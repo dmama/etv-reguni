@@ -30,7 +30,6 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -1861,13 +1860,12 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final PersonnePhysique luis = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				Assert.assertNotNull(luis);
-				final DecisionAci decisionAci = luis.getDecisionAciValideAt(depart);
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(luis.getNumero()), decisionAci);
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(luis.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

@@ -2795,7 +2795,7 @@ public class TiersServiceImpl implements TiersService {
 		return forCorrige;
 	}
 
-	private DecisionAci corrigerDecisionAci(@NotNull DecisionAci decisionAci, String remarque, int noOfsAutoriteFiscale) {
+	private DecisionAci corrigerDecisionAci(@NotNull DecisionAci decisionAci, RegDate dateFin, String remarque, int noOfsAutoriteFiscale) {
 
 		final boolean remarquesIdentiques = decisionAci.getRemarque()!=null && remarque !=null && decisionAci.getRemarque().equals(remarque);
 		final boolean remarquesNulles = decisionAci.getRemarque()==null && remarque ==null;
@@ -2811,6 +2811,7 @@ public class TiersServiceImpl implements TiersService {
 		DecisionAci decisionCorrigee = decisionAci.duplicate();
 		decisionAci.setAnnule(true);
 		decisionCorrigee.setRemarque(remarque);
+		decisionCorrigee.setDateFin(dateFin);
 		decisionCorrigee.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
 		decisionCorrigee = tiersDAO.addAndSave(ctb, decisionCorrigee);
 
@@ -4804,29 +4805,34 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public DecisionAci updateDecisionAci(DecisionAci decisionAci, RegDate dateFin, String remarque, Integer numeroAutoriteFiscale) {
 
-		DecisionAci updated = decisionAci;
+		DecisionAci updated = null;
+		if (needCreationNouvelleDecision(decisionAci, dateFin, remarque, numeroAutoriteFiscale)) {
+			updated = corrigerDecisionAci(decisionAci,dateFin, remarque, numeroAutoriteFiscale);
+		}
+		else{
+			if (decisionAci.getDateFin() == null && dateFin != null) {
+				decisionAci = closeDecisionAci(decisionAci,dateFin);
+			}
 
-		if (decisionAci.getDateFin() == null && dateFin != null) {
-			updated = closeDecisionAci(decisionAci,dateFin);
+			if (decisionAci.getRemarque() == null && remarque != null) {
+				decisionAci.setRemarque(remarque);
+			}
+			updated = decisionAci;
 		}
 
-		if (decisionAci.getRemarque() == null && remarque != null) {
-			updated.setRemarque(remarque);
-		}
+		return updated;
 
-		if (updated.getRemarque()!=null && !updated.getRemarque().equals(remarque)) {
-			// quelque chose d'autre a changé
-			updated = corrigerDecisionAci(updated, remarque, numeroAutoriteFiscale);
-		}
-		else if (!updated.getNumeroOfsAutoriteFiscale().equals(numeroAutoriteFiscale)) {
-			// quelque chose d'autre a changé
-			updated = corrigerDecisionAci(updated, remarque, numeroAutoriteFiscale);
-		}
-
-		return updated == decisionAci ? null : updated;
 	}
 
 
+	private boolean needCreationNouvelleDecision(DecisionAci d,RegDate dateFin, String remarque, Integer numeroAutoriteFiscale){
+		final boolean datefinModifiee = d.getDateFin()!=null && dateFin!=null && !d.getDateFin().equals(dateFin);
+		final boolean datefinSupprimee = d.getDateFin()!=null && dateFin==null;
+		final boolean autoriteModifiee = d.getNumeroOfsAutoriteFiscale()!=null && numeroAutoriteFiscale !=null && !d.getNumeroOfsAutoriteFiscale().equals(numeroAutoriteFiscale);
+		final boolean remarqueModifie = d.getRemarque()!=null && remarque!=null && !d.getRemarque().equals(remarque);
+		final boolean remarqueSupprimee = d.getRemarque()!=null && remarque ==null;
+		return datefinModifiee||datefinSupprimee|| autoriteModifiee||remarqueModifie||remarqueSupprimee;
+	}
 	@Override
 	public StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun) {
 

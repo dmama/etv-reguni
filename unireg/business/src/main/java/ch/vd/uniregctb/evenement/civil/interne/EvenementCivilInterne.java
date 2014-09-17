@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -519,5 +520,40 @@ public abstract class EvenementCivilInterne {
 		catch (TiersException e) {
 			throw new EvenementCivilException("Impossible de mettre à jour le flag 'habitant' de l'individu " + noIndividu, e);
 		}
+	}
+
+	/**
+	 * Permet de tester la presence d'une décision aci sur un contribuable qui peut être la personne concernée par l'évènement, son conjoint ou son ménage commun
+	 * @param ctbToCheck le contribuable a vérifier
+	 * @param ctbOfEvent le contribuable concerné par l'évenement civil , Peut être mis à  null si le contribuable concerné est le meme que celui qui est vérifié
+	 * @param dateEvenement
+	 * @throws EvenementCivilException
+	 */
+	protected void verifierPresenceDecisionEnCours(Contribuable ctbToCheck, @Nullable Contribuable ctbOfEvent, RegDate dateEvenement) throws EvenementCivilException {
+		//[SIFISC-12624]
+		//Si une décision aci en cours est présente, on met l'évenement en erreur
+		if (ctbToCheck.hasDecisionAciValidAt(dateEvenement)) {
+			String messageErreur = null;
+			if (ctbOfEvent == null) {
+				messageErreur = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(ctbToCheck.getNumero()));
+			}
+			else {
+				if (ctbToCheck instanceof MenageCommun) {
+					messageErreur = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI",
+							FormatNumeroHelper.numeroCTBToDisplay(ctbOfEvent.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ctbToCheck.getNumero()));
+				}
+				else {
+					// C'est le conjoint
+					messageErreur = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI",
+							FormatNumeroHelper.numeroCTBToDisplay(ctbOfEvent.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ctbToCheck.getNumero()));
+				}
+			}
+			throw new EvenementCivilException(messageErreur);
+		}
+	}
+
+	protected void verifierPresenceDecisionEnCours(Contribuable ctbToCheck, RegDate dateEvenement) throws EvenementCivilException {
+		verifierPresenceDecisionEnCours(ctbToCheck,null,dateEvenement);
 	}
 }

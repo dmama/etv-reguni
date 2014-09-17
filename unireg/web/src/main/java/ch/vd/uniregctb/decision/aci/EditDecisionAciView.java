@@ -2,11 +2,10 @@ package ch.vd.uniregctb.decision.aci;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class EditDecisionAciView implements Comparable<EditDecisionAciView>, Annulable{
+public class EditDecisionAciView implements Annulable{
 	private Long id;
 	private Long tiersId;
 	private RegDate dateDebut;
@@ -16,10 +15,6 @@ public class EditDecisionAciView implements Comparable<EditDecisionAciView>, Ann
 	private boolean annule;
 	private boolean dateFinEditable;
 	private Integer numeroAutoriteFiscale;
-
-	private static final BaseComparator<EditDecisionAciView> comparator = new BaseComparator<>(
-			new String[]{"annule", "dateDebut"},
-			new Boolean[]{true, false});
 
 	public Long getId() {
 		return id;
@@ -115,11 +110,6 @@ public class EditDecisionAciView implements Comparable<EditDecisionAciView>, Ann
 	}
 
 
-
-	@Override
-	public int compareTo(EditDecisionAciView o) {
-		return comparator.compare(this,o);
-	}
 
 	public boolean isDateFinEditable() {
 		return dateFinEditable;

@@ -380,18 +380,18 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@Transient
-	public DecisionAci getDecisionAciValideAt(@Nullable RegDate date) {
+	public boolean hasDecisionAciValidAt(@Nullable RegDate date) {
 
 		if (decisionsAci == null) {
-			return null;
+			return false;
 		}
 
 		for (DecisionAci d : decisionsAci) {
 			if (d.isValidAt(date)) {
-				return d;
+				return true;
 			}
 		}
 
-		return null;
+		return false;
 	}
 }

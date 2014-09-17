@@ -37,6 +37,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -218,7 +219,7 @@ public class TiersManager implements MessageSourceAware {
 				final DecisionAciView dView = new DecisionAciView(decision);
 				decisionsView.add(dView);
 			}
-			Collections.sort(decisionsView);
+			Collections.sort(decisionsView,new DecisionAciViewComparator());
 			tiersView.setDecisionsAci(decisionsView);
 		}
 

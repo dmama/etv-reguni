@@ -18,7 +18,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -523,13 +522,12 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				Assert.assertNotNull(monsieur);
-				final DecisionAci decisionAci = monsieur.getDecisionAciValideAt(dateDivorce);
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()), decisionAci);
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
@@ -586,15 +584,14 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(monsieur);
 				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
 				Assert.assertNotNull(madame);
-				final DecisionAci decisionAci = madame.getDecisionAciValideAt(dateDivorce);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) a un ancien conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()),decisionAci);
+				String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
@@ -660,15 +657,14 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 				final MenageCommun couple = (MenageCommun) tiersDAO.get(ids.couple);
 				Assert.assertNotNull(couple);
-				final DecisionAci decisionAci = couple.getDecisionAciValideAt(dateDivorce);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(couple.getNumero()),decisionAci);
+				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(couple.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

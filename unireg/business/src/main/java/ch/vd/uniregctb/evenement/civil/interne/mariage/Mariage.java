@@ -11,7 +11,6 @@ import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -23,7 +22,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -219,20 +217,9 @@ public class Mariage extends EvenementCivilInterne {
 			erreurs.addErreur(String.format("Le contribuable conjoint correspondant à l'individu %d n'existe pas dans le registre fiscal", nouveauConjoint.getNoTechnique()));
 		}
 
-		//[SIFISC-12624]
-		//Si une décision aci en cours est présente, on met l'évenement en erreur
-		final DecisionAci decisionAci = habitant.getDecisionAciValideAt(dateMariage);
-		if (decisionAci != null) {
-			erreurs.addErreur(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-					FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),decisionAci));
-		}
+		verifierPresenceDecisionEnCours(habitant,dateMariage);
 		if (nouveauConjointPP != null) {
-			//Si une décision aci en cours est présente sur le conjoint, on met l'évenement en erreur
-			final DecisionAci decisionAciConjoint = nouveauConjointPP.getDecisionAciValideAt(dateMariage);
-			if (decisionAciConjoint != null) {
-				erreurs.addErreur(String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(nouveauConjointPP.getNumero()),decisionAciConjoint));
-			}
+			verifierPresenceDecisionEnCours(nouveauConjointPP, habitant,dateMariage);
 		}
 
 

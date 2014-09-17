@@ -35,7 +35,6 @@ import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -154,13 +153,7 @@ public abstract class Arrivee extends Mouvement {
 			// [UNIREG-770] rechercher si un Non-Habitant assujetti existe (avec Nom - Prénom)
 			final PersonnePhysique habitant = getOrCreatePersonnePhysique(individu, numeroEvenement);
 
-			//[SIFISC-12624]
-			//Si une décision aci en cours est présente, on met l'évenement en erreur
-			final DecisionAci decisionAci = habitant.getDecisionAciValideAt(dateArrivee);
-			if (decisionAci != null) {
-				throw new EvenementCivilException(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),decisionAci));
-			}
+			verifierPresenceDecisionEnCours(habitant,dateArrivee);
 
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 			updateHabitantStatus(habitant, dateArrivee);
@@ -522,11 +515,7 @@ public abstract class Arrivee extends Mouvement {
 		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement);
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
-		final DecisionAci decisionAci = arrivant.getDecisionAciValideAt(dateEvenement);
-		if (decisionAci != null) {
-			throw new EvenementCivilException(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-					FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),decisionAci));
-		}
+		verifierPresenceDecisionEnCours(arrivant,dateEvenement);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 		updateHabitantStatus(arrivant, dateEvenement);
@@ -534,13 +523,7 @@ public abstract class Arrivee extends Mouvement {
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {
 			conjointDeLArrivant = getOrCreatePersonnePhysique(conjoint, numeroEvenement);
-			//[SIFISC-12624]
-			//Si une décision aci en cours est présente sur le conjoint, on met l'évenement en erreur
-			final DecisionAci decisionAciConjoint = conjointDeLArrivant.getDecisionAciValideAt(dateEvenement);
-			if (decisionAciConjoint != null) {
-				throw new EvenementCivilException(String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(conjointDeLArrivant.getNumero()),decisionAciConjoint));
-			}
+			verifierPresenceDecisionEnCours(conjointDeLArrivant,arrivant,dateEvenement);
 		}
 		else {
 			conjointDeLArrivant = null;
@@ -562,12 +545,7 @@ public abstract class Arrivee extends Mouvement {
 
 		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointDeLArrivant, dateEvenement, dateDebutMenage, numeroEvenement);
 		Assert.notNull(menageCommun);
-		//Presence décision ACI
-		final DecisionAci decisionSurCouple = menageCommun.getDecisionAciValideAt(getDate());
-		if (decisionSurCouple != null) {
-			throw new EvenementCivilException(String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI (%s)",
-					FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero()),decisionSurCouple));
-		}
+		verifierPresenceDecisionEnCours(menageCommun,arrivant,dateEvenement);
 
 		/*
 		 * Mise-à-jour des adresses

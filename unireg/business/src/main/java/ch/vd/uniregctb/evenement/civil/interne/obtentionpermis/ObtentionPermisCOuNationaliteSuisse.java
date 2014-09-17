@@ -14,7 +14,6 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -26,7 +25,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -96,27 +94,15 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			conjoint = etc.getConjoint(habitant);
 			couple = etc.getMenage();
 		}
-		final DecisionAci decisionAci = habitant.getDecisionAciValideAt(getDate());
-		if (decisionAci != null) {
-			errors.addErreur(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-					FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),decisionAci));
-		}
+		verifierPresenceDecisionEnCours(habitant,getDate());
 
 		if (conjoint != null) {
-			final ch.vd.uniregctb.tiers.DecisionAci decisionAciConjoint = conjoint.getDecisionAciValideAt(getDate());
-			if (decisionAciConjoint != null) {
-				errors.addErreur(String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),decisionAciConjoint));
-			}
+			verifierPresenceDecisionEnCours(conjoint, habitant,getDate());
 
 		}
 
 		if (couple != null) {
-			final DecisionAci decisionSurCouple = couple.getDecisionAciValideAt(getDate());
-			if (decisionSurCouple != null) {
-				errors.addErreur(String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(couple.getNumero()),decisionSurCouple));
-			}
+			verifierPresenceDecisionEnCours(couple, habitant,getDate());
 		}
 
 	}

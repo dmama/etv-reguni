@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -787,13 +786,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
-				final DecisionAci decisionAci = monsieur.getDecisionAciValideAt(dateMariage);
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),decisionAci);
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

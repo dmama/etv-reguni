@@ -64,6 +64,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
+import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -103,6 +104,7 @@ public class TiersServiceTest extends BusinessTest {
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private ValidationService validationService;
 	private EvenementFiscalDAO evenementFiscalDAO;
+	private DecisionAciDAO decisionAciDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -115,6 +117,7 @@ public class TiersServiceTest extends BusinessTest {
 		validationService = getBean(ValidationService.class, "validationService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 		adresseService = getBean(AdresseService.class, "adresseService");
+		decisionAciDAO = getBean(DecisionAciDAO.class, "decisionAciDAO");
 	}
 
 	@Test
@@ -8367,6 +8370,263 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
 				Assert.assertFalse("Le flag habitant n'a pas été remis à false", pp.isHabitantVD());
+			}
+		});
+	}
+
+	@Test
+	public void testMiseAJourDecisionsSimple() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final class IdsDecision {
+			public Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppM;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.ppM = m.getNumero();
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+				tiersService.updateDecisionAci(amodifier,null,"Nouvelle Remarque",null);
+			}
+		});
+
+		// vérification de l'état après départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				Assert.assertNotNull(pp);
+				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				assertNotNull(decisionsAci);
+				assertFalse(decisionsAci.isEmpty());
+				assertEquals(1, decisionsAci.size());
+				DecisionAci d = decisionsAci.get(0);
+				assertEquals(idsDecision.idOriginal,d.getId());
+				assertEquals("Nouvelle Remarque",d.getRemarque());
+
+			}
+		});
+	}
+
+	@Test
+	public void testMiseAJourAutoriteDecisions() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final class IdsDecision {
+			 Long idOriginal;
+			 Long idNouvel;
+		}
+		final class Ids {
+			long ppM;
+			long ppMme;
+			long mc;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.ppM = m.getNumero();
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,null,null,MockCommune.Aubonne.getNoOFS());
+				idsDecision.idNouvel = modifiee.getId();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				Assert.assertNotNull(pp);
+				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				assertNotNull(decisionsAci);
+				assertFalse(decisionsAci.isEmpty());
+				assertEquals(2, decisionsAci.size());
+				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
+				assertTrue(dOriginal.isAnnule());
+				assertEquals(MockCommune.Aubonne.getNoOFS(),dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+
+			}
+		});
+	}
+
+	@Test
+	public void testPremiereMiseAJourDateFinRemarqueDecisions() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final class IdsDecision {
+			Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppM;
+			long ppMme;
+			long mc;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.ppM = m.getNumero();
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				DecisionAci d = addDecisionAci(m,date(2006,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2013,5,6),"Ma remarque",null);
+				idsDecision.idNouvel = modifiee.getId();
+			}
+		});
+
+		// vérification de l'état après départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				Assert.assertNotNull(pp);
+				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				assertNotNull(decisionsAci);
+				assertFalse(decisionsAci.isEmpty());
+				assertEquals(1, decisionsAci.size());
+				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+				assertFalse(dOriginal.isAnnule());
+				assertEquals(date(2013, 5, 6),dOriginal.getDateFin());
+				assertEquals("Ma remarque",dOriginal.getRemarque());
+
+			}
+		});
+	}
+
+	@Test
+	public void testMiseAJourDateFinEtRemarqueDecisions() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final class IdsDecision {
+			Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppM;
+			long ppMme;
+			long mc;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.ppM = m.getNumero();
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				DecisionAci d = addDecisionAci(m,date(2006,11,1),date(2013,12,10),MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,"ma remarque");
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2012,12,10),"finalemeent rien",MockCommune.Lausanne.getNoOFS());
+				idsDecision.idNouvel = modifiee.getId();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppM);
+				Assert.assertNotNull(pp);
+				final List<DecisionAci> decisionsAci = new ArrayList<DecisionAci>(pp.getDecisionsAci());
+				assertNotNull(decisionsAci);
+				assertFalse(decisionsAci.isEmpty());
+				assertEquals(2, decisionsAci.size());
+				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
+				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
+				assertTrue(dOriginal.isAnnule());
+				assertEquals(MockCommune.Lausanne.getNoOFS(),dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(date(2012,12,10),dNouvelle.getDateFin());
+				assertEquals("finalemeent rien",dNouvelle.getRemarque());
+
+
 			}
 		});
 	}

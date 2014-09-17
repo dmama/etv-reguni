@@ -4,10 +4,9 @@ import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
-import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class DecisionAciView implements Comparable<DecisionAciView>, Annulable{
+public class DecisionAciView implements Annulable{
 	private Long id;
 	private Long tiersId;
 	private RegDate dateDebut;
@@ -19,9 +18,6 @@ public class DecisionAciView implements Comparable<DecisionAciView>, Annulable{
 	private Integer numeroForFiscalCommuneHorsCanton;
 	private Integer numeroForFiscalPays;
 
-	private static final BaseComparator<DecisionAciView> comparator = new BaseComparator<>(
-			new String[]{"annule", "dateDebut"},
-			new Boolean[]{true, false});
 
 	public Long getId() {
 		return id;
@@ -144,8 +140,4 @@ public class DecisionAciView implements Comparable<DecisionAciView>, Annulable{
 	}
 
 
-	@Override
-	public int compareTo(DecisionAciView o) {
-		return comparator.compare(this,o);
-	}
 }

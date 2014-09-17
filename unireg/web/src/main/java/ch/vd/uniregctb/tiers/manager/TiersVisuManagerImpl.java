@@ -27,6 +27,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.decision.aci.DecisionAciViewComparator;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -200,7 +201,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				final DecisionAciView dView = new DecisionAciView(decision);
 				decisionsView.add(dView);
 			}
-			Collections.sort(decisionsView);
+			Collections.sort(decisionsView,new DecisionAciViewComparator());
 		}
 		tiersView.setDecisionsAci(decisionsView);
 	}

@@ -26,7 +26,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
-import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -102,19 +101,10 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
-		final DecisionAci decisionAci = habitant.getDecisionAciValideAt(getDate());
-		if (decisionAci != null) {
-			erreurs.addErreur(String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI (%s)",
-					FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),decisionAci));
-		}
+		verifierPresenceDecisionEnCours(habitant,getDate());
 
 		if (ancienConjoint != null) {
-			final DecisionAci decisionAciConjoint = ancienConjoint.getDecisionAciValideAt(getDate());
-			if (decisionAciConjoint != null) {
-				erreurs.addErreur(String.format("Le contribuable trouvé (%s) a un ancien conjoint (%s) qui fait l'objet d'une décision ACI (%s)",
-						FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(ancienConjoint.getNumero()),decisionAciConjoint));
-			}
-
+			verifierPresenceDecisionEnCours(ancienConjoint,habitant,getDate());
 		}
 
 		/*
@@ -172,11 +162,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 				//Presence d'une décision ACI
 				final MenageCommun couple = menageComplet.getMenage();
-				final DecisionAci decisionSurCouple = couple.getDecisionAciValideAt(getDate());
-				if (decisionSurCouple != null) {
-					erreurs.addErreur(String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI (%s)",
-							FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(couple.getNumero()),decisionSurCouple));
-				}
+				verifierPresenceDecisionEnCours(couple,habitant,getDate());
 				/*
 				 * validation d'après le MetierService
 				 */
