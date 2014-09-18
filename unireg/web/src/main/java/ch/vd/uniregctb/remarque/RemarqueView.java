@@ -74,9 +74,6 @@ public class RemarqueView implements Annulable {
 	}
 
 	private static int countLines(String text) {
-		if (text == null) {
-			return 0;
-		}
 		final Matcher matcher = EOL_PATTERN.matcher(text);
 		int nbLines = 1;
 		while (matcher.find()) {
@@ -92,7 +89,7 @@ public class RemarqueView implements Annulable {
 	 */
 	private static String trimLines(String text) {
 		if (text == null) {
-			return null;
+			return StringUtils.EMPTY;
 		}
 		return TAIL_LINE_TRIMING_PATTERN.matcher(HEAD_LINE_TRIMING_PATTERN.matcher(text).replaceAll(StringUtils.EMPTY)).replaceAll(StringUtils.EMPTY);
 	}

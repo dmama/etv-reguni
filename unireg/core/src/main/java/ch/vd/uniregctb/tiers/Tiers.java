@@ -1044,10 +1044,9 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * Propriété présente pour afficher les données dans SuperGRA, ne doit pas être utilisée autrement
+	 * Propriété présente pour afficher les données dans SuperGRA et la validation... Pour le véritable affichage, lui préférer l'accès par le DAO.
 	 * @see ch.vd.uniregctb.tiers.dao.RemarqueDAO#getRemarques(Long)
 	 */
-	@Deprecated
 	@OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "tiers")
 	public Set<Remarque> getRemarques() {
 		return this.remarques;

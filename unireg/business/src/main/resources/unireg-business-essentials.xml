@@ -255,6 +255,8 @@
 	<bean id="declarationImpotOrdinaireValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinaireValidator" parent="declarationValidator" />
 	<bean id="declarationImpotSourceValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotSourceValidator" parent="declarationValidator" />
 
+	<bean id="remarqueValidator" class="ch.vd.uniregctb.validation.remarque.RemarqueValidator" parent="entityValidator"/>
+
 	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="entityValidator">
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>

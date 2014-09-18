@@ -56,7 +56,7 @@ public class EntityKey {
 
 	@Override
 	public String toString() {
-		return (type == null ? "(unknown)" : type.getDisplayName()) + " n°" + id;
+		return (type == null ? "(unknown)" : type.getDisplayArticleName()) + " n°" + id;
 	}
 }
 

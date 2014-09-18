@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.supergra.EntityKey;
@@ -132,6 +134,11 @@ public class EntityView implements Cloneable {
 			if ((Boolean.FALSE.equals(leftValue) && rightValue == null) || (leftValue == null && Boolean.FALSE.equals(rightValue))) {
 				// [UNIREG-2962] il n'est pas possible de distinguer entre une valeur booléenne nulle et false après l'avoir stockée dans une checkbox,
 				// en conséquence pour éviter des fausses détections on ignore ces différences.
+				continue;
+			}
+
+			if ((leftValue instanceof String && StringUtils.isBlank((String) leftValue) && rightValue == null) || (leftValue == null && rightValue instanceof String && StringUtils.isBlank((String) rightValue))) {
+				// on ne peut pas non plus distinguer une chaîne nulle d'une chaîne vide dans un champ texte
 				continue;
 			}
 

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -50,6 +51,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			results.merge(validateFors(tiers));
 			results.merge(validateDeclarations(tiers));
 			results.merge(validateRapports(tiers));
+			results.merge(validateRemarques(tiers));
 		}
 
 		return results;
@@ -252,6 +254,17 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		}
 
 		return results;
+	}
+
+	protected ValidationResults validateRemarques(T tiers) {
+		final ValidationResults vr = new ValidationResults();
+		final Set<Remarque> remarques = tiers.getRemarques();
+		if (remarques != null) {
+			for (Remarque r : remarques) {
+				vr.merge(getValidationService().validate(r));
+			}
+		}
+		return vr;
 	}
 
 }

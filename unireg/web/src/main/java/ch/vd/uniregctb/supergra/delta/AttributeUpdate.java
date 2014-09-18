@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.supergra.EntityKey;
@@ -65,15 +67,21 @@ public class AttributeUpdate extends Delta {
 
 	@Override
 	public String getHtml() {
-		if (oldValue == null && newValue != null) {
-			return "Renseignement du champ " + attribute2html(name) + " à " + value2html(newValue) + " sur le " + key;
+		final boolean oldNullOrEmpty = isNullOrEmpty(oldValue);
+		final boolean newNullOrEmpty = isNullOrEmpty(newValue);
+		if (oldNullOrEmpty && !newNullOrEmpty) {
+			return "Renseignement du champ " + attribute2html(name) + " à " + value2html(newValue) + " sur " + key;
 		}
-		else if (oldValue != null && newValue == null) {
-			return "Mise-à-nul du champ " + attribute2html(name) + " sur le " + key;
+		else if (!oldNullOrEmpty && newNullOrEmpty) {
+			return "Mise-à-nul du champ " + attribute2html(name) + " sur " + key;
 		}
 		else {
-			return "Mise-à-jour du champ " + attribute2html(name) + " de " + value2html(oldValue) + " à " + value2html(newValue) + " sur le " + key;
+			return "Mise-à-jour du champ " + attribute2html(name) + " de " + value2html(oldValue) + " à " + value2html(newValue) + " sur " + key;
 		}
+	}
+
+	private static boolean isNullOrEmpty(Object value) {
+		return value == null || (value instanceof String && StringUtils.isBlank((String) value));
 	}
 
 	@Override
