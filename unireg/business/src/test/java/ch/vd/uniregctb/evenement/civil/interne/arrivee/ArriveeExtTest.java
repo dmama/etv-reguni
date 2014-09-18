@@ -832,8 +832,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -927,8 +925,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				arrivee.handle(buildMessageCollector());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1026,8 +1022,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -1116,8 +1110,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				arrivee.handle(buildMessageCollector());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1212,8 +1204,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				arrivee.handle(buildMessageCollector());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1333,8 +1323,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				return null;
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1490,8 +1478,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -1643,8 +1629,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -1772,8 +1756,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				arrivee.handle(buildMessageCollector());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -1911,8 +1893,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				return null;
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -2063,8 +2043,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				return null;
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -2228,8 +2206,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -2349,8 +2325,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				assertEmpty(collector.getErreurs());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -2488,8 +2462,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				assertEmpty(collector.getErreurs());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
@@ -2632,8 +2604,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -2762,8 +2732,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		globalTiersIndexer.sync();
-
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -2831,8 +2799,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				assertEmpty(collector.getErreurs());
 			}
 		});
-
-		globalTiersIndexer.sync();
 
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
