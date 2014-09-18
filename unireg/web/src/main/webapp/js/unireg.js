@@ -605,6 +605,27 @@ var Fors = {
 		.error(Ajax.popupErrorHandler);
 	},
 
+	updateDatesFermetureForDebiteur: function(datesFermetureSelect, idFor, dateFin, forDejaFerme) {
+		var url = App.curl('/fors/debiteur/datesFermeture.do?forId=') + idFor;
+
+		// appel ajax
+		$.get(url + '&' + new Date().getTime(), function(dates) {
+			var options;
+			var selected = dateFin;
+			if (!forDejaFerme) {
+				options += '<option value=""' + (selected == null || selected === '' ? ' selected="true"' : "") + '/>';
+			}
+			var count = dates.length;
+			for (var i = 0 ; i < count ; ++ i) {
+				var date = dates[i];
+				var str = RegDate.format(date);
+				options += '<option value="' + str + '"' + (selected === str ? ' selected="true"' : '') + '>' + str + '</option>';
+			}
+			datesFermetureSelect.html(options);
+		}, 'json')
+		.error(Ajax.popupErrorHandler);
+	},
+
 	autoCompleteCommunesVD: function(textInput, noOfsInput, onChangeCallback) {
 		Autocomplete.infra('communeVD', $(textInput), true, function(item) {
 			$(noOfsInput).val(item ? item.id1 : null);

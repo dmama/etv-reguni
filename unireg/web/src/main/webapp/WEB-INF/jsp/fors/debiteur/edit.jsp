@@ -38,23 +38,6 @@
 							<c:if test="${command.fermetureEditable}">
 								<form:select path="dateFin" id="optionDatesFin" cssStyle="width:15ex"/>
 								<form:errors path="dateFin" cssClass="error"/>
-
-								<script type="application/javascript">
-									$.get(App.curl('/fors/debiteur/datesFermeture.do?forId=') + ${command.id}, function(dates) {
-										var options;
-										var selected = '<unireg:regdate regdate="${command.dateFin}"/>';
-										<c:if test="${!command.forFerme}">
-											options += '<option value=""' + (selected == null || selected === '' ? ' selected="true"' : "") + '/>';
-										</c:if>
-										var count = dates.length;
-										for (var i = 0 ; i < count ; ++ i) {
-											var date = dates[i];
-											var str = RegDate.format(date);
-											options += '<option value="' + str + '"' + (selected === str ? ' selected="true"' : '') + '>' + str + '</option>';
-										}
-										$('#optionDatesFin').html(options);
-									}, 'json').error(Ajax.popupErrorHandler);
-								</script>
 							</c:if>
 							<c:if test="${!command.fermetureEditable}">
 								<unireg:regdate regdate="${command.dateFin}"/>
@@ -124,6 +107,7 @@
 				</c:if>
 				<c:if test="${command.fermetureEditable}">
 					Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifFin}');
+					Fors.updateDatesFermetureForDebiteur($('#optionDatesFin'), '${command.id}', '${command.dateFin}', '${command.forFerme}');
 				</c:if>
 			});
 		</script>
