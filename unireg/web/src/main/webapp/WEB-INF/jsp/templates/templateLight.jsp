@@ -91,7 +91,10 @@
 				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
 				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 				<br/>
-				<strong>Navigateur&nbsp;:</strong> <c:out value="${header['User-Agent']}"/>
+				<strong>Navigateur&nbsp;:</strong> <div id="appVersion" style="display:inline-block"></div>
+				<script type="text/javascript">
+					document.getElementById('appVersion').innerHTML = navigator.userAgent;
+				</script>
 				<br/>&nbsp;<br/>
 			</div>
 			
