@@ -356,7 +356,10 @@
 				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 				&nbsp;&nbsp;&nbsp;<small><a href="<c:url value="/about.do"/>">A propos</a></small>
 				<br/>
-				<strong>Navigateur&nbsp;:</strong> <c:out value="${header['User-Agent']}"/>
+				<strong>Navigateur&nbsp;:</strong> <div id="appVersion" style="display:inline-block"></div>
+				<script type="text/javascript">
+					document.getElementById('appVersion').innerHTML = navigator.userAgent;
+				</script>
 				<br/>&nbsp;<br/>
 			</div>
 			
