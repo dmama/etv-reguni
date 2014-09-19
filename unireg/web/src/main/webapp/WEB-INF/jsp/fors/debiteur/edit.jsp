@@ -107,7 +107,7 @@
 				</c:if>
 				<c:if test="${command.fermetureEditable}">
 					Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'DEBITEUR_PRESTATION_IMPOSABLE', null, '${command.motifFin}');
-					Fors.updateDatesFermetureForDebiteur($('#optionDatesFin'), '${command.id}', '${command.dateFin}', <c:choose><c:when test="${command.forFerme}">true</c:when><c:otherwise>false</c:otherwise></c:choose>);
+					Fors.updateDatesFermetureForDebiteur($('#optionDatesFin'), '${command.id}', '${command.dateFin}', ${command.forFerme});
 				</c:if>
 			});
 		</script>
