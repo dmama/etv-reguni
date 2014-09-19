@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -1234,6 +1235,335 @@ public class EFactureEventHandlerTest extends BusinessTest {
 		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
 		Assert.assertNull(etatDemande.getCodeRaison());
 		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
+	}
+
+	@Test
+	public void testDemandeInscriptionNumeroSecuriteSocialePourContribuableVaudois() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String noSecu = "54843678543654";
+		final String demandeId = "42";
+		final String email = "albert@dufoin.ch";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				pp.setNumeroAssureSocial(noAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noSecu, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInEFactureAwareTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
+		Assert.assertNull(etatDemande.getCodeRaison());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_SECU_SANS_FOR_PRINCIPAL_HS.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
+	}
+
+	@Test
+	public void testDemandeInscriptionNumeroSecuriteSocialePourContribuableResidentHorsCanton() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String noSecu = "54843678543654";
+		final String demandeId = "42";
+		final String email = "albert@dufoin.ch";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bale);
+				pp.setNumeroAssureSocial(noAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noSecu, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInEFactureAwareTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
+		Assert.assertNull(etatDemande.getCodeRaison());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_SECU_SANS_FOR_PRINCIPAL_HS.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
+	}
+
+	@Test
+	public void testDemandeInscriptionNumeroSecuriteSocialePourContribuableResidentHorsSuisse() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String noSecu = "54843678543654";
+		final String demandeId = "42";
+		final String email = "albert@dufoin.ch";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.INDETERMINE, MockPays.France);
+				pp.setNumeroAssureSocial(noAvs);
+
+				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(2010, 3, 12), null, "35 rue des alouettes", "63000 Clermont-Ferrand", MockPays.France);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, noSecu, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInEFactureAwareTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, noSecu, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE, etatDemande.getType());
+		Assert.assertEquals((Integer) TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(), etatDemande.getCodeRaison());
+		Assert.assertEquals(TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertEquals(TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), etatDemande.getChampLibre());
+	}
+
+	@Test
+	public void testDemandeInscriptionNumeroAvsOuSecuSocialeAbsent() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String demandeId = "42";
+		final String email = "albert@dufoin.ch";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				pp.setNumeroAssureSocial(noAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addDemandeInscription(demandeId, ppId, email, dateDemande, typeDemande, null, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInEFactureAwareTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, email, dateDemande, typeDemande, null, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
+		Assert.assertNull(etatDemande.getCodeRaison());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.NUMERO_AVS_OU_SECURITE_SOCIALE_ABSENT.getDescription(), etatDemande.getDescriptionRaison());
+		Assert.assertNull(etatDemande.getChampLibre());
+	}
+
+	@Test
+	public void testDemandeInscriptionAdresseElectroniqueAbsente() throws Exception {
+
+		final String noAvs = "7564822568443";
+		final String demandeId = "42";
+		final RegDate dateDemande = RegDate.get();
+		final Demande.Action typeDemande = Demande.Action.INSCRIPTION;
+		final BigInteger noAdherent = getNewNumeroAdherent();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Dufoin", null, Sexe.MASCULIN);
+				addForPrincipal(pp, date(2010, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				pp.setNumeroAssureSocial(noAvs);
+				return pp.getNumero();
+			}
+		});
+
+		// mise en place...
+		eFactureService.setUp(new MockEFactureService() {
+			@Override
+			public void init() {
+				addDestinataire(ppId);
+				addDemandeInscription(demandeId, ppId, null, dateDemande, typeDemande, noAvs, TypeEtatDemande.VALIDATION_EN_COURS, noAdherent);
+			}
+		});
+
+		// traitement de la demande d'inscription
+		doInEFactureAwareTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Demande demande = new Demande(demandeId, ppId, null, dateDemande, typeDemande, noAvs, noAdherent);
+				handler.handle(demande);
+				return null;
+			}
+		});
+
+		// vérification état final e-facture
+		final DestinataireAvecHisto histo = eFactureService.getDestinataireAvecSonHistorique(ppId);
+		Assert.assertNotNull(histo);
+		Assert.assertEquals(TypeEtatDestinataire.NON_INSCRIT, histo.getDernierEtat().getType());
+		Assert.assertEquals(1, histo.getHistoriqueDemandes().size());
+
+		final DemandeAvecHisto demande = histo.getHistoriqueDemandes().get(0);
+		Assert.assertEquals(demandeId, demande.getIdDemande());
+
+		final EtatDemande etatDemande = demande.getDernierEtat();
+		Assert.assertNotNull(etatDemande);
+		Assert.assertEquals(TypeEtatDemande.REFUSEE, etatDemande.getType());
+		Assert.assertNull(etatDemande.getCodeRaison());
+		Assert.assertEquals(EFactureEventHandlerImpl.TypeRefusDemande.EMAIL_ABSENT.getDescription(), etatDemande.getDescriptionRaison());
 		Assert.assertNull(etatDemande.getChampLibre());
 	}
 

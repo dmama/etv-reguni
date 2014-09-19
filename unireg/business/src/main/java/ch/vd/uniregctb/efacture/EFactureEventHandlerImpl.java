@@ -24,10 +24,12 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
@@ -42,10 +44,13 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 	protected static enum TypeRefusDemande {
 
+		NUMERO_AVS_OU_SECURITE_SOCIALE_ABSENT("Pas de numéro AVS ni de numéro de sécurité sociale étranger."),
+		EMAIL_ABSENT("Adresse de courrier électronique absente."),
 		NUMERO_AVS_INVALIDE("Numéro AVS invalide."),
 		DATE_DEMANDE_ABSENTE("Date de la demande non renseignée."),
 		NUMERO_CTB_INCOHERENT("Numéro de contribuable incohérent."),
 		NUMERO_AVS_CTB_INCOHERENT("Numéro AVS incohérent avec le numéro de contribuable."),
+		NUMERO_SECU_SANS_FOR_PRINCIPAL_HS("Numéro de sécurité sociale étranger sans for principal hors-Suisse actif."),
 		ADRESSE_COURRIER_INEXISTANTE("Aucune adresse courrier pour ce contribuable.");
 
 		private final String description;
@@ -157,9 +162,14 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 	private TypeRefusDemande check(Demande demande, Tiers tiers) throws EvenementEfactureException {
 
-		// Check Numéro AVS à 13 chiffres
-		if (!AvsHelper.isValidNouveauNumAVS(demande.getNoAvs())) {
-			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+		// [SIFISC-12805] la valeur dans le champ noAvs peut être autre chose qu'un NAVS13... mais si le champ est vide, rien ne va plus...
+		final String noSecuOuAvs = AvsHelper.removeSpaceAndDash(demande.getNoAvs());
+		if (StringUtils.isBlank(noSecuOuAvs)) {
+			return TypeRefusDemande.NUMERO_AVS_OU_SECURITE_SOCIALE_ABSENT;
+		}
+
+		if (StringUtils.isBlank(demande.getEmail())) {
+			return TypeRefusDemande.EMAIL_ABSENT;
 		}
 
 		// Check Date et heure de la demande
@@ -167,17 +177,33 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
 		}
 
-		// vérification du tiers et de la correspondance avec le navs
+		// [SIFISC-12805] la valeur dans le champ noAvs peut être autre chose qu'un NAVS13... (on détecte le numéro AVS par sa longueur et le début à 756)
+		final boolean isNavs13 = noSecuOuAvs.length() == 13 && noSecuOuAvs.startsWith("756");
+		if (isNavs13 && !AvsHelper.isValidNouveauNumAVS(noSecuOuAvs)) {
+			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+		}
+
+		// vérification du tiers et de sa capacité à porter un numéro AVS (= seules les personnes physiques et les ménages l'ont)
 		final Set<Long> noAvsRegistre = findNavsDansRegistre(tiers);
 		if (noAvsRegistre.isEmpty()) {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
 
-		// si le set contient "null", on ne va pas plus loin dans le test sur le numéro AVS puisqu'un au moins est inconnu dans le registre
-		if (!noAvsRegistre.contains(null)) {
-			final long noAvsDemande = AvsHelper.stringToLong(demande.getNoAvs());
-			if (!noAvsRegistre.contains(noAvsDemande)) {
-				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
+		// si c'est un NAVS13, on vérifie qu'il correspond à au moins un contribuable PP lié au numéro donné
+		if (isNavs13) {
+			// si le set contient "null", on ne va pas plus loin dans le test sur le numéro AVS puisqu'un au moins est inconnu dans le registre
+			if (!noAvsRegistre.contains(null)) {
+				final long noAvsDemande = AvsHelper.stringToLong(demande.getNoAvs());
+				if (!noAvsRegistre.contains(noAvsDemande)) {
+					return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
+				}
+			}
+		}
+		else {
+			// ce n'est pas un numéro AVS13, il faut donc vérifier que le contribuable a un for principal HS actif
+			final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+			if (ffp == null || ffp.getDateFin() != null || ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
+				return TypeRefusDemande.NUMERO_SECU_SANS_FOR_PRINCIPAL_HS;
 			}
 		}
 

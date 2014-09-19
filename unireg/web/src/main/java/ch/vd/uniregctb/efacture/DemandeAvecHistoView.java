@@ -28,8 +28,12 @@ public class DemandeAvecHistoView {
 		this.idDemande = idDemande;
 		this.dateDemande = dateDemande;
 		this.noAdherent = noAdherent;
-		this.avs = avs != null ? FormatNumeroHelper.formatNumAVS(avs) : StringUtils.EMPTY;
-		this.email = email != null ? email : StringUtils.EMPTY;
+
+		// [SIFISC-12805] pour les cas où le numéro de sécurité sociale n'est pas un numéro AVS (et comprend éventuellement même des lettres), il faut l'afficher quand-même (mais sans formattage)
+		final String formattedAvs = FormatNumeroHelper.formatNumAVS(avs);
+		this.avs = StringUtils.isNotBlank(formattedAvs) ? formattedAvs : StringUtils.trimToEmpty(avs);
+
+		this.email = StringUtils.trimToEmpty(email);
 		this.descriptionTypeDemande = actionDemande != null ? actionDemande.getDescription() : StringUtils.EMPTY;
 
 		if (etats == null || etats.isEmpty()) {

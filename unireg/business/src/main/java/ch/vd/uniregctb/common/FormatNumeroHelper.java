@@ -81,8 +81,8 @@ public class FormatNumeroHelper {
 		sNumero = removeSpaceAndDash(sNumero);
 		if (sNumero != null && Pattern.matches("[0-9]*", sNumero)) {
 			rtr = sNumero;
-			if (sNumero.length() == 13) {
-				rtr = sNumero.substring(0, 3) + '.' + sNumero.substring(3, 7) + '.' + sNumero.substring(7, 11) + '.'
+			if (sNumero.length() == 13 && sNumero.startsWith("756")) {
+				rtr = "756." + sNumero.substring(3, 7) + '.' + sNumero.substring(7, 11) + '.'
 						+ sNumero.substring(11, sNumero.length());
 			}
 
