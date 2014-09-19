@@ -16,10 +16,9 @@ public class FormatNumeroHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testFormatNumAVS() throws Exception {
-
-		String numAVS = "1245789012345";
-
-		assertEquals("124.5789.0123.45", FormatNumeroHelper.formatNumAVS(numAVS));
+		assertEquals("1245789012345", FormatNumeroHelper.formatNumAVS("12.-45789. 012345"));        // pas de formattage car cela ne commence pas par 756
+		assertEquals("", FormatNumeroHelper.formatNumAVS("1245789012345AA"));                       // à cause des lettres
+		assertEquals("756.5789.0123.45", FormatNumeroHelper.formatNumAVS("75.--657  89012345"));    // formattage ok
 	}
 
 	@Test
