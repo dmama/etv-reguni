@@ -21,7 +21,7 @@ public class SourcierMixteArt137Al1 extends SourcierMixte {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new SourcierMixteArt137Al1(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscale());
+		return new SourcierMixteArt137Al1(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscalePrincipale());
 	}
 
 	@Override

@@ -142,7 +142,7 @@ public abstract class TaxLiabilityBuilder {
 
 	private static void fillWithholding(Withholding left, ch.vd.uniregctb.metier.assujettissement.Sourcier right) {
 		fillTaxLiability(left, right);
-		left.setTaxationAuthority(EnumHelper.coreToXMLv1(right.getTypeAutoriteFiscale()));
+		left.setTaxationAuthority(EnumHelper.coreToXMLv1(right.getTypeAutoriteFiscalePrincipale()));
 	}
 
 	private static void fillTaxLiability(TaxLiability left, ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {

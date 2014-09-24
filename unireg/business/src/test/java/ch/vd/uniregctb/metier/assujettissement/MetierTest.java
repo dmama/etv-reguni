@@ -927,7 +927,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(fin, assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
-		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
 	protected void assertSourcierMixteArt137Al1(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
@@ -938,7 +938,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(fin, assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
-		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
 	protected void assertSourcierMixteArt137Al2(RegDate debut, @Nullable MotifFor motifFractDebut, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
@@ -949,7 +949,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertNull(assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
 		assertNull(assujettissement.getMotifFractFin());
-		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
 	protected void assertSourcierMixteArt137Al2(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
@@ -960,7 +960,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(fin, assujettissement.getDateFin());
 		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
-		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
+		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
 	protected void assertPeriodeImposition(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,

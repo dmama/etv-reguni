@@ -307,7 +307,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			for (SourcierPur current : list) {
 				if (previous != null) {
 					if (DateRangeHelper.intersect(previous, current)) { // on a trouvé un assujettissement qui chevauche le précédent
-						if (previous.getTypeAutoriteFiscale() == current.getTypeAutoriteFiscale() || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (previous.getTypeAutoriteFiscalePrincipale() == current.getTypeAutoriteFiscalePrincipale() || current.getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 							list = overrideCurrentOnPrevious(list, current);
 						}
 						else {

@@ -153,7 +153,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		boolean actif = false;
 		final ForFiscalPrincipal ffp = (fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last());
 		if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getNumeroOfsAutoriteFiscale() == noOfsCommune) {
-			actif = true;
+			actif = getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 		}
 		else if (!fors.secondairesDansLaPeriode.isEmpty()) {
 			for (ForFiscalSecondaire ffs : fors.secondairesDansLaPeriode) {
@@ -165,6 +165,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 		return actif;
 	}
+
+	/**
+	 * @return le type d'autorité fiscale du domicile du contribuable pour cet assujettissement
+	 */
+	protected abstract TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale();
 
 	@Override
 	public abstract String toString();

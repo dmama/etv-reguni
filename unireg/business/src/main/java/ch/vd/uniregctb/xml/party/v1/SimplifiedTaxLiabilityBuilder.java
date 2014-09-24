@@ -30,7 +30,7 @@ public class SimplifiedTaxLiabilityBuilder {
 		}
 		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
 			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (mixte.getTypeAutoriteFiscalePrincipale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
 			}
 			else {
@@ -74,7 +74,7 @@ public class SimplifiedTaxLiabilityBuilder {
 		}
 		else if (a instanceof ch.vd.uniregctb.metier.assujettissement.SourcierMixte) {
 			ch.vd.uniregctb.metier.assujettissement.SourcierMixte mixte = (ch.vd.uniregctb.metier.assujettissement.SourcierMixte) a;
-			if (mixte.getTypeAutoriteFiscale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (mixte.getTypeAutoriteFiscalePrincipale() == ch.vd.uniregctb.type.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				result = newSimplifiedTaxLiability(a, SimplifiedTaxLiabilityType.UNLIMITED);
 			}
 			else {

@@ -24,7 +24,7 @@ public class SourcierPur extends Sourcier {
 
 	@Override
 	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
-		return new SourcierPur(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscale());
+		return new SourcierPur(getContribuable(), dateDebut, dateFin, motifDebut, motifFin, getTypeAutoriteFiscalePrincipale());
 	}
 
 	@Override

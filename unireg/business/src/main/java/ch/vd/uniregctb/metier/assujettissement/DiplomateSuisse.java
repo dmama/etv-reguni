@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Période d'assujettissement de type diplomate Suisse; c'est-à-dire pour un diplomate de nationalité Suisse, basé à l'étranger mais
@@ -29,6 +30,11 @@ public class DiplomateSuisse extends Assujettissement {
 	@Override
 	public TypeAssujettissement getType() {
 		return TypeAssujettissement.DIPLOMATE_SUISSE;
+	}
+
+	@Override
+	protected TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	@Override

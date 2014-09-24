@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type indigent; c'est-à-dire pour un contribuable domicilié dans une commune vaudoise, mais n'ayant pas de revenu ni
@@ -29,6 +30,11 @@ public class Indigent extends Assujettissement {
 	@Override
 	public TypeAssujettissement getType() {
 		return TypeAssujettissement.INDIGENT;
+	}
+
+	@Override
+	protected TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	@Override

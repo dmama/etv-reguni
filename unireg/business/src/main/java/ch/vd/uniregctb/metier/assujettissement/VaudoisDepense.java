@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement à la dépense; c'est-à-dire pour un contribuable étranger, domicilé dans le canton de Vaud mais sans activité lucrative
@@ -29,6 +30,11 @@ public class VaudoisDepense extends Assujettissement {
 	@Override
 	public TypeAssujettissement getType() {
 		return TypeAssujettissement.VAUDOIS_DEPENSE;
+	}
+
+	@Override
+	protected TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	@Override

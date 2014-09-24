@@ -186,11 +186,10 @@ public class ProduireRolesProcessor {
 		final T rapportFinal = variante.creerRapport(anneePeriode, nbThreads, today, true);
 
 		// parties à aller chercher en bloc par groupe de tiers
-		final Set<TiersDAO.Parts> parts = new HashSet<>();
-		parts.add(TiersDAO.Parts.FORS_FISCAUX);
-		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
-		parts.add(TiersDAO.Parts.ADRESSES);
-		parts.add(TiersDAO.Parts.DECLARATIONS);
+		final Set<TiersDAO.Parts> parts = EnumSet.of(TiersDAO.Parts.FORS_FISCAUX,
+		                                             TiersDAO.Parts.RAPPORTS_ENTRE_TIERS,
+		                                             TiersDAO.Parts.ADRESSES,
+		                                             TiersDAO.Parts.DECLARATIONS);
 
 		// groupement de communes (utilisé pour calculer la date du premier for, et la date du dernier)
 		final GroupementCommunes groupement = variante.getGroupementCommunes();
@@ -969,17 +968,25 @@ public class ProduireRolesProcessor {
 			// -> il faut le re-calculer !
 			final List<Assujettissement> assujettissementsCommune = assujettissementService.determinePourCommunes(assujettissement.getContribuable(), communes);
 			if (assujettissementsCommune == null) {
-				// bizarre : on a au moins une commune de l'ensemble qui est "active" (voir communeActive plus haut) mais on ne trouve pas
-				// d'assujettissement... on a eu le cas une fois avec un sourcier pur vaudois qui avait aussi un for secondaire sur une autre commune (les rôles
-				// de cette autre commune posent problème) - SIFISC-8671
-				throw new AssujettissementCommunalException(communes);
-			}
-			final Assujettissement assujettissementApres = DateRangeHelper.rangeAt(assujettissementsCommune, RegDateHelper.getFirstDayOfNextMonth(assujettissement.getDateFin()));
-			if (assujettissementApres == null) {
-				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
+				// [SIFISC-11991] si l'assujettissement est de type SOURCE_PURE, cela peut arriver (cas par exemple d'un mixte avec immeuble qui se marie
+				// pour devenir ordinaire... : l'année du mariage, l'ex-célibataire a un assujettissement "source pure" jusqu'à son mariage (= mixte - ordinaire)
+				// et l'assujettissement est déclaré "actif" sur la commune du for immeuble, alors qu'aucun assujettissement ne correspond en fait...)
+				if (assujettissement instanceof SourcierPur) {
+					typeAssujettissement = TypeAssujettissement.NON_ASSUJETTI;
+				}
+				else {
+					// à quoi correspond ce cas, maintenant... ?
+					throw new AssujettissementCommunalException(communes);
+				}
 			}
 			else {
-				typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
+				final Assujettissement assujettissementApres = DateRangeHelper.rangeAt(assujettissementsCommune, RegDateHelper.getFirstDayOfNextMonth(assujettissement.getDateFin()));
+				if (assujettissementApres == null) {
+					typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
+				}
+				else {
+					typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
+				}
 			}
 		}
 		else {

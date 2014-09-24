@@ -255,7 +255,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 				remplaceeParNote = true;
 			}
 
-			if (mixte.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+			if (mixte.getTypeAutoriteFiscalePrincipale() == TypeAutoriteFiscale.COMMUNE_HC) {
 				if (forsPeriode.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 					// Sourcier mixte hc avec activité indépendante => déclaration ordinaire
 					final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.HORS_CANTON, contribuable, annee);

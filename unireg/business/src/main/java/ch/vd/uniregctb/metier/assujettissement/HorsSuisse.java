@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type hors Suisse; c'est-à-dire pour un contribuable domicilié dans un pays étranger, et possédant un ou plusieurs
@@ -29,6 +30,11 @@ public class HorsSuisse extends Assujettissement {
 	@Override
 	public TypeAssujettissement getType() {
 		return TypeAssujettissement.HORS_SUISSE;
+	}
+
+	@Override
+	protected TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return TypeAutoriteFiscale.PAYS_HS;
 	}
 
 	@Override

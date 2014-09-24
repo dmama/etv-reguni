@@ -27,7 +27,7 @@ public abstract class Sourcier extends Assujettissement {
 		this.typeAutoriteFiscale = courant.typeAutoriteFiscale;
 	}
 
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+	public TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
 		return typeAutoriteFiscale;
 	}
 

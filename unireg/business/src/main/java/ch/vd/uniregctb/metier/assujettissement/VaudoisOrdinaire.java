@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type vaudois ordinaire; c'est-à-dire pour un contribuable Suisse ou permis C, domicilié dans le canton de Vaud et
@@ -29,6 +30,11 @@ public class VaudoisOrdinaire extends Assujettissement {
 	@Override
 	public TypeAssujettissement getType() {
 		return TypeAssujettissement.VAUDOIS_ORDINAIRE;
+	}
+
+	@Override
+	protected TypeAutoriteFiscale getTypeAutoriteFiscalePrincipale() {
+		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	@Override
