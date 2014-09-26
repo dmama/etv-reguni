@@ -206,10 +206,15 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		to.setMotherName(from.getMotherName());
 		to.setFatherName(from.getFatherName());
 
+		// les nom de naissance, origines et nationalités (SIFISC-13351 & SIFISC-13558)
+		to.setBirthName(from.getBirthName());
+		copyColl(to.getNationalities(), from.getNationalities());
+		copyColl(to.getOrigins(), from.getOrigins());
+
 		// les permis sont toujours renseignés (pas de PART spécifique)
 		copyColl(to.getCategories(), from.getCategories());
 
-		//la liste des IDE
+		// la liste des IDE
 		to.setUidNumbers(from.getUidNumbers());
 	}
 

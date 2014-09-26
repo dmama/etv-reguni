@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.ech.ech0007.v4.CantonAbbreviation;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -30,6 +31,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.ws.parties.v1.Entry;
 import ch.vd.unireg.ws.parties.v1.Parties;
@@ -38,7 +40,9 @@ import ch.vd.unireg.xml.party.address.v2.Address;
 import ch.vd.unireg.xml.party.address.v2.FormattedAddress;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.person.v3.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v3.Nationality;
 import ch.vd.unireg.xml.party.person.v3.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v3.Origin;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType;
@@ -139,6 +143,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				final MockIndividu junior = addIndividu(noIndividuJunior, dateNaissanceJunior, "Junior", "Bolomey", true);
 				addLiensFiliation(junior, ind, null, dateNaissanceJunior, null);
 				addLiensFiliation(ind, papa, null, dateNaissance, null);
+				addOrigine(ind, MockCommune.Neuchatel);
+				addOrigine(ind, MockCommune.Orbe);
+				ind.setNomNaissance("Bolomey-de-naissance");
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+				addNationalite(ind, MockPays.France, dateNaissance.addMonths(1), null);
 			}
 		});
 
@@ -294,6 +303,91 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 	public void onTearDown() throws Exception {
 		wsCacheManager.setCache(getBean(BusinessWebServiceCache.class, "wsv5Cache"));
 		super.onTearDown();
+	}
+
+	/**
+	 * [SIFISC-13558] En passant au travers du cache, ces données étaient oubliées
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNomNaissanceEtOrigineEtNationalite() throws Exception {
+
+		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
+		final int partyNo = ids.eric.intValue();
+
+		final Party party = cache.getParty(userLogin, partyNo, null);
+		assertInstanceOf(NaturalPerson.class, party);
+
+		final NaturalPerson np = (NaturalPerson) party;
+
+		// nom de naissance
+		{
+			assertEquals("Bolomey-de-naissance", np.getBirthName());
+		}
+
+		// orgines
+		{
+			final List<Origin> origines = np.getOrigins();
+			assertNotNull(origines);
+			assertEquals(2, origines.size());
+
+			// tri dans l'ordre alphabétique des noms de lieux : 1. Neuch', 2. Orbe
+			final List<Origin> sortedOrigins = new ArrayList<>(origines);
+			Collections.sort(sortedOrigins, new Comparator<Origin>() {
+				@Override
+				public int compare(Origin o1, Origin o2) {
+					return o1.getOriginName().compareTo(o2.getOriginName());
+				}
+			});
+
+			{
+				final Origin origine = sortedOrigins.get(0);
+				assertNotNull(origine);
+				assertEquals(CantonAbbreviation.NE, origine.getCanton());
+				assertEquals(MockCommune.Neuchatel.getNomOfficiel(), origine.getOriginName());
+			}
+			{
+				final Origin origine = sortedOrigins.get(1);
+				assertNotNull(origine);
+				assertEquals(CantonAbbreviation.VD, origine.getCanton());
+				assertEquals(MockCommune.Orbe.getNomOfficiel(), origine.getOriginName());
+			}
+		}
+
+		// nationalités
+		{
+			final List<Nationality> nationalites = np.getNationalities();
+			assertNotNull(nationalites);
+			assertEquals(2, nationalites.size());
+
+			// tri dans l'ordre croissant des dates de début : 1. Suisse, 2. France
+			final List<Nationality> sortedNationalities = new ArrayList<>(nationalites);
+			Collections.sort(sortedNationalities, new Comparator<Nationality>() {
+				@Override
+				public int compare(Nationality o1, Nationality o2) {
+					return o1.getDateFrom().compareTo(o2.getDateFrom());
+				}
+			});
+
+			{
+				final Nationality nationality = sortedNationalities.get(0);
+				assertNotNull(nationality);
+				assertEquals(new Date(1965, 4, 13), nationality.getDateFrom());
+				assertNull(nationality.getDateTo());
+				assertNotNull(nationality.getSwiss());
+				assertNull(nationality.getForeignCountry());
+				assertNull(nationality.getStateless());
+			}
+			{
+				final Nationality nationality = sortedNationalities.get(1);
+				assertNotNull(nationality);
+				assertEquals(new Date(1965, 5, 13), nationality.getDateFrom());
+				assertNull(nationality.getDateTo());
+				assertNull(nationality.getSwiss());
+				assertEquals((Integer) MockPays.France.getNoOFS(), nationality.getForeignCountry());
+				assertNull(nationality.getStateless());
+			}
+		}
 	}
 
 	@Test
