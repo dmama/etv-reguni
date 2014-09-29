@@ -23,8 +23,7 @@ public class HtmlHelper {
 		}
 		string = StringEscapeUtils.escapeHtml4(string);
 		string = string.replaceAll("\r\n?|\n", "<br/>");
-		string = string.replaceAll(" :", "&nbsp;:");
-		string = string.replaceAll("    ", "\t");
+		string = string.replaceAll(" ", "&nbsp;");
 		string = string.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 		return string;
 	}
