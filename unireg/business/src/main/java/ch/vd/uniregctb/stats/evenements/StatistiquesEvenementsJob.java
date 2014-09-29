@@ -42,36 +42,36 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 			final JobParam param = new JobParam();
 			param.setDescription("Evénements civils");
 			param.setName(EVTS_CIVILS);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
-			addParameterDefinition(param, Boolean.TRUE);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Evénements externes");
 			param.setName(EVTS_EXTERNES);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
-			addParameterDefinition(param, Boolean.TRUE);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Evénements d'identification");
 			param.setName(EVTS_IDENT_CTB);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
-			addParameterDefinition(param, Boolean.TRUE);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Evénements notaires");
 			param.setName(EVTS_NOTAIRES);
-			param.setMandatory(true);
+			param.setMandatory(false);
 			param.setType(new JobParamBoolean());
-			addParameterDefinition(param, Boolean.TRUE);
+			addParameterDefinition(param, Boolean.FALSE);
 		}
 
 		{
