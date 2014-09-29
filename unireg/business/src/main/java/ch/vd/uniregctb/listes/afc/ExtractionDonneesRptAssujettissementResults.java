@@ -2,7 +2,6 @@ package ch.vd.uniregctb.listes.afc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.DecompositionFors;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
@@ -82,7 +82,8 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 				modeImposition = ModeImposition.SOURCE;
 				if (ffp == null) {
 					// c'est toujours mieux que rien... cas du for SOURCE "inventé" par un for principal avec motif d'ouverture "CHGT_MODE_IMPOSITION"
-					final ForFiscalPrincipal ffpNonSource = a.getFors().principal;
+					// [SIFISC-10312] également le cas d'un sourcier mixte2 qui se marie dans l'année
+					final ForFiscalPrincipal ffpNonSource = extractForPrincipalDernierRecours(a.getFors());
 					motifRattachement = ffpNonSource.getMotifRattachement();
 					autoriteFiscaleForPrincipal = ffpNonSource.getTypeAutoriteFiscale();
 					ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(ffpNonSource.getNumeroOfsAutoriteFiscale(), autoriteFiscaleForPrincipal, ffpNonSource.getDateDebut());
@@ -132,6 +133,24 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	                                                                             Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
 		return buildInfoPeriodeImposition(ctb, identification, modeImposition, motifRattachement, a, a.getMotifFractDebut(), a.getMotifFractFin(),
 		                                  ofsCommuneForGestion, autoriteFiscaleForPrincipal);
+	}
+
+	/**
+	 * On se sert de cette méthode pour récupérer un for principal sur une période quand toutes les autres méthodes ont échoué (= selon le principe
+	 * du "c'est mieux que rien...")
+	 * @param decomposition décomposition de base
+	 * @return le for principal trouvé, ou <code>null</code> s'il n'y en a vraiment pas (mais comment peut-il alors y avoir assujettissement ?)
+	 */
+	private static ForFiscalPrincipal extractForPrincipalDernierRecours(DecompositionFors decomposition) {
+		if (decomposition.principal != null) {
+			return decomposition.principal;
+		}
+
+		if (!decomposition.principauxDansLaPeriode.isEmpty()) {
+			return decomposition.principauxDansLaPeriode.last();
+		}
+
+		return null;
 	}
 
 	/**

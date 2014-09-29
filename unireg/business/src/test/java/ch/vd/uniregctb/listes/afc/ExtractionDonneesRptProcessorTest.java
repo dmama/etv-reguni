@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.listes.afc;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -2500,7 +2499,6 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 	/**
 	 * [SIFISC-10312]... pour le moment, je ne sais pas trop quoi faire de ces cas -> test ignoré
 	 */
-	@Ignore
 	@Test
 	public void testSourcierHcPuisVdMixte2PuisMarie() throws Exception {
 
@@ -2533,9 +2531,26 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final ExtractionDonneesRptResults res = processor.run(RegDate.get(), 2011, TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, 1, null);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(TypeExtractionDonneesRpt.REVENU_SOURCE_PURE, res.getMode());
-		Assert.assertEquals(1, res.getListePeriode().size());
 		Assert.assertEquals(0, res.getListeCtbsIgnores().size());
 		Assert.assertEquals(0, res.getListeErreurs().size());
+		Assert.assertEquals(2, res.getListePeriode().size());
+
+		{
+			final ExtractionDonneesRptResults.InfoPeriodeImposition info = res.getListePeriode().get(0);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(date(2011, 1, 1), info.debutPeriodeImposition);
+			Assert.assertEquals(dateArriveeVD.getOneDayBefore().getLastDayOfTheMonth(), info.finPeriodeImposition);
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, info.autoriteFiscaleForPrincipal);
+			Assert.assertNull(info.ofsCommuneForGestion);
+		}
+		{
+			final ExtractionDonneesRptResults.InfoPeriodeImposition info = res.getListePeriode().get(1);
+			Assert.assertNotNull(info);
+			Assert.assertEquals(dateArriveeVD.getOneDayBefore().getLastDayOfTheMonth().getOneDayAfter(), info.debutPeriodeImposition);
+			Assert.assertEquals(dateMariage.getOneDayBefore().getLastDayOfTheMonth(), info.finPeriodeImposition);
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, info.autoriteFiscaleForPrincipal);
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.ofsCommuneForGestion);
+		}
 	}
 
 	/**
