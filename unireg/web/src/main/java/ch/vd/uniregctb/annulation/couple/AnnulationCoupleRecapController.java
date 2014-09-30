@@ -79,7 +79,9 @@ public class AnnulationCoupleRecapController extends AbstractSimpleFormControlle
 		throws Exception {
 
 		AnnulationCoupleRecapView annulationCoupleRecapView = (AnnulationCoupleRecapView) command;
-		checkAccesDossierEnLecture(annulationCoupleRecapView.getCouple().getNumero());
+		final Long numeroCouple = annulationCoupleRecapView.getCouple().getNumero();
+		checkAccesDossierEnLecture(numeroCouple);
+		checkTraitementContribuableAvecDecisionAci(numeroCouple);
 
 		try {
 			annulationCoupleRecapManager.save(annulationCoupleRecapView);
@@ -87,7 +89,7 @@ public class AnnulationCoupleRecapController extends AbstractSimpleFormControlle
 		catch (MetierServiceException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
-		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + annulationCoupleRecapView.getCouple().getNumero(), true));
+		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + numeroCouple, true));
 	}
 
 }

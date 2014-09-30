@@ -180,6 +180,8 @@
 
 	<bean id="controllerUtils" class="ch.vd.uniregctb.common.ControllerUtilsImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="tiersService" ref="tiersService" />
+		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
 	<bean id="searchCriteriaRemovalController" class="ch.vd.uniregctb.common.SearchCriteriaRemovalController"/>

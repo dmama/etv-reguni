@@ -1346,5 +1346,20 @@ DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFis
 	 * @return la décision modifiée ou une nouvelle décision avec les modifications,
 	 */
 	DecisionAci updateDecisionAci(DecisionAci decisionAci, RegDate dateFin, String remarque, Integer numeroAutoriteFiscale);
+
+	/**
+	 * Indique si un tiers dont le numero est passé en paramètre à une décision Aci En cours c.a.d sans date de fin
+	 * @param idTiers numero de tiers à tester
+	 * @return <b>true</b> si une décision en cours existe <b>false sinon</b>
+	 */
+	boolean hasDecisionAciEnCours(long idTiers);
+
+	/**
+	 * Indique si un tiers dont le numero est passé en paramètre à une décision Aci valide à une date donnée
+	 * @param idTiers numero de tiers à tester
+	 *@param date une date de référence
+	 * @return <b>true</b> si une décision est valide à la date donnée <b>false sinon</b>
+	 */
+	boolean hasDecisionAciValidAt(long idTiers, RegDate date);
 }
 

@@ -70,10 +70,12 @@ public class TiersReactivationRecapController  extends AbstractSimpleFormControl
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
 		TiersReactivationRecapView tiersReactivationRecapView = (TiersReactivationRecapView) command;
-		checkAccesDossierEnEcriture(tiersReactivationRecapView.getTiers().getNumero());
+		final Long tiersId = tiersReactivationRecapView.getTiers().getNumero();
+		checkAccesDossierEnEcriture(tiersId);
+		checkTraitementContribuableAvecDecisionAci(tiersId);
 
 		tiersReactivationRecapManager.save(tiersReactivationRecapView);
-		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersReactivationRecapView.getTiers().getNumero(), true));
+		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersId, true));
 	}
 
 

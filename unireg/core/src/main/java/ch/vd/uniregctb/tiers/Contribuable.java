@@ -394,4 +394,19 @@ public abstract class Contribuable extends Tiers {
 
 		return false;
 	}
+
+	@Transient
+	public boolean hasDecisionEnCours(){
+		if (decisionsAci == null) {
+			return false;
+		}
+
+		for (DecisionAci d : decisionsAci) {
+			if (d.getDateFin()==null && !d.isAnnule()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

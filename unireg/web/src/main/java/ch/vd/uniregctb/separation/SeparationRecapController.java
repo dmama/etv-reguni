@@ -77,7 +77,10 @@ public class SeparationRecapController extends AbstractSimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 		throws Exception {
 		SeparationRecapView separationRecapView = (SeparationRecapView) command;
-		checkAccesDossierEnEcriture(separationRecapView.getCouple().getNumero());
+		final Long numeroCouple = separationRecapView.getCouple().getNumero();
+		checkAccesDossierEnEcriture(numeroCouple);
+		checkTraitementContribuableAvecDecisionAci(numeroCouple);
+
 
 		/*
 		 * Ces warnings sont le résultat de la validation métier. Ils sont stockés temporairement dans 
@@ -91,6 +94,6 @@ public class SeparationRecapController extends AbstractSimpleFormController {
 		catch (MetierServiceException e) {
 			throw new ActionException(e.getMessage(), e);
 		}
-		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + separationRecapView.getCouple().getNumero(), true));
+		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + numeroCouple, true));
 	}
 }

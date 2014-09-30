@@ -7,20 +7,36 @@ import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.type.Niveau;
 
 public class ControllerUtilsImpl implements ControllerUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ControllerUtilsImpl.class);
-	
+
 	private SecurityProviderInterface securityProvider;
+	private TiersService tiersService;
+	private AutorisationManager autorisationManager;
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setAutorisationManager(AutorisationManager autorisationManager) {
+		this.autorisationManager = autorisationManager;
 	}
 
 	@Override
@@ -78,7 +94,7 @@ public class ControllerUtilsImpl implements ControllerUtils {
 				pagination.getSorting().isAscending() ? "1" : "2",
 				false);
 	}
-	
+
 	@Override
 	public String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue,
 	                                                          boolean htmlEscape) {
@@ -88,7 +104,7 @@ public class ControllerUtilsImpl implements ControllerUtils {
 		final String sortUsingNameParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORTUSINGNAME);
 		final String sortParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_SORT);
 		final String orderParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER);
-		
+
 		final StringBuilder b = new StringBuilder();
 		if (pageParamValue != null) {
 			b.append(String.format("%s=%s", pageParamName, pageParamValue));
@@ -113,11 +129,40 @@ public class ControllerUtilsImpl implements ControllerUtils {
 		}
 
 		String ret;
-		if(htmlEscape) {
-			ret = HtmlUtils.htmlEscape(b.toString());	
-		} else {
+		if (htmlEscape) {
+			ret = HtmlUtils.htmlEscape(b.toString());
+		}
+		else {
 			ret = b.toString();
 		}
 		return StringUtils.trimToNull(ret);
+	}
+
+	@Override
+	@Transactional
+	public void checkTraitementContribuableAvecDecisionAci(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
+		if (tiersId != null) {
+			Tiers tiers = tiersService.getTiers(tiersId);
+			if (tiers != null && tiers instanceof Contribuable) {
+				Contribuable ctb = (Contribuable)tiers;
+				Autorisations autorisations = getAutorisations(ctb);
+				if (!autorisations.isDecisionsAci() && ctb.hasDecisionEnCours()) {
+					final String message = String.format(
+							"L'opérateur [%s] s'est vu refuser le traitement sur le tiers n°%d :Décision ACI !", AuthenticationHelper.getCurrentPrincipal(),tiersId);
+					LOGGER.warn(message);
+					throw new AccessDeniedException(String.format("Vous ne possédez pas les droits pour traiter le contribuable %s qui est soumis à une décision ACI.", FormatNumeroHelper.numeroCTBToDisplay(tiersId)));
+				}
+
+
+			}
+
+
+
+		}
+	}
+
+	private Autorisations getAutorisations(Contribuable ctb) {
+		return autorisationManager.getAutorisations(ctb, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+
 	}
 }

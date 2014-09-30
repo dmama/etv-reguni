@@ -4824,6 +4824,33 @@ public class TiersServiceImpl implements TiersService {
 
 	}
 
+	@Override
+	public boolean hasDecisionAciEnCours(long idTiers) {
+		Tiers  tiers = tiersDAO.get(idTiers);
+		if ( tiers == null){
+			return false;
+		}
+		if (tiers instanceof Contribuable) {
+			Contribuable ctb = (Contribuable)tiers;
+			return ctb.hasDecisionEnCours();
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean hasDecisionAciValidAt(long idTiers, RegDate date) {
+		Tiers  tiers = tiersDAO.get(idTiers);
+		if ( tiers == null){
+			return false;
+		}
+		if (tiers instanceof Contribuable) {
+			Contribuable ctb = (Contribuable)tiers;
+			return ctb.hasDecisionAciValidAt(date);
+		}
+
+		return false;
+	}
 
 	private boolean needCreationNouvelleDecision(DecisionAci d,RegDate dateFin, String remarque, Integer numeroAutoriteFiscale){
 		final boolean datefinModifiee = d.getDateFin()!=null && dateFin!=null && !d.getDateFin().equals(dateFin);

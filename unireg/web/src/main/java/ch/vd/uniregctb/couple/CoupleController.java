@@ -102,6 +102,11 @@ public class CoupleController {
 		controllerUtils.checkAccesDossierEnEcriture(pp2Id);
 		controllerUtils.checkAccesDossierEnEcriture(mcId);
 
+		//Vérification droits Decision ACI
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(pp1Id);
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(pp2Id);
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(mcId);
+
 		final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
 		final Long menageId = menage.getId();
 

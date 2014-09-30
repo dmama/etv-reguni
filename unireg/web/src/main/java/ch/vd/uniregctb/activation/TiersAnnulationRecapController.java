@@ -70,11 +70,13 @@ public class TiersAnnulationRecapController extends AbstractSimpleFormController
 		throws Exception {
 
 		TiersAnnulationRecapView tiersAnnulationRecapView = (TiersAnnulationRecapView) command;
-		checkAccesDossierEnEcriture(tiersAnnulationRecapView.getNumeroTiers());
+		final Long numeroTiers = tiersAnnulationRecapView.getNumeroTiers();
+		checkAccesDossierEnEcriture(numeroTiers);
+		checkTraitementContribuableAvecDecisionAci(numeroTiers);
 
 		tiersAnnulationRecapManager.save(tiersAnnulationRecapView);
 		if (tiersAnnulationRecapView.getNumeroTiersRemplacant() == null) {
-			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + tiersAnnulationRecapView.getNumeroTiers(), true));
+			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + numeroTiers, true));
 		}
 		else
 		{

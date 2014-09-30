@@ -57,4 +57,12 @@ public interface ControllerUtils {
 	String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination);
 
 	String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue, boolean htmlEscape);
+
+	/**
+	 * Verifie que l'opérateur courant possède les droits d'accès pour un dossier si celui ci possède une décision ACI.
+	 * @param tiersId numéro du tiers à vérifier
+	 * @throws ObjectNotFoundException si le tiers n'existe pas
+	 * @throws AccessDeniedException si l'utilisatuer n'as pas les droits necessaires
+	 */
+	void checkTraitementContribuableAvecDecisionAci(Long tiersId) throws ObjectNotFoundException, AccessDeniedException;
 }

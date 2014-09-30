@@ -65,6 +65,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	static final String DOSSIER_TRAVAIL = "DOS_TRA";
 	static final String DOSSIER_NO_TRAVAIL = "DOS_NO_TRA";
 	static final String FISCAL_DECISION_ACI = "DEC_ACI";
+	static final String MODIF_CTB_AVEC_DECISION_ACI = "CTB_DCI_ACI";
 	
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
@@ -418,6 +419,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		if (tiers instanceof Contribuable) {
+			final Contribuable ctbAVerifier = (Contribuable) tiers;
+			final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
 				map.put(MODIF_DEBITEUR, Boolean.TRUE);
 			}
@@ -439,12 +442,12 @@ public class AutorisationManagerImpl implements AutorisationManager {
 							}
 						}
 					}
-					if (civilOK && (isSitFamActive || !contribuable.getSituationsFamille().isEmpty())) {
+					if (civilOK && modifiableSelonRoleEtDecisions && (isSitFamActive || !contribuable.getSituationsFamille().isEmpty())) {
 						map.put(MODIF_FISCAL, Boolean.TRUE);
 						map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 					}
 				}
-				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+				if (modifiableSelonRoleEtDecisions && SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(MODIF_DI, Boolean.TRUE);
 					map.put(MODIF_FISCAL, Boolean.TRUE);
 				}
@@ -532,6 +535,22 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return map;
 	}
 
+	/**Vérifie que le contribuable a une décision en cours ou pas et le cas echéant vérifier les droits en modification
+	 *
+	 * @param contribuable
+	 * @param visa
+	 * @param oid
+	 * @return true si l'utilisateur a le droit de modifier un ctb sous décision ou si il n'y a pas de décision ouverte, false sinon
+	 */
+	private boolean isCtbModifiableSelonRoleEtDecisions(Contribuable contribuable, String visa, int oid) {
+		if (contribuable.hasDecisionEnCours()) {
+			return SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid);
+		}
+		else {
+			return true;
+		}
+	}
+
 	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille
 	 *
@@ -564,7 +583,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	private boolean setDroitHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
 		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
-
+		final Contribuable ctbAVerifier = (Contribuable) tiers;
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 		//les habitants n'ont jamais les onglets civil et rapport prestation
 		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (isEditAllowedPP(tiers, visa, oid)) {
@@ -586,8 +606,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 		}
 
-		if ((typeImposition.isOrdinaireDepenseOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
-				(typeImposition.isSourcierOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
+		if ((modifiableSelonRoleEtDecisions && typeImposition.isOrdinaireDepenseOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
+				(modifiableSelonRoleEtDecisions && typeImposition.isSourcierOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
 			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(FISCAL_FOR_PRINC, Boolean.TRUE);
 			isEditable = true;
@@ -604,6 +624,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
 	 */
 	private boolean setDroitNonHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
+
+		final Contribuable ctbAVerifier = (Contribuable) tiers;
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
 
 		//les non habitants n'ont jamais l'onglet rapport prestation
 		//les ménage commun n'ont jamais les onglets civil et rapport prestation
@@ -668,7 +691,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			if ((typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid)) ||
+			if ((modifiableSelonRoleEtDecisions && typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid)) ||
 					(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
 					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
 					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
@@ -738,12 +761,14 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 */
 	private boolean codeFactorise3(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet,
 	                               boolean isEditable) {
-		if (!tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP, visa, oid)) {
+		final Contribuable ctbAVerifier = (Contribuable) tiers;
+		final boolean modifiableSelonRoleEtDecisions = isCtbModifiableSelonRoleEtDecisions(ctbAVerifier, visa, oid);
+		if (modifiableSelonRoleEtDecisions && !tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP, visa, oid)) {
 			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(FISCAL_FOR_SEC, Boolean.TRUE);
 			isEditable = true;
 		}
-		if (SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE, visa, oid)) {
+		if (modifiableSelonRoleEtDecisions && SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE, visa, oid)) {
 			allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(FISCAL_FOR_AUTRE, Boolean.TRUE);
 			isEditable = true;

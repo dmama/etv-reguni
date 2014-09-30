@@ -183,6 +183,18 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	}
 
 	/**
+	 * Verifie que l'opérateur courant possède les droits d'accès pour un dossier si celui ci possède une décision ACI.
+	 * @param tiersId numéro du tiers à vérifier
+	 * @throws ObjectNotFoundException
+	 *                          si le tiers n'existe pas
+	 * @throws AccessDeniedException
+	 *                          si l'utilisatuer n'as pas les droits necessaires
+	 */
+	protected void checkTraitementContribuableAvecDecisionAci(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(tiersId);
+	}
+
+	/**
 	 * Version spécialisée de {@link SimpleFormController#processFormSubmission} qui catche les erreurs de validation, renseigne les erreurs
 	 * détectées et réaffiche le formulaire automatiquement.
 	 */
