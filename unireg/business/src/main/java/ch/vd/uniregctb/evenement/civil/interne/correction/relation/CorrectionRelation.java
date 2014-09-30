@@ -111,9 +111,11 @@ public class CorrectionRelation extends EvenementCivilInterne {
 	@NotNull
 	private List<RelationConjoint> getConjointsCivils(Individu individu) {
 		final Set<RelationConjoint> set = new TreeSet<>();
-		for (RelationVersIndividu relation : individu.getConjoints()) {
-			if (relation.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
-				set.add(RelationConjoint.from(relation));
+		if (individu.getConjoints() != null) {
+			for (RelationVersIndividu relation : individu.getConjoints()) {
+				if (relation.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
+					set.add(RelationConjoint.from(relation));
+				}
 			}
 		}
 		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
