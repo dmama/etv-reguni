@@ -96,6 +96,15 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element name="otherCantonTaxAdministration" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si le débiteur représente l'administration fiscale d'un autre canton suisse.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
 			</xs:extension>
