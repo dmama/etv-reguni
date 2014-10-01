@@ -41,9 +41,11 @@ public abstract class AbstractTranslationStrategyWithRelationshipCacheCleanup im
 		final long noIndividu = event.getNumeroIndividu();
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.PARENTS, AttributeIndividu.CONJOINTS);
 		final Set<Long> individusLies = new HashSet<>();
-		individusLies.addAll(extractAutresIndividus(individu.getParents()));
-		individusLies.addAll(extractAutresIndividus(individu.getConjoints()));
-		individusLies.addAll(extractRelatedIndividus(individu.getNoTechnique()));
+		if (individu != null) {
+			individusLies.addAll(extractAutresIndividus(individu.getParents()));
+			individusLies.addAll(extractAutresIndividus(individu.getConjoints()));
+		}
+		individusLies.addAll(extractRelatedIndividus(noIndividu));
 		invalidateCache(individusLies);
 
 		// création de l'événement interne de traitement de l'événement
