@@ -39,6 +39,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
 		<property name="tiersService" ref="tiersService"/>
+		<property name="metierService" ref="metierService"/>
 	</bean>
 
 	<bean id="evtReqDesRetryProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesRetryProcessorImpl">

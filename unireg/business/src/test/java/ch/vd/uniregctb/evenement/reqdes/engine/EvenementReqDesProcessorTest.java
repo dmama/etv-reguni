@@ -25,6 +25,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.Fuse;
+import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.reqdes.ErreurTraitement;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
@@ -79,6 +80,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 		processor.setTiersService(tiersService);
 		processor.setAdresseService(getBean(AdresseService.class, "adresseService"));
 		processor.setAssujettissementService(getBean(AssujettissementService.class, "assujettissementService"));
+		processor.setMetierService(getBean(MetierService.class, "metierService"));
 		processor.afterPropertiesSet();
 	}
 
@@ -6090,6 +6092,276 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertTrue(pp.isDesactive(null));
 				Assert.assertEquals("Zigotto", pp.getNom());
 				Assert.assertEquals("Alain", pp.getPrenomUsuel());
+			}
+		});
+	}
+
+	@Test
+	public void testPartiePrenanteAlienatriceCelibataireDecedee() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+		final RegDate dateDeces = date(2013, 6, 1);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setDateDeces(dateDeces);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ALIENATEUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement -> le décès du tiers doit avoir été traité correctement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Pierre-Alain", pp.getPrenomUsuel());       // on a traité la modification de prénom
+				Assert.assertEquals(dateDeces, pp.getDateDeces());              // on a assigné la date de décès
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(2000, 5, 13), ffp.getDateDebut());
+				Assert.assertEquals(dateDeces, ffp.getDateFin());
+				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+			}
+		});
+	}
+
+	@Test
+	public void testPartiePrenanteAlienatriceEnCoupleDecedee() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateMariage = date(2000, 5, 13);
+		final RegDate dateDeces = date(2013, 6, 1);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		final class Ids {
+			long ppId;
+			long conjointId;
+			long mcId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				final PersonnePhysique conjoint = addNonHabitant("Pauline", "Zigotto", null, Sexe.FEMININ);
+				conjoint.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(ctb, conjoint, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateMariage);
+				pp.setEtatCivil(EtatCivil.MARIE);
+				pp.setDateDeces(dateDeces);
+				pp.setNomConjoint("Zigotto");
+				pp.setPrenomConjoint("Pauline");
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ALIENATEUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.conjointId = conjoint.getNumero();
+				ids.mcId = mc.getId();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement -> le décès du tiers doit avoir été traité correctement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Pierre-Alain", pp.getPrenomUsuel());       // on a traité la modification de prénom
+					Assert.assertEquals(dateDeces, pp.getDateDeces());              // on a assigné la date de décès
+
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					Assert.assertNull(ffp);
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.conjointId);
+					Assert.assertNotNull(pp);
+					Assert.assertEquals("Pauline", pp.getPrenomUsuel());
+					Assert.assertNull(pp.getDateDeces());
+
+					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
+					Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertFalse(ffp.isAnnule());
+				}
+				{
+					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mcId);
+					Assert.assertNotNull(mc);
+
+					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateMariage, ffp.getDateDebut());
+					Assert.assertEquals(dateDeces, ffp.getDateFin());
+					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
+					Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+					Assert.assertFalse(ffp.isAnnule());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testPartiePrenanteAcquereuseCelibataireDecedee() throws Exception {
+
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+		final RegDate dateDeces = date(2013, 6, 1);
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addNonHabitant("Alain", "Zigotto", dateNaissance, Sexe.MASCULIN);
+				addForPrincipal(ctb, date(2000, 5, 13), MotifFor.INDETERMINE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Lezigotto", "Pierre-Alain");
+				pp.setNumeroContribuable(ctb.getNumero());
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setDateEtatCivil(dateNaissance);
+				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
+				pp.setDateDeces(dateDeces);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement -> le décès du tiers doit avoir été traité correctement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Le traitement automatique de l'acquisition de propriété par une partie prenante décédée n'est pas implémenté.", erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Alain", pp.getPrenomUsuel());      // on n'a pas traité la modification de prénom
+				Assert.assertNull(pp.getDateDeces());                   // on n'a pas assigné la date de décès
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(date(2000, 5, 13), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
 			}
 		});
 	}

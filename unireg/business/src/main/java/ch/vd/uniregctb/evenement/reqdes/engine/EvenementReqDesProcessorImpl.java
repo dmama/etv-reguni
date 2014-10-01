@@ -62,6 +62,8 @@ import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -123,6 +125,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 	private TiersService tiersService;
 	private AdresseService adresseService;
 	private AssujettissementService assujettissementService;
+	private MetierService metierService;
 
 	/**
 	 * Handle utilisé pour les listeners de traitement
@@ -209,6 +212,10 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	public void setMetierService(MetierService metierService) {
+		this.metierService = metierService;
 	}
 
 	/**
@@ -717,8 +724,30 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				final ForsParTypeAt forsAt = assujetti.getForsParTypeAt(dateActe, false);
 				final boolean hasRoleAcquereurPropriete = hasRoleAcquereurPropriete(partiePrenante);
 
-				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement (
-				if (hasRoleAcquereurPropriete || forsAt.principal != null) {
+				// [SIFISC-13333] si la partie prenante est indiquée comme décédée, on doit gérer le décès à la date de décès annoncée (sauf si on le sait déjà...)
+				if (partiePrenante.getDateDeces() != null) {
+
+					// un décédé qui achète ? il vaut mieux confier cela aux mains expertes de la cellule...
+					if (hasRoleAcquereurPropriete) {
+						throw new EvenementReqDesException("Le traitement automatique de l'acquisition de propriété par une partie prenante décédée n'est pas implémenté.");
+					}
+
+					// s'il y a un for principal ouvert (= on n'a pas encore traité le décès de la personne, donc "on ne le sait pas encore"), il faudra le fermer pour motif DECES
+					if (forsAt.principal != null) {
+						try {
+							metierService.deces(data.personnePhysique, partiePrenante.getDateDeces(), null, null);
+						}
+						catch (MetierServiceException e) {
+							throw new EvenementReqDesException(String.format("Impossible de traiter le décès de la partie prenante (contribuable %s) indiquée comme décédée au %s.",
+							                                                 FormatNumeroHelper.numeroCTBToDisplay(data.personnePhysique.getNumero()),
+							                                                 RegDateHelper.dateToDisplayString(partiePrenante.getDateDeces())), e);
+						}
+					}
+				}
+
+				// s'il y a un rôle acquéreur de propriété, on doit placer le for principal correctement
+				// (même dans les autres cas de rôles, il peut être nécessaire d'ajuster le for principal)
+				else if (hasRoleAcquereurPropriete || forsAt.principal != null) {
 
 					//
 					// d'abord on se préoccupe du for principal

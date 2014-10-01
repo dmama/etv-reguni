@@ -949,7 +949,7 @@ public class TiersServiceImpl implements TiersService {
                 /* le non habitant est étranger sans permis C */
                 return true;
             } else {//ni nationalité ni permis
-                throw new TiersException("Impossible de déterminer la nationalité du contribuable " + nonHabitant.getNumero());
+                throw new TiersException("Impossible de déterminer la nationalité du contribuable " + FormatNumeroHelper.numeroCTBToDisplay(nonHabitant.getNumero()));
             }
         }
     }
