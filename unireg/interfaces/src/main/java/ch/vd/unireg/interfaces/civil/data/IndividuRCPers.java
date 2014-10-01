@@ -111,10 +111,10 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.origines = initOrigins(person);
 
 		if (history) {
-			this.adresses = initAdresses(null, person.getContactHistory(), person.getResidenceHistory(), infraService);
+			this.adresses = initAdresses(null, person.getContactHistory(), person.getResidenceHistory(), deces, infraService);
 		}
 		else {
-			this.adresses = initAdresses(person.getCurrentContact(), null, person.getCurrentResidence(), infraService);
+			this.adresses = initAdresses(person.getCurrentContact(), null, person.getCurrentResidence(), deces, infraService);
 		}
 
 		try {
@@ -401,7 +401,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	protected static List<Adresse> initAdresses(@Nullable Contact currentContact, @Nullable List<Contact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
+	protected static List<Adresse> initAdresses(@Nullable Contact currentContact, @Nullable List<Contact> contact, List<Residence> residence, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
 
 		final List<Adresse> adresses = new ArrayList<>();
 
@@ -449,7 +449,7 @@ public class IndividuRCPers implements Individu, Serializable {
 					for (int i = 0, residenceSize = listeTypee.size(); i < residenceSize; i++) {
 						final Residence r = listeTypee.get(i);
 						final Residence next = i + 1 < residenceSize ? listeTypee.get(i + 1) : null;
-						res.add(AdresseRCPers.get(r, next, infraService)); // va calculer une date de fin si nécessaire
+						res.add(AdresseRCPers.get(r, next, dateDeces, infraService)); // va calculer une date de fin si nécessaire
 					}
 
 					adresses.addAll(res);

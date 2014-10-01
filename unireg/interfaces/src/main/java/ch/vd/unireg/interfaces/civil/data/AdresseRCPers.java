@@ -62,11 +62,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(addressInfo, null, null, infraService);
 	}
 
-	public static AdresseRCPers get(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
+	public static AdresseRCPers get(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
 		if (residence == null) {
 			return null;
 		}
-		return new AdresseRCPers(residence, next, infraService);
+		return new AdresseRCPers(residence, next, dateDeces, infraService);
 	}
 
 	public AdresseRCPers(Contact contact, ServiceInfrastructureRaw infraService) {
@@ -100,13 +100,13 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localisationSuivante = null;
 	}
 
-	public AdresseRCPers(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
+	public AdresseRCPers(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces, ServiceInfrastructureRaw infraService) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 		final DwellingAddress.Dwelling dwelling = dwellingAddress.getDwelling();
 
 		this.dateDebut = initDateDebut(residence); // voir SIREF-1617
-		this.dateFin = initDateFin(residence, next); // voir SIREF-1794
+		this.dateFin = initDateFin(residence, next, dateDeces); // voir SIREF-1794, SIFISC-13595
 		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
@@ -133,6 +133,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		if (next != null && next.getDwellingAddress().getMovingDate() != null) {
 			this.localisationSuivante = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation suivante doit être nulle
+		}
+		else if (dateFin == null) {
+			// [SIFISC-13595] si la date de fin donnée par RCPers a été ignorée, il faut également ignorer la localisation suivante
+			this.localisationSuivante = null;
 		}
 		else {
 			this.localisationSuivante = initLocalisation(getLendemain(dateFin), residence.getGoesTo(), infraService);
@@ -182,19 +186,22 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 	/**
 	 * [SIREF-1794] Détermine la date de fin effective d'une adresse de résidence.
+	 * [SIFISC-13595] Si la date de fin de l'adresse de résidence correspond à la date de décès de l'individu, il faut l'ignorer
 	 *
 	 * @param residence une adresse de résidence
 	 * @param next      l'adresse de résidence qui suit dans l'ordre chronologique
+	 * @param dateDeces date de décès de l'individu concerné par cette adresse de résidence
 	 * @return la date de fin effective de l'adresse de résidence
 	 */
-	private static RegDate initDateFin(Residence residence, @Nullable Residence next) {
+	private static RegDate initDateFin(Residence residence, @Nullable Residence next, @Nullable RegDate dateDeces) {
 		final RegDate df;
 		if (next != null && movingInSameMunicipality(residence, next)) {
 			final RegDate nextMovingDate = XmlUtils.xmlcal2regdate(next.getDwellingAddress().getMovingDate());
 			df = nextMovingDate.getOneDayBefore();
 		}
 		else {
-			df = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
+			final RegDate candidate = XmlUtils.xmlcal2regdate(residence.getDepartureDate());
+			df = (candidate == dateDeces ? null : candidate);
 		}
 		return df;
 	}
