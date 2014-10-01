@@ -133,4 +133,30 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertEquals("CH7400243243G15379860", partyContainer.naturalPerson.getBankAccounts().get(0).getAccountNumber());
 		}
 	}
+
+	@Test
+	public void testDebiteurPrestationImposableEtFlagAciAutreCanton() throws Exception {
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(12500001, null);
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			Assert.assertNotNull(resp);
+			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			Assert.assertNotNull(party);
+			Assert.assertEquals(Debtor.class, party.getClass());
+			Assert.assertFalse(((Debtor) party).isOtherCantonTaxAdministration());
+		}
+		{
+			final Pair<String, Map<String, ?>> params = buildUriAndParams(12500002, null);
+			final ResponseEntity<Party> resp = get(Party.class, MediaType.APPLICATION_XML, params.getLeft(), params.getRight());
+			Assert.assertNotNull(resp);
+			Assert.assertEquals(HttpStatus.OK, resp.getStatusCode());
+
+			final Party party = resp.getBody();
+			Assert.assertNotNull(party);
+			Assert.assertEquals(Debtor.class, party.getClass());
+			Assert.assertTrue(((Debtor) party).isOtherCantonTaxAdministration());
+		}
+	}
 }

@@ -4077,4 +4077,51 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertEquals("Impossible de trouver l'individu n°" + noIndividuAbsent + " pour l'habitant n°" + ppId, e.getInfo().getMessage());
 		}
 	}
+
+	/**
+	 * [SIFISC-13461] ajout du flag "ACI autre canton" sur les débiteurs IS
+	 */
+	@Test
+	public void testFlagAciAutreCantonSurDebiteurIS() throws Exception {
+
+		final class Ids {
+			int dpiAvecFlag;
+			int dpiSansFlag;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final DebiteurPrestationImposable dpiSans = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				dpiSans.setAciAutreCanton(Boolean.FALSE);
+
+				final DebiteurPrestationImposable dpiAvec = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
+				dpiAvec.setAciAutreCanton(Boolean.TRUE);
+
+				final Ids ids = new Ids();
+				ids.dpiAvecFlag = dpiAvec.getNumero().intValue();
+				ids.dpiSansFlag = dpiSans.getNumero().intValue();
+				return ids;
+			}
+		});
+
+		// interrogation
+		final UserLogin user = new UserLogin(getDefaultOperateurName(), 22);
+
+		// cas avec flag
+		final Party avec = service.getParty(user, ids.dpiAvecFlag, null);
+		Assert.assertNotNull(avec);
+		Assert.assertEquals(Debtor.class, avec.getClass());
+		final Debtor avecDebtor = (Debtor) avec;
+		Assert.assertTrue(avecDebtor.isOtherCantonTaxAdministration());
+
+		// cas sans flag
+		final Party sans = service.getParty(user, ids.dpiSansFlag, null);
+		Assert.assertNotNull(sans);
+		Assert.assertEquals(Debtor.class, sans.getClass());
+		final Debtor sansDebtor = (Debtor) sans;
+		Assert.assertFalse(sansDebtor.isOtherCantonTaxAdministration());
+	}
 }

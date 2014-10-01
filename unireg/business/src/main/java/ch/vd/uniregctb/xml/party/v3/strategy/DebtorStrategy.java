@@ -44,6 +44,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 		to.setCommunicationMode(EnumHelper.coreToXMLv3(debiteur.getModeCommunication()));
 		to.setWithoutReminder(DataHelper.coreToXML(debiteur.getSansRappel()));
 		to.setWithoutWithholdingTaxDeclaration(DataHelper.coreToXML(debiteur.getSansListeRecapitulative()));
+		to.setOtherCantonTaxAdministration(DataHelper.coreToXML(debiteur.getAciAutreCanton()));
 		final Long contribuableId = debiteur.getContribuableId();
 		to.setAssociatedTaxpayerNumber(contribuableId == null ? null : contribuableId.intValue());
 		if (to.getCommunicationMode() == CommunicationMode.UPLOAD) {
@@ -59,6 +60,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 		to.setCommunicationMode(from.getCommunicationMode());
 		to.setWithoutReminder(from.isWithoutReminder());
 		to.setWithoutWithholdingTaxDeclaration(from.isWithoutWithholdingTaxDeclaration());
+		to.setOtherCantonTaxAdministration(from.isOtherCantonTaxAdministration());
 		to.setAssociatedTaxpayerNumber(from.getAssociatedTaxpayerNumber());
 		to.setSoftwareId(from.getSoftwareId());
 	}

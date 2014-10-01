@@ -55,7 +55,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	private Boolean sansListeRecapitulative = Boolean.FALSE;
 	private Set<Periodicite> periodicites;
 	private Long logicielId;
-
+	private Boolean aciAutreCanton = Boolean.FALSE;
 
 	@Column(name = "DPI_NOM1", length = LengthConstants.DPI_NOM1)
 	public String getNom1() {
@@ -118,6 +118,15 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Column(name = "SANS_RAPPEL")
 	public Boolean getSansRappel() {
 		return sansRappel;
+	}
+
+	@Column(name = "DPI_ACI_HC")
+	public Boolean getAciAutreCanton() {
+		return aciAutreCanton;
+	}
+
+	public void setAciAutreCanton(Boolean aciAutreCanton) {
+		this.aciAutreCanton = aciAutreCanton;
 	}
 
 	@Column(name = "LOGICIEL_ID")
