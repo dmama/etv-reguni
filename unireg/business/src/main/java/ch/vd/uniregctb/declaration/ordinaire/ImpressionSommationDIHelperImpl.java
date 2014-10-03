@@ -99,7 +99,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
  		 * à chacun des ex-membres du ménage avec un porte-adresse different pour chaque membre.
 		 */
 		final Tiers tiers = params.getDi().getTiers();
-		if (params.getDi().getTiers() instanceof MenageCommun) {
+		if (tiers instanceof MenageCommun) {
 			final MenageCommun mc = (MenageCommun) tiers;
 			final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(mc, null);
 			if (etc.getPrincipal() != null && etc.getConjoint() != null) {
