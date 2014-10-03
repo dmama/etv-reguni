@@ -4,11 +4,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.text.SimpleDateFormat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
@@ -108,7 +110,10 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 			marshaller.marshal(objectFactory.createEvenement(evenement), doc);
 
 			final EsbMessage m = EsbMessageFactory.createMessage();
-			m.setBusinessId(String.format("%d-%d", evenement.getContext().getNumeroContribuable(), evenement.getContext().getPeriodeFiscale()));
+			m.setBusinessId(String.format("%d-%d-%s",
+			                              evenement.getContext().getNumeroContribuable(),
+			                              evenement.getContext().getPeriodeFiscale(),
+			                              new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())));
 			m.setBusinessUser(principal);
 			m.setServiceDestination(serviceDestination);
 			m.setContext("declarationEvent");

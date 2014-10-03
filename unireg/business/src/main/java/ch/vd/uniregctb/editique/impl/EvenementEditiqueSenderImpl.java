@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.apache.xmlbeans.XmlOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -110,7 +112,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 
 		try {
 			final String body = "<empty/>";
-			final String businessId = String.format("copieconforme-%d-%d", noTiers, System.currentTimeMillis());
+			final String businessId = String.format("copieconforme-%d-%s", noTiers, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate()));
 			final EsbMessage msg = buildEsbMessage(businessId, typeDocument, body, serviceDestinationCopieConforme, true, new HeaderCustomFiller() {
 				@Override
 				public void addHeaders(EsbMessage msg) throws Exception {

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -171,7 +173,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 		final IdentificationCTBDocument identificationCtb = XmlEntityAdapter.entity2xml(message);
 
 		final EsbMessage m = EsbMessageFactory.createMessage();
-		m.setBusinessId(String.valueOf(message.getId()));
+		m.setBusinessId(String.format("%s-answer-%s", businessId, new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(businessId);
 		m.setServiceDestination(replyTo);
