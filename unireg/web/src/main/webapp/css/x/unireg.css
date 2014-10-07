@@ -25,15 +25,26 @@ legend a.delete {
 	background-repeat: repeat;
 }
 
-.individu
-	{
+table.civil {
+	border: none;
+	margin: 0;
+	padding: 0 0 10px;
+}
+
+fieldset.individu {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 10px;
+}
+
+.individu {
 	border: 1px solid #cdcdcd;
 	padding: 10px;
 	margin: 10px;
 	position: relative;
 	top: 10px;
 	z-index: 1;
-	display: inherit;
+	display: block;
 	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;
 }
