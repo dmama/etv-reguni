@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.ui.Model;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
@@ -101,8 +100,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessageEnCours() {
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
-		return etatsMessages;
+		return initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 	}
 
 	/**
@@ -111,8 +109,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessageEnCoursEtException() {
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
-		return etatsMessages;
+		return initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 	}
 
 	/**
@@ -121,10 +118,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessageSuspendu() {
-
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
-
-		return etatsMessages;
+		return initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 	}
 
 	/**
@@ -133,7 +127,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessage(final IdentificationContribuableEtatFilter filter) {
-		final Map<Etat, String> mapEtat = new EnumMap<Etat, String>(Etat.class);
+		final Map<Etat, String> mapEtat = new EnumMap<>(Etat.class);
 		final Collection<Etat> etats = identCtbService.getEtats(filter);
 
 		return getEtatAndLibelle(mapEtat, etats);
@@ -156,7 +150,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapTypeMessage(IdentificationContribuableEtatFilter filter) {
-		final Map<String, String> mapMessage = new HashMap<String, String>();
+		final Map<String, String> mapMessage = new HashMap<>();
 		final Collection<String> typesMessage = identCtbService.getTypesMessages(filter);
 		return getTypeMessageAndLibelle(mapMessage, typesMessage);
 	}
@@ -174,7 +168,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * Initialise la map des types de message
 	 */
 	public Map<String, String> initMapTypeMessage(final IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande) {
-		final Map<String, String> mapMessage = new HashMap<String, String>();
+		final Map<String, String> mapMessage = new HashMap<>();
 		final Collection<String> typesMessage = identCtbService.getTypeMessages(filter, typesDemande);
 		return getTypeMessageAndLibelle(mapMessage, typesMessage);
 	}
@@ -187,7 +181,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	public Map<String, String> initMapUser() {
 
-		final Map<String, String> mapUtilisateur = new HashMap<String, String>();
+		final Map<String, String> mapUtilisateur = new HashMap<>();
 		final List<String> listVisaUser = identCtbService.getTraitementUser();
 
 		for (String visaUser : listVisaUser) {
@@ -221,9 +215,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
 		// [SIFISC-5847] Il ne faut pas tenir compte des espaces initiaux dans le tri et l'affichage des libellés
 		final StringComparator comparator = new StringComparator(false, false, false, null);
-		final Map<String, String> allEmetteurs = new TreeMap<String, String>(comparator);
-
-
+		final Map<String, String> allEmetteurs = new TreeMap<>(comparator);
 		for (String emetteur : emetteurs) {
 			final String libelle = StringUtils.trimToEmpty(emetteur);
 			allEmetteurs.put(emetteur, libelle);
@@ -237,9 +229,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 
 	public Map<Etat, String> initMapEtatMessageArchive() {
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
-
-		return etatsMessages;
+		return initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 	}
 
 	/**
@@ -252,14 +242,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		return getPeriodesValues(periodes);
 	}
 
-
-
-
-
-
-
 	private Map<Integer, String> getPeriodesValues(Collection<Integer> periodes) {
-		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
+		final Map<Integer, String> allPeriodeFiscale = new TreeMap<>();
 		for (Integer periode : periodes) {
 			allPeriodeFiscale.put(periode, Integer.toString(periode));
 		}
@@ -268,7 +252,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 	public Map<String, Object> getMaps(IdentificationContribuableEtatFilter filter) {
-		final Map<String, Object> data = new HashMap<String, Object>(7);
+		final Map<String, Object> data = new HashMap<>(7);
 		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale(filter));
 		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(filter));
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
@@ -277,13 +261,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		data.put(ERREUR_MESSAGE_MAP_NAME, initErreurMessage());
 		data.put(TRAITEMENT_USER_MAP_NAME, initMapUser());
 		return data;
-	}
-
-	public void putMapsIntoModel(Model model,IdentificationContribuableEtatFilter filter) {
-		final Map<String, Object> maps = getMaps(filter);
-		for (Map.Entry<String, Object> entry : maps.entrySet()) {
-			model.addAttribute(entry.getKey(), entry.getValue());
-		}
 	}
 
 	/**
@@ -327,7 +304,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		if (source == null) {
 			return null;
 		}
-		final List<Map.Entry<K, V>> content = new ArrayList<Map.Entry<K, V>>(source.entrySet());
+		final List<Map.Entry<K, V>> content = new ArrayList<>(source.entrySet());
 		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
 			@Override
 			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {

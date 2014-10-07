@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -131,7 +131,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = "/tableau-bord/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String effacerFormulaireDeRecherche(ModelMap model) throws Exception {
+	public String effacerFormulaireDeRecherche(ModelMap model) throws Exception {
 		setUpModelForStats(model);
 		final IdentificationMessagesStatsCriteriaView statsCriteriaView = identificationMessagesStatsManager.getView();
 		model.put("statsCriteria", statsCriteriaView);
@@ -140,7 +140,7 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/effacerEnCours.do",  method = RequestMethod.POST)
-	protected ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,
+	public ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,
 	                                                           ModelMap model) throws Exception {
 		IdentificationContribuableListCriteria criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		model.put("identificationPagination",INITIAL_PAGINATION);
@@ -148,20 +148,20 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/effacerTraite.do", method = RequestMethod.POST)
-	protected ModelAndView effacerFormulaireDeRechercheTraite(HttpServletRequest request,ModelMap model) throws Exception {
+	public ModelAndView effacerFormulaireDeRechercheTraite(HttpServletRequest request,ModelMap model) throws Exception {
 		IdentificationContribuableListCriteria criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
 	@RequestMapping(value = "/gestion-messages/effacerSuspendu.do", method = RequestMethod.POST)
-	protected ModelAndView effacerFormulaireDeRechercheSuspendu(HttpServletRequest request,ModelMap model) throws Exception {
+	public ModelAndView effacerFormulaireDeRechercheSuspendu(HttpServletRequest request,ModelMap model) throws Exception {
 		IdentificationContribuableListCriteria  criteria = manageCriteria(request, identificationMessagesListManager.getView(null, null, null), "identificationCriteria", false);
 		return buildReponseForMessageSuspendu(request, criteria, model);
 	}
 
 	@RequestMapping(value = {"/tableau-bord/stats.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String getStats(HttpServletRequest request,
+	public String getStats(HttpServletRequest request,
 	                          @ModelAttribute("statsCriteria") IdentificationMessagesStatsCriteriaView criteriaInSession,
 	                          BindingResult bindingResult,
 	                          ModelMap model) throws Exception {
@@ -176,7 +176,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/unlock.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView deverouillerMessage(HttpServletRequest request,
+	public ModelAndView deverouillerMessage(HttpServletRequest request,
 	                                           @RequestParam(value = "source", required = true) Source source,
 	                                           @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                           ModelMap model) throws Exception {
@@ -186,7 +186,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/lock.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	protected ModelAndView verouillerMessage(HttpServletRequest request,
+	public ModelAndView verouillerMessage(HttpServletRequest request,
 	                                         @RequestParam(value = "source", required = true) Source source,
 	                                         @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                         ModelMap model) throws Exception {
@@ -196,7 +196,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/suspendre.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	protected ModelAndView suspendreMessage(HttpServletRequest request,
+	public ModelAndView suspendreMessage(HttpServletRequest request,
 	                                        @RequestParam(value = "source", required = true) Source source,
 	                                        @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                        ModelMap model) throws Exception {
@@ -206,7 +206,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/resoumettre.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	protected ModelAndView reSoumettreMessage(HttpServletRequest request,
+	public ModelAndView reSoumettreMessage(HttpServletRequest request,
 	                                          @RequestParam(value = "source", required = true) Source source,
 	                                          @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                          ModelMap model) throws Exception {
@@ -217,7 +217,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
-	protected ModelAndView demanderEditionMessage(HttpServletRequest request,
+	public ModelAndView demanderEditionMessage(HttpServletRequest request,
 	                                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria identCriteria,
 	                                              @RequestParam(value = "id", required = true) Long idMessage,
 	                                              @RequestParam(value = "source", required = true) Source source,
@@ -255,10 +255,9 @@ public class IdentificationController {
 		throw new IllegalArgumentException("Invalid value for source parameter");
 	}
 
-
 	@RequestMapping(value = "/gestion-messages/listEnCours.do", method =  {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String retourSurLaListeEnCours(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
+	public String retourSurLaListeEnCours(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listEnCours.do");
 	}
@@ -266,7 +265,7 @@ public class IdentificationController {
 	@RequestMapping(value = {"/gestion-messages/nav-listEnCours.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerEncours(HttpServletRequest request,
+	public ModelAndView listerEncours(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
@@ -282,8 +281,8 @@ public class IdentificationController {
 		model.put(IDENTIFICATION_PAGINATION,pagination);
 	}
 
-	/**Permet de conserver les critères sélectionneées des messages dans la session
-	 *
+	/**
+	 * Permet de conserver les critères sélectionneées des messages dans la session
 	 * @param request
 	 * @param criteria
 	 * @param criteriaName
@@ -302,14 +301,14 @@ public class IdentificationController {
 
 	@RequestMapping(value = "/gestion-messages/listSuspendu.do", method =  {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String retourSurLaListeSuspendu(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
+	public String retourSurLaListeSuspendu(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listSuspendu.do");
 	}
 
 	@RequestMapping(value = {"/gestion-messages/nav-listSuspendu.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerSuspendu(HttpServletRequest request,
+	public ModelAndView listerSuspendu(HttpServletRequest request,
 	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                                     BindingResult bindingResult,
 	                                     @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
@@ -324,7 +323,7 @@ public class IdentificationController {
 	@RequestMapping(value = {"/gestion-messages/listEnCoursFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerEnCoursFromStats(HttpServletRequest request,
+	public ModelAndView listerEnCoursFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
 	                                              @RequestParam(value = "periode", required = false) Integer periode,
 	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
@@ -347,7 +346,7 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/listSuspenduFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerSuspenduFromStats(HttpServletRequest request,
+	public ModelAndView listerSuspenduFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
 	                                              @RequestParam(value = "periode", required = false) Integer periode,
 	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
@@ -362,17 +361,17 @@ public class IdentificationController {
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
-
 	@RequestMapping(value = "/gestion-messages/listTraite.do", method =  {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String retourSurLaListeTraite(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
+	public String retourSurLaListeTraite(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listTraite.do");
 	}
+
 	@RequestMapping(value = {"/gestion-messages/nav-listTraite.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerTraite(HttpServletRequest request,
+	public ModelAndView listerTraite(HttpServletRequest request,
 	                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
 	                              BindingResult bindingResult,
 	                              @RequestParam(value = "wipeCriteria", required = false) String wipeCriteria,
@@ -387,7 +386,7 @@ public class IdentificationController {
 	@RequestMapping(value = {"/gestion-messages/listTraiteFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 			Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
-	protected ModelAndView listerTraiteFromStats(HttpServletRequest request,
+	public ModelAndView listerTraiteFromStats(HttpServletRequest request,
 	                                              @RequestParam(value = "etat", required = false) IdentificationContribuable.Etat etat,
 	                                              @RequestParam(value = "periode", required = false) Integer periode,
 	                                              @RequestParam(value = "typeMessage", required = false) String typeMessage,
@@ -564,7 +563,7 @@ public class IdentificationController {
 	 * @return un tableau (potentiellement vide...) des types autorisés
 	 */
 	protected TypeDemande[] getAllowedTypes() {
-		final Set<TypeDemande> types = new HashSet<>();
+		final Set<TypeDemande> types = EnumSet.noneOf(TypeDemande.class);
 		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			types.add(TypeDemande.MELDEWESEN);
 			types.add(TypeDemande.NCS);
@@ -577,9 +576,9 @@ public class IdentificationController {
 			types.add(TypeDemande.IMPOT_SOURCE);
 		}
 
-		if (types.size() == 0) {
+		if (types.isEmpty()) {
 			// aucun droit... plutôt que tous
-			return new TypeDemande[]{null};
+			return new TypeDemande[0];
 		}
 		else {
 			return types.toArray(new TypeDemande[types.size()]);
