@@ -7,6 +7,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -42,28 +44,27 @@ public class ParenteValidatorTest extends AbstractValidatorTest<Parente> {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(parent, null, date(1974, 2, 1), null);
+				final MenageCommun menage = couple.getMenage();
+
+				// bricolage pour construire une parenté dont le parent est le ménage
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
 				final Parente parente = addParente(enfant, parent, date(2000, 1, 1), null);
+				parente.setObjet(menage);
+				parent.getRapportsObjet().remove(parente);
+				menage.addRapportObjet(parente);
+
 				final Ids ids = new Ids();
-				ids.idParent = parent.getNumero();
+				ids.idParent = menage.getNumero();
 				ids.idEnfant = enfant.getNumero();
 				ids.idParente = parente.getId();
 				return ids;
 			}
-		});
-
-		// changement de la classe du tiers parent
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.changeNHenMenage(ids.idParent);
-				return null;
-			}
-		});
+		}) ;
 
 		// validation manuelle
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -88,26 +89,25 @@ public class ParenteValidatorTest extends AbstractValidatorTest<Parente> {
 		}
 
 		// mise en place
-		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique parent = addNonHabitant("Papa", "Barbapapa", null, Sexe.MASCULIN);
 				final PersonnePhysique enfant = addNonHabitant("Barbidur", "Barbapapa", null, Sexe.MASCULIN);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(enfant, null, date(2000, 1, 1), null);
+				final MenageCommun menage = couple.getMenage();
+
+				// bricolage pour construire une parenté dont l'enfant est le ménage
 				final Parente parente = addParente(enfant, parent, date(2000, 1, 1), null);
+				parente.setSujet(menage);
+				enfant.getRapportsSujet().remove(parente);
+				menage.addRapportSujet(parente);
+
 				final Ids ids = new Ids();
 				ids.idParent = parent.getNumero();
-				ids.idEnfant = enfant.getNumero();
+				ids.idEnfant = menage.getNumero();
 				ids.idParente = parente.getId();
 				return ids;
-			}
-		});
-
-		// changement de la classe du tiers parent
-		doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				tiersService.changeNHenMenage(ids.idEnfant);
-				return null;
 			}
 		});
 
