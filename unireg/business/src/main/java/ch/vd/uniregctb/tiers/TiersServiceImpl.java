@@ -582,6 +582,19 @@ public class TiersServiceImpl implements TiersService {
                     query.setLong("tiersId", numeroTiers);
                     query.executeUpdate();
                 }
+	            {
+		            final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:tiersId AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'";
+		            final SQLQuery query = session.createSQLQuery(deleteQuery);
+		            query.setLong("tiersId", numeroTiers);
+		            query.executeUpdate();
+	            }
+	            {
+		            final String deleteQuery = "DELETE FROM RAPPORT_ENTRE_TIERS WHERE (TIERS_SUJET_ID=:tiersId OR TIERS_OBJET_ID=:tiersId) AND RAPPORT_ENTRE_TIERS_TYPE='Parente'";
+		            final SQLQuery query = session.createSQLQuery(deleteQuery);
+		            query.setLong("tiersId", numeroTiers);
+		            query.executeUpdate();
+	            }
+
                 return null;
             }
         });
