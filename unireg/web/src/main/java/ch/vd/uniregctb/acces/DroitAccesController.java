@@ -137,7 +137,7 @@ public class DroitAccesController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, true, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	private List<TiersIndexedDataView> searchTiers(TiersCriteriaView criteriaView) {
