@@ -425,8 +425,7 @@ public abstract class DataHelper {
 	public static Long getAssociatedDi(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periodeImposition) {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
-		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut()
-				.year(), false);
+		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut().year(), false);
 		if (dis == null) {
 			return null;
 		}
@@ -436,10 +435,9 @@ public abstract class DataHelper {
 		for (ch.vd.uniregctb.declaration.Declaration di : dis) {
 			if (!di.isAnnule() && DateRangeHelper.intersect(periodeImposition, di)) {
 				if (idDi != null) {
-					final String erreur = String.format("Inhérence des données: trouvé deux déclarations (ids %d et %d) "
+					final String erreur = String.format("Incohérence des données: trouvé deux déclarations (ids %d et %d) "
 							+ "associées avec la période d'imposition du %s au %s sur le contribuable n°%d", idDi, di.getId(),
-							periodeImposition.getDateDebut().toString(), periodeImposition.getDateFin().toString(), contribuable
-							.getNumero());
+							periodeImposition.getDateDebut().toString(), periodeImposition.getDateFin().toString(), contribuable.getNumero());
 					throw new ValidationException(contribuable, erreur);
 				}
 				idDi = di.getId();
