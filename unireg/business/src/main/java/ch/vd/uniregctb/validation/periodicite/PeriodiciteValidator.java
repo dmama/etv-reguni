@@ -15,6 +15,10 @@ public class PeriodiciteValidator extends EntityValidatorImpl<Periodicite> {
 
 	@Override
 	public ValidationResults validate(Periodicite periodicite) {
+		return validatePeriodicite(periodicite);
+	}
+
+	public static ValidationResults validatePeriodicite(Periodicite periodicite) {
 		final ValidationResults results = new ValidationResults();
 
 		if (!periodicite.isAnnule()) {

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.periodicite.PeriodiciteValidator;
 
 public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifsValidator<ForDebiteurPrestationImposable> {
 
@@ -175,7 +176,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 		final Set<RegDate> datesCandidates = new TreeSet<>();
 		while (true) {
 			final Periodicite p = dpi.getPeriodiciteAt(candidate.getOneDayAfter());
-			if (p == null) {
+			if (p == null || PeriodiciteValidator.validatePeriodicite(p).hasErrors()) {
 				break;
 			}
 			candidate = p.getFinPeriode(candidate.getOneDayAfter());
