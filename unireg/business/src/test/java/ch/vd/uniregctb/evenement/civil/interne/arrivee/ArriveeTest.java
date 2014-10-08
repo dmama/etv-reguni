@@ -883,7 +883,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
 					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 
-					assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());
+					assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point de vue fiscal.", externe.getCommentaireTraitement());
 				}
 			});
 		}

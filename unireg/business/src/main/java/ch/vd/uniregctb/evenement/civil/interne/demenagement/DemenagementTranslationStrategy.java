@@ -41,7 +41,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			}
 			else if (communes.avant.getNoOFS() != communes.apres.getNoOFS()) {
 				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
-				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
+				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point de vue fiscal.",
 						communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
 				Audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
@@ -64,6 +64,10 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		}
 	}
 
+	private static boolean isCommuneFermeeAnneeEvenement(Commune commune, RegDate dateEvenement) {
+		return commune.getDateFinValidite() != null && commune.getDateDebutValidite().year() == dateEvenement.year();
+	}
+
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEchFacade event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
@@ -77,20 +81,33 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 				return new Demenagement(event, context, options);
 			}
 			else if (communes.avant.getNoOFS() != communes.apres.getNoOFS()) {
-				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
-				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
-						communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
+				// [SIFISC-6012]
+				// si l'une des deux communes au moins a une date de fin de validité dans l'année de l'événement, c'est que nous sommes face à une fusion civile
+				// dont la date précède celle de la fusion fiscale... Sinon, nous sommes peut-être entre deux fractions d'une même commune, non différenciées au
+				// niveau du contrôle de l'habitant. Sinon, il faut peut-être partir en erreur, non ?
+				final String message;
+				if (isCommuneFermeeAnneeEvenement(communes.avant, event.getDateEvenement().getOneDayBefore()) || isCommuneFermeeAnneeEvenement(communes.apres, event.getDateEvenement())) {
+					// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
+					message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point de vue fiscal.",
+					                        communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
+				}
+				else if (communes.avant.isFraction() && communes.apres.isFraction() && communes.avant.getOfsCommuneMere() == communes.apres.getOfsCommuneMere()) {
+					message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas différenciées dans les données civiles.",
+					                        communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
+				}
+				else {
+					throw new EvenementCivilException(String.format("Les communes %s et %s ne sont pas fusionnées en %d et ne sont pas des fractions de la même commune faîtière, pourtant c'est bien un événement de déménagement dans la commune qui a été reçu.",
+					                                                communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel(), event.getDateEvenement().year()));
+				}
+
 				Audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new ArriveePrincipale(event, context, options);
 			}
 			else {
-
 				// ok, il s'agit d'un déménagement conventionnel
 				return new Demenagement(event, context, options);
-
 			}
-
 		}
 		else if (isDemenagementSecondaire(event, context)) {
 			// Démemnagement secondaire

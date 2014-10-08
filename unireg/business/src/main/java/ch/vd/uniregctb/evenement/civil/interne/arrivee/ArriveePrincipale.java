@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -87,7 +88,7 @@ public class ArriveePrincipale extends Arrivee {
 		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
 
 		final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
-		previousLocation = computePreviousLocation(localisationPrecedente);
+		previousLocation = localisationPrecedente != null ? computePreviousLocation(localisationPrecedente) : estimateLocation(ancienneCommune);
 
 		// dans le cas de l'arrivée liée à une naissance, il n'y a pas de localisation précédente
 
@@ -110,6 +111,21 @@ public class ArriveePrincipale extends Arrivee {
 		this.previousLocation = computePreviousLocation(type);
 	}
 
+	@Nullable
+	private static LocalisationType estimateLocation(@Nullable Commune commune) {
+		if (commune == null) {
+			return null;
+		}
+
+		if (commune.isVaudoise()) {
+			return LocalisationType.CANTON_VD;
+		}
+		else {
+			return LocalisationType.HORS_CANTON;
+		}
+	}
+
+	@Nullable
 	private LocalisationType computePreviousLocation(Localisation avant) {
 		final LocalisationType loc;
 		if (avant != null && avant.getType() != null) {
@@ -122,6 +138,7 @@ public class ArriveePrincipale extends Arrivee {
 		return loc;
 	}
 
+	@Nullable
 	private LocalisationType computePreviousLocation(TypeEvenementCivil type) {
 		final LocalisationType previousLocation;
 		switch (type) {
@@ -636,13 +653,7 @@ public class ArriveePrincipale extends Arrivee {
 							// un seul déménagement...
 							final Commune ancienneCommune = communes.get(0).getCommune();
 							final Commune nouvelleCommune = communes.get(1).getCommune();
-							if (ancienneCommune == null) {
-								// arrivée HC/HS --> réglé plus bas
-							}
-							else if (nouvelleCommune == null) {
-								// départ HC/HS --> réglé plus bas
-							}
-							else {
+							if (ancienneCommune != null && nouvelleCommune != null) {
 								// déménagement vaudois -> c'est seulement à partir du moment
 								// où les deux conjoints on déménagés que le for doit bouger
 								dateDebutFor = communes.get(1).getDateDebut();
@@ -693,10 +704,7 @@ public class ArriveePrincipale extends Arrivee {
 
 			return commune == null ? null : new Pair<>(commune, dateDebutFor);
 		}
-		catch (ServiceInfrastructureException e) {
-			throw new EvenementCivilException(e.getMessage(), e);
-		}
-		catch (DonneesCivilesException e) {
+		catch (ServiceInfrastructureException | DonneesCivilesException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
 	}

@@ -1,36 +1,36 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
-	private ServiceInfrastructureService infraService;
-
-	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
-		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-	}
 
 	@Test(timeout = 10000L)
 	public void testDemenagementCelibataire() throws Exception {
@@ -130,7 +130,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite,MotifFor.MAJORITE, MockPays.Espagne);
+				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
 				return null;
 			}
 		});
@@ -191,7 +191,7 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique osvalde = addHabitant(noIndividu);
-				addForPrincipal(osvalde, dateMajorite,MotifFor.MAJORITE, MockPays.Espagne);
+				addForPrincipal(osvalde, dateMajorite, MotifFor.MAJORITE, MockPays.Espagne);
 				return null;
 			}
 		});
@@ -222,6 +222,165 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-6012] Cas d'une personne qui change de fraction dans une des communes de la vallée
+	 */
+	@Test
+	public void testDemenagementEntreFractionsMemeCommuneFaitiere() throws Exception {
+
+		final long noIndividu = 34278432576L;
+		final RegDate dateNaissance = date(1980, 7, 31);
+		final RegDate dateDemenagement = date(2014, 3, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Berney", "Alphonse", Sexe.MASCULIN);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.LAbbaye.LesBioux.BatimentLaGrandePartie, null, null, dateNaissance, dateDemenagement.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.LAbbaye.LePont.BatimentSurLesQuais, null, null, dateDemenagement, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Fraction.LesBioux);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil de déménagement dans la commune de L'Abbaye (commune faîtière des fractions "Les Bioux" et "Le Pont")
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDemenagement);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals(String.format("Traité comme une arrivée car les communes %s et %s ne sont pas différenciées dans les données civiles.",
+				                                  MockCommune.Fraction.LesBioux.getNomOfficiel(), MockCommune.Fraction.LePont.getNomOfficiel()),
+				                    evt.getCommentaireTraitement());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDemenagement, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Fraction.LePont.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-6012] Cas d'une personne pour laquelle un déménagement dans la commune est annoncé alors que les adresses de résidence indiquent
+	 * plutôt un déménagement vaudois entre deux communes qui n'ont rien à voir l'une avec l'autre...
+	 */
+	@Test
+	public void testDemenagementDansLaCommuneAvecCommunesTresDifferentes() throws Exception {
+
+		final long noIndividu = 34278432576L;
+		final RegDate dateNaissance = date(1980, 7, 31);
+		final RegDate dateDemenagement = date(2014, 3, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Berney", "Alphonse", Sexe.MASCULIN);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.Echallens.BatimentRouteDeMoudon, null, null, dateNaissance, dateDemenagement.getOneDayBefore());
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockBatiment.YverdonLesBains.BatimentCheminDesMuguets, null, null, dateDemenagement, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Echallens);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil de déménagement dans la commune de L'Abbaye (commune faîtière des fractions "Les Bioux" et "Le Pont")
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDemenagement);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertNull(evt.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Les communes %s et %s ne sont pas fusionnées en %d et ne sont pas des fractions de la même commune faîtière, pourtant c'est bien un événement de déménagement dans la commune qui a été reçu.",
+				                                  MockCommune.Echallens.getNomOfficiel(), MockCommune.YverdonLesBains.getNomOfficiel(), dateDemenagement.year()),
+				                    erreur.getMessage());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateNaissance.addYears(18), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MAJORITE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 			}
 		});
 	}

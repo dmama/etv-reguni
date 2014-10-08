@@ -51,6 +51,20 @@ public class MockBatiment {
 		public static final MockBatiment BatimentQuaiDeLaThiele = new MockBatiment(3164396, MockRue.YverdonLesBains.QuaiDeLaThiele);
 		public static final MockBatiment BatimentRueDeLaFaiencerie = new MockBatiment(844765, MockRue.YverdonLesBains.RueDeLaFaiencerie);
 	}
+
+	public static class LAbbaye {
+		public static class LesBioux {
+			public static final MockBatiment BatimentLeClos = new MockBatiment(830306, MockRue.LesBioux.LeClos);
+			public static final MockBatiment BatimentLaGrandePartie = new MockBatiment(830366, MockRue.LesBioux.LaGrandePartie);
+		}
+		public static class LePont {
+			public static final MockBatiment BatimentSurLesQuais = new MockBatiment(830071, MockRue.LePont.SurLesQuais);
+		}
+	}
+
+	public static class Echallens {
+		public static final MockBatiment BatimentRouteDeMoudon = new MockBatiment(868048, MockRue.Echallens.RouteDeMoudon);
+	}
 	
 	public MockBatiment(int egid, MockRue rue) {
 		this.egid = egid;

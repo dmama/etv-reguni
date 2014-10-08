@@ -182,6 +182,14 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		YverdonLesBains.addBatiment(MockBatiment.YverdonLesBains.BatimentQuaiDeLaThiele, null, null);
 		YverdonLesBains.addBatiment(MockBatiment.YverdonLesBains.BatimentRueDeLaFaiencerie, null, null);
 		YverdonLesBains.addAllBatiments(Gressy.getBatiments(veilleFusion2011), dateFusion2011, null);
+
+		// bâtiments dans la Vallée (pas de fusion, mais des fractions...)
+		Fraction.LesBioux.addBatiment(MockBatiment.LAbbaye.LesBioux.BatimentLaGrandePartie, null, null);
+		Fraction.LesBioux.addBatiment(MockBatiment.LAbbaye.LesBioux.BatimentLeClos, null, null);
+		Fraction.LePont.addBatiment(MockBatiment.LAbbaye.LePont.BatimentSurLesQuais, null, null);
+
+		// finalement un bâtiment sur Echallens
+		Echallens.addBatiment(MockBatiment.Echallens.BatimentRouteDeMoudon, null, null);
 	}
 
 	private String nom;

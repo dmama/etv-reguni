@@ -32,7 +32,6 @@ public class MockRue implements Rue {
 		public static final MockRue SentierFleurDeLys = new MockRue(MockLocalite.Prilly, "Sentier de la Fleur-de-Lys", 81681);
 	}
 
-
 	public static class CossonayVille {
 		public static final MockRue AvenueDuFuniculaire = new MockRue(MockLocalite.CossonayVille, "Avenue du Funiculaire", 32296);
 		public static final MockRue CheminDeRiondmorcel = new MockRue(MockLocalite.CossonayVille, "Chemin de Riondmorcel", 83404);
@@ -83,6 +82,15 @@ public class MockRue implements Rue {
 		public static final MockRue GrandRue = new MockRue(MockLocalite.LeSentier, "Grande-Rue", 32468);
 	}
 
+	public static class LesBioux {
+		public static final MockRue LeClos = new MockRue(MockLocalite.LesBioux, "Le Clos", 197489);
+		public static final MockRue LaGrandePartie = new MockRue(MockLocalite.LesBioux, "La Grande Partie", 197493);
+	}
+
+	public static class LePont {
+		public static final MockRue SurLesQuais = new MockRue(MockLocalite.LePont, "Sur les quais", 129312);
+	}
+
 	public static class Enney {
 		public static final MockRue chemin = new MockRue(MockLocalite.Enney, "Chemin d'Afflon", 334842);
 	}
@@ -110,6 +118,7 @@ public class MockRue implements Rue {
 
 	public static class Echallens {
 		public static final MockRue GrandRue = new MockRue(MockLocalite.Echallens, "Grand Rue", 31560);
+		public static final MockRue RouteDeMoudon = new MockRue(MockLocalite.Echallens, "Route de Moudon", 31568);
 	}
 
 	public static class Lonay {
