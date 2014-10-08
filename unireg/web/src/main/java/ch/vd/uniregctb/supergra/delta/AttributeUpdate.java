@@ -13,6 +13,7 @@ import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.EntityType;
 import ch.vd.uniregctb.supergra.SuperGraContext;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
@@ -94,10 +95,17 @@ public class AttributeUpdate extends Delta {
 				applyRapportUpdate((RapportEntreTiers) entity, context, setter);
 			}
 			else {
+				// Dans le cas d'une entity key, il faut aller chercher l'entité hibernate elle-même et l'assigner.
 				if (newValue instanceof EntityKey) {
-					// dans le cas d'une entity key, il faut aller chercher l'entité hibernate elle-même et l'assigner.
-					HibernateEntity newEntity = context.getEntity((EntityKey) newValue);
-					ReflexionUtils.setPathValue(entity, name, newEntity, ReflexionUtils.SetPathBehavior.CREATE_ON_THE_FLY);
+					final Object actualValue;
+					// [SIFISC-13658] le lien vers le contribuable principal depuis une situation de famille est géré à la main, on ne résoud donc pas l'entité
+					if (entity instanceof SituationFamilleMenageCommun && name.equals("contribuablePrincipalId")) {
+						actualValue = ((EntityKey) newValue).getId();
+					}
+					else {
+						actualValue = context.getEntity((EntityKey) newValue);
+					}
+					ReflexionUtils.setPathValue(entity, name, actualValue, ReflexionUtils.SetPathBehavior.CREATE_ON_THE_FLY);
 				}
 				else {
 					ReflexionUtils.setPathValue(entity, name, newValue, ReflexionUtils.SetPathBehavior.CREATE_ON_THE_FLY);
