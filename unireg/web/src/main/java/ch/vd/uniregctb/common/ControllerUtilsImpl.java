@@ -95,9 +95,8 @@ public class ControllerUtilsImpl implements ControllerUtils {
 				false);
 	}
 
-	@Override
-	public String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue,
-	                                                          boolean htmlEscape) {
+	private String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue,
+	                                                           boolean htmlEscape) {
 
 		final ParamEncoder encoder = new ParamEncoder(tableName);
 		final String pageParamName = encoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE);
@@ -152,17 +151,11 @@ public class ControllerUtilsImpl implements ControllerUtils {
 					LOGGER.warn(message);
 					throw new AccessDeniedException(String.format("Vous ne possédez pas les droits pour traiter le contribuable %s qui est soumis à une décision ACI.", FormatNumeroHelper.numeroCTBToDisplay(tiersId)));
 				}
-
-
 			}
-
-
-
 		}
 	}
 
 	private Autorisations getAutorisations(Contribuable ctb) {
 		return autorisationManager.getAutorisations(ctb, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
-
 	}
 }

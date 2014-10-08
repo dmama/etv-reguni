@@ -80,7 +80,7 @@ public class DebiteurEditController {
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
-	public String getDebiteurToEdit(Model model, @RequestParam(value = ID) long id) throws Exception {
+	public String getDebiteurToEdit(Model model, @RequestParam(value = ID) long id, @RequestParam(value = ControllerUtils.PARAMETER_MODIFIER, defaultValue = "false") boolean modified) throws Exception {
 		controllerUtils.checkAccesDossierEnLecture(id);
 		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(id);
 
@@ -89,6 +89,7 @@ public class DebiteurEditController {
 		model.addAttribute(MODES_COMMUNICATION, tiersMapHelper.getMapModeCommunication());
 		model.addAttribute(LIBELLES_LOGICIELS, tiersMapHelper.getAllLibellesLogiciels());
 		model.addAttribute(CATEGORIES_IMPOT_SOURCE, tiersMapHelper.getMapCategorieImpotSource());
+		model.addAttribute(ControllerUtils.PARAMETER_MODIFIER, modified);
 		model.addAttribute("command", view);
 		return "tiers/edition/debiteur/edit";
 	}

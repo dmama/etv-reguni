@@ -8,6 +8,9 @@ import ch.vd.uniregctb.security.AccessDeniedException;
  * Collection de méthodes utilitaires <b>générales</b> en relation avec les contrôleurs Spring MVC 3.
  */
 public interface ControllerUtils {
+
+	static final String PARAMETER_MODIFIER = "__MODIFIER__";
+
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p/>
@@ -55,8 +58,6 @@ public interface ControllerUtils {
 	 * @return une chaine contenant les parametres de requetes utiles au displaytag
 	 */
 	String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination);
-
-	String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue, boolean htmlEscape);
 
 	/**
 	 * Verifie que l'opérateur courant possède les droits d'accès pour un dossier si celui ci possède une décision ACI.
