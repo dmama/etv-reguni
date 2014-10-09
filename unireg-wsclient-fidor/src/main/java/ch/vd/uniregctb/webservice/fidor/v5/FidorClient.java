@@ -17,7 +17,7 @@ public interface FidorClient {
 	 * Retourne une commune à partir de son numéro Ofs et d'une date de référence.
 	 *
 	 * @param ofsId un numéro Ofs de commune
-	 * @param date  une date de référence
+	 * @param date  une date de référence (si <code>null</code>, la date du jour sera utilisée)
 	 * @return la commune avec le numéro Ofs demandé valide à la date spécifiée; ou <b>null</b> si la commune est inconnue.
 	 */
 	CommuneFiscale getCommuneParNoOFS(int ofsId, RegDate date);
@@ -53,24 +53,30 @@ public interface FidorClient {
 
 	/**
 	 * @param egid le numéro de bâtiment
-	 * @param date une date de référence
+	 * @param date une date de référence (si <code>null</code>, la date du jour sera utilisée)
 	 * @return la commune sur laquelle est sis le bâtiment identifié par son numéro Ofs.
 	 */
 	CommuneFiscale getCommuneParBatiment(int egid, RegDate date);
 
 	/**
 	 * @param ofsId identifiant d'un pays
-	 * @param date une date de référence
+	 * @param date une date de référence (si <code>null</code>, la date du jour sera utilisée)
 	 * @return les informations d'un pays
 	 */
 	Country getPaysDetail(long ofsId, RegDate date);
 
 	/**
 	 * @param iso2Id l'identifiant ISO sur deux positions d'un pays (e.g. 'ch')
-	 * @param date une date de référence
+	 * @param date une date de référence (si <code>null</code>, la date du jour sera utilisée)
 	 * @return les informations d'un pays
 	 */
 	Country getPaysDetail(String iso2Id, RegDate date);
+
+	/**
+	 * @param ofsId identifiant d'un pays
+	 * @return les différentes versions du pays associé à l'identifiant OFS
+	 */
+	List<Country> getPaysHisto(long ofsId);
 
 	/**
 	 * Retourne la liste de tous les pays

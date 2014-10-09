@@ -273,6 +273,26 @@ public class FidorClientImpl implements FidorClient {
 	}
 
 	@Override
+	public List<Country> getPaysHisto(long ofsId) {
+		final WebClient wc = createWebClient(600000); // 10 minutes
+		wc.path(paysPath);
+
+		// l'id
+		wc.query("id", ofsId);
+
+		try {
+			final ListOfPoliticalEntities list = wc.get(ListOfPoliticalEntities.class);
+			if (list == null || list.getNumberOfResults().intValue() == 0) {
+				return null;
+			}
+			return list.getListOfResults().getListOfStateTerritories().getStateTerritory();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
 	public List<Country> getTousLesPays() {
 		final WebClient wc = createWebClient(600000); // 10 minutes
 		wc.path(paysPath);
