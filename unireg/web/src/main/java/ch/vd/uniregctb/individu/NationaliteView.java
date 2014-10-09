@@ -28,7 +28,7 @@ public class NationaliteView implements DateRange, Serializable {
 
 	public NationaliteView(Nationalite src) {
 		this.validite = new DateRangeHelper.Range(src.getDateDebut(), src.getDateFin());
-		this.pays = src.getPays().getNomCourt();
+		this.pays = src.getPays() != null ? src.getPays().getNomCourt() : "?";
 	}
 
 	@Override
