@@ -155,7 +155,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ffp, ffp.getNumeroOfsAutoriteFiscale());
+			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure à la date de début du for", ffp, ffp.getNumeroOfsAutoriteFiscale());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{

@@ -164,7 +164,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 				try {
 					final Pays pays = serviceInfra.getPays(numeroOfsAutoriteFiscale, dateDebut);
 					if (pays == null) {
-						results.addError(String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure", ff, ff.getNumeroOfsAutoriteFiscale()));
+						results.addError(String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure à la date de début du for", ff, ff.getNumeroOfsAutoriteFiscale()));
 					}
 					else if (pays.isSuisse()) {
 						results.addError(String.format("Le for %s devrait être vaudois ou hors-canton", ff));
