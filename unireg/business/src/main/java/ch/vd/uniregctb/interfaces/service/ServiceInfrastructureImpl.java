@@ -171,6 +171,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		return rawService.getPaysHisto(numeroOFS);
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		return rawService.getCollectivite(noColAdm);
 	}

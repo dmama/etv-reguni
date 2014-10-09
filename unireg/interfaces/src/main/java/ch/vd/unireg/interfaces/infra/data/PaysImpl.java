@@ -12,7 +12,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
 	private static final DateRange ETERNITY = new DateRangeHelper.Range(null, null);
 
-	private static final long serialVersionUID = 3063853234481199767L;
+	private static final long serialVersionUID = 3230761033923586871L;
 
 	private final boolean valide;
 	private final DateRange validityRange;
@@ -47,24 +47,37 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		this.typeAffranchissement = null;
 	}
 
-	public PaysImpl(ch.ech.ech0072.v1.Country target, ch.vd.evd0007.v1.CountryAddOn addOn, ch.vd.evd0007.v1.ValidityDate validityDates) {
-		super(target.getId(), target.getShortNameFr(), target.getOfficialNameFr(), target.getIso2Id());
-		this.valide = target.isEntryValid();
+	private static DateRange buildValidityRangeBasedOnFlagAndDateOfChange(ch.ech.ech0072.v1.Country target) {
+		if (!target.isEntryValid()) {
+			return new DateRangeHelper.Range(null, XmlUtils.xmlcal2regdate(target.getDateOfChange()));
+		}
+		else {
+			return ETERNITY;
+		}
+	}
 
+	private static DateRange buildValidityRange(ch.ech.ech0072.v1.Country target, ch.vd.evd0007.v1.ValidityDate validityDates) {
+		final DateRange validityRange;
 		if (validityDates != null) {
 			final RegDate dateDebutValidite = XmlUtils.xmlcal2regdate(validityDates.getAdmissionDate());
 			final RegDate dateFinValidite = XmlUtils.xmlcal2regdate(validityDates.getAbolitionDate());
 			if (dateDebutValidite == null && dateFinValidite == null) {
-				this.validityRange = ETERNITY;
+				validityRange = buildValidityRangeBasedOnFlagAndDateOfChange(target);
 			}
 			else {
-				this.validityRange = new DateRangeHelper.Range(dateDebutValidite, dateFinValidite);
+				validityRange = new DateRangeHelper.Range(dateDebutValidite, dateFinValidite);
 			}
 		}
 		else {
-			this.validityRange = ETERNITY;
+			validityRange = buildValidityRangeBasedOnFlagAndDateOfChange(target);
 		}
+		return validityRange;
+	}
 
+	public PaysImpl(ch.ech.ech0072.v1.Country target, ch.vd.evd0007.v1.CountryAddOn addOn, ch.vd.evd0007.v1.ValidityDate validityDates) {
+		super(target.getId(), target.getShortNameFr(), target.getOfficialNameFr(), target.getIso2Id());
+		this.valide = target.isEntryValid();
+		this.validityRange = buildValidityRange(target, validityDates);
 		this.etatSouverain = target.isState();
 		this.ofsEtatSouverainParent = target.getAreaState();
 		this.codeIso2 = target.getIso2Id();

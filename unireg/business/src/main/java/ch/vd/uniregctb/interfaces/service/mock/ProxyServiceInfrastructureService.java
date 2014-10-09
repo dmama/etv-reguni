@@ -133,6 +133,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		return target.getPaysHisto(numeroOFS);
+	}
+
+	@Override
 	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		return target.getPays(numeroOFS, date);
 	}

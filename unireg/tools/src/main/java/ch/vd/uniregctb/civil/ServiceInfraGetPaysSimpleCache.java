@@ -34,6 +34,7 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	private final ServiceInfrastructureRaw target;
 	private final Map<KeyGetPaysByNoOfs, Pays> noOfsCache = Collections.synchronizedMap(new HashMap<KeyGetPaysByNoOfs, Pays>());
 	private final Map<KeyGetPaysByCodeIso, Pays> isoCache = Collections.synchronizedMap(new HashMap<KeyGetPaysByCodeIso, Pays>());
+	private final Map<KeyGetPaysHisto, List<Pays>> paysHistoCache = Collections.synchronizedMap(new HashMap<KeyGetPaysHisto, List<Pays>>());
 
 	public ServiceInfraGetPaysSimpleCache(ServiceInfrastructureRaw target) {
 		this.target = target;
@@ -307,6 +308,39 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		return target.getPays();
+	}
+
+	private static final class KeyGetPaysHisto {
+		private final int noOfs;
+
+		private KeyGetPaysHisto(int noOfs) {
+			this.noOfs = noOfs;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetPaysHisto that = (KeyGetPaysHisto) o;
+			return noOfs == that.noOfs;
+		}
+
+		@Override
+		public int hashCode() {
+			return noOfs;
+		}
+	}
+
+	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		final KeyGetPaysHisto key = new KeyGetPaysHisto(numeroOFS);
+		List<Pays> resultat = paysHistoCache.get(key);
+		if (resultat == null) {
+			resultat = target.getPaysHisto(numeroOFS);
+			paysHistoCache.put(key, resultat);
+		}
+		return resultat;
 	}
 
 	@Override

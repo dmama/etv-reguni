@@ -76,6 +76,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		return fidorService.getPaysHisto(numeroOFS);
+	}
+
+	@Override
 	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		return fidorService.getPays(numeroOFS, date);
 	}

@@ -392,6 +392,31 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public List<Pays> getPaysHisto(final int numeroOFS) throws ServiceInfrastructureException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getPaysHisto(numeroOFS);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getPaysHisto", new Object() {
+				@Override
+				public String toString() {
+					return String.format("numeroOFS=%d", numeroOFS);
+				}
+			});
+		}
+	}
+
+	@Override
 	public Pays getPays(final int numeroOFS, @Nullable final RegDate date) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();

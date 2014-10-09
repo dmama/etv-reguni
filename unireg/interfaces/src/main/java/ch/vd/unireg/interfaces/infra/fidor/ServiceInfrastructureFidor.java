@@ -16,6 +16,7 @@ import org.springframework.util.Assert;
 import ch.vd.evd0007.v1.Country;
 import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -106,10 +107,31 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 			else {
-				final List<Pays> pays = new ArrayList<>();
+				final List<Pays> pays = new ArrayList<>(list.size());
 				for (Country o : list) {
 					pays.add(PaysImpl.get(o));
 				}
+				return Collections.unmodifiableList(pays);
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		try {
+			final List<Country> list = fidorClient.getPaysHisto(numeroOFS);
+			if (list == null || list.isEmpty()) {
+				return Collections.emptyList();
+			}
+			else {
+				final List<Pays> pays = new ArrayList<>(list.size());
+				for (Country o : list) {
+					pays.add(PaysImpl.get(o));
+				}
+				Collections.sort(pays, new DateRangeComparator<Pays>());
 				return Collections.unmodifiableList(pays);
 			}
 		}
@@ -198,7 +220,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<>();
+			final List<Commune> communes = new ArrayList<>(all.size());
 			for (CommuneFiscale commune : all) {
 				communes.add(CommuneImpl.get(commune));
 			}

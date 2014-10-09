@@ -62,6 +62,13 @@ public interface ServiceInfrastructureRaw {
 	Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
+	 * @param numeroOFS un numéro Ofs de pays
+	 * @return les version du pays ayant possédé ce numéro OFS
+	 * @throws ServiceInfrastructureException
+	 */
+	List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException;
+
+	/**
 	 * Recherche un pays à partir de son code ('CH', 'FR', 'BE', ...). Voir la documentation de la méthode {@link ch.vd.infrastructure.model.Pays#getCodePays()}.
 	 *
 	 * @param codePays un code de pays ('CH', 'FR', 'BE', ...)

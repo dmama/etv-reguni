@@ -48,6 +48,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getPaysHisto", "numeroOfs", numeroOFS));
+		try {
+			return target.getPaysHisto(numeroOFS);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public Pays getPays(int numeroOFS, @Nullable RegDate date) throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getPays", "numeroOfs", numeroOFS, "date", date));
 		try {

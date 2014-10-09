@@ -2,7 +2,6 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -56,6 +55,13 @@ public interface ServiceInfrastructureService {
 	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	List<Pays> getPays() throws ServiceInfrastructureException;
+
+	/**
+	 * @param numeroOFS un numéro Ofs de pays
+	 * @return les version du pays ayant possédé ce numéro OFS
+	 * @throws ServiceInfrastructureException
+	 */
+	List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException;
 
 	/**
 	 * @param numeroOFS un numéro Ofs de pays.

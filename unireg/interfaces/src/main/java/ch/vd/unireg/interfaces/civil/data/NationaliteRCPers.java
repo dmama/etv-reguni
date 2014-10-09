@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.Serializable;
+import java.util.List;
 
 import ch.vd.evd0001.v5.Nationality;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -40,17 +41,18 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 		case "2":
 			// ok
 			final Integer noOfsPays = nationality.getCountry().getCountryId();
-			final RegDate refDate;
-			if (noOfsPays == ServiceInfrastructureRaw.noOfsSuisse && nationality.getNaturalizationSwissDate() != null) {
-				refDate = XmlUtils.xmlcal2regdate(nationality.getNaturalizationSwissDate());
+			if (noOfsPays == null) {
+				throw new IllegalArgumentException("Pays sans numéro OFS : " + nationality.getCountry());
 			}
-			else if (noOfsPays == ServiceInfrastructureRaw.noOfsSuisse && nationality.getUndoSwissDate() != null) {
-				refDate = XmlUtils.xmlcal2regdate(nationality.getUndoSwissDate());
+			final List<Pays> paysCandidats = infraService.getPaysHisto(noOfsPays);
+			if (paysCandidats == null || paysCandidats.isEmpty()) {
+				// TODO faudrait-il mettre le pays inconnu ici ?
+				p = null;
 			}
 			else {
-				refDate = XmlUtils.xmlcal2regdate(nationality.getReportingDate());
+				// on prend toujours la dernière version disponible du pays en question...
+				p = paysCandidats.get(paysCandidats.size() - 1);
 			}
-			p = infraService.getPays(noOfsPays, refDate);
 			break;
 		default:
 			throw new IllegalArgumentException("Code nationality status inconnu = [" + status + ']');

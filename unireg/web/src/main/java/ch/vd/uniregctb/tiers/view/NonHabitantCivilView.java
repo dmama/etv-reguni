@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -57,9 +59,9 @@ public class NonHabitantCivilView {
 		this.sDateDebutValiditeAutorisation = RegDateHelper.dateToDisplayString(pp.getDateDebutValiditeAutorisation());
 		this.numeroOfsNationalite = pp.getNumeroOfsNationalite();
 		if (pp.getNumeroOfsNationalite() != null) {
-			final Pays pays = infraService.getPays(pp.getNumeroOfsNationalite(), pp.getDateNaissance());
-			if (pays != null) {
-				this.libelleOfsPaysOrigine = pays.getNomCourt();
+			final List<Pays> candidates = infraService.getPaysHisto(pp.getNumeroOfsNationalite());
+			if (candidates != null && !candidates.isEmpty()) {
+				this.libelleOfsPaysOrigine = candidates.get(candidates.size() - 1).getNomCourt();
 			}
 		}
 		if (pp.getOrigine() != null) {

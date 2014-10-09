@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -237,6 +238,17 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		final List<Pays> histo = new ArrayList<>();
+		for (Pays p : pays) {
+			if (p.getNoOFS() == numeroOFS) {
+				histo.add(p);
+			}
+		}
+		return histo.isEmpty() ? Collections.<Pays>emptyList() : histo;
 	}
 
 	@Override

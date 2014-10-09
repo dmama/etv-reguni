@@ -772,6 +772,46 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	private static final class KeyGetPaysHisto {
+		private final int numeroOFS;
+
+		private KeyGetPaysHisto(int numeroOFS) {
+			this.numeroOFS = numeroOFS;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetPaysHisto that = (KeyGetPaysHisto) o;
+			return numeroOFS == that.numeroOFS;
+		}
+
+		@Override
+		public int hashCode() {
+			return numeroOFS;
+		}
+	}
+
+	@Override
+	public List<Pays> getPaysHisto(int numeroOFS) throws ServiceInfrastructureException {
+		final List<Pays> resultat;
+
+		final KeyGetPaysHisto key = new KeyGetPaysHisto(numeroOFS);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getPaysHisto(numeroOFS);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			//noinspection unchecked
+			resultat = (List<Pays>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
 	/**
 	 * Classe abstraite des clés utilisées pour le stockage des informations de pays
 	 */
