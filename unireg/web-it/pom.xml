@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
-			<version>3.4-SNAPSHOT</version>
+			<version>3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
