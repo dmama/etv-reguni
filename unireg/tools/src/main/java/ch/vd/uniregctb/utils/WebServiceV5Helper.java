@@ -3,11 +3,15 @@ package ch.vd.uniregctb.utils;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 
 import ch.vd.unireg.ws.parties.v1.Parties;
+import ch.vd.unireg.ws.search.party.v1.SearchResult;
 import ch.vd.unireg.xml.party.v3.Party;
 import ch.vd.unireg.xml.party.v3.PartyPart;
+import ch.vd.uniregctb.webservices.v5.PartySearchType;
+import ch.vd.uniregctb.webservices.v5.SearchMode;
 
 public abstract class WebServiceV5Helper {
 
@@ -31,5 +35,28 @@ public abstract class WebServiceV5Helper {
 			client.query("part", parts.toArray(new PartyPart[parts.size()]));
 		}
 		return client.get(Parties.class);
+	}
+
+	public static SearchResult searchParty(String urlWebService, String username, String password, String businessUser, int oid,
+	                                 String name, SearchMode nameSearchMode, String avs, String ide, Set<PartySearchType> partyTypes) {
+		final WebClient client = WebClient.create(urlWebService, username, password, null);
+		client.path("searchParty");
+		client.query("user", String.format("%s/%d", businessUser, oid));
+		if (StringUtils.isNotBlank(name)) {
+			client.query("name", name);
+			if (nameSearchMode != null) {
+				client.query("nameSearchMode", nameSearchMode);
+			}
+		}
+		if (StringUtils.isNotBlank(avs)) {
+			client.query("vn", avs);
+		}
+		if (StringUtils.isNotBlank(ide)) {
+			client.query("uid", ide);
+		}
+		if (partyTypes != null && !partyTypes.isEmpty()) {
+			client.query("partyType", partyTypes.toArray(new PartySearchType[partyTypes.size()]));
+		}
+		return client.get(SearchResult.class);
 	}
 }
