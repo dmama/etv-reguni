@@ -557,7 +557,15 @@ public interface TiersService {
      */
     ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
 
-    /**
+	/**
+	 * Ferme la décision d'un contribuable
+	 * @param decision a fermer
+	 * @param dateFin date de fermeture
+	 * @return la décision fermée
+	 */
+	DecisionAci closeDecisionAci(DecisionAci decision, RegDate dateFin);
+
+	/**
      * Ferme le for fiscal secondaire d'un contribuable.
      *
      * @param contribuable        le contribuable concerné

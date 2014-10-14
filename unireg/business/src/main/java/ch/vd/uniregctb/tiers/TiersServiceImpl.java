@@ -2656,7 +2656,8 @@ public class TiersServiceImpl implements TiersService {
         return forFiscalPrincipal;
     }
 
-	protected DecisionAci closeDecisionAci(DecisionAci decision, RegDate dateFin) {
+	@Override
+	public DecisionAci closeDecisionAci(DecisionAci decision, RegDate dateFin) {
 		Assert.notNull(decision);
 		if (decision.getDateDebut().isAfter(dateFin)) {
 			throw new ValidationException(decision, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFin) + ") est avant la date de début (" +

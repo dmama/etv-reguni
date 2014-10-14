@@ -16,6 +16,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -820,4 +821,151 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testTraiteContribuableAvecDecisionAci() throws Exception {
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique bruno = addNonHabitant("Bruno", "Citoyen", date(1966, 8, 1), Sexe.MASCULIN);
+				addDecisionAci(bruno,date(1988,1,2),null,MockCommune.Croy.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return bruno.getNumero();
+			}
+		});
+
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
+			@Override
+			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
+				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+				processor.traiteTiersAvecDecision(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				return rapport;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// Le contribuable habite sur une des communes concernées pas la fusion -> son for principal devrait être mis-à-jour
+				final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
+				assertNotNull(bruno);
+
+				final ForsParType fors = bruno.getForsParType(true);
+				assertNotNull(fors);
+				assertEquals(2, bruno.getDecisionsSorted().size());
+
+				final DecisionAci d0 = bruno.getDecisionsSorted().get(0);
+				assertNotNull(d0);
+				assertEquals(d0.getDateFin(),dateFusion.getOneDayBefore());
+				assertEquals(d0.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.Croy.getNoOFS());
+				final DecisionAci d1 = bruno.getDecisionsSorted().get(1);
+				assertEquals(d1.getDateDebut(),dateFusion);
+				assertEquals(d1.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.RomainmotierEnvy.getNoOFS());
+
+				assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+				assertEquals(0, rapport.tiersAvecDecisonIgnores.size());
+				assertEquals(1, rapport.tiersAvecDecisionTraites.size());
+				assertEmpty(rapport.tiersAvecDecisionEnErrors);
+			}
+		});
+	}
+
+	@Test
+	public void testTraiteContribuableAvecDecisionDejaSurNouvelleCommune() throws Exception {
+
+		// Le contribuable habite déjà sur la commune résultant de la fusion
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
+				addDecisionAci(bruno,date(1988,1,2),null,MockCommune.RomainmotierEnvy.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return bruno.getNumero();
+			}
+		});
+
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
+			@Override
+			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
+				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+				processor.traiteTiersAvecDecision(id, anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				return rapport;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// Le contribuable habite déjà sur la commune résultant de la fusion -> sa décision ne doit pas être mis-à-jour
+				final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, id);
+				assertNotNull(bruno);
+
+				final List<DecisionAci> decisions  = bruno.getDecisionsSorted();
+				assertNotNull(decisions);
+				assertEquals(1, decisions.size());
+
+				final DecisionAci decisionAci = decisions.get(0);
+				assertNotNull(decisionAci);
+
+				assertEquals(decisionAci.getNumeroOfsAutoriteFiscale().intValue(),MockCommune.RomainmotierEnvy.getNoOFS());
+				assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+				assertEquals(1, rapport.tiersAvecDecisonIgnores.size());
+				assertEquals(0, rapport.tiersAvecDecisionTraites.size());
+				assertEmpty(rapport.tiersAvecDecisionEnErrors);
+			}
+		});
+	}
+
+	@Test
+	public void testTraiteContribuableInvalideHorsDecision() throws Exception {
+
+		final long ppId = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique bruno = addNonHabitant("Bruno", "Rien", date(1966, 8, 1), Sexe.MASCULIN);
+				addDecisionAci(bruno, date(1988, 1, 2), null, MockCommune.Croy.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+				bruno.setNom(null);     // c'est ça qui devrait poser problème
+
+				final ValidationResults validationResults = validationService.validate(bruno);
+				assertTrue(validationResults.hasErrors());
+
+				return bruno.getNumero();
+			}
+		});
+
+		final FusionDeCommunesResults rapport = processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, null);
+		assertNotNull(rapport);
+
+		assertEquals(0, rapport.getNbTiersTotal());
+		assertEquals(0, rapport.tiersTraites.size());
+		assertEquals(0, rapport.tiersIgnores.size());
+		assertEquals(0, rapport.tiersEnErrors.size());
+
+		assertEquals(1, rapport.getNbTiersAvecDecisionTotal());
+		assertEquals(0, rapport.tiersAvecDecisonIgnores.size());
+		assertEquals(0, rapport.tiersAvecDecisionTraites.size());
+		assertEquals(1, rapport.tiersAvecDecisionEnErrors.size());
+
+		final FusionDeCommunesResults.Erreur error = rapport.tiersAvecDecisionEnErrors.get(0);
+		assertNotNull(error);
+		assertEquals(FusionDeCommunesResults.ErreurType.VALIDATION, error.raison);
+		assertEquals(ppId, error.noCtb);
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
+				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<DecisionAci> decisions= bruno.getDecisionsSorted();
+				assertNotNull(decisions);
+				assertEquals(1, decisions.size());
+
+				final DecisionAci decision = decisions.get(0);
+				assertNotNull(decision);
+				assertEquals(decision.getNumeroOfsAutoriteFiscale().intValue(), MockCommune.Croy.getNoOFS());
+				return null;
+			}
+		});
+	}
+
+
 }

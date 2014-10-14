@@ -350,6 +350,28 @@ public abstract class Contribuable extends Tiers {
 		return decisionsAci;
 	}
 
+	@Transient
+	public List<DecisionAci> getDecisionsSorted() {
+		List<DecisionAci> decisions = null;
+		if (decisionsAci != null) {
+			decisions = new ArrayList<>();
+			decisions.addAll(decisionsAci);
+			Collections.sort(decisions, new DateRangeComparator<DecisionAci>() {
+				@Override
+				public int compare(DecisionAci o1, DecisionAci o2) {
+					int comparisonDates = super.compare(o1, o2);
+					if (comparisonDates == 0) {
+						// à dates égales, il faut comparer selon le type d'autorité fiscale
+						return o1.getTypeAutoriteFiscale().ordinal() - o2.getTypeAutoriteFiscale().ordinal();
+					}
+					else {
+						return comparisonDates;
+					}
+				}
+			});
+		}
+		return decisions;
+	}
 	public void setDecisionsAci(Set<DecisionAci> decisionsAci) {
 		this.decisionsAci = decisionsAci;
 	}

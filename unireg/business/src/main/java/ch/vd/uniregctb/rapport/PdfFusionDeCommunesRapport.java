@@ -70,6 +70,12 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 					table.addLigne("Nombre de tiers traités:", String.valueOf(results.tiersTraites.size()));
 					table.addLigne("Nombre de tiers ignorés:", String.valueOf(results.tiersIgnores.size()));
 					table.addLigne("Nombre de tiers en erreur:", String.valueOf(results.tiersEnErrors.size()));
+
+					table.addLigne("Nombre total de tiers avec décisions:", String.valueOf(results.getNbTiersAvecDecisionTotal()));
+					table.addLigne("Nombre de tiers avec décision traités:", String.valueOf(results.tiersAvecDecisionTraites.size()));
+					table.addLigne("Nombre de tiers avec décision ignorés:", String.valueOf(results.tiersAvecDecisonIgnores.size()));
+					table.addLigne("Nombre de tiers avec décision en erreur:", String.valueOf(results.tiersAvecDecisionEnErrors.size()));
+
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -85,7 +91,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
-		// Habitants en erreurs
+		// Habitants  ignorés
 		{
 			String filename = "tiers_ignores.csv";
 			String contenu = asCsvFile(results.tiersIgnores, filename, status);
@@ -100,6 +106,33 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			String contenu = asCsvFile(results.tiersEnErrors, filename, status);
 			String titre = "Liste des tiers en erreur";
 			String listVide = "(aucun tiers en erreur)";
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+		}
+
+		// Habitants avec décision traités
+		{
+			String filename = "tiers_decision_traites.csv";
+			String contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status);
+			String titre = "Liste des tiers avec décision ACI traités";
+			String listVide = "(aucun tiers avec décision ACI traité)";
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+		}
+
+		// Habitants avec décision ignorés
+		{
+			String filename = "tiers_decision_ignores.csv";
+			String contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status);
+			String titre = "Liste des tiers avec décision ACI ignorés";
+			String listVide = "(aucun tiers avec décision ACI ignoré)";
+			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+		}
+
+		// Habitants avec décision en erreurs
+		{
+			String filename = "tiers_decision_en_erreur.csv";
+			String contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status);
+			String titre = "Liste des tiers avec décision ACI en erreur";
+			String listVide = "(aucun tiers avec décision ACI en erreur)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 

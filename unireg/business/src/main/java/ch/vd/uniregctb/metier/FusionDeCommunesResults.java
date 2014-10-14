@@ -32,7 +32,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	}
 
 	public enum IgnoreType {
-		FORS_DEJA_SUR_COMMUNE_RESULTANTE("Les fors du contribuable sont déjà sur la commune résultante.");
+		FORS_DEJA_SUR_COMMUNE_RESULTANTE("Les fors du contribuable sont déjà sur la commune résultante."),
+		DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE("Les décisions ACI du contribuable sont déjà sur la commune résultante.");;
 
 		private final String description;
 
@@ -43,6 +44,11 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		public String description() {
 			return description;
 		}
+	}
+
+	public enum PhaseTraitement{
+		PHASE_FOR,
+		PHASE_DECISION;
 	}
 
 	public static class Erreur extends Info {
@@ -79,11 +85,18 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public final Set<Integer> anciensNoOfs;
 	public final int nouveauNoOfs;
 
+
 	// résultats
 	public final List<Long> tiersTraites = new ArrayList<>();
 	public final List<Ignore> tiersIgnores = new ArrayList<>();
 	public final List<Erreur> tiersEnErrors = new ArrayList<>();
+
+	public final List<Long> tiersAvecDecisionTraites = new ArrayList<>();
+	public final List<Ignore> tiersAvecDecisonIgnores = new ArrayList<>();
+	public final List<Erreur> tiersAvecDecisionEnErrors = new ArrayList<>();
+
 	public boolean interrompu;
+	public PhaseTraitement phaseTraitement;
 
 	public FusionDeCommunesResults(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
@@ -97,11 +110,20 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		return tiersTraites.size() + tiersIgnores.size() + tiersEnErrors.size();
 	}
 
+
+	public int getNbTiersAvecDecisionTotal() {
+		return tiersAvecDecisionTraites.size() + tiersAvecDecisonIgnores.size() + tiersAvecDecisionEnErrors.size();
+	}
+
 	@Override
 	public void addAll(FusionDeCommunesResults right) {
 		this.tiersTraites.addAll(right.tiersTraites);
 		this.tiersIgnores.addAll(right.tiersIgnores);
 		this.tiersEnErrors.addAll(right.tiersEnErrors);
+
+		this.tiersAvecDecisionTraites.addAll(right.tiersAvecDecisionTraites);
+		this.tiersAvecDecisonIgnores.addAll(right.tiersAvecDecisonIgnores);
+		this.tiersAvecDecisionEnErrors.addAll(right.tiersAvecDecisionEnErrors);
 	}
 
 	public void addOnCommitException(Long habitantId, Exception e) {
@@ -116,13 +138,40 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		tiersIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.FORS_DEJA_SUR_COMMUNE_RESULTANTE, null, getNom(tiers.getNumero())));
 	}
 
+	public void addOnCommitPourDecisionException(Long habitantId, Exception e) {
+		tiersAvecDecisionEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
+	}
+
+	public void addTiersAvecDecisionInvalide(Long tiersId, ValidationException e) {
+		tiersAvecDecisionEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage(), getNom(tiersId)));
+	}
+
+	public void addTiersAvecDecisionIgnoreeDejaSurCommuneResultante(Tiers tiers) {
+		tiersAvecDecisonIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE, null, getNom(tiers.getNumero())));
+	}
+
 	@Override
 	public void addErrorException(Long element, Exception e) {
-		if (e instanceof ValidationException) {
-			addTiersInvalide(element, (ValidationException) e);
+		switch (phaseTraitement){
+		 case PHASE_FOR:
+			 if (e instanceof ValidationException) {
+				 addTiersInvalide(element, (ValidationException) e);
+			 }
+			 else {
+				 addOnCommitException(element, e);
+			 }
+			 break;
+		 case PHASE_DECISION:
+			 if (e instanceof ValidationException) {
+				 addTiersAvecDecisionInvalide(element, (ValidationException) e);
+			 }
+			 else {
+				 addOnCommitPourDecisionException(element, e);
+			 }
+			 break;
+		 default:
+			 break;
 		}
-		else {
-			addOnCommitException(element, e);
-		}
+
 	}
 }
