@@ -1669,8 +1669,15 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	private Commune getCommuneForAdresse(Adresse adresse) {
-		return serviceInfra.getCommuneByAdresse(adresse, RegDateHelper.minimum(adresse.getDateDebut(), adresse.getDateFin(), NullDateBehavior.LATEST));
+	private Commune getCommuneForAdresse(Adresse adresse, boolean faitiereOnly) {
+		final RegDate refDate = RegDateHelper.minimum(adresse.getDateDebut(), adresse.getDateFin(), NullDateBehavior.LATEST);
+		final Commune directe = serviceInfra.getCommuneByAdresse(adresse, refDate);
+		if (faitiereOnly) {
+			return serviceInfra.getCommuneFaitiere(directe, refDate);
+		}
+		else {
+			return directe;
+		}
 	}
 
 	/**
@@ -1685,7 +1692,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<Adresse> filtree = new ArrayList<>(adresses.size());
 		for (Adresse candidate : adresses) {
 			// vérifions qu'elle est vaudoise
-			final Commune commune = getCommuneForAdresse(candidate);
+			final Commune commune = getCommuneForAdresse(candidate, false);
 			if (commune != null && commune.isVaudoise()) {
 				filtree.add(candidate);
 			}
@@ -1739,7 +1746,7 @@ public class TiersServiceImpl implements TiersService {
 		// ensuite on construit des ranges de présences avérées et supputées
 		final Map<Integer, List<DateRange>> presences = new TreeMap<>();
 		for (Adresse a : adresses) {
-			final Commune commune = getCommuneForAdresse(a);
+			final Commune commune = getCommuneForAdresse(a, true);
 			if (commune != null) {
 				addPresenceCommunaleToMap(a, commune.getNoOFS(), presences);
 			}
