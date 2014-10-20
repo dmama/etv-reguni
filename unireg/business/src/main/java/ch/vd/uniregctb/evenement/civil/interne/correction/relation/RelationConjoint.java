@@ -53,6 +53,13 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 		return new RelationConjoint(dateDebut, dateFin, conjoint.getNumeroIndividu());
 	}
 
+	/**
+	 * Pour gérer les mariés seuls -> relation vers un individu inconnu
+	 */
+	public static RelationConjoint seul(RegDate dateDebut, RegDate dateFin) {
+		return new RelationConjoint(dateDebut, dateFin, null);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

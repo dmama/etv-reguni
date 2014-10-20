@@ -103,6 +103,10 @@ public class CorrectionRelation extends EvenementCivilInterne {
 				if (conjoint != null) {
 					set.add(RelationConjoint.from(ret.getDateDebut(), ret.getDateFin(), conjoint));
 				}
+				else {
+					// marié seul
+					set.add(RelationConjoint.seul(ret.getDateDebut(), ret.getDateFin()));
+				}
 			}
 		}
 		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
@@ -116,8 +120,9 @@ public class CorrectionRelation extends EvenementCivilInterne {
 	@NotNull
 	private static List<RelationConjoint> getConjointsCivils(Individu individu) {
 		final Set<RelationConjoint> set = new TreeSet<>();
-		if (individu.getConjoints() != null) {
-			for (RelationVersIndividu relation : individu.getConjoints()) {
+		final List<RelationVersIndividu> conjoints = individu.getConjoints();
+		if (conjoints != null) {
+			for (RelationVersIndividu relation : conjoints) {
 				if (relation.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
 					final List<EtatCivil> etatsCivils = getEtatsCivilsActifs(individu, relation);
 					RegDate finEtatCivil = relation.getDateFin();
@@ -128,13 +133,28 @@ public class CorrectionRelation extends EvenementCivilInterne {
 						if (ec.getDateDebut() == null) {
 							break;
 						}
-						else {
-							finEtatCivil = ec.getDateDebut().getOneDayBefore();
-						}
+						finEtatCivil = ec.getDateDebut().getOneDayBefore();
 					}
 				}
 			}
 		}
+
+		// maintenant, on va essayer de détecter les périodes "marié seul"... i.e. les périodes avec un état civil "marié" ou "pacsé" sans conjoint annoncé
+		RegDate finEtatCivil = individu.getDateDeces();
+		for (EtatCivil ec : CollectionsUtils.revertedOrder(individu.getEtatsCivils().asList())) {
+			if (ec.getTypeEtatCivil() == TypeEtatCivil.MARIE || ec.getTypeEtatCivil() == TypeEtatCivil.PACS) {
+				final RelationVersIndividu relation = conjoints != null ? DateRangeHelper.rangeAt(conjoints, ec.getDateDebut()) : null;
+				if (relation == null) {
+					// on dirait bien qu'on a trouvé un état civil "couple" sans conjoint annoncé -> marié seul
+					set.add(RelationConjoint.seul(ec.getDateDebut(), finEtatCivil));
+				}
+			}
+			if (ec.getDateDebut() == null) {
+				break;
+			}
+			finEtatCivil = ec.getDateDebut().getOneDayBefore();
+		}
+
 		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
 	}
 
