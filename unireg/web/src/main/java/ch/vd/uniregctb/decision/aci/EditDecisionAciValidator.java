@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.decision.aci;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -50,9 +51,22 @@ public class EditDecisionAciValidator implements Validator {
 			errors.rejectValue("numeroAutoriteFiscale", "error.autorite.fiscale.vide");
 		}
 		// [SIFISC-7381] si aucun changement n'a été saisi, on réaffiche le formulaire
-		if (decisionAci.getRemarque().equals(view.getRemarque()) && decisionAci.getDateFin() == view.getDateFin() && decisionAci.getNumeroOfsAutoriteFiscale().equals(view.getNumeroAutoriteFiscale())) {
+		if (aucunChangement(decisionAci,view)) {
 			errors.reject("global.error.aucun.changement");
 			return;
 		}
+	}
+
+	/**
+	 * Vérifie si un changement à été fait dans le formulaire d'édition
+	 * @param d la décision de reference
+	 * @param v la vue de modification
+	 * @return <b>true</b> si aucun changement, <b>false</b>sinon
+	 */
+	private boolean aucunChangement(DecisionAci d, EditDecisionAciView v){
+		final boolean remarqueIdentique = StringUtils.equals(d.getRemarque(), v.getRemarque());
+		final boolean dateFinIdentique = d.getDateFin() == v.getDateFin();
+		final boolean numeroAutoriteIdentique = d.getNumeroOfsAutoriteFiscale().equals(v.getNumeroAutoriteFiscale());
+		return remarqueIdentique && dateFinIdentique && numeroAutoriteIdentique;
 	}
 }
