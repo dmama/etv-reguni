@@ -293,4 +293,77 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-13763] Les relations civiles ne tiennent pas compte des séparations, mais les relations fiscales si, donc on vérifie que cela fonctionne tout de même
+	 */
+	@Test(timeout = 10000)
+	public void testAucuneModificationSurConjointsSepares() throws Exception {
+
+		final long noLui = 326232356L;
+		final long noElle = 312642357L;
+		final RegDate dateMariage = date(2004, 12, 6);
+		final RegDate dateSeparation = date(2011, 6, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
+				final MockIndividu elle = addIndividu(noElle, date(1980, 7, 13), "Bouille", "Meredith", Sexe.FEMININ);
+				marieIndividus(lui, elle, dateMariage);
+				separeIndividus(lui, elle, dateSeparation);
+			}
+		});
+
+		final class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
+
+				final Ids ids = new Ids();
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = couple.getMenage().getNumero();
+				return ids;
+			}
+		});
+
+		// envoi d'un événement de correction de relation sur Monsieur
+		final long evtIdLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(456782458L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(RegDate.get());
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noLui);
+				evt.setType(TypeEvenementCivilEch.CORR_RELATIONS);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noLui);
+
+		// vérification du traitement en erreur
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdLui);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			}
+		});
+	}
 }

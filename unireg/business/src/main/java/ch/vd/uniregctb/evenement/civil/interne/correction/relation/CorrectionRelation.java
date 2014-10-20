@@ -9,9 +9,14 @@ import java.util.TreeSet;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -104,20 +109,44 @@ public class CorrectionRelation extends EvenementCivilInterne {
 	}
 
 	/**
-	 * Retourne une liste triée sans doublon des relations de conjoints civils de l'individu indiqué
+	 * Retourne une liste triée sans doublon des relations de conjoints civils de l'individu indiqué (en prenant en compte les éventuelles séparations)
 	 * @param individu individu dont on cherche les conjoints civils
 	 * @return une liste triée
 	 */
 	@NotNull
-	private List<RelationConjoint> getConjointsCivils(Individu individu) {
+	private static List<RelationConjoint> getConjointsCivils(Individu individu) {
 		final Set<RelationConjoint> set = new TreeSet<>();
 		if (individu.getConjoints() != null) {
 			for (RelationVersIndividu relation : individu.getConjoints()) {
 				if (relation.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
-					set.add(RelationConjoint.from(relation));
+					final List<EtatCivil> etatsCivils = getEtatsCivilsActifs(individu, relation);
+					RegDate finEtatCivil = relation.getDateFin();
+					for (EtatCivil ec : CollectionsUtils.revertedOrder(etatsCivils)) {
+						if (ec.getTypeEtatCivil() == TypeEtatCivil.MARIE || ec.getTypeEtatCivil() == TypeEtatCivil.PACS) {
+							set.add(RelationConjoint.from(ec.getDateDebut(), finEtatCivil, relation));
+						}
+						if (ec.getDateDebut() == null) {
+							break;
+						}
+						else {
+							finEtatCivil = ec.getDateDebut().getOneDayBefore();
+						}
+					}
 				}
 			}
 		}
 		return set.isEmpty() ? Collections.<RelationConjoint>emptyList() : new ArrayList<>(set);
+	}
+
+	@NotNull
+	private static List<EtatCivil> getEtatsCivilsActifs(Individu individu, RelationVersIndividu relation) {
+		final List<EtatCivil> all = individu.getEtatsCivils().asList();
+		final List<EtatCivil> actifs = new ArrayList<>(all.size());
+		for (EtatCivil candidate : all) {
+			if (RegDateHelper.isBetween(candidate.getDateDebut(), relation.getDateDebut(), relation.getDateFin(), NullDateBehavior.EARLIEST)) {
+				actifs.add(candidate);
+			}
+		}
+		return actifs.isEmpty() ? Collections.<EtatCivil>emptyList() : actifs;
 	}
 }

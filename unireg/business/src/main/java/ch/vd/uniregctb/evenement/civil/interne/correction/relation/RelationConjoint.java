@@ -32,7 +32,7 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 	 * @param dateFin date de fin de la relation
 	 * @param noIndividuConjoint numéro d'individu civil du conjoint
 	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique)
-	 * @see #from(ch.vd.unireg.interfaces.civil.data.RelationVersIndividu)
+	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.unireg.interfaces.civil.data.RelationVersIndividu)
 	 */
 	RelationConjoint(RegDate dateDebut, RegDate dateFin, Long noIndividuConjoint) {
 		this.dateDebut = dateDebut;
@@ -40,9 +40,9 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 		this.noIndividuConjoint = noIndividuConjoint;
 	}
 
-	public static RelationConjoint from(RelationVersIndividu src) {
+	public static RelationConjoint from(RegDate dateDebut, RegDate dateFin, RelationVersIndividu src) {
 		if (src.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
-			return new RelationConjoint(src.getDateDebut(), src.getDateFin(), src.getNumeroAutreIndividu());
+			return new RelationConjoint(dateDebut, dateFin, src.getNumeroAutreIndividu());
 		}
 		else {
 			return null;
