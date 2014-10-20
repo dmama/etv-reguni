@@ -7,11 +7,14 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -113,15 +116,15 @@ public class TiersServiceTest2 extends BusinessTest {
 			assertFalse(pp.isHabitantVD());
 		}
 
-		// un individu parti de Lausanne à destination vaudoise (variante en résidence secondaire) => habitant
+		// un individu parti de Lausanne à destination vaudoise (variante en résidence secondaire) => non-habitant car les destinations des résidences secondaires sont maintenant ignorées
 		{
 			individu.getAdresses().clear();
 			individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
-			assertTrue(pp.isHabitantVD());
+			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
+			assertFalse(pp.isHabitantVD());
 		}
 
 		// un individu parti de Lausanne à destination hors-canton (variante en résidence secondaire) => nonhabitant
@@ -131,7 +134,7 @@ public class TiersServiceTest2 extends BusinessTest {
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
+			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 			assertFalse(pp.isHabitantVD());
 		}
 
@@ -176,6 +179,73 @@ public class TiersServiceTest2 extends BusinessTest {
 				final ForFiscalPrincipal f0 = fors.get(0);
 				assertForPrincipal(date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, f0);
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-13741] Non-résident transformé en habitant...
+	 */
+	@Test
+	public void testPassageParLaValleeEtFlagHabitant() throws Exception {
+
+		final long noIndividu = 45120321L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1968, 5, 12), "Li", "Kim", Sexe.MASCULIN);
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(2000, 1, 1), date(2006, 7, 31));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lonay.getNoOFS(), null));
+				}
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lonay.CheminDuRechoz, null, date(2006, 8, 1), date(2007, 5, 31));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.LeChenit.getNoOFS(), null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Echallens.getNoOFS(), null));
+				}
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2007, 6, 1), date(2011, 9, 29));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lonay.getNoOFS(), null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.LeChenit.getNoOFS(), null));
+				}
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(2011, 9, 30), date(2012, 6, 18));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Echallens.getNoOFS(), null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+				}
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				assertFalse(pp.isHabitantVD());
+				return pp.getNumero();
+			}
+		});
+
+		// recalcul du flag habitant sur cet individu
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				tiersService.updateHabitantFlag(pp, noIndividu, null);
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertFalse("Redevenu habitant ?", pp.isHabitantVD());
 			}
 		});
 	}
