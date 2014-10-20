@@ -8242,8 +8242,8 @@ public class TiersServiceTest extends BusinessTest {
 	 *                              -> Romainmôtier                            -> Genève
 	 *
 	 *     Secondaire
-	 *           Romainmôtier-Envy -----|.......... Orbe ?? ................................................
-	 *                              -> Orbe
+	 *           Romainmôtier-Envy -----|
+	 *                              -> Orbe     (destination ignorée)
 	 * </pre>
 	 */
 	@Test
@@ -8300,7 +8300,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertNotNull(pp);
-				Assert.assertTrue(pp.isHabitantVD());       // <-- la personne est toujours considérée comme habitante car il existe une présomption de présence sur Orbe
+				Assert.assertFalse(pp.isHabitantVD());       // <-- la personne n'est plus considérée comme habitante la destination des adresses secondaires est maintenant ignorée
 			}
 		});
 	}
