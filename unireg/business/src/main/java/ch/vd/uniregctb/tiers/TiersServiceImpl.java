@@ -119,6 +119,7 @@ import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -1742,14 +1743,18 @@ public class TiersServiceImpl implements TiersService {
 			if (commune != null) {
 				addPresenceCommunaleToMap(a, commune.getNoOFS(), presences);
 			}
-			final Localisation localisationSuivante = a.getLocalisationSuivante();
-			if (localisationSuivante != null && localisationSuivante.getType() == LocalisationType.CANTON_VD) {
-				if (localisationSuivante.getNoOfs() == null) {
-					// Vaud, mais on ne sait pas où ?? Qu'est-ce que c'est que ça ??
-					throw new IllegalArgumentException("Localisation suivante vaudoise sans numéro OFS");
+
+			// [SIFISC-9600] on ne doit finalement pas tenir compte des localisations suivantes des adresses secondaires
+			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				final Localisation localisationSuivante = a.getLocalisationSuivante();
+				if (localisationSuivante != null && localisationSuivante.getType() == LocalisationType.CANTON_VD) {
+					if (localisationSuivante.getNoOfs() == null) {
+						// Vaud, mais on ne sait pas où ?? Qu'est-ce que c'est que ça ??
+						throw new IllegalArgumentException("Localisation suivante vaudoise sans numéro OFS");
+					}
+					final DateRange presenceSupputee = new DateRangeHelper.Range(a.getDateFin().getOneDayAfter(), null);
+					addPresenceCommunaleToMap(presenceSupputee, localisationSuivante.getNoOfs(), presences);
 				}
-				final DateRange presenceSupputee = new DateRangeHelper.Range(a.getDateFin().getOneDayAfter(), null);
-				addPresenceCommunaleToMap(presenceSupputee, localisationSuivante.getNoOfs(), presences);
 			}
 		}
 
