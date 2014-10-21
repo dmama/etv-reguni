@@ -902,10 +902,17 @@ div.progress-bar-text {
 	 display: none;
 }
 
+/*************************************************************************
+SIFISC-13647 problème d'affichage avec IE: Dans le cas de l'ulitisation
+d'une ul, Il faut mettre le font-size à 0 afin de supprimer l'espace blanc
+qui se créé juste après le composant ul. spécifique au tabs
+**************************************************************************/
 .ui-tabs-nav {
 	border: 0;
 	background: none;
 	display: inline-block; /* autrement les tabs prennent toute la hauteur du menu de gauche dans Chrome ... */
+    font-size: 0; /* SIFISC-13647*/
+
 }
 
 .ui-tabs .ui-tabs-nav li {
