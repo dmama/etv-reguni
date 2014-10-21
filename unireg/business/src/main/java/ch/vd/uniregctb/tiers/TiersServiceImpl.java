@@ -19,7 +19,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +46,6 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
@@ -65,7 +62,6 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -119,7 +115,6 @@ import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -421,7 +416,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final boolean dansLeCanton;
 		if (individu.getDateDeces() == null) {
-			final Boolean isVaudois = isDomicileDansLeCanton(pp, null);
+			final Boolean isVaudois = isDomicileDansLeCanton(pp);
 			if (isVaudois == null) {
 				throw new TiersException("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas");
 			}
@@ -1622,14 +1617,13 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	/**
-	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970) (SIFISC-6841).
+	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970) (SIFISC-6841) maintenant.
 	 *
 	 * @param pp   une personne physique
-	 * @param date une date de référence
 	 * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
 	 *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
 	 */
-	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp, @Nullable RegDate date) {
+	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp) {
 
 		final Long numeroIndividu = pp.getNumeroIndividu();
 		if (numeroIndividu == null) {
@@ -1648,14 +1642,9 @@ public class TiersServiceImpl implements TiersService {
 			final List<Adresse> secVaudoises = filtrerAdressesVaudoises(adresses.secondaires);
 
 			// [SIFISC-6841] On tient aussi compte des résidences secondaires
-			if (hasAdresseAt(prnVaudoises, date) || hasAdresseAt(secVaudoises, date)) {
-				return Boolean.TRUE;
-			}
-
-			// [SIFISC-9600] Cas un peu plus complexe... On n'a pas d'adresse vaudoise active... mais n'y aurait-il pas un départ annoncé
-			// vers une commune vaudoise dont on n'aurait pas encore reçu l'arrivée ? Si c'est le cas, on considère encore la personne
-			// comme habitante
-			return hasAdresseSupputeeVaudoise(prnVaudoises, secVaudoises, date);
+			// [SIFISC-13741] Mais on ne tient plus compte que des adresses actives (finies, les recherches de destinations !)
+			final RegDate today = RegDate.get();
+			return hasAdresseAt(prnVaudoises, today) || hasAdresseAt(secVaudoises, today) ? Boolean.TRUE : Boolean.FALSE;
 		}
 		catch (ServiceInfrastructureException e) {
 			// rien à faire...
@@ -1722,109 +1711,7 @@ public class TiersServiceImpl implements TiersService {
 		return false;
 	}
 
-	private static void addPresenceCommunaleToMap(@NotNull DateRange presenceCommunale, int ofsCommune, @NotNull Map<Integer, List<DateRange>> map) {
-		List<DateRange> list = map.get(ofsCommune);
-		if (list == null) {
-			list = new ArrayList<>();
-			map.put(ofsCommune, list);
-		}
-		list.add(presenceCommunale);
-	}
-
-	private boolean hasAdresseSupputeeVaudoise(@NotNull List<Adresse> principales, @NotNull List<Adresse> secondaires, @Nullable RegDate date) {
-		final List<Adresse> adresses = new ArrayList<>(principales.size() + secondaires.size());
-		for (Adresse a : CollectionsUtils.merged(principales, secondaires)) {
-			// on ne s'intéresse qu'au adresses terminées avant la date donnée
-			if (a.getDateFin() != null && RegDateHelper.isBeforeOrEqual(a.getDateFin(), date, NullDateBehavior.LATEST)) {
-				adresses.add(a);
-			}
-			else if (a.isValidAt(date)) {
-				throw new IllegalArgumentException("Que fait-on là ? Aucune adresse ne devrait être valide à la date " + date + ", mais on a trouvé " + DateRangeHelper.toDisplayString(a));
-			}
-		}
-
-		// ensuite on construit des ranges de présences avérées et supputées
-		final Map<Integer, List<DateRange>> presences = new TreeMap<>();
-		for (Adresse a : adresses) {
-			final Commune commune = getCommuneForAdresse(a, true);
-			if (commune != null) {
-				addPresenceCommunaleToMap(a, commune.getNoOFS(), presences);
-			}
-
-			// [SIFISC-9600] on ne doit finalement pas tenir compte des localisations suivantes des adresses secondaires
-			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
-				final Localisation localisationSuivante = a.getLocalisationSuivante();
-				if (localisationSuivante != null && localisationSuivante.getType() == LocalisationType.CANTON_VD) {
-					if (localisationSuivante.getNoOfs() == null) {
-						// Vaud, mais on ne sait pas où ?? Qu'est-ce que c'est que ça ??
-						throw new IllegalArgumentException("Localisation suivante vaudoise sans numéro OFS");
-					}
-					final DateRange presenceSupputee = new DateRangeHelper.Range(a.getDateFin().getOneDayAfter(), null);
-					addPresenceCommunaleToMap(presenceSupputee, localisationSuivante.getNoOfs(), presences);
-				}
-			}
-		}
-
-		// phase de consolidation commune par commune
-		for (Map.Entry<Integer, List<DateRange>> entry : presences.entrySet()) {
-			final List<DateRange> pcs = entry.getValue();
-			if (pcs.size() > 1) {
-				Collections.sort(pcs, new DateRangeComparator<>());
-
-				// itération un par un
-				for (int currentIndex = 0 ; currentIndex < pcs.size() - 1 ; ++ currentIndex) {
-					DateRange pivot = pcs.get(currentIndex);
-
-					// comparaison avec chacun des ranges ultérieurs
-					final Iterator<DateRange> iterator = pcs.subList(currentIndex + 1, pcs.size()).iterator();
-					while (iterator.hasNext()) {
-						final DateRange pc = iterator.next();
-						if (!DateRangeHelper.intersect(pivot, pc)) {
-							// comme les éléments sont triés, cela il n'y aura pas d'intersection avec les éléments
-							// suivants non plus, et on peut changer de pivot
-							break;
-						}
-
-						// s'il y a intersection, 3 cas :
-						// - dates de fin fermées des deux côtés -> union
-						// - dates de fin ouvertes des deux côtés -> union
-						// - dates de fin ouverte d'un côté et fermée de l'autre -> union à gauche et intersection de l'autre
-						if ((pc.getDateFin() == null && pivot.getDateFin() == null) || (pc.getDateFin() != null && pivot.getDateFin() != null)) {
-							// union
-							pivot = new DateRangeHelper.Range(RegDateHelper.minimum(pc.getDateDebut(), pivot.getDateDebut(), NullDateBehavior.EARLIEST),
-							                                  RegDateHelper.maximum(pc.getDateFin(), pivot.getDateFin(), NullDateBehavior.LATEST));
-						}
-						else {
-							pivot = new DateRangeHelper.Range(RegDateHelper.minimum(pc.getDateDebut(), pivot.getDateDebut(), NullDateBehavior.EARLIEST),
-							                                  RegDateHelper.minimum(pc.getDateFin(), pivot.getDateFin(), NullDateBehavior.LATEST));
-						}
-
-						// tout est passé dans le pivot
-						iterator.remove();
-					}
-
-					// re-placement du pivot éventuellement modifié dans la liste
-					pcs.set(currentIndex, pivot);
-				}
-
-				// et merge des résultats (pour pouvoir ensuite facilement vérifier la présence communale à une date donnée)
-				entry.setValue(DateRangeHelper.merge(pcs));
-			}
-		}
-
-		// et finalement, commune par commune, on veut savoir si la date en entrée correspond à quelque chose ou pas...
-		for (List<DateRange> pourCommune : presences.values()) {
-			if (DateRangeHelper.rangeAt(pourCommune, date) != null) {
-				// présence communale vaudoise à la date demandée -> oui, l'individu est vaudois
-				return true;
-			}
-		}
-
-		// aucune présence communale vaudoise détectée à la date demandée -> pas vaudois
-		return false;
-	}
-
-    private List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
+	private List<PersonnePhysique> getEnfants(MenageCommun mc, RegDate dateValidite) {
         final EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCouple(mc, dateValidite);
         final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
         final Set<PersonnePhysique> setEnfantsMenage = new HashSet<>();
