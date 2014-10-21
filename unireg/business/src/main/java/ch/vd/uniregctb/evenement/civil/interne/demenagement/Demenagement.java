@@ -154,6 +154,27 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		if (nouvelleCommune != null && nouvelleCommune.getNoOFS() == EvenementCivilInterne.NO_OFS_FRACTION_SENTIER) {
 			warnings.addWarning("déménagement dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 		}
+
+		final PersonnePhysique ppPrincipale = getPrincipalPP();
+		EnsembleTiersCouple etc = context.getTiersService().getEnsembleTiersCouple(ppPrincipale, getDate().getOneDayBefore());
+		PersonnePhysique conjoint =null;
+		MenageCommun couple = null;
+		if (etc != null) {
+			conjoint = etc.getConjoint(ppPrincipale);
+			couple = etc.getMenage();
+		}
+
+		verifierPresenceDecisionEnCours(ppPrincipale,getDate());
+
+		if (conjoint != null) {
+			verifierPresenceDecisionEnCours(conjoint,ppPrincipale,getDate());
+
+		}
+
+		if (couple != null) {
+			verifierPresenceDecisionEnCours(couple,ppPrincipale,getDate());
+		}
+
 	}
 
 	@NotNull
