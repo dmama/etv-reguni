@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -532,7 +534,7 @@ public abstract class EvenementCivilInterne {
 	protected void verifierPresenceDecisionEnCours(Contribuable ctbToCheck, @Nullable Contribuable ctbOfEvent, RegDate dateEvenement) throws EvenementCivilException {
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
-		if (ctbToCheck.hasDecisionAciValidAt(dateEvenement)) {
+		if (ctbToCheck.hasDecisionAciValidAt(dateEvenement) || evenementIsAnterieurDecision(ctbToCheck,dateEvenement)) {
 			String messageErreur = null;
 			if (ctbOfEvent == null) {
 				messageErreur = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
@@ -555,5 +557,14 @@ public abstract class EvenementCivilInterne {
 
 	protected void verifierPresenceDecisionEnCours(Contribuable ctbToCheck, RegDate dateEvenement) throws EvenementCivilException {
 		verifierPresenceDecisionEnCours(ctbToCheck,null,dateEvenement);
+	}
+
+	private boolean evenementIsAnterieurDecision(Contribuable c, RegDate date){
+		List<DecisionAci> decisions = c.getDecisionsSorted();
+		if (decisions != null && !decisions.isEmpty()) {
+			final DecisionAci firstDecision = decisions.get(0);
+			return date.isBefore(firstDecision.getDateDebut());
+		}
+		return false;
 	}
 }

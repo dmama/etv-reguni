@@ -533,6 +533,68 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testEvenementDivorceAvantDecisionPrincipal() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateDivorce = date(2008, 11, 23);
+		final RegDate dateDebutDecision = date(2009, 11, 23);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
+				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
+				marieIndividus(monsieur, madame, dateMariage);
+				divorceIndividus(monsieur, madame, dateDivorce);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				final PersonnePhysique madame = addHabitant(noMadame);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				addDecisionAci(monsieur,dateDebutDecision,null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return null;
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long divorceId = genereEvenementDivorce(454563456L, noMonsieur, dateDivorce);
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMonsieur);
+
+		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				Assert.assertNotNull(monsieur);
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
+				Assert.assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
 	@Test(timeout = 10000L)
 	public void testDivorceAvecDecisionConjoint() throws Exception {
 
