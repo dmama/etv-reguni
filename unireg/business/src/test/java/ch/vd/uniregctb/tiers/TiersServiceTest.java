@@ -6062,96 +6062,55 @@ public class TiersServiceTest extends BusinessTest {
 		service.setServiceInfra(serviceInfra);
 
 		// Une personne inconnue au contrôle des habitants (non-habitant) quelconque
-		assertFalse(service.isDomicileDansLeCanton(new PersonnePhysique(), null));
+		assertFalse(service.isDomicileDansLeCanton(new PersonnePhysique()));
 
 		// Une personne avec un numéro d'individu mais introuvable dans le registre civil (par exemple, personne non-migrée par RcPers)
-		assertNull(service.isDomicileDansLeCanton(new PersonnePhysique(NON_MIGRE), null));
+		assertNull(service.isDomicileDansLeCanton(new PersonnePhysique(NON_MIGRE)));
 
 		// Jean qui ne possède aucune adresse de domicile
 		final PersonnePhysique jean = new PersonnePhysique(JEAN);
-		assertFalse(service.isDomicileDansLeCanton(jean, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(jean, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(jean, null));
+		assertFalse(service.isDomicileDansLeCanton(jean));
 
 		// Arnold qui a toujours habité dans le canton depuis sa naissance
 		final PersonnePhysique arnold = new PersonnePhysique(ARNOLD);
-		assertFalse(service.isDomicileDansLeCanton(arnold, date(1965, 2, 23))); // avant sa naissance...
-		assertTrue(service.isDomicileDansLeCanton(arnold, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(arnold, null));
+		assertTrue(service.isDomicileDansLeCanton(arnold));
 
 		// Gudrun qui a habité dans le canton durant l'année 1990
 		final PersonnePhysique gudrun = new PersonnePhysique(GUDRUN);
-		assertFalse(service.isDomicileDansLeCanton(gudrun, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 5, 28)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(gudrun, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(gudrun, null));
+		assertFalse(service.isDomicileDansLeCanton(gudrun));
 
 		// Lola qui a toujours habité dans le canton et à déménagé une fois
 		final PersonnePhysique lola = new PersonnePhysique(LOLA);
-		assertFalse(service.isDomicileDansLeCanton(lola, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1968, 5, 1)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(lola, null));
+		assertTrue(service.isDomicileDansLeCanton(lola));
 
 		// Heidi qui a habité dans le canton lors de deux périodes séparées
 		final PersonnePhysique heidi = new PersonnePhysique(HEIDI);
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1968, 5, 1)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(1980, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 5, 28)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, null));
+		assertFalse(service.isDomicileDansLeCanton(heidi));
 
 		// Ursule qui a habité dans le canton et qui est parti pour une destination vaudoise mais n'a pas encore enregistré son arrivée
+		// [SIFISC-13741] ce cas ne doit maintenant plus se produire (et donc on peut se permettre de ne plus tenir compte des destinations suivantes annoncées)
 		final PersonnePhysique ursule = new PersonnePhysique(URSULE);
-		assertFalse(service.isDomicileDansLeCanton(ursule, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(1968, 5, 1)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(1970, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(ursule, date(1971, 1, 1)));
-		assertFalse(service.isDomicileDansLeCanton(ursule, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(ursule, null));
+		assertFalse(service.isDomicileDansLeCanton(ursule));
 
 		// Hans qui habite hors-canton depuis toujours
 		final PersonnePhysique hans = new PersonnePhysique(HANS);
-		assertFalse(service.isDomicileDansLeCanton(hans, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(hans, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(hans, null));
+		assertFalse(service.isDomicileDansLeCanton(hans));
 
 		// Shirley qui est née à Cottens (VD) et qui est - charogne de gamine ! - partie à Zürich le 1er janvier 1990
 		final PersonnePhysique shirley = new PersonnePhysique(SHIRLEY);
-		assertTrue(service.isDomicileDansLeCanton(shirley, date(1970, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(shirley, date(1989, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, date(1990, 1, 1)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, null));
+		assertFalse(service.isDomicileDansLeCanton(shirley));
 
 		// Urs qui est né hors-canton et qui est arrivé dans le canton le 1er janvier 1990
 		final PersonnePhysique urs = new PersonnePhysique(URS);
-		assertFalse(service.isDomicileDansLeCanton(urs, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(urs, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(urs, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(urs, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(urs, null));
+		assertTrue(service.isDomicileDansLeCanton(urs));
 
 		// Moussa qui habite hors-Suisse depuis toujours
 		final PersonnePhysique moussa = new PersonnePhysique(MOUSSA);
-		assertFalse(service.isDomicileDansLeCanton(moussa, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(moussa, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(moussa, null));
+		assertFalse(service.isDomicileDansLeCanton(moussa));
 
 		// Brahim qui habitait hors-Suisse et qui est arrivé le 1er janvier 1990 dans le canton
 		final PersonnePhysique brahim = new PersonnePhysique(BRAHIM);
-		assertFalse(service.isDomicileDansLeCanton(brahim, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(brahim, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, null));
+		assertTrue(service.isDomicileDansLeCanton(brahim));
 	}
 
 	/**
@@ -6232,95 +6191,51 @@ public class TiersServiceTest extends BusinessTest {
 		service.setServiceInfra(serviceInfra);
 
 		// Une personne inconnue au contrôle des habitants (non-habitant) quelconque
-		assertFalse(service.isDomicileDansLeCanton(new PersonnePhysique(), null));
+		assertFalse(service.isDomicileDansLeCanton(new PersonnePhysique()));
 
 		// Une personne avec un numéro d'individu mais introuvable dans le registre civil (par exemple, personne non-migrée par RcPers)
-		assertNull(service.isDomicileDansLeCanton(new PersonnePhysique(NON_MIGRE), null));
+		assertNull(service.isDomicileDansLeCanton(new PersonnePhysique(NON_MIGRE)));
 
 		// Jean qui ne possède aucune adresse de domicile
 		final PersonnePhysique jean = new PersonnePhysique(JEAN);
-		assertFalse(service.isDomicileDansLeCanton(jean, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(jean, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(jean, null));
+		assertFalse(service.isDomicileDansLeCanton(jean));
 
 		// Arnold qui a toujours habité dans le canton depuis sa naissance
 		final PersonnePhysique arnold = new PersonnePhysique(ARNOLD);
-		assertFalse(service.isDomicileDansLeCanton(arnold, date(1965, 2, 23))); // avant sa naissance...
-		assertTrue(service.isDomicileDansLeCanton(arnold, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(arnold, null));
+		assertTrue(service.isDomicileDansLeCanton(arnold));
 
 		// Gudrun qui a habité dans le canton durant l'année 1990
 		final PersonnePhysique gudrun = new PersonnePhysique(GUDRUN);
-		assertFalse(service.isDomicileDansLeCanton(gudrun, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 5, 28)));
-		assertTrue(service.isDomicileDansLeCanton(gudrun, date(1990, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(gudrun, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(gudrun, null));
+		assertFalse(service.isDomicileDansLeCanton(gudrun));
 
 		// Lola qui a toujours habité dans le canton et à déménagé une fois
 		final PersonnePhysique lola = new PersonnePhysique(LOLA);
-		assertFalse(service.isDomicileDansLeCanton(lola, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1968, 5, 1)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(lola, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(lola, null));
+		assertTrue(service.isDomicileDansLeCanton(lola));
 
 		// Heidi qui a habité dans le canton lors de deux périodes séparées
 		final PersonnePhysique heidi = new PersonnePhysique(HEIDI);
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1968, 5, 1)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(1980, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 5, 28)));
-		assertTrue(service.isDomicileDansLeCanton(heidi, date(1990, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(heidi, null));
+		assertFalse(service.isDomicileDansLeCanton(heidi));
 
 		// Ursule qui a habité dans le canton et qui est parti pour une destination vaudoise mais n'a pas encore enregistré son arrivée
+		// [SIFISC-13741] ce cas ne doit maintenant plus se produire (et donc on peut se permettre de ne plus tenir compte des destinations suivantes annoncées)
 		final PersonnePhysique ursule = new PersonnePhysique(URSULE);
-		assertFalse(service.isDomicileDansLeCanton(ursule, date(1965, 2, 23)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(1968, 5, 1)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(1970, 12, 31)));
-		// [SIFISC-5970] différence de comportement entre RegPP et RcPers : la personne qui a annoncé son départ pour une
-		// autre commune vaudoise reste habitante, même si elle n'a pas encore annoncé son arrivée
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(1971, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(ursule, null));
+		assertFalse(service.isDomicileDansLeCanton(ursule));
 
 		// Trudi qui est arrivée dans une commune vaudoise le 1er janvier 1990 en provenance d'une autre commune vaudoise mais dont on a aucune trace (cas bizarre hypothétique)
 		final PersonnePhysique trudi = new PersonnePhysique(TRUDI);
-		assertFalse(service.isDomicileDansLeCanton(trudi, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(trudi,
-				date(1989, 12, 31))); // malgré son annonce de provenance d'autre commune vaudoise, on considère cette personne HC/HS parce qu'on a pas trace de cette résidence.
-		assertTrue(service.isDomicileDansLeCanton(trudi, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(trudi, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(trudi, null));
+		assertTrue(service.isDomicileDansLeCanton(trudi));
 
 		// Shirley qui est née à Cottens (VD) et qui est - charogne de gamine ! - partie à Zürich le 1er janvier 1990
 		final PersonnePhysique shirley = new PersonnePhysique(SHIRLEY);
-		assertTrue(service.isDomicileDansLeCanton(shirley, date(1970, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(shirley, date(1989, 12, 31)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, date(1990, 1, 1)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, date(2010, 3, 12)));
-		assertFalse(service.isDomicileDansLeCanton(shirley, null));
+		assertFalse(service.isDomicileDansLeCanton(shirley));
 
 		// Urs qui est né hors-canton et qui est arrivé dans le canton le 1er janvier 1990
 		final PersonnePhysique urs = new PersonnePhysique(URS);
-		assertFalse(service.isDomicileDansLeCanton(urs, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(urs, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(urs, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(urs, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(urs, null));
+		assertTrue(service.isDomicileDansLeCanton(urs));
 
 		// Brahim qui habitait hors-Suisse et qui est arrivé le 1er janvier 1990 dans le canton
 		final PersonnePhysique brahim = new PersonnePhysique(BRAHIM);
-		assertFalse(service.isDomicileDansLeCanton(brahim, date(1965, 2, 23)));
-		assertFalse(service.isDomicileDansLeCanton(brahim, date(1989, 12, 31)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, date(1990, 1, 1)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, date(2010, 3, 12)));
-		assertTrue(service.isDomicileDansLeCanton(brahim, null));
+		assertTrue(service.isDomicileDansLeCanton(brahim));
 	}
 
 	@Test

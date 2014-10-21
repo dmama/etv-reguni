@@ -86,18 +86,20 @@ public class TiersServiceTest2 extends BusinessTest {
 		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
-		// un individu parti de Lausanne à destination vaudoise => habitant
+		// un individu parti de Lausanne à destination vaudoise => non-habitant, car on ignore maintenant ([SIFISC-13741]) les destinations des adresses (qui ne sont plus sensées
+		// être vaudoises pour la dernière adresse valide...)
 		{
 			individu.getAdresses().clear();
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
-			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
-			assertTrue(pp.isHabitantVD());
+			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
+			assertFalse(pp.isHabitantVD());
 		}
 
 		// un individu parti de Lausanne à destination hors-canton => nonhabitant
 		{
+			pp.setHabitant(true);
 			individu.getAdresses().clear();
 			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
@@ -184,7 +186,7 @@ public class TiersServiceTest2 extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-13741] Non-résident transformé en habitant...
+	 * [SIFISC-13741] Non-résident transformé en habitant suite à un passage par la vallée de Joux
 	 */
 	@Test
 	public void testPassageParLaValleeEtFlagHabitant() throws Exception {
@@ -214,6 +216,63 @@ public class TiersServiceTest2 extends BusinessTest {
 				{
 					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(2011, 9, 30), date(2012, 6, 18));
 					adr.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Echallens.getNoOFS(), null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+				}
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				assertFalse(pp.isHabitantVD());
+				return pp.getNumero();
+			}
+		});
+
+		// recalcul du flag habitant sur cet individu
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				tiersService.updateHabitantFlag(pp, noIndividu, null);
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				assertFalse("Redevenu habitant ?", pp.isHabitantVD());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-13741] Non-résident transformé en habitant... suite à une déclaration de départ vers une commune pas encore existante au moment du départ
+	 */
+	@Test
+	public void testDepartVersCommuneNonEncoreExistanteEtFlagHabitant() throws Exception {
+
+		final long noIndividu = 45120321L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1968, 5, 12), "Li", "Kim", Sexe.MASCULIN);
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lonay.CheminDuRechoz, null, date(2006, 8, 1), date(2007, 5, 31));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+					adr.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.BourgEnLavaux.getNoOFS(), null));          // n'existe pas en 2007 !!
+				}
+				{
+					final MockAdresse adr = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Epesses.RueDeLaMottaz, null, date(2007, 6, 1), date(2011, 9, 29));
+					adr.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lonay.getNoOFS(), null));
 					adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 				}
 			}
