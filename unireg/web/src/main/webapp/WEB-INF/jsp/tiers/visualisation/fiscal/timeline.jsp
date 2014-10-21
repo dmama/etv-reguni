@@ -292,7 +292,7 @@
 		                                    </c:if>
 		                                    <br/>
 		                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
-		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
+		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 		                                    </c:if>
 		                                </div>
 									</td>
@@ -325,7 +325,7 @@
 		                                    </c:if>
 		                                    <br/>
 		                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
-		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
+		                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 		                                    </c:if>
 		                                </div>
 									</td>
@@ -358,8 +358,8 @@
 	                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
 	                                    </c:if>
 	                                    <br/>
-	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
-	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
+	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al1' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixteArt137Al2'}">
+	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscalePrincipale}"/></b>
 	                                    </c:if>
 	                                </div>
 								</td>
