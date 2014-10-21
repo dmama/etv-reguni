@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class VeuvageFromEch extends Veuvage {
@@ -49,6 +50,23 @@ public class VeuvageFromEch extends Veuvage {
 				final ValidationResults validationResults = new ValidationResults();
 				context.getMetierService().validateForOfVeuvage(veuf, dateVeuvage, couple, validationResults);
 				addValidationResults(erreurs, warnings, validationResults);
+				PersonnePhysique conjoint =null;
+				MenageCommun mc = null;
+				if (couple != null) {
+					conjoint = couple.getConjoint(veuf);
+					mc = couple.getMenage();
+				}
+
+				verifierPresenceDecisionEnCours(veuf,getDate());
+
+				if (conjoint != null) {
+					verifierPresenceDecisionEnCours(conjoint,veuf,getDate());
+
+				}
+
+				if (couple != null) {
+					verifierPresenceDecisionEnCours(mc,veuf,getDate());
+				}
 			}
 		}
 	}

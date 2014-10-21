@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Set;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -133,6 +135,106 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
+
+
+
+	@Test(timeout = 10000L)
+	public void testVeuvageAvecDecisionAci() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateVeuvage = date(2008, 11, 23);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "duTonnerre", "Bouchon", true);
+				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, null);
+				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Tulipia", "fleur", false);
+				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
+				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, null);
+				marieIndividus(monsieur, madame, dateMariage);
+			}
+		});
+
+		final long mcId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				final PersonnePhysique madame = addHabitant(noMadame);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				addDecisionAci(ensemble.getMenage(),dateVeuvage.addMonths(-6),null,MockCommune.Vevey.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return ensemble.getMenage().getNumero();
+			}
+		});
+
+		// décès fictif de monsieur juste pour le test
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateVeuvage);
+			}
+		});
+
+		// veuvage de madame pour le test
+		doModificationIndividu(noMadame, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				MockServiceCivil.veuvifieIndividu(individu, dateVeuvage, false);
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(454563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateVeuvage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMadame);
+				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMadame);
+
+		// on vérifie que le ménage-commun a bien été fermé suite au veuvage
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				final AppartenanceMenage appartenanceMadame = (AppartenanceMenage) madame.getRapportSujetValidAt(dateVeuvage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				assertNotNull(appartenanceMadame);
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				assertNotNull(mc);
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(mc.getNumero()));
+				Assert.assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
 
 	@Test(timeout = 10000L)
 	public void testVeuvageRedondant() throws Exception {
