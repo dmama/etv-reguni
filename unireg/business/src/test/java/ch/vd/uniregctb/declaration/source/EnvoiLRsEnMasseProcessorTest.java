@@ -17,6 +17,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -24,6 +26,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.TypeDocument;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -89,9 +92,100 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		return new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, tiersService, adresseService);
 	}
 
+	/**
+	 * [SIFISC-12895] les LR de périodicités uniques doivent maintenant être envoyées
+	 */
 	@Test
 	public void testEnvoiLRPeriodiciteUnique() throws Exception {
 
+		final int anneeReference = 2010;
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				dpi.setSansListeRecapitulative(false);
+
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+
+				addPeriodeFiscale(anneeReference);
+				return dpi.getNumero();
+			}
+		});
+
+		final List<Pair<Long, DateRange>> imprimees = new ArrayList<>();
+		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
+			@Override
+			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
+				imprimees.add(new Pair<Long, DateRange>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
+			}
+		};
+
+		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrs);
+
+		// début de période -> rien
+		{
+			imprimees.clear();
+			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
+				@Override
+				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
+					return processor.run(date(2010, 9, 30), null);
+				}
+			});
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(0, results.LRTraitees.size());
+			Assert.assertEquals(0, imprimees.size());
+		}
+
+		// fin de période -> la LR doit être envoyée
+		{
+			imprimees.clear();
+			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
+				@Override
+				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
+					return processor.run(date(2010, 10, 31), null);
+				}
+			});
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(1, results.LRTraitees.size());
+			Assert.assertEquals(1, imprimees.size());
+
+			final Pair<Long, DateRange> data = imprimees.get(0);
+			Assert.assertNotNull(data);
+			Assert.assertEquals((Long) dpiId, data.getFirst());
+			Assert.assertEquals(date(anneeReference, 10, 1), data.getSecond().getDateDebut());
+			Assert.assertEquals(date(anneeReference, 10, 31), data.getSecond().getDateFin());
+		}
+
+		// après la période -> la LR doit être envoyée
+		{
+			imprimees.clear();
+			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
+				@Override
+				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
+					return processor.run(date(2010, 12, 31), null);
+				}
+			});
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(1, results.LRTraitees.size());
+			Assert.assertEquals(1, imprimees.size());
+
+			final Pair<Long, DateRange> data = imprimees.get(0);
+			Assert.assertNotNull(data);
+			Assert.assertEquals((Long) dpiId, data.getFirst());
+			Assert.assertEquals(date(anneeReference, 10, 1), data.getSecond().getDateDebut());
+			Assert.assertEquals(date(anneeReference, 10, 31), data.getSecond().getDateFin());
+		}
+	}
+
+	@Test
+	public void testEnvoiPeriodiciteUniqueRienAEnvoyer() throws Exception {
 		final int anneeReference = 2010;
 		doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -99,24 +193,42 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 				DebiteurPrestationImposable dpi = addDebiteur();
 				dpi.setSansListeRecapitulative(false);
 
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 9, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 9, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
 
-				addPeriodeFiscale(anneeReference);
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeReference);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				addListeRecapitulative(dpi, pf, date(anneeReference, 10, 1), date(anneeReference, 10, 31), md);
+
 				return dpi.getNumero();
 			}
 		});
 
-		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrService);
-		final EnvoiLRsResults envoiLRsResults = doInNewTransaction(new TxCallback<EnvoiLRsResults>() {
+		final List<Pair<Long, DateRange>> imprimees = new ArrayList<>();
+		final ListeRecapService lrs = new ListRecapServiceWrapper(lrService) {
 			@Override
-			public EnvoiLRsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(date(2010, 12, 31), null);
+			public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode, RegDate dateFinPeriode) throws Exception {
+				imprimees.add(new Pair<Long, DateRange>(dpi.getNumero(), new DateRangeHelper.Range(dateDebutPeriode, dateFinPeriode)));
 			}
-		});
+		};
 
-		Assert.assertEquals(0, envoiLRsResults.LRTraitees.size());
-		Assert.assertEquals(0, envoiLRsResults.nbDPIsTotal);
+		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrs);
+
+		// la LR a déjà été envoyée -> rien de plus!
+		{
+			imprimees.clear();
+			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
+				@Override
+				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
+					return processor.run(date(2010, 12, 31), null);
+				}
+			});
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(0, results.LRTraitees.size());
+			Assert.assertEquals(0, imprimees.size());
+		}
 	}
 
 	@Test

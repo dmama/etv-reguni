@@ -59,6 +59,7 @@ public class PdfEnvoiLRsRapport extends PdfRapport {
 					table.addLigne("     trimestrielles :", String.valueOf(results.nbLrTrimestriellesTraitees));
 					table.addLigne("     semestrielles :", String.valueOf(results.nbLrSemestriellesTraitees));
 					table.addLigne("     annuelles :", String.valueOf(results.nbLrAnnuellesTraitees));
+					table.addLigne("     uniques :", String.valueOf(results.nbLrUniquesTraitees));
 					table.addLigne("Nombre de LR en erreur :", String.valueOf(results.LREnErreur.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));

@@ -23,7 +23,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -115,24 +114,17 @@ public class EnvoiLRsEnMasseProcessor {
 
 	private void traiteDebiteur(Long id, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
-		if (isdebiteurSansPeriodiciteUnique(dpi)) {
-			traiteDebiteur(dpi, dateFinPeriode, rapport);
-			rapport.addDebiteur(dpi);
-		}
-	}
-
-	private boolean isdebiteurSansPeriodiciteUnique(DebiteurPrestationImposable dpi) {
-		Periodicite periodicite = dpi.getPeriodiciteAt(RegDate.get());
-		return PeriodiciteDecompte.UNIQUE != periodicite.getPeriodiciteDecompte();
+		traiteDebiteur(dpi, dateFinPeriode, rapport);
+		rapport.addDebiteur(dpi);
 	}
 
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
 
 		final List<DateRange> lrTrouvees = new ArrayList<>();
-		final List<DateRange> lrPeriodiquesManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-		if (lrPeriodiquesManquantes != null) {
+		final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
+		if (lrManquantes != null) {
 			final SendingTimeStrategy sts = getSendingTimeStrategy(dpi);
-			for (DateRange lrPourCreation : lrPeriodiquesManquantes) {
+			for (DateRange lrPourCreation : lrManquantes) {
 				final PeriodiciteDecompte periodiciteDecompte = dpi.findPeriodicite(lrPourCreation.getDateDebut(), lrPourCreation.getDateFin()).getPeriodiciteDecompte();
 				if (sts.isRightMoment(dateFinPeriode, lrPourCreation, periodiciteDecompte)) {
 					if (DateRangeHelper.intersect(lrPourCreation, lrTrouvees)) {

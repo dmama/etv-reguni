@@ -75,6 +75,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	public int nbLrTrimestriellesTraitees;
 	public int nbLrSemestriellesTraitees;
 	public int nbLrAnnuellesTraitees;
+	public int nbLrUniquesTraitees;
 
 	public EnvoiLRsResults(RegDate dateTraitement, RegDate dateFinPeriode, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
@@ -89,6 +90,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 		this.nbLrTrimestriellesTraitees += right.nbLrTrimestriellesTraitees;
 		this.nbLrSemestriellesTraitees += right.nbLrSemestriellesTraitees;
 		this.nbLrAnnuellesTraitees += right.nbLrAnnuellesTraitees;
+		this.nbLrUniquesTraitees += right.nbLrUniquesTraitees;
 		this.LRTraitees.addAll(right.LRTraitees);
 		this.LREnErreur.addAll(right.LREnErreur);
 	}
@@ -100,17 +102,20 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 		final PeriodiciteDecompte periodicite = periodiciteAt.getPeriodiciteDecompte();
 
 		switch (periodicite) {
-			case MENSUEL :
+			case MENSUEL:
 				++ nbLrMensuellesTraitees;
 				break;
-			case TRIMESTRIEL :
+			case TRIMESTRIEL:
 				++ nbLrTrimestriellesTraitees;
 				break;
-			case SEMESTRIEL :
+			case SEMESTRIEL:
 				++ nbLrSemestriellesTraitees;
 				break;
-			case ANNUEL :
+			case ANNUEL:
 				++ nbLrAnnuellesTraitees;
+				break;
+			case UNIQUE:
+				++ nbLrUniquesTraitees;
 				break;
 		}
 		LRTraitees.add(new Traite(dpi.getNumero(), periodicite, dateDebut, dateFin, getNom(dpi.getNumero())));
