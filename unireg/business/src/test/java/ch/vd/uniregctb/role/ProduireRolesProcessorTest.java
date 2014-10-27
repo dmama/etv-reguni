@@ -1907,4 +1907,49 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertInfo(ids.mcId, TypeContribuable.ORDINAIRE, MockCommune.Fraction.LePont.getNoOFS(), dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
+
+	/**
+	 * [SIFISC-13803] NPE dans le calcul des rôles de l'OID si on avait, dans le même OID, un for fermé suivi par un for ouvert dans la liste
+	 * présentée par {@link ch.vd.uniregctb.tiers.Tiers#getForsFiscauxValidAt(RegDate)}
+	 */
+	@Test
+	public void testContribuableHorsSuisseAvecPlusieursImmeublesDansMemeOID() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		final RegDate dateAchat = date(2011, 6, 4);
+		final RegDate dateVente1 = date(2013, 12, 11);
+		final RegDate dateVente2 = date(2014, 3, 18);
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alberto", "Tamburini", null, Sexe.MASCULIN);
+				addForPrincipal(pp, dateAchat, null, MockPays.Allemagne);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente1, MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente2, MotifFor.VENTE_IMMOBILIER, MockCommune.Prilly.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.VufflensLaVille.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// rôles 2014 de l'OID de Lausanne
+		final ProduireRolesOIDsResults res = processor.runPourUnOfficeImpot(2013, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
+		assertNotNull(res);
+		assertEquals(0, res.ctbsEnErrors.size());
+		assertEquals(0, res.ctbsIgnores.size());
+		assertEquals(1, res.ctbsTraites);
+
+		final Map<Long, InfoContribuable> infos = res.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Prilly.getNoOFS(), MockCommune.VufflensLaVille.getNoOFS()));
+		assertNotNull(infos);
+		assertEquals(1, infos.size());
+		assertEquals((Long) ppId, infos.keySet().iterator().next());
+	}
 }

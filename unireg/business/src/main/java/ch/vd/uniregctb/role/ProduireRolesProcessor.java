@@ -25,7 +25,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -486,6 +488,7 @@ public class ProduireRolesProcessor {
 	 * @return les rapports (techniques) sur les rôles des contribuables pour chaque OID
 	 */
 	public ProduireRolesOIDsResults[] runPourTousOfficesImpot(final int anneePeriode, final int nbThreads, final StatusManager s) throws ServiceException {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		try {
 			// on va boucler sur tous les OIDs connus dans l'ordre des numéro de collectivité administrative
 			final List<OfficeImpot> oids = infraService.getOfficesImpot();
@@ -516,11 +519,11 @@ public class ProduireRolesProcessor {
 					}
 				};
 				final String prefixe = String.format("%s (%d/%d)", oid.getNomCourt(), ++ index, nbOids);
-				final ProduireRolesOIDsResults results = runPourUnOfficeImpot(anneePeriode, oid.getNoColAdm(), nbThreads, prefixe, s, true, progressCalculator);
+				final ProduireRolesOIDsResults results = runPourUnOfficeImpot(anneePeriode, oid.getNoColAdm(), nbThreads, prefixe, status, true, progressCalculator);
 				if (results != null) {
 					liste.add(results);
 				}
-				if (s.interrupted()) {
+				if (status.interrupted()) {
 					break;
 				}
 			}
@@ -867,13 +870,14 @@ public class ProduireRolesProcessor {
 		ForFiscalRevenuFortune candidatRetenu = forFiscal;
 		while (candidatRetenu.getDateFin() != null) {
 			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
+			Collections.sort(fors, new DateRangeComparator<ForFiscal>());       // [SIFISC-13803] l'ordre ne change rien pour le traitement, mais permet de stabiliser les choses
 			ForFiscalRevenuFortune nouveauCandidat = null;
 			for (ForFiscal candidat : fors) {
 				if (candidat instanceof ForFiscalRevenuFortune &&
 						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 						groupement.isDansGroupementDeCommunes(candidat.getNumeroOfsAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale()) &&
 						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-					if (nouveauCandidat == null || (nouveauCandidat.getDateFin() != null && nouveauCandidat.getDateFin().isBefore(candidat.getDateFin()))) {
+					if (nouveauCandidat == null || NullDateBehavior.LATEST.compare(nouveauCandidat.getDateFin(), candidat.getDateFin()) < 0) {
 						nouveauCandidat = (ForFiscalRevenuFortune) candidat;
 					}
 				}
