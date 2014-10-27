@@ -99,9 +99,9 @@
 					<xs:documentation>Participations Hors-Suisse.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="WINE_FARM_WORKERS">
+			<xs:enumeration value="WINE_FARM_SEASONAL_WORKERS">
 				<xs:annotation>
-					<xs:documentation>Ouvriers agricoles viticoles / effeuilleuses.</xs:documentation>
+					<xs:documentation>Saisonniers agricoles viticoles / effeuilleuses.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>

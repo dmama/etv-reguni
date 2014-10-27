@@ -8,10 +8,10 @@
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
-	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="../eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0007/4" schemaLocation="../eCH-0007-4-0.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="unireg-party-3.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3" schemaLocation="../eCH-0044-3-0.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="unireg-party-taxresidence-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/3" schemaLocation="unireg-party-3.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/3" schemaLocation="unireg-party-taxpayer-3.xsd" />
 
 	<xs:complexType name="naturalPersonType">
