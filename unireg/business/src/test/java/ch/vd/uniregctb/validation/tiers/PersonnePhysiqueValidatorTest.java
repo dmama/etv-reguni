@@ -2,8 +2,10 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -492,18 +494,23 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		ffp.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 		hab.addForFiscal(ffp);
 
-		// Sans for secondaire
-		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
+		final Map<TypeAutoriteFiscale, Integer> noOfsForExemplePourTypeAutoriteFiscale = new EnumMap<>(TypeAutoriteFiscale.class);
+		noOfsForExemplePourTypeAutoriteFiscale.put(TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Neuchatel.getNoOFS());
+		noOfsForExemplePourTypeAutoriteFiscale.put(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS());
+		noOfsForExemplePourTypeAutoriteFiscale.put(TypeAutoriteFiscale.PAYS_HS, MockPays.Allemagne.getNoOFS());
 
-			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFS() : MockPays.Allemagne.getNoOFS());
+		// Sans for secondaire
+		for (TypeAutoriteFiscale taf : TypeAutoriteFiscale.values()) {
+
+			ffp.setNumeroOfsAutoriteFiscale(noOfsForExemplePourTypeAutoriteFiscale.get(taf));
 			ffp.setTypeAutoriteFiscale(taf);
 
 			// Source sans fors secondaire : ok
 			{
 				ffp.setModeImposition(ModeImposition.SOURCE);
 				final ValidationResults vr = validate(hab);
-				assertFalse(vr.hasWarnings());
-				assertFalse(vr.hasErrors());
+				assertFalse(taf.name(), vr.hasWarnings());
+				assertFalse(taf.name(), vr.hasErrors());
 			}
 		}
 
@@ -526,10 +533,9 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		hab.addForFiscal(ffs);
 
 		// Avec for secondaire
-		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
+		for (TypeAutoriteFiscale taf : TypeAutoriteFiscale.values()) {
 
-			final String tafName = (taf == TypeAutoriteFiscale.COMMUNE_HC ? "hors-canton" : "hors-Suisse");
-			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFS() : MockPays.Allemagne.getNoOFS());
+			ffp.setNumeroOfsAutoriteFiscale(noOfsForExemplePourTypeAutoriteFiscale.get(taf));
 			ffp.setTypeAutoriteFiscale(taf);
 
 			// Source avec fors secondaire (intersection complète) : warning
@@ -540,12 +546,12 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 				ffp.setModeImposition(ModeImposition.SOURCE);
 
 				final ValidationResults vr = validate(hab);
-				assertFalse(vr.hasErrors());
-				assertTrue(vr.hasWarnings());
+				assertFalse(taf.name(), vr.hasErrors());
+				assertTrue(taf.name(), vr.hasWarnings());
 
 				final List<String> warnings = vr.getWarnings();
-				assertEquals(1, warnings.size());
-				assertEquals("Le mode d'imposition \"source\" du for principal " + tafName + " qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
+				assertEquals(taf.name(), 1, warnings.size());
+				assertEquals(taf.name(), "Le mode d'imposition \"source\" du for principal qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
 			}
 
 			// Source avec fors secondaire (intersection partielle) : warning
@@ -555,12 +561,12 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 				ffp.setModeImposition(ModeImposition.SOURCE);
 
 				final ValidationResults vr = validate(hab);
-				assertFalse(vr.hasErrors());
-				assertTrue(vr.hasWarnings());
+				assertFalse(taf.name(), vr.hasErrors());
+				assertTrue(taf.name(), vr.hasWarnings());
 
 				final List<String> warnings = vr.getWarnings();
-				assertEquals(1, warnings.size());
-				assertEquals("Le mode d'imposition \"source\" du for principal " + tafName + " qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
+				assertEquals(taf.name(), 1, warnings.size());
+				assertEquals(taf.name(), "Le mode d'imposition \"source\" du for principal qui commence le 01.01.2000 est anormal en présence de fors secondaires", warnings.get(0));
 			}
 
 			// Source avec fors secondaire (pas d'intersection) : ok
@@ -573,8 +579,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 				ffp.setModeImposition(ModeImposition.SOURCE);
 
 				final ValidationResults vr = validate(hab);
-				assertFalse(vr.hasWarnings());
-				assertFalse(vr.hasErrors());
+				assertFalse(taf.name(), vr.hasWarnings());
+				assertFalse(taf.name(), vr.hasErrors());
 
 				ffp2.setModeImposition(ModeImposition.SOURCE);
 			}
