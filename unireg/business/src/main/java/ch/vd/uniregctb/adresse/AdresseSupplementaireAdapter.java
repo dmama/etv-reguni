@@ -129,7 +129,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	public String getNpa() {
 		if (adresseSuisse != null) {
 			final Localite localite = getLocalite(adresseSuisse);
-			if (adresseSuisse.getNumeroCasePostale() != null && adresseSuisse.getNpaCasePostale() != null) {
+			if (adresseSuisse.getTexteCasePostale() != null && adresseSuisse.getNpaCasePostale() != null) {
 				// [SIFISC-143] surcharge du NPA de la localité par le npa de la case postale
 				return adresseSuisse.getNpaCasePostale().toString();
 			}

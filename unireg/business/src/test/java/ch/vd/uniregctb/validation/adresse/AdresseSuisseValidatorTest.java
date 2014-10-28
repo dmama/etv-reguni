@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
@@ -69,4 +70,26 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 		}
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidateNpaCasePostaleSansNumero() throws Exception {
+
+		final AdresseSuisse adresse = new AdresseSuisse();
+		adresse.setUsage(TypeAdresseTiers.COURRIER);
+		adresse.setDateDebut(date(2000, 1, 1));
+		adresse.setNumeroRue(MockRue.Bussigny.RueDeLIndustrie.getNoRue());
+		adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
+		adresse.setNpaCasePostale(1040);
+
+		// sans numéro de case postale
+		{
+			assertFalse(validate(adresse).hasErrors());
+		}
+
+		// avec un numéro de case postale -> même combat
+		{
+			adresse.setNumeroCasePostale(12);
+			assertFalse(validate(adresse).hasErrors());
+		}
+	}
 }

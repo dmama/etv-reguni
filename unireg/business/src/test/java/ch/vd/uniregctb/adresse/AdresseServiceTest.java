@@ -8072,6 +8072,28 @@ public class AdresseServiceTest extends BusinessTest {
 		assertTrue(adresse0.isIncomplete());
 	}
 
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdresseEnvoiAvecNpaCasePostaleSansNumero() throws Exception {
+		final PersonnePhysique pp = addNonHabitant("Alfred", "Lebois", date(1984, 4, 21), Sexe.MASCULIN);
+		final CasePostale cp = new CasePostale(TexteCasePostale.CASE_POSTALE, null, 1002);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2014, 1, 1), null, MockRue.Lausanne.AvenueDeLaGare, cp);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+		assertEquals(1, adresses.courrier.size());
+
+		final AdresseEnvoiDetaillee courrier = adresses.courrier.get(0);
+		assertNotNull(courrier);
+		assertFalse(courrier.isIncomplete());
+		assertEquals("Monsieur", courrier.getLigne1());
+		assertEquals("Alfred Lebois", courrier.getLigne2());
+		assertEquals("Avenue de la Gare", courrier.getLigne3());
+		assertEquals("Case Postale", courrier.getLigne4());
+		assertEquals("1002 Lausanne", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+	}
+
 	/**
 	 * Test de non-régression pour le cas SIFISC-6523. Où une adresse supplémentaire annulée sans date de fin
 	 * est suceptible de déclencher un warning de validité sur les dates de fin des autres adresses, elles,

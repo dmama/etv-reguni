@@ -548,11 +548,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setDateFin(fin);
 		adresse.setUsage(usage);
 		adresse.setNumeroRue(rue.getNoRue());
-		if(casePostale!=null){
+		if (casePostale != null) {
 			adresse.setTexteCasePostale(casePostale.getType());
 			adresse.setNumeroCasePostale(casePostale.getNumero());
+			adresse.setNpaCasePostale(casePostale.getNpa());
 		}
-		adresse.setNumeroOrdrePoste(rue.getLocalite().getNPA());
+		adresse.setNumeroOrdrePoste(rue.getLocalite().getNoOrdre());
 		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
 		return adresse;
 	}
@@ -563,9 +564,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);
 		adresse.setUsage(usage);
-		if(casePostale!=null){
+		if (casePostale != null) {
 			adresse.setTexteCasePostale(casePostale.getType());
 			adresse.setNumeroCasePostale(casePostale.getNumero());
+			adresse.setNpaCasePostale(casePostale.getNpa());
 		}
 		adresse.setNumeroOrdrePoste(noOrdre);
 		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
@@ -594,7 +596,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		adresse.setUsage(usage);
 		adresse.setRue(rue);
 		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
-		if(casePostale!=null){
+		if (casePostale != null) {
 			adresse.setTexteCasePostale(casePostale.getType());
 			adresse.setNumeroCasePostale(casePostale.getNumero());
 		}
