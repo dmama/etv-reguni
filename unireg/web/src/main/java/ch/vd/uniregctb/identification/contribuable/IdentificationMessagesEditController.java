@@ -69,18 +69,29 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			if (idAsString != null) {
 				Long id = Long.valueOf(idAsString);
 				if (bean == null || bean.getDemandeIdentificationView().getId().longValue() != id.longValue()) {
-					identificationMessagesEditManager.verouillerMessage(id);
-					bean = identificationMessagesEditManager.getView(id);
 					//gestion des droits
+					boolean visualisationLimitee = false;
 					if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 						if (!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)) {
 							throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 						}
-						bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
+						visualisationLimitee = true;
 						if (LOGGER.isTraceEnabled()) {
 							LOGGER.trace("Utilisateur avec visualisation limitée");
 						}
 					}
+
+					// [SIFISC-13602] tentative de relance de l'identification automatique avant toute chose
+					final Long noCtbNouvellementIdentifie = identificationMessagesEditManager.relanceIdentificationAuto(id);
+					if (noCtbNouvellementIdentifie != null) {
+						flash("Le contribuable a maintenant été identifié automatiquement.");
+					}
+
+					bean = identificationMessagesEditManager.getView(id);
+					if (bean.getNoCtbIdentifie() == null) {
+						identificationMessagesEditManager.verouillerMessage(id);
+					}
+					bean.setTypeVisualisation(visualisationLimitee ? TiersCriteria.TypeVisualisation.LIMITEE : TiersCriteria.TypeVisualisation.COMPLETE);
 				}
 			}
 		}
@@ -107,9 +118,16 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
 			throws Exception {
 
-		HttpSession session = request.getSession();
-		IdentificationMessagesEditView bean = (IdentificationMessagesEditView) session.getAttribute(PP_CRITERIA_NAME);
-		ModelAndView mav = showFormForList(request, response, errors, model, PP_CRITERIA_NAME, TIERS_LIST_ATTRIBUTE_NAME, bean, true);
+		final HttpSession session = request.getSession();
+		final IdentificationMessagesEditView bean = (IdentificationMessagesEditView) session.getAttribute(PP_CRITERIA_NAME);
+		final ModelAndView mav;
+		if (bean != null && bean.getNoCtbIdentifie() != null) {
+			mav = super.showForm(request, response, errors, model);
+			mav.addObject(TIERS_LIST_ATTRIBUTE_NAME, null);
+		}
+		else {
+			mav = showFormForList(request, response, errors, model, PP_CRITERIA_NAME, TIERS_LIST_ATTRIBUTE_NAME, bean, true);
+		}
 
 		String parameter = request.getParameter(UNLOCK_PARAMETER);
 		if (parameter != null) {

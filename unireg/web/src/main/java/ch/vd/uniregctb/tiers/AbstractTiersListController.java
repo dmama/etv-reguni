@@ -69,7 +69,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		ModelAndView mav  =  super.showForm(request, response, errors, model);
 		if (errors.getErrorCount() == 0) {
-			if(buttonEffacer == null) {
+			if (buttonEffacer == null) {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Affichage du formulaire de recherche...");
 				}

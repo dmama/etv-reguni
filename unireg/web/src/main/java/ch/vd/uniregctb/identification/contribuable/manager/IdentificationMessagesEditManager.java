@@ -14,7 +14,7 @@ public interface IdentificationMessagesEditManager {
 	 * @return la vue
 	 */
 	@Transactional(readOnly = true)
-	public IdentificationMessagesEditView getView(Long id) throws Exception ;
+	IdentificationMessagesEditView getView(Long id) throws Exception ;
 
 	/**
 	 * Alimente le cartouche de demande d'identification
@@ -22,46 +22,51 @@ public interface IdentificationMessagesEditManager {
 	 * @return la vue du cartouche
 	 */
 	@Transactional(readOnly = true)
-	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception  ;
+	DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception  ;
 
 	/**
 	 * Force l'identification du contribuable
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void forceIdentification(Long idIdentification, Long idPersonne, Etat etat) throws Exception ;
+	void forceIdentification(Long idIdentification, Long idPersonne, Etat etat) throws Exception ;
 
 	/**
 	 * Donne à expertiser
 	 * @param idIdentification
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void expertiser(Long idIdentification);
+	void expertiser(Long idIdentification);
 
 	/**
 	 * Impossible à identifier
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void impossibleAIdentifier(IdentificationMessagesEditView bean) throws Exception ;
+	void impossibleAIdentifier(IdentificationMessagesEditView bean) throws Exception ;
 
 	/**
 	 * Verouille le message pour qu'il ne soit pas traité à double
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public  void verouillerMessage(Long idIdentification) throws Exception;
+	void verouillerMessage(Long idIdentification) throws Exception;
+
 	/**
 	 * deverouille le message après traitement
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public  void deVerouillerMessage(Long idIdentification, boolean byAdmin) throws Exception;
+	void deVerouillerMessage(Long idIdentification, boolean byAdmin) throws Exception;
 
 	/**
 	 * Indique si le message dont l'id est passé en paramètre est en cours de traitement donc vérouillé
-	 *
-	 *
 	 * @param idIdentification l'id du message a vérifier
 	 * @return true si le message est en cours de traitement par un user false sinon
-	 * @throws Exception
 	 */
 	@Transactional(readOnly = true)
-	public boolean isMessageVerouille(Long idIdentification) throws Exception;
+	boolean isMessageVerouille(Long idIdentification) throws Exception;
+
+	/**
+	 * Relance une identification automatique sur le message en question
+	 * @return le numéro du contribuable identifié en cas d'identification réussie (<code>null</code> si le message était déjà traité ou si une nouvelle tentative d'identification n'est pas concluante)
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	Long relanceIdentificationAuto(long idIdentification) throws Exception;
 }

@@ -87,6 +87,10 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 			}
 			identificationMessagesEditView.setNumeroAVS(navs);
 		}
+
+		if (identificationContribuable.getReponse() != null) {
+			identificationMessagesEditView.setNoCtbIdentifie(identificationContribuable.getReponse().getNoContribuable());
+		}
 		return identificationMessagesEditView;
 	}
 
@@ -192,7 +196,6 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		identificationContribuable.setUtilisateurTraitant(user);
-
 	}
 
 	@Override
@@ -211,11 +214,19 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
 		final String utilisateurTraitant = identificationContribuable.getUtilisateurTraitant();
 		final String user = AuthenticationHelper.getCurrentPrincipal();
-		if(utilisateurTraitant !=null && !user.equals(utilisateurTraitant)){
-			return true;
-		}else{
-			return false;
-		}
+		return utilisateurTraitant != null && !user.equals(utilisateurTraitant);
+	}
 
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public Long relanceIdentificationAuto(long idIdentification) throws Exception {
+		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
+		if (identificationContribuable.getEtat().isEncoreATraiter()) {
+			// on ne tente une relance que si l'état n'est pas déjà terminal
+			if (identCtbService.tenterIdentificationAutomatiqueContribuable(identificationContribuable)) {
+				return identificationContribuable.getReponse().getNoContribuable();
+			}
+		}
+		return null;
 	}
 }

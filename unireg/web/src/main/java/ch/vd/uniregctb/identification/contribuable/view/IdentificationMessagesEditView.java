@@ -11,6 +11,8 @@ public class IdentificationMessagesEditView extends TiersCriteriaView {
 
 	private DemandeIdentificationView demandeIdentificationView;
 
+	private Long noCtbIdentifie;
+
 	public DemandeIdentificationView getDemandeIdentificationView() {
 		return demandeIdentificationView;
 	}
@@ -33,5 +35,13 @@ public class IdentificationMessagesEditView extends TiersCriteriaView {
 
 	public void setNumeroAVS11(String numeroAVS11) {
 		this.numeroAVS11 = numeroAVS11;
+	}
+
+	public Long getNoCtbIdentifie() {
+		return noCtbIdentifie;
+	}
+
+	public void setNoCtbIdentifie(Long noCtbIdentifie) {
+		this.noCtbIdentifie = noCtbIdentifie;
 	}
 }
