@@ -91,7 +91,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = initNoOfsPays(dateDebut, addressInfo.getCountry(), infraService);
 		this.rue = addressInfo.getStreet();
-		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
+
+		// [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
+		this.titre = StringUtils.isBlank(addressInfo.getAddressLine1()) ? addressInfo.getAddressLine2() : addressInfo.getAddressLine1();
+
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
 		this.noOfsCommuneAdresse = null;
 		this.egid = null; // les adresses courrier ne possèdent pas d'egid/ewid, par définition
@@ -118,7 +121,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
 		this.rue = addressInfo.getStreet();
-		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
+
+		// [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
+		this.titre = StringUtils.isBlank(addressInfo.getAddressLine1()) ? addressInfo.getAddressLine2() : addressInfo.getAddressLine1();
+
 		this.typeAdresse = initTypeAdresseResidence(residence);
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwelling == null || dwelling.getEGID() == null ? null : dwelling.getEGID().intValue();

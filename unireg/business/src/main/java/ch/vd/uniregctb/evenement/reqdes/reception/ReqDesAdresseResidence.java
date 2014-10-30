@@ -44,7 +44,9 @@ public final class ReqDesAdresseResidence implements Adresse {
 		this.numeroOrdrePoste = dwellingAddress.getSwissZipCodeId() == null ? 0 : dwellingAddress.getSwissZipCodeId();
 		this.rue = dwellingAddress.getStreet();
 		this.numeroAppartement = dwellingAddress.getDwellingNumber();
-		this.titre = dwellingAddress.getAddressLine1();     // TODO que faire d'addressLine2 ?
+
+		// [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
+		this.titre = StringUtils.isBlank(dwellingAddress.getAddressLine1()) ? dwellingAddress.getAddressLine2() : dwellingAddress.getAddressLine1();
 	}
 
 	public ReqDesAdresseResidence(AddressInformation addressInfo, ServiceInfrastructureService infraService) {
@@ -64,7 +66,9 @@ public final class ReqDesAdresseResidence implements Adresse {
 		this.npa = addressInfo.getSwissZipCode() != null ? String.valueOf(addressInfo.getSwissZipCode()) : addressInfo.getForeignZipCode();
 		this.npaComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.rue = addressInfo.getStreet();
-		this.titre = addressInfo.getAddressLine1();         // TODO que faire d'addressLine2 ?
+
+		// [SIFISC-13878] on prend en compte la deuxième ligne de complément si la première est vide
+		this.titre = StringUtils.isBlank(addressInfo.getAddressLine1()) ? addressInfo.getAddressLine2() : addressInfo.getAddressLine1();
 	}
 
 	private static CasePostale initCasePostale(String text, Long number) {
