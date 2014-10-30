@@ -83,6 +83,9 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 					}
 				}
 			}
+			else {
+				throw new DonneesCivilesException(String.format("L'individu %d est inconnu du registre civil.", noIndividu));
+			}
 		}
 		catch (DonneesCivilesException e) {
 			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour la date " + date + '.');

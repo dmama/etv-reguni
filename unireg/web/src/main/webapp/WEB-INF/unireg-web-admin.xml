@@ -102,5 +102,11 @@
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
-	
+
+	<!-- Gestion du recalcul du flag habitant -->
+	<bean id="recalculFlagHabitant" class="ch.vd.uniregctb.admin.RecalculFlagHabitantController">
+		<property name="tiersService" ref="tiersService"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
 </beans>

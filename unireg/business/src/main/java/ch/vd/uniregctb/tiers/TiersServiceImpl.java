@@ -83,7 +83,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1632,19 +1632,11 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		try {
-			final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
-			if (adresses == null) {
-				// individu inconnu ?
-				return null;
-			}
-
-			final List<Adresse> prnVaudoises = filtrerAdressesVaudoises(adresses.principales);
-			final List<Adresse> secVaudoises = filtrerAdressesVaudoises(adresses.secondaires);
-
 			// [SIFISC-6841] On tient aussi compte des résidences secondaires
 			// [SIFISC-13741] Mais on ne tient plus compte que des adresses actives (finies, les recherches de destinations !)
 			final RegDate today = RegDate.get();
-			return hasAdresseAt(prnVaudoises, today) || hasAdresseAt(secVaudoises, today) ? Boolean.TRUE : Boolean.FALSE;
+			final AdressesCivilesActives adresses = serviceCivilService.getAdresses(numeroIndividu, today, false);
+			return isAdresseVaudoise(adresses.principale) || hasAdresseVaudoise(adresses.secondaires);
 		}
 		catch (ServiceInfrastructureException e) {
 			// rien à faire...
@@ -1670,42 +1662,28 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * @param adresses liste d'adresses brutte
-	 * @return <code>true</code> si la commune associée à l'une au moins des adresses valides à la date donnée est vaudoise
+	 * @param adresse adresse à tester
+	 * @return <code>true</code> si l'adresse est non-nulle et est associée à une commune vaudoise, <code>false</code> dans tous les autres cas
 	 */
-	private List<Adresse> filtrerAdressesVaudoises(List<Adresse> adresses) {
-		if (adresses == null || adresses.isEmpty()) {
-			return adresses;
-		}
-
-		final List<Adresse> filtree = new ArrayList<>(adresses.size());
-		for (Adresse candidate : adresses) {
-			// vérifions qu'elle est vaudoise
-			final Commune commune = getCommuneForAdresse(candidate, false);
-			if (commune != null && commune.isVaudoise()) {
-				filtree.add(candidate);
-			}
-		}
-
-		return filtree;
-	}
-
-	/**
-	 * @param adresses liste d'adresses à tester
-	 * @param date date de référence (<code>null</code> pour la date courante)
-	 * @return <code>true</code> si au moins une adresse de la liste est valide à la date donnée
-	 */
-	private boolean hasAdresseAt(@NotNull List<Adresse> adresses, @Nullable RegDate date) {
-		if (adresses.isEmpty()) {
-			// pas d'adresses de résidence => pas de domicile dans le canton
+	private boolean isAdresseVaudoise(Adresse adresse) {
+		if (adresse == null) {
 			return false;
 		}
 
-		// puisque cet appel est fait aussi bien pour des adresses principales (= sans chevauchement) et secondaires (= avec chevauchements possibles)
-		// on ne peut pas réellement utiliser les méthodes de DateRangeHelper...
-		for (Adresse candidate : adresses) {
-			if (candidate.isValidAt(date)) {
-				return true;
+		final Commune commune = getCommuneForAdresse(adresse, false);
+		return commune != null && commune.isVaudoise();
+	}
+
+	/**
+	 * @param adresses collection d'adresses dans laquelle on cherche au moins une adresse vaudoise
+	 * @return <code>true</code> si au moins l'une des adresses de la collection est vaudoise au sens de {@link #isAdresseVaudoise(ch.vd.unireg.interfaces.civil.data.Adresse)}, <code>false</code> sinon
+	 */
+	private boolean hasAdresseVaudoise(Collection<Adresse> adresses) {
+		if (adresses != null && !adresses.isEmpty()) {
+			for (Adresse adresse : adresses) {
+				if (isAdresseVaudoise(adresse)) {
+					return true;
+				}
 			}
 		}
 		return false;

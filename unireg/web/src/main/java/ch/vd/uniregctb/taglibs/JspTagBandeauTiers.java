@@ -67,6 +67,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		final List<Action> list = new ArrayList<>();
 		list.add(new Reindexer());
 		list.add(new RecalculerParentes());
+		list.add(new RecalculerFlagHabitant());
 		list.add(new Marier());
 		list.add(new Deceder());
 		list.add(new Separer());
@@ -872,6 +873,27 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			return "post:/admin/refreshParentes.do?id=";
 		}
 	}
+
+	private static class RecalculerFlagHabitant implements Action {
+
+		@Override
+		public boolean isGranted() {
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN);
+		}
+
+		@Override
+		public boolean isValide(Tiers tiers) {
+			return tiers instanceof PersonnePhysique && ((PersonnePhysique) tiers).isConnuAuCivil();
+		}
+
+		@Override
+		public String getLabel() {
+			return "Recalculer le flag habitant";
+		}
+
+		@Override
+		public String getActionUrl() {
+			return "post:/admin/refreshFlagHabitant.do?id=";
+		}
+	}
 }
-
-
