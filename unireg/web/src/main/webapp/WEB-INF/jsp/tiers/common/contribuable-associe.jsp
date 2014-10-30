@@ -16,16 +16,24 @@
 				numero="${contribuableAssocie.numero}"></unireg:numCTB></a>
 			<c:if test="${contribuableAssocie.annule}"></strike></c:if>
 		</display:column>
-		<display:column sortable ="true" titleKey="label.nom.raison">
 
+		<display:column sortable ="true" titleKey="label.nom.raison">
 			<c:if test="${contribuableAssocie.nomCourrier1 != null }">
 				${contribuableAssocie.nomCourrier1}
 			</c:if>
 			<c:if test="${contribuableAssocie.nomCourrier2 != null }">
 				<br />${contribuableAssocie.nomCourrier2}
 			</c:if>
-
 		</display:column>
+
+		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
+			<fmt:formatDate value="${contribuableAssocie.dateDebut}" pattern="dd.MM.yyyy" />
+		</display:column>
+
+		<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<fmt:formatDate value="${contribuableAssocie.dateFin}" pattern="dd.MM.yyyy" />
+		</display:column>
+
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<unireg:consulterLog entityNature="RapportEntreTiers" entityId="${contribuableAssocie.id}"/>
