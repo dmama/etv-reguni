@@ -13,7 +13,6 @@ import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.List;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -75,7 +74,6 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity,DateRan
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_DECISION_ACI_TIERS_ID", columnNames = "TIERS_ID")
-	@ForeignKey(name = "FK_DECISION_ACI_TRS_ID")
 	public Tiers getTiers() {
 		return tiers;
 	}
