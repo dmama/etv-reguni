@@ -25,6 +25,11 @@
 					}
 					else {
 						$('#periodiciteDepuis').hide();
+						$('#pasDeDateDisponible').hide();
+
+						var tempDisabled = $('.tempDisabled');
+						tempDisabled.prop('disabled', false);
+						tempDisabled.removeClass('tempDisabled');
 					}
 				</c:otherwise>
 			</c:choose>
@@ -42,11 +47,24 @@
 					list += '<option value="' + str + '"' + (str === '<unireg:regdate regdate="${command.dateDebutNouvellePeriodicite}"/>' ? ' selected=true' : '') + '">' + str + '</option>';
 				}
 				selectDate.html(list);
+
+				var spanPeriodiciteDepuis = $('#periodiciteDepuis');
+				var spanPasDeDateDisponible = $('#pasDeDateDisponible');
 				if (dates.length > 0) {
-					$('#periodiciteDepuis').show();
+					spanPeriodiciteDepuis.show();
+					spanPasDeDateDisponible.hide();
+
+					var tempDisabled = $('.tempDisabled');
+					tempDisabled.prop('disabled', false);
+					tempDisabled.removeClass('tempDisabled');
 				}
 				else {
-					$('#periodiciteDepuis').hide();
+					spanPeriodiciteDepuis.hide();
+					spanPasDeDateDisponible.show();
+
+					var disablable = $('#formEditDebiteur').find(':input').not('#periodiciteCourante, #retourButton');
+					disablable.addClass('tempDisabled');
+					disablable.prop('disabled', true);        // on empêche de sauvegarder quoi que ce soit
 				}
 			}, 'json').error(Ajax.popupErrorHandler);
 		},
@@ -90,6 +108,9 @@
 				<span id="periodiciteDepuis" style="display: none;">
 					&nbsp;<fmt:message key="label.des.le"/>&nbsp;
 					<form:select id="dateDebutPeriodicite" path="dateDebutNouvellePeriodicite"/>
+				</span>
+				<span id="pasDeDateDisponible" style="display: none;" class="error">
+					&nbsp;<fmt:message key="label.pas.de.date.disponible.dans.lannee"/>
 				</span>
 			</td>
 			<td width="20%">

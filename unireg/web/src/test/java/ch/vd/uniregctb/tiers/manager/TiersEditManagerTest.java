@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -31,6 +33,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -53,7 +56,8 @@ public class TiersEditManagerTest extends WebTest {
 
 	private final static String DB_UNIT_FILE = "TiersEditManagerTest.xml";
 
-	private TiersEditManager tiersEditManager ;
+	private TiersEditManager tiersEditManager;
+	private TiersMapHelper tiersMapHelper;
 	private RemarqueDAO remarqueDAO;
 
 	/**
@@ -78,6 +82,7 @@ public class TiersEditManagerTest extends WebTest {
 
 		loadDatabase(DB_UNIT_FILE);
 		tiersEditManager = getBean(TiersEditManager.class, "tiersEditManager");
+		tiersMapHelper = getBean(TiersMapHelper.class, "tiersMapHelper");
 		remarqueDAO = getBean(RemarqueDAO.class, "remarqueDAO");
 	}
 
@@ -1291,5 +1296,87 @@ public class TiersEditManagerTest extends WebTest {
 		assertEquals(date(2013, 1, 1), dates.get(0));
 		assertEquals(date(2014, 1, 1), dates.get(1));
 		assertEquals(date(2015, 1, 1), dates.get(2));
+	}
+
+	@Test
+	public void testPeriodiciteNonActiveDejaUtiliseeParListe() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+		final RegDate dateDebut = date(anneeCourante, 1, 1);
+		final RegDate dateChangementMensuel = date(anneeCourante + 1, 1, 1);
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, dateDebut);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Bussigny);
+
+				final PeriodeFiscale pfCourante = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument mdCourante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfCourante);
+
+				// les périodicités
+				dpi.setPeriodicites(new HashSet<>(Arrays.asList(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebut, dateChangementMensuel.getOneDayBefore()),
+				                                                new Periodicite(PeriodiciteDecompte.MENSUEL, null, dateChangementMensuel, null))));
+
+				// les LR de l'année courante
+				for (int i = 0 ; i < 4 ; ++ i) {
+					final RegDate debutLr = date(anneeCourante, i * 3 + 1, 1);
+					final RegDate finLr = debutLr.addMonths(3).getOneDayBefore();
+					addListeRecapitulative(dpi, pfCourante, debutLr, finLr, mdCourante);
+				}
+				return dpi.getNumero();
+			}
+		});
+
+		// quelles sont les périodicités proposées ?
+		{
+			final DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertNotNull(view);
+			assertEquals(PeriodiciteDecompte.MENSUEL, view.getNouvellePeriodicite());
+			assertEquals(date(anneeCourante + 1, 1, 1), view.getDateDebutNouvellePeriodicite());
+			assertEquals(PeriodiciteDecompte.TRIMESTRIEL, view.getPeriodiciteActive());
+			assertEquals(date(anneeCourante, 1, 1), view.getDateDebutPeriodiciteActive());
+
+			final Map<PeriodiciteDecompte, String> map = tiersMapHelper.getMapLimiteePeriodiciteDecompte(view.getPeriodiciteActive());
+			assertNotNull(map);
+			assertEquals(EnumSet.of(PeriodiciteDecompte.UNIQUE, PeriodiciteDecompte.TRIMESTRIEL, PeriodiciteDecompte.MENSUEL), map.keySet());
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, view.getPeriodiciteActive(), date(anneeCourante + 1, 3, 31), true);
+			assertNotNull(dates);
+			assertEquals(1, dates.size());
+			assertEquals(date(anneeCourante + 1, 1, 1), dates.get(0));      // pour annuler la périodicité mensuelle non-encore utilisée
+		}
+
+		// maintenant on ajoute une LR sur l'année suivante (mensuelle, donc)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PeriodeFiscale pfSuivante = addPeriodeFiscale(anneeCourante + 1);
+				final ModeleDocument mdSuivante = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pfSuivante);
+
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				addListeRecapitulative(dpi, pfSuivante, date(anneeCourante + 1, 1, 1), date(anneeCourante + 1, 1, 31), mdSuivante);
+			}
+		});
+
+		// quelles sont les périodicités proposées ?
+		{
+			final DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+			assertNotNull(view);
+			assertEquals(PeriodiciteDecompte.MENSUEL, view.getNouvellePeriodicite());
+			assertEquals(date(anneeCourante + 1, 1, 1), view.getDateDebutNouvellePeriodicite());
+			assertEquals(PeriodiciteDecompte.MENSUEL, view.getPeriodiciteActive());
+			assertEquals(date(anneeCourante + 1, 1, 1), view.getDateDebutPeriodiciteActive());
+
+			final Map<PeriodiciteDecompte, String> map = tiersMapHelper.getMapLimiteePeriodiciteDecompte(view.getPeriodiciteActive());
+			assertNotNull(map);
+			assertEquals(EnumSet.of(PeriodiciteDecompte.UNIQUE, PeriodiciteDecompte.MENSUEL), map.keySet());
+
+			final List<RegDate> dates = tiersEditManager.getDatesPossiblesPourDebutNouvellePeriodicite(dpiId, view.getPeriodiciteActive(), date(anneeCourante + 1, 3, 31), true);
+			assertNotNull(dates);
+			assertEquals(0, dates.size());
+		}
 	}
 }

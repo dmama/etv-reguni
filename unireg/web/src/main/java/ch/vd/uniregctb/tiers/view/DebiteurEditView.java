@@ -1,6 +1,10 @@
 package ch.vd.uniregctb.tiers.view;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -16,9 +20,9 @@ public class DebiteurEditView {
 	private CategorieImpotSource categorieImpotSource;
 	private ModeCommunication modeCommunication;
 	private PeriodiciteDecompte nouvellePeriodicite;
-	private final PeriodiciteDecompte periodiciteActive;
-	private final RegDate dateDebutPeriodiciteActive;
 	private RegDate dateDebutNouvellePeriodicite;
+	private final PeriodiciteDecompte periodiciteActive;        // Attention, ce n'est pas réellement la périodicité active, mais peut représenter la dernière périodicité couverte par des LR
+	private final RegDate dateDebutPeriodiciteActive;
 	private PeriodeDecompte periodeDecompte;
 	private final ComplementView complement;
 	private Long logicielId;
@@ -43,10 +47,23 @@ public class DebiteurEditView {
 			this.periodeDecompte = dernierePeriodicite.getPeriodeDecompte();
 			this.dateDebutNouvellePeriodicite = dernierePeriodicite.getDateDebut();
 		}
-		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(RegDate.get());
+
+		final Periodicite periodiciteActive = dpi.getPeriodiciteAt(getDateReferencePourPeriodiciteActive(dpi));
 		this.periodiciteActive = periodiciteActive != null ? periodiciteActive.getPeriodiciteDecompte() : null;
 		this.dateDebutPeriodiciteActive = periodiciteActive != null ? periodiciteActive.getDateDebut() : null;
 		this.complement = new ComplementView(dpi, null, null, ibanValidator);
+	}
+
+	private static RegDate getDateReferencePourPeriodiciteActive(DebiteurPrestationImposable dpi) {
+		final List<Declaration> lrTriees = dpi.getDeclarationsSorted();
+		if (lrTriees != null) {
+			for (Declaration lr : CollectionsUtils.revertedOrder(lrTriees)) {
+				if (!lr.isAnnule()) {
+					return lr.getDateFin();
+				}
+			}
+		}
+		return RegDate.get();
 	}
 
 	public Long getId() {
