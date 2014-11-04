@@ -32,7 +32,6 @@ import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.GlobalIndexTracing;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -83,6 +82,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private ServicePersonneMoraleService servicePM;
 	private Dialect dialect;
 	private StatsService statsService;
+	private String serviceName;
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
 	private LoadAverager onTheFlyLoadAverager;
@@ -198,7 +198,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         private long getNanoIndex() {
             long timeindex = 0;
-	        final ServiceStats stats = statsService.getServiceStats(GlobalIndexTracing.SERVICE_NAME);
+	        final ServiceStats stats = statsService.getServiceStats(serviceName);
             if (stats != null) {
                 timeindex = stats.getTotalTime();
             }
@@ -761,5 +761,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDialect(Dialect dialect) {
 		this.dialect = dialect;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 }

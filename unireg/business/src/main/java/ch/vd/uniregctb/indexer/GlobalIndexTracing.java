@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -16,12 +17,11 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBean, DisposableBean {
 
-	public static final String SERVICE_NAME = "GlobalIndex";
-
 	private GlobalIndexInterface target;
 	private StatsService statsService;
+	private String serviceName;
 
-	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
+	private ServiceTracing tracing;
 
 	public void setTarget(GlobalIndexInterface target) {
 		this.target = target;
@@ -29,6 +29,10 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
 	@Override
@@ -227,6 +231,22 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 	}
 
 	@Override
+	public void search(final Query query, final int maxHits, final Sort sort, SearchCallback callback) throws IndexerException {
+		long time = tracing.start();
+		try {
+			target.search(query, maxHits, sort, callback);
+		}
+		finally {
+			tracing.end(time, "search", new Object() {
+				@Override
+				public String toString() {
+					return String.format("query='%s', maxHits=%d, sorting=%s", query, maxHits, sort);
+				}
+			});
+		}
+	}
+
+	@Override
 	public void searchAll(Query query, SearchAllCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
@@ -239,15 +259,16 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		tracing = new ServiceTracing(serviceName);
 		if (statsService != null) {
-			statsService.registerService(SERVICE_NAME, tracing);
+			statsService.registerService(serviceName, tracing);
 		}
 	}
 
 	@Override
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterService(SERVICE_NAME);
+			statsService.unregisterService(serviceName);
 		}
 	}
 }

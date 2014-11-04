@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -383,6 +384,44 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				@Override
 				public Object doInReadOnly(final Searcher searcher) throws Exception {
 					final TopDocs hits = searcher.search(query, maxHits);
+					callback.handle(hits, searcher.getDocGetter());
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			// pour ne pas transformer une TooManyException en IndexerException
+			if (e.getCause() instanceof IndexerException) {
+				throw (IndexerException) e.getCause();
+			}
+			throw new IndexerException(e);
+		}
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Searching done: " + query);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void search(final Query query, final int maxHits, final Sort sort, final SearchCallback callback) throws IndexerException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Searching: " + query);
+		}
+
+		if (index == null) {
+			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
+			return;
+		}
+
+		try {
+			index.read(new ReadOnlyCallback() {
+				@Override
+				public Object doInReadOnly(final Searcher searcher) throws Exception {
+					final TopDocs hits = searcher.search(query, null, maxHits, sort);
 					callback.handle(hits, searcher.getDocGetter());
 					return null;
 				}

@@ -12,7 +12,7 @@ public class OptimizeIndexJob extends JobDefinition {
 	public static final String NAME = "OptimizeIndexJob";
 	private static final String CATEGORIE = "Indexeur";
 
-	private GlobalIndex index;
+	private Map<String, GlobalIndex> indexes;
 
 	public OptimizeIndexJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -20,18 +20,19 @@ public class OptimizeIndexJob extends JobDefinition {
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
-		try {
-			index.optimize();
-			Audit.success("L'optimisation de l'index lucene est terminée.");
-		}
-		catch (Exception e) {
-			Audit.error("Impossible d'optimiser l'index lucene pour la raison suivante: " + e.getMessage());
-			throw e;
+		for (Map.Entry<String, GlobalIndex> entry : indexes.entrySet()) {
+			try {
+				entry.getValue().optimize();
+				Audit.success(String.format("L'optimisation de l'index lucene '%s' est terminée.", entry.getKey()));
+			}
+			catch (Exception e) {
+				Audit.error(String.format("Impossible d'optimiser l'index lucene '%s' pour la raison suivante: ", entry.getKey()) + e.getMessage());
+				throw e;
+			}
 		}
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setIndex(GlobalIndex index) {
-		this.index = index;
+	public void setIndexes(Map<String, GlobalIndex> indexes) {
+		this.indexes = indexes;
 	}
 }

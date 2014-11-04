@@ -24,7 +24,7 @@ public class IdentificationMessagesResultView implements Annulable {
 	private String traitementUser;
 	private Date traitementDate;
 	private boolean annule;
-	private long numeroContribuable;
+	private Long numeroContribuable;
 	private String messageRetour;
 	private String transmetteur;
 	private Long montant;
@@ -134,11 +134,11 @@ public class IdentificationMessagesResultView implements Annulable {
 		return utilisateurTraitant;
 	}
 
-	public void setNumeroContribuable(long numeroContribuable) {
+	public void setNumeroContribuable(Long numeroContribuable) {
 		this.numeroContribuable = numeroContribuable;
 	}
 
-	public long getNumeroContribuable() {
+	public Long getNumeroContribuable() {
 		return numeroContribuable;
 	}
 

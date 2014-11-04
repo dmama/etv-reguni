@@ -44,7 +44,7 @@
 		<property name="commandClass" value="ch.vd.uniregctb.admin.indexer.GestionIndexation" />
 		<property name="formView" value="admin/indexation" />
 		<property name="successView" value="indexation.do" />
-		<property name="globalIndex" ref="globalIndex" />
+		<property name="globalIndex" ref="globalTiersIndex" />
 		<property name="indexationManager" ref="indexationManager" />
 		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="dataEventService" ref="dataEventService" />

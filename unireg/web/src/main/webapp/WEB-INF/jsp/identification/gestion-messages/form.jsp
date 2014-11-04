@@ -18,7 +18,7 @@
 		</td>
 		<td width="25%">
 			<form:select path="typeMessage">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${typesMessage}" />
 			</form:select>	
 		</td>
@@ -36,7 +36,7 @@
 		</td>
 		<td width="25%">
 			<form:select path="periodeFiscale">
-				<form:option value="-1" ><fmt:message key="option.TOUTES" /></form:option>
+				<form:option value=""><fmt:message key="option.TOUTES" /></form:option>
 				<form:options items="${periodesFiscales}" />
 			</form:select>
 		</td>
@@ -54,7 +54,7 @@
 		</td>
 		<td width="25%">
 			<form:select path="emetteurId">
-				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+				<form:option value=""><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${emetteurs}" />
 			</form:select>
 		</td>
@@ -130,7 +130,7 @@
                     </td>
                     <td width="25%">
                         <form:select path="traitementUser">
-                            <form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+                            <form:option value=""><fmt:message key="option.TOUS" /></form:option>
                             <form:options items="${traitementUsers}" />
                         </form:select>
                     </td>

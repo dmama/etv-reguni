@@ -22,6 +22,7 @@
 	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="searcher" ref="globalMessageIdentificationSearcher"/>
 	</bean>
 
 	<bean id="identificationController" class="ch.vd.uniregctb.identification.contribuable.IdentificationController">

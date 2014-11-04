@@ -4,6 +4,7 @@ package ch.vd.uniregctb.indexer;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 
 
 public interface GlobalIndexInterface {
@@ -58,6 +59,16 @@ public interface GlobalIndexInterface {
 	 * @throws IndexerException en cas d'erreur dans l'indexeur
 	 */
 	void search(Query query, int maxHits, SearchCallback callback) throws IndexerException;
+
+	/**
+	 * Recherche les <i>maxHits</i> meilleurs résultats triés par un critère spécifique
+	 * @param query les critères de recherche
+	 * @param maxHits le nombre maximal de résultats retournés
+	 * @param sort le critère de tri
+	 * @param callback le callback appelé sur chacun des résultats trouvés
+	 * @throws IndexerException en cas d'erreur dans l'indexeur
+	 */
+	void search(Query query, int maxHits, Sort sort, SearchCallback callback) throws IndexerException;
 
 	void search(String query, int maxHits, SearchCallback callback) throws IndexerException;
 

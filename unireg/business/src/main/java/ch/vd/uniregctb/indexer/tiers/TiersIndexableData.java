@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.jetbrains.annotations.Nullable;
 
@@ -191,21 +189,9 @@ public class TiersIndexableData extends IndexableData {
 		return sb.toString().replaceAll("\\.", ""); // [SIFISC-6093] on supprime tous les points ('.') dans les strings de recherche.
 	}
 
-	private void addStoredValue(Document d, String name, String value) {
-		d.add(new StoredField(name, toString(value)));
-	}
-
-	private void addAnalyzedValue(Document d, String name, String value) {
-		d.add(new TextField(name, toString(value), Field.Store.YES));
-	}
-
-	private void addNotAnalyzedValue(Document d, String name, String value) {
-		d.add(new StringField(name, toString(value), Field.Store.YES));
-	}
-
 	private static final Pattern NULL_VALUE_PATTERN = Pattern.compile("\\b" + IndexerFormatHelper.nullValue() + "\\b");
 
-	private void addToutValues(Document d, String... values) {
+	private static void addToutValues(Document d, String... values) {
 		final StringBuilder sb = new StringBuilder();
 		for (String value : values) {
 			if (value != null) {
@@ -220,10 +206,6 @@ public class TiersIndexableData extends IndexableData {
 			}
 		}
 		d.add(new TextField(TiersIndexableData.TOUT, sb.toString().replaceAll("\\s+", " "), Field.Store.YES));
-	}
-
-	private String toString(String value) {
-		return value == null ? "" : value;
 	}
 
 	@Override

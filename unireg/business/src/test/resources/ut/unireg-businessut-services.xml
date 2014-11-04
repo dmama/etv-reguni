@@ -36,8 +36,12 @@
 	</bean>
 
 	<!-- File based -->
-	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.lucene.FSIndexProvider" lazy-init="true">
-		<constructor-arg value="${testprop.indexer.globalIndexPath}" />
+	<bean id="fileGlobalTiersIndexDirectory" class="ch.vd.uniregctb.indexer.lucene.FSIndexProvider" lazy-init="true">
+		<constructor-arg value="${testprop.indexer.globalIndexPath}/tiers" />
+	</bean>
+
+	<bean id="fileGlobalMessageIdentificationIndexDirectory" class="ch.vd.uniregctb.indexer.lucene.FSIndexProvider" lazy-init="true">
+		<constructor-arg value="${testprop.indexer.globalIndexPath}/message-identification" />
 	</bean>
 
 	<bean id="docService" class="ch.vd.uniregctb.document.DocumentServiceImpl" lazy-init="true">
@@ -53,8 +57,11 @@
 	<bean id="concreteTestForFiscalValidator" class="ch.vd.uniregctb.validation.fors.ConcreteForFiscalValidator" parent="forFiscalValidator"/>
 
 	<!-- Override du global index pour supporter plusieurs contextes Spring en parallèle -->
-	<bean id="globalIndexRaw" class="ch.vd.uniregctb.indexer.StaticSingletonGlobalIndex">
-		<constructor-arg ref="fileGlobalIndexDirectory" />
+	<bean id="globalTiersIndexRaw" class="ch.vd.uniregctb.indexer.StaticSingletonGlobalIndex">
+		<constructor-arg ref="fileGlobalTiersIndexDirectory" />
+	</bean>
+	<bean id="globalMessageIdentificationIndexRaw" class="ch.vd.uniregctb.indexer.StaticSingletonGlobalIndex">
+		<constructor-arg ref="fileGlobalMessageIdentificationIndexDirectory" />
 	</bean>
 
 </beans>

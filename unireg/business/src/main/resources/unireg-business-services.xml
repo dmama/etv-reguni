@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl">
-		<property name="globalIndex" ref="globalIndex" />
+		<property name="globalIndex" ref="globalTiersIndex" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
@@ -17,23 +17,48 @@
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />
 		<property name="dialect" ref="hibernateDialect" />
+		<property name="serviceName" value="GlobalTiersIndex"/>
 	</bean>
 
 	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl">
-		<property name="globalIndex" ref="globalIndex" />
+		<property name="globalIndex" ref="globalTiersIndex" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 
-	<bean id="globalIndexRaw" class="ch.vd.uniregctb.indexer.GlobalIndex">
-		<constructor-arg ref="fileGlobalIndexDirectory" />
+	<bean id="globalTiersIndexRaw" class="ch.vd.uniregctb.indexer.GlobalIndex">
+		<constructor-arg ref="fileGlobalTiersIndexDirectory" />
 	</bean>
 
-	<bean id="globalIndexTracing" class="ch.vd.uniregctb.indexer.GlobalIndexTracing">
-		<property name="target" ref="globalIndexRaw" />
+	<bean id="globalTiersIndexTracing" class="ch.vd.uniregctb.indexer.GlobalIndexTracing">
+		<property name="target" ref="globalTiersIndexRaw" />
 		<property name="statsService" ref="statsService" />
+		<property name="serviceName" value="GlobalTiersIndex"/>
 	</bean>
 
-	<alias alias="globalIndex" name="globalIndexTracing"/>
+	<alias alias="globalTiersIndex" name="globalTiersIndexTracing"/>
+
+	<bean id="globalMessageIdentificationIndexer" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexerImpl">
+		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>
+		<property name="identCtbDAO" ref="identCtbDAO"/>
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="globalMessageIdentificationSearcher" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcherImpl">
+		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>
+	</bean>
+
+	<bean id="globalMessageIdentificationIndexRaw" class="ch.vd.uniregctb.indexer.GlobalIndex">
+		<constructor-arg ref="fileGlobalMessageIdentificationIndexDirectory" />
+	</bean>
+
+	<bean id="globalMessageIdentificationIndexTracing" class="ch.vd.uniregctb.indexer.GlobalIndexTracing">
+		<property name="target" ref="globalMessageIdentificationIndexRaw"/>
+		<property name="statsService" ref="statsService"/>
+		<property name="serviceName" value="GlobalMessageIdentificationIndex"/>
+	</bean>
+
+	<alias alias="globalMessageIdentificationIndex" name="globalMessageIdentificationIndexTracing"/>
 	
 	<bean id="scheduler" class="ch.vd.uniregctb.scheduler.OverrideSchedulerFactoryBean">
 		<property name="schedulerName" value="schedulerQuartz" />

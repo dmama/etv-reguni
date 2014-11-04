@@ -17,7 +17,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 	</bean>
 
-	<!-- Job qui réindexe toute ou partie de la base de donnée -->
+	<!-- Job qui réindexe toute ou partie de la base de données -->
     <bean id="databaseIndexingJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob">
         <constructor-arg value="100"/>
         <constructor-arg value="Réindexer tout ou partie des tiers de la base de données"/>
@@ -26,8 +26,13 @@
 
     <bean id="optimizeIndexJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.OptimizeIndexJob">
         <constructor-arg value="101"/>
-        <constructor-arg value="Optimiser l'index 'Lucene' sur le disque"/>
-        <property name="index" ref="globalIndexRaw"/>
+        <constructor-arg value="Optimiser les indexes 'Lucene' sur le disque"/>
+	    <property name="indexes">
+		    <map>
+			    <entry key="Tiers" value-ref="globalTiersIndexRaw"/>
+			    <entry key="MessagesIdentification" value-ref="globalMessageIdentificationIndexRaw"/>
+		    </map>
+	    </property>
     </bean>
 
     <bean id="checkCoherenceIndexerJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.CheckCoherenceIndexerJob">
@@ -38,15 +43,22 @@
 		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <!-- Job qui recalcul l'OID de chaque tiers -->
+	<!-- Job qui ré-indexe les demandes d'identification de contribuable de la base de données -->
+	<bean id="databaseDemandeIdentificationIndexerJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.MessageIdentificationIndexerJob">
+		<constructor-arg value="103"/>
+		<constructor-arg value="Indexer les demandes d'identification de contribuable"/>
+		<property name="globalIndexer" ref="globalMessageIdentificationIndexer"/>
+	</bean>
+
+	<!-- Job qui re-calcule l'OID de chaque tiers -->
     <bean id="officeImpotIndexerJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.jobs.OfficeImpotIndexerJob">
-        <constructor-arg value="103"/>
+        <constructor-arg value="104"/>
         <constructor-arg value="Mettre-à-jour l'office d'impôt au niveau de chaque tiers"/>
         <property name="indexer" ref="officeImpotIndexer"/>
     </bean>
 
     <bean id="suppressionOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.oid.SuppressionOIDJob">
-        <constructor-arg value="104"/>
+        <constructor-arg value="105"/>
         <constructor-arg value="Mettre-à-jour les données suite à une suppression d'OID"/>
         <property name="adresseService" ref="adresseService"/>
         <property name="dataSource" ref="dataSource"/>
@@ -57,9 +69,9 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <!-- Job qui fait le rapprochement entre les contribuables et les prorpietaires donnés par le registre foncier    -->
+    <!-- Job qui fait le rapprochement entre les contribuables et les propriétaires donnés par le registre foncier    -->
      <bean id="rapprocherCtbRegistreFoncierJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.RapprocherCtbRegistreFoncierJob">
-        <constructor-arg value="105"/>
+        <constructor-arg value="106"/>
         <constructor-arg value="Rapprocher les contribuables et les propriétaires du registre foncier"/>
         <property name="registreFoncierService" ref="registreFoncierService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -67,7 +79,7 @@
 
     <!-- [SIFISC-2337] Job qui importe en vrac les immeubles du registre foncier    -->
      <bean id="importerImmeublesJob" parent="schedulerJob" class="ch.vd.uniregctb.registrefoncier.ImportImmeublesJob">
-        <constructor-arg value="106"/>
+        <constructor-arg value="107"/>
         <constructor-arg value="Importer les immeubles du registre foncier"/>
         <property name="registreFoncierService" ref="registreFoncierService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -75,7 +87,7 @@
 
     <!-- Job qui détermine les mouvements de dossiers en masse des contribuables-->
      <bean id="determinerMouvementsDossiersEnMasseJob" parent="schedulerJob" class="ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseJob">
-        <constructor-arg value="107"/>
+        <constructor-arg value="108"/>
         <constructor-arg value="Déterminer les mouvements de dossiers en masse"/>
         <property name="mouvementService" ref="mouvementService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -84,7 +96,7 @@
 
 	<!-- Job qui Resoud les adresses en fonction du numéro de rue-->
      <bean id="resolutionAdresseJob" parent="schedulerJob" class="ch.vd.uniregctb.adresse.ResolutionAdresseJob">
-        <constructor-arg value="108"/>
+        <constructor-arg value="109"/>
         <constructor-arg value="Résoudre les adresses en fonction du numéro de rue"/>
         <property name="adresseService" ref="adresseService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -92,7 +104,7 @@
 
 	<!-- Job qui compare les situations de famille UNIREG avec celles du civil-->
      <bean id="comparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
-        <constructor-arg value="109"/>
+        <constructor-arg value="110"/>
         <constructor-arg value="Comparer les situations de familles"/>
         <property name="rapportService" ref="rapportService"/>
         <property name="situationFamilleService" ref="situationFamilleService"/>
