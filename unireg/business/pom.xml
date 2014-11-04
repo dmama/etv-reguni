@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-simple-indexer</artifactId>
-			<version>1.2.0</version>
+			<version>1.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
