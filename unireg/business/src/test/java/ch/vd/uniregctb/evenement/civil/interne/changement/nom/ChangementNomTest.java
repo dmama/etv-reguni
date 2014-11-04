@@ -49,7 +49,7 @@ public class ChangementNomTest extends AbstractEvenementCivilInterneTest {
 	private DefaultMockServiceCivil mockServiceCivil;
 
 	public ChangementNomTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

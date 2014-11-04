@@ -5,7 +5,7 @@ import ch.vd.uniregctb.norentes.common.NorentesTest;
 public class Ec_18000_17_Arrivee_JIRA1677_Test extends NorentesTest {
 
 	public Ec_18000_17_Arrivee_JIRA1677_Test() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

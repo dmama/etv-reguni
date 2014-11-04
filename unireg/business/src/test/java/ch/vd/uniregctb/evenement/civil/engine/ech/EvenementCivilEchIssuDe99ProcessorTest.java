@@ -32,7 +32,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 
 	@Override
 	protected void runOnSetUp() throws Exception {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 		super.runOnSetUp();
 	}
 

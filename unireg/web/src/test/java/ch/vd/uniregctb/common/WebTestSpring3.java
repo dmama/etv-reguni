@@ -152,7 +152,7 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	@Override
 	protected void loadDatabase(String filename) throws Exception {
 		super.loadDatabase(filename);
-		indexData();
+		indexTiersData();
 	}
 
 	/**

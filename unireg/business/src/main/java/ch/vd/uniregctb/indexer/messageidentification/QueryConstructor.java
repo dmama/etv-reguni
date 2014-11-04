@@ -136,9 +136,8 @@ public abstract class QueryConstructor {
 	}
 
 	private static void addNavs13(BooleanQuery fullQuery, String avs13) throws IndexerException {
-		final String navsCriteria = IndexerFormatHelper.noAvsToString(avs13);
-		if (StringUtils.isNotBlank(navsCriteria)) {
-			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS13, navsCriteria);
+		if (StringUtils.isNotBlank(avs13)) {
+			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS13, IndexerFormatHelper.noAvsToString(avs13));
 			if (sub != null) {
 				fullQuery.add(sub, BooleanClause.Occur.MUST);
 			}
@@ -146,9 +145,8 @@ public abstract class QueryConstructor {
 	}
 
 	private static void addNavs11(BooleanQuery fullQuery, String avs11) throws IndexerException {
-		final String navsCriteria = IndexerFormatHelper.noAvsToString(avs11);
-		if (StringUtils.isNotBlank(navsCriteria)) {
-			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS11, navsCriteria);
+		if (StringUtils.isNotBlank(avs11)) {
+			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS11, IndexerFormatHelper.noAvsToString(avs11));
 			if (sub != null) {
 				fullQuery.add(sub, BooleanClause.Occur.MUST);
 			}

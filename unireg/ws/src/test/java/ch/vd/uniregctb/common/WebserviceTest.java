@@ -70,6 +70,6 @@ public abstract class WebserviceTest extends AbstractBusinessTest {
 	@Override
 	protected void loadDatabase(String filename) throws Exception {
 		super.loadDatabase(filename);
-		indexData();
+		indexTiersData();
 	}
 }

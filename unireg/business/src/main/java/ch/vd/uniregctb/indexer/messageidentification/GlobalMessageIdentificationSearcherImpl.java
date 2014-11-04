@@ -81,10 +81,19 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 		final SearchCallback callback = new SearchCallback() {
 			@Override
 			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				final int firstIndex = pagination.getSqlFirstResult();
+				final int firstIndex;
+				final int maxResults;
+				if (pagination == null) {
+					firstIndex = 0;
+					maxResults = Integer.MAX_VALUE;
+				}
+				else {
+					firstIndex = pagination.getSqlFirstResult();
+					maxResults = pagination.getSqlMaxResults();
+				}
 				final ScoreDoc[] docs = hits.scoreDocs;
 				if (docs != null && firstIndex < docs.length) {
-					final int size = Math.min(pagination.getSqlMaxResults(), docs.length - firstIndex);
+					final int size = Math.min(maxResults, docs.length - firstIndex);
 					for (int idx = 0 ; idx < size ; ++ idx) {
 						result.add(new MessageIdentificationIndexedData(docGetter.get(docs[firstIndex + idx].doc)));
 					}

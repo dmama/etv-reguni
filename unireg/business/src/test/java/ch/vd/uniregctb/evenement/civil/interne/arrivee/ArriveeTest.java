@@ -392,8 +392,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		}
 		final Ids ids = new Ids();
 
-		setWantIndexation(true);
-		removeIndexData();
+		setWantIndexationTiers(true);
+		removeTiersIndexData();
 
 		class ServiceCivil extends MockServiceCivil {
 

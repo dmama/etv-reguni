@@ -67,13 +67,13 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		 * Même si en fait on ne veut pas d'indexation, il est important, dans les tests d'arrivée, que l'indexeur soit
 		 * vide avant de démarrer le test (puisqu'on recherche dans les non-habitants quelqu'un qui pourrait convenir...)
 		 */
-		final boolean wantIndexation = this.wantIndexation;
-		setWantIndexation(true);
+		final boolean wantIndexation = this.wantIndexationTiers;
+		setWantIndexationTiers(true);
 		try {
 			super.truncateDatabase();
 		}
 		finally {
-			setWantIndexation(wantIndexation);
+			setWantIndexationTiers(wantIndexation);
 		}
 	}
 
@@ -914,7 +914,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -997,7 +997,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 			final String navs13 = "3218526549783";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1074,7 +1074,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateNaissance = date(1982, 6, 14);
 			final RegDate dateArrivee = date(2014, 7, 10);
 			final String navs13 = "7565683992644";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1150,7 +1150,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateNaissance = date(1982, 6, 14);
 			final RegDate dateArrivee = date(2014, 7, 10);
 			final String navs13 = "7565683992644";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1226,7 +1226,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 			final String navs13 = "3218526549783";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1318,7 +1318,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 			final String navs13 = "3218526549783";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1409,7 +1409,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 			final String navs13 = "3218526549783";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1487,7 +1487,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateMariage = date(2010, 1, 15);
 			final RegDate dateArrivee = date(2011, 10, 31);
 			final String navs13 = "3218526549783";
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// le p'tit nouveau
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -1572,7 +1572,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			final RegDate dateNaissanceMadame = date(1990, 3, 5);
 			final RegDate dateMariage = date(2009, 7, 8);
 
-			setWantIndexation(true);
+			setWantIndexationTiers(true);
 
 			// Le civil
 			serviceCivil.setUp(new DefaultMockServiceCivil(false) {

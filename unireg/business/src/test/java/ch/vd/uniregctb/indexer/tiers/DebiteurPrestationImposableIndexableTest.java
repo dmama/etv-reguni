@@ -33,7 +33,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 	private TiersDAO dao;
 
 	public DebiteurPrestationImposableIndexableTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

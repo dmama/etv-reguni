@@ -198,6 +198,12 @@
 		<property name="motsReservesIdentificationEntreprise" ref="motsReservesIdentificationPM"/>
 	</bean>
 
+	<bean id="messageIdentificationIndexInterceptor" class="ch.vd.uniregctb.indexer.messageidentification.MessageIdentificationIndexerHibernateInterceptor">
+		<property name="parent" ref="modificationInterceptor" />
+		<property name="indexer" ref="globalMessageIdentificationIndexer" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
 
 	<bean id="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractHelper" abstract="true">

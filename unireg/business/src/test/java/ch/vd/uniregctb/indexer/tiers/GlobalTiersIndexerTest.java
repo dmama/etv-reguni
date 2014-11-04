@@ -42,7 +42,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
 		indexer.overwriteIndex();
-		setWantIndexation(false); // -> va mettre le flag dirty sur tous les tiers modifiés
+		setWantIndexationTiers(false); // -> va mettre le flag dirty sur tous les tiers modifiés
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		};
 
 		indexer.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		indexer.setGlobalIndex(getBean(GlobalIndex.class, "globalIndex"));
+		indexer.setGlobalIndex(getBean(GlobalIndex.class, "globalTiersIndex"));
 		indexer.setStatsService(getBean(StatsService.class, "statsService"));
 		indexer.setServiceCivilService(serviceCivil);
 		indexer.setServiceInfra(serviceInfra);

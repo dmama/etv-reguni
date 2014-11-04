@@ -29,7 +29,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	private TiersService tiersService;
 
 	public MenageCommunIndexableTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

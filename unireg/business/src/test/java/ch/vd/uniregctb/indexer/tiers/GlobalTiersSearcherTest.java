@@ -58,7 +58,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	private static final String DB_UNIT_DATA_FILE = "GlobalTiersSearcherTest.xml";
 
 	public GlobalTiersSearcherTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	private static int getDefaultCollectivitesAdministrativesNumber() {

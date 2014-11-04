@@ -58,9 +58,11 @@
 
 	<!-- Override du global index pour supporter plusieurs contextes Spring en parallèle -->
 	<bean id="globalTiersIndexRaw" class="ch.vd.uniregctb.indexer.StaticSingletonGlobalIndex">
+		<constructor-arg value="tiers"/>
 		<constructor-arg ref="fileGlobalTiersIndexDirectory" />
 	</bean>
 	<bean id="globalMessageIdentificationIndexRaw" class="ch.vd.uniregctb.indexer.StaticSingletonGlobalIndex">
+		<constructor-arg value="identification"/>
 		<constructor-arg ref="fileGlobalMessageIdentificationIndexDirectory" />
 	</bean>
 

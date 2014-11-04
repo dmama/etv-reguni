@@ -36,7 +36,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 
 	public DatabaseIndexerJobTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

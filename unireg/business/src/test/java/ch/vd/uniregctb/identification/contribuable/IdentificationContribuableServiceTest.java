@@ -87,7 +87,7 @@ import static org.junit.Assert.fail;
 public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	public IdentificationContribuableServiceTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	/**

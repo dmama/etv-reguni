@@ -66,7 +66,7 @@ public class TiersListControllerTest extends WebMockMvcTest {
 			}
 		});
 
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

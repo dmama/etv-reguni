@@ -61,7 +61,7 @@ import static junit.framework.Assert.fail;
 public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 	public ArriveeExtTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 	
 	@Test
@@ -2889,7 +2889,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	@Test
 	public void testHandleArriveeNonHabitantSansDateNaissance() throws Exception {
 
-		removeIndexData();
+		removeTiersIndexData();
 
 		//
 		// Crée un individu

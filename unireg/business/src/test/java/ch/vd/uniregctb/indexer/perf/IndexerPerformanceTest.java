@@ -74,7 +74,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 
 	private void runHard() throws Exception {
 
-		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
+		globalIndex = getBean(GlobalIndexInterface.class, "globalTiersIndex");
 		globalIndex.overwriteIndex();
 
 		long begin = System.currentTimeMillis();

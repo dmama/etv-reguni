@@ -36,7 +36,7 @@ public class IdentificationContribuableRequestHandlerV3Test extends BusinessTest
 	private IdentificationContribuableRequestHandlerV3 handler;
 
 	public IdentificationContribuableRequestHandlerV3Test() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

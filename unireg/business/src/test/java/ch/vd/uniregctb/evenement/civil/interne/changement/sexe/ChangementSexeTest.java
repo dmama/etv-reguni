@@ -38,7 +38,7 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private DefaultMockServiceCivil mockServiceCivil;
 
 	public ChangementSexeTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

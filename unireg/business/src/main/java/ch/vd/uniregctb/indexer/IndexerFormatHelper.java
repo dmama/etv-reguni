@@ -38,6 +38,10 @@ public class IndexerFormatHelper {
 		}
 
 		protected abstract String toStringFromNotNull(@NotNull T object);
+
+		protected String nullValue() {
+			return IndexerFormatHelper.nullValue();
+		}
 	}
 
 	/**
@@ -96,7 +100,7 @@ public class IndexerFormatHelper {
 	};
 
 	/**
-	 * Suppression des blancs, points et autres tirets
+	 * Suppression des blancs, points et autres tirets (chaine {@link #NULL_VALUE} si l'original est <code>null</code>)
 	 */
 	public static final StringRenderer<String> AVS_RENDERER = new AbstractStringRendererImpl<String>() {
 		@Override

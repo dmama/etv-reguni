@@ -40,6 +40,9 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexer;
+import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
+import ch.vd.uniregctb.indexer.messageidentification.MessageIdentificationIndexerHibernateInterceptor;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -104,13 +107,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
     // private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBusinessTest.class);
 
-    protected boolean wantIndexation = false;
+    protected boolean wantIndexationTiers = false;
+	protected boolean wantIndexationMessagesIdentification = false;
     protected boolean wantSynchroTache = false;
 	protected boolean wantSynchroParentes = false;
 	protected boolean wantCollectivitesAdministratives = true;
     protected TiersService tiersService;
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
+	protected GlobalMessageIdentificationIndexer globalMessageIdentificationIndexer;
+	protected GlobalMessageIdentificationSearcher globalMessageIdentificationSearcher;
+	protected MessageIdentificationIndexerHibernateInterceptor messageIdentificationIndexerHibernateInterceptor;
     protected TacheSynchronizerInterceptor tacheSynchronizer;
     protected ValidationInterceptor validationInterceptor;
 	protected ParentesSynchronizerInterceptor parentesSynchronizer;
@@ -177,7 +184,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         tiersService = getBean(TiersService.class, "tiersService");
 	    globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 	    globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-        globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
+        globalTiersIndexer.setOnTheFlyIndexation(wantIndexationTiers);
+		globalMessageIdentificationSearcher = getBean(GlobalMessageIdentificationSearcher.class, "globalMessageIdentificationSearcher");
+		globalMessageIdentificationIndexer = getBean(GlobalMessageIdentificationIndexer.class, "globalMessageIdentificationIndexer");
+		messageIdentificationIndexerHibernateInterceptor = getBean(MessageIdentificationIndexerHibernateInterceptor.class, "messageIdentificationIndexInterceptor");
+		messageIdentificationIndexerHibernateInterceptor.setEnabled(wantIndexationMessagesIdentification);
         tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
         tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
         validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
@@ -188,7 +199,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	@Override
 	public void onTearDown() throws Exception {
-		if (wantIndexation) {
+		if (wantIndexationTiers) {
 			// si l'indexation asynchrone est demandée, on s'assure qu'elle est terminée avant la fin du test afin que
 			// le test suivant ne tente pas de vider la base de données alors que l'indexation est encore en cours, ce qui peut
 			// aller jusqu'à causer un deadlock (que l'on voit parfois çà et là dans les tests Jenkins)
@@ -201,27 +212,41 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected void truncateDatabase() throws Exception {
         super.truncateDatabase();
 
-        if (wantIndexation) {
-            removeIndexData();
+        if (wantIndexationTiers) {
+            removeTiersIndexData();
         }
+		if (wantIndexationMessagesIdentification) {
+			removeMessageIdentificationIndexData();
+		}
     }
 
     @Override
     protected void loadDatabase(String filename) throws Exception {
         super.loadDatabase(filename);
 
-        if (wantIndexation) {
-            indexData();
+        if (wantIndexationTiers) {
+            indexTiersData();
         }
+	    if (wantIndexationMessagesIdentification) {
+		    indexMessagesIdentificationData();
+	    }
     }
 
-    public void setWantIndexation(boolean wantIndexation) {
-        this.wantIndexation = wantIndexation;
+    public void setWantIndexationTiers(boolean wantIndexationTiers) {
+        this.wantIndexationTiers = wantIndexationTiers;
 
         if (globalTiersIndexer != null) {
-            globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
+            globalTiersIndexer.setOnTheFlyIndexation(wantIndexationTiers);
         }
     }
+
+	public void setWantIndexationMessagesIdentification(boolean wantIndexationMessagesIdentification) {
+		this.wantIndexationMessagesIdentification = wantIndexationMessagesIdentification;
+
+		if (messageIdentificationIndexerHibernateInterceptor != null) {
+			messageIdentificationIndexerHibernateInterceptor.setEnabled(wantIndexationMessagesIdentification);
+		}
+	}
 
     public void setWantSynchroTache(boolean wantSynchroTache) {
         this.wantSynchroTache = wantSynchroTache;
@@ -243,13 +268,21 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		this.wantCollectivitesAdministratives = wantCollectivitesAdministratives;
 	}
 
-	protected void indexData() throws Exception {
+	protected void indexTiersData() throws Exception {
         globalTiersIndexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.FULL, false);
     }
 
-    protected void removeIndexData() throws Exception {
+	protected void indexMessagesIdentificationData() throws Exception {
+		globalMessageIdentificationIndexer.indexAllDatabase(null, 1);
+	}
+
+    protected void removeTiersIndexData() throws Exception {
         globalTiersIndexer.overwriteIndex();
     }
+
+	protected void removeMessageIdentificationIndexData() throws Exception {
+		globalMessageIdentificationIndexer.overwriteIndex();
+	}
 
     protected <T> T doInTransactionAndSession(final TransactionCallback<T> action) throws Exception {
         return doInTransaction(new TransactionCallback<T>() {

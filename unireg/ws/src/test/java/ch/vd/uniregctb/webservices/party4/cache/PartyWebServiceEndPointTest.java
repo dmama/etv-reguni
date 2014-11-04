@@ -37,7 +37,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 	private PartyWebServiceEndPoint endpoint;
 
 	public PartyWebServiceEndPointTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

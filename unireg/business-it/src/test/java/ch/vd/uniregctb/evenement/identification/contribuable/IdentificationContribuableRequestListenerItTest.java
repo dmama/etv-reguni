@@ -29,7 +29,7 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 	private SmartLifecycle endpointManager;
 
 	public IdentificationContribuableRequestListenerItTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

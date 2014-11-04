@@ -50,7 +50,7 @@ public class CorrectionAutresNomsEchProcessorTest extends AbstractCorrectionEchP
 	@Test(timeout = 30000L)
 	public void testIndexationPourCorrectionAutresNoms() throws Exception {
 
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 
 		final long noIndividu = 126673246L;
 		final RegDate dateEvt = date(2011, 10, 31);

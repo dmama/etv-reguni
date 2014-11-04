@@ -64,7 +64,7 @@ public class CorrectionDateNaissanceTest extends AbstractEvenementCivilInterneTe
 	private GlobalTiersSearcher searcher;
 
 	public CorrectionDateNaissanceTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

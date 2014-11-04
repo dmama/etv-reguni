@@ -29,7 +29,7 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 	@Override
 	protected void runOnSetUp() throws Exception {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 		super.runOnSetUp();
 	}
 	

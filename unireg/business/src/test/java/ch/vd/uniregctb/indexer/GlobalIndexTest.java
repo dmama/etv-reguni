@@ -140,7 +140,7 @@ public class GlobalIndexTest extends BusinessTest {
 			assertTrue(success);
 		}
 		
-		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
+		globalIndex = getBean(GlobalIndexInterface.class, "globalTiersIndex");
 		globalIndex.overwriteIndex();
 
 		// Index data

@@ -512,7 +512,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsChangementSexe() throws Exception {
 
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 		setUpHabitant();
 
 		// Rech du tiers avant modif
@@ -554,7 +554,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		setWantIndexation(false);
+		setWantIndexationTiers(false);
 	}
 
 	/**

@@ -1181,8 +1181,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testSearchPartyByDebtorCategory() throws Exception {
 
-		removeIndexData();
-		setWantIndexation(true);
+		removeTiersIndexData();
+		setWantIndexationTiers(true);
 
 		final Long id = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
 			@Override
@@ -1584,8 +1584,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		removeIndexData();
-		setWantIndexation(true);
+		removeTiersIndexData();
+		setWantIndexationTiers(true);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override

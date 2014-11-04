@@ -54,11 +54,19 @@ public abstract class NorentesTest extends AbstractBusinessTest {
 	}
 
 	@Override
-	protected void removeIndexData() throws Exception {
+	protected void removeTiersIndexData() throws Exception {
 	}
 
 	@Override
-	protected void indexData() throws Exception {
+	protected void removeMessageIdentificationIndexData() throws Exception {
+	}
+
+	@Override
+	protected void indexTiersData() throws Exception {
+	}
+
+	@Override
+	protected void indexMessagesIdentificationData() throws Exception {
 	}
 
 	@Override

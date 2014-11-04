@@ -68,7 +68,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
+		globalIndex = getBean(GlobalIndexInterface.class, "globalTiersIndex");
 		globalIndex.overwriteIndex();
 	}
 

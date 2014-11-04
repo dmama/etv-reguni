@@ -28,7 +28,7 @@ public class IdentificationContribuableRequestHandlerV2Test extends BusinessTest
 	private IdentificationContribuableRequestHandlerV2 handler;
 
 	public IdentificationContribuableRequestHandlerV2Test() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class ChangementIdentificateurTest extends AbstractEvenementCivilInterneT
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementIdentificateurTest.class);
 
 	public ChangementIdentificateurTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Test

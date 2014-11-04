@@ -21,7 +21,7 @@ public class ConcurrentAccessTest extends BusinessTest {
 
 		super.onSetUp();
 
-		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
+		globalIndex = getBean(GlobalIndexInterface.class, "globalTiersIndex");
 		globalIndex.overwriteIndex();
 	}
 

@@ -38,7 +38,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 	private GlobalTiersIndexerImpl gti;
 
 	public MassTiersIndexerTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	private static final String DBUNIT_FILENAME = "MassTiersIndexerTest.xml";
@@ -55,7 +55,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 
 		gti = new GlobalTiersIndexerImpl(); // pour éviter le proxy
 		gti.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		gti.setGlobalIndex(getBean(GlobalIndex.class, "globalIndex"));
+		gti.setGlobalIndex(getBean(GlobalIndex.class, "globalTiersIndex"));
 		gti.setServiceCivilService(serviceCivil);
 		gti.setServiceInfra(serviceInfra);
 		gti.setSessionFactory(sessionFactory);

@@ -46,7 +46,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	private final RegDate dateNaissance2 = RegDate.get(2002, 11, 29);
 
 	public TiersIndexerHibernateInterceptorTest() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 
 		// Overwrite l'index
-		GlobalIndexInterface globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
+		final GlobalIndexInterface globalIndex = getBean(GlobalIndexInterface.class, "globalTiersIndex");
 		globalIndex.overwriteIndex();
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
@@ -495,7 +495,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		// Charge un tiers dirty
 		final long id = 6791;
-		setWantIndexation(false);
+		setWantIndexationTiers(false);
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		// Le tiers doit être dirty et on ne doit pas trouver dans l'indexeur
@@ -515,7 +515,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 		
 		// On change le prénom du tiers
 		doInNewTransaction(new TxCallback<Object>() {

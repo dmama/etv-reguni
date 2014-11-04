@@ -5,7 +5,7 @@ import ch.vd.uniregctb.norentes.common.NorentesTest;
 public class Ec_48000_02_CorrectionIdentificationNonHabitant_Test extends NorentesTest {
 
 	public Ec_48000_02_CorrectionIdentificationNonHabitant_Test() {
-		setWantIndexation(true);
+		setWantIndexationTiers(true);
 	}
 
 	@Override
