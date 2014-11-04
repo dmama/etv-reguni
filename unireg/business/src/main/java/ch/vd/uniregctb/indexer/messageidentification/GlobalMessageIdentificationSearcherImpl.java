@@ -46,15 +46,26 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 				return new Sort(new SortField(fieldName, SortField.Type.LONG, reverse));
 			}
 		};
+		final SortBuilder stringSortBuilder = new SortBuilder() {
+			@Override
+			public Sort build(String fieldName, boolean reverse) {
+				return new Sort(new SortField(fieldName, SortField.Type.STRING, reverse));
+			}
+		};
 
+		map.put("demande.typeMessage", Pair.of(MessageIdentificationIndexableData.TYPE_MESSAGE, stringSortBuilder));
 		map.put("demande.periodeFiscale", Pair.of(MessageIdentificationIndexableData.PERIODE_FISCALE, intSortBuilder));
+		map.put("demande.emetteurId", Pair.of(MessageIdentificationIndexableData.EMETTEUR, stringSortBuilder));
 		map.put("demande.date", Pair.of(MessageIdentificationIndexableData.DATE_MESSAGE, intSortBuilder));
+		map.put("etat", Pair.of(MessageIdentificationIndexableData.ETAT, stringSortBuilder));
+		map.put("demande.montant", Pair.of(MessageIdentificationIndexableData.TRI_MONTANT, longSortBuilder));
+		map.put("demande.personne.dateNaissance", Pair.of(MessageIdentificationIndexableData.TRI_DATE_NAISSANCE, intSortBuilder));
+		map.put("demande.personne.nom", Pair.of(MessageIdentificationIndexableData.TRI_NOM, stringSortBuilder));
+		map.put("demande.personne.prenoms", Pair.of(MessageIdentificationIndexableData.TRI_PRENOMS, stringSortBuilder));
+		map.put("demande.personne.NAVS11", Pair.of(MessageIdentificationIndexableData.NAVS11, stringSortBuilder));
+		map.put("demande.personne.NAVS13", Pair.of(MessageIdentificationIndexableData.NAVS13, stringSortBuilder));
+		map.put("reponse.noContribuable", Pair.of(MessageIdentificationIndexableData.TRI_CTB_TROUVE, longSortBuilder));
 
-		// TODO pose des problèmes (ArrayIndexOutOfBoundsException) dans Lucene -> est-ce parce que certaines valeurs sont stockées en strings (= les valeurs vides) ?
-		map.put("demande.personne.dateNaissance", Pair.of(MessageIdentificationIndexableData.DATE_NAISSANCE, intSortBuilder));
-
-		// TODO le montant est stocké en String et non-indexé... est-ce un problème ?
-		map.put("demande.montant", Pair.of(MessageIdentificationIndexableData.MONTANT, longSortBuilder));
 		return map;
 	}
 

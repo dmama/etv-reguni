@@ -47,7 +47,7 @@ public class MessageIdentificationIndexedData implements Serializable {
 	private static final Map<String, TypeDemande> DOCSUBTYPE_TYPE_DEMANDE_MAP = buildDocSubtypeTypeDemandeMap();
 
 	/**
-	 * Comme le doc subtype est minusculisé avant d'être placé sauvegardé, il faut en tenir compte
+	 * Comme le doc subtype est minusculisé avant d'être sauvegardé, il faut en tenir compte
 	 * au moment de la récupération
 	 */
 	private static Map<String, TypeDemande> buildDocSubtypeTypeDemandeMap() {

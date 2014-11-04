@@ -48,7 +48,8 @@ public abstract class QueryConstructor {
 			final BooleanQuery sub = new BooleanQuery();
 			for (TypeDemande type : typesDemande) {
 				if (type != null) {
-					sub.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, type.name())), BooleanClause.Occur.SHOULD);
+					// Les DocSubtypes sont tous en minuscules!
+					sub.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, type.name().toLowerCase())), BooleanClause.Occur.SHOULD);
 				}
 			}
 			if (!sub.clauses().isEmpty()) {
@@ -135,8 +136,9 @@ public abstract class QueryConstructor {
 	}
 
 	private static void addNavs13(BooleanQuery fullQuery, String avs13) throws IndexerException {
-		if (StringUtils.isNotBlank(avs13)) {
-			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS13, avs13);
+		final String navsCriteria = IndexerFormatHelper.noAvsToString(avs13);
+		if (StringUtils.isNotBlank(navsCriteria)) {
+			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS13, navsCriteria);
 			if (sub != null) {
 				fullQuery.add(sub, BooleanClause.Occur.MUST);
 			}
@@ -144,8 +146,9 @@ public abstract class QueryConstructor {
 	}
 
 	private static void addNavs11(BooleanQuery fullQuery, String avs11) throws IndexerException {
-		if (StringUtils.isNotBlank(avs11)) {
-			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS11, avs11);
+		final String navsCriteria = IndexerFormatHelper.noAvsToString(avs11);
+		if (StringUtils.isNotBlank(navsCriteria)) {
+			final Query sub = LuceneHelper.getAnyTermsExact(MessageIdentificationIndexableData.NAVS11, navsCriteria);
 			if (sub != null) {
 				fullQuery.add(sub, BooleanClause.Occur.MUST);
 			}
@@ -157,8 +160,8 @@ public abstract class QueryConstructor {
 			final int index = dateNaissance.index();
 			final BooleanQuery sub = new BooleanQuery();
 			sub.add(NumericRangeQuery.newIntRange(MessageIdentificationIndexableData.DATE_NAISSANCE, index, toPartialMax(index), true, true), BooleanClause.Occur.SHOULD);
-			sub.add(NumericRangeQuery.newIntRange(MessageIdentificationIndexableData.DATE_NAISSANCE, index % 100, index % 100, true, true), BooleanClause.Occur.SHOULD);
-			sub.add(NumericRangeQuery.newIntRange(MessageIdentificationIndexableData.DATE_NAISSANCE, index % 10000, index % 10000, true, true), BooleanClause.Occur.SHOULD);
+			sub.add(NumericRangeQuery.newIntRange(MessageIdentificationIndexableData.DATE_NAISSANCE, (index / 100) * 100, (index / 100) * 100, true, true), BooleanClause.Occur.SHOULD);
+			sub.add(NumericRangeQuery.newIntRange(MessageIdentificationIndexableData.DATE_NAISSANCE, (index / 10000) * 10000, (index / 10000) * 10000, true, true), BooleanClause.Occur.SHOULD);
 			fullQuery.add(sub, BooleanClause.Occur.MUST);
 		}
 	}

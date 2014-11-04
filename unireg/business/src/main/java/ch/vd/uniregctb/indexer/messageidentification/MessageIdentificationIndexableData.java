@@ -25,7 +25,17 @@ public class MessageIdentificationIndexableData extends IndexableData {
 	public static final String DATE_TRAITEMENT = "S_DATE_TRAITEMENT";
 
 	//
-	// clés données uniquement stockées
+	// clés des données uniquement utilisées pour le tri
+	//
+
+	public static final String TRI_NOM = "T_NOM";
+	public static final String TRI_PRENOMS = "T_PRENOMS";
+	public static final String TRI_DATE_NAISSANCE = "T_DATE_NAISSANCE";
+	public static final String TRI_MONTANT = "T_MONTANT";
+	public static final String TRI_CTB_TROUVE = "T_CTB_TROUVE";
+
+	//
+	// clés des données uniquement stockées
 	//
 
 	public static final String CTB_TROUVE = "D_CTB_TROUVE";
@@ -59,9 +69,9 @@ public class MessageIdentificationIndexableData extends IndexableData {
 	// Données uniquement stockées
 	//
 
-	private String noCtbTrouve;
+	private Long noCtbTrouve;
 	private String navs13Upi;
-	private String montant;
+	private Long montant;
 	private String annule;
 	private String utilisateurTraitant;
 	private String transmetteur;
@@ -92,10 +102,16 @@ public class MessageIdentificationIndexableData extends IndexableData {
 		addNumber(d, DATE_NAISSANCE, dateNaissance);
 		addNotAnalyzedValue(d, VISA_TRAITEMENT, visaTraitement);
 		addNumber(d, DATE_TRAITEMENT, dateTraitement);
+		addNumber(d, MONTANT, montant);
+		addNumber(d, CTB_TROUVE, noCtbTrouve);
 
-		addStoredValue(d, CTB_TROUVE, noCtbTrouve);
+		addNotAnalyzedValue(d, TRI_NOM, nom);
+		addNotAnalyzedValue(d, TRI_PRENOMS, prenoms);
+		addNumber(d, TRI_DATE_NAISSANCE, dateNaissance == null ? 0 : dateNaissance);
+		addNumber(d, TRI_MONTANT, montant == null ? 0L : montant);
+		addNumber(d, TRI_CTB_TROUVE, noCtbTrouve == null ? 0L : noCtbTrouve);
+
 		addStoredValue(d, AVS_UPI, navs13Upi);
-		addStoredValue(d, MONTANT, montant);
 		addStoredValue(d, ANNULE, annule);
 		addStoredValue(d, UTILISATEUR_TRAITANT, utilisateurTraitant);
 		addStoredValue(d, TRANSMETTEUR, transmetteur);
@@ -209,11 +225,11 @@ public class MessageIdentificationIndexableData extends IndexableData {
 		this.dateTraitement = dateTraitement;
 	}
 
-	public String getNoCtbTrouve() {
+	public Long getNoCtbTrouve() {
 		return noCtbTrouve;
 	}
 
-	public void setNoCtbTrouve(String noCtbTrouve) {
+	public void setNoCtbTrouve(Long noCtbTrouve) {
 		this.noCtbTrouve = noCtbTrouve;
 	}
 
@@ -225,11 +241,11 @@ public class MessageIdentificationIndexableData extends IndexableData {
 		this.navs13Upi = navs13Upi;
 	}
 
-	public String getMontant() {
+	public Long getMontant() {
 		return montant;
 	}
 
-	public void setMontant(String montant) {
+	public void setMontant(Long montant) {
 		this.montant = montant;
 	}
 

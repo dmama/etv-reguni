@@ -2,8 +2,6 @@ package ch.vd.uniregctb.indexer.messageidentification;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -54,16 +52,14 @@ public class MessageIdentificationIndexable implements Indexable {
 		data.setVisaTraitement(IndexerFormatHelper.nullableStringToString(message.getTraitementUser()));
 		data.setDateTraitement(toIndex(message.getDateTraitement()));
 
-		final Long noContribuableTrouve = message.getReponse().getNoContribuable();
-		data.setNoCtbTrouve(noContribuableTrouve == null ? StringUtils.EMPTY : noContribuableTrouve.toString());
 		data.setNavs13Upi(IndexerFormatHelper.nullableStringToString(message.getNAVS13Upi()));
-		final Long montant = demande.getMontant();
-		data.setMontant(montant == null ? StringUtils.EMPTY : montant.toString());
+		data.setMontant(demande.getMontant());
 		data.setAnnule(IndexerFormatHelper.booleanToString(message.isAnnule()));
 		data.setUtilisateurTraitant(IndexerFormatHelper.nullableStringToString(message.getTraitementUser()));
 		data.setTransmetteur(IndexerFormatHelper.nullableStringToString(demande.getTransmetteur()));
 
 		final Reponse reponse = message.getReponse();
+		data.setNoCtbTrouve(reponse != null ? reponse.getNoContribuable() : null);
 		data.setIdentifie(IndexerFormatHelper.booleanToString(reponse != null && reponse.getErreur() == null && reponse.getNoContribuable() != null));
 		data.setMessageErreur(IndexerFormatHelper.nullableStringToString(reponse != null && reponse.getErreur() != null ? reponse.getErreur().getMessage() : null));
 
