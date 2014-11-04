@@ -963,4 +963,86 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 		});
 	}
 
+	@Test
+	public void testDecesMembreCoupleAvecTiersDesactive() throws Exception {
+
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2008,10,19);
+		final RegDate dateDeces = date(2014,8,19);
+		final RegDate dateNaissanceMadame = date(1974, 8, 1);
+		final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+
+				MockIndividu monsieur = addIndividu(noMonsieur, dateNaissanceMonsieur, "Crispus", "Santacorpus", true);
+				MockIndividu madame = addIndividu(noMadame, dateNaissanceMadame, "Lisette", "Bouton", false);
+				addNationalite(monsieur,MockPays.Suisse,dateNaissanceMonsieur,null);
+				addNationalite(madame,MockPays.Suisse,dateNaissanceMadame,null);
+				marieIndividus(monsieur, madame, dateMariage);
+
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique monsieur = addHabitant(noMonsieur);
+				PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE,dateMariage.getOneDayBefore(),MotifFor.ANNULATION, MockCommune.Echallens);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+// décès civil
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
+		// événement demenagement
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDeces);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMonsieur);
+				evt.setType(TypeEvenementCivilEch.DECES);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noMonsieur);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+
+
 }
