@@ -38,11 +38,12 @@ echo "Version: $version"
 
 if [ "$ENVIRONMENT" == "INPO" ]; then
 	env=integration-po
+	user=dsi_unireg@ssv0309v
 else
 	env=integration
+	user=dsi_unireg@slv2655v
 fi
 
-user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
 baseDir=/ccv/data/dsi_unireg/unireg$ENVIRONMENT
 
