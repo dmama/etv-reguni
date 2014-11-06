@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
@@ -19,11 +20,13 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
 import ch.vd.uniregctb.efacture.DemandeAvecHistoView;
 import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
+import ch.vd.uniregctb.efacture.EFactureHelper;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EtatDemandeView;
@@ -163,7 +166,10 @@ public class EfactureManagerImpl implements EfactureManager {
 				final EtatDemandeView etatView = getEtatDemande(etat);
 				etatsDemande.add(etatView);
 			}
-			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAdherent(), demande.getNoAvs(),
+
+			final String canonicalNoAvs = AvsHelper.removeSpaceAndDash(demande.getNoAvs());
+			final String noAvs = EFactureHelper.isNavs13(canonicalNoAvs) ? canonicalNoAvs : null;
+			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAdherent(), FormatNumeroHelper.formatNumAVS(noAvs),
 			                                                           demande.getEmail(), demande.getAction(), etatsDemande);
 			demandes.add(view);
 		}

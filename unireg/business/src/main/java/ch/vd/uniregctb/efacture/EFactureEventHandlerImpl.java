@@ -178,7 +178,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		}
 
 		// [SIFISC-12805] la valeur dans le champ noAvs peut être autre chose qu'un NAVS13... (on détecte le numéro AVS par sa longueur et le début à 756)
-		final boolean isNavs13 = noSecuOuAvs.length() == 13 && noSecuOuAvs.startsWith("756");
+		final boolean isNavs13 = EFactureHelper.isNavs13(noSecuOuAvs);
 		if (isNavs13 && !AvsHelper.isValidNouveauNumAVS(noSecuOuAvs)) {
 			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
 		}

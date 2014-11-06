@@ -37,4 +37,8 @@ public abstract class EFactureHelper {
 		return MODE_IMPOSITIONS_AUTORISES.contains(ffp.getModeImposition());
 	}
 
+	// [SIFISC-12805] la valeur dans le champ noAvs peut être autre chose qu'un NAVS13... (on détecte le numéro AVS par sa longueur et le début à 756)
+	public static boolean isNavs13(String noSecuOuAvs) {
+		return noSecuOuAvs != null && noSecuOuAvs.length() == 13 && noSecuOuAvs.startsWith("756");
+	}
 }
