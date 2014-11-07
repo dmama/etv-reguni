@@ -44,11 +44,17 @@ public class MessageIdentificationIndexable implements Indexable {
 		data.setPriorite(IndexerFormatHelper.enumToString(demande.getPrioriteEmetteur()));
 		data.setDateMessage(toIndex(RegDateHelper.get(demande.getDate())));
 		data.setEtat(IndexerFormatHelper.enumToString(message.getEtat()));
-		data.setNom(criteresPersonne.getNom());
-		data.setPrenoms(criteresPersonne.getPrenoms());
-		data.setNavs13(IndexerFormatHelper.nullableStringToString(criteresPersonne.getNAVS13()));
-		data.setNavs11(IndexerFormatHelper.nullableStringToString(criteresPersonne.getNAVS11()));
-		data.setDateNaissance(toIndex(criteresPersonne.getDateNaissance()));
+		if (criteresPersonne != null) {
+			data.setNom(criteresPersonne.getNom());
+			data.setPrenoms(criteresPersonne.getPrenoms());
+			data.setNavs13(IndexerFormatHelper.nullableStringToString(criteresPersonne.getNAVS13()));
+			data.setNavs11(IndexerFormatHelper.nullableStringToString(criteresPersonne.getNAVS11()));
+			data.setDateNaissance(toIndex(criteresPersonne.getDateNaissance()));
+		}
+		else {
+			data.setNavs13(IndexerFormatHelper.nullableStringToString(null));
+			data.setNavs11(IndexerFormatHelper.nullableStringToString(null));
+		}
 		data.setVisaTraitement(IndexerFormatHelper.nullableStringToString(message.getTraitementUser()));
 		data.setDateTraitement(toIndex(message.getDateTraitement()));
 
@@ -59,9 +65,15 @@ public class MessageIdentificationIndexable implements Indexable {
 		data.setTransmetteur(IndexerFormatHelper.nullableStringToString(demande.getTransmetteur()));
 
 		final Reponse reponse = message.getReponse();
-		data.setNoCtbTrouve(reponse != null ? reponse.getNoContribuable() : null);
-		data.setIdentifie(IndexerFormatHelper.booleanToString(reponse != null && reponse.getErreur() == null && reponse.getNoContribuable() != null));
-		data.setMessageErreur(IndexerFormatHelper.nullableStringToString(reponse != null && reponse.getErreur() != null ? reponse.getErreur().getMessage() : null));
+		if (reponse != null) {
+			data.setNoCtbTrouve(reponse.getNoContribuable());
+			data.setIdentifie(IndexerFormatHelper.booleanToString(reponse.getErreur() == null && reponse.getNoContribuable() != null));
+			data.setMessageErreur(IndexerFormatHelper.nullableStringToString(reponse.getErreur() != null ? reponse.getErreur().getMessage() : null));
+		}
+		else {
+			data.setIdentifie(IndexerFormatHelper.booleanToString(false));
+			data.setMessageErreur(null);
+		}
 
 		return data;
 	}
