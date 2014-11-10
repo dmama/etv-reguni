@@ -867,6 +867,74 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+//SIFISC-13977
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNavs13MNomPrenomEnMinuscule() throws Exception {
+		final long noIndividuJudith = 1248758;
+		final long noIndividuHenchoz = 111345;
+
+		serviceUpi.setUp(new DefaultMockServiceUpi());
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indJudith = addIndividu(noIndividuJudith, date(1978,5,6), "Henchoz", "Judith", true);
+				MockIndividu indHenchoz = addIndividu(noIndividuHenchoz, date(1978,11,6), "Henchoz", "Judith", false);
+				addFieldsIndividu(indJudith, "7562602654751", "", "");
+				addFieldsIndividu(indHenchoz, "7568174363276", "", "");
+			}
+		});
+
+		class Ids {
+			Long judith;
+			Long henchoz;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habJudith = addHabitant(noIndividuJudith);
+				final PersonnePhysique habHenchoz = addHabitant(noIndividuHenchoz);
+				ids.judith = habJudith.getNumero();
+				ids.henchoz = habHenchoz.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("judith");
+		criteres.setNom("henchoz");
+		criteres.setNAVS13("7562602654751");
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+
+	}
+
 	//SIFISC-13180
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
