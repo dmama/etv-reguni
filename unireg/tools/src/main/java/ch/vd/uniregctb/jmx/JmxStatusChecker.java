@@ -21,7 +21,7 @@ public class JmxStatusChecker {
 
 	private static enum Environment {
 
-		IN("ssv0309v.etat-de-vaud.ch:50609", false),
+		IN("slv2655v.etat-de-vaud.ch:50609", false),
 		I2("ssv0309v.etat-de-vaud.ch:54609", false),
 		TE("spip.etat-de-vaud.ch:50609", false),
 		VA("ssv0298v.etat-de-vaud.ch:30609", true),
