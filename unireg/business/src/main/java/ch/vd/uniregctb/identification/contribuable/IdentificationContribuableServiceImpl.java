@@ -1309,21 +1309,23 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final String nomCritere = criteres.getNom();
 		final String prenomCritere = criteres.getPrenoms();
 		if (nomCritere != null) {
+			final String nomMinuscule = StringComparator.toLowerCaseWithoutAccent(nomCritere);
 			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
 				public boolean evaluate(PersonnePhysique pp) {
-					final String nomPrenom = tiersService.getNomPrenom(pp);
-					return (nomPrenom.contains(nomCritere));
+					final String nomPrenom = StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
+					return (nomPrenom.contains(nomMinuscule));
 				}
 			});
 		}
 
 		if (prenomCritere != null) {
+			final String prenomMinuscule = StringComparator.toLowerCaseWithoutAccent(prenomCritere);
 			CollectionUtils.filter(list, new Predicate<PersonnePhysique>() {
 				@Override
 				public boolean evaluate(PersonnePhysique pp) {
-					final String nomPrenom = tiersService.getNomPrenom(pp);
-					return (nomPrenom.contains(prenomCritere));
+					final String nomPrenom =StringComparator.toLowerCaseWithoutAccent(tiersService.getNomPrenom(pp));
+					return (nomPrenom.contains(prenomMinuscule));
 				}
 			});
 		}
