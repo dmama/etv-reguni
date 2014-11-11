@@ -42,6 +42,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -199,7 +201,11 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_IS);
-		editiqueHelper.remplitAffranchissement(infoDocument, dpi);
+
+		final ZoneAffranchissementEditique zoneAffranchissement = editiqueHelper.remplitAffranchissement(infoDocument, dpi);
+		if (zoneAffranchissement == null || zoneAffranchissement == ZoneAffranchissementEditique.INCONNU) {
+			infoDocument.setIdEnvoi(Integer.toString(ServiceInfrastructureService.noACIImpotSource));       // retour à l'ACI IS pour tous les documents qu'ont n'aurait pas su envoyer
+		}
 		return infoDocument;
 	}
 

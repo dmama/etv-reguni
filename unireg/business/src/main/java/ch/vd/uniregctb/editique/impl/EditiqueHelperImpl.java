@@ -335,7 +335,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	}
 
 	@Override
-	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
+	public ZoneAffranchissementEditique remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
 
 		final ZoneAffranchissementEditique zone;
 
@@ -369,10 +369,11 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 		affranchissement.setZone(zone != null ? zone.getCode() : StringUtils.EMPTY);
+		return zone;
 	}
 
 	@Override
-	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException {
+	public ZoneAffranchissementEditique remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException {
 		AdresseEnvoiDetaillee adresse;
 		try {
 			adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
@@ -380,7 +381,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		catch (AdresseException e) {
 			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " + tiers.getNumero() + " erreur: " + e.getMessage());
 		}
-		remplitAffranchissement(infoDocument, adresse);
+		return remplitAffranchissement(infoDocument, adresse);
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {

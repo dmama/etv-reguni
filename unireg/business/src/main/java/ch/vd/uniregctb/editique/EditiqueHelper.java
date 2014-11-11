@@ -147,13 +147,13 @@ public interface EditiqueHelper {
 
 	/**
 	 * Determine le code affranchissement à ajouter à l'infoDocument à partir du tiers passé en paramètre
-	 *@param infoDocument les informations du doccument a envoyer à éditique
+	 * @param infoDocument les informations du doccument a envoyer à éditique
 	 * @param tiers le tiers concerné par l'envoi
+	 * @return l'affranchissement correspondant à l'adresse
 	 * @throws EditiqueException
 	 *
 	 */
-
-	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException;
+	ZoneAffranchissementEditique remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException;
 
 	/**
 	 *  Determine le code affranchissement à ajouter à l'infoDocument à partir de l'adresse passé en paramètre
@@ -162,7 +162,7 @@ public interface EditiqueHelper {
 	 * @return l'affranchissement correspondant à l'adresse
 	 * @throws EditiqueException
 	 */
-	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
+	ZoneAffranchissementEditique remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
 
 	/**
 	 * Remplit un objet de type {@link TypAdresse.Adresse} avec les données d'un objet du type {@link AdresseEnvoi}
