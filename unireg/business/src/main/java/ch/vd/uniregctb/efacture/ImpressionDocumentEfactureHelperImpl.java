@@ -17,6 +17,8 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper implements ImpressionDocumentEfactureHelper {
@@ -142,7 +144,11 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper
 		infoDocument.setTypDoc("");
 		infoDocument.setCodDoc("");
 		infoDocument.setVersion(VERSION_XSD);
-		editiqueHelper.remplitAffranchissement(infoDocument, params.getTiers());
+
+		final ZoneAffranchissementEditique zoneAffranchissement = editiqueHelper.remplitAffranchissement(infoDocument, params.getTiers());
+		if (zoneAffranchissement == null || zoneAffranchissement == ZoneAffranchissementEditique.INCONNU) {
+			infoDocument.setIdEnvoi(Integer.toString(ServiceInfrastructureService.noACI));     // retour à l'ACI pour tous les documents qu'on ne sait pas où envoyer...
+		}
 		return infoDocument;
 	}
 }
