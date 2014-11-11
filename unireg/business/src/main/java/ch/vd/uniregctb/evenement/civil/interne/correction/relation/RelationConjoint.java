@@ -25,24 +25,27 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 	public final RegDate dateDebut;
 	public final RegDate dateFin;
 	public final Long noIndividuConjoint;
+	public final boolean conjointFiscalConnu;
 
 	/**
 	 * Constructeur interne utilisé en interne, donc, et par les tests (le code de production doit plutôt utiliser les méthodes statiques <em>from</em>)
 	 * @param dateDebut date de début de la relation
 	 * @param dateFin date de fin de la relation
 	 * @param noIndividuConjoint numéro d'individu civil du conjoint
+	 * @param conjointFiscalConnu <code>true</code> si un conjoint fiscal existe, <code>false</code> si marié seul fiscal
 	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique)
 	 * @see #from(ch.vd.registre.base.date.RegDate, ch.vd.registre.base.date.RegDate, ch.vd.unireg.interfaces.civil.data.RelationVersIndividu)
 	 */
-	RelationConjoint(RegDate dateDebut, RegDate dateFin, Long noIndividuConjoint) {
+	RelationConjoint(RegDate dateDebut, RegDate dateFin, Long noIndividuConjoint, boolean conjointFiscalConnu) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.noIndividuConjoint = noIndividuConjoint;
+		this.conjointFiscalConnu = conjointFiscalConnu;
 	}
 
 	public static RelationConjoint from(RegDate dateDebut, RegDate dateFin, RelationVersIndividu src) {
 		if (src.getTypeRelation() == TypeRelationVersIndividu.CONJOINT) {
-			return new RelationConjoint(dateDebut, dateFin, src.getNumeroAutreIndividu());
+			return new RelationConjoint(dateDebut, dateFin, src.getNumeroAutreIndividu(), false);
 		}
 		else {
 			return null;
@@ -50,14 +53,14 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 	}
 
 	public static RelationConjoint from(RegDate dateDebut, RegDate dateFin, PersonnePhysique conjoint) {
-		return new RelationConjoint(dateDebut, dateFin, conjoint.getNumeroIndividu());
+		return new RelationConjoint(dateDebut, dateFin, conjoint.getNumeroIndividu(), true);
 	}
 
 	/**
 	 * Pour gérer les mariés seuls -> relation vers un individu inconnu
 	 */
 	public static RelationConjoint seul(RegDate dateDebut, RegDate dateFin) {
-		return new RelationConjoint(dateDebut, dateFin, null);
+		return new RelationConjoint(dateDebut, dateFin, null, false);
 	}
 
 	@Override
@@ -70,8 +73,8 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
 		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
 
-		// deux relations distinctes (this != o) pour lesquelles l'individu est inconnu pour au moins l'une d'entre elles sont considérées comme différentes
-		return noIndividuConjoint != null && that.noIndividuConjoint != null && noIndividuConjoint.equals(that.noIndividuConjoint);
+		// si les deux relations sont "marié-seul", ok ; sinon, il faut que les deux numéros d'individu soient les mêmes
+		return (isMarieSeul() && that.isMarieSeul()) || (noIndividuConjoint != null && that.noIndividuConjoint != null && noIndividuConjoint.equals(that.noIndividuConjoint));
 	}
 
 	@Override
@@ -114,6 +117,10 @@ public final class RelationConjoint implements DateRange, Comparable<RelationCon
 			}
 		}
 		return comparison;
+	}
+
+	public boolean isMarieSeul() {
+		return !conjointFiscalConnu && noIndividuConjoint == null;
 	}
 
 	/**

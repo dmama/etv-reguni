@@ -70,7 +70,12 @@ public class CorrectionRelation extends EvenementCivilInterne {
 	private static final StringRenderer<RelationConjoint> REL_CNJNT_RENDERER = new StringRenderer<RelationConjoint>() {
 		@Override
 		public String toString(RelationConjoint rc) {
-			return String.format("%s -> %d", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin), rc.noIndividuConjoint);
+			if (rc.noIndividuConjoint == null && rc.conjointFiscalConnu) {
+				return String.format("%s -> null (avec conjoint fiscal)", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin));
+			}
+			else {
+				return String.format("%s -> %d", DateRangeHelper.toDisplayString(rc.dateDebut, rc.dateFin), rc.noIndividuConjoint);
+			}
 		}
 	};
 

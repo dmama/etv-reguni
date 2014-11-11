@@ -496,4 +496,125 @@ public class CorrectionRelationEchProcessorTest extends AbstractEvenementCivilEc
 		});
 
 	}
+
+	/**
+	 * SIFISC-13761 : cas d'un marié seul civil & fiscal
+	 */
+	@Test
+	public void testMarieSeulCivilEtFiscal() throws Exception {
+		final long noLui = 326232356L;
+		final RegDate dateMariage = date(2004, 12, 6);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
+				marieIndividu(lui, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, null, dateMariage, null);
+				return lui.getNumero();
+			}
+		});
+
+		// envoi d'un événement de correction de relation sur Monsieur
+		final long evtIdLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(456782458L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(RegDate.get());
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noLui);
+				evt.setType(TypeEvenementCivilEch.CORR_RELATIONS);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noLui);
+
+		// vérification du traitement en erreur
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdLui);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-13761 : cas d'un marié seul civil mais pas fiscal
+	 */
+	@Test
+	public void testMarieSeulCivilMaisPasFiscal() throws Exception {
+		final long noLui = 326232356L;
+		final RegDate dateMariage = date(2004, 12, 6);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noLui, date(1980, 10, 25), "Bouille", "Simon", Sexe.MASCULIN);
+				marieIndividu(lui, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addNonHabitant("Agathe", "Bouille", null, Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				return lui.getNumero();
+			}
+		});
+
+		// envoi d'un événement de correction de relation sur Monsieur
+		final long evtIdLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(456782458L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(RegDate.get());
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noLui);
+				evt.setType(TypeEvenementCivilEch.CORR_RELATIONS);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noLui);
+
+		// vérification du traitement en erreur
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdLui);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("L'historique des conjoints fiscaux n'est pas réconciliable de manière univoque avec les données civiles.", erreur.getMessage());
+			}
+		});
+	}
 }
