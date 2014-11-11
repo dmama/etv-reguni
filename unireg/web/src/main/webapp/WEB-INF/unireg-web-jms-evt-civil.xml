@@ -75,6 +75,13 @@
 				<value>CHGT_BLOCAGE_ADRESSE</value>
 			</set>
 		</property>
+		<property name="eventTypesWithNullEventDateReplacement">
+			<set>
+				<value>ATTRIBUTION_DONNEES_UPI</value>
+				<value>CORR_DONNEES_UPI</value>
+				<value>ANNULATION_DONNEES_UPI</value>
+			</set>
+		</property>
 	</bean>
 
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">

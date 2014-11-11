@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,12 +33,17 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 	private EvenementCivilEchEsbHandler esbHandler;
 	private List<EvenementCivilEch> evenementsTraites;
 	private List<EvenementCivilEch> evenementsIgnores;
+	private List<Pair<String, Throwable>> evenementsExploses;
 	private List<String> evenementsVusPasser;
 
 	private static final Set<TypeEvenementCivilEch> IGNORED = EnumSet.of(TypeEvenementCivilEch.CHGT_BLOCAGE_ADRESSE,
 	                                                                     TypeEvenementCivilEch.CHGT_RELIGION,
 	                                                                     TypeEvenementCivilEch.CORR_RELIGION,
 	                                                                     TypeEvenementCivilEch.CORR_LIEU_NAISSANCE);
+
+	private static final Set<TypeEvenementCivilEch> NULL_DATE_WITH_REPLACEMENT = EnumSet.of(TypeEvenementCivilEch.ATTRIBUTION_DONNEES_UPI,
+	                                                                                        TypeEvenementCivilEch.CORR_DONNEES_UPI,
+	                                                                                        TypeEvenementCivilEch.ANNULATION_DONNEES_UPI);
 
 	@Before
 	public void setup() throws Exception {
@@ -60,7 +66,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 
 		clearQueue(INPUT_QUEUE);
 
-		evenementsTraites = new ArrayList<>();
+		evenementsTraites = new LinkedList<>();
 		final EvenementCivilEchReceptionHandler receptionHandler = new EvenementCivilEchReceptionHandler() {
 			@Override
 			public EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {
@@ -75,13 +81,17 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 			}
 		};
 
-		evenementsVusPasser = new ArrayList<>();
-		evenementsIgnores = new ArrayList<>();
+		evenementsVusPasser = new LinkedList<>();
+		evenementsIgnores = new LinkedList<>();
+		evenementsExploses = new LinkedList<>();
 		esbHandler = new EvenementCivilEchEsbHandler() {
 			@Override
 			public void onEsbMessage(EsbMessage message) throws EsbBusinessException {
 				try {
 					super.onEsbMessage(message);
+				}
+				catch (Throwable t) {
+					evenementsExploses.add(Pair.of(message.getBusinessId(), t));
 				}
 				finally {
 					synchronized (evenementsVusPasser) {
@@ -99,6 +109,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 		};
 		esbHandler.setRecuperateur(null);
 		esbHandler.setIgnoredEventTypes(IGNORED);
+		esbHandler.setEventTypesWithNullEventDateReplacement(NULL_DATE_WITH_REPLACEMENT);
 		esbHandler.setReceptionHandler(receptionHandler);
 		esbHandler.afterPropertiesSet();
 
@@ -159,6 +170,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 		Assert.assertEquals(type, recu.getType());
 
 		Assert.assertEquals(0, evenementsIgnores.size());
+		Assert.assertEquals(0, evenementsExploses.size());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
@@ -169,6 +181,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 			evenementsVusPasser.clear();
 			evenementsTraites.clear();
 			evenementsIgnores.clear();
+			evenementsExploses.clear();
 
 			final Long idEvenement = 34674524122L + type.ordinal();
 			final RegDate dateEvenement = RegDate.get();
@@ -198,6 +211,7 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 			Assert.assertEquals("type " + type, 1, evenementsVusPasser.size());
 			Assert.assertEquals("type " + type, 0, evenementsTraites.size());
 			Assert.assertEquals("type " + type, 1, evenementsIgnores.size());
+			Assert.assertEquals("type " + type, 0, evenementsExploses.size());
 
 			final EvenementCivilEch recu = evenementsIgnores.get(0);
 			Assert.assertNotNull("type " + type, recu);
@@ -210,6 +224,73 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 			Assert.assertNull("type " + type, recu.getNumeroIndividu());
 			Assert.assertEquals("type " + type, refMessageId, recu.getRefMessageId());
 			Assert.assertEquals("type " + type, type, recu.getType());
+		}
+	}
+
+	@Test
+	public void testEvenementSansDate() throws Exception {
+		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
+
+			// on ignore ceux-là de toute façon...
+			if (IGNORED.contains(type) || type == TypeEvenementCivilEch.TESTING) {
+				continue;
+			}
+
+			// on construit un événement sans date du type donné
+			evenementsVusPasser.clear();
+			evenementsTraites.clear();
+			evenementsIgnores.clear();
+			evenementsExploses.clear();
+
+			final Long idEvenement = 48515544L + type.ordinal();
+			final Long refMessageId = 12L;
+			final ActionEvenementCivilEch action = ActionEvenementCivilEch.PREMIERE_LIVRAISON;
+
+			final EvenementCivilEch evt = new EvenementCivilEch();
+			evt.setId(idEvenement);
+			evt.setAction(action);
+			evt.setDateEvenement(null);
+			evt.setCommentaireTraitement("turlututu");
+			evt.setDateTraitement(DateHelper.getCurrentDate());
+			evt.setEtat(EtatEvenementCivil.A_TRAITER);
+			evt.setNumeroIndividu(23153612L);
+			evt.setRefMessageId(refMessageId);
+			evt.setType(type);
+
+			Assert.assertEquals(0, evenementsTraites.size());
+			sender.sendEvent(evt, "toto");
+
+			// On attend le message
+			synchronized (evenementsVusPasser) {
+				while (evenementsVusPasser.size() == 0) {
+					evenementsVusPasser.wait();
+				}
+			}
+			Assert.assertEquals("type " + type, 1, evenementsVusPasser.size());
+			Assert.assertEquals("type " + type, 0, evenementsIgnores.size());
+
+			if (NULL_DATE_WITH_REPLACEMENT.contains(type)) {
+				Assert.assertEquals("type " + type, 1, evenementsTraites.size());
+				Assert.assertEquals("type " + type, 0, evenementsExploses.size());
+
+				final EvenementCivilEch traite = evenementsTraites.get(0);
+				Assert.assertNotNull(traite);
+				Assert.assertEquals(RegDate.get(), traite.getDateEvenement());
+			}
+			else {
+				Assert.assertEquals("type " + type, 0, evenementsTraites.size());
+				Assert.assertEquals("type " + type, 1, evenementsExploses.size());
+
+				final Pair<String, Throwable> explosionData = evenementsExploses.get(0);
+				Assert.assertNotNull(explosionData);
+				Assert.assertNotNull(explosionData.getLeft());
+				Assert.assertNotNull(explosionData.getRight());
+
+				//noinspection ThrowableResultOfMethodCallIgnored
+				final Throwable t = explosionData.getRight();
+				Assert.assertEquals(EvenementCivilEchEsbException.class, t.getClass());
+				Assert.assertEquals("L'attribut 'date' est obligatoire pour un événement civil à l'entrée dans Unireg", t.getMessage());
+			}
 		}
 	}
 }

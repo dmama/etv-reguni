@@ -164,24 +164,36 @@ public abstract class CollectionsUtils {
 	}
 
 	/**
-	 * @param list liste à transformer en chaîne de caractères
-	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la liste
-	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la liste
-	 * @param <T> type des éléments de la liste
-	 * @return une chaîne de caractère qui énumère les éléments de la liste, séparés par le séparateur donné
+	 * @param col collection à transformer en chaîne de caractères
+	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
+	 * @param emptyCollectionString la chaîne de caractère à afficher dans le cas d'une collection nulle ou vide
+	 * @param <T> type des éléments de la collection
+	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné
 	 */
-	public static <T> String toString(List<T> list, StringRenderer<? super T> renderer, String separator) {
-		if (list == null || list.isEmpty()) {
-			return StringUtils.EMPTY;
+	public static <T> String toString(Collection<T> col, StringRenderer<? super T> renderer, String separator, String emptyCollectionString) {
+		if (col == null || col.isEmpty()) {
+			return emptyCollectionString;
 		}
 		final StringBuilder b = new StringBuilder();
-		for (T elt : list) {
+		for (T elt : col) {
 			if (b.length() > 0) {
 				b.append(separator);
 			}
 			b.append(renderer.toString(elt));
 		}
 		return b.toString();
+	}
+
+	/**
+	 * @param col collection à transformer en chaîne de caractères
+	 * @param renderer le {@link ch.vd.uniregctb.common.StringRenderer} à utiliser pour les éléments de la collection
+	 * @param separator le séparateur à placer entre la représentation de chacun des éléments de la collection
+	 * @param <T> type des éléments de la collection
+	 * @return une chaîne de caractère qui énumère les éléments de la collection, séparés par le séparateur donné (en cas de collection nulle ou vide, renvoie une chaîne vide)
+	 */
+	public static <T> String toString(Collection<T> col, StringRenderer<? super T> renderer, String separator) {
+		return toString(col, renderer, separator, StringUtils.EMPTY);
 	}
 
 	private static final StringRenderer<String> STRING_TRIMMER = new StringRenderer<String>() {

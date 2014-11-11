@@ -24,11 +24,14 @@ import org.xml.sax.SAXException;
 import ch.vd.evd0001.v5.EventIdentification;
 import ch.vd.evd0001.v5.EventNotification;
 import ch.vd.evd0001.v5.ObjectFactory;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
@@ -48,6 +51,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private int delaiRecuperationMinutes = 0;
 	private RecuperationThread recuperationThread;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
+	private Set<TypeEvenementCivilEch> eventTypesWithNullEventDateReplacement;
 	private EvenementCivilEchProcessingMode processingMode;
 	private boolean running;
 
@@ -59,6 +63,11 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIgnoredEventTypes(Set<TypeEvenementCivilEch> ignoredEventTypes) {
 		this.ignoredEventTypes = ignoredEventTypes;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEventTypesWithNullEventDateReplacement(Set<TypeEvenementCivilEch> eventTypesWithNullEventDateReplacement) {
+		this.eventTypesWithNullEventDateReplacement = eventTypesWithNullEventDateReplacement;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -144,6 +153,17 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		}
 	}
 
+	private void fillCurrentDateOnSpecificIncomingEvent(EvenementCivilEch ech) throws EvenementCivilEchEsbException {
+		// on ne s'intéresse qu'à des événements civils qui n'auraient pas de date en entrée
+		// (ou une date tellement hors des clous que cela ne fait pas de différence)
+		if (ech.getDateEvenement() == null) {
+			if (eventTypesWithNullEventDateReplacement.contains(ech.getType())) {
+				ech.setDateEvenement(RegDate.get());
+				LOGGER.info(String.format("La date de l'événement %d de type %s a été modifiée pour correspondre à la date de réception.", ech.getId(), ech.getType()));
+			}
+		}
+	}
+
 	private static void checkValidIncomingEventData(EvenementCivilEch ech) throws EvenementCivilEchEsbException {
 		final List<String> attributs = new ArrayList<>();
 		if (ech.getAction() == null) {
@@ -201,16 +221,19 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 				throw new EvenementCivilEchEsbException(EsbBusinessCode.EVT_CIVIL, e);
 			}
 
-			// 1'. validation des données de base
+			// 2. rattrapage de la date nulle
+			fillCurrentDateOnSpecificIncomingEvent(ech);
+
+			// 3. validation des données de base
 			checkValidIncomingEventData(ech);
 
-			// 2. événement ignoré ?
+			// 4. événement ignoré ?
 			if (isIgnored(ech)) {
 				onIgnoredEvent(ech);
 				return null;
 			}
 			else {
-				// 3. sauvegarde de l'événement dès son arrivée
+				// 5. sauvegarde de l'événement dès son arrivée
 				return saveIncomingEvent(ech);
 			}
 		}
@@ -377,21 +400,14 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
-			final StringBuilder b = new StringBuilder("Liste des événements civils ignorés : ");
-			if (ignoredEventTypes == null) {
-				b.append("Aucun");
-			}
-			else {
-				boolean first = true;
-				for (TypeEvenementCivilEch type : ignoredEventTypes) {
-					if (!first) {
-						b.append(", ");
-					}
-					b.append(type).append(" (").append(type.getCodeECH()).append(')');
-					first = false;
+			final StringRenderer<TypeEvenementCivilEch> renderer = new StringRenderer<TypeEvenementCivilEch>() {
+				@Override
+				public String toString(TypeEvenementCivilEch type) {
+					return String.format("%s (%d)", type, type.getCodeECH());
 				}
-				LOGGER.info(b.toString());
-			}
+			};
+			LOGGER.info(String.format("Liste des événements civils ignorés en mode %s : %s", processingMode, CollectionsUtils.toString(ignoredEventTypes, renderer, ", ", "Aucun")));
+			LOGGER.info(String.format("Liste des événements civils dont une date nulle sera remplacée par la date de réception en mode %s : %s", processingMode, CollectionsUtils.toString(eventTypesWithNullEventDateReplacement, renderer, ", ", "Aucun")));
 		}
 
 		if (recuperateur != null && delaiRecuperationMinutes < 0) {
