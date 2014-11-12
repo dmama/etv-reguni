@@ -523,6 +523,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(MODIF_ADRESSE, Boolean.TRUE);
 				map.put(ADR_P, Boolean.TRUE);
 			}
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_FISCAL_DPI, visa, oid)) {
+				map.put(MODIF_FISCAL, Boolean.TRUE);
+			}
 		}
 
 		// UNIREG-2120 Possibilite de créer un debiteur à partir d'une collectivité administrative
