@@ -5,7 +5,7 @@ TMP_FILE="$TMP_DIR/file"
 TMP_DEMANDES="$TMP_DIR/demandes"
 touch "$TMP_DEMANDES"
 
-grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed -e '/Reçu/ N;s/\n/ /' | grep -v "^--" | while read LINE; do
+grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 2 | grep -v "en cours" | sed -e '/Reçu/ N;s/\n/ /' | grep -v "^--" | while read LINE; do
 
 	if [[ "$LINE" =~ ch\.vd\. ]]; then
 		# Exception....
@@ -19,7 +19,7 @@ grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed
 		fi
 		echo "$NO_DEMANDE" >> "$TMP_DEMANDES"
 		echo "$DATE;$CTB_AVS;$TRAITEMENT;$NO_DEMANDE"
-		
+
 	done | sed -e 's/\//;/' -e 's/^\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\)/\3\2\1/' -e 's/\.//g'
 done > "$TMP_FILE"
 
