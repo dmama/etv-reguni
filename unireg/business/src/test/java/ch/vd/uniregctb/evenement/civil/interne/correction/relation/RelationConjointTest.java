@@ -64,9 +64,22 @@ public class RelationConjointTest extends WithoutSpringTest {
 
 
 	@Test
-	public void testHasDifferenceIdentiquesSaufNumerosIndividuInconnus() throws Exception {
+	public void testHasDifferenceIdentiquesYComprisNumerosIndividuInconnus() throws Exception {
 		final List<RelationConjoint> fiscal = Arrays.asList(new RelationConjoint(date(2001, 12, 3), date(2005, 3, 2), 1234L, false),
 		                                                                       new RelationConjoint(date(2006, 5, 1), date(2008, 9, 5), null, false),
+		                                                                       new RelationConjoint(date(2010, 7, 30), null, 4321L, false));
+
+		final List<RelationConjoint> civil = Arrays.asList(new RelationConjoint(date(2001, 12, 3), date(2005, 3, 2), 1234L, false),
+		                                                                      new RelationConjoint(date(2006, 5, 1), date(2008, 9, 5), null, false),
+		                                                                      new RelationConjoint(date(2010, 7, 30), null, 4321L, false));
+
+		Assert.assertFalse(RelationConjoint.hasDifference(fiscal, civil));
+	}
+
+	@Test
+	public void testHasDifferenceIdentiquesNumerosIndividuInconnusAvecConjointFiscalConnu() throws Exception {
+		final List<RelationConjoint> fiscal = Arrays.asList(new RelationConjoint(date(2001, 12, 3), date(2005, 3, 2), 1234L, false),
+		                                                                       new RelationConjoint(date(2006, 5, 1), date(2008, 9, 5), null, true),
 		                                                                       new RelationConjoint(date(2010, 7, 30), null, 4321L, false));
 
 		final List<RelationConjoint> civil = Arrays.asList(new RelationConjoint(date(2001, 12, 3), date(2005, 3, 2), 1234L, false),
@@ -218,6 +231,14 @@ public class RelationConjointTest extends WithoutSpringTest {
 		}
 		{
 			final RelationConjoint one = new RelationConjoint(date(2000, 5, 4), date(2009, 3, 1), null, false);
+			final RelationConjoint two = new RelationConjoint(date(2000, 5, 4), date(2009, 3, 1), null, false);
+			Assert.assertTrue(one.equals(one));
+			Assert.assertTrue(two.equals(two));
+			Assert.assertTrue(one.equals(two));
+			Assert.assertTrue(two.equals(one));
+		}
+		{
+			final RelationConjoint one = new RelationConjoint(date(2000, 5, 4), date(2009, 3, 1), null, true);
 			final RelationConjoint two = new RelationConjoint(date(2000, 5, 4), date(2009, 3, 1), null, false);
 			Assert.assertTrue(one.equals(one));
 			Assert.assertTrue(two.equals(two));
