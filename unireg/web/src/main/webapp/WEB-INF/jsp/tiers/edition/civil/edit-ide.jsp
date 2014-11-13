@@ -6,7 +6,9 @@
         <fmt:message key="title.edition.informations.entreprise" />
     </tiles:put>
     <tiles:put name="fichierAide">
-        <a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-civil-complement.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-civil-complement.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
     </tiles:put>
     <tiles:put name="body">
 

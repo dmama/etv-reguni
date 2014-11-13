@@ -6,7 +6,9 @@
 
   	<tiles:put name="title"><fmt:message key="title.param.application" /></tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="ouvrirAide('<c:url value='/docs/parametrage-application.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/parametrage-application.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="head">
   		

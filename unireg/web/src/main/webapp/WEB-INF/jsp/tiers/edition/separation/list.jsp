@@ -9,7 +9,9 @@
   		<fmt:message key="title.separation.recherche.menage.commun" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/creation-separation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/creation-separation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>

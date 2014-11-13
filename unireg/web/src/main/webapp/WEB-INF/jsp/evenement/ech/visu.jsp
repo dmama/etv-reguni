@@ -4,8 +4,10 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 <tiles:put name="title"><fmt:message key="label.caracteristiques.evenement.ech"/></tiles:put>
 <tiles:put name="fichierAide">
-    <c:url var="doc" value="/docs/evenements-ech.pdf"/>
-    <a href="#" onClick="ouvrirAide('${doc}');" title="AccessKey: a" accesskey="e">Aide</a>
+	<li>
+		<c:url var="doc" value="/docs/evenements-ech.pdf"/>
+		<a href="#" onClick="ouvrirAide('${doc}');" title="AccessKey: a" accesskey="e">Aide</a>
+	</li>
 </tiles:put>
 <tiles:put name="body">
 

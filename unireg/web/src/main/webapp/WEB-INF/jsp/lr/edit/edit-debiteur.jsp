@@ -3,7 +3,9 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.lrs.debiteur" /></tiles:put>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/listes-recapitulatives.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<li>
+			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/listes-recapitulatives.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		</li>
 	</tiles:put>
 	
 	<tiles:put name="body">

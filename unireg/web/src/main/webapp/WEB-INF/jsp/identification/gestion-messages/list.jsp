@@ -22,8 +22,6 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="${titrePage}" /></tiles:put>
-  	<tiles:put name="fichierAide">
-	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRechercheMessage" name="theForm" action="${myAction}" commandName="identificationCriteria">

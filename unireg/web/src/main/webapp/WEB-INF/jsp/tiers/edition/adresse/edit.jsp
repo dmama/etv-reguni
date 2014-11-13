@@ -9,7 +9,9 @@
 		</tiles:put>
 	</c:if>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-adresse.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<li>
+			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-adresse.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		</li>
 	</tiles:put>
 	<tiles:put name="body">
 		<form:form method="post" id="formEditTiers" name="theForm">

@@ -28,7 +28,9 @@
 
   	<tiles:put name="title"><fmt:message key="title.recherche.evenements.ech" /></tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="ouvrirAide('<c:url value='/docs/recherche.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="ouvrirAide('<c:url value='/docs/recherche.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>

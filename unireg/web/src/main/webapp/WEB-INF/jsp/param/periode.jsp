@@ -8,7 +8,9 @@
 		<fmt:message key="title.param.periode.fiscale" />
 	</tiles:put>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/parametrage-periode-fiscale.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<li>
+			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/parametrage-periode-fiscale.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		</li>
 	</tiles:put>
 	<tiles:put name="head">
 		<fmt:message key="label.param.confirm.init" var="confirmInit"/>

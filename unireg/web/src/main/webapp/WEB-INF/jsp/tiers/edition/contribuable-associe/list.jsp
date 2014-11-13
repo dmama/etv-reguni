@@ -8,7 +8,9 @@
 		  	<fmt:message key="title.recherche.contribuable.associe" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>

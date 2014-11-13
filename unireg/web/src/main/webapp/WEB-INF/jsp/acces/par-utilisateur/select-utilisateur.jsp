@@ -3,7 +3,9 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.acces.utilisateur.recherche.utilisateur" /></tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/acces-par-utilisateur.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
 	<tiles:put name="body">
 	<form:form method="post" id="formSelectUtilisateur"  name="theForm">

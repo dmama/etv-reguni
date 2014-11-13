@@ -6,7 +6,9 @@
   		<fmt:message key="title.recapitulatif.annulation.menage.commun" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onclick="ouvrirAide('<c:url value='/docs/annulation-couple.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onclick="ouvrirAide('<c:url value='/docs/annulation-couple.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="body">
 

@@ -6,7 +6,9 @@
 		<fmt:message key="title.edition.tiers" />
 	</tiles:put>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<li>
+			<a href="#" onClick="ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		</li>
 	</tiles:put>
 	<tiles:put name="body">
 		<form:form method="post" id="formEditDebiteur" name="theForm">

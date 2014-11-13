@@ -7,7 +7,9 @@
   		<fmt:message key="title.annulation.deces.recherche.pp" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/annulation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    <li>
+		    <a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/annulation-deces.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	    </li>
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>

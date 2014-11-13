@@ -5,8 +5,6 @@
   	<tiles:put name="title">
   		<fmt:message key="title.recapitulatif.annulation" />
   	</tiles:put>
-  	<tiles:put name="fichierAide">
-	</tiles:put>
   	<tiles:put name="body">
 
 		<table>

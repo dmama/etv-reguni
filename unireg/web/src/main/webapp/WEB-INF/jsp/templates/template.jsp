@@ -272,9 +272,7 @@
 						<li>
 							<a href="<c:url value='/'/>" title="Recherche" accesskey="d"><fmt:message key="label.recherche" /></a>
 						</li>
-						<li>
-							<tiles:getAsString name='fichierAide' ignore='true'/>
-						</li>
+						<tiles:getAsString name='fichierAide' ignore='true'/>
 						<li>
                             <%--suppress JspAbsolutePathInspection, HtmlUnknownTarget --%>
                             <a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>

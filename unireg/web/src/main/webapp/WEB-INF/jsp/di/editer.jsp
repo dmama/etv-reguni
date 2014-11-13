@@ -4,7 +4,7 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.di" /></tiles:put>
-  	<tiles:put name="fichierAide"><a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a></tiles:put>
+  	<tiles:put name="fichierAide"><li><a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a></li></tiles:put>
 	<tiles:put name="body">
 
 		<unireg:nextRowClass reset="1"/>

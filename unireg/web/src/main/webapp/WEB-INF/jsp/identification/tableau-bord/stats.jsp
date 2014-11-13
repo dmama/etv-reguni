@@ -14,8 +14,6 @@
             });
         </script>
     </tiles:put>
-  	<tiles:put name="fichierAide">
-	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
 	    <form:form method="get" id="formRechercheMessage" commandName="statsCriteria">

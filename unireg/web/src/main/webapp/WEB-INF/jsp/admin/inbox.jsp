@@ -6,7 +6,9 @@
 		<fmt:message key="label.inbox.gestion" />
 	</tiles:put>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/BoiteReception_ExtractionFichier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<li>
+			<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/BoiteReception_ExtractionFichier.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		</li>
 	</tiles:put>
 	<tiles:put name="body">
 	
