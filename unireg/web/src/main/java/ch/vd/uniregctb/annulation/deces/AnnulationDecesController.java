@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.annulation.deces;
 
+import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +114,7 @@ public class AnnulationDecesController {
 	@RequestMapping(value = "/list.do")
 	@Transactional(readOnly = true)
 	@SecurityCheck(rolesToCheck = {Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR},	accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String liste(ModelMap modelMap, @ModelAttribute(ANNULATION_DECES_CRITERIA) TiersCriteriaView criteresEnSession, BindingResult result) {
+	public String liste(ModelMap modelMap, @Valid @ModelAttribute(ANNULATION_DECES_CRITERIA) TiersCriteriaView criteresEnSession, BindingResult result) {
 		if (!result.hasErrors() && !criteresEnSession.isEmpty()) {
 			try {
 				final List<TiersIndexedDataView> list = searchDecedes(criteresEnSession);
