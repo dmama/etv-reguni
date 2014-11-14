@@ -1030,7 +1030,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 						gererSituationFamille(conjointPartiePrenante.getDateEtatCivil(), conjointPartiePrenante.getEtatCivil(), conjointPartiePrenante.getDateSeparation(), conjointData);
 					}
 				}
-				else if (!data.creation) {
+
+				// "etatCivil == null" signifie "partie prenante décédée"
+				else if (!data.creation && etatCivil != null) {
 					// la partie prenante est indiquée comme "équivalent célibataire" et il s'agit d'une mise à jour -> vérifions qu'on a bien quelque chose de compatible en base
 					final Set<RapportEntreTiers> rapports = data.personnePhysique.getRapportsSujet();
 					final DateRange range = new DateRangeHelper.Range(ppSrc.getDateEtatCivil(), null);
@@ -1046,7 +1048,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 
 				// couple ou pas couple, on crée (resp. met à jour) la situation de famille fiscale sur la personne physique
-				gererSituationFamille(ppSrc.getDateEtatCivil(), ppSrc.getEtatCivil(), ppSrc.getDateSeparation(), data);
+				gererSituationFamille(ppSrc.getDateEtatCivil(), etatCivil, ppSrc.getDateSeparation(), data);
 
 				// pas la peine d'aller regarder l'autre partie prenante si on a déjà constitué un couple avec elle...
 				if (conjointAutrePartiePrenante) {

@@ -6125,8 +6125,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
 				pp.setSexe(Sexe.MASCULIN);
 				pp.setDateNaissance(dateNaissance);
-				pp.setDateEtatCivil(dateNaissance);
-				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
 				pp.setDateDeces(dateDeces);
 
 				pp.setRue("Nizzaallee");
@@ -6208,8 +6206,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
 				pp.setSexe(Sexe.MASCULIN);
 				pp.setDateNaissance(dateNaissance);
-				pp.setDateEtatCivil(dateMariage);
-				pp.setEtatCivil(EtatCivil.MARIE);
 				pp.setDateDeces(dateDeces);
 				pp.setNomConjoint("Zigotto");
 				pp.setPrenomConjoint("Pauline");
@@ -6315,8 +6311,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
 				pp.setSexe(Sexe.MASCULIN);
 				pp.setDateNaissance(dateNaissance);
-				pp.setDateEtatCivil(dateNaissance);
-				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
 				pp.setDateDeces(dateDeces);
 
 				pp.setRue("Nizzaallee");
@@ -6386,8 +6380,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
 				pp.setSexe(Sexe.MASCULIN);
 				pp.setDateNaissance(dateNaissance);
-				pp.setDateEtatCivil(dateNaissance);
-				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
 				pp.setDateDeces(dateDeces);
 				pp.setSourceCivile(false);
 
@@ -6464,8 +6456,6 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
 				pp.setSexe(Sexe.MASCULIN);
 				pp.setDateNaissance(dateNaissance);
-				pp.setDateEtatCivil(dateNaissance);
-				pp.setEtatCivil(EtatCivil.CELIBATAIRE);
 				pp.setDateDeces(dateDeces);
 
 				pp.setRue("Nizzaallee");
