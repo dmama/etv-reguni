@@ -81,7 +81,10 @@ function filter_log() {
 function reorder-error-messages() {
 	BUFFER=""
 	while read LINE; do
-		if [[ "$LINE" =~ ^-[[:blank:]].*$ ]]; then
+		if [[ "$LINE" =~ ^-[[:blank:]].*$ ]] || [[ "$LINE" =~ Exception ]]; then
+			if [[ ! "$LINE" =~ ^- ]]; then
+				LINE="- $LINE"
+			fi
 			if [ -z "$BUFFER" ]; then
 				BUFFER="$LINE"
 			else
@@ -112,7 +115,7 @@ cat_file "$APP_LOG_FILE" | grep "vtReqDes" -A 10 | filter_log > "$APP_LOG"
 cat "$APP_LOG" | grep "terminé dans l.état" | sed -e 's/^.* \([A-Z_]\+\)$/\1/' | sort | uniq -c > "$STATS_LOG"
 
 # affichage des message d'erreur
-cat "$APP_LOG" | grep "\(^- \|EN_ERREUR\)" | sed -e '/vtReqDes/ s/^.*[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\.[0-9]\+\)[^0-9].*traitement \([0-9]\+\) .*$/Unité de traitement \2 à \1 :/' | reorder-error-messages > "$DETAIL_ERRORS"
+cat "$APP_LOG" | grep "\(^- \|EN_ERREUR\|^[^ ]\+Exception\)" | grep -v "ReqDesWrapping" | uniq | sed -e '/vtReqDes/ s/^.*[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\.[0-9]\+\)[^0-9].*traitement \([0-9]\+\) .*$/Unité de traitement \2 à \1 :/' | reorder-error-messages > "$DETAIL_ERRORS"
 
 # constitution du message en sortie
 if [ -s "$STATS_LOG" ]; then
