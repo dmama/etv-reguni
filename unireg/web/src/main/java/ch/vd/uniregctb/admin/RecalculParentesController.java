@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -19,8 +22,11 @@ import ch.vd.uniregctb.tiers.TiersService;
 @Controller
 public class RecalculParentesController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecalculParentesController.class);
+
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;
+	private DataEventService dataEventService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -28,6 +34,10 @@ public class RecalculParentesController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -40,6 +50,17 @@ public class RecalculParentesController {
 
 		final Tiers tiers = tiersService.getTiers(id);
 		if (tiers instanceof PersonnePhysique && ((PersonnePhysique) tiers).isHabitantVD()) {
+
+			// [SIFISC-14023] rafaîchissement du cache civil avant le recalcul des parentés
+			final Long noIndividu = ((PersonnePhysique) tiers).getNumeroIndividu();
+			if (noIndividu != null) {
+				LOGGER.info(String.format("Demande manuelle de rafraîchissement des relations de parenté du tiers %d (avec éviction du cache des données de l'individu %d)", tiers.getNumero(), noIndividu));
+				dataEventService.onIndividuChange(noIndividu);
+			}
+			else {
+				LOGGER.info(String.format("Demande manuelle de rafraîchissement des relations de parenté du tiers %d", tiers.getNumero()));
+			}
+
 			tiersService.refreshParentesSurPersonnePhysique((PersonnePhysique) tiers, true);
 			Flash.message("Les relations de parenté ont été rafraîchies.");
 		}

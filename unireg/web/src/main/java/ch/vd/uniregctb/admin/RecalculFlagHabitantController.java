@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -20,8 +23,11 @@ import ch.vd.uniregctb.tiers.TiersService;
 @Controller
 public class RecalculFlagHabitantController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecalculFlagHabitantController.class);
+
 	private TiersService tiersService;
 	private SecurityProviderInterface securityProvider;
+	private DataEventService dataEventService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -29,6 +35,10 @@ public class RecalculFlagHabitantController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -42,8 +52,16 @@ public class RecalculFlagHabitantController {
 		final Tiers tiers = tiersService.getTiers(id);
 		if (tiers instanceof PersonnePhysique && ((PersonnePhysique) tiers).isConnuAuCivil()) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
+
+			LOGGER.info(String.format("Demande de recalcul manuel du flag 'habitant' du contribuable %d (avec éviction du cache des données de l'individu %d)", pp.getNumero(), pp.getNumeroIndividu()));
+			dataEventService.onIndividuChange(pp.getNumeroIndividu());
+
 			try {
 				final TiersService.UpdateHabitantFlagResultat res = tiersService.updateHabitantFlag(pp, pp.getNumeroIndividu(), null);
+
+				LOGGER.info(String.format("Résultat du recalcul manuel du flag 'habitant' du contribuable %d : %s",
+				                          pp.getNumero(), res == TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT ? String.format("%s (%b)", res, pp.getHabitant()) : res));
+
 				final String message;
 				switch (res) {
 					case PAS_DE_CHANGEMENT:

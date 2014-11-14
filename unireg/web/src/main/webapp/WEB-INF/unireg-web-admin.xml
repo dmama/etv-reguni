@@ -101,12 +101,14 @@
 	<bean id="recalculParentesController" class="ch.vd.uniregctb.admin.RecalculParentesController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 
 	<!-- Gestion du recalcul du flag habitant -->
 	<bean id="recalculFlagHabitant" class="ch.vd.uniregctb.admin.RecalculFlagHabitantController">
 		<property name="tiersService" ref="tiersService"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 
 </beans>
