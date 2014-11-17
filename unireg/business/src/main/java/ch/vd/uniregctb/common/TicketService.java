@@ -7,8 +7,7 @@ package ch.vd.uniregctb.common;
 public interface TicketService {
 
 	/**
-	 * Interface des tickets renvoyés.
-	 * L'utilisation de l'interface {@link java.lang.AutoCloseable} permet d'utiliser ces tickets dans des constructions try-with-resource
+	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, long)} et utilisés par la méthode {@link #releaseTicket(ch.vd.uniregctb.common.TicketService.Ticket)}.
 	 */
 	static interface Ticket {
 	}
