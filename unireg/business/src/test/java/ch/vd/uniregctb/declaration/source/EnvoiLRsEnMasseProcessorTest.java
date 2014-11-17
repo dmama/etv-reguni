@@ -16,6 +16,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -36,6 +37,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 
 	private ListeRecapService lrService;
 	private AdresseService adresseService;
+	private TicketService ticketService;
 
 	private static class ListRecapServiceWrapper implements ListeRecapService {
 		private final ListeRecapService target;
@@ -85,11 +87,12 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		super.onSetUp();
 		adresseService = getBean(AdresseService.class, "adresseService");
 		lrService = getBean(ListeRecapService.class, "lrService");
+		ticketService = getBean(TicketService.class, "ticketService");
 	}
 
 	private EnvoiLRsEnMasseProcessor buildProcessor(ListeRecapService lrService) {
 		// création du processeur à la main pour pouvoir accéder aux méthodes protégées
-		return new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, tiersService, adresseService);
+		return new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, tiersService, adresseService, ticketService);
 	}
 
 	/**

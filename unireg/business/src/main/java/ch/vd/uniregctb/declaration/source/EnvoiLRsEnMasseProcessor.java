@@ -23,6 +23,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
+import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -42,14 +46,16 @@ public class EnvoiLRsEnMasseProcessor {
 	private final ListeRecapService lrService;
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
+	private final TicketService ticketService;
 
 	public EnvoiLRsEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                ListeRecapService lrService, TiersService tiersService, AdresseService adresseService) {
+	                                ListeRecapService lrService, TiersService tiersService, AdresseService adresseService, TicketService ticketService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
+		this.ticketService = ticketService;
 	}
 
 	/**
@@ -113,9 +119,21 @@ public class EnvoiLRsEnMasseProcessor {
 	}
 
 	private void traiteDebiteur(Long id, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {
-		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
-		traiteDebiteur(dpi, dateFinPeriode, rapport);
-		rapport.addDebiteur(dpi);
+		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(id);
+		try {
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			try {
+				final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, id);
+				traiteDebiteur(dpi, dateFinPeriode, rapport);
+				rapport.addDebiteur(dpi);
+			}
+			finally {
+				ticketService.releaseTicket(ticket);
+			}
+		}
+		catch (TicketTimeoutException e) {
+			throw new DeclarationException(String.format("Une LR est actuellement déjà en cours d'émission pour le débiteur %d.", id), e);
+		}
 	}
 
 	private void traiteDebiteur(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, EnvoiLRsResults rapport) throws Exception {

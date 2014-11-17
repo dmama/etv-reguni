@@ -18,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -60,6 +61,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final ValidationService validationService;
 	private final PeriodeImpositionService periodeImpositionService;
 	private final AdresseService adresseService;
+	private final TicketService ticketService;
 
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
@@ -68,7 +70,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	                                          ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
 	                                          DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
 	                                          ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService, PeriodeImpositionService periodeImpositionService,
-	                                          AdresseService adresseService) {
+	                                          AdresseService adresseService, TicketService ticketService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.modeleDocumentDAO = modeleDocumentDAO;
@@ -82,6 +84,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
 		this.adresseService = adresseService;
+		this.ticketService = ticketService;
 	}
 
 	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, @Nullable StatusManager s) throws DeclarationException {
@@ -89,7 +92,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres,
-		                                                             serviceCivilCacheWarmer, adresseService);
+		                                                             serviceCivilCacheWarmer, adresseService, ticketService);
 		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
 		                                                                               periodeImpositionService, adresseService);
 

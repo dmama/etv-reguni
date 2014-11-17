@@ -11,8 +11,12 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
@@ -40,6 +44,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	public final static String TARGET_ANNULER_DELAI = "annulerDelai";
 
 	private ListeRecapEditManager lrEditManager;
+	private TicketService ticketService;
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -101,22 +106,33 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		ListeRecapDetailView bean = (ListeRecapDetailView) command;
 
 		if (getTarget() != null) {
 			if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
-				final TraitementRetourEditique<EditiqueResultatErreur> erreur = new TraitementRetourEditique<EditiqueResultatErreur>() {
-					@Override
-					public ModelAndView doJob(EditiqueResultatErreur resultat) {
-						final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
-						throw new EditiqueCommunicationException(message);
-					}
-				};
+				final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(bean.getDpi().getNumero());
+				try {
+					final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+					try {
+						final TraitementRetourEditique<EditiqueResultatErreur> erreur = new TraitementRetourEditique<EditiqueResultatErreur>() {
+							@Override
+							public ModelAndView doJob(EditiqueResultatErreur resultat) {
+								final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+								throw new EditiqueCommunicationException(message);
+							}
+						};
 
-				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
-				traiteRetourEditique(resultat, response, "lr", null, null, erreur);
+						final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
+						traiteRetourEditique(resultat, response, "lr", null, null, erreur);
+					}
+					finally {
+						ticketService.releaseTicket(ticket);
+					}
+				}
+				catch (TicketTimeoutException e) {
+					throw new ActionException("Une LR est actuellement en cours d'impression pour ce débiteur. Veuillez ré-essayer ultérieurement.", e);
+				}
 			}
 		}
 		else {
@@ -153,5 +169,9 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 
 	public void setLrEditManager(ListeRecapEditManager lrEditManager) {
 		this.lrEditManager = lrEditManager;
+	}
+
+	public void setTicketService(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 }

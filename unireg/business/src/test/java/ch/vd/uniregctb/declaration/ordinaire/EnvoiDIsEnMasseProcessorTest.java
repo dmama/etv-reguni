@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -84,12 +85,13 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		adresseService = getBean(AdresseService.class, "adresseService");
+		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
-				diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService);
+		                                         diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService, ticketService);
 	}
 
 	@Test

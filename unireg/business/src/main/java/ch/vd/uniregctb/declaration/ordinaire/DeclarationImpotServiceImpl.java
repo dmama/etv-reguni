@@ -16,6 +16,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -78,6 +79,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
 	private PeriodeImpositionService periodeImpositionService;
 	private AssujettissementService assujettissementService;
+	private TicketService ticketService;
 
 	private Set<String> sourcesMonoQuittancement;
 
@@ -91,7 +93,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender, PeriodeImpositionService periodeImpositionService,
-	                                   AssujettissementService assujettissementService) {
+	                                   AssujettissementService assujettissementService, TicketService ticketService) {
 		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
@@ -109,6 +111,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.evenementDeclarationSender = evenementDeclarationSender;
 		this.periodeImpositionService = periodeImpositionService;
 		this.assujettissementService = assujettissementService;
+		this.ticketService = ticketService;
 		this.sourcesMonoQuittancement = Collections.emptySet();
 	}
 
@@ -200,6 +203,10 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.periodeImpositionService = periodeImpositionService;
 	}
 
+	public void setTicketService(TicketService ticketService) {
+		this.ticketService = ticketService;
+	}
+
 	public void setSourcesMonoQuittancement(Set<String> sources) {
 		this.sourcesMonoQuittancement = sources;
 	}
@@ -231,7 +238,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                         int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService);
+		                                                                        delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}
 
@@ -258,7 +265,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
-
 		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
@@ -267,10 +273,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
-			throws DeclarationException {
+	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
-				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService, periodeImpositionService, adresseService);
+		                                                                                            tacheDAO, tiersService, delaisService, this, transactionManager, parametres,
+		                                                                                            serviceCivilCacheWarmer, validationService, periodeImpositionService,
+		                                                                                            adresseService, ticketService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 

@@ -23,6 +23,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="ticketService" ref="ticketService"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >

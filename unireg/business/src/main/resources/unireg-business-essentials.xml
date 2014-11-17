@@ -133,6 +133,7 @@
 		<property name="helperSommationLR" ref="impressionSommationLRHelper" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="ticketService" ref="ticketService"/>
 	</bean>
 
 	<bean id="diService" class="ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotServiceImpl">
@@ -158,6 +159,7 @@
 		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="ticketService" ref="ticketService"/>
 		<property name="sourcesMonoQuittancement" ref="sourcesMonoQuittancementDi"/>
 	</bean>
 
@@ -169,6 +171,8 @@
 	</bean>
 
 	<bean id="ibanValidator" class="ch.vd.uniregctb.iban.IbanValidator"/>
+
+	<bean id="ticketService" class="ch.vd.uniregctb.common.TicketServiceImpl"/>
 
 	<!-- Database service -->
 	<bean id="databaseService" class="ch.vd.uniregctb.database.DatabaseServiceImpl">

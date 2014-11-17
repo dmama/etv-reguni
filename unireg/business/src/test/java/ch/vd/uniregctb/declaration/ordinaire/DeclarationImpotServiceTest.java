@@ -25,6 +25,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -117,6 +118,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		adresseService = getBean(AdresseService.class, "adresseService");
+		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -125,7 +127,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 * et seule l'interface publique est accessible)
 		 */
 		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIHelper,
-				transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService, assujettissementService);
+		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
+		                                          assujettissementService, ticketService);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override

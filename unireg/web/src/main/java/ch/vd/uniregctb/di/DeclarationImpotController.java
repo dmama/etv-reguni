@@ -31,13 +31,17 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -94,6 +98,7 @@ public class DeclarationImpotController {
 	private PeriodeImpositionService periodeImpositionService;
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
+	private TicketService ticketService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -149,6 +154,10 @@ public class DeclarationImpotController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setTicketService(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -433,26 +442,38 @@ public class DeclarationImpotController {
 		}
 
 		// On imprime la nouvelle déclaration d'impôt
+		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(tiersId);
+		try {
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			try {
+				final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
+				                                                                  view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
-		final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
-				view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
+				final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
+						new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
+							@Override
+							public String doJob(EditiqueResultatReroutageInbox resultat) {
+								return "redirect:/di/list.do?tiersId=" + tiersId;
+							}
+						};
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
-			@Override
-			public String doJob(EditiqueResultatReroutageInbox resultat) {
-				return "redirect:/di/list.do?tiersId=" + tiersId;
+				final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
+					@Override
+					public String doJob(EditiqueResultatErreur resultat) {
+						Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
+						return "redirect:/di/list.do?tiersId=" + tiersId;
+					}
+				};
+
+				return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
 			}
-		};
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur> erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatErreur>() {
-			@Override
-			public String doJob(EditiqueResultatErreur resultat) {
-				Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-				return "redirect:/di/list.do?tiersId=" + tiersId;
+			finally {
+				ticketService.releaseTicket(ticket);
 			}
-		};
-
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, null, erreur);
+		}
+		catch (TicketTimeoutException e) {
+			throw new ActionException("Une DI est actuellement en cours d'impression pour ce contribuable. Veuillez ré-essayer ultérieurement.", e);
+		}
 	}
 
 	private TypeDocument determineTypeDocumentParDefaut(long tiersId) {

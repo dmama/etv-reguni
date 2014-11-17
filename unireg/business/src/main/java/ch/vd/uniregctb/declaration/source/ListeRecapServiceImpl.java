@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -69,7 +70,10 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	private ImpressionSommationLRHelper helperSommationLR;
 
 	private TiersService tiersService;
+
 	private AdresseService adresseService;
+
+	private TicketService ticketService;
 
 	@Override
 	public EditiqueResultat getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
@@ -85,7 +89,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 */
 	@Override
 	public EnvoiLRsResults imprimerAllLR(RegDate dateFinPeriode, StatusManager status) throws Exception {
-		final EnvoiLRsEnMasseProcessor processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, tiersService, adresseService);
+		final EnvoiLRsEnMasseProcessor processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, tiersService, adresseService, ticketService);
 		return processor.run(dateFinPeriode, status);
 	}
 
@@ -393,5 +397,9 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setTicketService(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 }

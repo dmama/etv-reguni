@@ -36,7 +36,10 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -92,6 +95,8 @@ public class EnvoiDIsEnMasseProcessor {
 
 	private final AdresseService adresseService;
 
+	private final TicketService ticketService;
+
 	private final int tailleLot;
 	private RegDate dateExclusionDecedes;
 
@@ -112,7 +117,7 @@ public class EnvoiDIsEnMasseProcessor {
 	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
 	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService,
-	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService) {
+	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService, TicketService ticketService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -124,6 +129,7 @@ public class EnvoiDIsEnMasseProcessor {
 		this.parametreService = parametreService;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.adresseService = adresseService;
+		this.ticketService = ticketService;
 		this.dateExclusionDecedes = null;
 		Assert.isTrue(tailleLot > 0);
 	}
@@ -382,7 +388,6 @@ public class EnvoiDIsEnMasseProcessor {
 	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
-		final Long numeroCtb = contribuable.getNumero();
 
 		// Voir le use-case "SCU-ExclureContribuablesEnvoiDI"
 		final RegDate dateLimiteExclusion = contribuable.getDateLimiteExclusionEnvoiDeclarationImpot();
@@ -393,14 +398,36 @@ public class EnvoiDIsEnMasseProcessor {
 			return false;
 		}
 
+		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(contribuable.getNumero());
+		try {
+			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
+			try {
+				return traiterTache(tache, contribuable, dateTraitement, rapport, cache, dcache, simul);
+			}
+			finally {
+				ticketService.releaseTicket(ticket);
+			}
+		}
+		catch (TicketTimeoutException e) {
+			throw new DeclarationException(String.format("Une DI est actuellement déjà en cours d'émission pour le contribuable %d.", contribuable.getNumero()), e);
+		}
+		catch (InterruptedException e) {
+			throw new DeclarationException(e);
+		}
+	}
+
+	private boolean traiterTache(TacheEnvoiDeclarationImpot tache, Contribuable contribuable, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache,
+	                             DeclarationsCache dcache, boolean simul) throws DeclarationException {
+
+		final Long numeroCtb = contribuable.getNumero();
 		final List<DeclarationImpotOrdinaire> list = dcache.getDeclarationsInRange(contribuable, tache, false);
 		if (!list.isEmpty() && !simul) {
 
 			// Il existe déjà une (ou plusieurs) déclarations
 			if (list.size() == 1 && correspondent(list.get(0), tache)) {
 				Audit.warn("Il existe déjà une déclaration d'impôt pour la période [" + tache.getDateDebut() + " - " + tache.getDateFin()
-						+ "] et le contribuable [" + numeroCtb + "]. Aucune nouvelle déclaration n'est créée" + " et la tâche ["
-						+ tache.getId() + "] est considérée comme traitée.");
+						           + "] et le contribuable [" + numeroCtb + "]. Aucune nouvelle déclaration n'est créée" + " et la tâche ["
+						           + tache.getId() + "] est considérée comme traitée.");
 				tache.setEtat(TypeEtatTache.TRAITE);
 				rapport.addIgnoreDIDejaExistante(contribuable, tache.getDateDebut(), tache.getDateFin());
 			}

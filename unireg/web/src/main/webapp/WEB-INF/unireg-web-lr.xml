@@ -29,6 +29,7 @@
 		<property name="lrEditManager" ref="lrEditManager" />
 		<property name="formView" value="lr/edit/edit" />
 		<property name="successView" value="redirect:/lr/list.do" />
+		<property name="ticketService" ref="ticketService"/>
 	</bean>
 	
 	<bean id="listeRecapEditDebiteurValidator" class="ch.vd.uniregctb.lr.validator.ListeRecapEditDebiteurValidator" >
