@@ -167,6 +167,7 @@ public class AnnulationDecesController {
 	@SecurityCheck(rolesToCheck = {Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String annuleDeces(@RequestParam("numero") Long numero) throws MetierServiceException {
 		controllerUtils.checkAccesDossierEnEcriture(numero);
+		controllerUtils.checkTraitementContribuableAvecDecisionAci(numero);
 		final AnnulationDecesRecapView annulationDecesRecapView = manager.get(numero);
 		manager.save(annulationDecesRecapView);
 		return "redirect:/tiers/visu.do?id=" + annulationDecesRecapView.getPersonne().getNumero();

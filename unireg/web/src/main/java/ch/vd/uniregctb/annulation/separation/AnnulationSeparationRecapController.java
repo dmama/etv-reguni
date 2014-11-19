@@ -47,6 +47,7 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 		AnnulationSeparationRecapView annulationSeparationRecapView = annulationSeparationRecapManager.get(numero);
 		
 		checkAccesDossierEnLecture(annulationSeparationRecapView.getPremierePersonne().getNumero());
+		checkTraitementContribuableAvecDecisionAci(numero);
 		
 	 	// [UNIREG-1499] La 2nde personne peut etre null dans le cas d'un marié seul
 		if (annulationSeparationRecapView.getSecondePersonne() != null) {
@@ -88,11 +89,15 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 		throws Exception {
 
 		AnnulationSeparationRecapView annulationSeparationRecapView = (AnnulationSeparationRecapView) command;
-		checkAccesDossierEnEcriture(annulationSeparationRecapView.getPremierePersonne().getNumero());
+		final Long numeroPremierePersonne = annulationSeparationRecapView.getPremierePersonne().getNumero();
+		checkAccesDossierEnEcriture(numeroPremierePersonne);
+		checkTraitementContribuableAvecDecisionAci(numeroPremierePersonne);
 
 		// [UNIREG-1499] La 2nde personne peut etre null dans le cas d'un marié seul
+		final Long numeroSecondePersonne = annulationSeparationRecapView.getSecondePersonne().getNumero();
 		if (annulationSeparationRecapView.getSecondePersonne() != null) {
-			checkAccesDossierEnEcriture(annulationSeparationRecapView.getSecondePersonne().getNumero());
+			checkAccesDossierEnEcriture(numeroSecondePersonne);
+			checkTraitementContribuableAvecDecisionAci(numeroSecondePersonne);
 		}
 
 		try {
@@ -103,11 +108,11 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 			final StringBuilder b = new StringBuilder();
 			b.append("Exception lors de l'annulation de la séparation du ménage composé ");
 			if (annulationSeparationRecapView.getSecondePersonne() != null) {
-				b.append("des tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getPremierePersonne().getNumero()));
-				b.append(" et ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getSecondePersonne().getNumero()));
+				b.append("des tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroPremierePersonne));
+				b.append(" et ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroSecondePersonne));
 			}
 			else {
-				b.append("du tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getPremierePersonne().getNumero()));
+				b.append("du tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroPremierePersonne));
 			}
 			LOGGER.error(b.toString(), e);
 			throw new ActionException(e.getMessage());

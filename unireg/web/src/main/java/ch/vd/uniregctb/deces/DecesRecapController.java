@@ -77,6 +77,7 @@ public class DecesRecapController extends AbstractSimpleFormController {
 
 		DecesRecapView decesRecapView = (DecesRecapView) command;
 		checkAccesDossierEnEcriture(decesRecapView.getPersonne().getNumero());
+		checkTraitementContribuableAvecDecisionAci(decesRecapView.getPersonne().getNumero());
 
 		decesRecapManager.save(decesRecapView);
 		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + decesRecapView.getPersonne().getNumero(), true));
