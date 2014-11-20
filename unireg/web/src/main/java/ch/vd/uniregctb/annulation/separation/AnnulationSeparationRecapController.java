@@ -47,6 +47,7 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 		AnnulationSeparationRecapView annulationSeparationRecapView = annulationSeparationRecapManager.get(numero);
 		
 		checkAccesDossierEnLecture(annulationSeparationRecapView.getPremierePersonne().getNumero());
+		//SIFISC-14029 on teste la présence de décision Aci sur le couple
 		checkTraitementContribuableAvecDecisionAci(numero);
 		
 	 	// [UNIREG-1499] La 2nde personne peut etre null dans le cas d'un marié seul
@@ -94,8 +95,9 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 		checkTraitementContribuableAvecDecisionAci(numeroPremierePersonne);
 
 		// [UNIREG-1499] La 2nde personne peut etre null dans le cas d'un marié seul
-		final Long numeroSecondePersonne = annulationSeparationRecapView.getSecondePersonne().getNumero();
+
 		if (annulationSeparationRecapView.getSecondePersonne() != null) {
+			final Long numeroSecondePersonne = annulationSeparationRecapView.getSecondePersonne().getNumero();
 			checkAccesDossierEnEcriture(numeroSecondePersonne);
 			checkTraitementContribuableAvecDecisionAci(numeroSecondePersonne);
 		}
@@ -109,7 +111,7 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 			b.append("Exception lors de l'annulation de la séparation du ménage composé ");
 			if (annulationSeparationRecapView.getSecondePersonne() != null) {
 				b.append("des tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroPremierePersonne));
-				b.append(" et ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroSecondePersonne));
+				b.append(" et ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getSecondePersonne().getNumero()));
 			}
 			else {
 				b.append("du tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(numeroPremierePersonne));
