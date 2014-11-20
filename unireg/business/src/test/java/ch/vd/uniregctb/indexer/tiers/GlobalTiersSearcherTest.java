@@ -898,7 +898,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 20000)
 	public void testFlowSearchFusibleAvecResultats() throws Exception {
 		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
 		final Fuse fusible = new Fuse();
@@ -936,7 +936,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		fuseBlowingThread.join();
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 20000)
 	public void testFlowSearchFusibleDejaGrilleAvecResultats() throws Exception {
 		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
 		final Fuse fusible = new Fuse();
@@ -954,7 +954,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		globalTiersSearcher.flowSearch(criteria, queue, fusible);
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 20000)
 	public void testFlowSearchFusibleSansResultats() throws Exception {
 		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
 		final Fuse fusible = new Fuse();
@@ -970,7 +970,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		globalTiersSearcher.flowSearch(criteria, queue, fusible);
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 20000)
 	public void testFlowSearchAvecResultats() throws Exception {
 		final BlockingQueue<TiersIndexedData> queue = new SynchronousQueue<>();
 		final Fuse fusible = new Fuse();
