@@ -42,7 +42,8 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		getPersonnePhysiqueOrFillErrors(getNoIndividu(), erreurs);
+		final PersonnePhysique pp = getPersonnePhysiqueOrFillErrors(getNoIndividu(), erreurs);
+		verifierPresenceDecisionEnCours(pp,getDate());
 	}
 
 	@NotNull

@@ -46,6 +46,7 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		PersonnePhysique veuf = getPrincipalPP();
+		verifierPresenceDecisionEnCours(veuf,getDate());
 
 		/*
 				 * Récupération du ménage du veuf

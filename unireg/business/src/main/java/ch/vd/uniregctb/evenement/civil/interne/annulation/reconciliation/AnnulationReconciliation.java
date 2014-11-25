@@ -55,6 +55,7 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
 		PersonnePhysique principal = getPrincipalPP();
+		verifierPresenceDecisionEnCours(principal,getDate());
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
 		// Récupération du tiers MenageCommun
@@ -66,11 +67,13 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 		if (menage == null && !isAnnulationRedondante()) {
 			throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 		}
+		verifierPresenceDecisionEnCours(menage,principal,getDate());
 
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 		if (individuConjoint != null) {
 			// Obtention du tiers correspondant au conjoint.
 			PersonnePhysique conjoint = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
+			verifierPresenceDecisionEnCours(conjoint,principal,getDate());
 			// Vérification de la cohérence
 			if (menageComplet!=null && !menageComplet.estComposeDe(principal, conjoint)) {
 				throw new EvenementCivilException("Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");

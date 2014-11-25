@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 
@@ -759,6 +761,45 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 		final List<ForFiscal> fors = pp.getForsFiscauxNonAnnules(false);
 		Assert.assertEquals(0, fors.size());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testMajeurAvecDecisionAci() throws Exception {
+
+		final long noIndividu = 12345657879L;
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, RegDate.get().addYears(-19), "Poucet", "Grand", true);
+			}
+		});
+
+		// mise en place fiscale (pour la PP)
+		final long ppId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addYears(-1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addDecisionAci(pp,date(RegDate.get().year()-1,1,1),null,MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return pp.getNumero();
+			}
+		});
+
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
+		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
+		try {
+			sendEvent(evt);
+			Assert.fail("L'événement n'aurait pas dû passer : l'individu possède une décision ACI");
+		}
+		catch (EvenementCivilException e) {
+			final String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
+			Assert.assertEquals(message, e.getMessage());
+		}
+
+
 	}
 
 	@Test

@@ -160,7 +160,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 				assertEquals("Les fors fiscaux du ménage créés lors de la réconciliation doivent êtres annulés", true, forFiscal.isAnnule());
 			}
 		}
-		
+
 		/*
 		 * Evénements fiscaux devant être générés :
 		 *  - réouverture for fiscal principal de Maurice
@@ -170,7 +170,7 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(momo).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementsFiscaux(bea).size());
 	}
-	
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAnnulationMariageCelibataire() {
@@ -196,7 +196,8 @@ public class AnnulationReconciliationTest extends AbstractEvenementCivilInterneT
 		assertTrue("Une erreur aurait dû se produire car cette personne n'est pas réconciliée", errorFound);
 		assertEquals("L'erreur n'est pas la bonne", "Le tiers ménage commun n'a pu être trouvé", errorMessage);
 	}
-	
+
+
 	private AnnulationReconciliation createAnnulationReconciliation(Individu individu, RegDate date) {
 		return new AnnulationReconciliation(individu, null, date, 5652, context);
 	}

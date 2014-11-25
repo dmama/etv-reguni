@@ -79,6 +79,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		 * Obtention du tiers correspondant à l'ancient defunt.
 		 */
 		PersonnePhysique defunt = getPrincipalPP();
+		verifierPresenceDecisionEnCours(defunt,getDate());
 
 		/*
 		 * Deux cas de figure :

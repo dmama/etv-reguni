@@ -62,6 +62,9 @@ public class AnnulationMariage extends EvenementCivilInterne {
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
+		final PersonnePhysique principalPP = getPrincipalPP();
+		verifierPresenceDecisionEnCours(principalPP,getDate());
+
 		// Cas d'annulation de mariage
 		final ServiceCivilService serviceCivil = context.getServiceCivil();
 

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.deces;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -11,6 +12,8 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -21,6 +24,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -118,6 +122,55 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testAnnulationDecesCelibataireAvecDecisionAci() throws Exception {
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1956, 2, 25);
+				final MockIndividu andre = addIndividu(NO_INDIVIDU_CELIBATAIRE, dateNaissance, "Girard", "André", true);
+				addNationalite(andre, MockPays.Suisse, dateNaissance, null);
+				addAdresse(andre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, date(1995, 4, 19), null);
+			}
+		});
+
+		// mise en place fiscale
+		final Long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(NO_INDIVIDU_CELIBATAIRE);
+				addForPrincipal(pp, date(1995, 4, 19), MotifFor.ARRIVEE_HC, DATE_DECES, MotifFor.VEUVAGE_DECES, MockCommune.Fraction.LeLieu);
+				addDecisionAci(pp,date(1995, 4, 19),null,MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,"bof");
+				return pp.getNumero();
+			}
+		});
+
+		// envoi de l'événement civil
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu ind = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, date(2008,12,31));
+				final AnnulationDeces annulation = createValidAnnulationDeces(ind);
+
+				final MessageCollector collector = buildMessageCollector();
+
+				try {
+					annulation.validate(collector, collector);
+					Assert.fail("L'événement n'aurait pas dû valider : l'individu possède une décision ACI");
+				}
+				catch (EvenementCivilException e) {
+					final String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
+					Assert.assertEquals(message, e.getMessage());
+				}
+				return null;
+			}
+		});
+
+
 	}
 
 	@Test
