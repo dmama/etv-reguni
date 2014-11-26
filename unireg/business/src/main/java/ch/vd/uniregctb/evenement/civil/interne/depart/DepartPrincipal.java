@@ -151,6 +151,7 @@ public class DepartPrincipal extends Depart {
 
 		// [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre (notamment au niveau des fors fiscaux)
 		if (!isAncienTypeDepart() && !isDepartComplet()) {
+			Audit.info(getNumeroEvenement(), String.format("La résidence principale du conjoint au %s est toujours sur VD, pas d'action sur les fors fiscaux", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter())));
 			return;
 		}
 
@@ -193,15 +194,14 @@ public class DepartPrincipal extends Depart {
 	private boolean isDepartComplet() {
 		final PersonnePhysique habitant = getPrincipalPP();
 		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, getDate());
-		final PersonnePhysique conjoint;
 		if (couple != null) {
-			conjoint = couple.getConjoint(habitant);
+			final PersonnePhysique conjoint = couple.getConjoint(habitant);
+			if (conjoint != null) {
+				final Boolean hasResidencePrincipaleVaudoise = context.getTiersService().isHabitantResidencePrincipale(conjoint, getDate().getOneDayAfter());
+				return hasResidencePrincipaleVaudoise != null && !hasResidencePrincipaleVaudoise;
+			}
 		}
-		else {
-			conjoint = null;
-		}
-
-		return !(conjoint != null && conjoint.isHabitantVD());
+		return true;
 	}
 
 	/**
@@ -212,12 +212,22 @@ public class DepartPrincipal extends Depart {
 
 		Audit.info(depart.getNumeroEvenement(), String.format("Fermeture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture));
 
+		// [SIFISC-11521] si le for était déjà fermé à la même date pour le même motif, rien à faire...
+		final ForFiscalPrincipal precedent = contribuable.getForFiscalPrincipalAt(dateFermeture);
+		if (precedent != null && precedent.getDateFin() == dateFermeture && precedent.getMotifFermeture() == motifFermeture) {
+			Audit.info(depart.getNumeroEvenement(),
+			           String.format("Le for principal du contribuable est déjà fermé au %s pour le motif '%s', pas de traitement supplémentaire à prévoir sur les fors",
+			                         RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture.getDescription(false)));
+			return;
+		}
+
 		final ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 		if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			throw new RuntimeException("Le for du contribuable est déjà hors du canton");
 		}
 
-		Audit.info(depart.getNumeroEvenement(), String.format("Ouverture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter()), motifFermeture));
+		Audit.info(depart.getNumeroEvenement(),
+		           String.format("Ouverture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter()), motifFermeture));
 
 		if (ffp != null) {
 			final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());

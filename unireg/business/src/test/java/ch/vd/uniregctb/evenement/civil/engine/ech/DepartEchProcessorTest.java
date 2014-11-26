@@ -9,6 +9,7 @@ import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
@@ -1872,4 +1873,292 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
+	/**
+	 *  SIFISC-11521 : traitement d'un départ HS pour lequel les adresses civiles font état d'une arrivée secondaire au lendemain du départ
+	 */
+	@Test
+	public void testDepartPrincipalHorsSuisseSuiviArriveeSecondaireIndividuSeul() throws Exception {
+
+		final long noIndividu = 4674L;
+		final RegDate dateNaissance = date(1967, 5, 3);
+		final RegDate dateDepart = date(2014, 3, 6);
+		final RegDate dateArriveeSecondaire = dateDepart.getOneDayAfter();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Pruno", "Firmin", Sexe.MASCULIN);
+
+				final MockAdresse prn = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(2000, 1, 1), dateDepart);
+				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
+
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Cossonay);
+				return pp.getNumero();
+			}
+		});
+
+		final class Ids {
+			long evtDepartId;
+			long evtArriveeId;
+		}
+
+		// création d'un événement civil de départ et d'un autre d'arrivée (c'est le cas réel vu en production)
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Ids ids = new Ids();
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDepart);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					ids.evtDepartId = hibernateTemplate.merge(evt).getId();
+				}
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14533L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArriveeSecondaire);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					ids.evtArriveeId = hibernateTemplate.merge(evt).getId();
+				}
+				return ids;
+			}
+		});
+
+		// traitement des deux événements civils de l'individu
+		traiterEvenements(noIndividu);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evtDepart = evtCivilDAO.get(ids.evtDepartId);
+				Assert.assertNotNull(evtDepart);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final EvenementCivilEch evtArrivee = evtCivilDAO.get(ids.evtArriveeId);
+				Assert.assertNotNull(evtArrivee);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Albanie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
+
+	/**
+	 *  SIFISC-11521 : traitement d'un départ HS pour lequel les adresses civiles font état d'une arrivée secondaire au lendemain du départ pour les deux individus d'un couple
+	 */
+	@Test
+	public void testDepartPrincipalHorsSuisseSuiviArriveeSecondaireCouple() throws Exception {
+
+		final long noIndividuLui = 4674L;
+		final long noIndividuElle = 4262L;
+		final RegDate dateMariage = date(1976, 4, 2);
+		final RegDate dateDepart = date(2014, 3, 6);
+		final RegDate dateArriveeSecondaire = dateDepart.getOneDayAfter();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, null, "Pruno", "Firmin", Sexe.MASCULIN);
+				final MockIndividu elle = addIndividu(noIndividuElle, null, "Pruno", "Bécassine", Sexe.FEMININ);
+				marieIndividus(lui, elle, dateMariage);
+
+				{
+					final MockAdresse prn = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(2000, 1, 1), dateDepart);
+					prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
+					addAdresse(lui, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null);
+				}
+
+				// dans un premier temps, "elle" n'est pas encore partie (= on ne le sait pas encore)
+				addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+				return mc.getNumero();
+			}
+		});
+
+		final class Ids {
+			long evtDepartId;
+			long evtArriveeId;
+		}
+
+		// création d'un événement civil de départ et d'un autre d'arrivée (c'est le cas réel vu en production)
+		final Ids idsLui = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Ids ids = new Ids();
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDepart);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuLui);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					ids.evtDepartId = hibernateTemplate.merge(evt).getId();
+				}
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14533L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArriveeSecondaire);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuLui);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					ids.evtArriveeId = hibernateTemplate.merge(evt).getId();
+				}
+				return ids;
+			}
+		});
+
+		// traitement des deux événements civils de l'individu LUI
+		traiterEvenements(noIndividuLui);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evtDepart = evtCivilDAO.get(idsLui.evtDepartId);
+				Assert.assertNotNull(evtDepart);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final EvenementCivilEch evtArrivee = evtCivilDAO.get(idsLui.evtArriveeId);
+				Assert.assertNotNull(evtArrivee);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				Assert.assertNotNull(mc);
+
+				//
+				// le couple a toujours son for vaudois, car "elle" n'est pas partie
+				//
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// son départ à elle-maintenant
+		doModificationIndividu(noIndividuElle, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				final Collection<Adresse> adresses = individu.getAdresses();
+				Assert.assertEquals(1, adresses.size());
+
+				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+				prn.setDateFinValidite(dateDepart);
+				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null));
+
+				adresses.add(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateArriveeSecondaire, null));
+			}
+		});
+
+		// événements civils de départ/arrivée de Madame
+		final Ids idsElle = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final Ids ids = new Ids();
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14542L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDepart);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuElle);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					ids.evtDepartId = hibernateTemplate.merge(evt).getId();
+				}
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14543L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArriveeSecondaire);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuElle);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					ids.evtArriveeId = hibernateTemplate.merge(evt).getId();
+				}
+				return ids;
+			}
+		});
+
+		// traitement des événements civils de Madame
+		traiterEvenements(noIndividuElle);
+
+		// et vérification des résultats... on aimerait bien que le départ HS ait été passé sur le ménage commun
+		// (même si, au moment du second départ, "lui" (= conjoint) est en fait toujours considéré comme habitant
+		// en raison de sa résidence secondaire)
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evtDepart = evtCivilDAO.get(idsElle.evtDepartId);
+				Assert.assertNotNull(evtDepart);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final EvenementCivilEch evtArrivee = evtCivilDAO.get(idsElle.evtArriveeId);
+				Assert.assertNotNull(evtArrivee);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evtDepart.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Albanie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
 }

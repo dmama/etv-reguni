@@ -133,6 +133,15 @@ public interface TiersService {
 	 */
 	UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement) throws TiersException;
 
+	/**
+	 * @param pp personne physique à tester
+	 * @param date date de référence pour le test
+	 * @return <b>true</b> si l'adresse de domicile (= résidence principale seulement) de la personne donnée à la date donnée est dans le canton&nbsp;;
+	 *         <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne sait pas répondre de manière définitive
+	 *         (pas d'adresse de domicile connue, erreurs...)
+	 */
+	Boolean isHabitantResidencePrincipale(@NotNull PersonnePhysique pp, RegDate date);
+
     /**
      * Permet de recupérer la liste des enfants à faire figurer sur la DI  d'un contribuable
      *

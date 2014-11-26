@@ -416,7 +416,7 @@ public class TiersServiceImpl implements TiersService {
 
 		final boolean dansLeCanton;
 		if (individu.getDateDeces() == null) {
-			final Boolean isVaudois = isDomicileDansLeCanton(pp);
+			final Boolean isVaudois = isDomicileDansLeCanton(pp, RegDate.get(), false);
 			if (isVaudois == null) {
 				throw new TiersException("Impossible de déterminer si le domicile du contribuable " + pp.getNumero() + " est vaudois ou pas");
 			}
@@ -469,6 +469,11 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public UpdateHabitantFlagResultat updateHabitantStatus(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) throws TiersException {
 		return manageHabitantStatus(pp, noInd, numeroEvenement, date == null ? RegDate.get() : date);
+	}
+
+	@Override
+	public Boolean isHabitantResidencePrincipale(@NotNull PersonnePhysique pp, RegDate date) {
+		return isDomicileDansLeCanton(pp, date, true);
 	}
 
 	@Override
@@ -1620,10 +1625,12 @@ public class TiersServiceImpl implements TiersService {
 	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970) (SIFISC-6841) maintenant.
 	 *
 	 * @param pp   une personne physique
+	 * @param date date de référence (si <code>null</code>, on prend la date du jour)
+	 * @param residencePrincipaleSeulement <code>true</code> si les seuls résidences qui comptes sont les résidences principales, <code>false</code> si les résidences secondaires comptent aussi
 	 * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
 	 *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
 	 */
-	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp) {
+	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp, RegDate date, boolean residencePrincipaleSeulement) {
 
 		final Long numeroIndividu = pp.getNumeroIndividu();
 		if (numeroIndividu == null) {
@@ -1634,9 +1641,10 @@ public class TiersServiceImpl implements TiersService {
 		try {
 			// [SIFISC-6841] On tient aussi compte des résidences secondaires
 			// [SIFISC-13741] Mais on ne tient plus compte que des adresses actives (finies, les recherches de destinations !)
-			final RegDate today = RegDate.get();
-			final AdressesCivilesActives adresses = serviceCivilService.getAdresses(numeroIndividu, today, false);
-			return isAdresseVaudoise(adresses.principale) || hasAdresseVaudoise(adresses.secondaires);
+			// [SIFISC-11521] Les adresses secondaires ne sont pas toujours bonnes à prendre...
+			final RegDate dateReference = date == null ? RegDate.get() : date;
+			final AdressesCivilesActives adresses = serviceCivilService.getAdresses(numeroIndividu, dateReference, false);
+			return isAdresseVaudoise(adresses.principale) || (!residencePrincipaleSeulement && hasAdresseVaudoise(adresses.secondaires));
 		}
 		catch (ServiceInfrastructureException e) {
 			// rien à faire...
