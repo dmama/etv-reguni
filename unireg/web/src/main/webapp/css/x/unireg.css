@@ -459,3 +459,16 @@ table.conflicts th, table.conflicts td {
 table.conflicts td.conflict {
 	background-color: orange;
 }
+
+#messageDecision{
+    width:35%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;
+    border-radius: 			5px;
+    -moz-border-radius:		5px;
+    -webkit-border-radius:	5px;
+    padding: 0.5em;
+    font-weight:bold;
+    background-color:yellow;
+}

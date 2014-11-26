@@ -4,6 +4,7 @@
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 <c:set var="showEditLink" value="${autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
 <c:set var="showTimelineLink" value="${false}" />
+<c:set var="showMessagePresenceDecision" value="${command.decisionRecente && ! showEditLink}" />
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux && command.natureTiers != 'DebiteurPrestationImposable'}" />
 </authz:authorize>
@@ -12,23 +13,29 @@
 </authz:authorize>
 
 <!-- Debut Fiscal -->
-<c:if test="${showEditLink || showTimelineLink}">
+<c:if test="${showEditLink || showTimelineLink || showMessagePresenceDecision}">
 	<table border="0">
 		<tr>
-			<c:if test="${showEditLink}">
-				<td>
-					<c:choose>
-						<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
-							<unireg:raccourciModifier link="../debiteur/edit.do?id=${command.tiers.numero}" tooltip="Modifier les caractéristiques fiscales du débiteur"
-							                          display="label.bouton.modifier"/>
-						</c:when>
-						<c:otherwise>
-							<unireg:raccourciModifier link="../fiscal/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
-						</c:otherwise>
-					</c:choose>
-				</td>
-			</c:if>
-
+			<c:if test="${showEditLink || showMessagePresenceDecision}">
+                <c:if test="${showEditLink}">
+                    <td>
+                        <c:choose>
+                            <c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
+                                <unireg:raccourciModifier link="../debiteur/edit.do?id=${command.tiers.numero}" tooltip="Modifier les caractéristiques fiscales du débiteur"
+                                                          display="label.bouton.modifier"/>
+                            </c:when>
+                            <c:otherwise>
+                                <unireg:raccourciModifier link="../fiscal/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </c:if>
+                <c:if test="${showMessagePresenceDecision}">
+                    <td id="messageDecision">
+                        <fmt:message key="label.presence.decision.aci"/>
+                    </td>
+                </c:if>
+            </c:if>
 			<c:if test="${showTimelineLink}">
 				<td id="timeline" align="right">
 					<a href='<c:url value="/fors/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>

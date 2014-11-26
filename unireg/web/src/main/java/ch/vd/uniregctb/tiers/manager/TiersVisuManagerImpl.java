@@ -15,6 +15,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -204,6 +205,9 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			Collections.sort(decisionsView,new DecisionAciViewComparator());
 		}
 		tiersView.setDecisionsAci(decisionsView);
+		final int anneeCouranteMoins2ans = RegDate.get().year()-2;
+		final RegDate ilya2ans = RegDate.get(anneeCouranteMoins2ans, 12, 31);
+		tiersView.setDecisionRecente(contribuable.hasDecisionRecente(ilya2ans));
 	}
 
 	/**

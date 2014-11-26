@@ -221,6 +221,9 @@ public class TiersManager implements MessageSourceAware {
 			}
 			Collections.sort(decisionsView,new DecisionAciViewComparator());
 			tiersView.setDecisionsAci(decisionsView);
+			final int anneeCouranteMoins2ans = RegDate.get().year()-2;
+			final RegDate ilya2ans = RegDate.get(anneeCouranteMoins2ans, 12, 31);
+			tiersView.setDecisionRecente(contribuable.hasDecisionRecente(ilya2ans));
 		}
 
 	}

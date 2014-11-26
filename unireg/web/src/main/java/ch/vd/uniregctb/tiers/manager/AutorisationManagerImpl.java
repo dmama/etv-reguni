@@ -546,7 +546,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 * @return true si l'utilisateur a le droit de modifier un ctb sous décision ou si il n'y a pas de décision ouverte, false sinon
 	 */
 	private boolean isCtbModifiableSelonRoleEtDecisions(Contribuable contribuable, String visa, int oid) {
-		if (contribuable.hasDecisionEnCours()) {
+		final int anneeMoins2ans = RegDate.get().year()-2;
+		final RegDate ilya2ans = RegDate.get(anneeMoins2ans, 12, 31);
+		if (contribuable.hasDecisionRecente(ilya2ans)) {
 			return SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid);
 		}
 		else {

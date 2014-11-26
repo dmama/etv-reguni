@@ -19,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
@@ -424,11 +426,51 @@ public abstract class Contribuable extends Tiers {
 		}
 
 		for (DecisionAci d : decisionsAci) {
-			if (d.getDateFin()==null && !d.isAnnule()) {
+			final boolean ouverte =  d.getDateFin()==null || d.getDateFin().isAfterOrEqual(RegDate.get());
+			if (ouverte && !d.isAnnule()) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	@Transient
+	public DecisionAci getDerniereDecisionAci() {
+
+		List<DecisionAci> list = getDecisionsSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				DecisionAci decisionAci = list.get(i);
+				if (!decisionAci.isAnnule() ) {
+					return decisionAci;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Permet de savoir si la dernière decision si elle  existe  est fermée avant une certaine date
+	 * @param date la date de réference
+	 * @return vrai s'il n'existe aucune décision ou si la dernière décision est férmée avant la date, false si la derniere décision
+	 * est fermée après la date de passée en paramètre.
+	 */
+	@Transient
+	public boolean hasDerniereDecisionAciFermeeAvant(RegDate date){
+		final DecisionAci derniereDecisionAci = getDerniereDecisionAci();
+		if (derniereDecisionAci != null) {
+			return RegDateHelper.isAfter(date,derniereDecisionAci.getDateFin(), NullDateBehavior.LATEST);
+		}
+		return true;
+	}
+
+	/**
+	 * Permet de savoir s'il existe une decision encore ouverte ou si une décision a une date de fin récente par rapport à une date
+	 * @param date la date de réference
+	 * @return <b>vrai</b> si il existe une décision récente <b>false</b> sinon
+	 */
+	public boolean hasDecisionRecente(RegDate date){
+		return hasDecisionEnCours() ||  !hasDerniereDecisionAciFermeeAvant(date);
 	}
 }

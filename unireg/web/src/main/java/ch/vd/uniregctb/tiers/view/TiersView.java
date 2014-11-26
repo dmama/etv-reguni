@@ -97,6 +97,8 @@ public class TiersView {
 
 	private List<DecisionAciView> decisionsAci;
 
+	private boolean decisionRecente;
+
 	public ComplementView getComplement() {
 		return complement;
 	}
@@ -443,5 +445,13 @@ public class TiersView {
 
 	public void setDecisionsAci(List<DecisionAciView> decisionsAci) {
 		this.decisionsAci = decisionsAci;
+	}
+
+	public boolean isDecisionRecente() {
+		return decisionRecente;
+	}
+
+	public void setDecisionRecente(boolean decisionRecente) {
+		this.decisionRecente = decisionRecente;
 	}
 }
