@@ -141,15 +141,15 @@ public class PartyRequestHandlerV1 implements RequestHandler<PartyRequest> {
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}
 
-		if (context.securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
-			throw new ServiceException(new AccessDeniedExceptionInfo(
-					"L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + '.', null));
-		}
-
 		// Récupération du tiers
 		final Tiers tiers = context.tiersDAO.get(request.getPartyNumber(), true);
 		if (tiers == null) {
 			throw new ServiceException(new BusinessExceptionInfo("Le tiers n°" + request.getPartyNumber() + " n'existe pas.", BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
+		}
+
+		if (context.securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
+			throw new ServiceException(new AccessDeniedExceptionInfo(
+					"L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + '.', null));
 		}
 
 		// Calcul de l'adresse

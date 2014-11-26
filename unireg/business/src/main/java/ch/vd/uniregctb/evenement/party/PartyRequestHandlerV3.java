@@ -134,16 +134,16 @@ public class PartyRequestHandlerV3 implements RequestHandler<PartyRequest> {
 			                               null);
 		}
 
-		if (context.securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
-			throw new EsbBusinessException(EsbBusinessCode.DROITS_INSUFFISANTS,
-			                               String.format("L'utilisateur spécifié (%s/%d) n'a pas les droits d'accès en lecture sur le tiers n° %d.", login.getUserId(), login.getOid(), request.getPartyNumber()),
-			                               null);
-		}
-
 		// Récupération du tiers
 		final Tiers tiers = context.tiersDAO.get(request.getPartyNumber(), true);
 		if (tiers == null) {
 			throw new EsbBusinessException(EsbBusinessCode.CTB_INEXISTANT, String.format("Le tiers n°%d n'existe pas.", request.getPartyNumber()), null);
+		}
+
+		if (context.securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
+			throw new EsbBusinessException(EsbBusinessCode.DROITS_INSUFFISANTS,
+			                               String.format("L'utilisateur spécifié (%s/%d) n'a pas les droits d'accès en lecture sur le tiers n° %d.", login.getUserId(), login.getOid(), request.getPartyNumber()),
+			                               null);
 		}
 
 		// Calcul de l'adresse

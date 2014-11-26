@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.xml.common.v1.Date;
@@ -25,6 +26,8 @@ import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -34,6 +37,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -95,12 +99,19 @@ public class PartyRequestHandlerV1Test extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurDossierProtege() throws Exception {
+
+		final long tiersId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Margoulin", null, Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
 
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
-		provider.setDossiersProteges(4224L);
+		provider.setDossiersProteges(tiersId);
 
 		handler.setSecurityProvider(provider);
 		try {
@@ -108,17 +119,21 @@ public class PartyRequestHandlerV1Test extends BusinessTest {
 			final PartyRequest request = new PartyRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
-			request.setPartyNumber(4224);
+			request.setPartyNumber((int) tiersId);
 
-			try {
-				handler.handle(request);
-				fail();
-			}
-			catch (ServiceException e) {
-				assertTrue(e.getInfo() instanceof AccessDeniedExceptionInfo);
-				assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° 4224.", e.getMessage());
-			}
-
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						handler.handle(request);
+						fail();
+					}
+					catch (ServiceException e) {
+						assertTrue(e.getInfo() instanceof AccessDeniedExceptionInfo);
+						assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture sur le tiers n° " + tiersId + ".", e.getMessage());
+					}
+				}
+			});
 		}
 		finally {
 			handler.setSecurityProvider(null);
@@ -129,15 +144,26 @@ public class PartyRequestHandlerV1Test extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleSurTiersInconnu() throws Exception {
 
+		final int partyNo = 4224;
+
 		final Role[] roles = {Role.VISU_ALL};
-		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+		final MockSecurityProvider provider = new MockSecurityProvider(roles) {
+			@Override
+			public Niveau getDroitAcces(String visaOperateur, long tiersId) throws ObjectNotFoundException {
+				// en cas de tiers inexistant, le comportement du vrai service est de lancer une exception...
+				if (tiersId == partyNo) {
+					throw new TiersNotFoundException(tiersId);
+				}
+				return super.getDroitAcces(visaOperateur, tiersId);
+			}
+		};
 
 		handler.setSecurityProvider(provider);
 		try {
 			final PartyRequest request = new PartyRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
 			request.setLogin(login);
-			request.setPartyNumber(4224);
+			request.setPartyNumber(partyNo);
 
 			try {
 				handler.handle(request);
