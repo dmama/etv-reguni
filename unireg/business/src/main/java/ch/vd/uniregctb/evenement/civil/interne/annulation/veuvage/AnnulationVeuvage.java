@@ -47,6 +47,7 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 
 		PersonnePhysique veuf = getPrincipalPP();
 		verifierPresenceDecisionEnCours(veuf,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(veuf);
 
 		/*
 				 * Récupération du ménage du veuf

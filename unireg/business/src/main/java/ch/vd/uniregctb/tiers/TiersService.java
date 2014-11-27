@@ -1378,5 +1378,12 @@ DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFis
 	 * @return <b>true</b> si une décision est valide à la date donnée <b>false sinon</b>
 	 */
 	boolean hasDecisionAciValidAt(long idTiers, RegDate date);
+
+	/**
+	 * Récupère tous les ménages communs dans lesquelles une personne physique a été impliqué
+	 * @param pp la personne physique que l'on veut analyser
+	 * @return la liste des ménages communs trouvés ou null
+	 */
+	List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp);
 }
 

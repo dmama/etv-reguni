@@ -161,19 +161,17 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		MenageCommun couple = null;
 		if (etc != null) {
 			conjoint = etc.getConjoint(ppPrincipale);
-			couple = etc.getMenage();
 		}
 
 		verifierPresenceDecisionEnCours(ppPrincipale,getDate());
+
+		verifierPresenceDecisionsEnCoursSurCouple(ppPrincipale);
 
 		if (conjoint != null) {
 			verifierPresenceDecisionEnCours(conjoint,ppPrincipale,getDate());
 
 		}
 
-		if (couple != null) {
-			verifierPresenceDecisionEnCours(couple,ppPrincipale,getDate());
-		}
 
 	}
 

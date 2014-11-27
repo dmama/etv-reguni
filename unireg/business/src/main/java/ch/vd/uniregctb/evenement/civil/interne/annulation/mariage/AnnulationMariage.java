@@ -64,6 +64,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 
 		final PersonnePhysique principalPP = getPrincipalPP();
 		verifierPresenceDecisionEnCours(principalPP,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(principalPP);
 
 		// Cas d'annulation de mariage
 		final ServiceCivilService serviceCivil = context.getServiceCivil();

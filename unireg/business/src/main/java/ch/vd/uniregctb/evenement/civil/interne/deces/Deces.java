@@ -107,6 +107,7 @@ public class Deces extends EvenementCivilInterne {
 
 		//presence d'une décision ACI
 		verifierPresenceDecisionEnCours(defunt,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(defunt);
 
 		/*
 		 * Deux cas de figure :
@@ -151,7 +152,6 @@ public class Deces extends EvenementCivilInterne {
 				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 			}
 
-			verifierPresenceDecisionEnCours(menage,defunt,getDate());
 
 			/*
 			 * Détection de la redondance pour les evenements venant de Rcpers.

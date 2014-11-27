@@ -54,18 +54,14 @@ public class VeuvageFromEch extends Veuvage {
 				MenageCommun mc = null;
 				if (couple != null) {
 					conjoint = couple.getConjoint(veuf);
-					mc = couple.getMenage();
 				}
 
-				verifierPresenceDecisionEnCours(veuf,getDate());
+				verifierPresenceDecisionEnCours(veuf,dateVeuvage);
+				verifierPresenceDecisionsEnCoursSurCouple(veuf);
 
 				if (conjoint != null) {
 					verifierPresenceDecisionEnCours(conjoint,veuf,getDate());
 
-				}
-
-				if (couple != null) {
-					verifierPresenceDecisionEnCours(mc,veuf,getDate());
 				}
 			}
 		}

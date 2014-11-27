@@ -92,17 +92,13 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 		MenageCommun couple = null;
 		if (etc != null) {
 			conjoint = etc.getConjoint(habitant);
-			couple = etc.getMenage();
 		}
 		verifierPresenceDecisionEnCours(habitant,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(habitant);
 
 		if (conjoint != null) {
 			verifierPresenceDecisionEnCours(conjoint, habitant,getDate());
 
-		}
-
-		if (couple != null) {
-			verifierPresenceDecisionEnCours(couple, habitant,getDate());
 		}
 
 	}

@@ -102,6 +102,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
 		verifierPresenceDecisionEnCours(habitant,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(habitant);
 
 		if (ancienConjoint != null) {
 			verifierPresenceDecisionEnCours(ancienConjoint,habitant,getDate());
@@ -160,9 +161,6 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		else {
 			try {
 
-				//Presence d'une décision ACI
-				final MenageCommun couple = menageComplet.getMenage();
-				verifierPresenceDecisionEnCours(couple,habitant,getDate());
 				/*
 				 * validation d'après le MetierService
 				 */

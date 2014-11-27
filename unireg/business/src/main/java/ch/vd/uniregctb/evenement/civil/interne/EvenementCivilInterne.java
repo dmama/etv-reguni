@@ -562,6 +562,20 @@ public abstract class EvenementCivilInterne {
 		verifierPresenceDecisionEnCours(ctbToCheck,null,dateEvenement);
 	}
 
+	/**Detecte si une décision Aci est présente sur un couple d'une personne physique
+	 *
+	 * @param pp personne dont on veut vérifier les couples
+	 * @throws EvenementCivilException levé si un couple trouvé possède une décision ACI
+	 */
+	protected void verifierPresenceDecisionsEnCoursSurCouple(PersonnePhysique pp) throws EvenementCivilException {
+		final List<MenageCommun> allMenagesCommuns = context.getTiersService().getAllMenagesCommuns(pp);
+		if (allMenagesCommuns != null) {
+			for (MenageCommun mc : allMenagesCommuns) {
+				verifierPresenceDecisionEnCours(mc,pp,getDate());
+			}
+		}
+	}
+
 	private boolean evenementIsAnterieurDecision(Contribuable c, RegDate date){
 		List<DecisionAci> decisions = c.getDecisionsSorted();
 		if (decisions != null && !decisions.isEmpty()) {

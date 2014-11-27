@@ -56,6 +56,7 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 		// Obtention du tiers correspondant au conjoint principal.
 		PersonnePhysique principal = getPrincipalPP();
 		verifierPresenceDecisionEnCours(principal,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(principal);
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
 		// Récupération du tiers MenageCommun
@@ -67,7 +68,6 @@ public class AnnulationReconciliation extends EvenementCivilInterne {
 		if (menage == null && !isAnnulationRedondante()) {
 			throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 		}
-		verifierPresenceDecisionEnCours(menage,principal,getDate());
 
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 		if (individuConjoint != null) {

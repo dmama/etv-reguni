@@ -69,6 +69,8 @@ public class Reconciliation extends EvenementCivilInterne {
 
 		verifierPresenceDecisionEnCours(habitant,getDate());
 
+		verifierPresenceDecisionsEnCoursSurCouple(habitant);
+
 		/*
 		 * Validation de l'état civil de l'individu
 		 */
@@ -90,13 +92,6 @@ public class Reconciliation extends EvenementCivilInterne {
 			}
 
 			verifierPresenceDecisionEnCours(habitantConjoint, habitant,getDate());
-
-			//On récupère un éventuel couple
-			final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(habitant, getDate());
-			if (couple != null && couple.getMenage() != null) {
-				verifierPresenceDecisionEnCours(couple.getMenage(), habitant,getDate());
-			}
-
 
 			/*
 			 * Validation de l'état civil du conjoint

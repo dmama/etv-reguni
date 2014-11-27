@@ -516,6 +516,7 @@ public abstract class Arrivee extends Mouvement {
 		//[SIFISC-12624]
 		//Si une décision aci en cours est présente, on met l'évenement en erreur
 		verifierPresenceDecisionEnCours(arrivant,dateEvenement);
+		verifierPresenceDecisionsEnCoursSurCouple(arrivant);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 		updateHabitantStatus(arrivant, dateEvenement);
@@ -545,7 +546,6 @@ public abstract class Arrivee extends Mouvement {
 
 		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointDeLArrivant, dateEvenement, dateDebutMenage, numeroEvenement);
 		Assert.notNull(menageCommun);
-		verifierPresenceDecisionEnCours(menageCommun,arrivant,dateEvenement);
 
 		/*
 		 * Mise-à-jour des adresses

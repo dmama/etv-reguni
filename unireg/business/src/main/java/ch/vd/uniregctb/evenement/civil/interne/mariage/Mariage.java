@@ -218,6 +218,7 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		verifierPresenceDecisionEnCours(habitant,dateMariage);
+		verifierPresenceDecisionsEnCoursSurCouple(habitant);
 		if (nouveauConjointPP != null) {
 			verifierPresenceDecisionEnCours(nouveauConjointPP, habitant,dateMariage);
 		}

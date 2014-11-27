@@ -4751,6 +4751,32 @@ public class TiersServiceImpl implements TiersService {
 		return false;
 	}
 
+	@Override
+	public List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp) {
+		if (pp == null) {
+			return null;
+		}
+
+		final Set<RapportEntreTiers> rapportsEntreTiers = pp.getRapportsSujet();
+		if (rapportsEntreTiers == null) {
+			return null;
+		}
+
+
+		List<MenageCommun> menageCommuns =null;
+		for (RapportEntreTiers rapport : rapportsEntreTiers) {
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
+					if (menageCommuns == null) {
+						menageCommuns =  new ArrayList<MenageCommun>();
+					}
+					final MenageCommun mc = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+					menageCommuns.add(mc);
+			}
+		}
+
+		return menageCommuns;
+	}
+
 	private boolean needCreationNouvelleDecision(DecisionAci d,RegDate dateFin, String remarque, Integer numeroAutoriteFiscale){
 		final boolean datefinModifiee = d.getDateFin()!=null && dateFin!=null && !d.getDateFin().equals(dateFin);
 		final boolean datefinSupprimee = d.getDateFin()!=null && dateFin==null;

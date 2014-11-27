@@ -80,6 +80,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		 */
 		PersonnePhysique defunt = getPrincipalPP();
 		verifierPresenceDecisionEnCours(defunt,getDate());
+		verifierPresenceDecisionsEnCoursSurCouple(defunt);
 
 		/*
 		 * Deux cas de figure :
@@ -92,6 +93,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 			 * Obtention du tiers correspondant au veuf.
 			 */
 			PersonnePhysique veuf = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(getConjointSurvivant().getNoTechnique());
+			verifierPresenceDecisionEnCours(veuf,getDate());
 
 			/*
 			 * Récupération de l'ensemble decede-veuf-menageCommun
