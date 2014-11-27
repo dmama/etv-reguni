@@ -16,7 +16,6 @@
 <c:if test="${showEditLink || showTimelineLink || showMessagePresenceDecision}">
 	<table border="0">
 		<tr>
-			<c:if test="${showEditLink || showMessagePresenceDecision}">
                 <c:if test="${showEditLink}">
                     <td>
                         <c:choose>
@@ -34,7 +33,6 @@
                     <td id="messageDecision">
                         <fmt:message key="label.presence.decision.aci"/>
                     </td>
-                </c:if>
             </c:if>
 			<c:if test="${showTimelineLink}">
 				<td id="timeline" align="right">

@@ -451,18 +451,18 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	/**
-	 * Permet de savoir si la dernière decision si elle  existe  est fermée avant une certaine date
+	 * Permet de savoir si il existe  une decision qui a une date de fin qui se situe après une date de référence
 	 * @param date la date de réference
 	 * @return vrai s'il n'existe aucune décision ou si la dernière décision est férmée avant la date, false si la derniere décision
 	 * est fermée après la date de passée en paramètre.
 	 */
 	@Transient
-	public boolean hasDerniereDecisionAciFermeeAvant(RegDate date){
+	public boolean existDecisionAciOuverteApres(RegDate date){
 		final DecisionAci derniereDecisionAci = getDerniereDecisionAci();
 		if (derniereDecisionAci != null) {
-			return RegDateHelper.isAfter(date,derniereDecisionAci.getDateFin(), NullDateBehavior.LATEST);
+			return RegDateHelper.isBeforeOrEqual(date, derniereDecisionAci.getDateFin(), NullDateBehavior.LATEST);
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -470,7 +470,7 @@ public abstract class Contribuable extends Tiers {
 	 * @param date la date de réference
 	 * @return <b>vrai</b> si il existe une décision récente <b>false</b> sinon
 	 */
-	public boolean hasDecisionRecente(RegDate date){
-		return hasDecisionEnCours() ||  !hasDerniereDecisionAciFermeeAvant(date);
+	public boolean hasDecisionRecenteFor(RegDate date){
+		return hasDecisionEnCours() || existDecisionAciOuverteApres(date);
 	}
 }

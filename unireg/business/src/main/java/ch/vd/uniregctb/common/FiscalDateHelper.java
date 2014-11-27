@@ -230,4 +230,16 @@ public abstract class FiscalDateHelper {
 		}
 		return date;
 	}
+
+	/**
+	 * Permet de calculer la date de fin minimal pour qu'une décision Aci ait encore une influence sur la fiscalité d'un contribuable
+	 * elle correspond au 31.12 de l'année n - 2, si n est l'année courante
+	 *
+	 * @return la date calculée
+	 */
+	public static RegDate getDateMinimalPourEffetDecisionAci(){
+		final int annee = getAnneeCourante()-2;
+		return RegDate.get(annee, 12, 31);
+
+	}
 }

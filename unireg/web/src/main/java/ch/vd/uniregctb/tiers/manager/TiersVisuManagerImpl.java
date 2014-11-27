@@ -24,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -205,9 +206,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			Collections.sort(decisionsView,new DecisionAciViewComparator());
 		}
 		tiersView.setDecisionsAci(decisionsView);
-		final int anneeCouranteMoins2ans = RegDate.get().year()-2;
-		final RegDate ilya2ans = RegDate.get(anneeCouranteMoins2ans, 12, 31);
-		tiersView.setDecisionRecente(contribuable.hasDecisionRecente(ilya2ans));
+		final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
+		tiersView.setDecisionRecente(contribuable.hasDecisionRecenteFor(dateMinimalEffet));
 	}
 
 	/**
