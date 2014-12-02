@@ -69,6 +69,9 @@ public abstract class TiersWebHelper {
 		else if (rapport instanceof Parente) {
 			return String.format("%s %s l'enfant de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
+		else if (rapport instanceof AssujettissementParSubstitution) {
+			return String.format("L'assujettissement de %s se %s à celui de %s ", nomObjet, fermeOuAnnule ? "substituait" : "substitue", nomSujet);
+		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
 		}

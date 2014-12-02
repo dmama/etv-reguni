@@ -2,6 +2,7 @@ package ch.vd.uniregctb.type;
 
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
@@ -121,6 +122,18 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
 			return Parente.class;
+		}
+	},
+
+	ASSUJETTISSEMENT_PAR_SUBSTITUTION{
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new AssujettissementParSubstitution();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return AssujettissementParSubstitution.class;
 		}
 	};
 

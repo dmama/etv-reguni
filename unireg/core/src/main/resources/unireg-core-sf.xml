@@ -145,6 +145,7 @@
 		<value>ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport</value>
 		<value>ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport</value>
 		<value>ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport</value>
+		<value>ch.vd.uniregctb.document.AssujettiParSubstitutionRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.reqdes.ErreurTraitement</value>
@@ -155,6 +156,7 @@
 		<value>ch.vd.uniregctb.reqdes.TransactionImmobiliere</value>
 		<value>ch.vd.uniregctb.reqdes.UniteTraitement</value>
 		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
+		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
 	</util:list>
 
 	<!-- La session factory -->

@@ -57,6 +57,7 @@
 							<form:option value="CONSEIL_LEGAL"><fmt:message key="option.rapport.entre.tiers.SUJET.CONSEIL_LEGAL" /></form:option>
 							<form:option value="TUTELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.TUTELLE" /></form:option>
 							<form:option value="CURATELLE"><fmt:message key="option.rapport.entre.tiers.SUJET.CURATELLE" /></form:option>
+                            <form:option value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"><fmt:message key="option.rapport.entre.tiers.SUJET.ASSUJETTISSEMENT_PAR_SUBSTITUTION" /></form:option>
 						</form:select>
 					</p>
 					
@@ -131,17 +132,20 @@
 						
 						switch (type.val()) {
 						case 'TUTELLE':
-							autorite = "tuteur";
+							autorite = "le tuteur de";
 							break;
 						case 'CURATELLE':
-							autorite = "curateur";
+							autorite = "le curateur de";
 							break;							
 						case 'CONSEIL_LEGAL':
-							autorite = "conseil légal";
+							autorite = "le conseil légal de";
 							break;
 						case 'REPRESENTATION':
-							autorite = "représentant";
+							autorite = "le représentant de";
 							break;
+                        case 'ASSUJETTISSEMENT_PAR_SUBSTITUTION':
+                            autorite = "l'assujetti par substitution pour"
+
 						}
 
 						// mis-à-jour du DOM
@@ -149,7 +153,7 @@
 						setChild($('#td_tiers_droite'), contenuDroite);
 
 
-						$('#flecheMilieu').html('est le ' + autorite + ' de');
+						$('#flecheMilieu').html('est ' + autorite);
 					}
 
 					function setChild(td, child) {

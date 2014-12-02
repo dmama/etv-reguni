@@ -20,6 +20,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
@@ -70,6 +71,7 @@ import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
+import ch.vd.uniregctb.listes.assujettis.AssujettisParSubstitutionResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -497,4 +499,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	RecuperationOriginesNonHabitantsRapport generateRapport(RecuperationOriginesNonHabitantsResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch qui liste les assujettissements par substitution
+	 * @param results le résultat du batch
+	 * @param status le status manager
+	 * @return le rapport
+	 */
+	AssujettiParSubstitutionRapport generateRapport(AssujettisParSubstitutionResults results, StatusManager status);
 }

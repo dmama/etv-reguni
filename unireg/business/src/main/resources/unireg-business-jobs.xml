@@ -426,6 +426,17 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="listeAssujettisParSubstitutionJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.assujettis.AssujettisParSubstitutionJob">
+		<constructor-arg value="614"/>
+		<constructor-arg value="Produire la liste des contribuables possédant un lien d'assujettissement par substitution"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="assujettissementService" ref="assujettissementService" />
+
+	</bean>
+
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
         <constructor-arg value="700"/>
         <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>

@@ -29,6 +29,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.document.CalculParentesRapport;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
@@ -81,6 +82,7 @@ import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
+import ch.vd.uniregctb.listes.assujettis.AssujettisParSubstitutionResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -1211,6 +1213,29 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(RecuperationOriginesNonHabitantsRapport doc, OutputStream os) throws Exception {
 					final PdfRecuperationOriginesNonHabitantsRapport document = new PdfRecuperationOriginesNonHabitantsRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public AssujettiParSubstitutionRapport generateRapport(final AssujettisParSubstitutionResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapporAssujettisParSubstituttion";
+		final String description = "Rapport d'exécution du job qui liste les liens d'assujettissement par substitution.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(AssujettiParSubstitutionRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AssujettiParSubstitutionRapport>() {
+				@Override
+				public void writeDoc(AssujettiParSubstitutionRapport doc, OutputStream os) throws Exception {
+					final PdfAssujettistParSubstitutionRapport document = new PdfAssujettistParSubstitutionRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

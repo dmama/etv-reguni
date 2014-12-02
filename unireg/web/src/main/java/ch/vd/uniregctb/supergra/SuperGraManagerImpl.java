@@ -53,6 +53,7 @@ import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.taglibs.formInput.MultilineString;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -905,6 +906,22 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
 				return new AttributeView(p.getName(), "représentant", Tiers.class, entity, false, false, false);
+			}
+		});
+
+		// Assujettissement par substitution
+		builders.put(new AttributeKey(AssujettissementParSubstitution.class, "sujetId"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "substitué", Tiers.class, entity, false, false, false);
+			}
+		});
+		builders.put(new AttributeKey(AssujettissementParSubstitution.class, "objetId"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "substituant", Tiers.class, entity, false, false, false);
 			}
 		});
 

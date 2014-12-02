@@ -158,8 +158,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		if (rapportView.getId() == null) {
 
 			final TypeRapportEntreTiers type = rapportView.getTypeRapportEntreTiers().toCore();
-			final Tiers sujet; // sujet : pupille, curatelle ou personne sous conseil légal
-			final Tiers objet; // objet : tuteur, curateur ou conseil légal
+			final Tiers sujet; // sujet : pupille, curatelle, personne sous conseil légal ou substitué pour l'assujettissement
+			final Tiers objet; // objet : tuteur, curateur, conseil légal ou substituant pour l'assujettissement
 
 			// récupère les données
 			final SensRapportEntreTiers sens = rapportView.getSensRapportEntreTiers();

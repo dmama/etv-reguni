@@ -14,6 +14,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -192,6 +194,46 @@ public class RapportEditManagerTest extends WebTest {
 		assertUneRepresentationConventionnelle(true, noTiersRepresente);
 	}
 
+	@Test
+	public void testAjouterAssujettissementParSubstitutionSurCtbVaudois() throws Exception {
+
+		final long noIndSubstituant = 1L;
+		final long noIndSubstitue = 2L;
+
+		final long noTiersSubstituant = 10000001L;
+		final long noTiersSubstitue = 10000002L;
+
+		// Crée deux tiers habitant dans le canton
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndSubstituant, date(1957, 5, 23), "Lavanchy", "Simon", true);
+				addIndividu(noIndSubstitue, date(1964, 5, 23), "Poulet", "Jean-Patrice", true);
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addHabitant(noTiersSubstituant, noIndSubstituant);
+				PersonnePhysique represente = addHabitant(noTiersSubstitue, noIndSubstitue);
+				addForPrincipal(represente, date(1984, 5, 23), MotifFor.MAJORITE, MockCommune.Bex);
+				return null;
+			}
+		});
+
+		RapportView rapport = new RapportView();
+		rapport.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.ASSUJETTISSEMENT_PAR_SUBSTITUTION);
+		rapport.setTiers(new TiersGeneralView(noTiersSubstituant));
+		rapport.setTiersLie(new TiersGeneralView(noTiersSubstitue));
+		rapport.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
+		rapport.setDateDebut(date(2014, 11, 11));
+		manager.save(rapport);
+
+		assertUnAssujetissementParSubstitution(noTiersSubstitue);
+	}
+
 	private void assertUneRepresentationConventionnelle(final boolean executionForcee, final long noTiersRepresente) throws Exception {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -205,6 +247,24 @@ public class RapportEditManagerTest extends WebTest {
 
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapports.iterator().next();
 				assertEquals(executionForcee, repres.getExtensionExecutionForcee());
+				return null;
+			}
+		});
+	}
+
+	private void assertUnAssujetissementParSubstitution(final long noTiersSubstitue) throws Exception {
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique represente = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, noTiersSubstitue);
+				assertNotNull(represente);
+
+				final Set<RapportEntreTiers> rapports = represente.getRapportsSujet();
+				assertNotNull(rapports);
+				assertEquals(1, rapports.size());
+
+				final RapportEntreTiers rapport = rapports.iterator().next();
+				assertTrue(rapport instanceof AssujettissementParSubstitution);
 				return null;
 			}
 		});
