@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.RegDate;
@@ -84,7 +85,7 @@ public class MessageIdentificationIndexedData implements Serializable {
 		this.navs13Upi = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.AVS_UPI, doc);
 		this.montant = DocumentExtractorHelper.getLongValue(MessageIdentificationIndexableData.MONTANT, doc);
 		this.annule = DocumentExtractorHelper.getBooleanValue(MessageIdentificationIndexableData.ANNULE, doc, Boolean.FALSE);
-		this.utilisateurTraitant = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.UTILISATEUR_TRAITANT, doc);
+		this.utilisateurTraitant = StringUtils.trimToNull(DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.UTILISATEUR_TRAITANT, doc));
 		this.transmetteur = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.TRANSMETTEUR, doc);
 		this.identifie = DocumentExtractorHelper.getBooleanValue(MessageIdentificationIndexableData.IDENTIFIE, doc, noContribuableIdentifie != null);
 		this.messageErreur = DocumentExtractorHelper.getDocValue(MessageIdentificationIndexableData.ERREUR, doc);

@@ -61,7 +61,7 @@ public class MessageIdentificationIndexable implements Indexable {
 		data.setNavs13Upi(IndexerFormatHelper.nullableStringToString(message.getNAVS13Upi()));
 		data.setMontant(demande.getMontant());
 		data.setAnnule(IndexerFormatHelper.booleanToString(message.isAnnule()));
-		data.setUtilisateurTraitant(IndexerFormatHelper.nullableStringToString(message.getTraitementUser()));
+		data.setUtilisateurTraitant(IndexerFormatHelper.nullableStringToString(message.getUtilisateurTraitant()));
 		data.setTransmetteur(IndexerFormatHelper.nullableStringToString(demande.getTransmetteur()));
 
 		final Reponse reponse = message.getReponse();

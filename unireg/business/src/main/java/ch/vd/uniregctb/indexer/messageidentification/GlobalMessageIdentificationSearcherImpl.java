@@ -53,6 +53,7 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 			}
 		};
 
+		map.put("id", Pair.of(MessageIdentificationIndexableData.TRI_ID, longSortBuilder));
 		map.put("demande.typeMessage", Pair.of(MessageIdentificationIndexableData.TYPE_MESSAGE, stringSortBuilder));
 		map.put("demande.periodeFiscale", Pair.of(MessageIdentificationIndexableData.PERIODE_FISCALE, intSortBuilder));
 		map.put("demande.emetteurId", Pair.of(MessageIdentificationIndexableData.EMETTEUR, stringSortBuilder));

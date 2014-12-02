@@ -28,6 +28,7 @@ public class MessageIdentificationIndexableData extends IndexableData {
 	// clés des données uniquement utilisées pour le tri
 	//
 
+	public static final String TRI_ID = "T_ID";
 	public static final String TRI_NOM = "T_NOM";
 	public static final String TRI_PRENOMS = "T_PRENOMS";
 	public static final String TRI_DATE_NAISSANCE = "T_DATE_NAISSANCE";
@@ -105,6 +106,7 @@ public class MessageIdentificationIndexableData extends IndexableData {
 		addNumber(d, MONTANT, montant);
 		addNumber(d, CTB_TROUVE, noCtbTrouve);
 
+		addNumber(d,TRI_ID,id);
 		addNotAnalyzedValue(d, TRI_NOM, nom);
 		addNotAnalyzedValue(d, TRI_PRENOMS, prenoms);
 		addNumber(d, TRI_DATE_NAISSANCE, dateNaissance == null ? 0 : dateNaissance);
