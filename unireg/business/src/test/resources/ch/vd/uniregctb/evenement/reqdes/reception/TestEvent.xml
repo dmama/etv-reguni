@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:creationModification xmlns:ns="http://www.vd.ch/fiscalite/reqdes/creation-modification/1"
+                         xmlns:ns1="http://www.vd.ch/fiscalite/unireg/common/2"
+                         xmlns:ns2="http://www.ech.ch/xmlns/eCH-0010/4">
+	<ns:notarialDeed>
+		<ns:referenceDate>2008-09-29</ns:referenceDate>
+		<ns:dealNumber>124846154</ns:dealNumber>
+	</ns:notarialDeed>
+	<ns:notarialInformation>
+		<ns:sollicitor>
+			<ns:visa>moinotaire</ns:visa>
+			<ns:name>Yesparler</ns:name>
+			<ns:firstName>Clothaire</ns:firstName>
+		</ns:sollicitor>
+		<ns:operator>
+			<ns:visa>secret</ns:visa>
+			<ns:name>Cecrétère</ns:name>
+			<ns:firstName>Alicia</ns:firstName>
+		</ns:operator>
+	</ns:notarialInformation>
+	<ns:stakeholder id="1">
+		<ns:registryOrigin>
+			<ns:new/>
+		</ns:registryOrigin>
+		<ns:identity>
+			<ns:name>
+				<ns:officialName>Dumbledore</ns:officialName>
+				<ns:firstNames>Albus</ns:firstNames>
+			</ns:name>
+			<ns:sex>1</ns:sex>
+			<ns:dateOfBirth>
+				<ns1:year>1935</ns1:year>
+				<ns1:month>3</ns1:month>
+				<ns1:day>14</ns1:day>
+			</ns:dateOfBirth>
+			<ns:vn>7560764758089</ns:vn>
+			<ns:motherName>
+				<ns:officialName>Dumbledore Misses</ns:officialName>
+				<ns:firstNames>Kendra</ns:firstNames>
+			</ns:motherName>
+			<ns:fatherName>
+				<ns:officialName>Dumbledore Senior</ns:officialName>
+				<ns:firstNames>Percival</ns:firstNames>
+			</ns:fatherName>
+		</ns:identity>
+		<ns:dateOfDeath>
+			<ns1:year>2012</ns1:year>
+			<ns1:month>5</ns1:month>
+			<ns1:day>24</ns1:day>
+		</ns:dateOfDeath>
+		<ns:nationality>
+			<ns:foreignCountry>GB</ns:foreignCountry>
+			<ns:residencePermit>0301</ns:residencePermit>
+		</ns:nationality>
+		<ns:residence>
+			<ns:swissResidence>
+				<ns:municipalityId>761</ns:municipalityId>
+				<ns:dwellingAddress>
+					<ns2:addressLine1>Herrn</ns2:addressLine1>
+					<ns2:street>Verborgenestrasse</ns2:street>
+					<ns2:houseNumber>42</ns2:houseNumber>
+					<ns2:locality>Zürich</ns2:locality>
+					<ns2:town>Zürich</ns2:town>
+					<ns2:swissZipCode>8000</ns2:swissZipCode>
+					<ns2:country>CH</ns2:country>
+				</ns:dwellingAddress>
+			</ns:swissResidence>
+		</ns:residence>
+	</ns:stakeholder>
+	<ns:stakeholder id="2">
+		<ns:registryOrigin>
+			<ns:civil/>
+		</ns:registryOrigin>
+		<ns:identity>
+			<ns:name>
+				<ns:officialName>Potter</ns:officialName>
+				<ns:firstNames>Harry</ns:firstNames>
+			</ns:name>
+			<ns:sex>1</ns:sex>
+			<ns:dateOfBirth>
+				<ns1:year>1995</ns1:year>
+				<ns1:month>8</ns1:month>
+				<ns1:day>26</ns1:day>
+			</ns:dateOfBirth>
+			<ns:vn>7561699595992</ns:vn>
+			<ns:motherName>
+				<ns:officialName>Evans</ns:officialName>
+				<ns:firstNames>Lily</ns:firstNames>
+			</ns:motherName>
+			<ns:fatherName>
+				<ns:officialName>Potter</ns:officialName>
+				<ns:firstNames>James</ns:firstNames>
+			</ns:fatherName>
+		</ns:identity>
+		<ns:maritalStatus>
+			<ns:maritalStatus>2</ns:maritalStatus>
+			<ns:dateOfMaritalStatus>
+				<ns1:year>2014</ns1:year>
+				<ns1:month>2</ns1:month>
+				<ns1:day>6</ns1:day>
+			</ns:dateOfMaritalStatus>
+			<ns:partner>
+				<ns:stakeholder stakeholderId="3"/>
+			</ns:partner>
+		</ns:maritalStatus>
+		<ns:nationality>
+			<ns:stateless/>
+			<ns:residencePermit>0302</ns:residencePermit>
+		</ns:nationality>
+		<ns:residence>
+			<ns:foreignCountryResidence>
+				<ns2:addressLine1>Sir</ns2:addressLine1>
+				<ns2:street>Grimmauld Place</ns2:street>
+				<ns2:houseNumber>12</ns2:houseNumber>
+				<ns2:locality>London</ns2:locality>
+				<ns2:town>London</ns2:town>
+				<ns2:foreignZipCode>GX1 TF2</ns2:foreignZipCode>
+				<ns2:country>GB</ns2:country>
+			</ns:foreignCountryResidence>
+		</ns:residence>
+	</ns:stakeholder>
+	<ns:stakeholder id="3">
+		<ns:registryOrigin>
+			<ns:fiscal partyNumber="15948723"/>
+		</ns:registryOrigin>
+		<ns:identity>
+			<ns:name>
+				<ns:officialName>Weasley</ns:officialName>
+				<ns:firstNames>Ginny</ns:firstNames>
+			</ns:name>
+			<ns:sex>2</ns:sex>
+			<ns:dateOfBirth>
+				<ns1:year>1996</ns1:year>
+				<ns1:month>4</ns1:month>
+				<ns1:day>25</ns1:day>
+			</ns:dateOfBirth>
+			<ns:vn>7562739035928</ns:vn>
+			<ns:motherName>
+				<ns:officialName>Weasley</ns:officialName>
+				<ns:firstNames>Molly</ns:firstNames>
+			</ns:motherName>
+			<ns:fatherName>
+				<ns:officialName>Weasley</ns:officialName>
+				<ns:firstNames>Arthur</ns:firstNames>
+			</ns:fatherName>
+		</ns:identity>
+		<ns:maritalStatus>
+			<ns:maritalStatus>2</ns:maritalStatus>
+			<ns:dateOfMaritalStatus>
+				<ns1:year>2014</ns1:year>
+				<ns1:month>2</ns1:month>
+				<ns1:day>6</ns1:day>
+			</ns:dateOfMaritalStatus>
+			<ns:partner>
+				<ns:stakeholder stakeholderId="2"/>
+			</ns:partner>
+		</ns:maritalStatus>
+		<ns:nationality>
+			<ns:swiss/>
+		</ns:nationality>
+		<ns:residence>
+			<ns:foreignCountryResidence>
+				<ns2:addressLine1>Misses</ns2:addressLine1>
+				<ns2:street>Grimmauld Place</ns2:street>
+				<ns2:houseNumber>12</ns2:houseNumber>
+				<ns2:locality>London</ns2:locality>
+				<ns2:town>London</ns2:town>
+				<ns2:foreignZipCode>GX1 TF2</ns2:foreignZipCode>
+				<ns2:country>GB</ns2:country>
+			</ns:foreignCountryResidence>
+		</ns:residence>
+	</ns:stakeholder>
+	<ns:transaction inscriptionMode="INSCRIPTION" inscriptionType="PROPERTY">
+		<ns:description>Donation</ns:description>
+		<ns:municipalityId>5586</ns:municipalityId>
+		<ns:stakeholder stakeholderId="1" role="DISPOSER"/>
+		<ns:stakeholder stakeholderId="2" role="BUYER"/>
+		<ns:stakeholder stakeholderId="3" role="OTHER"/>
+	</ns:transaction>
+	<ns:transaction inscriptionMode="INSCRIPTION" inscriptionType="EASEMENT">
+		<ns:description>Droit de passage</ns:description>
+		<ns:municipalityId>5477</ns:municipalityId>
+		<ns:municipalityId>5613</ns:municipalityId>
+		<ns:stakeholder stakeholderId="2" role="OTHER"/>
+	</ns:transaction>
+</ns:creationModification>

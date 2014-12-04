@@ -1,0 +1,8 @@
+<EvtRegCivil xmlns="http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil">
+  <NoTechnique>12</NoTechnique>
+  <Code>18000</Code>
+  <NoIndividu>6789</NoIndividu>
+  <DateEvenement>2007-10-25</DateEvenement>
+  <DateTraitement>2007-10-25</DateTraitement>
+  <NumeroOFS>5264</NumeroOFS>
+</EvtRegCivil>

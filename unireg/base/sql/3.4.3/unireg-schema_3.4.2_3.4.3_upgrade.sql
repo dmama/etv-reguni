@@ -1,0 +1,6 @@
+-- Version
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('3.4.3', '3.4_2_3.4.3_upgrade');
+
+-- Adresse de retour des DIs
+ALTER TABLE TACHE add (DECL_ADRESSE_RETOUR nvarchar2(4));
+ALTER TABLE DECLARATION add (DELAI_RETOUR_IMPRIME number(10,0));
