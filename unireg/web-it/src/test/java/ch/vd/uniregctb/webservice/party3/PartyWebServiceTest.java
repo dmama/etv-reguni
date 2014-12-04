@@ -49,6 +49,7 @@ import ch.vd.unireg.xml.party.immovableproperty.v1.PropertyShare;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategoryPeriod;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType;
@@ -1214,7 +1215,18 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			params.setPartyNumber(10174192); // Eudina Mara Alencar Casal
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
-			assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());
+
+			// le permis B a expiré le 30.11.2014
+			assertNull(pp.getCategory());
+
+			final List<NaturalPersonCategoryPeriod> cats = pp.getCategories();
+			assertNotNull(cats);
+			assertEquals(1, cats.size());
+
+			final NaturalPersonCategoryPeriod cat = cats.get(0);
+			assertNotNull(cat);
+			assertEquals(NaturalPersonCategory.C_02_B_PERMIT, cat.getCategory());
+			assertEquals(newDate(2014, 11, 30), cat.getDateTo());
 		}
 	}
 
