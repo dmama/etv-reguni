@@ -90,6 +90,14 @@ public class JspTagDocumentIcon extends BodyTagSupport {
 		if (image != null) {
 			return String.format("%s%s", contextPath, image);
 		}
+
+		if (mimeType.contains(";")) {
+			// si on est ici, c'est qu'on n'a pas trouvé d'image pour le mimeType donné et que
+			// le nom du mimetype contient un ";" (exemple : "text/plain; charset=UTF-8"
+			// -> dans ce cas, on refait la recherche de l'extension sur la première partie du mimetype seulement
+			return getImageUri(contextPath, mimeType.substring(0, mimeType.indexOf(";")));
+		}
+
 		return null;
 	}
 }
