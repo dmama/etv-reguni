@@ -46,8 +46,8 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			});
 			// ids en entrées
 			String filename = "contribuables_a_traiter.csv";
-			String contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
-			attacheFichier(writer, filename, "Contribuables à traiter", contenu, 500);
+			byte[] contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
+			attacheFichier(writer, filename, "Contribuables à traiter", contenu, CsvHelper.MIME_TYPE, 500);
 		}
 
 		// Résultats
@@ -74,7 +74,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		// DIs traitées
 		{
 			String filename = "dis_traitees.csv";
-			String contenu = delaisTraitesAsCsvFile(results.traites, filename, status);
+			byte[] contenu = delaisTraitesAsCsvFile(results.traites, filename, status);
 			String titre = "Liste des déclarations traitées";
 			String listVide = "(aucun déclaration traitée)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -83,7 +83,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		// DIs ignorées
 		{
 			String filename = "dis_ignorees.csv";
-			String contenu = asCsvFile(results.ignores, filename, status);
+			byte[] contenu = asCsvFile(results.ignores, filename, status);
 			String titre = "Liste des déclarations ignorées";
 			String listVide = "(aucun déclaration ignorée)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -92,7 +92,7 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		// les erreur
 		{
 			String filename = "erreurs.csv";
-			String contenu = asCsvFile(results.errors, filename, status);
+			byte[] contenu = asCsvFile(results.errors, filename, status);
 			String titre = "Liste des erreurs";
 			String listVide = "(aucune erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -103,8 +103,8 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String delaisTraitesAsCsvFile(List<DemandeDelaiCollectiveResults.Traite> traites, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] delaisTraitesAsCsvFile(List<DemandeDelaiCollectiveResults.Traite> traites, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = traites.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<DemandeDelaiCollectiveResults.Traite>() {

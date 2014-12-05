@@ -53,7 +53,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		// Nouveaux habitants
 		{
 			final String filename = "nouveaux_habitants.csv";
-			final String contenu = genererListeModifications(res.getNouveauxHabitants(), filename, status);
+			final byte[] contenu = genererListeModifications(res.getNouveauxHabitants(), filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -62,7 +62,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		// Nouveaux non-habitants
 		{
 			final String filename = "nouveaux_non_habitants.csv";
-			final String contenu = genererListeModifications(res.getNouveauxNonHabitants(), filename, status);
+			final byte[] contenu = genererListeModifications(res.getNouveauxNonHabitants(), filename, status);
 			final String titre = "Liste des nouveaux non-habitants";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -71,7 +71,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = genererListeErreurs(res.getErreurs(), filename, status);
+			final byte[] contenu = genererListeErreurs(res.getErreurs(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -81,9 +81,9 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String genererListeErreurs(List<CorrectionFlagHabitantResults.ContribuableErreur> erreurs, String filename, StatusManager status) {
+	private byte[] genererListeErreurs(List<CorrectionFlagHabitantResults.ContribuableErreur> erreurs, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		if (erreurs != null && !erreurs.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableErreur>() {
 				@Override
@@ -105,9 +105,9 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String genererListeModifications(List<CorrectionFlagHabitantResults.ContribuableInfo> modifications, String filename, StatusManager status) {
+	private byte[] genererListeModifications(List<CorrectionFlagHabitantResults.ContribuableInfo> modifications, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		if (modifications != null && !modifications.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(modifications, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableInfo>() {
 				@Override

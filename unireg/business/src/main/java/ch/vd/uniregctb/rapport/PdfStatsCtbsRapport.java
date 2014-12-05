@@ -72,7 +72,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		// Contribuables traités
 		{
 			String filename = "stats_ctbs_" + results.annee + ".csv";
-			String contenu = asCsvFile(results, filename, status);
+			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des contribuables assujettis";
 			String listVide = "(aucune contribuable)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -81,7 +81,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		// Contribuables en erreurs
 		{
 			String filename = "ctbs_en_erreur.csv";
-			String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucune contribuable en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -92,9 +92,9 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String asCsvFile(StatistiquesCtbs results, String filename, StatusManager status) {
+	private byte[] asCsvFile(StatistiquesCtbs results, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final Set<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> entrySet = results.stats.entrySet();

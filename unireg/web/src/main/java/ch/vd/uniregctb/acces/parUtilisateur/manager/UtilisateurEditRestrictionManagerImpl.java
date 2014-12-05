@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.acces.parUtilisateur.manager;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -233,8 +234,8 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 
 		@Override
 		public InputStream getStreamForExtraction(DroitsAccesExtractionResult rapportFinal) throws IOException {
-			final String contenu = buildCsv(rapportFinal.acces);
-			return CsvHelper.getInputStream(contenu);
+			final byte[] contenu = buildCsv(rapportFinal.acces);
+			return new ByteArrayInputStream(contenu);
 		}
 
 		@Override
@@ -262,7 +263,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			return b.toString();
 		}
 
-		private String buildCsv(List<DroitAccesUtilisateurView> acces) {
+		private byte[] buildCsv(List<DroitAccesUtilisateurView> acces) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
 			return CsvHelper.asCsvFile(acces, filename, null, new CsvHelper.FileFiller<DroitAccesUtilisateurView>() {
 				@Override

@@ -72,7 +72,7 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Personnes physiques ignorées
 		{
 			final String filename = "ignores.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoIgnore>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoIgnore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("RAISON");
@@ -92,7 +92,7 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoErreur>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoErreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("ERREUR");
@@ -112,7 +112,7 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// non-habitants modifiés
 		{
 			final String filename = "modifications.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoTraite>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoTraite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);

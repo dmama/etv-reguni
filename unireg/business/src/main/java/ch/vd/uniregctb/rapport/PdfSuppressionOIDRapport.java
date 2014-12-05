@@ -48,7 +48,7 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "tiers_traites.csv";
-			final String contenu = asCsvFile(results.traites, filename, status);
+			final byte[] contenu = asCsvFile(results.traites, filename, status);
 			final String titre = "Liste des tiers traités";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -57,7 +57,7 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvFile(results.errors, filename, status);
+			final byte[] contenu = asCsvFile(results.errors, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);

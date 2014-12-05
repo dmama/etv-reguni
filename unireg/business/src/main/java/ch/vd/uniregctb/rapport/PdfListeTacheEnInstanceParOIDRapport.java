@@ -63,7 +63,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		}
 		{
 			String filename = "tachesenInstance_par_OID.csv";
-			String contenu = asCsvFile(results, filename, status);
+			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des tâches en instance par OID";
 			String listVide = "(aucune tâche traitée)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -74,8 +74,8 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String asCsvFile(ListeTachesEnInstanceParOID results, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] asCsvFile(ListeTachesEnInstanceParOID results, String filename, StatusManager status) {
+		byte[] contenu = null;
 		List<ListeTachesEnInstanceParOID.LigneTacheInstance> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {

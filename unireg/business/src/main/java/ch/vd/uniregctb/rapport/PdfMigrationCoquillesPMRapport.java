@@ -63,7 +63,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "pm_migrees.csv";
-			final String contenu = ctbIdsAsCsvFile(results.traitees, filename, status);
+			final byte[] contenu = ctbIdsAsCsvFile(results.traitees, filename, status);
 			final String titre = "Liste des personnes morales migrées";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -73,7 +73,7 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);

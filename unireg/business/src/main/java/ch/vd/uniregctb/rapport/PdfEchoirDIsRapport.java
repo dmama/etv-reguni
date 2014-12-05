@@ -66,7 +66,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		// DIs échues
 		{
 			String filename = "dis_echues.csv";
-			String contenu = disEchuesAsCsvFile(results.disEchues, filename, status);
+			byte[] contenu = disEchuesAsCsvFile(results.disEchues, filename, status);
 			String titre = "Liste des déclarations nouvellement échues";
 			String listVide = "(aucun déclaration échue)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -75,7 +75,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		// DIs en erreur
 		{
 			String filename = "dis_en_erreur.csv";
-			String contenu = asCsvFile(results.disEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucun déclaration en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -87,8 +87,8 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 	}
 
 
-	private String disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
+		byte[] contenu = null;
 		final int size = disEchues.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsResults.Echue>() {

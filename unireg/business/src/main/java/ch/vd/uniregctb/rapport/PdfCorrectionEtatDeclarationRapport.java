@@ -52,7 +52,7 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 		// Doublons
 		{
 			final String filename = "doublons_supprimes.csv";
-			final String contenu = traitesAsCsvFile(results.doublons, filename, status);
+			final byte[] contenu = traitesAsCsvFile(results.doublons, filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -62,7 +62,7 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -74,8 +74,8 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 	}
 
 
-	private String traitesAsCsvFile(List<CorrectionEtatDeclarationResults.Doublon> list, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] traitesAsCsvFile(List<CorrectionEtatDeclarationResults.Doublon> list, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CorrectionEtatDeclarationResults.Doublon>() {

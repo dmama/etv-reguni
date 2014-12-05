@@ -67,7 +67,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		// adresses resolues
 			{
 				final String filename = "for_et_commune_differente.csv";
-				final String contenu = getCsvForFiscalEtCommuneDifferente(results.listeCommunesDifferentes, filename, status);
+				final byte[] contenu = getCsvForFiscalEtCommuneDifferente(results.listeCommunesDifferentes, filename, status);
 				final String titre = "Liste des communes différentes";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -78,7 +78,7 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvErrorFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,8 +90,8 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 
 	
 
-	private <T extends ComparerForFiscalEtCommuneResults.CommunesDifferentes> String getCsvForFiscalEtCommuneDifferente(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends ComparerForFiscalEtCommuneResults.CommunesDifferentes> byte[] getCsvForFiscalEtCommuneDifferente(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -122,8 +122,8 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends ComparerForFiscalEtCommuneResults.Erreur> String asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		String contenu = null;
+	protected static <T extends ComparerForFiscalEtCommuneResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {

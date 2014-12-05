@@ -51,7 +51,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "codes_modifies.csv";
-			final String contenu = buildContenuTraites(results.getTraites(), status, filename);
+			final byte[] contenu = buildContenuTraites(results.getTraites(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation a été modifié";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -60,7 +60,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		// Cas ignorés
 		{
 			final String filename = "ignores.csv";
-			final String contenu = buildContenuIgnores(results.getIgnores(), status, filename);
+			final byte[] contenu = buildContenuIgnores(results.getIgnores(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation n'a pas été touché";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -69,7 +69,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = buildContenuErreurs(results.getErreurs(), status, filename);
+			final byte[] contenu = buildContenuErreurs(results.getErreurs(), status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -79,7 +79,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String buildContenuTraites(List<ImportCodesSegmentResults.Traite> traites, StatusManager status, String filename) {
+	private byte[] buildContenuTraites(List<ImportCodesSegmentResults.Traite> traites, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Traite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -94,7 +94,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		});
 	}
 
-	private String buildContenuIgnores(List<ImportCodesSegmentResults.Ignore> ignores, StatusManager status, String filename) {
+	private byte[] buildContenuIgnores(List<ImportCodesSegmentResults.Ignore> ignores, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Ignore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -109,7 +109,7 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		});
 	}
 
-	private String buildContenuErreurs(List<ImportCodesSegmentResults.Erreur> erreurs, StatusManager status, String filename) {
+	private byte[] buildContenuErreurs(List<ImportCodesSegmentResults.Erreur> erreurs, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

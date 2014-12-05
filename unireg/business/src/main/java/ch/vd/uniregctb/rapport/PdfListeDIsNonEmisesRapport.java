@@ -62,7 +62,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		}
 		{
 			String filename = "contribuables_sans_DI.csv";
-			String contenu = asCsvFile(results, filename, status);
+			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traité)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -73,8 +73,8 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String asCsvFile(ListeDIsNonEmises results, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] asCsvFile(ListeDIsNonEmises results, String filename, StatusManager status) {
+		byte[] contenu = null;
 		List<ListeDIsNonEmises.LigneRapport> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {

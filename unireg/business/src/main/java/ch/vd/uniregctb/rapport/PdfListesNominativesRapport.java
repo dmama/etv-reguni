@@ -70,7 +70,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    // Contribuables ok
 	    {
 	        final String filename = "tiers.csv";
-	        final String contenu = genererListesNominatives(results, filename, status);
+	        final byte[] contenu = genererListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers";
 	        final String listVide = "(aucun)";
 	        addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -79,7 +79,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    // Contribuables en erreurs
 	    {
 	        final String filename = "tiers_en_erreur.csv";
-	        final String contenu = genererErreursListesNominatives(results, filename, status);
+	        final byte[] contenu = genererErreursListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers en erreur";
 	        final String listVide = "(aucun)";
 	        addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,9 +90,9 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    status.setMessage("Génération du rapport terminée.");
 	}
 	
-    private String genererListesNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
+    private byte[] genererListesNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
 
-        String contenu = null;
+	    byte[] contenu = null;
         final List<ListesNominativesResults.InfoTiers> list = results.getListeTiers();
         final int size = list.size();
         if (size > 0) {
@@ -144,9 +144,9 @@ public class PdfListesNominativesRapport extends PdfRapport{
         return contenu;
     }
 
-	private String genererErreursListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
+	private byte[] genererErreursListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
 
-	    String contenu = null;
+		byte[] contenu = null;
 	    final List<ListesNominativesResults.Erreur> list = results.getListeErreurs();
 	    final int size = list.size();
 	    if (size > 0) {

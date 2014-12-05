@@ -71,7 +71,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		// Assujettis trouvés
 		{
 			final String filename = "assujettis.csv";
-			final String contenu = buildContenuAssujettis(results.getAssujettis(), status, filename);
+			final byte[] contenu = buildContenuAssujettis(results.getAssujettis(), status, filename);
 			final String titre = "Liste des contribuables assujettis et de leurs assujettissements";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -80,7 +80,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		// Contribuables ignorés
 		{
 			final String filename = "ignores.csv";
-			final String contenu = buildContenuIgnores(results.getIgnores(), filename, status);
+			final byte[] contenu = buildContenuIgnores(results.getIgnores(), filename, status);
 			final String titre = "Liste des contribuables ignorés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -89,7 +89,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = buildContenuErreurs(results.getListeErreurs(), filename, status);
+			final byte[] contenu = buildContenuErreurs(results.getListeErreurs(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -99,7 +99,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
+	private static byte[] buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbAssujetti>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -121,7 +121,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		});
 	}
 
-	private static String buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
+	private static byte[] buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbIgnore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -137,7 +137,7 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		});
 	}
 
-	private static String buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
+	private static byte[] buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(results, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

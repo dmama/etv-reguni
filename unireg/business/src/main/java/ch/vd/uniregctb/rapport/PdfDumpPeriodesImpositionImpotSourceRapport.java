@@ -65,7 +65,7 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 		// Personnes physiques ignorées
 		{
 			final String filename = "ignores.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Ignore>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Ignore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("RAISON");
@@ -85,7 +85,7 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getErrors(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Error>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getErrors(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Error>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA).append("ERREUR");
@@ -105,7 +105,7 @@ public class PdfDumpPeriodesImpositionImpotSourceRapport extends PdfRapport {
 		// périodes d'imposition IS calculées
 		{
 			final String filename = "piis.csv";
-			final String contenu = CsvHelper.asCsvFile(results.getInfos(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Info>() {
+			final byte[] contenu = CsvHelper.asCsvFile(results.getInfos(), filename, status, new CsvHelper.FileFiller<DumpPeriodesImpositionImpotSourceResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);

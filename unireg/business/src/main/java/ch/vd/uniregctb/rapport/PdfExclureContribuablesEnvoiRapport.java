@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 
 /**
@@ -45,8 +46,8 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        });
 	        // ids en entrées
 	        String filename = "contribuables_a_exclure.csv";
-	        String contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
-	        attacheFichier(writer, filename, description, contenu, 500);
+		    byte[] contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
+	        attacheFichier(writer, filename, description, contenu, CsvHelper.MIME_TYPE, 500);
 	    }
 
 	    // Résultats
@@ -72,7 +73,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	    // DIs ignorées
 	    {
 	        String filename = "ctbs_ignorees.csv";
-	        String contenu = asCsvFile(results.ctbsIgnores, filename, status);
+		    byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 	        String titre = "Liste des contribuables ignorés";
 	        String listVide = "(aucun contribuable ignoré)";
 	        addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -81,7 +82,7 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	    // DIs en erreur
 	    {
 	        String filename = "ctbs_en_erreur.csv";
-	        String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+		    byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 	        String titre = "Liste des contribuables en erreur";
 	        String listVide = "(aucun contribuable en erreur)";
 	        addListeDetaillee(writer, titre, listVide, filename, contenu);

@@ -145,24 +145,23 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci au <b>début</b> de la ligne courante du document.
 	 */
-	protected void attacheFichier(PdfWriter writer, String filename, String description, String contenu) throws DocumentException {
+	protected void attacheFichier(PdfWriter writer, String filename, String description, byte[] contenu, String mimeType) throws DocumentException {
 
 		float x = 50; // il n'y a pas moyen (= pas trouvé) de connaître la position X courante
-		attacheFichier(writer, filename, description, contenu, x);
+		attacheFichier(writer, filename, description, contenu, mimeType, x);
 	}
 
 	/**
 	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci au <b>début</b> de la ligne courante du document.
 	 */
-	protected void attacheFichier(PdfWriter writer, String filename, String description, String contenu, float x) throws DocumentException {
+	protected void attacheFichier(PdfWriter writer, String filename, String description, byte[] contenu, String mimeType, float x) throws DocumentException {
 
 		float y = writer.getVerticalPosition(false);
 		Rectangle position = new Rectangle(x, y, x + 20f, y + 20f);
 
-		// Encoding ISO-8859-1 : parce qu'Excel ne reconnaît pas tout seul l'encoding des fichiers CSV...
 		PdfFileSpecification file;
 		try {
-			file = PdfFileSpecification.fileEmbedded(writer, null, filename, contenu.getBytes("ISO-8859-1"), 9);
+			file = PdfFileSpecification.fileEmbedded(writer, null, filename, contenu, mimeType, null, 9);
 			writer.addAnnotation(PdfAnnotation.createFileAttachment(writer, position, description, file));
 		}
 		catch (Exception e) {
@@ -173,7 +172,7 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un paragraphe listant de manière détaillée un résultat de processing.
 	 */
-	protected void addListeDetaillee(PdfWriter writer, String titre, String listVide, String filename, String contenu) throws DocumentException {
+	protected void addListeDetaillee(PdfWriter writer, String titre, String listVide, String filename, byte[] contenu) throws DocumentException {
 		addEnteteListeDetaillee(titre);
 		addPartieDeListeDetaillee(writer, titre, listVide, filename, contenu);
 	}
@@ -188,14 +187,14 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un lien vers un fichier de détails
 	 */
-	private void addPartieDeListeDetaillee(PdfWriter writer, String titre, String descriptionListeVide, String filename, String contenu) throws DocumentException {
+	private void addPartieDeListeDetaillee(PdfWriter writer, String titre, String descriptionListeVide, String filename, byte[] contenu) throws DocumentException {
 		final Paragraph details = new Paragraph();
 		details.setIndentationLeft(50);
 		details.setSpacingBefore(10);
 		details.setSpacingAfter(10);
 		details.setFont(normalFont);
 
-		final boolean vide = StringUtils.isBlank(contenu);
+		final boolean vide = contenu == null || contenu.length == 0;
 		if (vide) {
 			details.add(new Chunk(descriptionListeVide));
 		}
@@ -206,11 +205,11 @@ public abstract class PdfRapport extends Document {
 		add(details);
 
 		if (!vide) {
-			attacheFichier(writer, filename, titre, contenu);
+			attacheFichier(writer, filename, titre, contenu, CsvHelper.MIME_TYPE);
 		}
 	}
 
-	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
+	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, byte[][] contenus) throws DocumentException {
 		Assert.isEqual(filenames.length, contenus.length);
 
 		addEnteteListeDetaillee(titre);
@@ -220,14 +219,14 @@ public abstract class PdfRapport extends Document {
 			}
 		}
 		else {
-			addPartieDeListeDetaillee(writer, titre, listVide, "empty-file", "");
+			addPartieDeListeDetaillee(writer, titre, listVide, "empty-file", null);
 		}
 	}
 
 	/**
 	 * Construit le contenu du fichier détaillé des contribuables traités
 	 */
-	protected static String ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
+	protected static byte[] ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(ctbsTraites, filename, status, new CsvHelper.FileFiller<Long>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -245,7 +244,7 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends JobResults.Info> String asCsvFile(List<T> list, String filename, StatusManager status) {
+	protected static <T extends JobResults.Info> byte[] asCsvFile(List<T> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

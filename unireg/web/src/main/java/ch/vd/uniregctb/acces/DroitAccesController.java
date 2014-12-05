@@ -342,7 +342,7 @@ public class DroitAccesController {
 			return HttpHelper.getRedirectPagePrecedente(request);
 		}
 
-		final String content = CsvHelper.asCsvFile(conflits, "conflits.csv", null, new CsvHelper.FileFiller<DroitAccesConflitAvecDonneesContribuable>() {
+		final byte[] content = CsvHelper.asCsvFile(conflits, "conflits.csv", null, new CsvHelper.FileFiller<DroitAccesConflitAvecDonneesContribuable>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(CsvHelper.COMMA);
@@ -368,7 +368,7 @@ public class DroitAccesController {
 				return true;
 			}
 		});
-		try (InputStream in = new ByteArrayInputStream(content.getBytes(CsvHelper.CHARSET))) {
+		try (InputStream in = new ByteArrayInputStream(content)) {
 			servletService.downloadAsFile("conflits.csv", CsvHelper.MIME_TYPE, in, null, response);
 		}
 		return null;

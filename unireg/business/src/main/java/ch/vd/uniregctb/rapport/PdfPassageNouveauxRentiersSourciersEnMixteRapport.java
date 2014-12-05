@@ -70,7 +70,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			// Habitants traités
 			{
 				String filename = "sourciers_convertis.csv";
-				String contenu = asCsvFileTraite(results.sourciersConvertis, filename, status);
+				byte[] contenu = asCsvFileTraite(results.sourciersConvertis, filename, status);
 				String titre = "Liste des sourciers convertis";
 				String listVide = "(aucun sourcier converti)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -79,7 +79,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			// Habitants en erreurs
 			{
 				String filename = "sourciers_en_erreur.csv";
-				String contenu = asCsvFileErreur(results.sourciersEnErreurs, filename, status);
+				byte[] contenu = asCsvFileErreur(results.sourciersEnErreurs, filename, status);
 				String titre = "Liste des habitants en erreur";
 				String listVide = "(aucun habitant en erreur)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,7 +90,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String asCsvFileTraite(List<PassageNouveauxRentiersSourciersEnMixteResults.Traite> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileTraite(List<PassageNouveauxRentiersSourciersEnMixteResults.Traite> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Traite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -105,7 +105,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		});
 	}
 
-	private static String asCsvFileErreur(List<PassageNouveauxRentiersSourciersEnMixteResults.Erreur> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileErreur(List<PassageNouveauxRentiersSourciersEnMixteResults.Erreur> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

@@ -51,7 +51,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "immeubles_importes.csv";
-			final String contenu = buildContenuTraites(results.traites, status, filename);
+			final byte[] contenu = buildContenuTraites(results.traites, status, filename);
 			final String titre = "Liste des immeubles importés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -60,7 +60,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		// Cas ignorés
 		{
 			final String filename = "immeubles_ignores.csv";
-			final String contenu = buildContenuIgnores(results.ignores, status, filename);
+			final byte[] contenu = buildContenuIgnores(results.ignores, status, filename);
 			final String titre = "Liste des immeubles ignorés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -69,7 +69,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		// A vérifier
 		{
 			final String filename = "immeubles_a_verifier.csv";
-			final String contenu = buildContenuAVerifier(results.averifier, status, filename);
+			final byte[] contenu = buildContenuAVerifier(results.averifier, status, filename);
 			final String titre = "Liste des immeubles qui doivent être vérifiés dans le registre foncier";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -78,7 +78,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "immeubles_en_erreurs.csv";
-			final String contenu = buildContenuErreurs(results.erreurs, status, filename);
+			final byte[] contenu = buildContenuErreurs(results.erreurs, status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -88,7 +88,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String buildContenuTraites(List<ImportImmeublesResults.Import> traites, StatusManager status, String filename) {
+	private byte[] buildContenuTraites(List<ImportImmeublesResults.Import> traites, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Import>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -103,7 +103,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private String buildContenuIgnores(List<ImportImmeublesResults.Ignore> ignores, StatusManager status, String filename) {
+	private byte[] buildContenuIgnores(List<ImportImmeublesResults.Ignore> ignores, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Ignore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -118,7 +118,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private String buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
+	private byte[] buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(averifiers, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.AVerifier>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -133,7 +133,7 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private String buildContenuErreurs(List<ImportImmeublesResults.Erreur> erreurs, StatusManager status, String filename) {
+	private byte[] buildContenuErreurs(List<ImportImmeublesResults.Erreur> erreurs, StatusManager status, String filename) {
 		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

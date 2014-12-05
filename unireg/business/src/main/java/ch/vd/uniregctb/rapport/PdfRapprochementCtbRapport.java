@@ -79,7 +79,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
         // CTBs rapprochés
         {
             final String filename = "contribuables_rapproches.csv";
-            final String contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
+            final byte[] contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
             final String titre = "Liste des contribuables rapprochés";
             final String listVide = "(aucun)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -88,7 +88,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
         // les erreurs
         {
             final String filename = "erreurs.csv";
-            final String contenu = asCsvFile(results.ctbsEnErreur, filename, status);
+            final byte[] contenu = asCsvFile(results.ctbsEnErreur, filename, status);
             final String titre = "Liste des erreurs";
             final String listVide = "(aucune)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -101,7 +101,7 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
     /**
      * Construit le contenu du fichier détaillé des contribuables rapprochés
      */
-	private String ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
+	private byte[] ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(listeRapprochee, filename, status, new CsvHelper.FileFiller<ProprietaireRapproche>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

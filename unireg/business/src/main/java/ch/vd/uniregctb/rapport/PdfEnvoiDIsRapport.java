@@ -79,7 +79,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs traités
         {
             String filename = "contribuables_traites.csv";
-            String contenu = ctbIdsAsCsvFile(results.ctbsAvecDiGeneree, filename, status);
+	        byte[] contenu = ctbIdsAsCsvFile(results.ctbsAvecDiGeneree, filename, status);
             String titre = "Liste des contribuables traités";
             String listVide = "(aucun contribuable traité)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -88,7 +88,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs indigents
         {
             String filename = "contribuables_indigents.csv";
-            String contenu = ctbIdsAsCsvFile(results.ctbsIndigents, filename, status);
+	        byte[] contenu = ctbIdsAsCsvFile(results.ctbsIndigents, filename, status);
             String titre = "Liste des contribuables indigents";
             String listVide = "(aucun contribuable indigent)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -97,7 +97,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs ignorés
         {
             String filename = "contribuables_ignores.csv";
-            String contenu = asCsvFile(results.ctbsIgnores, filename, status);
+	        byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
             String titre = "Liste des contribuables ignorés";
             String listVide = "(aucun contribuable ignoré)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -106,7 +106,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs en erreurs
         {
             String filename = "contribuables_en_erreur.csv";
-            String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+	        byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
             String titre = "Liste des contribuables en erreur";
             String listVide = "(aucun contribuable en erreur)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);

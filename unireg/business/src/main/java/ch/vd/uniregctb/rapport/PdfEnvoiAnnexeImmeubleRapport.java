@@ -73,7 +73,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 		// CTBs ignorés
 		{
 			String filename = "contribuables_traites.csv";
-			String contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status);
+			byte[] contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traités)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -82,7 +82,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 		// CTBs ignorés
 		{
 			String filename = "contribuables_ignores.csv";
-			String contenu = asCsvFile(results.ctbsIgnores, filename, status);
+			byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 			String titre = "Liste des contribuables ignorés";
 			String listVide = "(aucun contribuable ignoré)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -91,7 +91,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 		// CTBs en erreurs
 		{
 			String filename = "contribuables_en_erreur.csv";
-			String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucun contribuable en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -106,7 +106,7 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> String asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
+	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> byte[] asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

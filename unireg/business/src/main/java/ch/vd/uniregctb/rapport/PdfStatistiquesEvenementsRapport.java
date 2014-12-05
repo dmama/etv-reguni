@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -113,7 +114,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements civils : types en erreur
 			{
 				final String filename = "erreurs_evts_civils_ech_par_type.csv";
-				final String contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), "RECUS", dateReference, filename, status);
+				final byte[] contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), "RECUS", dateReference, filename, status);
 				final String titre = "Erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -122,7 +123,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// messages d'erreur regroupés par type
 			{
 				final String filename = "messages_erreurs_evts_civils_ech_par_type.csv";
-				final String contenu = buildStatsMessagesErreursEchParType(civilsEch.getToutesErreurs(), filename, status);
+				final byte[] contenu = buildStatsMessagesErreursEchParType(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Messages d'erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -131,7 +132,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// toutes les erreurs
 			{
 				final String filename = "erreurs_evts_civils_ech.csv";
-				final String contenu = asCsvStatFile(civilsEch.getToutesErreurs(), filename, status);
+				final byte[] contenu = asCsvStatFile(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils e-CH";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -140,7 +141,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// manipulations manuelles
 			{
 				final String filename = "manipulations_evts_civils_ech.csv";
-				final String contenu = asCsvStatFile(civilsEch.getManipulationsManuelles(), filename, status);
+				final byte[] contenu = asCsvStatFile(civilsEch.getManipulationsManuelles(), filename, status);
 				final String titre = String.format("Manipulations manuelles des événements civils e-CH depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -149,7 +150,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// forçages par type
 			{
 				final String filename = "evts_civils_forces_ech.csv";
-				final String contenu = asCsvFile(civilsEch.getForcesParType(), civilsEch.getForcesRecemmentParType(), "FORCES", dateReference, filename, status);
+				final byte[] contenu = asCsvFile(civilsEch.getForcesParType(), civilsEch.getForcesRecemmentParType(), "FORCES", dateReference, filename, status);
 				final String titre = "Evénements civils e-CH forcés par type d'événement";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -158,7 +159,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// taille des queues d'attente
 			{
 				final String filename = "queues_attente_ech.csv";
-				final String contenu = asCsvStatFile(civilsEch.getQueuesAttente(), filename, status);
+				final byte[] contenu = asCsvStatFile(civilsEch.getQueuesAttente(), filename, status);
 				final String titre = "Queues d'événements e-CH en attente";
 				final String listeVide = "(aucune)";
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
@@ -193,7 +194,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements externes : erreurs
 			{
 				final String filename = "erreurs_evts_externes.csv";
-				final String contenu = asCsvStatFile(externes.getErreurs(), filename, status);
+				final byte[] contenu = asCsvStatFile(externes.getErreurs(), filename, status);
 				final String titre = "Erreurs des événements externes";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -233,7 +234,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : restant à traiter
 			{
 				final String filename = "identification_ctb_a_traiter.csv";
-				final String contenu = asCsvStatFile(identCtb.getATraiter(), filename, status);
+				final byte[] contenu = asCsvStatFile(identCtb.getATraiter(), filename, status);
 				final String titre = "Evénements d'identification à traiter";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -273,7 +274,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements ReqDes : erreurs
 			{
 				final String filename = "reqdes_erreurs.csv";
-				final String contenu = asCsvStatFile(notaires.getToutesErreurs(), filename, status);
+				final byte[] contenu = asCsvStatFile(notaires.getToutesErreurs(), filename, status);
 				final String titre = "Evénements ReqDes en erreur";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -282,7 +283,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements ReqDes : manipulations manuelles
 			{
 				final String filename = "reqdes_forces.csv";
-				final String contenu = asCsvStatFile(notaires.getManipulationsManuelles(), filename, status);
+				final byte[] contenu = asCsvStatFile(notaires.getManipulationsManuelles(), filename, status);
 				final String titre = "Evénements ReqDes forcés";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -316,8 +317,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return b.toString();
 	}
 
-	private static <T extends StatistiqueEvenementInfo> String asCsvStatFile(List<T> elements, String fileName, StatusManager statusManager) {
-		String contenu = null;
+	private static <T extends StatistiqueEvenementInfo> byte[] asCsvStatFile(List<T> elements, String fileName, StatusManager statusManager) {
+		byte[] contenu = null;
 		if (elements != null && !elements.isEmpty()) {
 			final T first = elements.get(0);
 			contenu = CsvHelper.asCsvFile(elements, fileName, statusManager, new CsvHelper.FileFiller<T>() {
@@ -337,11 +338,12 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static String asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable String prefixeNouveaux, RegDate dateReference, String fileName, StatusManager statusManager) {
-		String contenu = null;
+	private static byte[] asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable String prefixeNouveaux, RegDate dateReference, String fileName, StatusManager statusManager) throws IOException {
+		byte[] contenu = null;
 		if (tous != null && !tous.isEmpty()) {
 			final String message = String.format("Génération du fichier %s", fileName);
 			statusManager.setMessage(message, 0);
+
 			final StringBuilder b = new StringBuilder();
 
 			// les noms des colonnes
@@ -366,7 +368,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 					}
 				}
 			}
-			contenu = b.toString();
+			contenu = b.toString().getBytes(CsvHelper.CHARSET);
 
 			statusManager.setMessage(message, 100);
 		}
@@ -407,8 +409,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		}
 	}
 
-	private String buildStatsMessagesErreursEchParType(List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
-		String contenu = null;
+	private byte[] buildStatsMessagesErreursEchParType(List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
+		byte[] contenu = null;
 		if (toutesErreurs != null && !toutesErreurs.isEmpty()) {
 
 			final String messageCalcul = String.format("Calcul des statistiques pour le fichier %s", fileName);

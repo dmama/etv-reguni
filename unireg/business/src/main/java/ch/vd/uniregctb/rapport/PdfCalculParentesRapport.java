@@ -68,7 +68,7 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			// Relations créées
 			{
 				String filename = "parentes.csv";
-				String contenu = asCsvFileTraite(results.getUpdates(), filename, status);
+				byte[] contenu = asCsvFileTraite(results.getUpdates(), filename, status);
 				String titre = "Liste des relations de parenté mises à jour";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -77,7 +77,7 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			// Erreurs
 			{
 				String filename = "erreurs.csv";
-				String contenu = asCsvFileErreur(results.getErreurs(), filename, status);
+				byte[] contenu = asCsvFileErreur(results.getErreurs(), filename, status);
 				String titre = "Liste des erreurs rencontrées";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -88,7 +88,7 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String asCsvFileTraite(List<ParenteUpdateInfo> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileTraite(List<ParenteUpdateInfo> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ParenteUpdateInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -111,7 +111,7 @@ public class PdfCalculParentesRapport extends PdfRapport {
 		});
 	}
 
-	private static String asCsvFileErreur(List<CalculParentesResults.InfoErreur> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileErreur(List<CalculParentesResults.InfoErreur> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CalculParentesResults.InfoErreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

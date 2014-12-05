@@ -164,7 +164,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			else {
 				filename = "contribuables_en_erreur.csv";
 			}
-		    final String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+		    final byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 		    final String titre = "Liste des contribuables en erreur";
 		    final String listVide = "(aucun contribuable en erreur)";
 		    addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -178,7 +178,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			else {
 				filename = "contribuables_ignores.csv";
 			}
-		    final String contenu = asCsvFile(results.ctbsIgnores, filename, status);
+		    final byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 		    final String titre = "Liste des contribuables ignorés";
 		    final String listVide = "(aucun contribuable ignoré)";
 		    addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -223,7 +223,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		// Fichier CVS détaillé
 		{
 			final OfficeImpot office = getOfficeImpot(results.noColOID);
-			final String[] contenu = asCsvFiles(nomsCommunes, infoOid, status);
+			final byte[][] contenu = asCsvFiles(nomsCommunes, infoOid, status);
 			writeFichierDetail(results, writer, contenu, infoOid.isEmpty(), String.format("OID%02d", office.getNoColAdm()));
 		}
 	}
@@ -231,7 +231,7 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 	/**
 	 * Utilisé par le traitement d'un OID complet
 	 */
-	private String[] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
+	private byte[][] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoOid.values());
 		status.setMessage("Génération du rapport");
 

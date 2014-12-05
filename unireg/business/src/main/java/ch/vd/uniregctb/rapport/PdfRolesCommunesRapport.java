@@ -93,7 +93,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		// Détails des contribuables en erreur ou ignorés
 		if (!results.ctbsEnErrors.isEmpty()) {
 		    final String filename = "contribuables_en_erreur.csv";
-		    final String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
+		    final byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 		    final String titre = "Liste des contribuables en erreur";
 		    final String listVide = "(aucun contribuable en erreur)";
 		    addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -101,7 +101,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 
 		if (!results.ctbsIgnores.isEmpty()) {
 		    final String filename = "contribuables_ignores.csv";
-		    final String contenu = asCsvFile(results.ctbsIgnores, filename, status);
+		    final byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 		    final String titre = "Liste des contribuables ignorés";
 		    final String listVide = "(aucun contribuable ignoré)";
 		    addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -169,7 +169,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 
 		    // Fichier CVS détaillé
 		    {
-			    final String[] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
+			    final byte[][] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
 			    writeFichierDetail(results, writer, contenu, totalContribuables == 0, Integer.toString(commune.getNoOFS()));
 		    }
 		}
@@ -178,7 +178,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 	/**
 	 * Utilisé par le traitement commune par commune
 	 */
-	private String[] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
+	private byte[][] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
 
 		final int noOfsCommune = infoCommune.getNoOfs();
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoCommune.getInfosContribuables().values());

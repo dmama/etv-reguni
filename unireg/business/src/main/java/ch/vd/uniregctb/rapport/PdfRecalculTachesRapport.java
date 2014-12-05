@@ -64,7 +64,7 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		// Action menées
 		{
 			final String filename = "actions_menees.csv";
-			final String contenu = actionsAsCsvFile(results.getActions(), filename, status);
+			final byte[] contenu = actionsAsCsvFile(results.getActions(), filename, status);
 			final String titre = "Liste des actions menées par le job";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -73,7 +73,7 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = errorsAsCsvFile(results.getExceptions(), filename, status);
+			final byte[] contenu = errorsAsCsvFile(results.getExceptions(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -83,7 +83,7 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String actionsAsCsvFile(List<TacheSyncResults.ActionInfo> actions, String fileName, StatusManager status) {
+	private byte[] actionsAsCsvFile(List<TacheSyncResults.ActionInfo> actions, String fileName, StatusManager status) {
 		return CsvHelper.asCsvFile(actions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ActionInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -100,7 +100,7 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		});
 	}
 
-	private String errorsAsCsvFile(List<TacheSyncResults.ExceptionInfo> exceptions, String fileName, StatusManager status) {
+	private byte[] errorsAsCsvFile(List<TacheSyncResults.ExceptionInfo> exceptions, String fileName, StatusManager status) {
 		return CsvHelper.asCsvFile(exceptions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ExceptionInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

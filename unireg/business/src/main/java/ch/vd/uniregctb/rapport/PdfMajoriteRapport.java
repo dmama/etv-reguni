@@ -69,7 +69,7 @@ public class PdfMajoriteRapport extends PdfRapport {
         // Habitants traités
         {
             final String filename = "habitants_traites.csv";
-            final String contenu = CsvHelper.asCsvFile(results.habitantTraites, filename, status, new CsvHelper.FileFiller<OuvertureForsResults.Traite>() {
+            final byte[] contenu = CsvHelper.asCsvFile(results.habitantTraites, filename, status, new CsvHelper.FileFiller<OuvertureForsResults.Traite>() {
 	            @Override
 	            public void fillHeader(CsvHelper.LineFiller b) {
 		            b.append("OID").append(COMMA);
@@ -101,7 +101,7 @@ public class PdfMajoriteRapport extends PdfRapport {
         // Habitants en erreurs
         {
             final String filename = "habitants_en_erreur.csv";
-            final String contenu = asCsvFile(results.habitantEnErrors, filename, status);
+            final byte[] contenu = asCsvFile(results.habitantEnErrors, filename, status);
             final String titre = "Liste des habitants en erreur";
             final String listVide = "(aucun habitant en erreur)";
             document.addListeDetaillee(writer, titre, listVide, filename, contenu);

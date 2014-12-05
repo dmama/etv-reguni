@@ -74,7 +74,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		// débiteurs ignorés
 		{
 			final String filename = "debiteurs_ignores.csv";
-			final String contenu = getCsvDebiteursNonTraites(results.ignores, filename, status);
+			final byte[] contenu = getCsvDebiteursNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des débiteurs ignorés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -83,7 +83,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		// listes récapitulatives échues
 		{
 			final String filename = "lr_echues.csv";
-			final String contenu = getCsvLrEchues(results.lrEchues, filename, status);
+			final byte[] contenu = getCsvLrEchues(results.lrEchues, filename, status);
 			final String titre = "Liste des LR échues";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -92,7 +92,7 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = getCsvDebiteursNonTraites(results.erreurs, filename, status);
+			final byte[] contenu = getCsvDebiteursNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -102,8 +102,8 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> String getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> byte[] getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -126,8 +126,8 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (lrEchues != null && !lrEchues.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
 				@Override

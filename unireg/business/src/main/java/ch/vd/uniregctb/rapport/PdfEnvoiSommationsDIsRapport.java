@@ -77,7 +77,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // Sommations DI en erreurs
         {
             String filename = "sommations_DI_en_erreur.csv";
-            String contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status);
             String titre = "Liste des déclarations impossibles à sommer";
             String listVide = "(aucune déclaration à sommer en erreur)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -86,7 +86,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // DI avec délai effectif non échu
         {
             String filename = "delai_effectif_non_echu.csv";
-            String contenu = asCsvFileSommationDI(results.getListeDisDelaiEffectifNonEchu(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getListeDisDelaiEffectifNonEchu(), filename, status);
             String titre = "Liste des déclarations dont le délai effectif n'est pas échu";
             String listVide = "(aucune)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -95,7 +95,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // DI avec contribuables non assujettis.
         {
             String filename = "non_assujettissement.csv";
-            String contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status);
             String titre = "Liste des déclarations dont les contribuables ne sont pas assujettis";
             String listVide = "(aucune déclaration n'est liée à un contribuable non assujetti)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -104,7 +104,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // DI avec contribuables indigents.
         {
             String filename = "indigents.csv";
-            String contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont indigents";
             String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -113,7 +113,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 	     // DI avec contribuables sourcier purs.
         {
             String filename = "sourciersPurs.csv";
-            String contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont sourciers";
             String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -122,7 +122,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // DI optionnelles
         {
             String filename = "optionnelles.csv";
-            String contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status);
             String titre = "Liste des déclarations non-sommées car optionnelles";
             String listVide = "(aucune déclaration sommable n'est optionnelle)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -131,7 +131,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // DI sommées.
         {
             String filename = "sommations.csv";
-            String contenu = asCsvFileSommationDI(results.getSommations(), filename, status);
+	        byte[] contenu = asCsvFileSommationDI(results.getSommations(), filename, status);
             String titre = "Liste des déclarations sommées";
             String listVide = "(aucune déclaration sommée)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -142,8 +142,8 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
     }
 
 	@SuppressWarnings({"unchecked"})
-	private String asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
-		final String content;
+	private byte[] asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
+		final byte[] content;
 		if (!list.isEmpty()) {
 			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
 				@Override

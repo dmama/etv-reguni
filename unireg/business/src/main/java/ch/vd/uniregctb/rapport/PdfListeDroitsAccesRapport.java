@@ -69,7 +69,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
         // CTBs traités
         {
             String filename = "droits_acces.csv";
-            String contenu = droitsAccesAsCsvFile(results.droitsAcces, filename, status);
+            byte[] contenu = droitsAccesAsCsvFile(results.droitsAcces, filename, status);
             String titre = "Liste des droits d'accès";
             String listVide = "(aucun droit d'accès)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -78,7 +78,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
         // CTBs en erreurs
         {
             String filename = "erreurs.csv";
-            String contenu = asCsvFile(results.erreurs, filename, status);
+            byte[] contenu = asCsvFile(results.erreurs, filename, status);
             String titre = "Liste des erreurs";
             String listVide = "(aucune erreur)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -89,7 +89,7 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
         status.setMessage("Génération du rapport terminée.");
     }
 
-	private String droitsAccesAsCsvFile(List<ListeDroitsAccesResults.InfoDroitAcces> list, String filename, StatusManager status) {
+	private byte[] droitsAccesAsCsvFile(List<ListeDroitsAccesResults.InfoDroitAcces> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeDroitsAccesResults.InfoDroitAcces>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

@@ -65,7 +65,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "messages_identifies.csv";
-			final String contenu = getCsvMessagesIdentifies(results.identifies, filename, status);
+			final byte[] contenu = getCsvMessagesIdentifies(results.identifies, filename, status);
 			final String titre = "Liste des messages identifiés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -74,7 +74,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		// Messages non-identifiés
 		{
 			final String filename = "messages_non_identifies.csv";
-			final String contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status);
+			final byte[] contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status);
 			final String titre = "Liste des messages non-identifiés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -83,7 +83,7 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvErrorFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -93,8 +93,8 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends IdentifierContribuableResults.Identifie> String getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends IdentifierContribuableResults.Identifie> byte[] getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -122,8 +122,8 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private <T extends IdentifierContribuableResults.NonIdentifie> String getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends IdentifierContribuableResults.NonIdentifie> byte[] getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -148,8 +148,8 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends IdentifierContribuableResults.Erreur> String asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		String contenu = null;
+	protected static <T extends IdentifierContribuableResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {

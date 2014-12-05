@@ -66,7 +66,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Mouvements
 		{
 			final String filename = "mouvements.csv";
-			final String contenu = genererListeMouvements(results.mouvements, filename, status);
+			final byte[] contenu = genererListeMouvements(results.mouvements, filename, status);
 			final String titre = "Liste des mouvements générés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -75,7 +75,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Contribuables ignorés
 		{
 			final String filename = "ignores.csv";
-			final String contenu = genererListeDossiersNonTraites(results.ignores, filename, status);
+			final byte[] contenu = genererListeDossiersNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des dossiers ignorés";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -84,7 +84,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = genererListeDossiersNonTraites(results.erreurs, filename, status);
+			final byte[] contenu = genererListeDossiersNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs rencontrées";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -95,9 +95,9 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String genererListeDossiersNonTraites(List<DeterminerMouvementsDossiersEnMasseResults.NonTraite> nonTraites, String filename, StatusManager status) {
+	private byte[] genererListeDossiersNonTraites(List<DeterminerMouvementsDossiersEnMasseResults.NonTraite> nonTraites, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		if (nonTraites != null && !nonTraites.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(nonTraites, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.NonTraite>() {
 				@Override
@@ -119,9 +119,9 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String genererListeMouvements(List<DeterminerMouvementsDossiersEnMasseResults.Mouvement> mouvements, String filename, StatusManager status) {
+	private byte[] genererListeMouvements(List<DeterminerMouvementsDossiersEnMasseResults.Mouvement> mouvements, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		if (mouvements != null && !mouvements.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(mouvements, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.Mouvement>() {
 				@Override

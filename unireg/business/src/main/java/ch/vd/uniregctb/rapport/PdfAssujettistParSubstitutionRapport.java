@@ -67,7 +67,7 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 			// Relations créées
 			{
 				String filename = "substitutions.csv";
-				String contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status);
+				byte[] contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status);
 				String titre = "Liste des assujettissements par substitution";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -76,7 +76,7 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 			// Erreurs
 			{
 				String filename = "erreurs.csv";
-				String contenu = asCsvFileErreur(results.getErreurs(), filename, status);
+				byte[] contenu = asCsvFileErreur(results.getErreurs(), filename, status);
 				String titre = "Liste des erreurs rencontrées";
 				String listVide = "(aucune)";
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -87,7 +87,7 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static String asCsvFileTraite(List<AssujettisParSubstitutionResults.InfoRapportSubstitution> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileTraite(List<AssujettisParSubstitutionResults.InfoRapportSubstitution> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.InfoRapportSubstitution>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
@@ -124,7 +124,7 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 		});
 	}
 
-	private static String asCsvFileErreur(List<AssujettisParSubstitutionResults.Erreur> list, String filename, StatusManager status) {
+	private static byte[] asCsvFileErreur(List<AssujettisParSubstitutionResults.Erreur> list, String filename, StatusManager status) {
 		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {

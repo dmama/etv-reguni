@@ -89,7 +89,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 
 		{
 			final String filename = String.format("donnees_rpt_%s_%d.csv", results.getMode().name().toLowerCase(), results.periodeFiscale);
-			final String contenu = genererListePeriodes(results, filename, status);
+			final byte[] contenu = genererListePeriodes(results, filename, status);
 			final String titre = "Liste des périodes";
 			final String listeVide = "(aucun)";
 			final int taille = results.getListePeriode().size();
@@ -99,7 +99,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		// Contribuables en erreurs
 		{
 			final String filename = "contribuables_en_erreur.csv";
-			final String contenu = genererListeErreurs(results, filename, status);
+			final byte[] contenu = genererListeErreurs(results, filename, status);
 			final String titre = "Liste des contribuables en erreur";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -108,7 +108,7 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
 		{
 			final String filename = "contribuables_ignorés.csv";
-			final String contenu = genererListeIgnores(results, filename, status);
+			final byte[] contenu = genererListeIgnores(results, filename, status);
 			final String titre = " Liste des contribuables ignorés ayant un for sur la période fiscale concernée";
 			final String listeVide = "(aucun)";
 			addListeDetaillee(writer, titre, listeVide, filename, contenu);
@@ -119,8 +119,8 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String genererListeErreurs(ExtractionDonneesRptResults results, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] genererListeErreurs(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+		byte[] contenu = null;
 		final List<ExtractionDonneesRptResults.Erreur> liste = results.getListeErreurs();
 		if (!liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
@@ -143,15 +143,15 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String genererListeIgnores(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+	private byte[] genererListeIgnores(ExtractionDonneesRptResults results, String filename, StatusManager status) {
 		return genererListe(results.getListeCtbsIgnores(), filename, status);
 	}
 
-	private String genererListePeriodes(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+	private byte[] genererListePeriodes(ExtractionDonneesRptResults results, String filename, StatusManager status) {
 		return genererListe(results.getListePeriode(), filename, status);
 	}
 
-	private <T extends ExtractionDonneesRptResults.InfoCtbBase> String genererListe(List<T> liste, String filename, StatusManager status) {
+	private <T extends ExtractionDonneesRptResults.InfoCtbBase> byte[] genererListe(List<T> liste, String filename, StatusManager status) {
 		final String[] nomsColonnes = (!liste.isEmpty() ? liste.get(0).getNomsColonnes() : null);
 		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override

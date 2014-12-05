@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.mouvement.manager;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -423,8 +424,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 		@Override
 		public InputStream getStreamForExtraction(MouvementDossierExtractionResult rapportFinal) throws IOException {
-			final String contenu = buildCsv(rapportFinal.mvts);
-			return CsvHelper.getInputStream(contenu);
+			final byte[] contenu = buildCsv(rapportFinal.mvts);
+			return new ByteArrayInputStream(contenu);
 		}
 
 		@Override
@@ -520,7 +521,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			return b.toString();
 		}
 
-		private String buildCsv(List<MouvementDetailView> mvts) {
+		private byte[] buildCsv(List<MouvementDetailView> mvts) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
 			return CsvHelper.asCsvFile(mvts, filename, null, new CsvHelper.FileFiller<MouvementDetailView>() {
 				@Override

@@ -68,7 +68,7 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		// LR sommées
 		{
 			String filename = "listes_recapitulatives_sommees.csv";
-			String contenu = asCsvFile(results.lrSommees, filename, status);
+			byte[] contenu = asCsvFile(results.lrSommees, filename, status);
 			String titre = "Liste des débiteurs traités";
 			String listVide = "(aucun débiteur traité)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -77,7 +77,7 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		// Sommations LR en erreurs
 		{
 			String filename = "sommation_en_erreur.csv";
-			String contenu = asCsvFile(results.sommationLREnErreurs, filename, status);
+			byte[] contenu = asCsvFile(results.sommationLREnErreurs, filename, status);
 			String titre = "Liste des débiteurs en erreur";
 			String listVide = "(aucun débiteur en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);

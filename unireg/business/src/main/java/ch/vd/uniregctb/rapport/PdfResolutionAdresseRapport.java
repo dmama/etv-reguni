@@ -67,7 +67,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		// adresses resolues
 			{
 				final String filename = "adresses_resolues.csv";
-				final String contenu = getCsvAdresseResolue(results.listeAdresseResolues, filename, status);
+				final byte[] contenu = getCsvAdresseResolue(results.listeAdresseResolues, filename, status);
 				final String titre = "Liste des adresses résolues";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -78,7 +78,7 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvErrorFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,8 +90,8 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 
 	
 
-	private <T extends ResolutionAdresseResults.InfoAdresse> String getCsvAdresseResolue(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends ResolutionAdresseResults.InfoAdresse> byte[] getCsvAdresseResolue(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -122,8 +122,8 @@ public class PdfResolutionAdresseRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends ResolutionAdresseResults.Erreur> String asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		String contenu = null;
+	protected static <T extends ResolutionAdresseResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {

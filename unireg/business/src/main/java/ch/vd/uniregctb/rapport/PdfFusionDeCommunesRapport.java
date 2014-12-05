@@ -85,7 +85,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants traités
 		{
 			String filename = "tiers_traites.csv";
-			String contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status);
+			byte[] contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status);
 			String titre = "Liste des tiers traités";
 			String listVide = "(aucun tiers traité)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -94,7 +94,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants  ignorés
 		{
 			String filename = "tiers_ignores.csv";
-			String contenu = asCsvFile(results.tiersIgnores, filename, status);
+			byte[] contenu = asCsvFile(results.tiersIgnores, filename, status);
 			String titre = "Liste des tiers ignorés";
 			String listVide = "(aucun tiers ignoré)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -103,7 +103,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants en erreurs
 		{
 			String filename = "tiers_en_erreur.csv";
-			String contenu = asCsvFile(results.tiersEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.tiersEnErrors, filename, status);
 			String titre = "Liste des tiers en erreur";
 			String listVide = "(aucun tiers en erreur)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -112,7 +112,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants avec décision traités
 		{
 			String filename = "tiers_decision_traites.csv";
-			String contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status);
+			byte[] contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status);
 			String titre = "Liste des tiers avec décision ACI traités";
 			String listVide = "(aucun tiers avec décision ACI traité)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -121,7 +121,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants avec décision ignorés
 		{
 			String filename = "tiers_decision_ignores.csv";
-			String contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status);
+			byte[] contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status);
 			String titre = "Liste des tiers avec décision ACI ignorés";
 			String listVide = "(aucun tiers avec décision ACI ignoré)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -130,7 +130,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants avec décision en erreurs
 		{
 			String filename = "tiers_decision_en_erreur.csv";
-			String contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status);
 			String titre = "Liste des tiers avec décision ACI en erreur";
 			String listVide = "(aucun tiers avec décision ACI en erreur)";
 			document.addListeDetaillee(writer, titre, listVide, filename, contenu);

@@ -72,7 +72,7 @@ public class PdfValidationRapport extends PdfRapport {
 		// CTBs en erreurs
 		{
 			String filename = "tiers_invalides.csv";
-			String contenu = asCsvFile(results.erreursValidation, filename, statusManager);
+			byte[] contenu = asCsvFile(results.erreursValidation, filename, statusManager);
 			String titre = "Liste des tiers invalides";
 			String listVide = "(aucun tiers invalide)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -81,7 +81,7 @@ public class PdfValidationRapport extends PdfRapport {
 		// Assujettissements
 		if (results.calculatePeriodesImposition) {
 			String filename = "periodes_imposition_incalculables.csv";
-			String contenu = asCsvFile(results.erreursPeriodesImposition, filename, statusManager);
+			byte[] contenu = asCsvFile(results.erreursPeriodesImposition, filename, statusManager);
 			String titre = "Liste des périodes d'imposition qui ne sont pas calculables";
 			String listVide = "(aucune période d'imposition incalculable)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,7 +90,7 @@ public class PdfValidationRapport extends PdfRapport {
 		// Cohérence DI
 		if (results.calculatePeriodesImposition && results.coherencePeriodesImpositionWrtDIs) {
 			String filename = "periodes_dis_incoherentes.csv";
-			String contenu = asCsvFile(results.erreursCoherenceDI, filename, statusManager);
+			byte[] contenu = asCsvFile(results.erreursCoherenceDI, filename, statusManager);
 			String titre = "Liste des DIs émises dont les dates ne correspondent pas aux dates d'assujettissement";
 			String listVide = "(aucune DI émise dont les dates ne correspondent pas aux dates d'assujettissement)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -99,7 +99,7 @@ public class PdfValidationRapport extends PdfRapport {
 		// Adresses
 		if (results.calculateAdresses) {
 			String filename = "tiers_adresses_incalculables.csv";
-			String contenu = asCsvFile(results.erreursAdresses, filename, statusManager);
+			byte[] contenu = asCsvFile(results.erreursAdresses, filename, statusManager);
 			String titre = "Liste des tiers dont les adresses ne sont pas calculables";
 			String listVide = "(aucun tiers dont les adresses ne sont pas calculables)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);

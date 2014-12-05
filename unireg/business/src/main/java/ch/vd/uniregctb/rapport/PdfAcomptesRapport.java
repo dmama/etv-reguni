@@ -58,7 +58,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 		// Contribuables ok
 		{
 			final String filename = "contribuables_acomptes.csv";
-			final String contenu = genererAcomptes(results, filename, status);
+			final byte[] contenu = genererAcomptes(results, filename, status);
 			final String titre = "Liste des populations pour les bases acomptes";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -67,7 +67,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 		// Contribuables en erreurs
 		{
 			final String filename = "contribuables_acomptes_en_erreur.csv";
-			final String contenu = genererErreursAcomptes(results, filename, status);
+			final byte[] contenu = genererErreursAcomptes(results, filename, status);
 			final String titre = "Liste des populations pour les bases acomptes en erreur";
 			final String listVide = "(aucun contribuable en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -76,7 +76,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
 		{
 			final String filename = "contribuables_acomptes_ignorés.csv";
-			final String contenu = genererListeIgnoresAcomptes(results, filename, status);
+			final byte[] contenu = genererListeIgnoresAcomptes(results, filename, status);
 			final String titre = " Liste des populations ignorées ayant un for sur une période fiscale concernée";
 			final String listeVide = "(aucun)";
 			addListeDetaillee(writer, titre, listeVide, filename, contenu);
@@ -87,9 +87,9 @@ public class PdfAcomptesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String genererAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private byte[] genererAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		final List<AcomptesResults.InfoContribuableAssujetti> list = results.getListeContribuablesAssujettis();
 		final int size = list.size();
 		if (size > 0) {
@@ -132,9 +132,9 @@ public class PdfAcomptesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String genererErreursAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private byte[] genererErreursAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		final List<AcomptesResults.Erreur> list = results.getListeErreurs();
 		final int size = list.size();
 		if (size > 0) {
@@ -158,9 +158,9 @@ public class PdfAcomptesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private String genererListeIgnoresAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private byte[] genererListeIgnoresAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 		final List<AcomptesResults.InfoContribuableIgnore> list = results.getContribuablesIgnores();
 		final int size = list.size();
 		if (size > 0) {

@@ -66,7 +66,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		// Situations réinitialisées
 		{
 			String filename = "situations_reinitialisees.csv";
-			String contenu = situationsTraiteesAsCsvFile(results.situationsTraitees, filename, status);
+			byte[] contenu = situationsTraiteesAsCsvFile(results.situationsTraitees, filename, status);
 			String titre = "Liste des situations réinitialisées";
 			String listVide = "(aucun situation réinitialisée)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -75,7 +75,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		// Situations en erreur
 		{
 			String filename = "situations_en_erreur.csv";
-			String contenu = asCsvFile(results.situationsEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.situationsEnErrors, filename, status);
 			String titre = "Liste des situations en erreur";
 			String listVide = "(aucun situation en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -86,8 +86,8 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String situationsTraiteesAsCsvFile(List<ReinitialiserBaremeDoubleGainResults.Situation> situations, String filename, StatusManager status) {
-		String contenu = null;
+	private byte[] situationsTraiteesAsCsvFile(List<ReinitialiserBaremeDoubleGainResults.Situation> situations, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = situations.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(situations, filename, status, new CsvHelper.FileFiller<ReinitialiserBaremeDoubleGainResults.Situation>() {

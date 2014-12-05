@@ -70,7 +70,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		// Déclarations traités
 		{
 			String filename = "stats_dis_" + results.annee + ".csv";
-			String contenu = asCsvFile(results, filename, status);
+			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des déclarations d'impôt ordinaires";
 			String listVide = "(aucune déclaration)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -79,7 +79,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		// Déclarations en erreurs
 		{
 			String filename = "dis_en_erreur.csv";
-			String contenu = asCsvFile(results.disEnErrors, filename, status);
+			byte[] contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucune déclaration en erreur)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -91,9 +91,9 @@ public class PdfStatsDIsRapport extends PdfRapport {
 	/**
 	 * Génère un fichier CSV contenant les statistiques pour les déclarations d'impôt ordinaires
 	 */
-	private String asCsvFile(StatistiquesDIs results, String filename, StatusManager status) {
+	private byte[] asCsvFile(StatistiquesDIs results, String filename, StatusManager status) {
 
-		String contenu = null;
+		byte[] contenu = null;
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final List<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<>(results.stats.entrySet());

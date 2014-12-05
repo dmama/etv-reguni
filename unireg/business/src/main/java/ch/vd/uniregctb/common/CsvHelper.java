@@ -2,12 +2,10 @@ package ch.vd.uniregctb.common;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
@@ -30,7 +28,7 @@ public abstract class CsvHelper {
 	public static final char DOUBLE_QUOTE = '"';
 	public static final String EMPTY = StringUtils.EMPTY;
 	public static final String CHARSET = "ISO-8859-15";
-	public static final String MIME_TYPE = MimeTypeHelper.MIME_CSV;
+	public static final String MIME_TYPE = MimeTypeHelper.MIME_CSV + ";charset=" + CHARSET;
 
 	public static interface LineFiller {
 		LineFiller append(int i);
@@ -123,8 +121,8 @@ public abstract class CsvHelper {
 	/**
 	 * Méthode de remplissage de fichier Csv utilisant un {@link ch.vd.uniregctb.common.CsvHelper.FileFiller}
 	 */
-	public static <T> String asCsvFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
-		String contenu = null;
+	public static <T> byte[] asCsvFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
+		byte [] contenu = null;
 		if (!list.isEmpty()) {
 			try {
 				contenu = asCsvFileThroughTempFile(list, fileName, status, filler);
@@ -139,7 +137,7 @@ public abstract class CsvHelper {
 	/**
 	 * Méthode de remplissage de fichier Csv utilisant un {@link ch.vd.uniregctb.common.CsvHelper.WriterLineFiller}
 	 */
-	private static <T> String asCsvFileThroughTempFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) throws IOException {
+	private static <T> byte[] asCsvFileThroughTempFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) throws IOException {
 		final File tmpFile = File.createTempFile("ur-csv-", null);
 		try {
 			// normalement, on l'aura détruit avant, mais...
@@ -157,6 +155,9 @@ public abstract class CsvHelper {
 			if (fileLength > Integer.MAX_VALUE) {
 				throw new RuntimeException("Fichier de sortie beaucoup trop gros !");
 			}
+			if (fileLength == 0) {
+				return null;
+			}
 			final byte[] bytes = new byte[(int) fileLength];
 			try (final FileInputStream fis = new FileInputStream(tmpFile);
 			     final BufferedInputStream in = new BufferedInputStream(fis, 1024 * 1024)) {
@@ -164,7 +165,7 @@ public abstract class CsvHelper {
 				if (readLength != fileLength) {
 					throw new IOException("Impossible de relire l'ensemble du fichier de sortie");
 				}
-				return new String(bytes, CHARSET);
+				return bytes;
 			}
 		}
 		finally {
@@ -260,9 +261,5 @@ public abstract class CsvHelper {
 		else {
 			return EMPTY;
 		}
-	}
-
-	public static InputStream getInputStream(String csvContent) throws IOException {
-		return new ByteArrayInputStream(csvContent.getBytes(CHARSET));
 	}
 }

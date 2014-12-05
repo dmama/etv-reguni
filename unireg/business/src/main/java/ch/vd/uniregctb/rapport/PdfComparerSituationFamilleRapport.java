@@ -67,7 +67,7 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		// adresses resolues
 			{
 				final String filename = "situations_differentes.csv";
-				final String contenu = getCsvSituationsDifferentes(results.listeSituationsDifferentes, filename, status);
+				final byte[] contenu = getCsvSituationsDifferentes(results.listeSituationsDifferentes, filename, status);
 				final String titre = "Liste des situations différentes";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -78,7 +78,7 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvErrorFile(results.erreurs, filename, status);
+			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -90,8 +90,8 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 
 	
 
-	private <T extends ComparerSituationFamilleResults.SituationsDifferentes> String getCsvSituationsDifferentes(List<T> liste, String filename, StatusManager status) {
-		String contenu = null;
+	private <T extends ComparerSituationFamilleResults.SituationsDifferentes> byte[] getCsvSituationsDifferentes(List<T> liste, String filename, StatusManager status) {
+		byte[] contenu = null;
 		if (liste != null && !liste.isEmpty()) {
 			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
@@ -122,8 +122,8 @@ public class PdfComparerSituationFamilleRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends ComparerSituationFamilleResults.Erreur> String asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		String contenu = null;
+	protected static <T extends ComparerSituationFamilleResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		byte[] contenu = null;
 		int size = list.size();
 		if (size > 0) {
 			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
