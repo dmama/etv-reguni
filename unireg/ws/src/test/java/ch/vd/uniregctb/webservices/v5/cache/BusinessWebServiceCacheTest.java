@@ -186,8 +186,14 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addParente(junior, eric, dateNaissanceJunior, null);
 
 				// un débiteur
-				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2000, 1, 1));
+				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
 				ids.debiteur = debiteur.getId();
+
+				// ... avec une LR sur 2009
+				addForDebiteur(debiteur, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
+				final PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+				final ModeleDocument modeleLr = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf2009);
+				addListeRecapitulative(debiteur, pf2009, date(2009, 1, 1), date(2009, 12, 31), modeleLr);
 
 				// un rapport de travail entre eric et le débiteur (pour avoir un calcul de PIIS)
 				addRapportPrestationImposable(debiteur, eric, date(2009, 1, 1), date(2009, 5, 1), false);
@@ -537,15 +543,21 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 
 		final UserLogin userLogin = new UserLogin(getDefaultOperateurName(), 21);
 
+		// au début, il n'y a rien
+		assertNull(getCacheValue(ids.debiteur.intValue(), 2009));
+		assertNull(getCacheValue(ids.debiteur.intValue(), 2010));
+
 		// On charge le cache avec des tiers
 
 		assertNotNull(cache.getDebtorInfo(userLogin, ids.debiteur.intValue(), 2010));
 		assertNotNull(getCacheValue(ids.debiteur.intValue(), 2010));
+		assertNull("L'appel a été fait sur 2010, il ne devrait rien y avoir dans le cache pour 2009 !!", getCacheValue(ids.debiteur.intValue(), 2009));       // toujours rien pour le 2009
 
 		// On evicte les tiers
 		cache.evictParty(ids.debiteur);
 
 		// On vérifie que le cache est vide
+		assertNull(getCacheValue(ids.debiteur.intValue(), 2009));
 		assertNull(getCacheValue(ids.debiteur.intValue(), 2010));
 	}
 
