@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
@@ -114,55 +116,61 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements civils : types en erreur
 			{
 				final String filename = "erreurs_evts_civils_ech_par_type.csv";
-				final byte[] contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), "RECUS", dateReference, filename, status);
 				final String titre = "Erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFile(civilsEch.getErreursParType(), civilsEch.getErreursParTypeNouveaux(), "RECUS", dateReference, filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// messages d'erreur regroupés par type
 			{
 				final String filename = "messages_erreurs_evts_civils_ech_par_type.csv";
-				final byte[] contenu = buildStatsMessagesErreursEchParType(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Messages d'erreurs des événements civils e-CH par type d'événement";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = buildStatsMessagesErreursEchParType(civilsEch.getToutesErreurs(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// toutes les erreurs
 			{
 				final String filename = "erreurs_evts_civils_ech.csv";
-				final byte[] contenu = asCsvStatFile(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils e-CH";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(civilsEch.getToutesErreurs(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// manipulations manuelles
 			{
 				final String filename = "manipulations_evts_civils_ech.csv";
-				final byte[] contenu = asCsvStatFile(civilsEch.getManipulationsManuelles(), filename, status);
 				final String titre = String.format("Manipulations manuelles des événements civils e-CH depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(civilsEch.getManipulationsManuelles(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// forçages par type
 			{
 				final String filename = "evts_civils_forces_ech.csv";
-				final byte[] contenu = asCsvFile(civilsEch.getForcesParType(), civilsEch.getForcesRecemmentParType(), "FORCES", dateReference, filename, status);
 				final String titre = "Evénements civils e-CH forcés par type d'événement";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFile(civilsEch.getForcesParType(), civilsEch.getForcesRecemmentParType(), "FORCES", dateReference, filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// taille des queues d'attente
 			{
 				final String filename = "queues_attente_ech.csv";
-				final byte[] contenu = asCsvStatFile(civilsEch.getQueuesAttente(), filename, status);
 				final String titre = "Queues d'événements e-CH en attente";
 				final String listeVide = "(aucune)";
-				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(civilsEch.getQueuesAttente(), filename, status)) {
+					addListeDetaillee(writer, titre, listeVide, filename, contenu);
+				}
 			}
 		}
 
@@ -194,10 +202,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements externes : erreurs
 			{
 				final String filename = "erreurs_evts_externes.csv";
-				final byte[] contenu = asCsvStatFile(externes.getErreurs(), filename, status);
 				final String titre = "Erreurs des événements externes";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(externes.getErreurs(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 		}
 
@@ -234,10 +243,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : restant à traiter
 			{
 				final String filename = "identification_ctb_a_traiter.csv";
-				final byte[] contenu = asCsvStatFile(identCtb.getATraiter(), filename, status);
 				final String titre = "Evénements d'identification à traiter";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(identCtb.getATraiter(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 		}
 
@@ -274,19 +284,21 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements ReqDes : erreurs
 			{
 				final String filename = "reqdes_erreurs.csv";
-				final byte[] contenu = asCsvStatFile(notaires.getToutesErreurs(), filename, status);
 				final String titre = "Evénements ReqDes en erreur";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(notaires.getToutesErreurs(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// événements ReqDes : manipulations manuelles
 			{
 				final String filename = "reqdes_forces.csv";
-				final byte[] contenu = asCsvStatFile(notaires.getManipulationsManuelles(), filename, status);
 				final String titre = "Evénements ReqDes forcés";
 				final String listVide = "(aucun)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvStatFile(notaires.getManipulationsManuelles(), filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 		}
 
@@ -317,11 +329,11 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return b.toString();
 	}
 
-	private static <T extends StatistiqueEvenementInfo> byte[] asCsvStatFile(List<T> elements, String fileName, StatusManager statusManager) {
-		byte[] contenu = null;
+	private static <T extends StatistiqueEvenementInfo> TemporaryFile asCsvStatFile(List<T> elements, String fileName, StatusManager statusManager) {
+		TemporaryFile contenu = null;
 		if (elements != null && !elements.isEmpty()) {
 			final T first = elements.get(0);
-			contenu = CsvHelper.asCsvFile(elements, fileName, statusManager, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(elements, fileName, statusManager, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(asCsvLine(first.getNomsColonnes(), false));
@@ -338,39 +350,52 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private static byte[] asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable String prefixeNouveaux, RegDate dateReference, String fileName, StatusManager statusManager) throws IOException {
-		byte[] contenu = null;
+	private static TemporaryFile asCsvFile(Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> tous, @Nullable final Map<Pair<TypeEvenementCivilEch, ActionEvenementCivilEch>, Integer> nouveaux, @Nullable final String prefixeNouveaux, final RegDate dateReference, String fileName, StatusManager statusManager) throws IOException {
+		TemporaryFile contenu = null;
 		if (tous != null && !tous.isEmpty()) {
-			final String message = String.format("Génération du fichier %s", fileName);
-			statusManager.setMessage(message, 0);
+			final class Data {
+				final TypeEvenementCivilEch type;
+				final ActionEvenementCivilEch action;
+				final int total;
+				final int marginal;
 
-			final StringBuilder b = new StringBuilder();
-
-			// les noms des colonnes
-			b.append("TYPE").append(COMMA).append("ACTION").append(COMMA).append("TOTAL");
-			if (nouveaux != null) {
-				b.append(COMMA).append(prefixeNouveaux).append("_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
+				Data(TypeEvenementCivilEch type, ActionEvenementCivilEch action, int total, int marginal) {
+					this.type = type;
+					this.action = action;
+					this.total = total;
+					this.marginal = marginal;
+				}
 			}
-			b.append('\n');
-
-			// les valeurs
+			final List<Data> list = new LinkedList<>();
 			for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {
 					final Pair<TypeEvenementCivilEch, ActionEvenementCivilEch> key = new Pair<>(type, action);
 					final Integer total = tous.get(key);
 					final Integer marginal = nouveaux != null ? nouveaux.get(key) : null;
 					if ((total != null && total > 0) || (marginal != null && marginal > 0)) {
-						b.append(type).append(COMMA).append(action).append(COMMA).append(toStringInt(total, 0));
-						if (nouveaux != null) {
-							b.append(COMMA).append(toStringInt(marginal, 0));
-						}
-						b.append('\n');
+						list.add(new Data(type, action, total != null ? total : 0, marginal != null ? marginal : 0));
 					}
 				}
 			}
-			contenu = b.toString().getBytes(CsvHelper.CHARSET);
 
-			statusManager.setMessage(message, 100);
+			contenu = CsvHelper.asCsvTemporaryFile(list, fileName, statusManager, new CsvHelper.FileFiller<Data>() {
+				@Override
+				public void fillHeader(CsvHelper.LineFiller b) {
+					b.append("TYPE").append(COMMA).append("ACTION").append(COMMA).append("TOTAL");
+					if (nouveaux != null) {
+						b.append(COMMA).append(prefixeNouveaux).append("_DEPUIS_").append(RegDateHelper.dateToDisplayString(dateReference));
+					}
+				}
+
+				@Override
+				public boolean fillLine(CsvHelper.LineFiller b, Data elt) {
+					b.append(elt.type).append(COMMA).append(elt.action).append(COMMA).append(elt.total);
+					if (nouveaux != null) {
+						b.append(COMMA).append(elt.marginal);
+					}
+					return true;
+				}
+			});
 		}
 		return contenu;
 	}
@@ -409,8 +434,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		}
 	}
 
-	private byte[] buildStatsMessagesErreursEchParType(List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
-		byte[] contenu = null;
+	private TemporaryFile buildStatsMessagesErreursEchParType(List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> toutesErreurs, String fileName, StatusManager statusManager) {
+		TemporaryFile contenu = null;
 		if (toutesErreurs != null && !toutesErreurs.isEmpty()) {
 
 			final String messageCalcul = String.format("Calcul des statistiques pour le fichier %s", fileName);
@@ -447,7 +472,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			});
 
 			// touche finale : remplissage de la chaîne de caractères qui finira dans le fichier CSV
-			contenu = CsvHelper.asCsvFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {
+			contenu = CsvHelper.asCsvTemporaryFile(stats, fileName, statusManager, new CsvHelper.FileFiller<Map.Entry<EvtCivilEchMsgTypeKey, MutableInt>>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("MESSAGE").append(COMMA);

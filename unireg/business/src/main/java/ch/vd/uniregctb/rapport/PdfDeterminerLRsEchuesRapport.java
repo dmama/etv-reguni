@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 
 /**
@@ -74,38 +75,41 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		// débiteurs ignorés
 		{
 			final String filename = "debiteurs_ignores.csv";
-			final byte[] contenu = getCsvDebiteursNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des débiteurs ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvDebiteursNonTraites(results.ignores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// listes récapitulatives échues
 		{
 			final String filename = "lr_echues.csv";
-			final byte[] contenu = getCsvLrEchues(results.lrEchues, filename, status);
 			final String titre = "Liste des LR échues";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvLrEchues(results.lrEchues, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = getCsvDebiteursNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvDebiteursNonTraites(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> byte[] getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private <T extends DeterminerLRsEchuesResults.ResultDebiteurNonTraite> TemporaryFile getCsvDebiteursNonTraites(List<T> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("RAISON").append(COMMA).append("COMMENTAIRE");
@@ -126,10 +130,10 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile getCsvLrEchues(List<DeterminerLRsEchuesResults.ResultLrEchue> lrEchues, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (lrEchues != null && !lrEchues.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
+			contenu = CsvHelper.asCsvTemporaryFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_TIERS").append(COMMA).append("CATEGORIE_IS").append(COMMA).append("NOM").append(COMMA).append("DEBUT_PERIODE_LR").append(COMMA).append("FIN_PERIODE_LR");

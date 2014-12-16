@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.extraction;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxElement;
 import ch.vd.uniregctb.inbox.InboxService;
@@ -156,13 +155,16 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public InputStream getStreamForExtraction(MyResult rapportFinal) throws IOException {
-				final File tempFile = File.createTempFile("testExtractionService", "dmp");
-				tempFile.deleteOnExit();
-				try (FileOutputStream fos = new FileOutputStream(tempFile); ObjectOutputStream out = new ObjectOutputStream(fos)) {
+			public TemporaryFile getExtractionContent(MyResult rapportFinal) throws IOException {
+				final TemporaryFile file = new TemporaryFile("testExtractionService");
+				try (OutputStream os = file.openOutputStream(); ObjectOutputStream out = new ObjectOutputStream(os)) {
 					out.writeObject(rapportFinal.liste);
 				}
-				return new FileInputStream(tempFile);
+				catch (RuntimeException | Error | IOException e) {
+					file.close();
+					throw e;
+				}
+				return file;
 			}
 
 			@Override
@@ -274,14 +276,18 @@ public class ExtractionServiceTest extends BusinessTest {
 			}
 
 			@Override
-			public InputStream getStreamForExtraction(MyResult rapportFinal) throws IOException {
+			public TemporaryFile getExtractionContent(MyResult rapportFinal) throws IOException {
 				Collections.sort(rapportFinal.liste);
-				final File tempFile = File.createTempFile("testExtractionService", "dmp");
-				tempFile.deleteOnExit();
-				try (FileOutputStream fos = new FileOutputStream(tempFile); ObjectOutputStream out = new ObjectOutputStream(fos)) {
+
+				final TemporaryFile file = new TemporaryFile("testExtractionService");
+				try (OutputStream os = file.openOutputStream(); ObjectOutputStream out = new ObjectOutputStream(os)) {
 					out.writeObject(rapportFinal.liste);
 				}
-				return new FileInputStream(tempFile);
+				catch (RuntimeException | Error | IOException e) {
+					file.close();
+					throw e;
+				}
+				return file;
 			}
 
 			@Override

@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 
 /**
@@ -69,45 +70,52 @@ public class PdfMajoriteRapport extends PdfRapport {
         // Habitants traités
         {
             final String filename = "habitants_traites.csv";
-            final byte[] contenu = CsvHelper.asCsvFile(results.habitantTraites, filename, status, new CsvHelper.FileFiller<OuvertureForsResults.Traite>() {
-	            @Override
-	            public void fillHeader(CsvHelper.LineFiller b) {
-		            b.append("OID").append(COMMA);
-		            b.append("NO_CTB").append(COMMA);
-		            b.append("NOM").append(COMMA);
-		            b.append("DATE_OUVERTURE").append(COMMA);
-		            b.append("RAISON").append(COMMA);
-		            b.append("COMMENTAIRE");
-	            }
-
-	            @Override
-	            public boolean fillLine(CsvHelper.LineFiller b, OuvertureForsResults.Traite elt) {
-		            b.append(elt.officeImpotID != null ? elt.officeImpotID.toString() : EMPTY).append(COMMA);
-		            b.append(elt.noCtb).append(COMMA);
-		            b.append(escapeChars(elt.nomCtb)).append(COMMA);
-		            b.append(elt.dateOuverture).append(COMMA);
-		            b.append(escapeChars(elt.getDescriptionRaison()));
-		            if (elt.details != null) {
-			            b.append(COMMA).append(asCsvField(elt.details));
-		            }
-		            return true;
-	            }
-            });
             final String titre = "Liste des habitants traités";
-            final String listVide = "(aucun habitant traité)";
-            document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        final String listVide = "(aucun habitant traité)";
+	        try (TemporaryFile contenu = getHabitantsTraitesCsvFile(results, status, filename)) {
+		        document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // Habitants en erreurs
         {
             final String filename = "habitants_en_erreur.csv";
-            final byte[] contenu = asCsvFile(results.habitantEnErrors, filename, status);
             final String titre = "Liste des habitants en erreur";
-            final String listVide = "(aucun habitant en erreur)";
-            document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        final String listVide = "(aucun habitant en erreur)";
+	        try (TemporaryFile contenu = asCsvFile(results.habitantEnErrors, filename, status)) {
+		        document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         document.close();
 
         status.setMessage("Génération du rapport terminée.");
-    }}
+    }
+
+	private TemporaryFile getHabitantsTraitesCsvFile(OuvertureForsResults results, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(results.habitantTraites, filename, status, new CsvHelper.FileFiller<OuvertureForsResults.Traite>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("OID").append(COMMA);
+				b.append("NO_CTB").append(COMMA);
+				b.append("NOM").append(COMMA);
+				b.append("DATE_OUVERTURE").append(COMMA);
+				b.append("RAISON").append(COMMA);
+				b.append("COMMENTAIRE");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, OuvertureForsResults.Traite elt) {
+				b.append(elt.officeImpotID != null ? elt.officeImpotID.toString() : EMPTY).append(COMMA);
+				b.append(elt.noCtb).append(COMMA);
+				b.append(escapeChars(elt.nomCtb)).append(COMMA);
+				b.append(elt.dateOuverture).append(COMMA);
+				b.append(escapeChars(elt.getDescriptionRaison()));
+				if (elt.details != null) {
+					b.append(COMMA).append(asCsvField(elt.details));
+				}
+				return true;
+			}
+		});
+	}
+}

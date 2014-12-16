@@ -14,6 +14,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -71,20 +72,22 @@ public class PdfListeNoteRapport extends PdfRapport {
 		// adresses resolues
 		{
 			final String filename = "contribuables_note.csv";
-			final byte[] contenu = getCsvContribuablesNotes(results.listeContribuableAvecNote, filename, status, results.periode);
 			final String titre = "Liste des contribuables avec note pour la période fiscale " + results.getPeriode();
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvContribuablesNotes(results.listeContribuableAvecNote, filename, status, results.periode)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvErrorFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -92,10 +95,10 @@ public class PdfListeNoteRapport extends PdfRapport {
 	}
 
 
-	private <T extends ListeNoteResults.InfoContribuableAvecNote> byte[] getCsvContribuablesNotes(List<T> liste, String filename, StatusManager status, final int periode) {
-		byte[] contenu = null;
+	private <T extends ListeNoteResults.InfoContribuableAvecNote> TemporaryFile getCsvContribuablesNotes(List<T> liste, String filename, StatusManager status, final int periode) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NUMERO CTB").append(COMMA);
@@ -200,11 +203,11 @@ public class PdfListeNoteRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends ListeNoteResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	protected static <T extends ListeNoteResults.Erreur> TemporaryFile asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("id du contribuable").append(COMMA).append("Message d'erreur");

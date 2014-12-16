@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 
 /**
@@ -46,8 +47,9 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	        });
 	        // ids en entrées
 	        String filename = "contribuables_a_exclure.csv";
-		    byte[] contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
-	        attacheFichier(writer, filename, description, contenu, CsvHelper.MIME_TYPE, 500);
+		    try (TemporaryFile contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status)) {
+			    attacheFichier(writer, contenu.getFullPath(), filename, description, CsvHelper.MIME_TYPE, 500);
+		    }
 	    }
 
 	    // Résultats
@@ -73,19 +75,21 @@ public class PdfExclureContribuablesEnvoiRapport extends PdfRapport {
 	    // DIs ignorées
 	    {
 	        String filename = "ctbs_ignorees.csv";
-		    byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 	        String titre = "Liste des contribuables ignorés";
-	        String listVide = "(aucun contribuable ignoré)";
-	        addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    String listVide = "(aucun contribuable ignoré)";
+		    try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
 	    }
 
 	    // DIs en erreur
 	    {
 	        String filename = "ctbs_en_erreur.csv";
-		    byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 	        String titre = "Liste des contribuables en erreur";
-	        String listVide = "(aucun contribuable en erreur)";
-	        addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    String listVide = "(aucun contribuable en erreur)";
+		    try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
 	    }
 
 	    close();

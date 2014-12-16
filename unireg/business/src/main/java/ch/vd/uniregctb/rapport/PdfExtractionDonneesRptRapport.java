@@ -14,6 +14,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.type.ModeImposition;
 
@@ -89,29 +90,31 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 
 		{
 			final String filename = String.format("donnees_rpt_%s_%d.csv", results.getMode().name().toLowerCase(), results.periodeFiscale);
-			final byte[] contenu = genererListePeriodes(results, filename, status);
 			final String titre = "Liste des périodes";
 			final String listeVide = "(aucun)";
-			final int taille = results.getListePeriode().size();
-			addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			try (TemporaryFile contenu = genererListePeriodes(results, filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
 		}
 
 		// Contribuables en erreurs
 		{
 			final String filename = "contribuables_en_erreur.csv";
-			final byte[] contenu = genererListeErreurs(results, filename, status);
 			final String titre = "Liste des contribuables en erreur";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeErreurs(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
 		{
 			final String filename = "contribuables_ignorés.csv";
-			final byte[] contenu = genererListeIgnores(results, filename, status);
 			final String titre = " Liste des contribuables ignorés ayant un for sur la période fiscale concernée";
 			final String listeVide = "(aucun)";
-			addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeIgnores(results, filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -119,11 +122,11 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] genererListeErreurs(ExtractionDonneesRptResults results, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile genererListeErreurs(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		final List<ExtractionDonneesRptResults.Erreur> liste = results.getListeErreurs();
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NUMERO_CTB").append(COMMA);
@@ -143,17 +146,17 @@ public class PdfExtractionDonneesRptRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] genererListeIgnores(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+	private TemporaryFile genererListeIgnores(ExtractionDonneesRptResults results, String filename, StatusManager status) {
 		return genererListe(results.getListeCtbsIgnores(), filename, status);
 	}
 
-	private byte[] genererListePeriodes(ExtractionDonneesRptResults results, String filename, StatusManager status) {
+	private TemporaryFile genererListePeriodes(ExtractionDonneesRptResults results, String filename, StatusManager status) {
 		return genererListe(results.getListePeriode(), filename, status);
 	}
 
-	private <T extends ExtractionDonneesRptResults.InfoCtbBase> byte[] genererListe(List<T> liste, String filename, StatusManager status) {
+	private <T extends ExtractionDonneesRptResults.InfoCtbBase> TemporaryFile genererListe(List<T> liste, String filename, StatusManager status) {
 		final String[] nomsColonnes = (!liste.isEmpty() ? liste.get(0).getNomsColonnes() : null);
-		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				if (nomsColonnes != null) {

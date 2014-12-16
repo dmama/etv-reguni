@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 
 public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
@@ -72,86 +73,101 @@ public class PdfRecuperationDonneesAnciensHabitantsRapport extends PdfRapport {
 		// Personnes physiques ignorées
 		{
 			final String filename = "ignores.csv";
-			final byte[] contenu = CsvHelper.asCsvFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoIgnore>() {
-				@Override
-				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("NO_CTB").append(COMMA).append("RAISON");
-				}
-
-				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoIgnore elt) {
-					b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
-					return true;
-				}
-			});
 			final String titre = "Liste des cas ignorés";
 			final String listVide = "(aucune)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getIgnoresCsvFile(results, status, filename)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = CsvHelper.asCsvFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoErreur>() {
-				@Override
-				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("NO_CTB").append(COMMA).append("ERREUR");
-				}
-
-				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoErreur elt) {
-					b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
-					return true;
-				}
-			});
 			final String titre = "Liste des erreurs rencontrées";
 			final String listVide = "(aucune)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getErreursCsvFile(results, status, filename)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// non-habitants modifiés
 		{
 			final String filename = "modifications.csv";
-			final byte[] contenu = CsvHelper.asCsvFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoTraite>() {
-				@Override
-				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("NO_CTB").append(COMMA);
-					b.append("MAJ_MERE").append(COMMA);
-					b.append("MAJ_PERE").append(COMMA);
-					b.append("MAJ_PRENOMS").append(COMMA);
-					b.append("MAJ_NOM_NAISSANCE").append(COMMA);
-					b.append("PRENOMS_MERE").append(COMMA);
-					b.append("NOM_MERE").append(COMMA);
-					b.append("PRENOMS_PERE").append(COMMA);
-					b.append("NOM_PERE").append(COMMA);
-					b.append("PRENOMS_CTB").append(COMMA);
-					b.append("NOM_NAISSANCE");
-				}
-
-				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoTraite elt) {
-					b.append(elt.noCtb).append(COMMA);
-					b.append(elt.majMere).append(COMMA);
-					b.append(elt.majPere).append(COMMA);
-					b.append(elt.majPrenoms).append(COMMA);
-					b.append(elt.majNomNaissance).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.prenomsMere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomMere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.prenomsPere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomPere)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.tousPrenoms)).append(COMMA);
-					b.append(CsvHelper.escapeChars(elt.nomNaissance));
-					return true;
-				}
-			});
 			final String titre = "Liste des non-habitants modifiés";
 			final String listVide = "(aucune)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getModificationsCsvFile(results, status, filename)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		document.close();
 
 		status.setMessage("Génération du rapport terminée.");
+	}
+
+	private static TemporaryFile getModificationsCsvFile(RecuperationDonneesAnciensHabitantsResults results, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(results.getTraites(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoTraite>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("NO_CTB").append(COMMA);
+				b.append("MAJ_MERE").append(COMMA);
+				b.append("MAJ_PERE").append(COMMA);
+				b.append("MAJ_PRENOMS").append(COMMA);
+				b.append("MAJ_NOM_NAISSANCE").append(COMMA);
+				b.append("PRENOMS_MERE").append(COMMA);
+				b.append("NOM_MERE").append(COMMA);
+				b.append("PRENOMS_PERE").append(COMMA);
+				b.append("NOM_PERE").append(COMMA);
+				b.append("PRENOMS_CTB").append(COMMA);
+				b.append("NOM_NAISSANCE");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoTraite elt) {
+				b.append(elt.noCtb).append(COMMA);
+				b.append(elt.majMere).append(COMMA);
+				b.append(elt.majPere).append(COMMA);
+				b.append(elt.majPrenoms).append(COMMA);
+				b.append(elt.majNomNaissance).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.prenomsMere)).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.nomMere)).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.prenomsPere)).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.nomPere)).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.tousPrenoms)).append(COMMA);
+				b.append(CsvHelper.escapeChars(elt.nomNaissance));
+				return true;
+			}
+		});
+	}
+
+	private static TemporaryFile getErreursCsvFile(RecuperationDonneesAnciensHabitantsResults results, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(results.getErreurs(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoErreur>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("NO_CTB").append(COMMA).append("ERREUR");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoErreur elt) {
+				b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
+				return true;
+			}
+		});
+	}
+
+	private static TemporaryFile getIgnoresCsvFile(RecuperationDonneesAnciensHabitantsResults results, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(results.getIgnores(), filename, status, new CsvHelper.FileFiller<RecuperationDonneesAnciensHabitantsResults.InfoIgnore>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				b.append("NO_CTB").append(COMMA).append("RAISON");
+			}
+
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, RecuperationDonneesAnciensHabitantsResults.InfoIgnore elt) {
+				b.append(elt.noCtb).append(COMMA).append(CsvHelper.escapeChars(elt.getMessage()));
+				return true;
+			}
+		});
 	}
 
 

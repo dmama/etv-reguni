@@ -13,6 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 
 /**
@@ -71,36 +72,39 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		// Assujettis trouvés
 		{
 			final String filename = "assujettis.csv";
-			final byte[] contenu = buildContenuAssujettis(results.getAssujettis(), status, filename);
 			final String titre = "Liste des contribuables assujettis et de leurs assujettissements";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuAssujettis(results.getAssujettis(), status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Contribuables ignorés
 		{
 			final String filename = "ignores.csv";
-			final byte[] contenu = buildContenuIgnores(results.getIgnores(), filename, status);
 			final String titre = "Liste des contribuables ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuIgnores(results.getIgnores(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = buildContenuErreurs(results.getListeErreurs(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuErreurs(results.getListeErreurs(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static byte[] buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbAssujetti>() {
+	private static TemporaryFile buildContenuAssujettis(List<ListeAssujettisResults.InfoCtbAssujetti> liste, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbAssujetti>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("TYPE_ASSUJETTISSEMENT").append(COMMA)
@@ -121,8 +125,8 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		});
 	}
 
-	private static byte[] buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbIgnore>() {
+	private static TemporaryFile buildContenuIgnores(List<ListeAssujettisResults.InfoCtbIgnore> liste, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.InfoCtbIgnore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON");
@@ -137,8 +141,8 @@ public class PdfListeAssujettisRapport extends PdfRapport {
 		});
 	}
 
-	private static byte[] buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(results, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.Erreur>() {
+	private static TemporaryFile buildContenuErreurs(List<ListeAssujettisResults.Erreur> results, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(results, filename, status, new CsvHelper.FileFiller<ListeAssujettisResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");

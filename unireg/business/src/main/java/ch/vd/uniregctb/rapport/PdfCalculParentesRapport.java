@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.parentes.CalculParentesResults;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 
@@ -68,19 +69,21 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			// Relations créées
 			{
 				String filename = "parentes.csv";
-				byte[] contenu = asCsvFileTraite(results.getUpdates(), filename, status);
 				String titre = "Liste des relations de parenté mises à jour";
 				String listVide = "(aucune)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileTraite(results.getUpdates(), filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// Erreurs
 			{
 				String filename = "erreurs.csv";
-				byte[] contenu = asCsvFileErreur(results.getErreurs(), filename, status);
 				String titre = "Liste des erreurs rencontrées";
 				String listVide = "(aucune)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileErreur(results.getErreurs(), filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			document.close();
@@ -88,8 +91,8 @@ public class PdfCalculParentesRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static byte[] asCsvFileTraite(List<ParenteUpdateInfo> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ParenteUpdateInfo>() {
+	private static TemporaryFile asCsvFileTraite(List<ParenteUpdateInfo> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ParenteUpdateInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("ACTION").append(COMMA);
@@ -111,8 +114,8 @@ public class PdfCalculParentesRapport extends PdfRapport {
 		});
 	}
 
-	private static byte[] asCsvFileErreur(List<CalculParentesResults.InfoErreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CalculParentesResults.InfoErreur>() {
+	private static TemporaryFile asCsvFileErreur(List<CalculParentesResults.InfoErreur> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<CalculParentesResults.InfoErreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB_ENFANT").append(COMMA);

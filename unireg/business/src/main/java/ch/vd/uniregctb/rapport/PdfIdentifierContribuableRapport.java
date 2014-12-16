@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 
 /**
@@ -65,38 +66,41 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "messages_identifies.csv";
-			final byte[] contenu = getCsvMessagesIdentifies(results.identifies, filename, status);
 			final String titre = "Liste des messages identifiés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvMessagesIdentifies(results.identifies, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Messages non-identifiés
 		{
 			final String filename = "messages_non_identifies.csv";
-			final byte[] contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status);
 			final String titre = "Liste des messages non-identifiés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvMessagesNonIdentifies(results.nonIdentifies, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvErrorFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends IdentifierContribuableResults.Identifie> byte[] getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private <T extends IdentifierContribuableResults.Identifie> TemporaryFile getCsvMessagesIdentifies(List<T> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Business-ID Message").append(COMMA);
@@ -122,10 +126,10 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private <T extends IdentifierContribuableResults.NonIdentifie> byte[] getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private <T extends IdentifierContribuableResults.NonIdentifie> TemporaryFile getCsvMessagesNonIdentifies(List<T> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Business-ID Message").append(COMMA);
@@ -148,11 +152,11 @@ public class PdfIdentifierContribuableRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends IdentifierContribuableResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	protected static <T extends IdentifierContribuableResults.Erreur> TemporaryFile asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("id du message").append(COMMA);

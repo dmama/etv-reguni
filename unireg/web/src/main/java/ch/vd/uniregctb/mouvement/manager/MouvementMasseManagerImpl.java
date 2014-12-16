@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.mouvement.manager;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +26,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
@@ -423,9 +422,8 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 
 		@Override
-		public InputStream getStreamForExtraction(MouvementDossierExtractionResult rapportFinal) throws IOException {
-			final byte[] contenu = buildCsv(rapportFinal.mvts);
-			return new ByteArrayInputStream(contenu);
+		public TemporaryFile getExtractionContent(MouvementDossierExtractionResult rapportFinal) throws IOException {
+			return buildCsv(rapportFinal.mvts);
 		}
 
 		@Override
@@ -521,9 +519,9 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 			return b.toString();
 		}
 
-		private byte[] buildCsv(List<MouvementDetailView> mvts) {
+		private TemporaryFile buildCsv(List<MouvementDetailView> mvts) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
-			return CsvHelper.asCsvFile(mvts, filename, null, new CsvHelper.FileFiller<MouvementDetailView>() {
+			return CsvHelper.asCsvTemporaryFile(mvts, filename, null, new CsvHelper.FileFiller<MouvementDetailView>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("CTB_ID").append(CsvHelper.COMMA);

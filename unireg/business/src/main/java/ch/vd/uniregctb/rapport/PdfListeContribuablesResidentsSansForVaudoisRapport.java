@@ -11,6 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 
 /**
@@ -55,28 +56,31 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		// contribuables cibles de ce job
 		{
 		    String filename = "ctbs_identifies.csv";
-		    byte[] contenu = buildListeContribuablesIdentifies(results.getContribuablesIdentifies(), filename, status);
 		    String titre = "Liste des contribuables identifiés";
-		    String listVide = "(aucun)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			String listVide = "(aucun)";
+			try (TemporaryFile contenu = buildListeContribuablesIdentifies(results.getContribuablesIdentifies(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// contribuables ignorés
 		{
-		    String filename = "ctbs_ignores.csv";
-			byte[] contenu = buildContribuablesIgnores(results.getContribuablesIgnores(), filename, status);
-		    String titre = "Liste des contribuables ignorés";
-		    String listVide = "(aucun)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			String filename = "ctbs_ignores.csv";
+			String titre = "Liste des contribuables ignorés";
+			String listVide = "(aucun)";
+			try (TemporaryFile contenu = buildContribuablesIgnores(results.getContribuablesIgnores(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// erreurs
 		{
 		    String filename = "ctbs_en_erreur.csv";
-			byte[] contenu = buildErreurs(results.getListeErreurs(), filename, status);
 		    String titre = "Liste des erreurs";
-		    String listVide = "(aucune)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			String listVide = "(aucune)";
+			try (TemporaryFile contenu = buildErreurs(results.getListeErreurs(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -84,11 +88,11 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] buildListeContribuablesIdentifies(List<Long> ctbIds, String filename, StatusManager status) {
+	private TemporaryFile buildListeContribuablesIdentifies(List<Long> ctbIds, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (!ctbIds.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(ctbIds, filename, status, new CsvHelper.FileFiller<Long>() {
+			contenu = CsvHelper.asCsvTemporaryFile(ctbIds, filename, status, new CsvHelper.FileFiller<Long>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro");
@@ -104,11 +108,11 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		return contenu;
 	}
 
-	private byte[] buildContribuablesIgnores(List<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore> liste, String filename, StatusManager status) {
+	private TemporaryFile buildContribuablesIgnores(List<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore> liste, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro").append(COMMA).append("Raison");
@@ -125,11 +129,11 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 		return contenu;
 	}
 
-	private byte[] buildErreurs(List<ListesResults.Erreur> liste, String filename, StatusManager status) {
+	private TemporaryFile buildErreurs(List<ListesResults.Erreur> liste, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (!liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro").append(COMMA);

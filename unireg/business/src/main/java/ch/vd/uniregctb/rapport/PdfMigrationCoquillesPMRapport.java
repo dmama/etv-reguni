@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 
 /**
@@ -63,20 +64,22 @@ public class PdfMigrationCoquillesPMRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "pm_migrees.csv";
-			final byte[] contenu = ctbIdsAsCsvFile(results.traitees, filename, status);
 			final String titre = "Liste des personnes morales migrées";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.traitees, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();

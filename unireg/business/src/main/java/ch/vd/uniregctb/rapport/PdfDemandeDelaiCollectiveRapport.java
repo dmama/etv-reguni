@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
 
 /**
@@ -46,8 +47,9 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 			});
 			// ids en entrées
 			String filename = "contribuables_a_traiter.csv";
-			byte[] contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status);
-			attacheFichier(writer, filename, "Contribuables à traiter", contenu, CsvHelper.MIME_TYPE, 500);
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.ctbsIds, filename, status)) {
+				attacheFichier(writer, contenu.getFullPath(), filename, "Contribuables à traiter", CsvHelper.MIME_TYPE, 500);
+			}
 		}
 
 		// Résultats
@@ -74,28 +76,31 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		// DIs traitées
 		{
 			String filename = "dis_traitees.csv";
-			byte[] contenu = delaisTraitesAsCsvFile(results.traites, filename, status);
 			String titre = "Liste des déclarations traitées";
 			String listVide = "(aucun déclaration traitée)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = delaisTraitesAsCsvFile(results.traites, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// DIs ignorées
 		{
 			String filename = "dis_ignorees.csv";
-			byte[] contenu = asCsvFile(results.ignores, filename, status);
 			String titre = "Liste des déclarations ignorées";
 			String listVide = "(aucun déclaration ignorée)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.ignores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// les erreur
 		{
 			String filename = "erreurs.csv";
-			byte[] contenu = asCsvFile(results.errors, filename, status);
 			String titre = "Liste des erreurs";
 			String listVide = "(aucune erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.errors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -103,11 +108,11 @@ public class PdfDemandeDelaiCollectiveRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] delaisTraitesAsCsvFile(List<DemandeDelaiCollectiveResults.Traite> traites, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile delaisTraitesAsCsvFile(List<DemandeDelaiCollectiveResults.Traite> traites, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = traites.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<DemandeDelaiCollectiveResults.Traite>() {
+			contenu = CsvHelper.asCsvTemporaryFile(traites, filename, status, new CsvHelper.FileFiller<DemandeDelaiCollectiveResults.Traite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuable").append(COMMA).append("Numéro de déclaration");

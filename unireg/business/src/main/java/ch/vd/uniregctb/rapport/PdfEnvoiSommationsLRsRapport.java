@@ -9,6 +9,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 
 /**
@@ -68,19 +69,21 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		// LR sommées
 		{
 			String filename = "listes_recapitulatives_sommees.csv";
-			byte[] contenu = asCsvFile(results.lrSommees, filename, status);
 			String titre = "Liste des débiteurs traités";
 			String listVide = "(aucun débiteur traité)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.lrSommees, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Sommations LR en erreurs
 		{
 			String filename = "sommation_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.sommationLREnErreurs, filename, status);
 			String titre = "Liste des débiteurs en erreur";
 			String listVide = "(aucun débiteur en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.sommationLREnErreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();

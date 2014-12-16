@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 
 /**
@@ -70,19 +71,21 @@ public class PdfStatsDIsRapport extends PdfRapport {
 		// Déclarations traités
 		{
 			String filename = "stats_dis_" + results.annee + ".csv";
-			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des déclarations d'impôt ordinaires";
 			String listVide = "(aucune déclaration)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Déclarations en erreurs
 		{
 			String filename = "dis_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucune déclaration en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.disEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -91,9 +94,9 @@ public class PdfStatsDIsRapport extends PdfRapport {
 	/**
 	 * Génère un fichier CSV contenant les statistiques pour les déclarations d'impôt ordinaires
 	 */
-	private byte[] asCsvFile(StatistiquesDIs results, String filename, StatusManager status) {
+	private TemporaryFile asCsvFile(StatistiquesDIs results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final List<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>> list = new ArrayList<>(results.stats.entrySet());
@@ -106,7 +109,7 @@ public class PdfStatsDIsRapport extends PdfRapport {
 
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<Map.Entry<StatistiquesDIs.Key, StatistiquesDIs.Value>>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'office d'impôt").append(COMMA);

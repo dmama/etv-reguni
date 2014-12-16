@@ -23,6 +23,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.ProduireRolesResults;
 import ch.vd.uniregctb.type.MotifFor;
@@ -44,7 +45,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return infraService;
 	}
 
-	protected void writeFichierDetail(T results, PdfWriter writer, byte[][] contenu, boolean vide, String nomEntite) throws DocumentException {
+	protected void writeFichierDetail(T results, PdfWriter writer, TemporaryFile[] contenu, boolean vide, String nomEntite) throws DocumentException {
 		final String[] filenames = new String[contenu.length];
 		if (filenames.length > 1) {
 			for (int i = 0 ; i < contenu.length ; ++ i) {
@@ -192,13 +193,13 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		return StringUtils.isBlank(str) ? "" : str;
 	}
 
-	protected final byte[][] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
+	protected final TemporaryFile[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
-		final List<byte[]> fichiers = new ArrayList<>();
+		final List<TemporaryFile> fichiers = new ArrayList<>();
 		if (infos != null) {
 			final List<List<ProduireRolesResults.InfoContribuable>> decoupage = CollectionsUtils.split(infos, MAX_ROLES_PAR_FICHIER);
 			for (List<ProduireRolesResults.InfoContribuable> portion : decoupage) {
-				final byte[] contenu = CsvHelper.asCsvFile(portion, "...", null, new CsvHelper.FileFiller<ProduireRolesResults.InfoContribuable>() {
+				final TemporaryFile contenu = CsvHelper.asCsvTemporaryFile(portion, "...", null, new CsvHelper.FileFiller<ProduireRolesResults.InfoContribuable>() {
 					@Override
 					public void fillHeader(CsvHelper.LineFiller b) {
 						b.append("Numéro OFS de la commune").append(COMMA);
@@ -294,7 +295,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				fichiers.add(contenu);
 			}
 		}
-		return fichiers.toArray(new byte[fichiers.size()][]);
+		return fichiers.toArray(new TemporaryFile[fichiers.size()]);
 	}
 
 	protected final String asCvsField(ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb) {

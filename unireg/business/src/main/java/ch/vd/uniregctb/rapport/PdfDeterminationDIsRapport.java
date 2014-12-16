@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
 
 /**
@@ -68,28 +69,31 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 		// CTBs traités
 		{
 			String filename = "contribuables_traites.csv";
-			byte[] contenu = traitesAsCsvFile(results.traites, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traité)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = traitesAsCsvFile(results.traites, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// CTBs ignorés
 		{
 			String filename = "contribuables_ignores.csv";
-			byte[] contenu = asCsvFile(results.ignores, filename, status);
 			String titre = "Liste des contribuables ignorés";
 			String listVide = "(aucun contribuable ignoré)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.ignores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// CTBs en erreurs
 		{
 			String filename = "contribuables_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.erreurs, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucun contribuable en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -97,11 +101,11 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] traitesAsCsvFile(List<DeterminationDIsResults.Traite> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile traitesAsCsvFile(List<DeterminationDIsResults.Traite> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<DeterminationDIsResults.Traite>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<DeterminationDIsResults.Traite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'office d'impôt").append(COMMA);

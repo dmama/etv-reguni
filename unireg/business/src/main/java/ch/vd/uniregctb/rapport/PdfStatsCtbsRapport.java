@@ -17,6 +17,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 
 /**
@@ -72,19 +73,21 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		// Contribuables traités
 		{
 			String filename = "stats_ctbs_" + results.annee + ".csv";
-			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Statistiques des contribuables assujettis";
 			String listVide = "(aucune contribuable)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Contribuables en erreurs
 		{
 			String filename = "ctbs_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucune contribuable en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -92,9 +95,9 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] asCsvFile(StatistiquesCtbs results, String filename, StatusManager status) {
+	private TemporaryFile asCsvFile(StatistiquesCtbs results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 
 		// trie par ordre croissant selon l'ordre naturel de la clé
 		final Set<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>> entrySet = results.stats.entrySet();
@@ -109,7 +112,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 
 		final int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<Map.Entry<StatistiquesCtbs.Key, StatistiquesCtbs.Value>>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'office d'impôt").append(COMMA);

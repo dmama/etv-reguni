@@ -1,10 +1,8 @@
 package ch.vd.uniregctb.common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 
@@ -14,7 +12,7 @@ import org.apache.commons.io.IOUtils;
  */
 public final class TempFileInputStreamProvider {
 
-	private final File tempFile;
+	private final TemporaryFile file;
 	private final long size;
 
 	/**
@@ -24,25 +22,20 @@ public final class TempFileInputStreamProvider {
 	 * @throws IOException en cas de problème
 	 */
 	public TempFileInputStreamProvider(String prefix, InputStream src) throws IOException {
-		tempFile = File.createTempFile(prefix, ".tmp");
-		tempFile.deleteOnExit();
-		try {
-			copyStreamToFile(src, tempFile);
+		file = new TemporaryFile(prefix);
+		try (OutputStream out = file.openOutputStream()) {
+			IOUtils.copy(src, out);
 		}
-		finally {
-			src.close();
+		catch (RuntimeException | Error | IOException e) {
+			file.close();
+			throw e;
 		}
-		size = tempFile.length();
-	}
 
-	private static void copyStreamToFile(InputStream in, File dest) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(dest)) {
-			IOUtils.copy(in, fos);
-		}
+		size = file.getFullPath().length();
 	}
 
 	public InputStream getInputStream() throws IOException {
-		return new FileInputStream(tempFile);
+		return file.openInputStream();
 	}
 
 	public long getFileSize() {
@@ -50,7 +43,6 @@ public final class TempFileInputStreamProvider {
 	}
 
 	public void close() {
-		//noinspection ResultOfMethodCallIgnored
-		tempFile.delete();
+		file.close();
 	}
 }

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -21,8 +22,6 @@ import com.itextpdf.text.pdf.PdfFileSpecification;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.PngImage;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.common.ApplicationInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.TimeHelper;
 
 /**
@@ -43,8 +43,6 @@ public abstract class PdfRapport extends Document {
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static final char COMMA = CsvHelper.COMMA;
 	public static final String EMPTY = StringUtils.EMPTY;
-
-	private final Logger LOGGER = LoggerFactory.getLogger(PdfRapport.class);
 
 	protected final Font titreFont = new Font(Font.FontFamily.HELVETICA, 20);
 	protected final Font entete1 = WARNING_FONT;
@@ -143,36 +141,27 @@ public abstract class PdfRapport extends Document {
 	}
 
 	/**
-	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci au <b>début</b> de la ligne courante du document.
+	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci à l'abscisse <i>x</i> de la ligne courante du document.
+	 * (le contenu ajouté est présent dans le fichier sur disque indiqué)
 	 */
-	protected void attacheFichier(PdfWriter writer, String filename, String description, byte[] contenu, String mimeType) throws DocumentException {
-
-		float x = 50; // il n'y a pas moyen (= pas trouvé) de connaître la position X courante
-		attacheFichier(writer, filename, description, contenu, mimeType, x);
+	protected static void attacheFichier(PdfWriter writer, File fichier, String filename, String description, String mimeType, float x) throws IOException {
+		final PdfFileSpecification file = PdfFileSpecification.fileEmbedded(writer, fichier.getPath(), filename, null, mimeType, null, 9);
+		attacheFichier(writer, file, description, x);
 	}
 
 	/**
-	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci au <b>début</b> de la ligne courante du document.
+	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci à l'abscisse <i>x</i> de la ligne courante du document.
 	 */
-	protected void attacheFichier(PdfWriter writer, String filename, String description, byte[] contenu, String mimeType, float x) throws DocumentException {
-
-		float y = writer.getVerticalPosition(false);
-		Rectangle position = new Rectangle(x, y, x + 20f, y + 20f);
-
-		PdfFileSpecification file;
-		try {
-			file = PdfFileSpecification.fileEmbedded(writer, null, filename, contenu, mimeType, null, 9);
-			writer.addAnnotation(PdfAnnotation.createFileAttachment(writer, position, description, file));
-		}
-		catch (Exception e) {
-			throw new DocumentException(e);
-		}
+	private static void attacheFichier(PdfWriter writer, PdfFileSpecification file, String description, float x) throws IOException {
+		final float y = writer.getVerticalPosition(false);
+		final Rectangle position = new Rectangle(x, y, x + 20f, y + 20f);
+		writer.addAnnotation(PdfAnnotation.createFileAttachment(writer, position, description, file));
 	}
 
 	/**
 	 * Ajoute un paragraphe listant de manière détaillée un résultat de processing.
 	 */
-	protected void addListeDetaillee(PdfWriter writer, String titre, String listVide, String filename, byte[] contenu) throws DocumentException {
+	protected void addListeDetaillee(PdfWriter writer, String titre, String listVide, String filename, TemporaryFile contenu) throws DocumentException {
 		addEnteteListeDetaillee(titre);
 		addPartieDeListeDetaillee(writer, titre, listVide, filename, contenu);
 	}
@@ -187,14 +176,14 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Ajoute un lien vers un fichier de détails
 	 */
-	private void addPartieDeListeDetaillee(PdfWriter writer, String titre, String descriptionListeVide, String filename, byte[] contenu) throws DocumentException {
+	private void addPartieDeListeDetaillee(PdfWriter writer, String titre, String descriptionListeVide, String filename, TemporaryFile contenu) throws DocumentException {
 		final Paragraph details = new Paragraph();
 		details.setIndentationLeft(50);
 		details.setSpacingBefore(10);
 		details.setSpacingAfter(10);
 		details.setFont(normalFont);
 
-		final boolean vide = contenu == null || contenu.length == 0;
+		final boolean vide = contenu == null;
 		if (vide) {
 			details.add(new Chunk(descriptionListeVide));
 		}
@@ -205,11 +194,16 @@ public abstract class PdfRapport extends Document {
 		add(details);
 
 		if (!vide) {
-			attacheFichier(writer, filename, titre, contenu, CsvHelper.MIME_TYPE);
+			try {
+				attacheFichier(writer, contenu.getFullPath(), filename, titre, CsvHelper.MIME_TYPE, 50);
+			}
+			catch (IOException e) {
+				throw new DocumentException(e);
+			}
 		}
 	}
 
-	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, byte[][] contenus) throws DocumentException {
+	protected void addListeDetailleeDecoupee(PdfWriter writer, String titre, String listVide, String[] filenames, TemporaryFile[] contenus) throws DocumentException {
 		Assert.isEqual(filenames.length, contenus.length);
 
 		addEnteteListeDetaillee(titre);
@@ -226,8 +220,8 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Construit le contenu du fichier détaillé des contribuables traités
 	 */
-	protected static byte[] ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(ctbsTraites, filename, status, new CsvHelper.FileFiller<Long>() {
+	protected static TemporaryFile ctbIdsAsCsvFile(List<Long> ctbsTraites, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(ctbsTraites, filename, status, new CsvHelper.FileFiller<Long>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB");
@@ -244,8 +238,8 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends JobResults.Info> byte[] asCsvFile(List<T> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+	protected static <T extends JobResults.Info> TemporaryFile asCsvFile(List<T> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")

@@ -15,6 +15,8 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AutoCloseableContainer;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesResults;
@@ -93,18 +95,20 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		// Détails des contribuables en erreur ou ignorés
 		if (!results.ctbsEnErrors.isEmpty()) {
 		    final String filename = "contribuables_en_erreur.csv";
-		    final byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 		    final String titre = "Liste des contribuables en erreur";
-		    final String listVide = "(aucun contribuable en erreur)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			final String listVide = "(aucun contribuable en erreur)";
+			try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		if (!results.ctbsIgnores.isEmpty()) {
 		    final String filename = "contribuables_ignores.csv";
-		    final byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 		    final String titre = "Liste des contribuables ignorés";
-		    final String listVide = "(aucun contribuable ignoré)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			final String listVide = "(aucun contribuable ignoré)";
+			try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		writeCommuneParCommune(results, dateGeneration, status, writer);
@@ -169,8 +173,9 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 
 		    // Fichier CVS détaillé
 		    {
-			    final byte[][] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
-			    writeFichierDetail(results, writer, contenu, totalContribuables == 0, Integer.toString(commune.getNoOFS()));
+			    try (AutoCloseableContainer<TemporaryFile> container = new AutoCloseableContainer<>(asCsvFiles(nomsCommunes, infoCommune, status))) {
+				    writeFichierDetail(results, writer, container.getElements(), totalContribuables == 0, Integer.toString(commune.getNoOFS()));
+			    }
 		    }
 		}
 	}
@@ -178,7 +183,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 	/**
 	 * Utilisé par le traitement commune par commune
 	 */
-	private byte[][] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
+	private TemporaryFile[] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
 
 		final int noOfsCommune = infoCommune.getNoOfs();
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoCommune.getInfosContribuables().values());

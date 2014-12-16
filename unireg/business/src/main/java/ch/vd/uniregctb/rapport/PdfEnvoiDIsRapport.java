@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 
 /**
@@ -79,37 +80,41 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs traités
         {
             String filename = "contribuables_traites.csv";
-	        byte[] contenu = ctbIdsAsCsvFile(results.ctbsAvecDiGeneree, filename, status);
             String titre = "Liste des contribuables traités";
-            String listVide = "(aucun contribuable traité)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucun contribuable traité)";
+	        try (TemporaryFile contenu = ctbIdsAsCsvFile(results.ctbsAvecDiGeneree, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // CTBs indigents
         {
             String filename = "contribuables_indigents.csv";
-	        byte[] contenu = ctbIdsAsCsvFile(results.ctbsIndigents, filename, status);
             String titre = "Liste des contribuables indigents";
-            String listVide = "(aucun contribuable indigent)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucun contribuable indigent)";
+	        try (TemporaryFile contenu = ctbIdsAsCsvFile(results.ctbsIndigents, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // CTBs ignorés
         {
             String filename = "contribuables_ignores.csv";
-	        byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
             String titre = "Liste des contribuables ignorés";
-            String listVide = "(aucun contribuable ignoré)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucun contribuable ignoré)";
+	        try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // CTBs en erreurs
         {
             String filename = "contribuables_en_erreur.csv";
-	        byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
             String titre = "Liste des contribuables en erreur";
-            String listVide = "(aucun contribuable en erreur)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucun contribuable en erreur)";
+	        try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         close();

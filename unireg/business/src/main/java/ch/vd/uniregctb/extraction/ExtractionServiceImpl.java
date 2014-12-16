@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.common.MonitorableExecutorService;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -451,6 +452,65 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	}
 
 	/**
+	 * InputStream basé sur un fichier temporaire qui doit être effacé au moment de la clôture du flux
+	 */
+	private static class TemporaryFileInputStream extends InputStream {
+		private final TemporaryFile file;
+		private final InputStream is;
+
+		private TemporaryFileInputStream(TemporaryFile file) throws IOException {
+			this.file = file;
+			this.is = file.openInputStream();
+		}
+
+		@Override
+		public int read() throws IOException {
+			return is.read();
+		}
+
+		@Override
+		public int read(@NotNull byte[] b) throws IOException {
+			return is.read(b);
+		}
+
+		@Override
+		public int read(@NotNull byte[] b, int off, int len) throws IOException {
+			return is.read(b, off, len);
+		}
+
+		@Override
+		public long skip(long n) throws IOException {
+			return is.skip(n);
+		}
+
+		@Override
+		public int available() throws IOException {
+			return is.available();
+		}
+
+		@Override
+		public void close() throws IOException {
+			is.close();
+			file.close();
+		}
+
+		@Override
+		public void mark(int readlimit) {
+			is.mark(readlimit);
+		}
+
+		@Override
+		public void reset() throws IOException {
+			is.reset();
+		}
+
+		@Override
+		public boolean markSupported() {
+			return is.markSupported();
+		}
+	}
+
+	/**
 	 * Lancement d'un travail d'extraction par lots
 	 * @param extractor l'extracteur
 	 * @param action l'action spécifique pour le lancement de l'extracteur
@@ -464,10 +524,24 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		final R rapportFinal = extractor.createRapport(true);
 		final List<E> elements = getElements(extractor);
 		action.run(extractor, rapportFinal, elements);
-		final InputStream stream = extractor.getStreamForExtraction(rapportFinal);
+
 		final String mimeType = extractor.getMimeType();
 		final String filenameRadical = extractor.getFilenameRadical();
-		return new ExtractionResultOk(stream, mimeType, filenameRadical, extractor.wasInterrupted());
+		final TemporaryFile contentFile = extractor.getExtractionContent(rapportFinal);
+		try {
+			final InputStream is = new TemporaryFileInputStream(contentFile);
+			try {
+				return new ExtractionResultOk(is, mimeType, filenameRadical, extractor.wasInterrupted());
+			}
+			catch (RuntimeException | Error e) {
+				is.close();
+				throw e;
+			}
+		}
+		catch (RuntimeException | Error | IOException e) {
+			contentFile.close();
+			throw e;
+		}
 	}
 
 	/**

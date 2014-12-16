@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.extraction;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import ch.vd.shared.batchtemplate.BatchResults;
 import ch.vd.shared.batchtemplate.Behavior;
+import ch.vd.uniregctb.common.TemporaryFile;
 
 /**
  * Interface implémentée par les extracteurs qui supportent le traitement par lot
@@ -55,10 +55,10 @@ public interface BatchableExtractor<E, R extends BatchResults<E, R>> extends Ext
 
 	/**
 	 * @param rapportFinal rapport aggrégé de tous les lots
-	 * @return un flux en lecture sur la donnée brute de l'extraction (= le contenu du fichier CSV, par exemple)
+	 * @return fichier temporaire contenant la donnée brute de l'extraction (= le contenu du fichier CSV, par exemple)
 	 * @throws IOException en cas de problème avec le flux
 	 */
-	InputStream getStreamForExtraction(R rapportFinal) throws IOException;
+	TemporaryFile getExtractionContent(R rapportFinal) throws IOException;
 
 	/**
 	 * @return le MIME-type du document renvoyé dans le stream

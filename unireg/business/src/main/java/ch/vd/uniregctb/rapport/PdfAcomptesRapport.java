@@ -13,6 +13,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 
 /**
  * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
@@ -58,28 +59,31 @@ public class PdfAcomptesRapport extends PdfRapport {
 		// Contribuables ok
 		{
 			final String filename = "contribuables_acomptes.csv";
-			final byte[] contenu = genererAcomptes(results, filename, status);
 			final String titre = "Liste des populations pour les bases acomptes";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererAcomptes(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Contribuables en erreurs
 		{
 			final String filename = "contribuables_acomptes_en_erreur.csv";
-			final byte[] contenu = genererErreursAcomptes(results, filename, status);
 			final String titre = "Liste des populations pour les bases acomptes en erreur";
 			final String listVide = "(aucun contribuable en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererErreursAcomptes(results, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// contribuables ignorés (for intersectant avec la periode fiscale mais pas d'assujettissement, ou assujettissement ne donnant pas droit aux acomptes)
 		{
 			final String filename = "contribuables_acomptes_ignorés.csv";
-			final byte[] contenu = genererListeIgnoresAcomptes(results, filename, status);
 			final String titre = " Liste des populations ignorées ayant un for sur une période fiscale concernée";
 			final String listeVide = "(aucun)";
-			addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeIgnoresAcomptes(results, filename, status)) {
+				addListeDetaillee(writer, titre, listeVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -87,13 +91,13 @@ public class PdfAcomptesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] genererAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private TemporaryFile genererAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		final List<AcomptesResults.InfoContribuableAssujetti> list = results.getListeContribuablesAssujettis();
 		final int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableAssujetti>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableAssujetti>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuable").append(COMMA);
@@ -132,13 +136,13 @@ public class PdfAcomptesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] genererErreursAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private TemporaryFile genererErreursAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		final List<AcomptesResults.Erreur> list = results.getListeErreurs();
 		final int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuable").append(COMMA);
@@ -158,13 +162,13 @@ public class PdfAcomptesRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] genererListeIgnoresAcomptes(AcomptesResults results, String filename, StatusManager status) {
+	private TemporaryFile genererListeIgnoresAcomptes(AcomptesResults results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		final List<AcomptesResults.InfoContribuableIgnore> list = results.getContribuablesIgnores();
 		final int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableIgnore>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<AcomptesResults.InfoContribuableIgnore>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuable").append(COMMA);

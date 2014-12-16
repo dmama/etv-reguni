@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 
 /**
@@ -66,19 +67,21 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		// Situations réinitialisées
 		{
 			String filename = "situations_reinitialisees.csv";
-			byte[] contenu = situationsTraiteesAsCsvFile(results.situationsTraitees, filename, status);
 			String titre = "Liste des situations réinitialisées";
 			String listVide = "(aucun situation réinitialisée)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = situationsTraiteesAsCsvFile(results.situationsTraitees, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Situations en erreur
 		{
 			String filename = "situations_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.situationsEnErrors, filename, status);
 			String titre = "Liste des situations en erreur";
 			String listVide = "(aucun situation en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.situationsEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -86,11 +89,11 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] situationsTraiteesAsCsvFile(List<ReinitialiserBaremeDoubleGainResults.Situation> situations, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile situationsTraiteesAsCsvFile(List<ReinitialiserBaremeDoubleGainResults.Situation> situations, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = situations.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(situations, filename, status, new CsvHelper.FileFiller<ReinitialiserBaremeDoubleGainResults.Situation>() {
+			contenu = CsvHelper.asCsvTemporaryFile(situations, filename, status, new CsvHelper.FileFiller<ReinitialiserBaremeDoubleGainResults.Situation>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'office d'impôt").append(COMMA);

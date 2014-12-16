@@ -16,6 +16,8 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.uniregctb.common.AutoCloseableContainer;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.role.ProduireRolesResults;
@@ -164,10 +166,11 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			else {
 				filename = "contribuables_en_erreur.csv";
 			}
-		    final byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 		    final String titre = "Liste des contribuables en erreur";
-		    final String listVide = "(aucun contribuable en erreur)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			final String listVide = "(aucun contribuable en erreur)";
+			try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		if (!results.ctbsIgnores.isEmpty()) {
@@ -178,10 +181,11 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 			else {
 				filename = "contribuables_ignores.csv";
 			}
-		    final byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 		    final String titre = "Liste des contribuables ignorés";
-		    final String listVide = "(aucun contribuable ignoré)";
-		    addListeDetaillee(writer, titre, listVide, filename, contenu);
+			final String listVide = "(aucun contribuable ignoré)";
+			try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		writeResultatsOid(results, status, writer);
@@ -223,15 +227,16 @@ public class PdfRolesOIDsRapport extends PdfRolesRapport<ProduireRolesOIDsResult
 		// Fichier CVS détaillé
 		{
 			final OfficeImpot office = getOfficeImpot(results.noColOID);
-			final byte[][] contenu = asCsvFiles(nomsCommunes, infoOid, status);
-			writeFichierDetail(results, writer, contenu, infoOid.isEmpty(), String.format("OID%02d", office.getNoColAdm()));
+			try (AutoCloseableContainer<TemporaryFile> container = new AutoCloseableContainer<>(asCsvFiles(nomsCommunes, infoOid, status))) {
+				writeFichierDetail(results, writer, container.getElements(), infoOid.isEmpty(), String.format("OID%02d", office.getNoColAdm()));
+			}
 		}
 	}
 
 	/**
 	 * Utilisé par le traitement d'un OID complet
 	 */
-	private byte[][] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
+	private TemporaryFile[] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoOid.values());
 		status.setMessage("Génération du rapport");
 

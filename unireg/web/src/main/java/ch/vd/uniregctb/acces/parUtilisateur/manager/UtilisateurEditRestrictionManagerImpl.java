@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.acces.parUtilisateur.manager;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +20,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
@@ -233,9 +232,8 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		}
 
 		@Override
-		public InputStream getStreamForExtraction(DroitsAccesExtractionResult rapportFinal) throws IOException {
-			final byte[] contenu = buildCsv(rapportFinal.acces);
-			return new ByteArrayInputStream(contenu);
+		public TemporaryFile getExtractionContent(DroitsAccesExtractionResult rapportFinal) throws IOException {
+			return buildCsv(rapportFinal.acces);
 		}
 
 		@Override
@@ -263,9 +261,9 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 			return b.toString();
 		}
 
-		private byte[] buildCsv(List<DroitAccesUtilisateurView> acces) {
+		private TemporaryFile buildCsv(List<DroitAccesUtilisateurView> acces) {
 			final String filename = String.format("%s%s", getFilenameRadical(), MimeTypeHelper.getFileExtensionForType(getMimeType()));
-			return CsvHelper.asCsvFile(acces, filename, null, new CsvHelper.FileFiller<DroitAccesUtilisateurView>() {
+			return CsvHelper.asCsvTemporaryFile(acces, filename, null, new CsvHelper.FileFiller<DroitAccesUtilisateurView>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("TYPE_DROIT").append(CsvHelper.COMMA);

@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 
 /**
@@ -65,29 +66,31 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		// Messages identifiés
 		{
 			final String filename = "EvenementExterneTraites.csv";
-			final byte[] contenu = getCsvEvenementTraite(results.traites, filename, status);
 			final String titre = "Liste des événements externes traités";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = getCsvEvenementTraite(results.traites, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvErrorFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private <T extends TraiterEvenementExterneResult.Traite> byte[] getCsvEvenementTraite(List<T> liste, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private <T extends TraiterEvenementExterneResult.Traite> TemporaryFile getCsvEvenementTraite(List<T> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Evenement Id").append(COMMA);
@@ -114,11 +117,11 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends TraiterEvenementExterneResult.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	protected static <T extends TraiterEvenementExterneResult.Erreur> TemporaryFile asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Evenement Id").append(COMMA);

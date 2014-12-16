@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 
 public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRapport {
@@ -70,19 +71,21 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			// Habitants traités
 			{
 				String filename = "sourciers_convertis.csv";
-				byte[] contenu = asCsvFileTraite(results.sourciersConvertis, filename, status);
 				String titre = "Liste des sourciers convertis";
 				String listVide = "(aucun sourcier converti)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileTraite(results.sourciersConvertis, filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// Habitants en erreurs
 			{
 				String filename = "sourciers_en_erreur.csv";
-				byte[] contenu = asCsvFileErreur(results.sourciersEnErreurs, filename, status);
 				String titre = "Liste des habitants en erreur";
 				String listVide = "(aucun habitant en erreur)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileErreur(results.sourciersEnErreurs, filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			document.close();
@@ -90,8 +93,8 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static byte[] asCsvFileTraite(List<PassageNouveauxRentiersSourciersEnMixteResults.Traite> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Traite>() {
+	private static TemporaryFile asCsvFileTraite(List<PassageNouveauxRentiersSourciersEnMixteResults.Traite> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Traite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB");
@@ -105,8 +108,8 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 		});
 	}
 
-	private static byte[] asCsvFileErreur(List<PassageNouveauxRentiersSourciersEnMixteResults.Erreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Erreur>() {
+	private static TemporaryFile asCsvFileErreur(List<PassageNouveauxRentiersSourciersEnMixteResults.Erreur> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<PassageNouveauxRentiersSourciersEnMixteResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(CsvHelper.COMMA);

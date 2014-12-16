@@ -8,6 +8,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.oid.SuppressionOIDResults;
 
 public class PdfSuppressionOIDRapport extends PdfRapport {
@@ -48,19 +49,21 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "tiers_traites.csv";
-			final byte[] contenu = asCsvFile(results.traites, filename, status);
 			final String titre = "Liste des tiers traités";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.traites, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvFile(results.errors, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.errors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();

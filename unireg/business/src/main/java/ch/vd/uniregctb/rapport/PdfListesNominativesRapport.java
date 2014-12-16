@@ -11,6 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.listesnominatives.TypeAdresse;
 
@@ -70,19 +71,21 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    // Contribuables ok
 	    {
 	        final String filename = "tiers.csv";
-	        final byte[] contenu = genererListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers";
-	        final String listVide = "(aucun)";
-	        addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    final String listVide = "(aucun)";
+		    try (TemporaryFile contenu = genererListesNominatives(results, filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
 	    }
 
 	    // Contribuables en erreurs
 	    {
 	        final String filename = "tiers_en_erreur.csv";
-	        final byte[] contenu = genererErreursListesNominatives(results, filename, status);
 	        final String titre = "Liste des tiers en erreur";
-	        final String listVide = "(aucun)";
-	        addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    final String listVide = "(aucun)";
+		    try (TemporaryFile contenu = genererErreursListesNominatives(results, filename, status)) {
+			    addListeDetaillee(writer, titre, listVide, filename, contenu);
+		    }
 	    }
 
 	    close();
@@ -90,13 +93,13 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    status.setMessage("Génération du rapport terminée.");
 	}
 	
-    private byte[] genererListesNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
+    private TemporaryFile genererListesNominatives(final ListesNominativesResults results, String filename, StatusManager status) {
 
-	    byte[] contenu = null;
+	    TemporaryFile contenu = null;
         final List<ListesNominativesResults.InfoTiers> list = results.getListeTiers();
         final int size = list.size();
         if (size > 0) {
-	        contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListesNominativesResults.InfoTiers>() {
+	        contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListesNominativesResults.InfoTiers>() {
 		        @Override
 		        public void fillHeader(CsvHelper.LineFiller b) {
 			        b.append("NUMERO_CTB").append(COMMA);
@@ -144,13 +147,13 @@ public class PdfListesNominativesRapport extends PdfRapport{
         return contenu;
     }
 
-	private byte[] genererErreursListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
+	private TemporaryFile genererErreursListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 	    final List<ListesNominativesResults.Erreur> list = results.getListeErreurs();
 	    final int size = list.size();
 	    if (size > 0) {
-		    contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
+		    contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListesResults.Erreur>() {
 			    @Override
 			    public void fillHeader(CsvHelper.LineFiller b) {
 				    b.append("Numéro de contribuable").append(COMMA);

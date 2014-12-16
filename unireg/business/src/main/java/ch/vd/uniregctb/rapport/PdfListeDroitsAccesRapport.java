@@ -12,6 +12,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 
 /**
@@ -67,21 +68,23 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
         }
 
         // CTBs traités
-        {
-            String filename = "droits_acces.csv";
-            byte[] contenu = droitsAccesAsCsvFile(results.droitsAcces, filename, status);
-            String titre = "Liste des droits d'accès";
-            String listVide = "(aucun droit d'accès)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	    {
+		    String filename = "droits_acces.csv";
+		    String titre = "Liste des droits d'accès";
+		    String listVide = "(aucun droit d'accès)";
+		    try (TemporaryFile contenu = droitsAccesAsCsvFile(results.droitsAcces, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // CTBs en erreurs
         {
             String filename = "erreurs.csv";
-            byte[] contenu = asCsvFile(results.erreurs, filename, status);
             String titre = "Liste des erreurs";
-            String listVide = "(aucune erreur)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune erreur)";
+	        try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         close();
@@ -89,8 +92,8 @@ public class PdfListeDroitsAccesRapport extends PdfRapport {
         status.setMessage("Génération du rapport terminée.");
     }
 
-	private byte[] droitsAccesAsCsvFile(List<ListeDroitsAccesResults.InfoDroitAcces> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeDroitsAccesResults.InfoDroitAcces>() {
+	private TemporaryFile droitsAccesAsCsvFile(List<ListeDroitsAccesResults.InfoDroitAcces> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListeDroitsAccesResults.InfoDroitAcces>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA);

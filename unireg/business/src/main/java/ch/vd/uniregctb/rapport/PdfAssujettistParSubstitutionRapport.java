@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.listes.assujettis.AssujettisParSubstitutionResults;
 
 public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
@@ -67,19 +68,21 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 			// Relations créées
 			{
 				String filename = "substitutions.csv";
-				byte[] contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status);
 				String titre = "Liste des assujettissements par substitution";
 				String listVide = "(aucune)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileTraite(results.getRapportsSubstitutions(), filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			// Erreurs
 			{
 				String filename = "erreurs.csv";
-				byte[] contenu = asCsvFileErreur(results.getErreurs(), filename, status);
 				String titre = "Liste des erreurs rencontrées";
 				String listVide = "(aucune)";
-				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try (TemporaryFile contenu = asCsvFileErreur(results.getErreurs(), filename, status)) {
+					document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 			document.close();
@@ -87,8 +90,8 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 			status.setMessage("Génération du rapport terminée.");
 	}
 
-	private static byte[] asCsvFileTraite(List<AssujettisParSubstitutionResults.InfoRapportSubstitution> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.InfoRapportSubstitution>() {
+	private static TemporaryFile asCsvFileTraite(List<AssujettisParSubstitutionResults.InfoRapportSubstitution> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.InfoRapportSubstitution>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB_SUBSTITUANT").append(COMMA);
@@ -124,8 +127,8 @@ public class PdfAssujettistParSubstitutionRapport extends PdfRapport {
 		});
 	}
 
-	private static byte[] asCsvFileErreur(List<AssujettisParSubstitutionResults.Erreur> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.Erreur>() {
+	private static TemporaryFile asCsvFileErreur(List<AssujettisParSubstitutionResults.Erreur> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<AssujettisParSubstitutionResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("ID_RAPPORT").append(COMMA);

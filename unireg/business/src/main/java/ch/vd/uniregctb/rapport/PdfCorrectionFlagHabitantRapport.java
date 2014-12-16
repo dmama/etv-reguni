@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 
 /**
@@ -53,39 +54,42 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		// Nouveaux habitants
 		{
 			final String filename = "nouveaux_habitants.csv";
-			final byte[] contenu = genererListeModifications(res.getNouveauxHabitants(), filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeModifications(res.getNouveauxHabitants(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Nouveaux non-habitants
 		{
 			final String filename = "nouveaux_non_habitants.csv";
-			final byte[] contenu = genererListeModifications(res.getNouveauxNonHabitants(), filename, status);
 			final String titre = "Liste des nouveaux non-habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeModifications(res.getNouveauxNonHabitants(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = genererListeErreurs(res.getErreurs(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeErreurs(res.getErreurs(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 		close();
 
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] genererListeErreurs(List<CorrectionFlagHabitantResults.ContribuableErreur> erreurs, String filename, StatusManager status) {
+	private TemporaryFile genererListeErreurs(List<CorrectionFlagHabitantResults.ContribuableErreur> erreurs, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (erreurs != null && !erreurs.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableErreur>() {
+			contenu = CsvHelper.asCsvTemporaryFile(erreurs, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableErreur>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);
@@ -105,11 +109,11 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] genererListeModifications(List<CorrectionFlagHabitantResults.ContribuableInfo> modifications, String filename, StatusManager status) {
+	private TemporaryFile genererListeModifications(List<CorrectionFlagHabitantResults.ContribuableInfo> modifications, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (modifications != null && !modifications.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(modifications, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableInfo>() {
+			contenu = CsvHelper.asCsvTemporaryFile(modifications, filename, status, new CsvHelper.FileFiller<CorrectionFlagHabitantResults.ContribuableInfo>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB");

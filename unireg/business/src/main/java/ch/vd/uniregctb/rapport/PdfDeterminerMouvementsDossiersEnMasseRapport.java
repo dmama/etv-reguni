@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 
 /**
@@ -66,28 +67,31 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		// Mouvements
 		{
 			final String filename = "mouvements.csv";
-			final byte[] contenu = genererListeMouvements(results.mouvements, filename, status);
 			final String titre = "Liste des mouvements générés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeMouvements(results.mouvements, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Contribuables ignorés
 		{
 			final String filename = "ignores.csv";
-			final byte[] contenu = genererListeDossiersNonTraites(results.ignores, filename, status);
 			final String titre = "Liste des dossiers ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeDossiersNonTraites(results.ignores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = genererListeDossiersNonTraites(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs rencontrées";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = genererListeDossiersNonTraites(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -95,11 +99,11 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] genererListeDossiersNonTraites(List<DeterminerMouvementsDossiersEnMasseResults.NonTraite> nonTraites, String filename, StatusManager status) {
+	private TemporaryFile genererListeDossiersNonTraites(List<DeterminerMouvementsDossiersEnMasseResults.NonTraite> nonTraites, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (nonTraites != null && !nonTraites.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(nonTraites, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.NonTraite>() {
+			contenu = CsvHelper.asCsvTemporaryFile(nonTraites, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.NonTraite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);
@@ -119,11 +123,11 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 		return contenu;
 	}
 
-	private byte[] genererListeMouvements(List<DeterminerMouvementsDossiersEnMasseResults.Mouvement> mouvements, String filename, StatusManager status) {
+	private TemporaryFile genererListeMouvements(List<DeterminerMouvementsDossiersEnMasseResults.Mouvement> mouvements, String filename, StatusManager status) {
 
-		byte[] contenu = null;
+		TemporaryFile contenu = null;
 		if (mouvements != null && !mouvements.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(mouvements, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.Mouvement>() {
+			contenu = CsvHelper.asCsvTemporaryFile(mouvements, filename, status, new CsvHelper.FileFiller<DeterminerMouvementsDossiersEnMasseResults.Mouvement>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("NO_CTB").append(COMMA);

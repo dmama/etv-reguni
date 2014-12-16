@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 
 public class PdfImportImmeublesRapport extends PdfRapport {
@@ -51,45 +52,49 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "immeubles_importes.csv";
-			final byte[] contenu = buildContenuTraites(results.traites, status, filename);
 			final String titre = "Liste des immeubles importés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuTraites(results.traites, status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Cas ignorés
 		{
 			final String filename = "immeubles_ignores.csv";
-			final byte[] contenu = buildContenuIgnores(results.ignores, status, filename);
 			final String titre = "Liste des immeubles ignorés";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuIgnores(results.ignores, status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// A vérifier
 		{
 			final String filename = "immeubles_a_verifier.csv";
-			final byte[] contenu = buildContenuAVerifier(results.averifier, status, filename);
 			final String titre = "Liste des immeubles qui doivent être vérifiés dans le registre foncier";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuAVerifier(results.averifier, status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "immeubles_en_erreurs.csv";
-			final byte[] contenu = buildContenuErreurs(results.erreurs, status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuErreurs(results.erreurs, status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] buildContenuTraites(List<ImportImmeublesResults.Import> traites, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Import>() {
+	private TemporaryFile buildContenuTraites(List<ImportImmeublesResults.Import> traites, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(traites, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Import>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("NO_CONTRIBUABLE");
@@ -103,8 +108,8 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] buildContenuIgnores(List<ImportImmeublesResults.Ignore> ignores, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Ignore>() {
+	private TemporaryFile buildContenuIgnores(List<ImportImmeublesResults.Ignore> ignores, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(ignores, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Ignore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("RAISON");
@@ -118,8 +123,8 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(averifiers, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.AVerifier>() {
+	private TemporaryFile buildContenuAVerifier(List<ImportImmeublesResults.AVerifier> averifiers, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(averifiers, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.AVerifier>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("RAISON").append(COMMA).append("DETAILS");
@@ -133,8 +138,8 @@ public class PdfImportImmeublesRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] buildContenuErreurs(List<ImportImmeublesResults.Erreur> erreurs, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Erreur>() {
+	private TemporaryFile buildContenuErreurs(List<ImportImmeublesResults.Erreur> erreurs, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportImmeublesResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_IMMEUBLE").append(COMMA).append("ERREUR").append(COMMA).append("DETAILS");

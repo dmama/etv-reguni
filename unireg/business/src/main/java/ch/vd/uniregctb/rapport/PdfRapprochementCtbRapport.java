@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.registrefoncier.ProprietaireRapproche;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 
@@ -79,19 +80,21 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
         // CTBs rapprochés
         {
             final String filename = "contribuables_rapproches.csv";
-            final byte[] contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status);
             final String titre = "Liste des contribuables rapprochés";
-            final String listVide = "(aucun)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        final String listVide = "(aucun)";
+	        try (TemporaryFile contenu = ctbRapprocheAsCsvFile(results.listeRapproche, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // les erreurs
         {
             final String filename = "erreurs.csv";
-            final byte[] contenu = asCsvFile(results.ctbsEnErreur, filename, status);
             final String titre = "Liste des erreurs";
-            final String listVide = "(aucune)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        final String listVide = "(aucune)";
+	        try (TemporaryFile contenu = asCsvFile(results.ctbsEnErreur, filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         close();
@@ -101,8 +104,8 @@ public class PdfRapprochementCtbRapport extends PdfRapport {
     /**
      * Construit le contenu du fichier détaillé des contribuables rapprochés
      */
-	private byte[] ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(listeRapprochee, filename, status, new CsvHelper.FileFiller<ProprietaireRapproche>() {
+	private TemporaryFile ctbRapprocheAsCsvFile(List<ProprietaireRapproche> listeRapprochee, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(listeRapprochee, filename, status, new CsvHelper.FileFiller<ProprietaireRapproche>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NumeroFoncier").append(COMMA);

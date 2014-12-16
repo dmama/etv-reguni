@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HttpHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
@@ -342,7 +342,15 @@ public class DroitAccesController {
 			return HttpHelper.getRedirectPagePrecedente(request);
 		}
 
-		final byte[] content = CsvHelper.asCsvFile(conflits, "conflits.csv", null, new CsvHelper.FileFiller<DroitAccesConflitAvecDonneesContribuable>() {
+		try (TemporaryFile content = getConflitsAsCsvFile(conflits);
+		     InputStream in = content.openInputStream()) {
+			servletService.downloadAsFile("conflits.csv", CsvHelper.MIME_TYPE, in, null, response);
+		}
+		return null;
+	}
+
+	private static TemporaryFile getConflitsAsCsvFile(List<DroitAccesConflitAvecDonneesContribuable> conflits) {
+		return CsvHelper.asCsvTemporaryFile(conflits, "conflits.csv", null, new CsvHelper.FileFiller<DroitAccesConflitAvecDonneesContribuable>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(CsvHelper.COMMA);
@@ -368,10 +376,6 @@ public class DroitAccesController {
 				return true;
 			}
 		});
-		try (InputStream in = new ByteArrayInputStream(content)) {
-			servletService.downloadAsFile("conflits.csv", CsvHelper.MIME_TYPE, in, null, response);
-		}
-		return null;
 	}
 
 	@RequestMapping(value = "/par-utilisateur/ajouter-restriction.do", method = RequestMethod.GET)

@@ -13,6 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 
@@ -85,55 +86,61 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		// Habitants traités
 		{
 			String filename = "tiers_traites.csv";
-			byte[] contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status);
 			String titre = "Liste des tiers traités";
 			String listVide = "(aucun tiers traité)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraites, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Habitants  ignorés
 		{
 			String filename = "tiers_ignores.csv";
-			byte[] contenu = asCsvFile(results.tiersIgnores, filename, status);
 			String titre = "Liste des tiers ignorés";
 			String listVide = "(aucun tiers ignoré)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.tiersIgnores, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Habitants en erreurs
 		{
 			String filename = "tiers_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.tiersEnErrors, filename, status);
 			String titre = "Liste des tiers en erreur";
 			String listVide = "(aucun tiers en erreur)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.tiersEnErrors, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Habitants avec décision traités
 		{
 			String filename = "tiers_decision_traites.csv";
-			byte[] contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status);
 			String titre = "Liste des tiers avec décision ACI traités";
 			String listVide = "(aucun tiers avec décision ACI traité)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersAvecDecisionTraites, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Habitants avec décision ignorés
 		{
 			String filename = "tiers_decision_ignores.csv";
-			byte[] contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status);
 			String titre = "Liste des tiers avec décision ACI ignorés";
 			String listVide = "(aucun tiers avec décision ACI ignoré)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.tiersAvecDecisonIgnores, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Habitants avec décision en erreurs
 		{
 			String filename = "tiers_decision_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status);
 			String titre = "Liste des tiers avec décision ACI en erreur";
 			String listVide = "(aucun tiers avec décision ACI en erreur)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.tiersAvecDecisionEnErrors, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		document.close();

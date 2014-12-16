@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 
 
@@ -77,64 +78,71 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         // Sommations DI en erreurs
         {
             String filename = "sommations_DI_en_erreur.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status);
             String titre = "Liste des déclarations impossibles à sommer";
-            String listVide = "(aucune déclaration à sommer en erreur)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune déclaration à sommer en erreur)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // DI avec délai effectif non échu
         {
             String filename = "delai_effectif_non_echu.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getListeDisDelaiEffectifNonEchu(), filename, status);
             String titre = "Liste des déclarations dont le délai effectif n'est pas échu";
-            String listVide = "(aucune)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeDisDelaiEffectifNonEchu(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // DI avec contribuables non assujettis.
         {
             String filename = "non_assujettissement.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status);
             String titre = "Liste des déclarations dont les contribuables ne sont pas assujettis";
-            String listVide = "(aucune déclaration n'est liée à un contribuable non assujetti)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune déclaration n'est liée à un contribuable non assujetti)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeNonAssujettissement(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // DI avec contribuables indigents.
         {
             String filename = "indigents.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont indigents";
-            String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
 	     // DI avec contribuables sourcier purs.
         {
             String filename = "sourciersPurs.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont sourciers";
-            String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // DI optionnelles
         {
             String filename = "optionnelles.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status);
             String titre = "Liste des déclarations non-sommées car optionnelles";
-            String listVide = "(aucune déclaration sommable n'est optionnelle)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String listVide = "(aucune déclaration sommable n'est optionnelle)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         // DI sommées.
         {
             String filename = "sommations.csv";
-	        byte[] contenu = asCsvFileSommationDI(results.getSommations(), filename, status);
-            String titre = "Liste des déclarations sommées";
-            String listVide = "(aucune déclaration sommée)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        String titre = "Liste des déclarations sommées";
+	        String listVide = "(aucune déclaration sommée)";
+	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getSommations(), filename, status)) {
+		        addListeDetaillee(writer, titre, listVide, filename, contenu);
+	        }
         }
 
         close();
@@ -142,10 +150,10 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
     }
 
 	@SuppressWarnings({"unchecked"})
-	private byte[] asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
-		final byte[] content;
+	private TemporaryFile asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
+		final TemporaryFile content;
 		if (!list.isEmpty()) {
-			content = CsvHelper.asCsvFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
+			content = CsvHelper.asCsvTemporaryFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(list.get(0).getCsvEntete());

@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 
 /**
@@ -52,20 +53,22 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 		// Doublons
 		{
 			final String filename = "doublons_supprimes.csv";
-			final byte[] contenu = traitesAsCsvFile(results.doublons, filename, status);
 			final String titre = "Liste des nouveaux habitants";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = traitesAsCsvFile(results.doublons, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -74,11 +77,11 @@ public class PdfCorrectionEtatDeclarationRapport extends PdfRapport {
 	}
 
 
-	private byte[] traitesAsCsvFile(List<CorrectionEtatDeclarationResults.Doublon> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile traitesAsCsvFile(List<CorrectionEtatDeclarationResults.Doublon> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<CorrectionEtatDeclarationResults.Doublon>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<CorrectionEtatDeclarationResults.Doublon>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Id du contribuable").append(COMMA);

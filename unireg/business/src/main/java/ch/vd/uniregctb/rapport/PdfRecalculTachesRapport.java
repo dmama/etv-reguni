@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tache.TacheSyncResults;
 
 /**
@@ -64,27 +65,29 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		// Action menées
 		{
 			final String filename = "actions_menees.csv";
-			final byte[] contenu = actionsAsCsvFile(results.getActions(), filename, status);
 			final String titre = "Liste des actions menées par le job";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = actionsAsCsvFile(results.getActions(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = errorsAsCsvFile(results.getExceptions(), filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = errorsAsCsvFile(results.getExceptions(), filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] actionsAsCsvFile(List<TacheSyncResults.ActionInfo> actions, String fileName, StatusManager status) {
-		return CsvHelper.asCsvFile(actions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ActionInfo>() {
+	private TemporaryFile actionsAsCsvFile(List<TacheSyncResults.ActionInfo> actions, String fileName, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(actions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ActionInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("CTB_ID").append(COMMA);
@@ -100,8 +103,8 @@ public class PdfRecalculTachesRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] errorsAsCsvFile(List<TacheSyncResults.ExceptionInfo> exceptions, String fileName, StatusManager status) {
-		return CsvHelper.asCsvFile(exceptions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ExceptionInfo>() {
+	private TemporaryFile errorsAsCsvFile(List<TacheSyncResults.ExceptionInfo> exceptions, String fileName, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(exceptions, fileName, status, new CsvHelper.FileFiller<TacheSyncResults.ExceptionInfo>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("CTB_ID").append(COMMA);

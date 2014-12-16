@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.common;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
@@ -118,59 +115,34 @@ public abstract class CsvHelper {
 		}
 	}
 
-	/**
-	 * Méthode de remplissage de fichier Csv utilisant un {@link ch.vd.uniregctb.common.CsvHelper.FileFiller}
-	 */
-	public static <T> byte[] asCsvFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
-		byte [] contenu = null;
+	@Nullable("si la collection est vide")
+	public static <T> TemporaryFile asCsvTemporaryFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) {
+		TemporaryFile file = null;
 		if (!list.isEmpty()) {
 			try {
-				contenu = asCsvFileThroughTempFile(list, fileName, status, filler);
+				file = new TemporaryFile("ur-csv-");
+				try (final OutputStream out = file.openOutputStream();
+				     final OutputStreamWriter writer = new OutputStreamWriter(out, CHARSET);
+				     final BufferedWriter bufferedWriter = new BufferedWriter(writer, 1024 * 1024)) {
+
+					final LineFiller lf = new WriterLineFiller(bufferedWriter);
+					buildFileContent(list, fileName, status, filler, lf);
+				}
+			}
+			catch (RuntimeException | Error e) {
+				if (file != null) {
+					file.close();
+				}
+				throw e;
 			}
 			catch (IOException e) {
+				if (file != null) {
+					file.close();
+				}
 				throw new RuntimeException(e);
 			}
 		}
-		return contenu;
-	}
-
-	/**
-	 * Méthode de remplissage de fichier Csv utilisant un {@link ch.vd.uniregctb.common.CsvHelper.WriterLineFiller}
-	 */
-	private static <T> byte[] asCsvFileThroughTempFile(Collection<T> list, String fileName, @Nullable StatusManager status, FileFiller<T> filler) throws IOException {
-		final File tmpFile = File.createTempFile("ur-csv-", null);
-		try {
-			// normalement, on l'aura détruit avant, mais...
-			tmpFile.deleteOnExit();
-
-			try (final FileOutputStream o = new FileOutputStream(tmpFile);
-			     final OutputStreamWriter writer = new OutputStreamWriter(o, CHARSET);
-			     final BufferedWriter bufferedWriter = new BufferedWriter(writer, 1024 * 1024)) {
-				final LineFiller lf = new WriterLineFiller(bufferedWriter);
-				buildFileContent(list, fileName, status, filler, lf);
-			}
-
-			// le fichier a été écrit -> on le relit maintenant dans la chaîne de caractères à renvoyer
-			final long fileLength = tmpFile.length();
-			if (fileLength > Integer.MAX_VALUE) {
-				throw new RuntimeException("Fichier de sortie beaucoup trop gros !");
-			}
-			if (fileLength == 0) {
-				return null;
-			}
-			final byte[] bytes = new byte[(int) fileLength];
-			try (final FileInputStream fis = new FileInputStream(tmpFile);
-			     final BufferedInputStream in = new BufferedInputStream(fis, 1024 * 1024)) {
-				final int readLength = in.read(bytes);
-				if (readLength != fileLength) {
-					throw new IOException("Impossible de relire l'ensemble du fichier de sortie");
-				}
-				return bytes;
-			}
-		}
-		finally {
-			tmpFile.delete();
-		}
+		return file;
 	}
 
 	private static <T> void buildFileContent(Collection<T> list, String fileName, StatusManager status, FileFiller<T> filler, LineFiller lf) {

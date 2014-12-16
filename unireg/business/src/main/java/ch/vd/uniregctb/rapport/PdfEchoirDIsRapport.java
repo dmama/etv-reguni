@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
 
 /**
@@ -66,19 +67,21 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		// DIs échues
 		{
 			String filename = "dis_echues.csv";
-			byte[] contenu = disEchuesAsCsvFile(results.disEchues, filename, status);
 			String titre = "Liste des déclarations nouvellement échues";
 			String listVide = "(aucun déclaration échue)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = disEchuesAsCsvFile(results.disEchues, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// DIs en erreur
 		{
 			String filename = "dis_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.disEnErrors, filename, status);
 			String titre = "Liste des déclarations en erreur";
 			String listVide = "(aucun déclaration en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.disEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -87,11 +90,11 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 	}
 
 
-	private byte[] disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		final int size = disEchues.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsResults.Echue>() {
+			contenu = CsvHelper.asCsvTemporaryFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsResults.Echue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE");

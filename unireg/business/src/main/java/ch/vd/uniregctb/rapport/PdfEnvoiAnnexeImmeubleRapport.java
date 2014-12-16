@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 
 /**
@@ -73,28 +74,31 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 		// CTBs ignorés
 		{
 			String filename = "contribuables_traites.csv";
-			byte[] contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traités)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFileForInfoImmeuble(results.infoCtbTraites, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// CTBs ignorés
 		{
 			String filename = "contribuables_ignores.csv";
-			byte[] contenu = asCsvFile(results.ctbsIgnores, filename, status);
 			String titre = "Liste des contribuables ignorés";
 			String listVide = "(aucun contribuable ignoré)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.ctbsIgnores, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// CTBs en erreurs
 		{
 			String filename = "contribuables_en_erreur.csv";
-			byte[] contenu = asCsvFile(results.ctbsEnErrors, filename, status);
 			String titre = "Liste des contribuables en erreur";
 			String listVide = "(aucun contribuable en erreur)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results.ctbsEnErrors, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 
@@ -106,8 +110,8 @@ public class PdfEnvoiAnnexeImmeubleRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> byte[] asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
-		return CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+	private static <T extends EnvoiAnnexeImmeubleResults.InfoCtbImmeuble> TemporaryFile asCsvFileForInfoImmeuble(List<T> list, String filename, StatusManager status) {
+		return CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("OID").append(COMMA).append("NO_CTB").append(COMMA).append("NOM")

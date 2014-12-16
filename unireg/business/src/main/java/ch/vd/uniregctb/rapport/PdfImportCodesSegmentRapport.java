@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
 
 public class PdfImportCodesSegmentRapport extends PdfRapport {
@@ -51,36 +52,39 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		// Cas traités
 		{
 			final String filename = "codes_modifies.csv";
-			final byte[] contenu = buildContenuTraites(results.getTraites(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation a été modifié";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuTraites(results.getTraites(), status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Cas ignorés
 		{
 			final String filename = "ignores.csv";
-			final byte[] contenu = buildContenuIgnores(results.getIgnores(), status, filename);
 			final String titre = "Liste des contribuables dont le code de segmentation n'a pas été touché";
 			final String listVide = "(aucun)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuIgnores(results.getIgnores(), status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		// Erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = buildContenuErreurs(results.getErreurs(), status, filename);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = buildContenuErreurs(results.getErreurs(), status, filename)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] buildContenuTraites(List<ImportCodesSegmentResults.Traite> traites, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(traites, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Traite>() {
+	private TemporaryFile buildContenuTraites(List<ImportCodesSegmentResults.Traite> traites, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(traites, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Traite>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("CODE_SEGMENT");
@@ -94,8 +98,8 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] buildContenuIgnores(List<ImportCodesSegmentResults.Ignore> ignores, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(ignores, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Ignore>() {
+	private TemporaryFile buildContenuIgnores(List<ImportCodesSegmentResults.Ignore> ignores, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(ignores, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Ignore>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("RAISON");
@@ -109,8 +113,8 @@ public class PdfImportCodesSegmentRapport extends PdfRapport {
 		});
 	}
 
-	private byte[] buildContenuErreurs(List<ImportCodesSegmentResults.Erreur> erreurs, StatusManager status, String filename) {
-		return CsvHelper.asCsvFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Erreur>() {
+	private TemporaryFile buildContenuErreurs(List<ImportCodesSegmentResults.Erreur> erreurs, StatusManager status, String filename) {
+		return CsvHelper.asCsvTemporaryFile(erreurs, filename, status, new CsvHelper.FileFiller<ImportCodesSegmentResults.Erreur>() {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				b.append("NO_CTB").append(COMMA).append("ERREUR").append(COMMA).append("DETAILS");

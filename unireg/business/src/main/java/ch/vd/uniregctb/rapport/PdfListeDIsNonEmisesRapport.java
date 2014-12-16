@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 
 
@@ -62,10 +63,11 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		}
 		{
 			String filename = "contribuables_sans_DI.csv";
-			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des contribuables traités";
 			String listVide = "(aucun contribuable traité)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		document.close();
@@ -73,12 +75,12 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] asCsvFile(ListeDIsNonEmises results, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile asCsvFile(ListeDIsNonEmises results, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		List<ListeDIsNonEmises.LigneRapport> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeDIsNonEmises.LigneRapport>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListeDIsNonEmises.LigneRapport>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuale").append(COMMA);

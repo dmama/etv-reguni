@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 
 
@@ -63,10 +64,11 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		}
 		{
 			String filename = "tachesenInstance_par_OID.csv";
-			byte[] contenu = asCsvFile(results, filename, status);
 			String titre = "Liste des tâches en instance par OID";
 			String listVide = "(aucune tâche traitée)";
-			document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvFile(results, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		document.close();
@@ -74,12 +76,12 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private byte[] asCsvFile(ListeTachesEnInstanceParOID results, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private TemporaryFile asCsvFile(ListeTachesEnInstanceParOID results, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		List<ListeTachesEnInstanceParOID.LigneTacheInstance> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<ListeTachesEnInstanceParOID.LigneTacheInstance>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListeTachesEnInstanceParOID.LigneTacheInstance>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'OID").append(COMMA);

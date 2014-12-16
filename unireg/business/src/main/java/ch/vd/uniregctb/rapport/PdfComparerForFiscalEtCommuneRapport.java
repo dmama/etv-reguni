@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
+import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 
 /**
@@ -67,10 +68,11 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		// adresses resolues
 			{
 				final String filename = "for_et_commune_differente.csv";
-				final byte[] contenu = getCsvForFiscalEtCommuneDifferente(results.listeCommunesDifferentes, filename, status);
 				final String titre = "Liste des communes différentes";
 				final String listVide = "(aucune)";
-				addListeDetaillee(writer, titre, listVide, filename, contenu);
+				try ( TemporaryFile contenu = getCsvForFiscalEtCommuneDifferente(results.listeCommunesDifferentes, filename, status)) {
+					addListeDetaillee(writer, titre, listVide, filename, contenu);
+				}
 			}
 
 
@@ -78,10 +80,11 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final byte[] contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
-			addListeDetaillee(writer, titre, listVide, filename, contenu);
+			try (TemporaryFile contenu = asCsvErrorFile(results.erreurs, filename, status)) {
+				addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
 		}
 
 		close();
@@ -90,10 +93,10 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 
 	
 
-	private <T extends ComparerForFiscalEtCommuneResults.CommunesDifferentes> byte[] getCsvForFiscalEtCommuneDifferente(List<T> liste, String filename, StatusManager status) {
-		byte[] contenu = null;
+	private <T extends ComparerForFiscalEtCommuneResults.CommunesDifferentes> TemporaryFile getCsvForFiscalEtCommuneDifferente(List<T> liste, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		if (liste != null && !liste.isEmpty()) {
-			contenu = CsvHelper.asCsvFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(liste, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("FOR FISCAL ID ").append(COMMA);
@@ -122,11 +125,11 @@ public class PdfComparerForFiscalEtCommuneRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends ComparerForFiscalEtCommuneResults.Erreur> byte[] asCsvErrorFile(List<T> list, String filename, StatusManager status) {
-		byte[] contenu = null;
+	protected static <T extends ComparerForFiscalEtCommuneResults.Erreur> TemporaryFile asCsvErrorFile(List<T> list, String filename, StatusManager status) {
+		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvFile(list, filename, status, new CsvHelper.FileFiller<T>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<T>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numero Contribuable").append(COMMA).append("Message d'erreur");
