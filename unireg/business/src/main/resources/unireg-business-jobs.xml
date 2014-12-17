@@ -484,7 +484,7 @@
 
 	<bean id="correctionFlagHabitantJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantJob">
 		<constructor-arg value="706" />
-		<constructor-arg value="Corriger les flags 'habitant' en fonction du for fiscal principal actif" />
+		<constructor-arg value="Corriger les flags 'habitant' en fonction des adresses de résidence connues" />
 		<property name="rapportService" ref="rapportService"/>
 		<property name="tiersService" ref="tiersService"/>
 	</bean>
