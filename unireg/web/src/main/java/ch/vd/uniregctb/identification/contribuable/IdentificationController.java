@@ -256,7 +256,6 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/listEnCours.do", method =  {RequestMethod.POST, RequestMethod.GET})
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String retourSurLaListeEnCours(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listEnCours.do");
@@ -300,7 +299,6 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/listSuspendu.do", method =  {RequestMethod.POST, RequestMethod.GET})
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String retourSurLaListeSuspendu(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listSuspendu.do");
@@ -362,7 +360,6 @@ public class IdentificationController {
 	}
 
 	@RequestMapping(value = "/gestion-messages/listTraite.do", method =  {RequestMethod.POST, RequestMethod.GET})
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String retourSurLaListeTraite(@ModelAttribute("identificationPagination") ParamPagination paginationInSession ) throws AdresseException {
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession,"nav-listTraite.do");
