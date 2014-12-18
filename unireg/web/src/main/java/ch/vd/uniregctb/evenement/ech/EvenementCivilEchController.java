@@ -131,14 +131,14 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
+	public ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
 		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
+	public String rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                            BindingResult bindingResult,
 	                            ModelMap model ) throws AdresseException {
 		// Stockage des nouveau critère de recherche dans la session
@@ -153,14 +153,14 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession ) throws AdresseException 	{
+	public String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession ) throws AdresseException 	{
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected ModelAndView navigationDansLaListe(HttpServletRequest request,
+	public ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                         @ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
 	                                         ModelMap model) throws AdresseException 	{
@@ -198,20 +198,20 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
+	public ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
 		return new ModelAndView ("evenement/ech/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
+	public String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
 		manager.forceEvenement(id);
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
+	public String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
 		boolean recycle = manager.recycleEvenementCivil(id);
 		if (recycle) {
 			Flash.message("Événement recyclé");

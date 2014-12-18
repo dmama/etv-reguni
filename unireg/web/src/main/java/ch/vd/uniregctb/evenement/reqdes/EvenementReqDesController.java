@@ -179,7 +179,7 @@ public class EvenementReqDesController {
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String effacerFormulaireDeRecherche(Model model) {
+	public String effacerFormulaireDeRecherche(Model model) {
 		populateSearchModel(model, initCriteria(), INITIAL_PAGINATION, null, 0);
 		return "evenement/reqdes/list";
 	}
