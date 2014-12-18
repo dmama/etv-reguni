@@ -37,7 +37,7 @@ public class DecesRecapValidator implements Validator {
 
 		boolean veuvageMarieSeul = decesRecapView.isMarieSeul() && decesRecapView.isVeuf();
 
-		final RegDate dateDeces = RegDateHelper.get(decesRecapView.getDateDeces());
+		final RegDate dateDeces = decesRecapView.getDateDeces();
 		if (dateDeces == null) {
 			if (veuvageMarieSeul) {
 				ValidationUtils.rejectIfEmpty(errors, "dateDeces", "error.date.veuvage.vide");

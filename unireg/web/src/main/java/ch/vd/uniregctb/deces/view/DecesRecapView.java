@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.deces.view;
 
-import java.util.Date;
-
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 
 public class DecesRecapView {
 
-	private Date dateDeces;
+	private RegDate dateDeces;
 
 	private TiersGeneralView personne;
 	
@@ -16,11 +15,11 @@ public class DecesRecapView {
 
 	private String remarque;
 	
-	public Date getDateDeces() {
+	public RegDate getDateDeces() {
 		return dateDeces;
 	}
 
-	public void setDateDeces(Date dateDeces) {
+	public void setDateDeces(RegDate dateDeces) {
 		this.dateDeces = dateDeces;
 	}
 
