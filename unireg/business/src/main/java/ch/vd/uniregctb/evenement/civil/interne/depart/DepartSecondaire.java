@@ -164,7 +164,7 @@ public class DepartSecondaire extends Depart {
 				}
 
 				if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)",
+					erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois actif (arrangement fiscal ?)",
 					                                pp.getNumero()));
 				}
 			}

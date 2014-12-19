@@ -785,7 +785,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)", numeroCtb);
+				String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois actif (arrangement fiscal ?)", numeroCtb);
 				Assert.assertEquals(message, erreur.getMessage());
 				Assert.assertNull(evt.getCommentaireTraitement());
 				return null;
