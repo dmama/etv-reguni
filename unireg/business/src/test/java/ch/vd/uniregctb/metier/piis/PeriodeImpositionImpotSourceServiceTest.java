@@ -2066,7 +2066,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 	@Test
 	public void testSourcierPurObtientPermisCOuNationalitePremierJourDuMois() throws Exception {
 
-		final int year = RegDate.get().year() - 1;
+		final int year = 2013;
 		final RegDate obtention = date(year, 5, 1);
 
 		// mise en place fiscale
