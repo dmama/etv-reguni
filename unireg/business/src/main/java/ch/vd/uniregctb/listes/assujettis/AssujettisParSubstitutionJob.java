@@ -61,7 +61,7 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(rapport);
-		Audit.success("Le génération des données de parenté est terminée.", rapport);
+		Audit.success("La génération le la liste des assujettis par substitution est terminée.", rapport);
 
 	}
 

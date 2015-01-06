@@ -101,6 +101,6 @@ public class CalculParentesJob extends JobDefinition {
 			}
 		});
 		setLastRunReport(rapport);
-		Audit.success("Le génération des données de parenté est terminée.", rapport);
+		Audit.success("La génération des données de parenté est terminée.", rapport);
 	}
 }
