@@ -216,7 +216,7 @@ public class IdentificationController {
 
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_CELLULE_BO}, accessDeniedMessage = ACCESS_DENIED_ACTION_MESSAGE)
 	public ModelAndView demanderEditionMessage(HttpServletRequest request,
 	                                              @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria identCriteria,
 	                                              @RequestParam(value = "id", required = true) Long idMessage,
