@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.fidor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -180,7 +181,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<>();
+			final List<Commune> communes = new ArrayList<>(list.size());
 			for (CommuneFiscale commune : list) {
 				communes.add(CommuneImpl.get(commune));
 			}
@@ -199,7 +200,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 
-			final List<Commune> communes = new ArrayList<>();
+			final List<Commune> communes = new LinkedList<>();
 			for (CommuneFiscale commune : all) {
 				if (!commune.isEstUneCommuneFaitiere() && ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
 					communes.add(CommuneImpl.get(commune));
@@ -442,7 +443,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 				return Collections.emptyList();
 			}
 			else {
-				final List<Logiciel> logiciels = new ArrayList<>();
+				final List<Logiciel> logiciels = new ArrayList<>(list.size());
 				for (ch.vd.evd0012.v1.Logiciel logicielFidor : list) {
 					logiciels.add(LogicielImpl.get(logicielFidor));
 				}

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -504,8 +505,8 @@ public abstract class ProduireRolesResults<T extends ProduireRolesResults<T>> ex
 	// données de sortie
 	public final Map<Integer, InfoCommune> infosCommunes = new HashMap<>();
 	public int ctbsTraites = 0;
-	public final List<Ignore> ctbsIgnores = new ArrayList<>();
-	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
+	public final List<Ignore> ctbsIgnores = new LinkedList<>();
+	public final List<Erreur> ctbsEnErrors = new LinkedList<>();
 	public boolean interrompu;
 
 	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {

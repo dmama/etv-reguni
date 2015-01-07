@@ -300,15 +300,11 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 
 	private List<Long> getIdCtb(List<ContribuableAvecImmeuble> listeCtbImmeuble) {
-
-		final List<Long> idsCtb = new ArrayList<>();
-
+		final List<Long> idsCtb = new ArrayList<>(listeCtbImmeuble.size());
 		for (ContribuableAvecImmeuble ctbImmeuble : listeCtbImmeuble) {
-
 			idsCtb.add(ctbImmeuble.getNumeroContribuable());
 		}
 		return idsCtb;
-
 	}
 
 

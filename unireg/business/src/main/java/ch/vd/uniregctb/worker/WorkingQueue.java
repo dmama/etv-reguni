@@ -5,6 +5,7 @@ import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -305,7 +306,7 @@ public class WorkingQueue<T> {
 	public void reset() {
 
 		// on vide la queue dans une liste
-		final List<Element<T>> drain = new ArrayList<>();
+		final List<Element<T>> drain = new LinkedList<>();
 		queue.drainTo(drain);
 		
 		// on supprime tous les éléments de la liste (les éléments non-présents dans le queue mais présents dans le 'inprocessing' sont ceux en cours de traitement par les listeners)

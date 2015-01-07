@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -117,7 +117,7 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	 */
 	protected static List<ContribuableAvecImmeuble> extractCtbFromCSV(byte[] csv, StatusManager status) throws UnsupportedEncodingException {
 
-		final List<ContribuableAvecImmeuble> listeCtb = new ArrayList<>();
+		final List<ContribuableAvecImmeuble> listeCtb = new LinkedList<>();
 		final Pattern p = Pattern.compile("^([0-9]+);([0-9]+)(;.*)?$");
 
 		status.setMessage("Chargement du fichier d'entrée");

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -69,8 +69,8 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	public int nbSourciersHorsSuisse;
 	public int nbSourciersConjointsIgnores;
 
-	public final List<Traite> sourciersConvertis = new ArrayList<>();
-    public final List<Erreur> sourciersEnErreurs = new ArrayList<>();
+	public final List<Traite> sourciersConvertis = new LinkedList<>();
+    public final List<Erreur> sourciersEnErreurs = new LinkedList<>();
 
 	public boolean interrompu;
 

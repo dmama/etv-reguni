@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.registrefoncier;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -172,10 +172,10 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 
 	public final RegDate dateTraitement = RegDate.get();
 	public int nbLignes;
-	public final List<Import> traites = new ArrayList<>();
-	public final List<Ignore> ignores = new ArrayList<>();
-	public final List<AVerifier> averifier = new ArrayList<>();
-	public final List<Erreur> erreurs = new ArrayList<>();
+	public final List<Import> traites = new LinkedList<>();
+	public final List<Ignore> ignores = new LinkedList<>();
+	public final List<AVerifier> averifier = new LinkedList<>();
+	public final List<Erreur> erreurs = new LinkedList<>();
 	public boolean interrompu;
 
 	public ImportImmeublesResults(TiersService tiersService, AdresseService adresseService) {

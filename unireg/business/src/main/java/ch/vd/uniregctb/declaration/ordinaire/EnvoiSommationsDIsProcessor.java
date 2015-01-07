@@ -355,7 +355,6 @@ public class EnvoiSommationsDIsProcessor  {
 		return template.execute(new TransactionCallback<List<IdentifiantDeclaration>>() {
 			@Override
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
-				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>();
 				final List<Object[]> declarationsASommer = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
 					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
@@ -373,6 +372,7 @@ public class EnvoiSommationsDIsProcessor  {
 						return query.list();
 					}
 				});
+				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<>(declarationsASommer.size());
 				for (Object[] objects : declarationsASommer) {
 					final Number numeroDi = (Number) objects[0];
 					final Number numeroTiers = (Number) objects[1];

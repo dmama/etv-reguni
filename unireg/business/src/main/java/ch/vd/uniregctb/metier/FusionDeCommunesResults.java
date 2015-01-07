@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -87,13 +87,13 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 
 
 	// résultats
-	public final List<Long> tiersTraites = new ArrayList<>();
-	public final List<Ignore> tiersIgnores = new ArrayList<>();
-	public final List<Erreur> tiersEnErrors = new ArrayList<>();
+	public final List<Long> tiersTraites = new LinkedList<>();
+	public final List<Ignore> tiersIgnores = new LinkedList<>();
+	public final List<Erreur> tiersEnErrors = new LinkedList<>();
 
-	public final List<Long> tiersAvecDecisionTraites = new ArrayList<>();
-	public final List<Ignore> tiersAvecDecisonIgnores = new ArrayList<>();
-	public final List<Erreur> tiersAvecDecisionEnErrors = new ArrayList<>();
+	public final List<Long> tiersAvecDecisionTraites = new LinkedList<>();
+	public final List<Ignore> tiersAvecDecisonIgnores = new LinkedList<>();
+	public final List<Erreur> tiersAvecDecisionEnErrors = new LinkedList<>();
 
 	public boolean interrompu;
 	public PhaseTraitement phaseTraitement;

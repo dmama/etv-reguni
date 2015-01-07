@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -87,10 +87,10 @@ public abstract class AbstractEnvoiDIsResults<R extends AbstractEnvoiDIsResults<
 
 	// Données de processing
 	public int nbCtbsTotal;
-	public final List<Long> ctbsAvecDiGeneree = new ArrayList<>();
-	public final List<Long> ctbsIndigents = new ArrayList<>();
-	public final List<Ignore> ctbsIgnores = new ArrayList<>();
-	public final List<Erreur> ctbsEnErrors = new ArrayList<>();
+	public final List<Long> ctbsAvecDiGeneree = new LinkedList<>();
+	public final List<Long> ctbsIndigents = new LinkedList<>();
+	public final List<Ignore> ctbsIgnores = new LinkedList<>();
+	public final List<Erreur> ctbsEnErrors = new LinkedList<>();
 	public boolean interrompu;
 
 	public AbstractEnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
