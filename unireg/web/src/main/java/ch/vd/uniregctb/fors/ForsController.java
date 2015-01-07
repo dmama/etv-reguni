@@ -844,8 +844,7 @@ public class ForsController {
 	private Map<MotifRattachement, String> getMotifsRattachementPourForSecondaire() {
 		if (motifsRattachementForSecondaire == null) {
 			motifsRattachementForSecondaire =
-					tiersMapHelper.getMapRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE, MotifRattachement.SEJOUR_SAISONNIER,
-					                                  MotifRattachement.DIRIGEANT_SOCIETE);
+					tiersMapHelper.getMapRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE);
 		}
 		return motifsRattachementForSecondaire;
 	}
