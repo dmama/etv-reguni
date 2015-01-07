@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -1614,5 +1615,51 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-14297] il n'y a plus de for vaudois au 31.12 de l'année, mais l'assujettissement va bien jusqu'à la fin de l'année -> le calcul du for de gestion doit bien faire attention
+	 * (on se retrouve dans le même cas que le SIFISC-4923, mais dans le batch d'envoi, cette fois, au lieu de l'interactif)
+	 */
+	@Test
+	public void testMixte2PartiHorsCantonEnDecembre() throws Exception {
+
+		final int annee = 2014;
+		final RegDate dateDepartHC = date(annee, 12, 1);
+
+		// mise en place civile... rien du tout
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+
+				final PersonnePhysique pp = addNonHabitant("Alfred", "D'Isigny", date(1978, 5, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2012, 1, 1), MotifFor.INDETERMINE, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
+
+				final CollectiviteAdministrative oid = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, RegDate.get().getOneDayAfter(), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, 0, oid);
+
+				return pp.getNumero();
+			}
+		});
+
+		// envoi de la DI ?
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsAvecDiGeneree.size());
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(0, results.ctbsIndigents.size());
+
+		assertEquals(Arrays.asList(ppId), results.ctbsAvecDiGeneree);
 	}
 }

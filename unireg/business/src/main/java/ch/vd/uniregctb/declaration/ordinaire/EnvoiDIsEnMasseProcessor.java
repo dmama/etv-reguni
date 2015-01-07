@@ -528,7 +528,7 @@ public class EnvoiDIsEnMasseProcessor {
 	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
-		final ForGestion forGestion = tiersService.getForGestionActif(contribuable, tache.getDateFin());
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, tache.getDateFin());
 		if (forGestion == null) {
 			String message = "Impossible de trouver un for de gestion pour le contribuable no [" + contribuable.getNumero()
 					+ "] à la date [" + tache.getDateFin() + "].";
