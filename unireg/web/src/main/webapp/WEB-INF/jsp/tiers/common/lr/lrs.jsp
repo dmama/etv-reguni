@@ -8,10 +8,7 @@
 	<c:set var="url" value="edit-debiteur.do" />
 </c:if>
 <c:if test="${not empty command.lrs}">	
-	<display:table 	name="command.lrs" id="lr" 
-					pagesize="4" 
-					requestURI="${url}"
-					class="display">
+	<display:table 	name="command.lrs" id="lr" pagesize="4" requestURI="${url}" class="display" sort="list">
 		<c:if test="${page == 'edit' }">			
 			<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.lr.trouvee" /></span></display:setProperty>
 			<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.lr.trouvee" /></span></display:setProperty>
