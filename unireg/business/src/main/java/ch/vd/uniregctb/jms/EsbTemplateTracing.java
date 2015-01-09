@@ -18,6 +18,7 @@ import ch.vd.uniregctb.stats.StatsService;
 public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean {
 
 	private StatsService statsService;
+	private String destinationSuffix = null;
 
 	private final Map<String, ServiceTracing> map = new HashMap<>();
 
@@ -25,35 +26,34 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 		this.statsService = statsService;
 	}
 
-	private ServiceTracing get(EsbMessage message) {
-		return get(message.getServiceDestination());
+	public void setDestinationSuffix(String destinationSuffix) {
+		this.destinationSuffix = destinationSuffix;
 	}
 
-	private ServiceTracing get(String destination) {
-		ServiceTracing s = map.get(destination);
+	private ServiceTracing get(EsbMessage message) {
+		return getOrCreate(getLoggedDestination(message.getServiceDestination()));
+	}
+
+	private String getLoggedDestination(String destination) {
+		return destinationSuffix == null ? destination : String.format("%s%s", destination, destinationSuffix);
+	}
+
+	private synchronized ServiceTracing getOrCreate(String name) {
+		ServiceTracing s = map.get(name);
 		if (s == null) {
-			s = create(destination);
+			s = new ServiceTracing("EsbTemplate");
+			map.put(name, s);
+			statsService.registerService(name, s);
 		}
 		return s;
 	}
 
-	private ServiceTracing create(String destination) {
-		synchronized (map) {
-			ServiceTracing s = map.get(destination);
-			if (s == null) {
-				s = new ServiceTracing("EsbTemplate");
-				map.put(destination, s);
-				statsService.registerService(destination, s);
-			}
-			return s;
-		}
-	}
-
 	@Override
-	public void destroy() throws Exception {
+	public synchronized void destroy() throws Exception {
 		for (String s : map.keySet()) {
 			statsService.unregisterService(s);
 		}
+		map.clear();
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	@Override
 	public EsbMessage receive(final String destinationName) throws Exception {
-		final ServiceTracing tracing = get(destinationName);
+		final ServiceTracing tracing = getOrCreate(destinationName);
 		final long time = tracing.start();
 		try {
 			return super.receive(destinationName);
@@ -109,7 +109,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	@Override
 	public EsbMessage receiveSelected(final String destinationName, final String messageSelector) throws Exception {
-		final ServiceTracing tracing = get(destinationName);
+		final ServiceTracing tracing = getOrCreate(destinationName);
 		final long time = tracing.start();
 		try {
 			return super.receiveSelected(destinationName, messageSelector);
@@ -126,7 +126,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	@Override
 	public EsbMessage receiveInternal(final String destinationName) throws Exception {
-		final ServiceTracing tracing = get(destinationName);
+		final ServiceTracing tracing = getOrCreate(destinationName);
 		final long time = tracing.start();
 		try {
 			return super.receiveInternal(destinationName);
@@ -143,7 +143,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	@Override
 	public EsbMessage receiveSelectedInternal(final String destinationName, final String messageSelector) throws Exception {
-		final ServiceTracing tracing = get(destinationName);
+		final ServiceTracing tracing = getOrCreate(destinationName);
 		final long time = tracing.start();
 		try {
 			return super.receiveSelectedInternal(destinationName, messageSelector);
