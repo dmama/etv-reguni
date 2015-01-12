@@ -918,7 +918,7 @@ qui se créé juste après le composant ul. spécifique au tabs
 .ui-tabs .ui-tabs-nav li {
 	font-weight: bold;
 	border: 0;
-	margin-left: -1px;
+	margin-left: 0px;
 	padding-left: 4px;
 	background: url("tableftF.gif") no-repeat left top;
 }
