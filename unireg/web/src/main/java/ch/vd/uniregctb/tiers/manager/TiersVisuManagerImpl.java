@@ -84,12 +84,13 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	@Override
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
+	                             boolean ctbAssocieHisto,WebParamPagination webParamPagination) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
 		tiersVisuView.setAdressesHistoCiviles(adressesHistoCiviles);
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
+		tiersVisuView.setCtbAssocieHisto(ctbAssocieHisto);
 		tiersVisuView.setAdressesHistoCivilesConjoint(adressesHistoCivilesConjoint);
 
 
@@ -125,7 +126,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			setDebiteurPrestationImposable(tiersVisuView, dpi, rapportsPrestationHisto, webParamPagination);
-			setContribuablesAssocies(tiersVisuView, dpi);
+			setContribuablesAssocies(tiersVisuView, dpi, ctbAssocieHisto);
 			setForsFiscauxDebiteur(tiersVisuView, dpi);
 			setPeriodicitesView(tiersVisuView, dpi);
 			setLogicielView(tiersVisuView, dpi);

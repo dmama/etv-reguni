@@ -260,7 +260,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			tiersEditView.setTiers(dpi);
 			setForsFiscauxDebiteur(tiersEditView, dpi);
-			setContribuablesAssocies(tiersEditView, dpi);
+			setContribuablesAssocies(tiersEditView, dpi, false);
 			setPeriodiciteCourante(tiersEditView,dpi);
 			if (dpi.getContribuableId() == null) {
 				tiersEditView.setAddContactISAllowed(true);

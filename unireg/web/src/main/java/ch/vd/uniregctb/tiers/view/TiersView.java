@@ -65,6 +65,8 @@ public class TiersView {
 
 	private boolean rapportsPrestationHisto;
 
+	private boolean ctbAssocieHisto;
+
 	private Set<DebiteurView> debiteurs;
 
 	private List<RapportView> contribuablesAssocies;
@@ -453,5 +455,13 @@ public class TiersView {
 
 	public void setDecisionRecente(boolean decisionRecente) {
 		this.decisionRecente = decisionRecente;
+	}
+
+	public boolean isCtbAssocieHisto() {
+		return ctbAssocieHisto;
+	}
+
+	public void setCtbAssocieHisto(boolean ctbAssocieHisto) {
+		this.ctbAssocieHisto = ctbAssocieHisto;
 	}
 }

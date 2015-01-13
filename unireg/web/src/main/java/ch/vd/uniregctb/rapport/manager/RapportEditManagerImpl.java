@@ -291,7 +291,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		if (tiers instanceof DebiteurPrestationImposable ) {
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			tiersEditView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
-			setContribuablesAssocies(tiersEditView, dpi);
+			setContribuablesAssocies(tiersEditView, dpi, false);
 			if (dpi.getContribuableId() == null) {
 				tiersEditView.setAddContactISAllowed(true);
 			}

@@ -334,7 +334,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente List<RapportView>
 	 */
-	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException {
+	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur, boolean ctbAssocieHisto) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<>();
 
 		// Rapport entre tiers Objet
@@ -352,11 +352,21 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setNomCourrier(nomCourrier);
 				final String toolTipMessage = TiersWebHelper.getRapportEntreTiersTooltips(rapportEntreTiers, adresseService, tiersService);
 				rapportView.setToolTipMessage(toolTipMessage);
-				rapportsView.add(rapportView);
+				boolean accepterRapportHistorique = isRapportHistorique(rapportEntreTiers) && ctbAssocieHisto;
+				if (accepterRapportHistorique || !isRapportHistorique(rapportEntreTiers)) {
+					rapportsView.add(rapportView);
+				}
+
 			}
 		}
 		tiersView.setContribuablesAssocies(rapportsView);
 	}
+
+	private boolean isRapportHistorique(RapportEntreTiers r){
+		return r.getDateFin() !=null || r.isAnnule();
+	}
+
+
 
 	protected void setLogicielView(TiersView tiersView, DebiteurPrestationImposable debiteur) {
 		final Long logicielId = debiteur.getLogicielId();
