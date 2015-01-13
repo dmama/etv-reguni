@@ -58,8 +58,12 @@ public class JspTagRetourButton extends BodyTagSupport {
 			else {
 				out.print("    if (confirm(message)) {");
 			}
-
-			out.print("        document.location.href = lien;");
+			//out.print("        document.getElementById('retourButton').disabled = true;");
+			out.print(" var inputs = document.getElementsByTagName('INPUT');");
+			out.print(" for (var i = 0; i < inputs.length; i++) {");
+			out.print("     inputs[i].disabled = true;");
+			out.print(" }");
+			out.print(" document.location.href = lien;");
 			out.print("    }");
 			out.print(" }");
 			out.print("</script>");
