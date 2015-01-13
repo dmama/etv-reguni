@@ -210,7 +210,9 @@ div.newMc {
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
-
+.information * {
+	padding: 0;
+}
 /**
  * Table d'action de synchronisation
  */
