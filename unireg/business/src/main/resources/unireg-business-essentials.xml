@@ -281,6 +281,7 @@
 	<bean id="tutelleValidator" class="ch.vd.uniregctb.validation.rapport.TutelleValidator" parent="representationLegaleValidator" />
 	<bean id="curatelleValidator" class="ch.vd.uniregctb.validation.rapport.CuratelleValidator" parent="representationLegaleValidator" />
 	<bean id="conseilLegalValidator" class="ch.vd.uniregctb.validation.rapport.ConseilLegalValidator" parent="representationLegaleValidator" />
+	<bean id="AssujettissementParSubstitutionValidator" class="ch.vd.uniregctb.validation.rapport.AssujettissementParSubstitutionValidator" parent="rapportEntreTiersValidator" />
 
 	<bean id="tacheValidator" class="ch.vd.uniregctb.validation.tache.TacheValidator" abstract="true" parent="entityValidator" />
 	<bean id="defaultTacheValidator" class="ch.vd.uniregctb.validation.tache.DefaultTacheValidator" parent="tacheValidator" />
