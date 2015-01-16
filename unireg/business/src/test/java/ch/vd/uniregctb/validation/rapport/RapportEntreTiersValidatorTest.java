@@ -8,6 +8,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -100,6 +101,35 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 		catch (ValidationException e) {
 			assertEquals("MenageCommun #" + idMenage + " - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Une représentation légale ne peut s'appliquer que sur une personne physique\n", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidationRapportAssujettissement() throws Exception {
+
+		final long idMenage = 10851795;
+		try {
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					// crée un ménage commun
+					final PersonnePhysique jean = addNonHabitant("Jean", "Duchoux", date(1960, 1, 1), Sexe.MASCULIN);
+					final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, jean, null, date(1990, 1, 1), null);
+
+					// ajoute un assujettissement par substition (devrait être interdit !)
+					final AssujettissementParSubstitution assujettissement = new AssujettissementParSubstitution();
+					assujettissement.setDateDebut(date(2000, 1, 1));
+					final PersonnePhysique huguette = addNonHabitant("Huguette", "Dupruneau", date(1960, 2, 3), Sexe.FEMININ);
+
+					tiersService.addRapport(assujettissement,  huguette,ensemble.getMenage());
+					return null;
+				}
+			});
+			fail();
+		}
+		catch (ValidationException e) {
+			assertEquals("MenageCommun #" + idMenage + " - 1 erreur(s) - 0 avertissement(s):\n" +
+					" [E] Le tiers dont l'assujetissement se substitue n'est pas une personne physique\n", e.getMessage());
 		}
 	}
 
