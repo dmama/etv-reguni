@@ -132,19 +132,19 @@
 						
 						switch (type.val()) {
 						case 'TUTELLE':
-							autorite = "le tuteur de";
+							autorite = "est le tuteur de";
 							break;
 						case 'CURATELLE':
-							autorite = "le curateur de";
+							autorite = "est le curateur de";
 							break;							
 						case 'CONSEIL_LEGAL':
-							autorite = "le conseil légal de";
+							autorite = "est le conseil légal de";
 							break;
 						case 'REPRESENTATION':
-							autorite = "le représentant de";
+							autorite = " est le représentant de";
 							break;
                         case 'ASSUJETTISSEMENT_PAR_SUBSTITUTION':
-                            autorite = "l'assujetti par substitution pour"
+                            autorite = "se substitue à"
 
 						}
 
@@ -153,7 +153,7 @@
 						setChild($('#td_tiers_droite'), contenuDroite);
 
 
-						$('#flecheMilieu').html('est ' + autorite);
+						$('#flecheMilieu').html(autorite);
 					}
 
 					function setChild(td, child) {
