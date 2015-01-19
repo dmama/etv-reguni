@@ -64,7 +64,7 @@ public class EditDecisionAciValidator implements Validator {
 	 * @return <b>true</b> si aucun changement, <b>false</b>sinon
 	 */
 	private boolean aucunChangement(DecisionAci d, EditDecisionAciView v){
-		final boolean remarqueIdentique = StringUtils.equals(d.getRemarque(), v.getRemarque());
+		final boolean remarqueIdentique = StringUtils.equals(StringUtils.trimToNull(d.getRemarque()), StringUtils.trimToNull(v.getRemarque()));
 		final boolean dateFinIdentique = d.getDateFin() == v.getDateFin();
 		final boolean numeroAutoriteIdentique = d.getNumeroOfsAutoriteFiscale().equals(v.getNumeroAutoriteFiscale());
 		return remarqueIdentique && dateFinIdentique && numeroAutoriteIdentique;

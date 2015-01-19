@@ -4713,7 +4713,7 @@ public class TiersServiceImpl implements TiersService {
 				decisionAci = closeDecisionAci(decisionAci,dateFin);
 			}
 
-			if (decisionAci.getRemarque() == null && remarque != null) {
+			if (decisionAci.getRemarque() == null && StringUtils.trimToNull(remarque) != null) {
 				decisionAci.setRemarque(remarque);
 			}
 			updated = decisionAci;
