@@ -27,13 +27,13 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
 
@@ -143,8 +143,8 @@ public class EnvoiLRsEnMasseProcessor {
 		if (lrManquantes != null) {
 			final SendingTimeStrategy sts = getSendingTimeStrategy(dpi);
 			for (DateRange lrPourCreation : lrManquantes) {
-				final PeriodiciteDecompte periodiciteDecompte = dpi.findPeriodicite(lrPourCreation.getDateDebut(), lrPourCreation.getDateFin()).getPeriodiciteDecompte();
-				if (sts.isRightMoment(dateFinPeriode, lrPourCreation, periodiciteDecompte)) {
+				final Periodicite periodicite = dpi.findPeriodicite(lrPourCreation.getDateDebut(), lrPourCreation.getDateFin());
+				if (sts.isRightMoment(dateFinPeriode, lrPourCreation, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte())) {
 					if (DateRangeHelper.intersect(lrPourCreation, lrTrouvees)) {
 						final String message = String.format("Le débiteur %s possède déjà une LR qui intersecte la période du %s au %s.",
 								FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),

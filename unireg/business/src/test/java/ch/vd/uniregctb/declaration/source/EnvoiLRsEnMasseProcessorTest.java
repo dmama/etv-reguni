@@ -333,4 +333,69 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 			Assert.assertEquals(date(annee, 6, 30), data.getSecond().getDateFin());
 		}
 	}
+
+	/**
+	 * [SIFISC-14408]
+	 */
+	@Test
+	public void testEnvoiEffeuilleuseEnMilieuDePeriodeUnique() throws Exception {
+
+		final int annee = 2015;
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				dpi.setCategorieImpotSource(CategorieImpotSource.EFFEUILLEUSES);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.T1, date(annee, 1, 1), null);
+				addForDebiteur(dpi, date(annee, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aubonne);
+				addPeriodeFiscale(annee);
+				return dpi.getNumero();
+			}
+		});
+
+		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrService);
+
+		// début de période -> rien
+		{
+			final EnvoiLRsResults results = processor.run(date(annee, 1, 31), null);
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(0, results.LRTraitees.size());
+			Assert.assertEquals(0, results.LREnErreur.size());
+		}
+
+		// milieu de période -> la LR doit être envoyée
+		{
+			final EnvoiLRsResults results = processor.run(date(annee, 2, 28), null);
+
+			Assert.assertNotNull(results);
+			Assert.assertEquals(1, results.nbDPIsTotal);
+			Assert.assertEquals(1, results.LRTraitees.size());
+			Assert.assertEquals(0, results.LREnErreur.size());
+
+			final EnvoiLRsResults.Traite traitee = results.LRTraitees.get(0);
+			Assert.assertNotNull(traitee);
+			Assert.assertEquals(dpiId, traitee.noCtb);
+			Assert.assertEquals(date(annee, 1, 1), traitee.dateDebut);
+			Assert.assertEquals(date(annee, 3, 31), traitee.dateFin);
+
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+					Assert.assertNotNull(dpi);
+
+					final List<Declaration> lrs = dpi.getDeclarationsForPeriode(annee, true);
+					Assert.assertNotNull(lrs);
+					Assert.assertEquals(1, lrs.size());
+
+					final Declaration lr = lrs.get(0);
+					Assert.assertNotNull(lr);
+					Assert.assertEquals(date(annee, 1, 1), lr.getDateDebut());
+					Assert.assertEquals(date(annee, 3, 31), lr.getDateFin());
+				}
+			});
+		}
+	}
 }

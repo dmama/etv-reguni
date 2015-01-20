@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.source;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 /**
@@ -15,7 +16,7 @@ public enum SendingTimeStrategy {
 	 */
 	PERIOD_BEGIN {
 		@Override
-		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite) {
+		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite, PeriodeDecompte periodeDecompte) {
 			return referenceDate.isAfterOrEqual(lrPeriod.getDateDebut());
 		}
 	},
@@ -31,9 +32,16 @@ public enum SendingTimeStrategy {
 	 */
 	PERIOD_MIDDLE {
 		@Override
-		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite) {
-			Assert.isEqual(lrPeriod.getDateFin(), periodicite.getFinPeriode(lrPeriod.getDateDebut()));
-			Assert.isEqual(lrPeriod.getDateDebut(), periodicite.getDebutPeriode(lrPeriod.getDateFin()));
+		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite, PeriodeDecompte periodeDecompte) {
+			if (periodicite == PeriodiciteDecompte.UNIQUE) {
+				final DateRange range = periodeDecompte.getPeriodeCourante(lrPeriod.getDateDebut());
+				Assert.isEqual(lrPeriod.getDateFin(), range.getDateFin());
+				Assert.isEqual(lrPeriod.getDateDebut(), range.getDateDebut());
+			}
+			else {
+				Assert.isEqual(lrPeriod.getDateFin(), periodicite.getFinPeriode(lrPeriod.getDateDebut()));
+				Assert.isEqual(lrPeriod.getDateDebut(), periodicite.getDebutPeriode(lrPeriod.getDateFin()));
+			}
 
 			final int length = lrPeriod.getDateFin().month() - lrPeriod.getDateDebut().month() + 1;     // en mois
 			final int middle = length / 2 + length % 2;      // 1 -> 1; 2 -> 1; 3 -> 2; ... ; 6 -> 3; ...
@@ -47,7 +55,7 @@ public enum SendingTimeStrategy {
 	 */
 	PERIOD_END {
 		@Override
-		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite) {
+		public boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite, PeriodeDecompte periodeDecompte) {
 			return referenceDate.isAfterOrEqual(lrPeriod.getDateFin());
 		}
 	};
@@ -58,6 +66,6 @@ public enum SendingTimeStrategy {
 	 * @param periodicite la périodicité utilisée pour générer la LR
 	 * @return <code>true</code> si la LR peut être imprimée
 	 */
-	public abstract boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite);
+	public abstract boolean isRightMoment(RegDate referenceDate, DateRange lrPeriod, PeriodiciteDecompte periodicite, PeriodeDecompte periodeDecompte);
 
 }
