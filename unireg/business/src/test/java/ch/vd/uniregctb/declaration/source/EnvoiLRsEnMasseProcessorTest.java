@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -17,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.TicketService;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -129,12 +131,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// début de période -> rien
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 9, 30), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 9, 30), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
@@ -145,12 +142,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// fin de période -> la LR doit être envoyée
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 10, 31), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 10, 31), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
@@ -167,12 +159,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// après la période -> la LR doit être envoyée
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 12, 31), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 12, 31), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
@@ -220,18 +207,61 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// la LR a déjà été envoyée -> rien de plus!
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 12, 31), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 12, 31), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
 			Assert.assertEquals(0, results.LRTraitees.size());
 			Assert.assertEquals(0, imprimees.size());
 		}
+	}
+
+	/**
+	 * [SIFISC-14407] La période de la LR persistée en base était fausse (= fin au 31.12) alors qu'elle était correcte dans le rapport d'exécution
+	 */
+	@Test
+	public void testEnvoiPeriodiciteUniqueEnvoiReel() throws Exception {
+		final int anneeReference = RegDate.get().year();
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M04, date(anneeReference, 1, 1), null);
+				addForDebiteur(dpi, date(anneeReference, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Aigle);
+
+				addPeriodeFiscale(anneeReference);
+				return dpi.getNumero();
+			}
+		});
+
+		final EnvoiLRsEnMasseProcessor processor = buildProcessor(lrService);
+		final EnvoiLRsResults results = processor.run(date(anneeReference, 6, 30), null);
+		Assert.assertNotNull(results);
+		Assert.assertEquals(1, results.nbDPIsTotal);
+		Assert.assertEquals(0, results.LREnErreur.size());
+		Assert.assertEquals(1, results.LRTraitees.size());
+
+		final EnvoiLRsResults.Traite traitee = results.LRTraitees.get(0);
+		Assert.assertNotNull(traitee);
+		Assert.assertEquals(date(anneeReference, 4, 1), traitee.dateDebut);
+		Assert.assertEquals(date(anneeReference, 4, 30), traitee.dateFin);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Assert.assertNotNull(dpi);
+
+				final List<Declaration> lrs = dpi.getDeclarationsForPeriode(anneeReference, true);
+				Assert.assertNotNull(lrs);
+				Assert.assertEquals(1, lrs.size());
+
+				final Declaration lr = lrs.get(0);
+				Assert.assertNotNull(lr);
+				Assert.assertEquals(date(anneeReference, 4, 1), lr.getDateDebut());
+				Assert.assertEquals(date(anneeReference, 4, 30), lr.getDateFin());
+			}
+		});
 	}
 
 	@Test
@@ -261,12 +291,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// début de période -> rien
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 2, 28), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 2, 28), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
@@ -277,12 +302,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// milieu de période -> la LR doit être envoyée
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 3, 31), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 3, 31), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);
@@ -299,12 +319,7 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		// fin de période -> la LR doit être envoyée
 		{
 			imprimees.clear();
-			final EnvoiLRsResults results = doInNewTransactionAndSession(new TransactionCallback<EnvoiLRsResults>() {
-				@Override
-				public EnvoiLRsResults doInTransaction(TransactionStatus status) {
-					return processor.run(date(2010, 6, 30), null);
-				}
-			});
+			final EnvoiLRsResults results = processor.run(date(2010, 6, 30), null);
 
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.nbDPIsTotal);

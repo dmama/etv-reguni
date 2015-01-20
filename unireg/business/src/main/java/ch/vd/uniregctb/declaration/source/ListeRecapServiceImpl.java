@@ -129,9 +129,17 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(dateDebutPeriode);
 		//[UNIREG-3115] Periodicite non trouvé en debut de periode de lR on cherche à la fin.
-		final Periodicite periodiciteAt = dpi.findPeriodicite(dateDebutPeriode,dateFinPeriode);
-		lr.setDateFin(periodiciteAt.getFinPeriode(dateDebutPeriode));
-		lr.setPeriodicite(periodiciteAt.getPeriodiciteDecompte());
+		final Periodicite periodiciteAt = dpi.findPeriodicite(dateDebutPeriode, dateFinPeriode);
+		final PeriodiciteDecompte periodiciteDecompte = periodiciteAt.getPeriodiciteDecompte();
+		if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE) {
+			// [SIFISC-14407] la fin de période est calculée différemment pour les périodicités uniques
+			final PeriodeDecompte periode = periodiciteAt.getPeriodeDecompte();
+		    lr.setDateFin(periode.getPeriodeCourante(dateDebutPeriode).getDateFin());
+		}
+		else {
+			lr.setDateFin(periodiciteAt.getFinPeriode(dateDebutPeriode));
+		}
+		lr.setPeriodicite(periodiciteDecompte);
 		lr.setModeCommunication(dpi.getModeCommunication());
 
 		final PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());
