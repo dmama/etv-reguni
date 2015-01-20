@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -357,7 +358,11 @@ public abstract class Contribuable extends Tiers {
 		List<DecisionAci> decisions = null;
 		if (decisionsAci != null) {
 			decisions = new ArrayList<>();
-			decisions.addAll(decisionsAci);
+			for (DecisionAci decisionAci : decisionsAci) {
+				if (!decisionAci.isAnnule()) {
+					decisions.add(decisionAci);
+				}
+			}
 			Collections.sort(decisions, new DateRangeComparator<DecisionAci>() {
 				@Override
 				public int compare(DecisionAci o1, DecisionAci o2) {
@@ -435,34 +440,30 @@ public abstract class Contribuable extends Tiers {
 		return false;
 	}
 
-	@Transient
-	public DecisionAci getDerniereDecisionAci() {
 
-		List<DecisionAci> list = getDecisionsSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				DecisionAci decisionAci = list.get(i);
-				if (!decisionAci.isAnnule() ) {
-					return decisionAci;
-				}
-			}
+
+	@Transient
+	public RegDate getDateFinDerniereDecisionAci() {
+
+		final List<DecisionAci> decisionsAci = getDecisionsSorted();
+		if (decisionsAci != null && !decisionsAci.isEmpty()) {
+			final List<RegDate> dates = DateRangeHelper.extractBoundaries(decisionsAci);
+			return dates.get(dates.size()-1);
 		}
+
 		return null;
 	}
 
 	/**
 	 * Permet de savoir si il existe  une decision qui a une date de fin qui se situe après une date de référence
 	 * @param date la date de réference
-	 * @return vrai s'il n'existe aucune décision ou si la dernière décision est férmée avant la date, false si la derniere décision
+	 * @return vrai s'il n'existe aucune décision ou si la dernière décision est férmée avant ou au plus tard à la date, false si la derniere décision
 	 * est fermée après la date de passée en paramètre.
 	 */
 	@Transient
 	public boolean existDecisionAciOuverteApres(RegDate date){
-		final DecisionAci derniereDecisionAci = getDerniereDecisionAci();
-		if (derniereDecisionAci != null) {
-			return RegDateHelper.isBeforeOrEqual(date, derniereDecisionAci.getDateFin(), NullDateBehavior.LATEST);
-		}
-		return false;
+		final RegDate dateFinDerniereDecisionAci = getDateFinDerniereDecisionAci();
+		return RegDateHelper.isBefore(date, dateFinDerniereDecisionAci, NullDateBehavior.LATEST);
 	}
 
 	/**
