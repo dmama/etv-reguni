@@ -47,7 +47,8 @@ public class AdresseTiersAnnuleeResolutionExceptionStub implements AdresseGeneri
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return target.isValidAt(date);
+		// les adresses annulées ne doivent pas être considérées comme valides
+		return !isAnnule() && target.isValidAt(date);
 	}
 
 	@Override

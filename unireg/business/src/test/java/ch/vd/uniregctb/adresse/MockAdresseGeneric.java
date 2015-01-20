@@ -40,7 +40,8 @@ final class MockAdresseGeneric implements AdresseGenerique {
 	 */
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
+		// les adresses annulées ne doivent pas être considérées comme valides
+		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
 	@Override
