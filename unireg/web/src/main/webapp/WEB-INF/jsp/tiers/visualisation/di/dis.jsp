@@ -6,7 +6,7 @@
 	<table border="0">
 		<tr><td>
 			<c:if test="${empty param['message'] && empty param['retour']}">
-				<unireg:linkTo name="Modifier" title="Modifier les DIs" action="/di/list.do" params="{tiersId:${command.tiers.numero}}" link_class="edit"/>
+				<unireg:raccourciModifier link="../di/list.do?tiersId=${command.tiers.numero}" tooltip="Modifier les DIs" display="label.bouton.modifier"/>
 			</c:if>
 		</td></tr>
 	</table>

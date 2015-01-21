@@ -7,7 +7,7 @@
 		<tr>
 			<td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:linkTo name="Modifier" title="Modifier les points de communications" action="/complements/communications/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
+					<unireg:raccourciModifier link="../complements/communications/edit.do?id=${command.tiers.numero}" tooltip="Modifier les points de communications" display="label.bouton.modifier"/>
 				</c:if>
 			</td>
 		</tr>
@@ -54,7 +54,7 @@
 		<tr>
 			<td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:linkTo name="Modifier" title="Modifier les coordonnées financières" action="/complements/coordfinancieres/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
+					<unireg:raccourciModifier link="../complements/coordfinancieres/edit.do?id=${command.tiers.numero}" tooltip="Modifier les coordonnées financières" display="label.bouton.modifier"/>
 				</c:if>
 			</td>
 		</tr>
