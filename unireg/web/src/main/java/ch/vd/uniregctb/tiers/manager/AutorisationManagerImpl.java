@@ -696,13 +696,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			if ((modifiableSelonRoleEtDecisions && typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid)) ||
-					(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
-				allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
-				allowedOnglet.put(FISCAL_FOR_PRINC, Boolean.TRUE);
-				isEditable = true;
+			if(modifiableSelonRoleEtDecisions){
+				if (typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid) ||
+						(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
+						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
+						(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
+					allowedOnglet.put(MODIF_FISCAL, Boolean.TRUE);
+					allowedOnglet.put(FISCAL_FOR_PRINC, Boolean.TRUE);
+					isEditable = true;
+				}
 			}
 		}
 		return isEditable;
