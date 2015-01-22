@@ -119,9 +119,10 @@ public abstract class Depart extends Mouvement {
 	 * @param ctb            contribuable concerné par le départ
 	 * @param dateFermeture  date de fermeture des fors
 	 * @param motifFermeture motif de fermeture des fors à fermer
+	 * @return la date de fermeture effectivement prise en compte pour le for
 	 * @throws EvenementCivilException en cas de problème
 	 */
-	protected abstract void doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
+	protected abstract RegDate doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
 
 	@NotNull
 	@Override
@@ -142,12 +143,12 @@ public abstract class Depart extends Mouvement {
 		final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		final Contribuable contribuable = findContribuable(dateFermeture, pp);
 
-		doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
+		final RegDate dateFermetureEffective = doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
-		updateHabitantStatus(pp, dateFermeture.getOneDayAfter());
+		updateHabitantStatus(pp, dateFermetureEffective.getOneDayAfter());
 		if (isAncienTypeDepart) {
-			updateHabitantStatus(getConjointPP(), getNoIndividuConjoint(), dateFermeture.getOneDayAfter());
+			updateHabitantStatus(getConjointPP(), getNoIndividuConjoint(), dateFermetureEffective.getOneDayAfter());
 		}
 
 		return HandleStatus.TRAITE;

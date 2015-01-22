@@ -1876,7 +1876,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	/**
 	 *  SIFISC-11521 : traitement d'un départ HS pour lequel les adresses civiles font état d'une arrivée secondaire au lendemain du départ
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartPrincipalHorsSuisseSuiviArriveeSecondaireIndividuSeul() throws Exception {
 
 		final long noIndividu = 4674L;
@@ -1975,7 +1975,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	/**
 	 *  SIFISC-11521 : traitement d'un départ HS pour lequel les adresses civiles font état d'une arrivée secondaire au lendemain du départ pour les deux individus d'un couple
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartPrincipalHorsSuisseSuiviArriveeSecondaireCouple() throws Exception {
 
 		final long noIndividuLui = 4674L;
@@ -2158,6 +2158,184 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockPays.Albanie.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-14429] Tentative de rattrapage
+	 * <ul>
+	 *     <li>Deux conjoints d'un couple vaudois quittent le canton à des dates différentes</li>
+	 *     <li>Les événements de départ sont traités dans l'ordre inverse de l'ordre des dates de départ</li>
+	 * </ul>
+	 */
+	@Test(timeout = 10000L)
+	public void testDepartConjointsDatesDifferentesTraitesOrdreInverse() throws Exception {
+
+		//
+		// Le meneur part d'abord, le suiveur... suit
+		//
+
+		final long noIndividuMeneur = 3674532L;
+		final long noIndividuSuiveur = 3764325623L;
+		final RegDate dateMariage = date(2005, 5, 1);
+		final RegDate dateDepartMeneur = date(2014, 5, 30);
+		final RegDate dateDepartSuiveur = dateDepartMeneur.addMonths(1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu meneur = addIndividu(noIndividuMeneur, null, "Dubalai", "Philibert", Sexe.MASCULIN);
+				final MockIndividu suiveur = addIndividu(noIndividuSuiveur, null, "Dubalai", "Martina", Sexe.FEMININ);
+				marieIndividus(meneur, suiveur, dateMariage);
+
+				addAdresse(meneur, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+				addAdresse(suiveur, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+			}
+		});
+
+		final class Ids {
+			long idMeneur;
+			long idSuiveur;
+			long idMenage;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique meneur = addHabitant(noIndividuMeneur);
+				final PersonnePhysique suiveur = addHabitant(noIndividuSuiveur);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(meneur, suiveur, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+
+				final Ids ids = new Ids();
+				ids.idMenage = mc.getNumero();
+				ids.idMeneur = meneur.getNumero();
+				ids.idSuiveur = suiveur.getNumero();
+				return ids;
+			}
+		});
+
+		//
+		// traitement du premier départ : celui du suiveur (on les traite justement dans le désordre)
+		//
+
+		doModificationIndividu(noIndividuSuiveur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				final Collection<Adresse> adresses = individu.getAdresses();
+				Assert.assertEquals(1, adresses.size());
+
+				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+				prn.setDateFinValidite(dateDepartSuiveur);
+				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
+			}
+		});
+
+		final long evtSuiveurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartSuiveur);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuSuiveur);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividuSuiveur);
+
+		//
+		// vérification du for sur le couple (à ce stade, il est encore vaudois, puisque le conjoint n'est pas connu comme parti)
+		//
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtSuiveurId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		//
+		// traitement du deuxième départ : celui du meneur (on les traite justement dans le désordre)
+		//
+
+		doModificationIndividu(noIndividuMeneur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				final Collection<Adresse> adresses = individu.getAdresses();
+				Assert.assertEquals(1, adresses.size());
+
+				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+				prn.setDateFinValidite(dateDepartMeneur);
+				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
+			}
+		});
+
+		final long evtMeneurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(64748L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartMeneur);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuMeneur);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividuMeneur);
+
+		//
+		// vérification du for sur le couple (à ce stade, on s'attend, grace au rattrapage, à ce que le for soit passé en Allemage depuis le lendemain de la date de départ du SUIVEUR
+		// alors qu'on est bien en train de traiter un départ du MENEUR...)
+		//
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtMeneurId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDepartSuiveur.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 			}
 		});
 	}
