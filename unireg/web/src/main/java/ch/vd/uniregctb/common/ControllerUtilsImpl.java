@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -145,7 +146,8 @@ public class ControllerUtilsImpl implements ControllerUtils {
 			if (tiers != null && tiers instanceof Contribuable) {
 				Contribuable ctb = (Contribuable)tiers;
 				Autorisations autorisations = getAutorisations(ctb);
-				if (!autorisations.isDecisionsAci() && ctb.hasDecisionEnCours()) {
+				final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
+				if (!autorisations.isDecisionsAci() && ctb.hasDecisionRecenteFor(dateMinimalEffet)) {
 					final String message = String.format(
 							"L'opérateur [%s] s'est vu refuser le traitement sur le tiers n°%d :Décision ACI !", AuthenticationHelper.getCurrentPrincipal(),tiersId);
 					LOGGER.warn(message);
