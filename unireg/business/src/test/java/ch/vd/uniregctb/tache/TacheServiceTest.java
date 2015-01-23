@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -5734,6 +5736,74 @@ public class TacheServiceTest extends BusinessTest {
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setNumeroCTB(ppId);
 				verifieControleDossier(criteria, 0);
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-14441] NPE à l'annulation de décès d'un contribuable vaudois dont le dernier for fiscal était ouvert pour motif DEMENAGEMENT alors qu'il s'agissait d'une arrivée HS
+	 */
+	@Test
+	public void testAnnulationDecesVaudoisAvecMotifOuvertureDernierForErrone() throws Exception {
+
+		final long noIndividu = 467326L;
+		final RegDate dateNaissance = date(1980, 10, 23);
+		final RegDate majorite = dateNaissance.addYears(18);
+		final RegDate dateDeces = date(2014, 10, 2);
+		final RegDate dateDepartHS = date(2011, 5, 3);
+		final RegDate dateRetourHS = date(2013, 4, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Casevieille", "Robert", Sexe.MASCULIN);
+				individu.setDateDeces(dateDeces);
+
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, dateDepartHS);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.RouteDeMoudon, null, dateRetourHS, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, majorite, MotifFor.MAJORITE, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Vallorbe);
+				addForPrincipal(pp, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourHS.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu); // motif de fin bizarre
+				addForPrincipal(pp, dateRetourHS, MotifFor.DEMENAGEMENT_VD, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Echallens);                                  // modif d'ouverture bizarre
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du décès
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				metierService.annuleDeces(pp, dateDeces);       // <-- la NPE se produisait ici quand on essayait de déterminer la commune derrière le numéro OFS du pays inconnu (-> null -> boom !)
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertNull(pp.getDateDeces());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateRetourHS, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 			}
 		});
 	}

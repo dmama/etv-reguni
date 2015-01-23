@@ -416,7 +416,35 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		switch (motifOuverture) {
+		// [SIFISC-14441] recalcul du "vrai" motif d'ouverture par rapport aux arrivées/départs
+		final MotifFor motifOuvertureEffectif;
+		final ForFiscalPrincipal ffpPrecedent = contribuable.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
+		if (ffpPrecedent != null) {
+			if (ffpPrecedent.getTypeAutoriteFiscale() != forFiscal.getTypeAutoriteFiscale()) {
+				// le motif doit être une arrivée HS/HC (l'autorité fiscale du nouveau for étant forcément vaudoise, voir quelques lignes plus haut...)
+				if (ffpPrecedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+					motifOuvertureEffectif = MotifFor.ARRIVEE_HS;
+				}
+				else {
+					motifOuvertureEffectif = MotifFor.ARRIVEE_HC;
+				}
+			}
+			else {
+				// le motif ne peut pas être une arrivée ou un départ HS/HC
+				if (motifOuverture == MotifFor.DEPART_HC || motifOuverture == MotifFor.DEPART_HS || motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
+					motifOuvertureEffectif = MotifFor.DEMENAGEMENT_VD;
+				}
+				else {
+					motifOuvertureEffectif = motifOuverture;
+				}
+			}
+		}
+		else {
+			// pas de for précédent -> pas de raison de remettre en doute le motif présent dans le for
+			motifOuvertureEffectif = motifOuverture;
+		}
+
+		switch (motifOuvertureEffectif) {
 		case ARRIVEE_HC:
 			try {
 				final List<Assujettissement> assujettissements = assujettissementService.determine(contribuable, forFiscal.getDateDebut().year());
