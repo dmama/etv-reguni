@@ -262,6 +262,7 @@ public class TiersServiceImpl implements TiersService {
         nonHabitant.setTousPrenoms(null);
         nonHabitant.setDateNaissance(null);
 		nonHabitant.setNomNaissance(null);
+		nonHabitant.setDateDeces(null);
         nonHabitant.setSexe(null);
         nonHabitant.setNumeroOfsNationalite(null);
         nonHabitant.setCategorieEtranger(null);
