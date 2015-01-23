@@ -416,35 +416,7 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		// [SIFISC-14441] recalcul du "vrai" motif d'ouverture par rapport aux arrivées/départs
-		final MotifFor motifOuvertureEffectif;
-		final ForFiscalPrincipal ffpPrecedent = contribuable.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
-		if (ffpPrecedent != null) {
-			if (ffpPrecedent.getTypeAutoriteFiscale() != forFiscal.getTypeAutoriteFiscale()) {
-				// le motif doit être une arrivée HS/HC (l'autorité fiscale du nouveau for étant forcément vaudoise, voir quelques lignes plus haut...)
-				if (ffpPrecedent.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-					motifOuvertureEffectif = MotifFor.ARRIVEE_HS;
-				}
-				else {
-					motifOuvertureEffectif = MotifFor.ARRIVEE_HC;
-				}
-			}
-			else {
-				// le motif ne peut pas être une arrivée ou un départ HS/HC
-				if (motifOuverture == MotifFor.DEPART_HC || motifOuverture == MotifFor.DEPART_HS || motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					motifOuvertureEffectif = MotifFor.DEMENAGEMENT_VD;
-				}
-				else {
-					motifOuvertureEffectif = motifOuverture;
-				}
-			}
-		}
-		else {
-			// pas de for précédent -> pas de raison de remettre en doute le motif présent dans le for
-			motifOuvertureEffectif = motifOuverture;
-		}
-
-		switch (motifOuvertureEffectif) {
+		switch (motifOuverture) {
 		case ARRIVEE_HC:
 			try {
 				final List<Assujettissement> assujettissements = assujettissementService.determine(contribuable, forFiscal.getDateDebut().year());
@@ -491,18 +463,17 @@ public class TacheServiceImpl implements TacheService {
 			// si le demenagement arrive dans une periode fiscale échue, une tâche de contrôle
 			// du dossier est engendrée pour l’ancien office d’impôt gérant
 			// (déterminé par l’ancien for principal) s’il a changé.
-			ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
-			boolean changementOfficeImpot = false;
-			if (ffp != null && !ffp.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale())) {
-				changementOfficeImpot = true;
-			}
+			// [SIFISC-14441] on évitera une NPE si on s'assure que les numéros OFS que l'on compare sont bien des communes (on sait déjà que le nouveau for est vaudois, mais quid de l'ancien?)
+			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(forFiscal.getDateDebut().getOneDayBefore());
+			final boolean changementOfficeImpot = ffp != null
+					&& ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+					&& !ffp.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale());
 
 			if (FiscalDateHelper.isEnPeriodeEchue(forFiscal.getDateDebut()) && changementOfficeImpot) {
-				OfficeImpot office;
-				office = serviceInfra.getOfficeImpotDeCommune(ffp.getNumeroOfsAutoriteFiscale());
+				final OfficeImpot office = serviceInfra.getOfficeImpotDeCommune(ffp.getNumeroOfsAutoriteFiscale());
 				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
 				if (office != null) {
-					CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
+					final CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
 					genereTacheControleDossier(contribuable, collectivite);
 				}
 
