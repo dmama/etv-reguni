@@ -27,7 +27,7 @@ public class ImmeubleDAOImpl extends BaseDAOImpl<Immeuble, Long> implements Imme
 	@Override
 	public List<Immeuble> find(final long proprietaireId) {
 		final Session session = getCurrentSession();
-		final Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId");
+		final Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId order by i.nomCommune asc, i.numero asc, i.dateDerniereMutation desc");
 		query.setParameter("propId", proprietaireId);
 		return query.list();
 	}

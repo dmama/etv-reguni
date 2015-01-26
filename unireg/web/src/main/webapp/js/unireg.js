@@ -2354,7 +2354,7 @@ var DisplayTable = {
 
 		var html = '';
 
-		if (totalCount > pageSize) {
+		if ((totalCount > pageSize) && pageSize > 0) {
 			html += '<table class="pageheader" style="margin-top: 0;"><tr>\n';
 			html += '<td class="pagebanner">Trouvé ' + totalCount + ' éléments. Affichage de ' + ((page - 1) * pageSize + 1) + ' à ' + (page * pageSize) + '.</td>';
 			html += '<td class="pagelinks">&nbsp;\n';

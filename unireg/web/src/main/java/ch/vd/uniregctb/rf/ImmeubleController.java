@@ -74,7 +74,8 @@ public class ImmeubleController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public ImmeublesPage list(@RequestParam("ctb") long ctbId,
 	                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-	                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
+	                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+	                          @RequestParam(value = "printview", required = false, defaultValue = "false") boolean modeImpression) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_IMMEUBLES)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
@@ -86,7 +87,7 @@ public class ImmeubleController {
 
 		final List<ImmeubleView> views = new ArrayList<>();
 		final ParamPagination pagination = new ParamPagination(page, pageSize, null, true);
-		final List<Immeuble> list = immeubleDAO.find(ctbId, pagination);
+		final List<Immeuble> list = modeImpression?immeubleDAO.find(ctbId):immeubleDAO.find(ctbId, pagination);
 		for (Immeuble immeuble : list) {
 			views.add(new ImmeubleView(immeuble, messageSource));
 		}

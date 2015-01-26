@@ -14,6 +14,8 @@ public class TiersVisuView extends TiersView {
 
 	private boolean adressesHistoCivilesConjoint;
 
+	private int nombreElementsTable;
+
 	public boolean isAdressesHisto() {
 		return adressesHisto;
 	}
@@ -35,5 +37,13 @@ public class TiersVisuView extends TiersView {
 
 	public boolean isAdressesHistoCivilesConjoint() {
 		return adressesHistoCivilesConjoint;
+	}
+
+	public int getNombreElementsTable() {
+		return nombreElementsTable;
+	}
+
+	public void setNombreElementsTable(int nombreElementsTable) {
+		this.nombreElementsTable = nombreElementsTable;
 	}
 }

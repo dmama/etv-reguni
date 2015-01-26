@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <!-- Debut Immeubles -->
-
+<c:set var="printview" value='<%= request.getParameter("printview") %>' />
 <div id="immeublesDiv" style="position:relative"><img src="<c:url value="/images/loading.gif"/>"/></div>
 
 <script>
@@ -16,10 +16,10 @@
 
         refreshTable: function (page) {
             // get the data
-            $.get('<c:url value="/rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}"/>' + '&page=' + page + '&' + new Date().getTime(), function(immeublesPage) {
+            $.get('<c:url value="/rf/immeuble/list.do?ctb=${command.tiersGeneral.numero}"/>' + '&page=' + page + '&' + new Date().getTime()+'&printview='+${printview}, function(immeublesPage) {
                 var html = '<fieldset>\n';
                 html += '<legend><span><fmt:message key="label.liste.immeubles" /></span></legend>\n';
-                html += Immeubles.buildPageHeader(immeublesPage.page, 10, immeublesPage.totalCount);
+                html += Immeubles.buildPageHeader(immeublesPage.page,${command.nombreElementsTable}, immeublesPage.totalCount);
                 html += Immeubles.buildPageTable(immeublesPage.immeubles) + '\n';
                 html += '</fieldset>\n';
                 $('#immeublesDiv').html(html);
