@@ -4778,6 +4778,49 @@ public class TiersServiceImpl implements TiersService {
 		return menageCommuns;
 	}
 
+
+	@Override
+	public boolean isSousInfluenceDecisions(Contribuable ctb) {
+		final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
+
+		final Set<Contribuable> contribuablesToCheck = new HashSet<>();
+		construireListeTiersLies(ctb,contribuablesToCheck);
+		//Verification sur tous les ctb trouvés
+		for (Contribuable ctbToCheck : contribuablesToCheck) {
+			if (ctbToCheck.hasDecisionRecenteFor(dateMinimalEffet)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+//TODO parametrer une age maximum pour les couples fermés à considérer
+	private void construireListeTiersLies(Contribuable ctb, Set<Contribuable> tiersLies) {
+		if (tiersLies == null) {
+			tiersLies = new HashSet<>();
+		}
+
+		tiersLies.add(ctb);
+		if (ctb instanceof PersonnePhysique) {
+			List<MenageCommun> menages = getAllMenagesCommuns((PersonnePhysique) ctb);
+			for (MenageCommun menage : menages) {
+				if (!tiersLies.contains(menage)) {
+					construireListeTiersLies(menage, tiersLies);
+				}
+
+			}
+		}
+		else if (ctb instanceof MenageCommun) {
+			final Set<PersonnePhysique> membres = getPersonnesPhysiques((MenageCommun) ctb);
+			for (PersonnePhysique membre : membres) {
+				if (!tiersLies.contains(membre)) {
+					construireListeTiersLies(membre, tiersLies);
+				}
+
+			}
+		}
+	}
+
 	private boolean needCreationNouvelleDecision(DecisionAci d,RegDate dateFin, String remarque, Integer numeroAutoriteFiscale){
 		final boolean datefinModifiee = d.getDateFin()!=null && dateFin!=null && !d.getDateFin().equals(dateFin);
 		final boolean datefinSupprimee = d.getDateFin()!=null && dateFin==null;

@@ -1385,5 +1385,13 @@ DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFis
 	 * @return la liste des ménages communs trouvés ou null
 	 */
 	List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp);
+
+    /**!ATTENTION! méthode non utilisée pour le moment mais qui le sera en 15R* afin de répondre à SIFISC-14452
+     * Determine si un ctb est sous l'influence d'une décision ACI: soit directement soit par une de ses relations directe
+     * Couple ou membre du couple
+      * @param ctb
+     * @return vrai si une influence de décision a été détectée false sinon
+     */
+boolean isSousInfluenceDecisions(Contribuable ctb);
 }
 

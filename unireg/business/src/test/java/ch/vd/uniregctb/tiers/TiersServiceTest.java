@@ -8588,5 +8588,74 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testinfluenceDecisionsSimple() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final long noIndividuElle = 231923537L;
+		final long noIndividuElleEx = 236733537L;
+		final class IdsDecision {
+			public Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppLui;
+			long ppElle;
+			long ppElleEx;
+			long menageCommun;
+			long menageCommunEx;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(2008,5,1));
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(2013,5,7),null);
+				final MenageCommun mc = etc.getMenage();
+				final MenageCommun mcEx = etcEx.getMenage();
+				final Ids ids = new Ids();
+				ids.ppLui = m.getNumero();
+				ids.ppElle = mm.getNumero();
+				ids.ppElleEx = mmEx.getNumero();
+				ids.menageCommun = mc.getNumero();
+				ids.menageCommunEx = mcEx.getNumero();
+
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique mEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				DecisionAci d = addDecisionAci(mEx,date(2013,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+
+		// vérification de l'état après départ
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+				Assert.assertNotNull(pp);
+				assertTrue(tiersService.isSousInfluenceDecisions(pp));
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+				Assert.assertNotNull(mc);
+				assertTrue(tiersService.isSousInfluenceDecisions(mc));
+			}
+		});
+	}
+
 }
 
