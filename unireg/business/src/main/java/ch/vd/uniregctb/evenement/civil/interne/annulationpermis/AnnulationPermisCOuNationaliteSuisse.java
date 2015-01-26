@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -35,6 +36,13 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationPermisCOuNationaliteSuisse(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
+	}
+
+	@Override
+	protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		PersonnePhysique habitant = getPrincipalPP();
+		final RegDate dateEvenement = getDate();
+		verifierPresenceDecisionEnCours(habitant, dateEvenement);
 	}
 
 	@NotNull

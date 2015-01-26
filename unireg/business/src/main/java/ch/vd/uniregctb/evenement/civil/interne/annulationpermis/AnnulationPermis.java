@@ -75,7 +75,7 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		// rien à faire
+		super.validateSpecific(erreurs,warnings);
 	}
 
 	@NotNull
