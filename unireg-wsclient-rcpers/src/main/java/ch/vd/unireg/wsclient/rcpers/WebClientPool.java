@@ -1,7 +1,10 @@
 package ch.vd.unireg.wsclient.rcpers;
 
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
@@ -11,38 +14,23 @@ public class WebClientPool {
 	private String username;
 	private String password;
 
-	private final PoolableObjectFactory factory = new PoolableObjectFactory() {
+	private final PooledObjectFactory<WebClient> factory = new BasePooledObjectFactory<WebClient>() {
 		@Override
-		public Object makeObject() throws Exception {
+		public WebClient create() throws Exception {
 			return WebClient.create(baseUrl, username, password, null);
 		}
 
 		@Override
-		public void destroyObject(Object o) throws Exception {
-			// nothing to do
-		}
-
-		@Override
-		public boolean validateObject(Object o) {
-			return o instanceof WebClient;
-		}
-
-		@Override
-		public void activateObject(Object o) throws Exception {
-			// nothing to do
-		}
-
-		@Override
-		public void passivateObject(Object o) throws Exception {
-			// nothing to do
+		public PooledObject<WebClient> wrap(WebClient webClient) {
+			return new DefaultPooledObject<>(webClient);
 		}
 	};
-	private final GenericObjectPool pool = new GenericObjectPool();
+
+	private final GenericObjectPool<WebClient> pool = new GenericObjectPool<>(factory);
 
 	public void init() {
-		pool.setFactory(factory);
-		pool.setMaxActive(40);
-		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+		pool.setMaxTotal(40);
+		pool.setBlockWhenExhausted(true);
 		pool.setMaxIdle(10);
 		pool.setMinIdle(0);
 	}
@@ -59,12 +47,12 @@ public class WebClientPool {
 		this.password = password;
 	}
 
-	public void setMaxActive(int maxActive) {
-		this.pool.setMaxActive(maxActive);
+	public void setMaxTotal(int maxTotal) {
+		this.pool.setMaxTotal(maxTotal);
 	}
 
-	public void setWhenExhaustedAction(byte whenExhaustedAction) {
-		this.pool.setWhenExhaustedAction(whenExhaustedAction);
+	public void setBlockWhenExhausted(boolean block) {
+		this.pool.setBlockWhenExhausted(block);
 	}
 
 	public void setMaxIdle(int maxIdle) {
@@ -78,7 +66,7 @@ public class WebClientPool {
 	public WebClient borrowClient(int receiveTimeout) {
 		final WebClient wc;
 		try {
-			wc = (WebClient) pool.borrowObject();
+			wc = pool.borrowObject();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
