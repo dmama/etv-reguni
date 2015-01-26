@@ -26,10 +26,10 @@
 	
 	<tiles:put name="vue">
 		<li>
-			<a href="#" onclick="showScreenView()">
+			<a href="#" onclick="modeImpression(false)">
 				<span class="form-friendly" style="display: none;" id="tabnav-enable"><fmt:message key="label.vue.ecran" /></span>
 			</a>
-			<a href="#" onclick="showPrintView()">
+			<a href="#" onclick="modeImpression(true)">
 				<span class="printer-friendly" style="display: block;" id="tabnav-disable"><fmt:message key="label.vue.imprimable" /></span>
 			</a>
 		</li>
@@ -299,7 +299,13 @@
 		 		$("#tabnav-disable").hide();
 		 		$("#tabnav-enable").show();
 			    $('#print-button').show();
+
 		 	}
+
+			function modeImpression(actif){
+				var url = updateQueryStringParameter(window.location.href,'printview',actif);
+				window.location.replace(url);
+			}
 
 		 	/**
 		 	 * Vue normale : affichage les tabs normalement.
@@ -311,11 +317,30 @@
 		 		$("#tabnav-disable").show();
 		 		$("#tabnav-enable").hide();
 			    $('#print-button').hide();
-		 	}
+			}
+
+			function updateQueryStringParameter(uri, key, value) {
+
+				// remove the hash part before operating on the uri
+				var i = uri.indexOf('#');
+				var hash = i === -1 ? '' : uri.substr(i);
+				uri = i === -1 ? uri : uri.substr(0, i);
+
+				var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+				var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+				if (uri.match(re)) {
+					uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+				} else {
+					uri = uri + separator + key + "=" + value;
+				}
+				return uri + hash;
+			}
 
 		 	// [UNIREG-3290] Sélection de la vue imprimable par l'url
 			$(function() {
 				var url = document.location.toString();
+				//par défaut
+				showScreenView();
 				if (url.indexOf("printview=true") != -1) {
 					showPrintView();
 				}

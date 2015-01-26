@@ -25,8 +25,8 @@ public interface TiersVisuManager {
 	 * @param adressesHistoCiviles
 	 * @param adressesHistoCivilesConjoint
 	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
-	 * @Param ctbAssocieHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de contribuable associé
-	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView
+	 * @param modeImpression
+	 *@param webParamPagination      les informations de pagination  @return un objet TiersVisuView  @Param ctbAssocieHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de contribuable associé
 	 * @return les informations de visualisation demandées.
 	 * @throws ch.vd.infrastructure.service.ServiceInfrastructureException
 	 *          en cas de problème de connexion au service d'infrastructure.
@@ -35,7 +35,7 @@ public interface TiersVisuManager {
 	 */
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto, boolean ctbAssocieHisto,
-	                          WebParamPagination webParamPagination
+	                             boolean modeImpression, WebParamPagination webParamPagination
 	) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**

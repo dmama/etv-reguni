@@ -40,6 +40,7 @@ public class TiersVisuController extends AbstractTiersController {
 	private final static String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
 	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 	private final static String CTB_ASSOCIE_HISTO_PARAM = "ctbAssocieHisto";
+	private final static String MODE_IMPRESSION = "printview";
 
 	private TiersEditManager tiersEditManager;
 	private TiersVisuManager tiersVisuManager;
@@ -70,6 +71,7 @@ public class TiersVisuController extends AbstractTiersController {
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 		final boolean ctbAssocieHisto = getBooleanParam(request, CTB_ASSOCIE_HISTO_PARAM);
+		final boolean modeImpression = getBooleanParam(request, MODE_IMPRESSION);
 
 		if (idParam != null && !idParam.isEmpty()) {
 			Long id = Long.parseLong(idParam);
@@ -78,7 +80,7 @@ public class TiersVisuController extends AbstractTiersController {
 			checkAccesDossierEnLecture(id);
 
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, ctbAssocieHisto, pagination);
+			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, ctbAssocieHisto,modeImpression, pagination);
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
