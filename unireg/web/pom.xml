@@ -539,7 +539,7 @@
 						<type>runtime</type>
 						<properties>
 							<cargo.remote.username>tomcat</cargo.remote.username>
-							<cargo.remote.username>tomcat</cargo.remote.username>
+							<cargo.remote.password>tomcat</cargo.remote.password>
 							<cargo.remote.uri>http://localhost:8080/manager/text</cargo.remote.uri>
 						</properties>
 					</configuration>
