@@ -1,12 +1,10 @@
 package ch.vd.uniregctb.datasource;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import oracle.jdbc.OracleDriver;
-
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * Datasource à utiliser pour la gestion des NVARCHAR (unicode)

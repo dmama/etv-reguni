@@ -16,9 +16,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 /**
  * Permet de dumper les données telles que demandées par le CCF
@@ -162,7 +164,7 @@ public class CcfDumper {
 		}
 	}
 
-	private static final class ConnectionFactory extends BasePoolableObjectFactory<Connection> {
+	private static final class ConnectionFactory extends BasePooledObjectFactory<Connection> {
 		private final String dbUrl;
 		private final String dbUser;
 		private final String dbPwd;
@@ -174,19 +176,26 @@ public class CcfDumper {
 		}
 
 		@Override
-		public Connection makeObject() throws SQLException {
+		public Connection create() throws Exception {
 			return DriverManager.getConnection(dbUrl, dbUser, dbPwd);
 		}
 
 		@Override
-		public void destroyObject(Connection obj) throws SQLException {
-			obj.close();
+		public PooledObject<Connection> wrap(Connection obj) {
+			return new DefaultPooledObject<>(obj);
+		}
+
+		@Override
+		public void destroyObject(PooledObject<Connection> p) throws Exception {
+			p.getObject().close();
+			super.destroyObject(p);
 		}
 	}
 
 	private static final class ConnectionPool extends GenericObjectPool<Connection> implements AutoCloseable {
 		private ConnectionPool(String url, String dbUser, String dbPwd) {
-			super(new ConnectionFactory(url, dbUser, dbPwd), 2);
+			super(new ConnectionFactory(url, dbUser, dbPwd));
+			setMaxTotal(2);
 		}
 	}
 

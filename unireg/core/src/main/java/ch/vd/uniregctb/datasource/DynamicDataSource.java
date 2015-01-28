@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.datasource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -49,7 +49,7 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 			i.setUsername(oracleUsername);
 			i.setPassword(oraclePassword);
 			i.setInitialSize(1);
-			i.setMaxActive(1);
+			i.setMaxTotal(1);
 			instance = i;
 		}
 		else if (jdbcProfile.equalsIgnoreCase("postgresql")) {
@@ -59,7 +59,7 @@ public class DynamicDataSource implements FactoryBean, InitializingBean, Disposa
 			i.setUsername(postgresqlUsername);
 			i.setPassword(postgresqlPassword);
 			i.setInitialSize(1);
-			i.setMaxActive(1);
+			i.setMaxTotal(1);
 			instance = i;
 		}
 		else {

@@ -8,7 +8,8 @@ public class JvmVersionHelper {
 	public static enum Version {
 		JAVA_1_5("1.5.", "1.5"),
 		JAVA_1_6("1.6.", "1.6"),
-		JAVA_1_7("1.7.", "1.7");
+		JAVA_1_7("1.7.", "1.7"),
+		JAVA_1_8("1.8.", "1.8");
 
 		private final String prefixe;
 		private final String displayName;
@@ -23,7 +24,7 @@ public class JvmVersionHelper {
 	 * Vérifie que la JVM est compatible avec un Host-Interfaces
 	 */
 	public static void checkJvmWrtHostInterfaces() {
-		checkJavaVersion(Version.JAVA_1_7);
+		checkJavaVersion(Version.JAVA_1_8);
 //		checkArraySerializationWorkaround();
 	}
 

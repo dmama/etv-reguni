@@ -2,8 +2,8 @@ package ch.vd.uniregctb.utils;
 
 import java.util.Map;
 
+import ch.vd.registre.jmx.properties.PropertiesAdapter;
 import ch.vd.registre.jmx.properties.PropertiesAdapterFactoryBean;
-import ch.vd.registre.jmx.properties.UnsupportedPropertiesAdapter;
 
 public interface UniregProperties {
 
@@ -23,7 +23,7 @@ public interface UniregProperties {
 	 */
 	static class UniregPropertiesAdapterFactoryBean extends PropertiesAdapterFactoryBean {
 		@Override
-		public UnsupportedPropertiesAdapter createInstance(Object obj) {
+		public PropertiesAdapter createInstance(Object obj) {
 			if (obj instanceof UniregProperties) {
 				obj = ((UniregProperties)obj).getAllProperties();
 			}

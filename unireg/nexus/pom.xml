@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>uniregctb-servlet-common</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>weblogic</groupId>
 			<artifactId>wlthint3client</artifactId>
-			<version>10.3.3</version>
+			<version>12.1.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -112,12 +112,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${servlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>ejb</artifactId>
-			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -224,6 +218,7 @@
 					</webResources>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -233,16 +228,37 @@
 					</descriptors>
 				</configuration>
 			</plugin>
+
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.0-beta-1</version>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>1.4.8</version>
 				<configuration>
-					<url>http://localhost:8080/manager/text</url>
-					<update>true</update>
-					<path>/unireg/nexus</path>
-					<username>tomcat</username>
-					<password>tomcat</password>
+					<container>
+						<containerId>tomcat8x</containerId>
+						<type>remote</type>
+					</container>
+					<configuration>
+						<type>runtime</type>
+						<properties>
+							<cargo.remote.username>tomcat</cargo.remote.username>
+							<cargo.remote.username>tomcat</cargo.remote.username>
+							<cargo.remote.uri>http://localhost:8080/manager/text</cargo.remote.uri>
+						</properties>
+					</configuration>
+					<deployables>
+						<deployable>
+							<groupId>ch.vd.uniregctb</groupId>
+							<artifactId>uniregctb-nexus</artifactId>
+							<type>war</type>
+							<properties>
+								<context>/unireg/nexus</context>
+							</properties>
+						</deployable>
+					</deployables>
+					<deployer>
+						<type>installed</type>
+					</deployer>
 				</configuration>
 			</plugin>
 
