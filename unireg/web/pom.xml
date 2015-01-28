@@ -553,9 +553,6 @@
 							</properties>
 						</deployable>
 					</deployables>
-					<deployer>
-						<type>installed</type>
-					</deployer>
 				</configuration>
 			</plugin>
 
