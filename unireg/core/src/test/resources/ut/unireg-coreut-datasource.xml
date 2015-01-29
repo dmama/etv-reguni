@@ -38,6 +38,7 @@
 		<property name="oracleServerName" value="${testprop.oracle.jdbc.server}" />
 		<property name="oraclePortNumber" value="${testprop.oracle.jdbc.port}" />
 		<property name="oracleDatabaseName" value="${testprop.oracle.jdbc.instance}" />
+		<property name="oracleServiceName" value="${testprop.oracle.jdbc.service}" />
 		<property name="oracleUserName" value="${testprop.oracle.jdbc.username}" />
 		<property name="oraclePassword" value="${testprop.oracle.jdbc.password}" />
 		<property name="postgresqlServerName" value="${testprop.postgresql.jdbc.server}" />

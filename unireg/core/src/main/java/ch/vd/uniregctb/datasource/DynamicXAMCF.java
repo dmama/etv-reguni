@@ -16,6 +16,7 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 	private String oracleServerName;
 	private Integer oraclePortNumber;
 	private String oracleDatabaseName;
+	private String oracleServiceName;
 	private String oracleUserName;
 	private String oraclePassword;
 
@@ -51,6 +52,7 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 			i.setServerName(oracleServerName);
 			i.setPortNumber(oraclePortNumber);
 			i.setDatabaseName(oracleDatabaseName);
+			i.setServiceName(oracleServiceName);
 			i.setUserName(oracleUserName);
 			i.setPassword(oraclePassword);
 			instance = i;
@@ -99,6 +101,11 @@ public class DynamicXAMCF implements FactoryBean, InitializingBean, DisposableBe
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setOracleDatabaseName(String oracleDatabaseName) {
 		this.oracleDatabaseName = oracleDatabaseName;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setOracleServiceName(String oracleServiceName) {
+		this.oracleServiceName = oracleServiceName;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -13,6 +13,7 @@ testprop.oracle.jdbc.password=${testprop.jdbc.password}
 testprop.oracle.jdbc.server=sli2315t.etat-de-vaud.ch
 testprop.oracle.jdbc.port=1526
 testprop.oracle.jdbc.instance=FISCAL1L
+testprop.oracle.jdbc.service=
 testprop.oracle.jdbc.url=jdbc:oracle:thin:@${testprop.oracle.jdbc.server}:${testprop.oracle.jdbc.port}:${testprop.oracle.jdbc.instance}
 
 # Postgresql

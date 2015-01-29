@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!--
 		Ce bean permet de résoudre les propriétés de type testprop.xxx lors du
@@ -40,6 +39,7 @@
 		<property name="serverName" value="${testprop.oracle.jdbc.server}" />
 		<property name="portNumber" value="${testprop.oracle.jdbc.port}" />
 		<property name="databaseName" value="${testprop.oracle.jdbc.instance}" />
+		<property name="serviceName" value="${testprop.oracle.jdbc.service}" />
 		<property name="userName" value="${testprop.oracle.jdbc.username}" />
 		<property name="password" value="${testprop.oracle.jdbc.password}" />
 	</bean>
