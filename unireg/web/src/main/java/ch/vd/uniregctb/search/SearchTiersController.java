@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -51,7 +50,8 @@ public class SearchTiersController {
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat (voir http://wiki.apache.org/tomcat/FAQ/CharacterEncoding#Q8 pour une correction plus othrodoxe
 		// mais qui nécessiterait de changer la configuration de Tomcat)
-		query = EncodingFixHelper.fixFromIso(query);
+		// --> en tomcat 8, l'interprétation en UTF-8 par tomcat est maintenant le défaut, plus la peine de changer l'encoding (http://tomcat.apache.org/migration-8.html#URIEncoding)
+		//query = EncodingFixHelper.fixFromIso(query);
 
 		if (StringUtils.isNotBlank(saveQueryTo)) {
 			// on stocke la requête en session si on nous l'a demandé

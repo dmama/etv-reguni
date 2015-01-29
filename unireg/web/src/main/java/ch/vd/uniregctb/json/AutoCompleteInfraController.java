@@ -25,7 +25,6 @@ import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.uniregctb.common.EncodingFixHelper;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -109,7 +108,8 @@ public class AutoCompleteInfraController {
 		final Set<InfraCategory> categories = parseCategories(category);
 
 		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat
-		term = EncodingFixHelper.fixFromIso(term);
+		// --> depuis tomcat 8, ce n'est plus vrai, les urls sont bien interprétées en UTF-8 par Tomcat par défaut... (http://tomcat.apache.org/migration-8.html#URIEncoding)
+		//term = EncodingFixHelper.fixFromIso(term);
 
 		// on ignore les accents
 		term = StringComparator.toLowerCaseWithoutAccent(term);
