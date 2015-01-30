@@ -485,8 +485,9 @@
 			<dependencies>
 				<dependency>
 					<groupId>oracle.jdbc</groupId>
-					<artifactId>ojdbc6</artifactId>
+					<artifactId>ojdbc7</artifactId>
 					<version>${oracle.version}</version>
+					<scope>provided</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -494,14 +495,16 @@
 			<id>postgresql</id>
 			<dependencies>
 				<dependency>
-					<groupId>postgresql</groupId>
+					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
 					<version>${postgresql.version}</version>
+					<scope>provided</scope>
 				</dependency>
 				<dependency>
 					<groupId>org.tranql</groupId>
 					<artifactId>tranql-connector-postgresql-common</artifactId>
-					<version>1.4</version>
+					<version>1.5</version>
+					<scope>provided</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -608,12 +611,12 @@
 		<cobertura.version>2.5.1</cobertura.version>
 
 		<!-- Database settings -->
-		<oracle.version>11.2.0.1.0</oracle.version>
+		<oracle.version>12.1.0.2.0</oracle.version>
 		<oracle.jdbc.driverClassName>oracle.jdbc.OracleDriver</oracle.jdbc.driverClassName>
 		<oracle.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</oracle.hibernate.dialect>
 		<oracle.hibernate.query.substitutions>true 1, false 0</oracle.hibernate.query.substitutions>
 
-		<postgresql.version>9.1-901-1.jdbc4</postgresql.version>
+		<postgresql.version>9.3-1102-jdbc4</postgresql.version>
 		<postgresql.jdbc.driverClassName>org.postgresql.Driver</postgresql.jdbc.driverClassName>
 		<postgresql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.PostgreSQL83Dialect</postgresql.hibernate.dialect>
 		<postgresql.hibernate.query.substitutions/>
