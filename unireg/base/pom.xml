@@ -590,7 +590,7 @@
 
 		<!-- Framework dependency versions -->
 		<tomcat.version>8.0.17</tomcat.version>
-		<embedded-tomcat.version>4.0.0-SNAPSHOT</embedded-tomcat.version>
+		<embedded-tomcat.version>4.0.0</embedded-tomcat.version>
 		<shared-base.version>4.12.0</shared-base.version>
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
