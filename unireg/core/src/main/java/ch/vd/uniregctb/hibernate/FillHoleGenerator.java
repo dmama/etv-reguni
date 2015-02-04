@@ -2,7 +2,6 @@ package ch.vd.uniregctb.hibernate;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,9 +12,10 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.cfg.DefaultComponentSafeNamingStrategy;
 import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.cfg.ObjectNameNormalizer;
+import org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator;
+import org.hibernate.cfg.naming.NamingStrategyDelegator;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
@@ -59,8 +59,13 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 			}
 
 			@Override
+			protected NamingStrategyDelegator getNamingStrategyDelegator() {
+				return new ImprovedNamingStrategyDelegator();
+			}
+
+			@Override
 			protected NamingStrategy getNamingStrategy() {
-				return new DefaultComponentSafeNamingStrategy();
+				return null;
 			}
 		};
 		final Properties properties = new Properties();
@@ -96,7 +101,7 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		}
 
 		Long foundId = null;
-		try (Connection con = session.connection(); Statement stat = con.createStatement()) {
+		try (Statement stat = session.connection().createStatement()) {
 
 			// [UNIREG-726] on tient compte des no de ctbs non-migrés comme étant réservés
 			final String query = "SELECT numero FROM " + tableName + " WHERE numero >= " + firstId
