@@ -50,7 +50,7 @@
 					<input type="submit" id="ajouter" value="Ajouter"/>
 				</td>				
 				<td width="25%">
-					<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../lr/edit.do?action=editdi&id=' + ${command.idDeclaration}" />
+					<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../lr/edit.do?action=editdi&id=${command.idDeclaration}'" />
 				</td>
 				<td width="25%">&nbsp;</td>
 			</tr>

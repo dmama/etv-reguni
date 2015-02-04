@@ -2,8 +2,6 @@ package ch.vd.uniregctb.decision.aci;
 
 import javax.validation.Valid;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -21,9 +19,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -45,9 +41,6 @@ public class DecisionAciController {
 	private ControllerUtils controllerUtils;
 	private TiersMapHelper tiersMapHelper;
 	private Validator decisionAciValidator;
-	private MessageSourceAccessor messageSource;
-	private SecurityProviderInterface securityProvider;
-	private ParametreAppService paramService;
 	private HibernateTemplate hibernateTemplate;
 	private AutorisationManager autorisationManager;
 
@@ -68,20 +61,8 @@ public class DecisionAciController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = new MessageSourceAccessor(messageSource);
-	}
-
 	public void setDecisionAciDAO(DecisionAciDAO decisionAciDAO) {
 		this.decisionAciDAO = decisionAciDAO;
-	}
-
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
-	}
-
-	public void setParamService(ParametreAppService paramService) {
-		this.paramService = paramService;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {

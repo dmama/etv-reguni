@@ -2,8 +2,6 @@ package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
 
-import java.util.Date;
-
 /**
  * Evénement d'une personne morale.
  *

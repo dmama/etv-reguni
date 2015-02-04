@@ -27,7 +27,6 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AuthenticationInterface;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -48,16 +47,14 @@ public class RapprocherCtbProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
 	private final ServiceCivilService serviceCivil;
 
-	public RapprocherCtbProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AdresseService adresseService, TiersService tiersService,
+	public RapprocherCtbProcessor(PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AdresseService adresseService, TiersService tiersService,
 	                              ServiceCivilService serviceCivil) {
-		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;

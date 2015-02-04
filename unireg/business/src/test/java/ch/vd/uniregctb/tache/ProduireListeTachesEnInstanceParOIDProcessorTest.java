@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -83,7 +83,7 @@ public class ProduireListeTachesEnInstanceParOIDProcessorTest extends BusinessTe
 		// dans les statistiques, la tâche doit être placée sur l'OID 22 même si le tiers est lié à l'OID 7...
 
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1.0, res.getNombreTacheMoyen());
+		Assert.assertEquals(1.0, res.getNombreTacheMoyen(), 1e-12);
 
 		final List<ListeTachesEnInstanceParOID.LigneTacheInstance> lignes = res.getLignes();
 		Assert.assertNotNull(lignes);

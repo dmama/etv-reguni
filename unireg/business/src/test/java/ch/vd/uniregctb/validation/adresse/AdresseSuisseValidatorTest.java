@@ -13,9 +13,9 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSuisse> {
 

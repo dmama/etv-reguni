@@ -24,8 +24,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test qui met en évidence le comportement étrange d'Hibernate qui créé des proxy sous-classant 'Tiers' à la place des classes concrètes

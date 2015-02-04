@@ -1173,7 +1173,7 @@ public class TiersServiceImpl implements TiersService {
 				if (DateRangeHelper.intersect(rapport, periode)) {
 					if (listeEnsemble == null) {
 						// création à la demande
-						listeEnsemble =  new ArrayList<EnsembleTiersCouple>();
+						listeEnsemble =  new ArrayList<>();
 					}
 					final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 					listeEnsemble.add(getEnsembleTiersCouple(menageCommun,anneePeriode));
@@ -4768,7 +4768,7 @@ public class TiersServiceImpl implements TiersService {
 		for (RapportEntreTiers rapport : rapportsEntreTiers) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
 					if (menageCommuns == null) {
-						menageCommuns =  new ArrayList<MenageCommun>();
+						menageCommuns =  new ArrayList<>();
 					}
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 					menageCommuns.add(mc);

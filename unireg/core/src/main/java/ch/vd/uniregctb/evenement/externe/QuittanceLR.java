@@ -1,15 +1,15 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Tiers;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.LengthConstants;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>

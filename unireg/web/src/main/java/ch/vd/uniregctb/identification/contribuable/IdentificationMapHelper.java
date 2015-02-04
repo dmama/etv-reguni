@@ -74,7 +74,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 
-		final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
+		final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<>();
 
 		final String libellePrioritaire = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + PrioriteEmetteur.PRIORITAIRE);
 		final String libelleNonPrioritaire = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + PrioriteEmetteur.NON_PRIORITAIRE);
@@ -311,7 +311,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				return valueComparator.compare(o1.getValue(), o2.getValue());
 			}
 		});
-		final Map<K, V> sorted = new LinkedHashMap<K, V>(source.size());
+		final Map<K, V> sorted = new LinkedHashMap<>(source.size());
 		for (Map.Entry<K, V> item : content) {
 			sorted.put(item.getKey(), item.getValue());
 		}

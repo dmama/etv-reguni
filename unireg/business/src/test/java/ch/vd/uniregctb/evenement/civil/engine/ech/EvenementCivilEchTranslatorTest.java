@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.EnumSet;
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 

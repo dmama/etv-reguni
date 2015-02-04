@@ -31,9 +31,9 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 
 import static ch.vd.registre.base.date.DateRangeHelper.Range;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 // Pour générer des screenshots des assujettissements :
 //  - activer les annotations ci-dessous

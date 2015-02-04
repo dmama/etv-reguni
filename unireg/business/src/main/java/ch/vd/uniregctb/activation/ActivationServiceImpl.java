@@ -2,7 +2,6 @@ package ch.vd.uniregctb.activation;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;

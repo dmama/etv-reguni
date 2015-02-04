@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class TiersAdresseManagerTest extends WebTest {
 

@@ -79,7 +79,7 @@
 				<td width="25%">&nbsp;</td>
 				<td width="25%"><input type="submit" id="fermerAdresse" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
 				<td width="25%">&nbsp;</td>
-				<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='edit.do?id=' + ${command.numCTB}" /></td>
+				<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='edit.do?id=${command.numCTB}'" /></td>
 			</tr>
 		</table>
 	</tiles:put>

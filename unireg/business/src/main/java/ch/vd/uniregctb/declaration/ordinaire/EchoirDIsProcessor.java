@@ -171,6 +171,7 @@ public class EchoirDIsProcessor {
 					public List<IdentifiantDeclaration> doInHibernate(Session session) throws HibernateException {
 
 						final Query query = session.createSQLQuery(sql);
+						//noinspection unchecked
 						final List<Object[]> rows = query.list();
 						if (rows != null && !rows.isEmpty()) {
 							for (Object[] row : rows) {

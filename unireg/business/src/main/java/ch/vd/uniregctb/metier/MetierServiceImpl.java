@@ -1983,10 +1983,7 @@ public class MetierServiceImpl implements MetierService {
 			Audit.warn(message);
 			return null;
 		}
-		catch (ModeImpositionResolverException ex) {
-			throw new MetierServiceException(ex.getMessage(), ex);
-		}
-		catch (ServiceInfrastructureException ex) {
+		catch (ModeImpositionResolverException | ServiceInfrastructureException ex) {
 			throw new MetierServiceException(ex.getMessage(), ex);
 		}
 	}

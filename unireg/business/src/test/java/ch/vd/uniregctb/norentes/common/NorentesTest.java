@@ -5,7 +5,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.common.AbstractBusinessTest;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-norentes-main.xml",

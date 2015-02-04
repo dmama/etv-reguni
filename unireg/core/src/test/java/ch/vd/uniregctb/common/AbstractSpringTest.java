@@ -17,7 +17,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,11 +34,10 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static junit.framework.Assert.failNotEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(transactionManager = "transactionManager")
@@ -195,7 +193,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	public static void assertContains(String containee, String container) {
 
 		if (container == null || containee == null || !container.contains(containee)) {
-			failNotEquals("", containee, container);
+			assertEquals(containee, container);     // <-- toujours faux!
 		}
 	}
 
@@ -204,7 +202,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		container = container.toLowerCase();
 		containee = containee.toLowerCase();
 		if (!container.contains(containee)) {
-			failNotEquals("", containee, container);
+			assertEquals(containee, container);     // <-- toujours faux!
 		}
 	}
 

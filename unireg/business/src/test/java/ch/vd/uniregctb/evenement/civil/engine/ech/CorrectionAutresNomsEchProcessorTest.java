@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import net.sf.ehcache.CacheManager;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;

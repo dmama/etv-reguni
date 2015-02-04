@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 public class TypeDocumentTest extends EnumTest {

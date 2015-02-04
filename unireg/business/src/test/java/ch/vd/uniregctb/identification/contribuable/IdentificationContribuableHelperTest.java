@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;

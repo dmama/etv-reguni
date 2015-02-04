@@ -16,8 +16,6 @@ import org.hibernate.usertype.UserType;
  */
 public class URLUserType extends GenericUserType implements UserType {
 
-	private boolean allowPartial;
-
 	public URLUserType() {
 	}
 

@@ -22,8 +22,8 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TiersIndexableDataTest extends WithoutSpringTest {

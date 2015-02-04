@@ -22,8 +22,8 @@ import ch.vd.registre.base.date.PartialDateException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
 	"classpath:ut/RegDateUserTypeTest-spring.xml"

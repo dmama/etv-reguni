@@ -132,13 +132,7 @@ public abstract class ReflexionUtils {
 
 			return s.toString();
 		}
-		catch (IntrospectionException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-		catch (InvocationTargetException e) {
+		catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 	}

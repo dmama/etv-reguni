@@ -11,7 +11,7 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class GestionJobTest extends WithoutSpringTest {
 

@@ -11,7 +11,7 @@ import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class TacheAnnulationDeclarationImpotValidatorTest extends AbstractValidatorTest<TacheAnnulationDeclarationImpot> {
 

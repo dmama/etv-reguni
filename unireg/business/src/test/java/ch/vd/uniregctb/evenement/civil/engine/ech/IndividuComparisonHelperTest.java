@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.Arrays;
 import java.util.Collections;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;

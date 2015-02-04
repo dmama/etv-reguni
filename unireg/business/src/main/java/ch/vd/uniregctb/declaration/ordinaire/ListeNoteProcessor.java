@@ -70,7 +70,7 @@ public class ListeNoteProcessor {
 		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement, annee, tiersService, adresseService);
 		status.setMessage("Récupération des contribuables ...");
 		mapInfo = recupererContribuables(annee);
-		final List<Long> ids = new ArrayList<Long>(mapInfo.keySet());
+		final List<Long> ids = new ArrayList<>(mapInfo.keySet());
 
 		// Reussi les messages par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
@@ -245,7 +245,7 @@ public class ListeNoteProcessor {
 	}
 
 	private List<Long> getIdCtb(List<InfoForFerme> listInfos) {
-		List<Long> result = new ArrayList<Long>();
+		List<Long> result = new ArrayList<>();
 		for (InfoForFerme listInfo : listInfos) {
 			result.add(listInfo.numeroCtb);
 		}

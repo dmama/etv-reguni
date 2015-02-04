@@ -2,7 +2,7 @@ package ch.vd.uniregctb.validation.declaration;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +11,8 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class EtatDeclarationSommeeValidatorTest extends AbstractValidatorTest<EtatDeclarationSommee>{
 

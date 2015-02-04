@@ -8,10 +8,10 @@ import org.junit.Test;
 import ch.vd.unireg.xml.party.relation.v2.RelationBetweenPartiesType;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Test qui vérifie que l'enum exposé dans les web-services est compatible avec celui utilisé en interne par Unireg.

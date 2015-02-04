@@ -8,8 +8,8 @@ import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.party4.EnumTest;
 import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
 
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 public class NaturalPersonTest extends EnumTest {

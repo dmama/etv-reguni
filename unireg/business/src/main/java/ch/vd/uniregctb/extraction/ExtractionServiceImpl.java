@@ -37,7 +37,6 @@ import ch.vd.uniregctb.common.MonitorableExecutorService;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.TemporaryFile;
 import ch.vd.uniregctb.common.ThreadNameGenerator;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -67,11 +66,6 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	private PlatformTransactionManager transactionManager;
 
 	/**
-	 * Hibernate template
-	 */
-	private HibernateTemplate hibernateTemplate;
-
-	/**
 	 * Service de gestion des documents une fois l'extraction terminée
 	 */
 	private InboxService inboxService;
@@ -99,11 +93,6 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

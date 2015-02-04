@@ -9,7 +9,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class ForFiscalAutreElementImposableValidatorTest extends AbstractValidatorTest<ForFiscalAutreElementImposable> {
 

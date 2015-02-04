@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;

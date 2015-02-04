@@ -6,7 +6,7 @@ import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.uniregctb.webservices.party4.EnumTest;
 import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test qui vérifie que l'enum exposé dans les web-services est compatible avec celui utilisé en interne par Unireg.

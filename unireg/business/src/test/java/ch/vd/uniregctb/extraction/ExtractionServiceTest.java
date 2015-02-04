@@ -37,7 +37,6 @@ public class ExtractionServiceTest extends BusinessTest {
 		inboxService = new MockInboxService();
 
 		extractionService = new ExtractionServiceImpl();
-		extractionService.setHibernateTemplate(hibernateTemplate);
 		extractionService.setTransactionManager(transactionManager);
 		extractionService.setInboxService(inboxService);
 		extractionService.setExpiration(1);

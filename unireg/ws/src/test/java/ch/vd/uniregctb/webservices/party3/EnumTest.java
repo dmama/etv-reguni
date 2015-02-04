@@ -2,9 +2,8 @@ package ch.vd.uniregctb.webservices.party3;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.failNotEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public abstract class EnumTest extends WithoutSpringTest {
 
@@ -42,12 +41,4 @@ public abstract class EnumTest extends WithoutSpringTest {
 			assertNotNull(message, found);
 		}
 	}
-
-	public static void assertContains(String containee, String container) {
-
-		if (container == null || containee == null || !container.contains(containee)) {
-			failNotEquals("", containee, container);
-		}
-	}
-
 }

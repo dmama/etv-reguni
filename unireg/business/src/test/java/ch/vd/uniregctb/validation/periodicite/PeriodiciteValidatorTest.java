@@ -7,7 +7,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class PeriodiciteValidatorTest extends AbstractValidatorTest<Periodicite> {
 

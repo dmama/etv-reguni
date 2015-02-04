@@ -4,7 +4,7 @@ import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0007.v4.SwissMunicipality;
 import ch.ech.ech0008.v2.Country;
 import ch.ech.ech0011.v5.Destination;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;

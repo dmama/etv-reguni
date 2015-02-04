@@ -92,10 +92,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				cantons.add(CantonImpl.get(c));
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des cantons impossible", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des cantons impossible", e);
 		}
 		return Collections.unmodifiableList(cantons);
@@ -115,10 +112,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return Collections.unmodifiableList(communes);
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des communes impossible", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des communes impossible", e);
 		}
 	}
@@ -144,10 +138,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return Collections.unmodifiableList(communes);
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des fractions de communes impossible", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des fractions de communes impossible", e);
 		}
 	}
@@ -210,10 +201,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				pays.add(PaysImpl.get(p));
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des pays", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des pays", e);
 		}
 		return Collections.unmodifiableList(pays);
@@ -267,10 +255,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				return CommuneImpl.get(serviceInfrastructure.getCommuneById(localite.getNoCommune().toString()));
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la commune " + numOrdreP, e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la commune " + numOrdreP, e);
 		}
 	}
@@ -291,10 +276,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				}
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Impossible de récupérer les liste des localites", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Impossible de récupérer les liste des localites", e);
 		}
 		return Collections.unmodifiableList(localites);
@@ -313,10 +295,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				rues.add(RueImpl.get(r));
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 		return Collections.unmodifiableList(rues);
@@ -336,10 +315,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return Collections.unmodifiableList(rues);
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 	}
@@ -352,10 +328,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		try {
 			return RueImpl.get(serviceInfrastructure.getRueByNumero(numero));
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
 		}
 	}
@@ -368,10 +341,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		try {
 			return LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la localite", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la localite", e);
 		}
 	}
@@ -384,10 +354,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		try {
 			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm));
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
 		}
 	}
@@ -409,10 +376,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				}
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(offices);
@@ -447,10 +411,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				}
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
@@ -475,10 +436,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 				}
 			}
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces aux collectivites administratives", e);
 		}
 		return Collections.unmodifiableList(collectivites);
@@ -490,10 +448,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		try {
 			return InstitutionFinanciereImpl.get(serviceInfrastructure.getInstitutionFinanciere(id));
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
 		}
 	}
@@ -509,10 +464,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return list;
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces à l'institution financière", e);
 		}
 	}
@@ -527,10 +479,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return list;
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces aux types de régimes fiscaux", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces aux types de régimes fiscaux", e);
 		}
 	}
@@ -558,10 +507,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			}
 			return list;
 		}
-		catch (RemoteException e) {
-			throw new ServiceInfrastructureException("Acces aux types des états PM", e);
-		}
-		catch (InfrastructureException e) {
+		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces aux types des états PM", e);
 		}
 	}

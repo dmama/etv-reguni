@@ -382,7 +382,7 @@
 					</c:otherwise>
 				</c:choose>
 			</td>
-			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../adresses/edit.do?id=' + ${command.numCTB}" /></td>
+			<td width="25%"><input type="button" name="cancel" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../adresses/edit.do?id=${command.numCTB}'" /></td>
 			<td width="25%"></td>
 		</tr>
 		</table>

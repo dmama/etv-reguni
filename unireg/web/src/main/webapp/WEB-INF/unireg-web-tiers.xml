@@ -246,9 +246,6 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="controllerUtils" ref="controllerUtils"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
-		<property name="messageSource" ref="messageSource" />
-		<property name="securityProvider" ref="securityProviderInterface" />
-		<property name="paramService" ref="parametreAppService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="autorisationManager" ref="autorisationManager"/>
 		<property name="decisionAciValidator" ref="decisionAciValidator"/>

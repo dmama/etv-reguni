@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.metier.piis;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

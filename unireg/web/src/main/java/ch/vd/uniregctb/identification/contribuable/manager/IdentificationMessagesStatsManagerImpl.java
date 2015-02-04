@@ -55,7 +55,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean) {
-		List<IdentificationMessagesStatsResultView> statsView = new ArrayList<IdentificationMessagesStatsResultView>();
+		List<IdentificationMessagesStatsResultView> statsView = new ArrayList<>();
 		Map<IdentificationContribuable.Etat, Integer> resultatsStats = identCtbService.calculerStats(bean);
 
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {

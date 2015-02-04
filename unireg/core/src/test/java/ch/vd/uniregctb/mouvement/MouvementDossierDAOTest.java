@@ -4,9 +4,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;

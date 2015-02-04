@@ -288,8 +288,7 @@ public abstract class Arrivee extends Mouvement {
 			modeDetection = ModeDetection.COMPLET;
 		}
 
-		final Map.Entry resultat = new AbstractMap.SimpleEntry(modeDetection,nonHabitants);
-		return resultat;
+		return new AbstractMap.SimpleEntry<>(modeDetection, nonHabitants);
 	}
 
 	/**Determine si la liste des personnes physiques passée en paramètre contient
@@ -868,6 +867,6 @@ public abstract class Arrivee extends Mouvement {
 
 	private enum ModeDetection{
 		NAVS13,
-		COMPLET;
+		COMPLET
 	}
 }

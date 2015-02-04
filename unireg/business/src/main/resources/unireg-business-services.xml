@@ -258,7 +258,6 @@
 	
 	<bean id="registreFoncierService" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl"> 
 		<property name="adresseService" ref="adresseService" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />		
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="immeubleDAO" ref="immeubleDAO" />

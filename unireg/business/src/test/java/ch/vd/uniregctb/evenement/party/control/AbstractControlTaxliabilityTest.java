@@ -100,7 +100,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest {
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
-		List<Long> expected = new ArrayList<Long>();
+		List<Long> expected = new ArrayList<>();
 		expected.add(idPere);
 		expected.add(idMere);
 		final List<Long> parentsIds = result.getEchec().getParentsIds();
@@ -114,7 +114,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest {
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
-		List<Long> expected = new ArrayList<Long>();
+		List<Long> expected = new ArrayList<>();
 		expected.add(idPere);
 		expected.add(idMere);
 		final List<Long> parentsIds = result.getEchec().getParentsIds();
@@ -140,7 +140,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest {
 		assertNull(idTiersAssujetti);
 		assertNotNull(result.getEchec());
 		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, result.getEchec().getType());
-		List<Long> expectedParentIds = new ArrayList<Long>();
+		List<Long> expectedParentIds = new ArrayList<>();
 		expectedParentIds.add(idPere);
 		expectedParentIds.add(idMere);
 		final List<Long> parentsIds = result.getEchec().getParentsIds();
@@ -148,7 +148,7 @@ public abstract class AbstractControlTaxliabilityTest extends BusinessTest {
 		assertEquals(2, parentsIds.size());
 		assertListTiers(expectedParentIds, parentsIds);
 
-		List<Long> expectedMenageParentIds = new ArrayList<Long>();
+		List<Long> expectedMenageParentIds = new ArrayList<>();
 		expectedMenageParentIds.add(idMenagePere);
 		expectedMenageParentIds.add(idMenageMere);
 		final List<Long> menageParentsIds = result.getEchec().getMenageCommunParentsIds();

@@ -18,9 +18,9 @@ import ch.vd.unireg.xml.party.v2.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v2.BankAccount;
 import ch.vd.uniregctb.common.WebitTest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public abstract class AbstractPartyWebServiceTest extends WebitTest {
 

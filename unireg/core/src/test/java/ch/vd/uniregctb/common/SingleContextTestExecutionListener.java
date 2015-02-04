@@ -34,10 +34,7 @@ public class SingleContextTestExecutionListener implements TestExecutionListener
 			f.setAccessible(true);
 			locations = (Object[]) f.get(testContext);
 		}
-		catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IllegalAccessException e) {
+		catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 		return ObjectUtils.nullSafeToString(locations);

@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DeclarationImpotOrdinaireDAOTest extends CoreDAOTest {
 

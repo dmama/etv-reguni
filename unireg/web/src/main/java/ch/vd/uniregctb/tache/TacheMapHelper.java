@@ -59,7 +59,7 @@ public class TacheMapHelper extends CommonMapHelper {
 			TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(true);
 
-			final Map<Integer, String> map = new TreeMap<Integer, String>();
+			final Map<Integer, String> map = new TreeMap<>();
 
 			template.execute(new TransactionCallback<Object>() {
 				@Override
@@ -106,7 +106,7 @@ public class TacheMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapOfficeImpotUtilisateur() {
 
-		final Map<Integer, String> map = new HashMap<Integer, String>();
+		final Map<Integer, String> map = new HashMap<>();
 		if (!SecurityDebugConfig.isIfoSecDebug()) {
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivites = serviceSecurite.getCollectivitesUtilisateur(AuthenticationHelper.getCurrentPrincipal());
 			if (collectivites != null) {
@@ -141,7 +141,7 @@ public class TacheMapHelper extends CommonMapHelper {
 			map.put(MockOfficeImpot.OID_ST_CROIX.getNoColAdm(), MockOfficeImpot.OID_ST_CROIX.getNomCourt());
 		}
 
-		final Map<Integer, String> treeMap = new TreeMap<Integer, String>(new ValueComparator<String>(map));
+		final Map<Integer, String> treeMap = new TreeMap<>(new ValueComparator<>(map));
 		treeMap.putAll(map);
 		return Collections.unmodifiableMap(treeMap);
 	}

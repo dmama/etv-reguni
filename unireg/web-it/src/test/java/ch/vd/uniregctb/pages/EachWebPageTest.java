@@ -2,14 +2,14 @@ package ch.vd.uniregctb.pages;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WebitTest;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class EachWebPageTest extends WebitTest {
 

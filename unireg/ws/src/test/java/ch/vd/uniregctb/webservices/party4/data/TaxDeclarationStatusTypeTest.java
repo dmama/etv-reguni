@@ -13,8 +13,8 @@ import ch.vd.uniregctb.webservices.party4.EnumTest;
 import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
 import ch.vd.uniregctb.xml.party.v2.TaxDeclarationBuilder;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 @SuppressWarnings({"JavaDoc"})

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.editique.impl;
 
-import junit.framework.Assert;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.TimeHelper;

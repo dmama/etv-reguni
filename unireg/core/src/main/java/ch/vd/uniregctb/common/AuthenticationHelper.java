@@ -2,7 +2,6 @@ package ch.vd.uniregctb.common;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Stack;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.acls.domain.PrincipalSid;

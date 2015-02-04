@@ -3,8 +3,8 @@ package ch.vd.uniregctb.evenement.civil.ech;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

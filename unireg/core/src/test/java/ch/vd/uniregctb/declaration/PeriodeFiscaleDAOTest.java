@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings({"JavaDoc"})
 public class PeriodeFiscaleDAOTest extends CoreDAOTest {

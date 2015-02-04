@@ -33,7 +33,7 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 
 	public enum IgnoreType {
 		FORS_DEJA_SUR_COMMUNE_RESULTANTE("Les fors du contribuable sont déjà sur la commune résultante."),
-		DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE("Les décisions ACI du contribuable sont déjà sur la commune résultante.");;
+		DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE("Les décisions ACI du contribuable sont déjà sur la commune résultante.");
 
 		private final String description;
 
@@ -48,7 +48,7 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 
 	public enum PhaseTraitement{
 		PHASE_FOR,
-		PHASE_DECISION;
+		PHASE_DECISION
 	}
 
 	public static class Erreur extends Info {

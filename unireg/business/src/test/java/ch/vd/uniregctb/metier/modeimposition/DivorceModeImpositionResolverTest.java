@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 

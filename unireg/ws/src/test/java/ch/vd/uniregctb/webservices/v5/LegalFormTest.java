@@ -5,9 +5,9 @@ import org.junit.Test;
 import ch.vd.unireg.xml.party.othercomm.v1.LegalForm;
 import ch.vd.uniregctb.type.FormeJuridique;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class LegalFormTest extends EnumTest {

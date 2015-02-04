@@ -17,8 +17,8 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class DetermineDIsJobTest extends JobTest {
 

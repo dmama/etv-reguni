@@ -202,10 +202,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 			return new Communes(communeAvant, communeApres);
 		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementCivilException(e);
-		}
-		catch (ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -229,10 +226,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			}
 			return false;
 		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementCivilException(e);
-		}
-		catch (ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -320,10 +314,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 			}
 			return false;
 		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementCivilException(e);
-		}
-		catch (ServiceInfrastructureException e) {
+		catch (DonneesCivilesException | ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
 	}

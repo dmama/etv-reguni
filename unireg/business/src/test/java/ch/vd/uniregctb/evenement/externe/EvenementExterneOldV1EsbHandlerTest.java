@@ -553,7 +553,7 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
 		marshaller.marshal(new JAXBElement<>(qname, EvtQuittanceListe.class, event), doc);
 
-		final EsbMessage m = new EsbMessageFactory().createMessage();
+		final EsbMessage m = EsbMessageFactory.createMessage();
 		m.setBody(doc);
 
 		return m;

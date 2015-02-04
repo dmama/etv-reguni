@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.TimeHelper;

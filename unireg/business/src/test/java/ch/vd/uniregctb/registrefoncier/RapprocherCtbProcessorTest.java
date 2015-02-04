@@ -26,7 +26,7 @@ public class RapprocherCtbProcessorTest extends BusinessTest {
 		super.runOnSetUp();
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		processor = new RapprocherCtbProcessor(hibernateTemplate, transactionManager, tiersDAO, adresseService, tiersService, serviceCivil);
+		processor = new RapprocherCtbProcessor(transactionManager, tiersDAO, adresseService, tiersService, serviceCivil);
 	}
 
 	@Test

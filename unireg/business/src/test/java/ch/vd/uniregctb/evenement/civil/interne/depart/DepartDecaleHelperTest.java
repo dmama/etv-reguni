@@ -2,8 +2,8 @@ package ch.vd.uniregctb.evenement.civil.interne.depart;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;

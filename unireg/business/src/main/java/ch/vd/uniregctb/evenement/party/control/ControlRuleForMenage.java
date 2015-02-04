@@ -27,8 +27,8 @@ public abstract class ControlRuleForMenage<T extends Enum<T>> extends ControlRul
 		final List<EnsembleTiersCouple> listeCouples = tiers instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) tiers) : null;
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période
-			final List<Long> menagesCommunsAssujettis = new ArrayList<Long>();
-			final List<Long> menagesCommunsNonAssujettis = new ArrayList<Long>();
+			final List<Long> menagesCommunsAssujettis = new ArrayList<>();
+			final List<Long> menagesCommunsNonAssujettis = new ArrayList<>();
 			for (EnsembleTiersCouple couple : listeCouples) {
 				final MenageCommun menageCommun = couple.getMenage();
 				if (isAssujetti(menageCommun)) {

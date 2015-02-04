@@ -176,13 +176,7 @@ public class JspTagFormInput extends AbstractHtmlInputElementTag {
 			constructor.setAccessible(true);
 			editor = constructor.newInstance(params);
 		}
-		catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-		catch (InvocationTargetException e) {
+		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 		return editor;

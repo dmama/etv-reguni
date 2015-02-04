@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class DeclarationImpotSourceValidatorTest extends AbstractValidatorTest<DeclarationImpotSource> {
 

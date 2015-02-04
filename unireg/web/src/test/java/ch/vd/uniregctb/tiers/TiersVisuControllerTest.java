@@ -16,7 +16,7 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test case du controlleur spring du meme nom.

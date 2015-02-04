@@ -2,7 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class AsyncStorageTest<S extends AsyncStorage<String, String>> extends WithoutSpringTest {

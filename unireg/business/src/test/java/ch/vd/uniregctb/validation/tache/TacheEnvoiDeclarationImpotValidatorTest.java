@@ -13,7 +13,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class TacheEnvoiDeclarationImpotValidatorTest extends AbstractValidatorTest<TacheEnvoiDeclarationImpot> {
 

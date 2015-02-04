@@ -38,7 +38,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, adresseService);
+		processor = new ImportImmeublesProcessor(getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, adresseService);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

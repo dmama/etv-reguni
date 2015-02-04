@@ -23,7 +23,7 @@ public class ControlRuleForMenageDate extends ControlRuleForMenage<ModeImpositio
 
 	@Override
 	public List<EnsembleTiersCouple> getEnsembleTiersCouple(PersonnePhysique pp) {
-		final List<EnsembleTiersCouple> liste = new ArrayList<EnsembleTiersCouple>(1);
+		final List<EnsembleTiersCouple> liste = new ArrayList<>(1);
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, date);
 		if (couple != null) {
 			liste.add(couple);

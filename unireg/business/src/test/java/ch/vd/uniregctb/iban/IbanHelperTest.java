@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.iban;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;

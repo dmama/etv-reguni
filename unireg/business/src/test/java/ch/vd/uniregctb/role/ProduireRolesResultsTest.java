@@ -3,7 +3,7 @@ package ch.vd.uniregctb.role;
 import java.util.Arrays;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -258,6 +258,7 @@ public class AdresseMixer {
 	 *                 les autres par ordre décroissant de priorité.
 	 * @return une liste d'adresses qui peuvent être utilisées pour boucher les trous de la collection d'adresses de base; ou <b>null</b> si la collection de base ne possède aucun trou.
 	 */
+	@SafeVarargs
 	public static List<AdresseGenerique> determineBoucheTrous(List<AdresseGenerique> adresses, List<AdresseGenerique>... defaults) {
 		if (defaults == null || defaults.length == 0) {
 			return null;

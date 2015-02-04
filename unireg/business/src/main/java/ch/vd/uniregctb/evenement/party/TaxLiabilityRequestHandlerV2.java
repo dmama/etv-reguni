@@ -147,7 +147,7 @@ public abstract class TaxLiabilityRequestHandlerV2<T extends TaxLiabilityRequest
 	}
 
 	private List<Integer> getListOfInteger(List<Long> menageCommunIds) {
-		final List<Integer> result = new ArrayList<Integer>();
+		final List<Integer> result = new ArrayList<>();
 		for (Long menageCommunId : menageCommunIds) {
 			result.add(menageCommunId.intValue());
 		}

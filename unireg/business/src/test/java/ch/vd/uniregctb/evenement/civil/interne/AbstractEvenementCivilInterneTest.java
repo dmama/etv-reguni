@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;

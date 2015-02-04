@@ -11,7 +11,7 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class SimpleGlobalIndexTest extends WithoutSpringTest {
 

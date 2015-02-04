@@ -3,7 +3,7 @@ package ch.vd.uniregctb.tiers;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.TransactionStatus;

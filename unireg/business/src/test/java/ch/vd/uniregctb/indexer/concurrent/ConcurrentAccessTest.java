@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class ConcurrentAccessTest extends BusinessTest {
 

@@ -6,8 +6,8 @@ import ch.vd.unireg.xml.party.debtor.v2.WithholdingTaxDeclarationPeriod;
 import ch.vd.uniregctb.webservices.party4.EnumTest;
 import ch.vd.uniregctb.webservices.party4.impl.EnumHelper;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 public class WithholdingTaxDeclarationPeriodTest extends EnumTest {

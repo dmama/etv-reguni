@@ -222,17 +222,17 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				junit.framework.Assert.assertNotNull(evt);
+				org.junit.Assert.assertNotNull(evt);
 				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				junit.framework.Assert.assertNotNull(pp);
+				org.junit.Assert.assertNotNull(pp);
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				junit.framework.Assert.assertNotNull(erreurs);
-				junit.framework.Assert.assertEquals(1, erreurs.size());
+				org.junit.Assert.assertNotNull(erreurs);
+				org.junit.Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-				junit.framework.Assert.assertEquals(message, erreur.getMessage());
+				org.junit.Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
 		});
@@ -293,17 +293,17 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				junit.framework.Assert.assertNotNull(evt);
+				org.junit.Assert.assertNotNull(evt);
 				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				junit.framework.Assert.assertNotNull(pp);
+				org.junit.Assert.assertNotNull(pp);
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				junit.framework.Assert.assertNotNull(erreurs);
-				junit.framework.Assert.assertEquals(1, erreurs.size());
+				org.junit.Assert.assertNotNull(erreurs);
+				org.junit.Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-				junit.framework.Assert.assertEquals(message, erreur.getMessage());
+				org.junit.Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
 		});

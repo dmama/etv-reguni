@@ -1,6 +1,6 @@
 package ch.vd.unireg.interfaces.upi.mock;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import ch.vd.unireg.interfaces.upi.ServiceUpiException;
 import ch.vd.unireg.interfaces.upi.ServiceUpiRaw;

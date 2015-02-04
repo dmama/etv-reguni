@@ -3,7 +3,7 @@ package ch.vd.uniregctb.common;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateConstants;

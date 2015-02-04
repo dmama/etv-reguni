@@ -33,7 +33,6 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -92,13 +91,11 @@ public class ImportImmeublesProcessor {
 	private final ImmeubleDAO immeubleDAO;
 	private final TiersDAO tiersDAO;
 	private final TiersService tiersService;
-	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final AdresseService adresseService;
 
-	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService,
+	public ImportImmeublesProcessor(ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService,
 	                                AdresseService adresseService) {
-		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.immeubleDAO = immeubleDAO;
 		this.tiersDAO = tiersDAO;
