@@ -144,7 +144,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -289,7 +289,6 @@
 								<goals>
 									<goal>compile</goal>
 								</goals>
-								<!--<phase>compile</phase>-->
 							</execution>
 						</executions>
 						<configuration>

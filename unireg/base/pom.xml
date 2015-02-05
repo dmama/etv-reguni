@@ -218,7 +218,7 @@
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
-			<version>${jstl.version}</version>
+			<version>${taglibs.standard.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -585,8 +585,9 @@
 
 		<!-- Web application versions -->
 		<jsp.version>2.2</jsp.version>
-		<servlet.version>3.0-alpha-1</servlet.version>
-		<jstl.version>1.1.2</jstl.version>
+		<servlet.version>3.1.0</servlet.version>
+		<jstl.version>1.2</jstl.version>
+		<taglibs.standard.version>1.1.2</taglibs.standard.version>
 
 		<!-- Framework dependency versions -->
 		<tomcat.version>8.0.17</tomcat.version>
