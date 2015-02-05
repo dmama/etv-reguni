@@ -397,7 +397,7 @@
 						-inferrel -inferdep -quiet -hide java.* -collpackages java.util.* -qualify -postfixpackage -nodefontsize 9
 						-nodefontpackagesize 7
 					</additionalparam>
-					<additionalJOption>-J-Xmx1024m</additionalJOption>
+					<additionalJOption>-J-Xmx1024m -Xdoclint:none</additionalJOption>
 					<aggregate>true</aggregate>
 					<excludePackageNames>javax.jws.*:ch.vd.uniregctb.webservices.*</excludePackageNames>
 					<links>
