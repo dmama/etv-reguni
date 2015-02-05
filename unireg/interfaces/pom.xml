@@ -35,12 +35,12 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>5.7-SNAPSHOT</version>
+			<version>5.7</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-wsclient-rcpers</artifactId>
-			<version>5.1-SNAPSHOT</version>
+			<version>5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
