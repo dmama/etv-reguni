@@ -111,14 +111,14 @@ public class AnnulationDecesController {
 		return tiersMapHelper.getMapTypeRechercheNom();
 	}
 
-	@RequestMapping(value = "/list.do")
+	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true)
 	@SecurityCheck(rolesToCheck = {Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR},	accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	public String liste(ModelMap modelMap, @Valid @ModelAttribute(ANNULATION_DECES_CRITERIA) TiersCriteriaView criteresEnSession, BindingResult result) {
-		if (!result.hasErrors() && !criteresEnSession.isEmpty()) {
+	public String getListe(Model model, @ModelAttribute(ANNULATION_DECES_CRITERIA) TiersCriteriaView criteres, BindingResult result) {
+		if (!criteres.isEmpty()) {
 			try {
-				final List<TiersIndexedDataView> list = searchDecedes(criteresEnSession);
-				modelMap.addAttribute("list", list);
+				final List<TiersIndexedDataView> list = searchDecedes(criteres);
+				model.addAttribute("list", list);
 			}
 			catch (TooManyResultsIndexerException ee) {
 				result.reject("error.preciser.recherche");
@@ -128,6 +128,16 @@ public class AnnulationDecesController {
 			}
 		}
 		return "annulation/deces/list";
+	}
+
+	@RequestMapping(value = "/list.do", method = RequestMethod.POST)
+	@Transactional(readOnly = true)
+	@SecurityCheck(rolesToCheck = {Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR},	accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String postListe(@Valid @ModelAttribute(ANNULATION_DECES_CRITERIA) TiersCriteriaView criteresEnSession, BindingResult result) {
+		if (result.hasErrors()) {
+			return "annulation/deces/list";
+		}
+		return "redirect:list.do";
 	}
 
 	private List<TiersIndexedDataView> searchDecedes(TiersCriteriaView criteresEnSession) {
