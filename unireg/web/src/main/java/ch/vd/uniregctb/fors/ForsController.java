@@ -683,8 +683,8 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addDebiteur(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -700,7 +700,7 @@ public class ForsController {
 
 		final long dpiId = view.getTiersId();
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(dpiId);
@@ -746,7 +746,7 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editDebiteur(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
@@ -765,7 +765,7 @@ public class ForsController {
 	@RequestMapping(value = "/debiteur/edit.do", method = RequestMethod.POST)
 	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
@@ -790,7 +790,7 @@ public class ForsController {
 	@RequestMapping(value = "/debiteur/cancel.do", method = RequestMethod.POST)
 	public String cancelDebiteur(long forId) throws Exception {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
@@ -810,7 +810,7 @@ public class ForsController {
 	@RequestMapping(value = "/debiteur/reopen.do", method = RequestMethod.POST)
 	public String reopenDebiteur(long forId) throws Exception {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_DPI, Role.MODIF_FISCAL_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
