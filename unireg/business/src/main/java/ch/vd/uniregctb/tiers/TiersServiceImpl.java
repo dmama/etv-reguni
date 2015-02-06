@@ -2704,7 +2704,7 @@ public class TiersServiceImpl implements TiersService {
 				// rien à faire
 				return null;
 			}
-		final Contribuable ctb = (Contribuable) decisionAci.getTiers();
+		final Contribuable ctb = decisionAci.getContribuable();
 		Assert.notNull(ctb);
 
 		// [SIFISC-12624] toutes les corrections doivent s'effectuer par une annulation de la décision suivi de la création d'une nouvelle décision avec la valeur corrigée.

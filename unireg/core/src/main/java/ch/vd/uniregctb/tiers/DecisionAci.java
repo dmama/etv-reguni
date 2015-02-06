@@ -27,9 +27,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @Entity
 @Table(name = "DECISION_ACI")
-public class DecisionAci extends HibernateEntity implements LinkedEntity,DateRange,Duplicable<DecisionAci> {
+public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRange, Duplicable<DecisionAci> {
+
 	private Long id;
-	private Tiers tiers;
+	private Contribuable contribuable;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private Integer numeroOfsAutoriteFiscale;
@@ -39,19 +40,18 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity,DateRan
 	public DecisionAci() {
 	}
 
-	public DecisionAci(Tiers tiers, RegDate dateDebut, RegDate dateFin, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, String remarque) {
+	public DecisionAci(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, String remarque) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
 		this.typeAutoriteFiscale = typeAutoriteFiscale;
 		this.remarque = remarque;
-		this.tiers = tiers;
+		this.contribuable = contribuable;
 	}
 
 	public DecisionAci(DecisionAci da) {
-		this(da.getTiers(),da.getDateDebut(), da.getDateFin(), da.getNumeroOfsAutoriteFiscale(), da.getTypeAutoriteFiscale(), da.getRemarque());
+		this(da.getContribuable(), da.getDateDebut(), da.getDateFin(), da.getNumeroOfsAutoriteFiscale(), da.getTypeAutoriteFiscale(), da.getRemarque());
 	}
-
 
 	@Override
 	@Transient
@@ -74,12 +74,12 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity,DateRan
 	})
 	@JoinColumn(name = "TIERS_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_DECISION_ACI_TIERS_ID", columnNames = "TIERS_ID")
-	public Tiers getTiers() {
-		return tiers;
+	public Contribuable getContribuable() {
+		return contribuable;
 	}
 
-	public void setTiers(Tiers tiers) {
-		this.tiers = tiers;
+	public void setContribuable(Contribuable contribuable) {
+		this.contribuable = contribuable;
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity,DateRan
 	@Transient
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return tiers == null ? null : Arrays.asList(tiers);
+		return contribuable == null ? null : Arrays.asList(contribuable);
 	}
 
 	/**

@@ -1476,7 +1476,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		public void assertSame(DecisionAci entity1, DecisionAci entity2) {
 			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
 			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
-			Assert.isSame(entity1.getTiers().getNumero(), entity2.getTiers().getNumero());
+			Assert.isSame(entity1.getContribuable().getNumero(), entity2.getContribuable().getNumero());
 			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
 			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
 		}

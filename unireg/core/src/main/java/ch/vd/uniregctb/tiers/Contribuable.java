@@ -400,11 +400,11 @@ public abstract class Contribuable extends Tiers {
 	}
 
 
-	public void addDecisionAci(DecisionAci d){
+	public void addDecisionAci(DecisionAci d) {
 		if (this.decisionsAci == null) {
 			this.decisionsAci = new HashSet<>();
 		}
-		d.setTiers(this);
+		d.setContribuable(this);
 		this.decisionsAci.add(d);
 	}
 

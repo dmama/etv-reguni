@@ -81,12 +81,11 @@ public class DecisionAciView implements Annulable{
 
 	public DecisionAciView(DecisionAci d) {
 		this.id = d.getId();
-		this.tiersId = d.getTiers().getNumero();
+		this.tiersId = d.getContribuable().getNumero();
 		this.dateDebut = d.getDateDebut();
 		this.dateFin =d.getDateFin();
 		this.remarque = d.getRemarque();
 		this.annule = d.isAnnule();
-		this.tiersId = d.getTiers().getId();
 		setTypeEtNumeroForFiscal(d.getTypeAutoriteFiscale(),d.getNumeroOfsAutoriteFiscale());
 	}
 

@@ -440,7 +440,7 @@ public class FusionDeCommunesProcessor {
 			decision.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
 		}
 		else {
-			Contribuable ctb = (Contribuable)decision.getTiers();
+			Contribuable ctb = decision.getContribuable();
 			tiersService.closeDecisionAci(decision, dateFusion.getOneDayBefore());
 			tiersService.addDecisionAci(ctb, decision.getTypeAutoriteFiscale(), nouveauNoOfs, dateFusion, null, decision.getRemarque());
 		}
@@ -494,15 +494,15 @@ public class FusionDeCommunesProcessor {
 					+ "ORDER BY f.tiers.id ASC";
 
 	final private static String queryTiersAvecDecision = // --------------------------------
-			"SELECT d.tiers.id                                                  "
+			"SELECT d.contribuable.id                                           "
 					+ "FROM                                                     "
-					+ "    DecisionAci AS d                                       "
+					+ "    DecisionAci AS d                                     "
 					+ "WHERE                                                    "
 					+ "	   d.annulationDate IS null                             "
 					+ "	   AND (d.dateFin IS null OR d.dateFin >= :dateFusion)  "
 					+ "	   AND d.typeAutoriteFiscale != 'PAYS_HS'               "
 					+ "	   AND d.numeroOfsAutoriteFiscale IN (:nosOfs)          "
-					+ "ORDER BY d.tiers.id ASC";
+					+ "ORDER BY d.contribuable.id ASC";
 
 	private List<Long> getListTiersTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion) {
 

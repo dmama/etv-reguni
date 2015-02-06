@@ -5,7 +5,7 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class EditDecisionAciView implements Annulable{
+public class EditDecisionAciView implements Annulable {
 	private Long id;
 	private Long tiersId;
 	private RegDate dateDebut;
@@ -83,14 +83,14 @@ public class EditDecisionAciView implements Annulable{
 		this.remarque = d.getRemarque();
 		this.annule = d.isAnnule();
 		this.dateFinEditable = d.getDateFin() == null || d.getDateFin().isAfter(RegDate.get());
-		this.tiersId = d.getTiers().getId();
+		this.tiersId = d.getContribuable().getNumero();
 		this.typeAutoriteFiscale = d.getTypeAutoriteFiscale();
 		this.numeroAutoriteFiscale = d.getNumeroOfsAutoriteFiscale();
 	}
 
 	public void initReadOnlyData(DecisionAci decision) {
 		this.id = decision.getId();
-		this.tiersId = decision.getTiers().getNumero();
+		this.tiersId = decision.getContribuable().getNumero();
 		this.dateDebut = decision.getDateDebut();
 		this.dateFinEditable = decision.getDateFin() == null || decision.getDateFin().isAfter(RegDate.get());
 		if (!this.dateFinEditable) {
@@ -108,8 +108,6 @@ public class EditDecisionAciView implements Annulable{
 	public boolean isAnnule() {
 		return annule;
 	}
-
-
 
 	public boolean isDateFinEditable() {
 		return dateFinEditable;

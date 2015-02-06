@@ -9,6 +9,7 @@ import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.tiers.DecisionAci;
 
 public class DecisionAciDAOImpl extends BaseDAOImpl<DecisionAci, Long> implements DecisionAciDAO {
+
 	protected DecisionAciDAOImpl() {
 		super(DecisionAci.class);
 	}
@@ -22,7 +23,7 @@ public class DecisionAciDAOImpl extends BaseDAOImpl<DecisionAci, Long> implement
 	@Override
 	public List<DecisionAci> getDecisionsAci(Long tiersId) {
 		final Session session = getCurrentSession();
-		final Query query = session.createQuery("from DecisionAci d where d.tiers.id = :tiersId");
+		final Query query = session.createQuery("from DecisionAci d where d.contribuable.id = :tiersId");
 		query.setParameter("tiersId", tiersId);
 		//noinspection unchecked
 		return query.list();

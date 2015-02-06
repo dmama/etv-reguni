@@ -151,12 +151,12 @@ public class DecisionAciController {
 			throw new ObjectNotFoundException("La décision ACI avec l'id = " + decisionId + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations((Contribuable) decisionAci.getTiers());
+		final Autorisations auth = getAutorisations(decisionAci.getContribuable());
 		if (!auth.isDecisionsAci()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de décision ACI.");
 		}
 
-		final Long tiersId = decisionAci.getTiers().getNumero();
+		final Long tiersId = decisionAci.getContribuable().getNumero();
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("command", new EditDecisionAciView(decisionAci));
@@ -173,12 +173,12 @@ public class DecisionAciController {
 			throw new ObjectNotFoundException("La décision ACI avec l'id = " + view.getId() + " n'existe pas.");
 		}
 
-		final Contribuable ctb = (Contribuable) tiersDAO.get(decisionAci.getTiers().getNumero());
+		final Contribuable ctb = (Contribuable) tiersDAO.get(decisionAci.getContribuable().getNumero());
 		if (ctb == null) {
 			throw new ObjectNotFoundException("Le contribuable avec l'id=" + view.getTiersId() + " n'existe pas.");
 		}
 
-		final Autorisations auth = getAutorisations((Contribuable) decisionAci.getTiers());
+		final Autorisations auth = getAutorisations(decisionAci.getContribuable());
 		if (!auth.isDecisionsAci()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de décision ACI.");
 		}
@@ -204,7 +204,7 @@ public class DecisionAciController {
 		if (decisionAci == null) {
 			throw new ObjectNotFoundException("La décision ACI  n°" + decisionId + " n'existe pas.");
 		}
-		final Tiers tiers = decisionAci.getTiers();
+		final Tiers tiers = decisionAci.getContribuable();
 		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
 
 		final Autorisations auth = getAutorisations((Contribuable) tiers);
