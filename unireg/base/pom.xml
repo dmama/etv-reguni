@@ -596,7 +596,7 @@
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
-		<activemq.version>5.8.0.redhat-60024</activemq.version>
+		<activemq.version>5.10.0</activemq.version>
 		<jencks.version>2.2</jencks.version>
 		<jackson.version>1.9.13</jackson.version>
 		<wsparty3.version>3.8</wsparty3.version>
