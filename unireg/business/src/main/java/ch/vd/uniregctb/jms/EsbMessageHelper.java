@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -79,10 +80,30 @@ public abstract class EsbMessageHelper {
 	 */
 	public static String extractNamespaceURI(EsbMessage msg, Logger logger) {
 		try {
-			return StringUtils.trimToEmpty(msg.getBodyAsDocument().getDocumentElement().getNamespaceURI());
+			return extractNamespaceURI(msg.getBodyAsDocument(), msg.getBusinessId(), logger);
 		}
 		catch (Exception e) {
 			logger.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", msg.getBusinessId()), e);
+			return ERROR_VALUE;
+		}
+	}
+
+	/**
+	 * Essaie d'extraire le <i>namespace</i> du <i>root element</i> du document passé en paramètre. S'il n'existe pas, une chaîne vide est retournée.
+	 * @param doc DOM du message ESB dont on veut connaître le <i>namespace</i>
+	 * @param logger logger sur lequel sera envoyé (en WARN) un éventuel problème à l'extraction du <i>namespace</i>
+	 * @return l'URI du <i>namespace</i> extrait, une chaîne vide en absence de <i>namespace</i> et "???" en cas d'erreur à l'extraction
+	 */
+	public static String extractNamespaceURI(Document doc, String businessId, Logger logger) {
+		if (doc == null) {
+			return StringUtils.EMPTY;
+		}
+
+		try {
+			return StringUtils.trimToEmpty(doc.getDocumentElement().getNamespaceURI());
+		}
+		catch (Exception e) {
+			logger.warn(String.format("Exception lors de l'extraction du namespace du message '%s'", businessId), e);
 			return ERROR_VALUE;
 		}
 	}
@@ -94,14 +115,18 @@ public abstract class EsbMessageHelper {
 
 	/**
 	 * Essaie d'extraire le type de l'élément racine d'après l'attribut xsi:type, si xsi représente bien http://www.w3.org/2001/XMLSchema-instance
-	 * @param msg message ESB dont on veut connaître le type de l'élément racine
+	 * @param doc DOM dont on veut connaître le type de l'élément racine
 	 * @param logger logger sur lequel sera envoyé (en WARN) un éventuel problème à l'extraction de la donnée>
 	 * @return type de l'élément racine si l'information xsi:type est disponible, <code>null</code> si cette information est indisponible et "???" en cas de problème
 	 */
-	public static String extractRootElementType(EsbMessage msg, Logger logger) {
+	public static String extractRootElementType(Document doc, String businessId, Logger logger) {
+		if (doc == null) {
+			return null;
+		}
+
 		try {
 			// parsing des attributs de l'élément racine
-			final Element rootElement = msg.getBodyAsDocument().getDocumentElement();
+			final Element rootElement = doc.getDocumentElement();
 			final NamedNodeMap attributeMap = rootElement.getAttributes();
 			final int nbAttributes = attributeMap.getLength();
 			final Map<String, String> attributes = new LinkedHashMap<>(nbAttributes);
@@ -136,6 +161,22 @@ public abstract class EsbMessageHelper {
 				}
 			}
 			return null;
+		}
+		catch (Exception e) {
+			logger.warn(String.format("Exception lors de l'extraction du type de l'élément racine du message '%s'", businessId), e);
+			return ERROR_VALUE;
+		}
+	}
+
+	/**
+	 * Essaie d'extraire le type de l'élément racine d'après l'attribut xsi:type, si xsi représente bien http://www.w3.org/2001/XMLSchema-instance
+	 * @param msg message ESB dont on veut connaître le type de l'élément racine
+	 * @param logger logger sur lequel sera envoyé (en WARN) un éventuel problème à l'extraction de la donnée>
+	 * @return type de l'élément racine si l'information xsi:type est disponible, <code>null</code> si cette information est indisponible et "???" en cas de problème
+	 */
+	public static String extractRootElementType(EsbMessage msg, Logger logger) {
+		try {
+			return extractRootElementType(msg.getBodyAsDocument(), msg.getBusinessId(), logger);
 		}
 		catch (Exception e) {
 			logger.warn(String.format("Exception lors de l'extraction du type de l'élément racine du message '%s'", msg.getBusinessId()), e);

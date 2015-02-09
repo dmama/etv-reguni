@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.w3c.dom.Document;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
@@ -29,22 +30,36 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	private static final StringRenderer<EsbMessage> RENDERER = new StringRenderer<EsbMessage>() {
 		@Override
 		public String toString(EsbMessage msg) {
-			final String typePart = getRootElementTypePart(msg);
+			final String businessId = msg.getBusinessId();
+			final Document doc = getDocument(msg);
+			final String typePart = getRootElementTypePart(doc, businessId);
+			final String uri = EsbMessageHelper.extractNamespaceURI(doc, businessId, APP_LOGGER);
 			if (StringUtils.isBlank(msg.getBusinessCorrelationId())) {
 				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', ns='%s'%s",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER), typePart);
+				                     businessId, uri, typePart);
 			}
 			else {
 				return String.format("queue='%s', sender='%s', businessUser='%s', businessId='%s', businessCorrelationId='%s', ns='%s'%s",
 				                     msg.getServiceDestination(), msg.getApplication(), msg.getBusinessUser(),
-				                     msg.getBusinessId(), msg.getBusinessCorrelationId(), EsbMessageHelper.extractNamespaceURI(msg, APP_LOGGER), typePart);
+				                     businessId, msg.getBusinessCorrelationId(), uri, typePart);
 			}
 		}
 
-		private String getRootElementTypePart(EsbMessage msg) {
+		@Nullable
+		private Document getDocument(EsbMessage msg) {
+			try {
+				return msg.getBodyAsDocument();
+			}
+			catch (Exception e) {
+				APP_LOGGER.warn(String.format("Exception lors de la récupération du DOM du message '%s'", msg.getBusinessId()), e);
+				return null;
+			}
+		}
+
+		private String getRootElementTypePart(Document doc, String businessId) {
 			final String typePart;
-			final String type = EsbMessageHelper.extractRootElementType(msg, APP_LOGGER);
+			final String type = EsbMessageHelper.extractRootElementType(doc, businessId, APP_LOGGER);
 			if (StringUtils.isNotBlank(type)) {
 				typePart = String.format(", type='%s'", type);
 			}
