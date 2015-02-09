@@ -66,6 +66,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		cediListener = new EvenementCediEsbMessageHandler();
 		cediListener.setHandlers(Arrays.<DossierElectroniqueHandler<?>>asList(v1Handler));
 		cediListener.setHibernateTemplate(hibernateTemplate);
+		cediListener.afterPropertiesSet();
 	}
 
 	/**

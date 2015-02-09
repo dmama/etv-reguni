@@ -61,6 +61,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 		handler.setTransactionManager(transactionManager);
 		handler.setHibernateTemplate(hibernateTemplate);
 		handler.setEvenementDAO(getBean(EvenementReqDesDAO.class, "reqdesEvenementDAO"));
+		handler.afterPropertiesSet();
 	}
 
 	private CreationModification buildCreationModificationFromPath(String path) throws Exception {

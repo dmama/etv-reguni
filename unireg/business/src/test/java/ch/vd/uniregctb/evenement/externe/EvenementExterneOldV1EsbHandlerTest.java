@@ -65,6 +65,7 @@ public class EvenementExterneOldV1EsbHandlerTest extends BusinessTest {
 
 		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(new EvtQuittanceListeV1Connector(), new EvtListeV1Connector(), new EvtListeV2Connector(), new EvtListeV3Connector());
 		handler.setConnectors(connectors);
+		handler.afterPropertiesSet();
 	}
 
 	@Test

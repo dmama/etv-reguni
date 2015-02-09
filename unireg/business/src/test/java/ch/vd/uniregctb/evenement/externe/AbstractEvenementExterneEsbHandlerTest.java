@@ -48,6 +48,7 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 
 		final List<EvenementExterneConnector> connectors = Arrays.<EvenementExterneConnector>asList(getTestedConnector());
 		handler.setConnectors(connectors);
+		handler.afterPropertiesSet();
 	}
 
 	protected abstract EvenementExterneConnector<?> getTestedConnector();
