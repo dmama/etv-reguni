@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -28,11 +29,12 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 
-public class EFactureMessageHandler implements EsbMessageHandler {
+public class EFactureMessageHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EFactureMessageHandler.class);
 
 	private Schema schemaCache;
+	private JAXBContext jaxbContext;
 
 	private EFactureEventHandler handler;
 	private HibernateTemplate hibernateTemplate;
@@ -43,6 +45,11 @@ public class EFactureMessageHandler implements EsbMessageHandler {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -72,8 +79,7 @@ public class EFactureMessageHandler implements EsbMessageHandler {
 	}
 
 	private void onMessage(EsbMessage message, Map<String, String> incomingHeaders) throws Exception {
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final Object event = u.unmarshal(message.getBodyAsSource());
 		final Demande evt;

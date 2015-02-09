@@ -42,7 +42,6 @@ import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
-import ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
@@ -61,7 +60,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	private static final Logger LOGGER = LoggerFactory.getLogger(RapportTravailRequestEsbHandler.class);
 
 	private EsbMessageValidator esbValidator;
-	private final ObjectFactory objectFactory = new ObjectFactory();
+	private final ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory objectFactory = new ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory();
 
 	private PlatformTransactionManager transactionManager;
 	private EsbJmsTemplate esbTemplate;
@@ -69,6 +68,9 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	private ServiceTracing esbMessageValidatorServiceTracing;
 
 	private Schema schemaCache;
+
+	private JAXBContext inputJaxbContext;
+	private JAXBContext outputJaxbContext;
 
 	public void setRapportTravailRequestHandler(RapportTravailRequestHandler rapportTravailRequestHandler) {
 		this.rapportTravailRequestHandler = rapportTravailRequestHandler;
@@ -176,11 +178,13 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 		resources.addAll(resource);
 
 		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
+
+		outputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory.class.getPackage().getName());
+		inputJaxbContext = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());
 	}
 
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = inputJaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
 		return element == null ? null : (MiseAJourRapportTravailRequest) element.getValue();
@@ -206,8 +210,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 	private void answer(MiseAJourRapportTravailResponse response, EsbMessage query) throws ESBValidationException {
 
 		try {
-			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-			final Marshaller marshaller = context.createMarshaller();
+			final Marshaller marshaller = outputJaxbContext.createMarshaller();
 
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);

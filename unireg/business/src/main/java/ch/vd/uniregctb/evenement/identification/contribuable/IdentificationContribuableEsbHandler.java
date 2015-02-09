@@ -58,7 +58,7 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 
 	private Map<Class<?>, IdentificationContribuableRequestHandler<?,?>> handlers;
 	private Schema schemaCache;
-	private Class<?>[] classesForParsing;
+	private JAXBContext inputJaxbContext;
 
 	public void setHandlers(Map<Class<?>, IdentificationContribuableRequestHandler<?,?>> handlers) {
 		this.handlers = handlers;
@@ -122,7 +122,8 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 			}
 			parsingClasses.add(requestClass);
 		}
-		classesForParsing = parsingClasses.toArray(new Class[parsingClasses.size()]);
+
+		inputJaxbContext = JAXBContext.newInstance(parsingClasses.toArray(new Class[parsingClasses.size()]));
 
 		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
 	}
@@ -176,8 +177,7 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 	}
 
 	private Object parse(Source message) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(classesForParsing);
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = inputJaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
 		return element == null ? null : element.getValue();

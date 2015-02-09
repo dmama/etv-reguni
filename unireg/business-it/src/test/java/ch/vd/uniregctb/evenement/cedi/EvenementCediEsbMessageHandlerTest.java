@@ -90,6 +90,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 				events.add(evt);
 			}
 		}));
+		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di.xml");
@@ -132,6 +133,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 				events.add(evt);
 			}
 		}));
+		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di_presque_vide.xml");
@@ -183,6 +185,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		};
 
 		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler));
+		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-2.0-exemple.xml");
@@ -234,6 +237,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		};
 
 		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler));
+		esbHandler.afterPropertiesSet();
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-3.0-exemple.xml");

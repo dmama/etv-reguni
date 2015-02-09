@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
 import ch.vd.evd0025.v1.ObjectFactory;
@@ -29,13 +30,15 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 
-public class EFactureMessageSenderImpl implements EFactureMessageSender {
+public class EFactureMessageSenderImpl implements EFactureMessageSender, InitializingBean {
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
 	private boolean enabled = true;
 	private String serviceDestination;
 	private String serviceReplyTo;
+
+	private JAXBContext jaxbContext;
 
 	private final static ThreadSafeSimpleDateFormat SDF = new ThreadSafeSimpleDateFormat("MMddHHmmssSSS");
 	private final static Logger LOGGER = LoggerFactory.getLogger(EFactureMessageSenderImpl.class);
@@ -58,6 +61,11 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 
 	public void setServiceReplyTo(String serviceReplyTo) {
 		this.serviceReplyTo = serviceReplyTo;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -184,8 +192,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 			Assert.notNull(principal);
 
 			try {
-				final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-				final Marshaller marshaller = context.createMarshaller();
+				final Marshaller marshaller = jaxbContext.createMarshaller();
 
 				final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);

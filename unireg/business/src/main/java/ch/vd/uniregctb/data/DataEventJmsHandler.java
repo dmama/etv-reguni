@@ -45,6 +45,8 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 
 	private Schema schemaCache;
 
+	private JAXBContext jaxbContext;
+
 	private Map<Class<? extends DataEvent>, Handler> handlers;
 
 	private static <T extends DataEvent> void addToMap(Map<Class<? extends DataEvent>, Handler> map, Class<T> clazz, Handler<T> handler) {
@@ -178,13 +180,13 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.handlers = buildHandlers();
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
 
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(msg.getBodyAsSource());
 

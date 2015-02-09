@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.jms.EsbMessageHandler;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementExterneEsbHandler implements EsbMessageHandler {
+public class EvenementExterneEsbHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementExterneEsbHandler.class);
 
@@ -40,7 +41,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 	private HibernateTemplate hibernateTemplate;
 	private Schema schemaCache;
 	private Map<Class<?>, EvenementExterneConnector> connectorMap;
-	private Class<?>[] supportedConnectorClasses;
+	private JAXBContext jaxbContext;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementExterneHandler handler) {
@@ -62,12 +63,15 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 					throw new IllegalArgumentException("Plusieurs connecteurs pour la même classe : " + supportedClass);
 				}
 			}
-			this.supportedConnectorClasses = connectorMap.keySet().toArray(new Class[connectors.size()]);
 		}
 		else {
 			this.connectorMap = Collections.emptyMap();
-			this.supportedConnectorClasses = new Class[0];
 		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(connectorMap.keySet().toArray(new Class[connectorMap.size()]));
 	}
 
 	@Override
@@ -118,8 +122,7 @@ public class EvenementExterneEsbHandler implements EsbMessageHandler {
 	protected EvenementExterne parse(Source source, String bodyAsString, String businessId) throws IOException, EsbBusinessException {
 
 		try {
-			final JAXBContext context = JAXBContext.newInstance(supportedConnectorClasses);
-			final Unmarshaller u = context.createUnmarshaller();
+			final Unmarshaller u = jaxbContext.createUnmarshaller();
 			u.setSchema(getRequestSchema());
 
 			final Object xml = u.unmarshal(source);

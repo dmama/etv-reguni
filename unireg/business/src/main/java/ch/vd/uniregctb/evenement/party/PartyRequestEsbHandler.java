@@ -68,7 +68,8 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private EsbMessageValidator esbValidator;
 	private Schema schemaCache;
-	private Class<? extends Request>[] supportedRequestClasses;
+	private JAXBContext inputJaxbContext;
+	private JAXBContext outputJaxbContext;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandlers(Map<Class<? extends Request>, RequestHandler> handlers) {
@@ -146,8 +147,7 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	}
 
 	private Request parse(Source message) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(supportedRequestClasses);
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = inputJaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
 		return element == null ? null : (Request) element.getValue();
@@ -187,14 +187,12 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 	private void answer(boolean validateResponse, Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) throws ESBValidationException {
 
 		try {
-			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-			final Marshaller marshaller = context.createMarshaller();
-
 			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			final Document doc = db.newDocument();
 
+			final Marshaller marshaller = outputJaxbContext.createMarshaller();
 			marshaller.marshal(objectFactory.createResponse(response), doc);
 			EsbMessageHelper.cleanupDocumentNamespaceDefinitions(doc.getDocumentElement());
 
@@ -241,7 +239,8 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 			resources.addAll(resource);
 		}
 
-		supportedRequestClasses = handlers.keySet().toArray(new Class[handlers.size()]);
 		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
+		inputJaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[handlers.size()]));
+		outputJaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 }

@@ -62,6 +62,7 @@ public class EvenementDeclarationEsbHandlerTest extends EvenementTest {
 
 		handler = new EvenementDeclarationEsbHandler();
 		handler.setHibernateTemplate(hibernateTemplate);
+		handler.afterPropertiesSet();
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setHandler(handler);

@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.w3c.dom.Document;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -26,13 +27,15 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbMessageValidator;
 
-public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender {
+public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationSenderImpl.class);
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
+
+	private JAXBContext jaxbContext;
 
 	/**
 	 * permet d'activer/désactiver l'envoi des événements fiscaux
@@ -57,6 +60,11 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -99,12 +107,11 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 		Assert.notNull(principal);
 
 		try {
-			JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-			Marshaller marshaller = context.createMarshaller();
+			final Marshaller marshaller = jaxbContext.createMarshaller();
 
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			final DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.newDocument();
 
 			marshaller.marshal(objectFactory.createEvenement(evenement), doc);

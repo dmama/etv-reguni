@@ -45,6 +45,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchEsbHandler.class);
 
 	private Schema schemaCache;
+	private JAXBContext jaxbContext;
 
 	private EvenementCivilEchReceptionHandler receptionHandler;
 	private EvenementCivilEchRecuperateur recuperateur;
@@ -261,8 +262,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	}
 
 	private EventNotification parse(Source xml) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		return (EventNotification) u.unmarshal(xml);
 	}
@@ -413,5 +413,7 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 		if (recuperateur != null && delaiRecuperationMinutes < 0) {
 			throw new IllegalArgumentException("La propriété 'delaiRecuperationMinutes' devrait être positive ou nulle");
 		}
+
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 }

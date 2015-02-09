@@ -26,6 +26,8 @@ import ch.vd.uniregctb.jms.EsbMessageValidator;
 public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, InitializingBean {
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
+	private JAXBContext jaxbContext;
+
 	private EsbMessageValidator esbValidator;
 
 	private AbstractEsbJmsTemplate esbTemplate;
@@ -54,13 +56,14 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 				new ClassPathResource("eVD-0004-3-0.xsd"),
 				new ClassPathResource("eVD-0001-5-0.xsd")
 		});
+
+		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
 	public void sendEvent(EvenementCivilEch evt, String businessUser) throws Exception {
 
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Marshaller marshaller = context.createMarshaller();
+		final Marshaller marshaller = jaxbContext.createMarshaller();
 
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);

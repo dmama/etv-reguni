@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -29,7 +30,7 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 
-public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
+public class EvenementDeclarationEsbHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationEsbHandler.class);
 
@@ -39,6 +40,8 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 
 	private Schema schemaCache;
 
+	private JAXBContext jaxbContext;
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementDeclarationHandler handler) {
 		this.handler = handler;
@@ -47,6 +50,11 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -86,8 +94,7 @@ public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 
 	private EvenementDeclaration parse(Source message, String businessId) throws JAXBException, SAXException, IOException {
 
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
 

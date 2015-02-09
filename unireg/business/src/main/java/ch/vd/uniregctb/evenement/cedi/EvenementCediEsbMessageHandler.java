@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
@@ -28,13 +29,13 @@ import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 
-public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
+public class EvenementCediEsbMessageHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCediEsbMessageHandler.class);
 
 	private Map<Class<?>, DossierElectroniqueHandler<?>> handlers;
 	private Schema schemaCache;
-	private Class<?>[] supportedRequestClasses;
+	private JAXBContext jaxbContext;
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -45,12 +46,16 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 			map.put(deh.getHandledClass(), deh);
 		}
 		this.handlers = map;
-		this.supportedRequestClasses = map.keySet().toArray(new Class[map.size()]);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(handlers.keySet().toArray(new Class[handlers.size()]));
 	}
 
 	@Override
@@ -120,8 +125,7 @@ public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 	}
 
 	private Object parse(Source message) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(supportedRequestClasses);
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		return u.unmarshal(message);
 	}

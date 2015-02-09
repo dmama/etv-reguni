@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -77,12 +78,13 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.xml.DataHelper;
 
-public class ReqDesEventHandler implements EsbMessageHandler {
+public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReqDesEventHandler.class);
 	private static final String VISA = "ReqDesEvent";
 
 	private Schema schemaCache;
+	private JAXBContext jaxbContext;
 
 	private ServiceInfrastructureService infraService;
 	private EvenementReqDesDAO evenementDAO;
@@ -108,6 +110,11 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 
 	public void setProcessor(EvenementReqDesProcessor processor) {
 		this.processor = processor;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -370,8 +377,7 @@ public class ReqDesEventHandler implements EsbMessageHandler {
 	}
 
 	protected CreationModification parse(Source xml) throws JAXBException, SAXException, IOException {
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Unmarshaller u = context.createUnmarshaller();
+		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		return (CreationModification) ((JAXBElement) u.unmarshal(xml)).getValue();
 	}

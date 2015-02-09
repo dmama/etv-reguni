@@ -42,6 +42,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	private String businessUser;
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
+	private JAXBContext jaxbContext;
 
 	/**
 	 * for testing purpose
@@ -74,6 +75,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
+		jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 	}
 
 	@Override
@@ -228,8 +230,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 	}
 
 	private void sendDataEvent(String businessId, DataEvent event) throws Exception {
-		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
-		final Marshaller marshaller = context.createMarshaller();
+		final Marshaller marshaller = jaxbContext.createMarshaller();
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
 		final DocumentBuilder db = dbf.newDocumentBuilder();
