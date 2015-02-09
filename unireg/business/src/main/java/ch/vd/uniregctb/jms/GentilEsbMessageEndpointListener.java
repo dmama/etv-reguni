@@ -63,6 +63,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 
 	private EsbMessageHandler handler;
 	private EsbBusinessErrorHandler esbErrorHandler;
+	private EsbMessageTracingFactoryImpl esbMessageTracingFactory;
 
 	public void setHandler(EsbMessageHandler handler) {
 		this.handler = handler;
@@ -72,8 +73,13 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		this.esbErrorHandler = esbErrorHandler;
 	}
 
+	public void setEsbMessageTracingFactory(EsbMessageTracingFactoryImpl esbMessageTracingFactory) {
+		this.esbMessageTracingFactory = esbMessageTracingFactory;
+	}
+
 	@Override
-	public void onEsbMessage(EsbMessage message) {
+	public void onEsbMessage(EsbMessage msg) {
+		final EsbMessage message = esbMessageTracingFactory != null ? esbMessageTracingFactory.wrap(msg) : msg;
 		final long start = loadMeter.start(message);
 		Throwable t = null;
 		String businessError = null;
@@ -104,13 +110,13 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 			if (JMS_LOGGER.isInfoEnabled()) {
 				final String exceptMsg = t != null ? String.format(", %s thrown", t.getClass().getName()) : StringUtils.EMPTY;
 				final String businessErrorMsg = StringUtils.isNotBlank(businessError) ? String.format(", error='%s'", StringUtils.abbreviate(businessError, 100)) : StringUtils.EMPTY;
-				final String msg = String.format("[load=%d] (%d ms) %s%s%s",
-				                                 loadMeter.getLoad() + 1,
-				                                 TimeUnit.NANOSECONDS.toMillis(end - start),
-				                                 displayedValue,
-				                                 businessErrorMsg,
-				                                 exceptMsg);
-				JMS_LOGGER.info(msg);
+				final String logString = String.format("[load=%d] (%d ms) %s%s%s",
+				                                       loadMeter.getLoad() + 1,
+				                                       TimeUnit.NANOSECONDS.toMillis(end - start),
+				                                       displayedValue,
+				                                       businessErrorMsg,
+				                                       exceptMsg);
+				JMS_LOGGER.info(logString);
 			}
 		}
 	}

@@ -16,6 +16,11 @@
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="esbErrorHandler" ref="esbErrorHandler"/>
+		<property name="esbMessageTracingFactory" ref="esbMessageTracingFactory"/>
+	</bean>
+
+	<bean id="esbMessageTracingFactory" class="ch.vd.uniregctb.jms.EsbMessageTracingFactoryImpl">
+		<property name="statsService" ref="statsService"/>
 	</bean>
 
 	<bean id="esbErrorHandler" class="ch.vd.uniregctb.jms.EsbBusinessErrorHandlerImpl">

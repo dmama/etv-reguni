@@ -21,7 +21,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public final class ServiceTracing implements ServiceTracingInterface {
+public final class ServiceTracing implements ServiceTracingInterface, ServiceTracingRecorder {
 
 	private static final long NANO_TO_MILLI = TimeUnit.MILLISECONDS.toNanos(1);
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente

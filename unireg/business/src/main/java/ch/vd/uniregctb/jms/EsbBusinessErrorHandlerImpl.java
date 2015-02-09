@@ -36,7 +36,7 @@ public class EsbBusinessErrorHandlerImpl implements EsbBusinessErrorHandler {
 	}
 
 	protected static EsbMessageImpl buildEsbErrorMessage(EsbMessage esbMessage, String errorDescription, Throwable throwable, EsbBusinessCode errorCode) throws IOException {
-		final EsbMessageImpl m = (EsbMessageImpl) esbMessage;
+		final EsbMessageImpl m = (EsbMessageImpl) (esbMessage instanceof EsbMessageWrapper ? ((EsbMessageWrapper) esbMessage).getUltimateTarget() : esbMessage);
 
 		if (throwable != null) {
 			try (Writer exceptionWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(exceptionWriter)) {
