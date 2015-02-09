@@ -21,7 +21,6 @@ import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
@@ -96,8 +95,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.2.xsd")});
+		buildEsbMessageValidator(new Resource[]{new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-7.2.xsd")});
 
 		// flush est vraiment la seule méthode appelée...
 		final HibernateTemplate hibernateTemplate = new HibernateTemplateImpl() {

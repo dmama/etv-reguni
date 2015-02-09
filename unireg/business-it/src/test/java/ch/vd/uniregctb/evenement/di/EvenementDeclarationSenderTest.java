@@ -8,7 +8,6 @@ import org.springframework.core.io.Resource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
@@ -42,9 +41,11 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("unireg-common-1.xsd"), new ClassPathResource("event/di/evenementDeclarationImpot-common-1.xsd"),
-				new ClassPathResource("event/di/evenementDeclarationImpot-output-1.xsd")});
+		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("unireg-common-1.xsd"),
+				new ClassPathResource("event/di/evenementDeclarationImpot-common-1.xsd"),
+				new ClassPathResource("event/di/evenementDeclarationImpot-output-1.xsd")
+		});
 
 		sender = new EvenementDeclarationSenderImpl();
 		sender.setEsbTemplate(esbTemplate);

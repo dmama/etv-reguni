@@ -16,7 +16,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.output.v1.EvenementAnnulationDeclarationImpot;
@@ -25,13 +24,14 @@ import ch.vd.unireg.xml.event.di.output.v1.EvenementEmissionDeclarationImpot;
 import ch.vd.unireg.xml.event.di.output.v1.ObjectFactory;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 
 public class EvenementDeclarationSenderImpl implements EvenementDeclarationSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementDeclarationSenderImpl.class);
 
 	private EsbJmsTemplate esbTemplate;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
 
 	/**
@@ -51,7 +51,7 @@ public class EvenementDeclarationSenderImpl implements EvenementDeclarationSende
 		this.esbTemplate = esbTemplate;
 	}
 
-	public void setEsbValidator(EsbXmlValidation esbValidator) {
+	public void setEsbValidator(EsbMessageValidator esbValidator) {
 		this.esbValidator = esbValidator;
 	}
 

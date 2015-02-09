@@ -37,21 +37,24 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.xml.ServiceException;
 
 public class IdentificationContribuableEsbHandler implements EsbMessageHandler, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableEsbHandler.class);
 
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private EsbJmsTemplate esbTemplate;
+	private ServiceTracing esbMessageValidatorServiceTracing;
 
 	private Map<Class<?>, IdentificationContribuableRequestHandler<?,?>> handlers;
 	private Schema schemaCache;
@@ -63,6 +66,10 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setEsbMessageValidatorServiceTracing(ServiceTracing esbMessageValidatorServiceTracing) {
+		this.esbMessageValidatorServiceTracing = esbMessageValidatorServiceTracing;
 	}
 
 	@Override
@@ -117,9 +124,7 @@ public class IdentificationContribuableEsbHandler implements EsbMessageHandler, 
 		}
 		classesForParsing = parsingClasses.toArray(new Class[parsingClasses.size()]);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -16,9 +16,9 @@ import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.AbstractEsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
+import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 
 /**
  * Implémentation de la fonctionalité de test d'envoi d'un événement civil
@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, InitializingBean {
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 
 	private AbstractEsbJmsTemplate esbTemplate;
 	private String outputQueue;
@@ -49,9 +49,11 @@ public class EvenementCivilEchSenderImpl implements EvenementCivilEchSender, Ini
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource("eVD-0009-1-0.xsd"), new ClassPathResource("eVD-0004-3-0.xsd"), new ClassPathResource("eVD-0001-5-0.xsd")});
+		esbValidator = BusinessItTest.buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("eVD-0009-1-0.xsd"),
+				new ClassPathResource("eVD-0004-3-0.xsd"),
+				new ClassPathResource("eVD-0001-5-0.xsd")
+		});
 	}
 
 	@Override

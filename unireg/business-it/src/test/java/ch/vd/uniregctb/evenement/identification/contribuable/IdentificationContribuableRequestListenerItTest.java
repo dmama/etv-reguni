@@ -8,10 +8,9 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementHelper;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -25,7 +24,7 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;
 	private String OutputQueue;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private SmartLifecycle endpointManager;
 
 	public IdentificationContribuableRequestListenerItTest() {
@@ -38,9 +37,7 @@ public abstract class IdentificationContribuableRequestListenerItTest extends Bu
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
+		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource(getRequestXSD()), new ClassPathResource(getResponseXSD())});
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.ident.ctb.input");
 		OutputQueue = inputQueue + ".response";

@@ -17,7 +17,6 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -72,8 +71,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setHandler(handler);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/iam/messageIAM_EMPIS.xsd")});
+		buildEsbMessageValidator(new Resource[]{new ClassPathResource("xsd/iam/messageIAM_EMPIS.xsd")});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}

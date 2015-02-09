@@ -40,7 +40,6 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.event.rt.response.v1.ObjectFactory;
@@ -49,7 +48,10 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -58,12 +60,13 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RapportTravailRequestEsbHandler.class);
 
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private final ObjectFactory objectFactory = new ObjectFactory();
 
 	private PlatformTransactionManager transactionManager;
 	private EsbJmsTemplate esbTemplate;
 	private RapportTravailRequestHandler rapportTravailRequestHandler;
+	private ServiceTracing esbMessageValidatorServiceTracing;
 
 	private Schema schemaCache;
 
@@ -77,6 +80,10 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setEsbMessageValidatorServiceTracing(ServiceTracing esbMessageValidatorServiceTracing) {
+		this.esbMessageValidatorServiceTracing = esbMessageValidatorServiceTracing;
 	}
 
 	@Override
@@ -168,9 +175,7 @@ public class RapportTravailRequestEsbHandler implements EsbMessageHandler, Initi
 		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
 		resources.addAll(resource);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
 	}
 
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {

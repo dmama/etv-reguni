@@ -57,7 +57,7 @@
 		<property name="destinationQueue" value="${extprop.jms.error.queue}"/>
 	</bean>
 
-	<bean id="esbMessageValidator" class="ch.vd.technical.esb.validation.EsbXmlValidation" lazy-init="true">
+	<bean id="esbMessageValidatorRaw" class="ch.vd.uniregctb.jms.EsbMessageValidatorImpl">
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
 			<list>
@@ -70,5 +70,18 @@
 			</list>
 		</property>
 	</bean>
+
+	<bean id="esbMessageValidatorServiceTracing" class="ch.vd.uniregctb.stats.ServiceTracingFactory">
+		<property name="statsService" ref="statsService"/>
+		<property name="detailedLogging" value="true"/>
+		<property name="serviceName" value="EsbMessageValidator"/>
+	</bean>
+
+	<bean id="esbMessageValidatorTracing" class="ch.vd.uniregctb.jms.EsbMessageValidatorTracing">
+		<property name="target" ref="esbMessageValidatorRaw"/>
+		<property name="serviceTracing" ref="esbMessageValidatorServiceTracing"/>
+	</bean>
+
+	<alias alias="esbMessageValidator" name="esbMessageValidatorTracing"/>
 
 </beans>

@@ -28,6 +28,7 @@
 				<entry key="ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest" value-ref="identificationContribuableRequestHandlerV4"/>
 			</util:map>
 		</property>
+		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
 	</bean>
 
 	<bean id="identificationContribuableRequestHandlerV2" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableRequestHandlerV2">

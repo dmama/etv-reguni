@@ -18,7 +18,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -26,6 +25,7 @@ import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 
 /**
  * Classe technique qui reçoit des événements de demande d'identification de contribuable, et qui permet d'envoyer les réponses.
@@ -42,7 +42,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 
 	private String outputQueue;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private HibernateTemplate hibernateTemplate;
 	private EsbJmsTemplate esbTemplate;
 
@@ -55,7 +55,7 @@ public class IdentificationContribuableV1EsbHandler implements IdentificationCon
 		this.outputQueue = outputQueue;
 	}
 
-	public void setEsbValidator(EsbXmlValidation esbValidator) {
+	public void setEsbValidator(EsbMessageValidator esbValidator) {
 		this.esbValidator = esbValidator;
 	}
 

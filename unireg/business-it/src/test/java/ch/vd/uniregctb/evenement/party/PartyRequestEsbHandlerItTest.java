@@ -20,7 +20,6 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -29,6 +28,7 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.jms.EsbBusinessErrorCollector;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +48,7 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;
 	private String OutputQueue;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private EsbBusinessErrorCollector errorCollector;
 
 	protected static String requestToString(Request request) throws JAXBException {
@@ -67,15 +67,12 @@ abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 		errorCollector = getBean(EsbBusinessErrorCollector.class, "partyRequestErrorCollector");
 		errorCollector.clear();
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-
 		final List<Resource> sources = new ArrayList<>();
 		sources.add(new ClassPathResource(getRequestXSD()));
 		for (String xsd : getResponseXSD()) {
 			sources.add(new ClassPathResource(xsd));
 		}
-		esbValidator.setSources(sources.toArray(new Resource[sources.size()]));
+		esbValidator = buildEsbMessageValidator(sources.toArray(new Resource[sources.size()]));
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.party.service");
 		OutputQueue = inputQueue + ".response";

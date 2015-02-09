@@ -33,7 +33,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
@@ -43,6 +42,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.EvenementFiscalLR;
 import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.utils.LogLevel;
 
@@ -57,7 +57,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
 	private String outputQueue;
 	private EsbJmsTemplate esbTemplate;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private String serviceDestination;
 
 	/**
@@ -255,7 +255,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		this.esbTemplate = esbTemplate;
 	}
 
-	public void setEsbValidator(EsbXmlValidation esbValidator) {
+	public void setEsbValidator(EsbMessageValidator esbValidator) {
 		this.esbValidator = esbValidator;
 	}
 

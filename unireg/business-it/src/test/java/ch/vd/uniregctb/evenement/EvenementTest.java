@@ -8,13 +8,15 @@ import java.util.Map;
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;
+import org.springframework.core.io.Resource;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
+import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +29,7 @@ import static org.junit.Assert.assertNull;
 public abstract class EvenementTest {
 
 	protected EsbJmsTemplate esbTemplate;
-	protected EsbXmlValidation esbValidator;
+	protected EsbMessageValidator esbValidator;
 
 	protected UniregProperties uniregProperties;
 	protected ConnectionFactory jmsConnectionFactory;
@@ -48,6 +50,10 @@ public abstract class EvenementTest {
 			manager = null;
 		}
 		esbValidator = null;
+	}
+
+	protected void buildEsbMessageValidator(Resource[] sources) throws Exception {
+		esbValidator = BusinessItTest.buildEsbMessageValidator(sources);
 	}
 
 	protected void initEndpointManager(String queueName, MessageListener listener) {

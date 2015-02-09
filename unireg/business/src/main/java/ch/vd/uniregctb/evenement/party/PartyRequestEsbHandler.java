@@ -36,7 +36,6 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
@@ -46,10 +45,13 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.EsbMessageValidationHelper;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**
@@ -59,11 +61,12 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PartyRequestEsbHandler.class);
 
-	private EsbXmlValidation esbValidator;
+	private ServiceTracing esbMessageValidatorServiceTracing;
 	private EsbJmsTemplate esbTemplate;
-	private final ObjectFactory objectFactory = new ObjectFactory();
-
 	private Map<Class<? extends Request>, RequestHandler> handlers;
+
+	private final ObjectFactory objectFactory = new ObjectFactory();
+	private EsbMessageValidator esbValidator;
 	private Schema schemaCache;
 	private Class<? extends Request>[] supportedRequestClasses;
 
@@ -74,6 +77,10 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 
 	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setEsbMessageValidatorServiceTracing(ServiceTracing esbMessageValidatorServiceTracing) {
+		this.esbMessageValidatorServiceTracing = esbMessageValidatorServiceTracing;
 	}
 
 	@Override
@@ -235,9 +242,6 @@ public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBe
 		}
 
 		supportedRequestClasses = handlers.keySet().toArray(new Class[handlers.size()]);
-
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(resources.toArray(new Resource[resources.size()]));
+		esbValidator = EsbMessageValidationHelper.buildValidator(esbMessageValidatorServiceTracing, new ClasspathCatalogResolver(), resources.toArray(new Resource[resources.size()]));
 	}
 }

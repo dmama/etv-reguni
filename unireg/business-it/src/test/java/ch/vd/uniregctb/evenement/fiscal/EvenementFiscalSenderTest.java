@@ -13,7 +13,6 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
@@ -52,8 +51,7 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 
 		clearQueue(OUTPUT_QUEUE);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementFiscalMaster-v1.xsd")});
+		buildEsbMessageValidator(new Resource[]{new ClassPathResource("xsd/fiscal/evenementFiscalMaster-v1.xsd")});
 
 		sender = new EvenementFiscalSenderImpl();
 		sender.setServiceDestination("test");

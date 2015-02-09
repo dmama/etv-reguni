@@ -15,6 +15,7 @@
 		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
 	</bean>
 
 	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

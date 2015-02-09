@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -54,11 +53,11 @@ import ch.vd.unireg.xml.event.reqdes.v1.StakeholderRole;
 import ch.vd.unireg.xml.event.reqdes.v1.SwissResidence;
 import ch.vd.unireg.xml.event.reqdes.v1.Swissness;
 import ch.vd.unireg.xml.event.reqdes.v1.Transaction;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.evenement.reqdes.engine.MockEvenementReqDesProcessor;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
 import ch.vd.uniregctb.reqdes.EtatTraitement;
 import ch.vd.uniregctb.reqdes.EvenementReqDes;
 import ch.vd.uniregctb.reqdes.InformationsActeur;
@@ -80,7 +79,7 @@ import ch.vd.uniregctb.type.Sexe;
 public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
-	private EsbXmlValidation esbValidator;
+	private EsbMessageValidator esbValidator;
 	private String inputQueue;
 	private MockEvenementReqDesProcessor processor;
 
@@ -107,9 +106,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
 		processor = getBean(MockEvenementReqDesProcessor.class, "reqdesEventProcessor");
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource("event/reqdes/creation-modification-contribuables-1.xsd")});
+		esbValidator = buildEsbMessageValidator(new Resource[]{new ClassPathResource("event/reqdes/creation-modification-contribuables-1.xsd")});
 
 		inputQueue = uniregProperties.getProperty("testprop.jms.queue.reqdes");
 

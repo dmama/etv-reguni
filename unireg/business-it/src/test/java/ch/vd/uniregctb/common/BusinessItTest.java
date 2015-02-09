@@ -3,8 +3,12 @@ package ch.vd.uniregctb.common;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
+import ch.vd.uniregctb.jms.EsbMessageValidator;
+import ch.vd.uniregctb.jms.EsbMessageValidatorImpl;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
 
@@ -67,6 +71,13 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 		else {
 			return StringUtils.trimToNull(valiPattern.matcher(string).replaceAll(""));
 		}
+	}
+
+	public static EsbMessageValidator buildEsbMessageValidator(Resource[] sources) throws Exception {
+		final EsbMessageValidatorImpl validator = new EsbMessageValidatorImpl();
+		validator.setResourceResolver(new ClasspathCatalogResolver());
+		validator.setSources(sources);
+		return validator;
 	}
 
 }

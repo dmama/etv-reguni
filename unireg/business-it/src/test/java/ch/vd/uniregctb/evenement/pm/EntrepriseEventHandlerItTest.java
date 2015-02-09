@@ -14,7 +14,6 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.data.MockDataEventService;
 import ch.vd.uniregctb.evenement.EvenementTest;
@@ -85,8 +84,7 @@ public class EntrepriseEventHandlerItTest extends EvenementTest {
 		listener.setEsbTemplate(esbTemplate);
 		listener.setHandler(handler);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});
+		buildEsbMessageValidator(new Resource[]{new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}

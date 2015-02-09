@@ -20,7 +20,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -84,8 +83,7 @@ public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 			cprs.add(connector.getRequestXSD());
 		}
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setSources(cprs.toArray(new Resource[cprs.size()]));
+		buildEsbMessageValidator(cprs.toArray(new Resource[cprs.size()]));
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}

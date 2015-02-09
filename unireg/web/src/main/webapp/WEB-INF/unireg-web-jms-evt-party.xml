@@ -26,6 +26,7 @@
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbMessageValidatorServiceTracing" ref="esbMessageValidatorServiceTracing"/>
 	</bean>
 
 	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

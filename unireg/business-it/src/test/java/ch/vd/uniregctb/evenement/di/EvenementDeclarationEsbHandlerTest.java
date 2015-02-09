@@ -18,8 +18,6 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.validation.EsbXmlValidation;
-import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -70,11 +68,11 @@ public class EvenementDeclarationEsbHandlerTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setEsbTemplate(esbTemplate);
 
-		esbValidator = new EsbXmlValidation();
-		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
-		esbValidator.setSources(new Resource[]{new ClassPathResource("unireg-common-1.xsd"),
+		buildEsbMessageValidator(new Resource[]{
+				new ClassPathResource("unireg-common-1.xsd"),
 				new ClassPathResource("/event/di/evenementDeclarationImpot-input-1.xsd"),
-				new ClassPathResource("/event/di/evenementDeclarationImpot-common-1.xsd")});
+				new ClassPathResource("/event/di/evenementDeclarationImpot-common-1.xsd")
+		});
 
 		initEndpointManager(INPUT_QUEUE, listener);
 	}
