@@ -56,7 +56,7 @@ function compute_stats() {
 # les fichiers sont téléchargés dans un sous-répertoire spécifique à l'environnement voulu
 cd "$(dirname "$0")/$ENVIRONMENT/unireg-web"
 
-ls -1 unireg-web-cat_unireg${ENVIRONMENT}01.log.* | grep "[0-9]\+\(\.xz\)\?$" | while read FILE; do
+ls -1 unireg-web-cat_unireg${ENVIRONMENT}01.log.* | grep "[0-9]\+\(\.xz\)\?$" | tail -n 10 | while read FILE; do
 	DATE=$(echo "$FILE" | sed -e 's/^.*log//' -e 's/[^0-9]//g')
 	compute_stats "$FILE" "$DATE"
 done | encode_output
