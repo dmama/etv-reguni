@@ -120,11 +120,11 @@ public class Autorisations {
 	 * @return vrai si au moins une donnée est éditable; faux si ce n'est pas le cas
 	 */
 	public boolean isEditable() {
-		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || decisionsAci || forsAutresImpots || declarationImpots || identificationEntreprise))
+		return (donneesFiscales && (forsPrincipaux || forsSecondaires || forsAutresElementsImposables || decisionsAci || forsAutresImpots || identificationEntreprise))
 				|| (adresses && (adressesDomicile || adressesCourrier || adressesRepresentation || adressesPoursuite))
 				|| (complements && (complementsCommunications || complementsCoordonneesFinancieres))
 				|| (rapports && (rapportsDePrestations || rapportsDeTravail || autresRapports))
-				|| donneesCiviles || debiteurs || mouvements || situationsFamille;
+				|| declarationImpots || donneesCiviles || debiteurs || mouvements || situationsFamille;
 	}
 
 	public boolean isDonneesFiscales() {
@@ -148,7 +148,7 @@ public class Autorisations {
 	}
 
 	public boolean isDeclarationImpots() {
-		return declarationImpots && donneesFiscales;
+		return declarationImpots;
 	}
 
 	public boolean isAdresses() {
