@@ -448,10 +448,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 						map.put(FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 					}
 				}
-				if (modifiableSelonRoleEtDecisions && SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(MODIF_DI, Boolean.TRUE);
-					map.put(MODIF_FISCAL, Boolean.TRUE);
 				}
+
 				if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
 					map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
 				}

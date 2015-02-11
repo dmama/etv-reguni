@@ -18,6 +18,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AutorisationTest  extends WebTest {
 
@@ -97,6 +98,195 @@ public class AutorisationTest  extends WebTest {
 		});
 
 	}
+
+
+	@Test
+	public void testAutorisationModifDiAvecDecisionAci() throws Exception {
+
+		final String visaOperateurDi = "xsizij";
+		final String visaOperateurSimple = "xsizap";
+		final long noIndividuFederico = 452120L;
+		final long noIndividuAlbert = 4564121L;
+
+		// extrait du profile OID
+		serviceSecurite.setUp(new MockServiceSecuriteService() {
+			@Override
+			protected void init() {
+
+				addOperateur(visaOperateurDi, 43L, Role.DI_DELAI_PP,
+						Role.DI_DESANNUL_PP,Role.DI_DUPLIC_PP,
+						Role.DI_EMIS_PP,Role.DI_QUIT_PP,
+						Role.DI_SOM_PP,Role.FOR_PRINC_ORDDEP_HAB,Role.FOR_PRINC_ORDDEP_HCHS);
+				addOperateur(visaOperateurSimple, 44L, Role.FOR_PRINC_ORDDEP_HAB,Role.FOR_PRINC_ORDDEP_HCHS);
+			}
+		});
+
+
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu indFederico = addIndividu(noIndividuFederico, null, "jurencon", "Federico", Sexe.MASCULIN);
+				final MockIndividu indAlbert = addIndividu(noIndividuAlbert, null, "rodrigue", "Albert", Sexe.MASCULIN);
+				addAdresse(indFederico, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(2000,11,3), null);
+				addAdresse(indAlbert, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2000,11,4), null);
+				addNationalite(indFederico, MockPays.Suisse, date(1978,11,3), null);
+				addNationalite(indAlbert, MockPays.Suisse, date(1979,11,3), null);
+			}
+		});
+
+		final class Ids {
+			long ppFederico;
+			long ppAlbert;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique federico = addHabitant(noIndividuFederico);
+				final PersonnePhysique albert = addNonHabitant("Gregoire","albert",null,Sexe.MASCULIN);
+				addForPrincipal(federico,date(2000,11,3) , MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+				addDecisionAci(albert,date(2014,1,1),null,MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+
+				final Ids ids = new Ids();
+				ids.ppFederico = federico.getNumero();
+				ids.ppAlbert = albert.getNumero();
+				return ids;
+			}
+		});
+
+
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+				//Modification autorisée sur DI
+				Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert,visaOperateurDi,1);
+				Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
+				//Modif fiscales interdites car présences d'une décisions
+				Assert.assertFalse(autorisationsDiAlbert.isDonneesFiscales());
+
+				//Modification non autorisée sur DI
+				Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert,visaOperateurSimple, 1);
+				Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
+				//Modif fiscales interdites car présences d'une décisions
+				Assert.assertFalse(autorisationsSimpleAlbert.isDonneesFiscales());
+
+
+				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+				//Modification sur DI
+				Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico,visaOperateurDi,1);
+				Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
+				//Modif fisales autorisées
+				Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
+				//Modification non autorisée sur DI
+				Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico,visaOperateurSimple,1);
+				Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
+				//Modif fisales autorisées
+				Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
+
+			}
+		});
+
+	}
+
+	@Test
+	public void testAutorisationModifDiSansDecisionAci() throws Exception {
+
+		final String visaOperateurDi = "xsizij";
+		final String visaOperateurSimple = "xsizap";
+		final long noIndividuFederico = 452120L;
+		final long noIndividuAlbert = 4564121L;
+
+		// extrait du profile OID
+		serviceSecurite.setUp(new MockServiceSecuriteService() {
+			@Override
+			protected void init() {
+
+				addOperateur(visaOperateurDi, 43L, Role.DI_DELAI_PP,
+						Role.DI_DESANNUL_PP,Role.DI_DUPLIC_PP,
+						Role.DI_EMIS_PP,Role.DI_QUIT_PP,
+						Role.DI_SOM_PP,Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
+				addOperateur(visaOperateurSimple, 44L, Role.FOR_PRINC_ORDDEP_HAB, Role.FOR_PRINC_ORDDEP_HCHS);
+			}
+		});
+
+
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu indFederico = addIndividu(noIndividuFederico, null, "jurencon", "Federico", Sexe.MASCULIN);
+				final MockIndividu indAlbert = addIndividu(noIndividuAlbert, null, "rodrigue", "Albert", Sexe.MASCULIN);
+				addAdresse(indFederico, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(2000,11,3), null);
+				addAdresse(indAlbert, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2000,11,4), null);
+				addNationalite(indFederico, MockPays.Suisse, date(1978,11,3), null);
+				addNationalite(indAlbert, MockPays.Suisse, date(1979,11,3), null);
+			}
+		});
+
+		final class Ids {
+			long ppFederico;
+			long ppAlbert;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique federico = addHabitant(noIndividuFederico);
+				final PersonnePhysique albert = addNonHabitant("Gregoire","albert",null,Sexe.MASCULIN);
+				addForPrincipal(federico, date(2000, 11, 3), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay);
+
+				final Ids ids = new Ids();
+				ids.ppFederico = federico.getNumero();
+				ids.ppAlbert = albert.getNumero();
+				return ids;
+			}
+		});
+
+
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique albert = (PersonnePhysique) tiersDAO.get(ids.ppAlbert);
+				//Modification autorisée sur DI
+				Autorisations autorisationsDiAlbert = autorisationManager.getAutorisations(albert,visaOperateurDi,1);
+				Assert.assertTrue(autorisationsDiAlbert.isDeclarationImpots());
+				//Modif fiscales autorisees
+				Assert.assertTrue(autorisationsDiAlbert.isDonneesFiscales());
+
+				//Modification non autorisée sur DI
+				Autorisations autorisationsSimpleAlbert = autorisationManager.getAutorisations(albert,visaOperateurSimple, 1);
+				Assert.assertFalse(autorisationsSimpleAlbert.isDeclarationImpots());
+				//Modif fiscales autorisees
+				Assert.assertTrue(autorisationsSimpleAlbert.isDonneesFiscales());
+
+
+				final PersonnePhysique federico = (PersonnePhysique) tiersDAO.get(ids.ppFederico);
+				//Modification sur DI
+				Autorisations autorisationsDiFederico = autorisationManager.getAutorisations(federico,visaOperateurDi,1);
+				Assert.assertTrue(autorisationsDiFederico.isDeclarationImpots());
+				//Modif fisales autorisées
+				Assert.assertTrue(autorisationsDiFederico.isDonneesFiscales());
+				//Modification non autorisée sur DI
+				Autorisations autorisationsSimpleFederico = autorisationManager.getAutorisations(federico,visaOperateurSimple,1);
+				Assert.assertFalse(autorisationsSimpleFederico.isDeclarationImpots());
+				//Modif fisales autorisées
+				Assert.assertTrue(autorisationsSimpleFederico.isDonneesFiscales());
+
+			}
+		});
+
+	}
+
 
 
 	@Test
