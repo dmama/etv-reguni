@@ -19,7 +19,7 @@ public class WatchDogUniregIntegrationTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegration() throws Exception {
 		LOGGER.info("Vérification de Unireg en intégration...");
-		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
+		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
@@ -32,5 +32,6 @@ public class WatchDogUniregIntegrationTest extends WatchDogTest {
 		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/infra.do");
 		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/securite.do");
 		// inutile de se faire spammer pour SIPF assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/bvr.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/efacture.do");
 	}
 }

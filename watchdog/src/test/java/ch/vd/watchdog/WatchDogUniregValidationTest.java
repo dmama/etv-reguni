@@ -16,29 +16,22 @@ public class WatchDogUniregValidationTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregValidationTest.class);
 
-	@Test
-	public void testDummy() {
-		// JUnit demande au minimum l'existence d'une méthode de test...
-	}
-
-	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé parce que y en a marre de se faire spammer par la validation qui est down tous les lundis matins
+	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testValidation() throws Exception {
 		LOGGER.info("Vérification de Unireg en validation...");
-		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/"));
+		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
 
-	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé parce que y en a marre de se faire spammer par la validation qui est down tous les lundis matins
+	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testValidationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en validation...");
-		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
-				"https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/admin/status.do"));
-		assertNotNull(page);
-		assertStatus("OK", page, "serviceCivilStatus");
-		assertStatus("OK", page, "serviceInfraStatus");
-		assertStatus("OK", page, "serviceSecuriteStatus");
-		// SIPF est down jusqu'au 7 juin 2010 : assertStatus("OK", page, "bvrPlusStatus");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/admin/status/civil.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/admin/status/infra.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/admin/status/securite.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/admin/status/bvr.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/web/admin/status/efacture.do");
 	}
 }

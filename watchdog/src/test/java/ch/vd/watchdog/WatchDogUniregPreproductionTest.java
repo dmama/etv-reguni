@@ -16,17 +16,22 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregPreproductionTest.class);
 
-	@Test
-	public void testDummy() {
-		// JUnit demande au minimum l'existence d'une méthode de test...
-	}
-
-	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé temporairement pendant la mise-en-préproduction
+	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testPreproduction() throws Exception {
 		LOGGER.info("Vérification de Unireg PP en préproduction...");
-		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/"));
+		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Choisissez votre OID de travail"));
+	}
+
+	@Test(timeout = WatchDogTest.TIMEOUT)
+	public void testPreproductionConnectivite() throws Exception {
+		LOGGER.info("Vérification de la connectivité de Unireg en pré-production...");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/civil.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/infra.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/securite.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/bvr.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/efacture.do");
 	}
 }
