@@ -2,7 +2,10 @@ package ch.vd.uniregctb.embedded;
 
 import java.io.File;
 
+import org.apache.commons.lang3.CharEncoding;
+
 import ch.vd.registre.embedded.tomcat.TomcatRunner;
+import ch.vd.registre.embedded.tomcat.TomcatRunnerParameters;
 
 /**
  * Cette application permet de démarrer l'application Unireg avec un Tomcat embeddé à l'intérieur d'Eclipse.
@@ -69,19 +72,24 @@ public class UniregTomcatRunner {
 		System.setProperty("oracle.hibernate.query.substitutions", "true 1, false 0");
 
 		System.setProperty("extprop.hibernate.hbm2ddl.mode", "validate");
-		
-		/**
-		 * Paramètres:
-		 * <ul>
-		 * <li>1. Le context path de l'application (Ex: "/registre/regch")</li>
-		 * <li>2. Le port TCP sur lequel l'application écoute</li>
-		 * <li>3. Le repertoire de la webapp explosée (sans les classes et les libs) relative au repertoire courant Ex Reg-CH: "webapp" =>
-		 * ..../04-Impl/regch/web/webapp Ex Unireg: "src/main/webapp" => ..../04-Impl/unireg/web/src/main/webapp</li>
-		 * <li>4. Le fichier context.xml pour la définition des data sources</li>
-		 * <li>5. Le fichier tomcat-users.xml pour la définition des utilisateurs</li>
-		 * </ul>
-		 */
-		final TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/web", 8080, "src/main/webapp", null, null);
+
+		final String userDbPath;
+		final File userDb = new File("src/test/resources/ch/vd/uniregctb/embedded/tomcat-users.xml");
+		if (userDb.exists()) {
+			userDbPath = userDb.getPath();
+		}
+		else {
+			userDbPath = null;
+		}
+
+		final TomcatRunnerParameters params = new TomcatRunnerParameters();
+		params.setContextPath("/fiscalite/unireg/web");
+		params.setPort(8080);
+		params.setWebappDir("src/main/webapp");
+		params.setUserDatabasePath(userDbPath);
+		params.setURIEncoding(CharEncoding.UTF_8);
+
+		final TomcatRunner runner = new TomcatRunner(params);
 		runner.start();
 	}
 }
