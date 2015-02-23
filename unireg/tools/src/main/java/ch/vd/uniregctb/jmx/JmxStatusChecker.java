@@ -24,7 +24,7 @@ public class JmxStatusChecker {
 		IN("slv2655v.etat-de-vaud.ch:50609", false),
 		I2("ssv0309v.etat-de-vaud.ch:54609", false),
 		TE("spip.etat-de-vaud.ch:50609", false),
-		VA("ssv0298v.etat-de-vaud.ch:30609", true),
+		VA("slv2743v.etat-de-vaud.ch:30609", true),
 		PP("ssv0298v.etat-de-vaud.ch:34609", true),
 		PR("ssv0296p.etat-de-vaud.ch:20609", true),
 		PO("ssv0298v.etat-de-vaud.ch:38609", true);
