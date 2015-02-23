@@ -117,6 +117,7 @@ public class MovingWindow<E> implements Iterator<MovingWindow.Snapshot<E>> {
 
 	@Override
 	public void remove() {
-		throw new UnsupportedOperationException();
+		this.iterator.remove();
+		this.previouses.remove(0);
 	}
 }
