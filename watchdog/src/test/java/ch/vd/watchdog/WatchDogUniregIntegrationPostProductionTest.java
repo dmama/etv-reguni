@@ -1,7 +1,12 @@
 package ch.vd.watchdog;
 
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -19,7 +24,8 @@ public class WatchDogUniregIntegrationPostProductionTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegrationPostProduction() throws Exception {
 		LOGGER.info("Vérification de Unireg en intégration de post-production...");
-		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/"));
+		final WebClient webClient = loginIamValidation();
+		HtmlPage page = getPage(webClient, new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
@@ -28,10 +34,8 @@ public class WatchDogUniregIntegrationPostProductionTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegrationPostProductionConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration de post-production...");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/civil.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/infra.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/securite.do");
-		// SIPF, SIPF, SIIIIIIIIIIIIIIIIIIIIPF !!! assertStatus("OK", page, "bvrPlusStatus");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/efacture.do");
+
+		// on ne vérifie plus le service SIPF en i2, ils ne sont pas assez souvent là...
+		checkStatus("ssv0309v", 54609, false, "serviceBVRPlus");
 	}
 }

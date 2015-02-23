@@ -2,6 +2,7 @@ package ch.vd.watchdog;
 
 import java.net.URL;
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -19,7 +20,8 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testPreproduction() throws Exception {
 		LOGGER.info("Vérification de Unireg PP en préproduction...");
-		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/"));
+		final WebClient webClient = loginIamValidation();
+		HtmlPage page = getPage(webClient, new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Choisissez votre OID de travail"));
@@ -28,10 +30,6 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testPreproductionConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en pré-production...");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/civil.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/infra.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/securite.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/bvr.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/web/admin/status/efacture.do");
+		checkStatus("ssv0298v", 34609, true);
 	}
 }

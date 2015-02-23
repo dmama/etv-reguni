@@ -1,11 +1,25 @@
 package ch.vd.watchdog;
 
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,10 +43,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -47,7 +64,8 @@ public abstract class WatchDogTest {
 	private static final String IAM_USERNAME = "usrreg06";
 	private static final String IAM_PASSWORD = "Welc0me!"; // please don't look
 
-	private MyWebClient webClient;
+	private static final String JMX_USERNAME = "monitorRole";
+	private static final String JMX_PASSWORD = "m0n1t0r";   // please don't look...
 
 	protected static final class MyWebClient extends WebClient {
 
@@ -74,17 +92,17 @@ public abstract class WatchDogTest {
 		}
 	}
 
-	@Before
-	public void setUp() throws Exception {
-		webClient = new MyWebClient();
+	protected static WebClient loginIamValidation() throws Exception {
+		final MyWebClient webClient = new MyWebClient();
 
 		final WebClientOptions options = webClient.getOptions();
 		options.setUseInsecureSSL(true);
 		options.setRedirectEnabled(false);
 
 		options.setJavaScriptEnabled(true);
-		loginIAM();
+		loginIAM(webClient);
 		options.setJavaScriptEnabled(false);
+		return webClient;
 	}
 
 	private static final Pattern COOKIE_PATTERN = Pattern.compile("([^;]*)(?:; expires=([^;]*))?(?:; domain=([^;]*))?(?:; path=([^;]*))?(; secure)?");
@@ -102,11 +120,12 @@ public abstract class WatchDogTest {
 
 	/**
 	 * Explicit following of redirect
+	 * @param webClient http client to use
 	 * @param url url to fetch
 	 * @return the HTML page found at the end of all the redirects
 	 */
-	public <P extends Page> P getPage(URL url) throws IOException {
-		return getPage(url, 20);
+	public static <P extends Page> P getPage(WebClient webClient, URL url) throws IOException {
+		return getPage(webClient, url, 20);
 	}
 
 	/**
@@ -115,7 +134,7 @@ public abstract class WatchDogTest {
 	 * @param nbAllowedRedirects number of allowed redirects
 	 * @return the HTML page found at the end of all the redirects
 	 */
-	private <P extends Page> P getPage(URL url, int nbAllowedRedirects) throws IOException {
+	private static <P extends Page> P getPage(WebClient webClient, URL url, int nbAllowedRedirects) throws IOException {
 		try {
 			return webClient.getPage(url);
 		}
@@ -154,7 +173,7 @@ public abstract class WatchDogTest {
 
 				final String location = response.getResponseHeaderValue("Location");
 				final URL newUrl = resolveURL(url, location);
-				return getPage(newUrl, nbAllowedRedirects - 1);
+				return getPage(webClient, newUrl, nbAllowedRedirects - 1);
 			}
 			throw e;
 		}
@@ -179,9 +198,9 @@ public abstract class WatchDogTest {
 	/**
 	 * Log l'utilisateur dans IAM, si nécessaire.
 	 */
-	private void loginIAM() throws Exception {
+	private static void loginIAM(MyWebClient webClient) throws Exception {
 
-		final HtmlPage loginPage = getPage(new URL("https://validation.portail.etat-de-vaud.ch/iam/accueil/"));
+		final HtmlPage loginPage = getPage(webClient, new URL("https://validation.portail.etat-de-vaud.ch/iam/accueil/"));
 		if (loginPage.getTitleText().contains("Page de Login")) {
 			LOGGER.debug("Login IAM avec username = " + IAM_USERNAME);
 
@@ -199,14 +218,6 @@ public abstract class WatchDogTest {
 		}
 	}
 
-	protected static void assertStatus(final String expected, final HtmlPage page, final String statusIdName) {
-		final HtmlTableCell td = page.getHtmlElementById(statusIdName);
-		assertNotNull(td);
-		final DomText status = (DomText) td.getFirstChild();
-		assertNotNull(status);
-		assertEquals("Problème avec le " + statusIdName, expected, status.asText());
-	}
-
 	/**
 	 * Asserte que le statut du service est bien la valeur spécifiée. Cette méthode fonctionne à partir de la version 5.0.1 d'Unireg (qui permet de récupérer les statuts des différents services au format
 	 * JSON).
@@ -215,9 +226,9 @@ public abstract class WatchDogTest {
 	 * @param url      l'url d'accès au statut du service sous format JSON
 	 * @throws IOException en cas d'impossibilité de récupérer le statut
 	 */
-	protected void assertJsonStatus(String expected, String url) throws IOException {
+	protected static void assertJsonStatus(WebClient webClient, String expected, String url) throws IOException {
 
-		final Page page = getPage(new URL(url));
+		final Page page = getPage(webClient, new URL(url));
 		assertNotNull(page);
 
 		final WebResponse response = page.getWebResponse();
@@ -233,5 +244,68 @@ public abstract class WatchDogTest {
 		if (!expected.equals(actual)) {
 			fail("Problème avec le " + map.get("name") + ". Description = " + map.get("description"));
 		}
+	}
+
+	protected static interface JmxCallback<T> {
+		T execute(MBeanServerConnection con) throws Exception;
+	}
+
+	protected static abstract class JmxCallbackWithoutResult implements JmxCallback<Object> {
+		@Override
+		public Object execute(MBeanServerConnection con) throws Exception {
+			doExecute(con);
+			return null;
+		}
+
+		protected abstract void doExecute(MBeanServerConnection con) throws Exception;
+	}
+
+	protected static <T> T doWithJmxConnection(String host, int port, boolean withCredentials, JmxCallback<T> callback) throws Exception {
+		final String url = String.format("service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi", host, port);
+		final JMXServiceURL serviceUrl = new JMXServiceURL(url);
+		final Map<String, String[]> env = new HashMap<>();
+		if (withCredentials) {
+			final String[] credentials = { JMX_USERNAME, JMX_PASSWORD };
+			env.put(JMXConnector.CREDENTIALS, credentials);
+		}
+		try (JMXConnector jmxConnector = JMXConnectorFactory.connect(serviceUrl, env)) {
+			final MBeanServerConnection con = jmxConnector.getMBeanServerConnection();
+			return callback.execute(con);
+		}
+	}
+
+	protected static void checkStatus(String host, int port, boolean withCredentials, String... ignored) throws Exception {
+		final Set<String> ignoredSet = new HashSet<>(Arrays.asList(ignored));
+		doWithJmxConnection(host, port, withCredentials, new JmxCallbackWithoutResult() {
+			@Override
+			protected void doExecute(MBeanServerConnection con) throws Exception {
+				final Set<ObjectName> beanSet = con.queryNames(new ObjectName("ch.vd.uniregctb-*:type=Monitoring,name=Application"), null);
+				final Set<String> nok = new TreeSet<>();
+				for (ObjectName objectName : beanSet) {
+					final String json = (String) con.getAttribute(objectName, "StatusJSON");
+					final String[] splits = json.split("\\s*,\\s*");
+					assertTrue(json, splits.length > 0);
+
+					final Pattern pattern = Pattern.compile("[^\\w]*'(\\w+)'\\s*:\\s*'(\\w+)'.*");
+					for (String split : splits) {
+						final Matcher matcher = pattern.matcher(split);
+						if (matcher.matches()) {
+							if (!ignoredSet.contains(matcher.group(1))) {
+								final String localStatus = matcher.group(2);
+								if (!"OK".equals(localStatus)) {
+									nok.add(String.format("%s/%s (%s)", objectName, matcher.group(1), localStatus));
+								}
+							}
+						}
+						else {
+							throw new IllegalArgumentException("Unsupported format : " + split);
+						}
+					}
+				}
+
+				assertEquals(Arrays.toString(nok.toArray(new String[nok.size()])), 0, nok.size());
+				assertNotEquals(0, beanSet.size());
+			}
+		});
 	}
 }

@@ -2,6 +2,7 @@ package ch.vd.watchdog;
 
 import java.net.URL;
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -19,7 +20,8 @@ public class WatchDogUniregIntegrationTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegration() throws Exception {
 		LOGGER.info("Vérification de Unireg en intégration...");
-		HtmlPage page = getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
+		final WebClient webClient = loginIamValidation();
+		HtmlPage page = getPage(webClient, new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre, titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
@@ -28,10 +30,8 @@ public class WatchDogUniregIntegrationTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegrationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration...");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/civil.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/infra.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/securite.do");
-		// inutile de se faire spammer pour SIPF assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/bvr.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/efacture.do");
+
+		// on ne vérifie plus le service SIPF en IN, ils ne sont pas assez souvent là...
+		checkStatus("slv2655v", 50609, false, "serviceBVRPlus");
 	}
 }
