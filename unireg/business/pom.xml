@@ -100,14 +100,7 @@
 		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
 			<artifactId>esb-client</artifactId>
-			<version>4.0</version>
-			<exclusions>
-				<!-- on veut utiliser les bibliothèques activemq explicitement demandées dans core -->
-				<exclusion>
-					<groupId>org.apache.activemq</groupId>
-					<artifactId>activemq-core</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>4.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.technical.esb</groupId>
