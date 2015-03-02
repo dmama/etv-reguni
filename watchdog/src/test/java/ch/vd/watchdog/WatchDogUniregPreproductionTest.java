@@ -30,6 +30,6 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testPreproductionConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en pré-production...");
-		checkStatus("ssv0298v", 34609, true);
+		checkStatus("slv2745v", 34609, true);
 	}
 }
