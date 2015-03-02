@@ -40,6 +40,7 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -1378,5 +1379,189 @@ public class TiersEditManagerTest extends WebTest {
 			assertNotNull(dates);
 			assertEquals(0, dates.size());
 		}
+	}
+
+	/**
+	 * [SIFISC-14671] Cas d'un débiteur à périodicité unique dont la LR de l'année a déjà été émise, et dont on change
+	 * la périodicité dès l'année suivante, en la conservant unique mais en changeant seulement la période de décompte
+	 * (voir UNIREG-2683 pour l'ancienne implémentation, qui écrasait la périodicité courante)
+	 */
+	@Test
+	public void testModificationPeriodeDecompteSurPeriodiciteUniqueAvecLrDejaEmise() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+
+		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+
+				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(lastYear);
+				final ModeleDocument md = addModeleDocument(TypeDocument.LISTE_RECAPITULATIVE, pf);
+				addListeRecapitulative(dpi, pf, date(lastYear, 6, 1), date(lastYear, 6, 30), md);
+				return dpi.getNumero();
+			}
+		});
+
+		// modification dans l'écran de la périodicité dès le 1.1, en restant unique mais en changeant de période de décompte (s1)
+		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+		view.setDateDebutNouvellePeriodicite(date(lastYear + 1, 1, 1));
+		view.setNouvellePeriodicite(PeriodiciteDecompte.UNIQUE);
+		view.setPeriodeDecompte(PeriodeDecompte.S1);
+		tiersEditManager.save(view);
+
+		// on vérifie maintenant qu'une nouvelle périodicité a bien été créée dès la date demandée (et que la précédente a bien été conservée)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+				assertEquals(2, periodicites.size());
+				{
+					final Periodicite p = periodicites.get(0);
+					assertNotNull(p);
+					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+					assertEquals(date(lastYear, 12, 31), p.getDateFin());
+					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+					assertFalse(p.isAnnule());
+				}
+				{
+					final Periodicite p = periodicites.get(1);
+					assertNotNull(p);
+					assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
+					assertNull(p.getDateFin());
+					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+					assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
+					assertFalse(p.isAnnule());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-14671] Cas d'un débiteur à périodicité unique dont la LR de l'année n'a pas encore été émise, et dont on change
+	 * la périodicité dès l'année suivante, en la conservant unique mais en changeant seulement la période de décompte
+	 * (voir UNIREG-2683 pour l'ancienne implémentation, qui écrasait la périodicité courante)
+	 */
+	@Test
+	public void testModificationPeriodeDecompteSurPeriodiciteUniqueAvecLrNonEmise() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+
+		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+
+				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+				return dpi.getNumero();
+			}
+		});
+
+		// modification dans l'écran de la périodicité dès le 1.1, en restant unique mais en changeant de période de décompte (s1)
+		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+		view.setDateDebutNouvellePeriodicite(date(lastYear + 1, 1, 1));
+		view.setNouvellePeriodicite(PeriodiciteDecompte.UNIQUE);
+		view.setPeriodeDecompte(PeriodeDecompte.S1);
+		tiersEditManager.save(view);
+
+		// on vérifie maintenant qu'une nouvelle périodicité a bien été créée dès la date demandée (et que la précédente a bien été conservée)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+				assertEquals(2, periodicites.size());
+				{
+					final Periodicite p = periodicites.get(0);
+					assertNotNull(p);
+					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+					assertEquals(date(lastYear, 12, 31), p.getDateFin());
+					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+					assertFalse(p.isAnnule());
+				}
+				{
+					final Periodicite p = periodicites.get(1);
+					assertNotNull(p);
+					assertEquals(date(lastYear + 1, 1, 1), p.getDateDebut());
+					assertNull(p.getDateFin());
+					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+					assertEquals(PeriodeDecompte.S1, p.getPeriodeDecompte());
+					assertFalse(p.isAnnule());
+				}
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-14671] Cas d'un débiteur à périodicité unique dont la LR de l'année n'a pas encore été émise, et dont on change
+	 * la périodicité dès l'année suivante, en la conservant unique mais en changeant seulement la période de décompte
+	 * (voir UNIREG-2683 pour l'ancienne implémentation, qui écrasait la périodicité courante)
+	 */
+	@Test
+	public void testConservationPeriodeDecompteSurPeriodiciteUniqueAvecLrNonEmise() throws Exception {
+
+		final int lastYear = RegDate.get().year() - 1;
+
+		// Création du DPI, de son for, de sa périodicité unique (juin) et de sa LR
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1980, 10, 25), Sexe.MASCULIN);
+				final DebiteurPrestationImposable dpi = addDebiteur(null, pp, date(lastYear, 1, 1));
+				dpi.setModeCommunication(ModeCommunication.PAPIER);
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(lastYear, 1, 1), null));
+
+				addForDebiteur(dpi, date(lastYear, 1, 1), MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Aigle);
+				return dpi.getNumero();
+			}
+		});
+
+		// modification dans l'écran de la périodicité dès le 1.1, en restant unique et en conservant la période de décompte
+		final DebiteurEditView view = tiersEditManager.getDebiteurEditView(dpiId);
+		view.setDateDebutNouvellePeriodicite(date(lastYear + 1, 1, 1));
+		view.setNouvellePeriodicite(PeriodiciteDecompte.UNIQUE);
+		view.setPeriodeDecompte(PeriodeDecompte.M06);       // la même qu'avant
+		tiersEditManager.save(view);
+
+		// on vérifie maintenant qu'aucune nouvelle périodicité n'a été créée
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final List<Periodicite> periodicites = dpi.getPeriodicitesSorted();
+				assertEquals(1, periodicites.size());
+				{
+					final Periodicite p = periodicites.get(0);
+					assertNotNull(p);
+					assertEquals(date(lastYear, 1, 1), p.getDateDebut());
+					assertNull(p.getDateFin());
+					assertEquals(PeriodiciteDecompte.UNIQUE, p.getPeriodiciteDecompte());
+					assertEquals(PeriodeDecompte.M06, p.getPeriodeDecompte());
+					assertFalse(p.isAnnule());
+				}
+			}
+		});
 	}
 }
