@@ -31,29 +31,33 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 		Sort build(String fieldName, boolean reverse);
 	}
 
+	private static SortBuilder buildSortBuilder(final SortField.Type type, boolean addIdSorting) {
+		if (addIdSorting) {
+			return new SortBuilder() {
+				@Override
+				public Sort build(String fieldName, boolean reverse) {
+					return new Sort(new SortField(fieldName, type, reverse));
+				}
+			};
+		}
+		else {
+			return new SortBuilder() {
+				@Override
+				public Sort build(String fieldName, boolean reverse) {
+					return new Sort(new SortField(fieldName, type, reverse), new SortField(MessageIdentificationIndexableData.TRI_ID, SortField.Type.LONG, reverse));
+				}
+			};
+		}
+	}
+
 	private static Map<String, Pair<String, SortBuilder>> buildPaginationSortingFieldMapping() {
 		final Map<String, Pair<String, SortBuilder>> map = new HashMap<>();
 
-		final SortBuilder intSortBuilder = new SortBuilder() {
-			@Override
-			public Sort build(String fieldName, boolean reverse) {
-				return new Sort(new SortField(fieldName, SortField.Type.INT, reverse));
-			}
-		};
-		final SortBuilder longSortBuilder = new SortBuilder() {
-			@Override
-			public Sort build(String fieldName, boolean reverse) {
-				return new Sort(new SortField(fieldName, SortField.Type.LONG, reverse));
-			}
-		};
-		final SortBuilder stringSortBuilder = new SortBuilder() {
-			@Override
-			public Sort build(String fieldName, boolean reverse) {
-				return new Sort(new SortField(fieldName, SortField.Type.STRING, reverse));
-			}
-		};
+		final SortBuilder intSortBuilder = buildSortBuilder(SortField.Type.INT, true);
+		final SortBuilder longSortBuilder = buildSortBuilder(SortField.Type.LONG, true);
+		final SortBuilder stringSortBuilder = buildSortBuilder(SortField.Type.STRING, true);
 
-		map.put("id", Pair.of(MessageIdentificationIndexableData.TRI_ID, longSortBuilder));
+		map.put("id", Pair.of(MessageIdentificationIndexableData.TRI_ID, buildSortBuilder(SortField.Type.LONG, false)));
 		map.put("demande.typeMessage", Pair.of(MessageIdentificationIndexableData.TYPE_MESSAGE, stringSortBuilder));
 		map.put("demande.periodeFiscale", Pair.of(MessageIdentificationIndexableData.PERIODE_FISCALE, intSortBuilder));
 		map.put("demande.emetteurId", Pair.of(MessageIdentificationIndexableData.EMETTEUR, stringSortBuilder));
