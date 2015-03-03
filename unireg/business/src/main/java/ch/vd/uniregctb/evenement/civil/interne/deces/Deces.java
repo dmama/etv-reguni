@@ -43,7 +43,7 @@ public class Deces extends EvenementCivilInterne {
 	protected static Logger LOGGER = LoggerFactory.getLogger(Deces.class);
 
 	private final boolean fromRcpers;
-	private boolean isRedondant = false;
+	private boolean redondantSelonFors = false;
 
 	/**
 	 * Le conjoint Survivant.
@@ -162,10 +162,11 @@ public class Deces extends EvenementCivilInterne {
 				final ForFiscalPrincipal ffpDefunt = defunt.getForFiscalPrincipalAt(getDate().getOneDayAfter());
 				if (ffpMenage != null && ffpMenage.getMotifFermeture() == MotifFor.VEUVAGE_DECES && getDate().equals(ffpMenage.getDateFin())) {
 					// L'événement est redondant si le for fiscal principal du couple est fermé à la date de déces avec un motif veuvage décés
-					isRedondant = true;
+					redondantSelonFors = true;
+
 					if (ffpDefunt != null && ffpDefunt.getMotifOuverture() == MotifFor.VEUVAGE_DECES && getDate().getOneDayAfter().equals(ffpDefunt.getDateDebut())) {
 					// sauf dans le cas ou le défunt est veuf depuis le lendemain du jour de son déces ( on est dans le cas ou les 2 conjoints sont mort le même jour)
-						isRedondant = false;
+						redondantSelonFors = false;
 					}
 
 				}
@@ -194,10 +195,6 @@ public class Deces extends EvenementCivilInterne {
 
 	private HandleStatus handleDeces(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		if (isRedondant) {
-			return HandleStatus.REDONDANT;
-		}
-
 		/*
 		 * Obtention du tiers correspondant au defunt.
 		 */
@@ -211,7 +208,7 @@ public class Deces extends EvenementCivilInterne {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
 				Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal, rien à faire");
 				checkForsFermesAvecPassageToutDroit(warnings);
-				return HandleStatus.TRAITE;
+				return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
 			}
 			else {
 
@@ -220,7 +217,7 @@ public class Deces extends EvenementCivilInterne {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
 					Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal avec un jour de différence (" + RegDateHelper.dateToDisplayString(dateDecesUnireg) + "), rien à faire");
 					checkForsFermesAvecPassageToutDroit(warnings);
-					return HandleStatus.TRAITE;
+					return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {
 					// si plus d'1 jour d'écart ou sur une PF différente : KO (evt en Erreur --> pour traitement par la Cellule vérif de la date de décès)
@@ -230,7 +227,9 @@ public class Deces extends EvenementCivilInterne {
 		}
 
 		try {
-			context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
+			if (!redondantSelonFors) {
+				context.getMetierService().deces(defunt, getDate(), null, getNumeroEvenement());
+			}
 		}
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
