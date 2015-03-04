@@ -66,7 +66,6 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -458,21 +457,14 @@ public class TacheServiceTest extends BusinessTest {
 
 		final List<Tache> taches = tacheDAO.getAll();
 		assertNotNull(taches);
-		assertEquals(2 + anneeCourante - 2010, taches.size()); // tâche de transmission de dossier + tâche d'annulation de la DI 2009
+		assertEquals(1 + anneeCourante - 2010, taches.size()); // tâche d'annulation de la DI 2009
 															   // + les tâches d'envoi de DIs pour [2010..année courante[ qui doivent être annulées suite au décès
 
-		TacheTransmissionDossier tacheTransmission = null;
 		TacheAnnulationDeclarationImpot tacheAnnulationDeclaration = null;
 		for (Tache t : taches) {
 			if (t instanceof TacheEnvoiDeclarationImpot) {
 				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) t;
 				assertTrue(tacheEnvoi.isAnnule());
-			}
-			else if (t instanceof TacheTransmissionDossier) {
-				if (tacheTransmission != null) {
-					fail("Trouvé plusieurs tâches de transmission de dossier");
-				}
-				tacheTransmission = (TacheTransmissionDossier) t;
 			}
 			else if (t instanceof TacheAnnulationDeclarationImpot) {
 				if (tacheAnnulationDeclaration != null) {
@@ -489,11 +481,6 @@ public class TacheServiceTest extends BusinessTest {
 		// la tâche d'envoi de DI
 		// assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2009, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
 		//		TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,TypeAdresseRetour.ACI, tacheEnvoi);
-
-		// la tâche de transmission de dossier
-		assertNotNull(tacheTransmission);
-		assertEquals(TypeEtatTache.EN_INSTANCE, tacheTransmission.getEtat());
-		assertEquals(getNextSunday(RegDate.get()), tacheTransmission.getDateEcheance());
 
 		// la tâche d'annulation de di
 		assertNotNull(tacheAnnulationDeclaration);
@@ -538,39 +525,15 @@ public class TacheServiceTest extends BusinessTest {
 
 		final List<Tache> taches = tacheDAO.getAll();
 		assertNotNull(taches);
-		assertEquals(2, taches.size());   // tâche de transmission de dossier + tâche d'envoi de DI 2008
+		assertEquals(1, taches.size());   // tâche d'envoi de DI 2008
 
-		TacheEnvoiDeclarationImpot tacheEnvoi = null;
-
-		TacheTransmissionDossier tacheTransmission = null;
-
-		for (Tache t : taches) {
-			if (t instanceof TacheEnvoiDeclarationImpot) {
-				tacheEnvoi = (TacheEnvoiDeclarationImpot) t;
-				continue;
-			}
-			if (t instanceof TacheTransmissionDossier) {
-				if (tacheTransmission != null) {
-					fail("Trouvé plusieurs tâches de transmission de dossier");
-				}
-				tacheTransmission = (TacheTransmissionDossier) t;
-			}
-			else {
-				fail("type de tâche non attendu : " + t.getClass().getName());
-			}
-		}
-
+		final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
+		assertNotNull(tacheEnvoi);
 
 		// [UNIREG-1305]
 		// la tâche d'envoi de DI
-		 assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aciSuccessions, tacheEnvoi);
-
-		// la tâche de transmission de dossier
-		assertNotNull(tacheTransmission);
-		assertEquals(TypeEtatTache.EN_INSTANCE, tacheTransmission.getEtat());
-		assertEquals(getNextSunday(RegDate.get()), tacheTransmission.getDateEcheance());
-
+		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+		            TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aciSuccessions, tacheEnvoi);
 	}
 
 	@Test
@@ -1851,11 +1814,8 @@ public class TacheServiceTest extends BusinessTest {
 			sortTachesAnnulation(annulations);
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2008, 1, 1), date(2008, 12, 31), annulations.get(0));
 
-			// Vérifie qu'une tache de transmission de dossier pour l'office d'impôt du contribuable a été générée
-			final List<TacheTransmissionDossier> transmissions = tacheDAO.listTaches(ids.menageId, TypeTache.TacheTransmissionDossier);
-			assertNotNull(transmissions);
-			assertEquals(1, transmissions.size());
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, transmissions.get(0));
+			// Vérifie qu'aucune tache de transmission de dossier n'a été générée (SIFISC-14863 -> on ne les génère plus !)
+			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheTransmissionDossier));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheControleDossier));
@@ -4434,23 +4394,10 @@ public class TacheServiceTest extends BusinessTest {
 					criterion.setContribuable(pp);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					assertNotNull(taches);
-					assertEquals(2, taches.size());
-				}
-
-				// une tâche de transmission de dossier
-				{
-					final TacheCriteria criterion = new TacheCriteria();
-					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheTransmissionDossier);
-					final List<Tache> taches = tacheDAO.find(criterion);
-					assertNotNull(taches);
 					assertEquals(1, taches.size());
-
-					final TacheTransmissionDossier tache = (TacheTransmissionDossier) taches.get(0);
-					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
 				}
 
-				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du décès
+				// une tâche d'envoi de DI pour la période en cours jusqu'à la date du décès
 				{
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);

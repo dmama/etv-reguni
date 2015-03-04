@@ -298,14 +298,10 @@ public class TacheServiceImpl implements TacheService {
 			break;
 
 		case VEUVAGE_DECES:
-			final CollectiviteAdministrative collectiviteAssignee = tiersService.getOfficeImpotAt(contribuable, null);
-			if (collectiviteAssignee != null) { // [UNIREG-3223] les sourciers purs ne possèdent pas de dossier, on peut donc les ignorer
-				generateTacheTransmissionDossier(contribuable, collectiviteAssignee);
-			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			// [UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
 			// [UNIREG-2322] appelé de manière automatique par le TacheSynchronizerInterceptor
-
+			// [SIFISC-14863] les tâches de transmission de dossier ne sont maintenant plus générées
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			if (!contribuable.getForsParTypeAt(dateFermeture, false).secondaires.isEmpty()) {
