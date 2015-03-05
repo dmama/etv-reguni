@@ -11,6 +11,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -63,6 +64,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 		gti.setTiersSearcher(globalTiersSearcher);
 		gti.setTiersService(tiersService);
 		gti.setTransactionManager(transactionManager);
+		gti.setAvatarService(getBean(AvatarService.class, "avatarService"));
 
 		loadDatabase(DBUNIT_FILENAME);
 
