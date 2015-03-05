@@ -8,6 +8,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -32,8 +33,8 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 	private ContribuableIndexable ctbIndexable;
 
 	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServicePersonneMoraleService servicePM,
-	                                            ServiceInfrastructureService serviceInfra, DebiteurPrestationImposable dpi) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, dpi);
+	                                            ServiceInfrastructureService serviceInfra, AvatarService avatarService, DebiteurPrestationImposable dpi) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, dpi);
 
 		final Contribuable ctb = tiersService.getContribuable(dpi);
 		if (ctb != null) {
@@ -44,24 +45,24 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable<Debiteu
 					if (ind == null) {
 						throw new IndividuNotFoundException(pp);
 					}
-					ctbIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
+					ctbIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp, ind);
 				}
 				else {
-					ctbIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
+					ctbIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
 				}
 			}
 			else if (ctb instanceof Entreprise) {
 				final Entreprise entreprise = (Entreprise) ctb;
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, entreprise);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, avatarService, entreprise);
 			}
 			else if (ctb instanceof AutreCommunaute) {
-				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute) ctb);
+				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, avatarService, (AutreCommunaute) ctb);
 			}
 			else if (ctb instanceof CollectiviteAdministrative) {
-				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, (CollectiviteAdministrative) ctb);
+				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, avatarService, (CollectiviteAdministrative) ctb);
 			}
 			else if (ctb instanceof MenageCommun) {
-				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ((MenageCommun) ctb));
+				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, ((MenageCommun) ctb));
 			}
 			else {
 				Assert.fail("Type de contribuable inconnu = " + ctb.getNatureTiers());

@@ -8,6 +8,7 @@ import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.indexer.lucene.DocumentExtractorHelper;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -48,6 +49,7 @@ public class TiersIndexedData implements Serializable {
 	private final Integer noOfsCommuneDomicile;
 	private final Long ancienNumeroSourcier;
 	private final List<String> numerosIDE;
+	private final TypeAvatar typeAvatar;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = DocumentExtractorHelper.getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
@@ -78,6 +80,7 @@ public class TiersIndexedData implements Serializable {
 		modeCommunication = DocumentExtractorHelper.getEnumValue(TiersIndexableData.MODE_COMMUNICATION, doc, ModeCommunication.class);
 		assujettissementPP = DocumentExtractorHelper.getEnumValue(TiersIndexableData.ASSUJETTISSEMENT_PP, doc, TypeAssujettissement.class);
 		numerosIDE = DocumentExtractorHelper.getList(DocumentExtractorHelper.getDocValue(TiersIndexableData.IDE, doc));
+		typeAvatar = DocumentExtractorHelper.getEnumValue(TiersIndexableData.AVATAR, doc, TypeAvatar.class);
 	}
 
 	private static RegDate indexStringToDateNaissance(String dateNaissance, String tiersType) {
@@ -221,5 +224,12 @@ public class TiersIndexedData implements Serializable {
 	 */
 	public List<String> getNumerosIDE() {
 		return numerosIDE;
+	}
+
+	/**
+	 * @return le type d'avatar lié au tiers
+	 */
+	public TypeAvatar getTypeAvatar() {
+		return typeAvatar;
 	}
 }

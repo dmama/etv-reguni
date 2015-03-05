@@ -5,6 +5,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -21,8 +22,8 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
 	private final Individu individu;
 
-	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique hab, Individu individu) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, hab);
+	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique hab, Individu individu) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, hab);
 		Assert.notNull(individu);
 		this.individu = individu;
 	}

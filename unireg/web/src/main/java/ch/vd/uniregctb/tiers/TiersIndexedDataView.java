@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -110,4 +111,7 @@ public class TiersIndexedDataView implements Annulable {
 		return data.isDebiteurInactif();
 	}
 
+	public TypeAvatar getTypeAvatar() {
+		return data.getTypeAvatar();
+	}
 }

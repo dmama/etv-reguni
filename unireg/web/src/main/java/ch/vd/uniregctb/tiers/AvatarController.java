@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.vd.unireg.avatars.AvatarService;
-import ch.vd.unireg.avatars.ImageData;
-import ch.vd.unireg.avatars.TypeAvatar;
+import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.avatar.ImageData;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 
 @Controller
 public class AvatarController {

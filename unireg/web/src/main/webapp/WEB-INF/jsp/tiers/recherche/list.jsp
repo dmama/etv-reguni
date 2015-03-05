@@ -40,10 +40,15 @@
 					<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves"/></span></display:setProperty>
 					<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.tiers.trouves"/></span></display:setProperty>
 
-					<display:column sortable="true" titleKey="label.numero.tiers" sortProperty="numero">
-						<a href="visu.do?id=${tiers.numero}"><unireg:numCTB numero="${tiers.numero}"/></a>
+					<display:column sortable="true" titleKey="label.numero.tiers" sortProperty="numero" style="width: 10em;">
+						<a href="visu.do?id=${tiers.numero}" style="vertical-align: middle; line-height: 2em;"><unireg:numCTB numero="${tiers.numero}"/></a>
+						<c:if test="${tiers.typeAvatar != null}">
+							<div style="float: right;">
+								<img alt="" src="<c:url value='/tiers/avatar.do'/>?type=${tiers.typeAvatar}&url_memorize=false" style="height: 2em;"/>
+							</div>
+						</c:if>
 					</display:column>
-					<display:column sortable="true" titleKey="label.role">
+					<display:column sortable="true" titleKey="label.role" style="white-space: nowrap;">
 						<c:out value="${tiers.roleLigne1}"/>
 						<c:if test="${tiers.roleLigne2 != null}">
 							<br><c:out value="${tiers.roleLigne2}"/>

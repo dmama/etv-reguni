@@ -5,6 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
@@ -26,8 +27,8 @@ public class EntrepriseIndexable extends ContribuableIndexable<Entreprise> {
 	private final PersonneMorale pm;
 
 	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, ServicePersonneMoraleService servicePM,
-	                           Entreprise entreprise) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, entreprise);
+	                           AvatarService avatarService, Entreprise entreprise) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, entreprise);
 		this.pm = servicePM.getPersonneMorale(entreprise.getNumero(), PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS);
 		if (pm == null) {
 			throw new IndexerException("Impossible de trouver la personne morale n°" + entreprise.getNumero() + " dans le registre PM.");

@@ -3,8 +3,8 @@ package ch.vd.uniregctb.tiers.vignette;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 
-import ch.vd.unireg.avatars.AvatarService;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.TiersService;

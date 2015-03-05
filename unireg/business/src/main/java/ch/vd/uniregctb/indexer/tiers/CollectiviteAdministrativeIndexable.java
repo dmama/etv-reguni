@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -18,8 +19,8 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable<C
 	public static final String SUB_TYPE = "collectiviteadministrative";
 
 	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService,
-	                                           ServiceInfrastructureService serviceInfra, CollectiviteAdministrative collectivite) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, collectivite);
+	                                           ServiceInfrastructureService serviceInfra, AvatarService avatarService, CollectiviteAdministrative collectivite) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, collectivite);
 	}
 
 	@Override

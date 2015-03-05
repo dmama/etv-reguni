@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -12,6 +10,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.indexer.Indexable;
 import ch.vd.uniregctb.indexer.IndexableData;
@@ -25,22 +24,22 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(TiersIndexable.class);
-
 	public static final String TYPE = "tiers";
 
 	protected final T tiers;
+	protected final AvatarService avatarService;
 	protected final TiersService tiersService;
 	protected final AdresseService adresseService;
 	protected final ServiceInfrastructureService serviceInfra;
 
-	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, T tiers) throws IndexerException {
+	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, T tiers) throws IndexerException {
 		Assert.notNull(tiers);
 		Assert.notNull(adresseService);
 		this.tiers = tiers;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
+		this.avatarService = avatarService;
 	}
 
 	public String getType() {
@@ -67,6 +66,7 @@ public abstract class TiersIndexable<T extends Tiers> implements Indexable {
 		data.setDebiteurInactif(IndexerFormatHelper.booleanToString(tiers.isDebiteurInactif()));
 		data.setAnnule(IndexerFormatHelper.booleanToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());
+		data.setTypeAvatar(IndexerFormatHelper.enumToString(avatarService.getTypeAvatar(tiers)));
 
 		final Long millisecondes = DateHelper.getCurrentDate().getTime();
 		data.setIndexationDate(IndexerFormatHelper.numberToString(millisecondes));

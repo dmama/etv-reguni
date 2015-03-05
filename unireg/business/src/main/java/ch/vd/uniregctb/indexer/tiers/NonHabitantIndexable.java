@@ -5,6 +5,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -17,8 +18,8 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 
 	public static final String SUB_TYPE = "nonhabitant";
 
-	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique nonHabitant) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, nonHabitant);
+	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, PersonnePhysique nonHabitant) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, nonHabitant);
 	}
 
 	@Override

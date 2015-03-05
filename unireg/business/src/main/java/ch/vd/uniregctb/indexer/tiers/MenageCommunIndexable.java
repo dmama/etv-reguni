@@ -12,6 +12,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -36,13 +37,13 @@ public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexa
 
 	public static final String SUB_TYPE = "menagecommun";
 
-	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, MenageCommun menage) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, menage);
+	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, AvatarService avatarService, MenageCommun menage) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, menage);
 
 		final EnsembleTiersCouple ensemble = extractEnsembleForIndexation(tiersService, menage);
-		ppIndexable1 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getPrincipal());
+		ppIndexable1 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, ensemble.getPrincipal());
 		if (ensemble.getConjoint() != null) {
-			ppIndexable2 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getConjoint());
+			ppIndexable2 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, avatarService, ensemble.getConjoint());
 		}
 		else {
 			ppIndexable2 = null;//marié seul => pas d'indexation du conjoint
@@ -145,17 +146,17 @@ public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexa
 	}
 
 	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
-	                                                        PersonnePhysique pp) {
+	                                                        AvatarService avatarService, PersonnePhysique pp) {
 		PersonnePhysiqueIndexable ppIndexable = null;
 		if (pp != null && !pp.isHabitantVD()) {
-			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
+			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
 		}
 		else if (pp != null) {
 			final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ADRESSES);
 			if (ind == null) {
 				throw new IndividuNotFoundException(pp);
 			}
-			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
+			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp, ind);
 		}
 		return ppIndexable;
 	}

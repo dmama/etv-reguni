@@ -7,7 +7,6 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.avatars.ImageData;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v1.OrdinaryTaxDeclarationAckResponse;
 import ch.vd.unireg.ws.deadline.v1.DeadlineRequest;
@@ -22,6 +21,7 @@ import ch.vd.unireg.xml.party.v3.PartyInfo;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
+import ch.vd.uniregctb.avatar.ImageData;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.webservices.common.AccessDeniedException;

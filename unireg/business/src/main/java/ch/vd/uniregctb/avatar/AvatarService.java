@@ -1,4 +1,4 @@
-package ch.vd.unireg.avatars;
+package ch.vd.uniregctb.avatar;
 
 import ch.vd.uniregctb.tiers.Tiers;
 

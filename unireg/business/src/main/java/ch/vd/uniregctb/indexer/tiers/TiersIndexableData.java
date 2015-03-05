@@ -67,6 +67,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
 	public static final String D_DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String ASSUJETTISSEMENT_PP = "D_ASSUJETTISSEMENT_PP";
+	public static final String AVATAR = "D_AVATAR";
 
 	// champs de recherche
 	private String numeros;
@@ -111,6 +112,7 @@ public class TiersIndexableData extends IndexableData {
 	private String indexationDate;
 	private String modeCommunication;   // uniquement renseigné sur les débiteurs (SIFISC-6587)
 	private String assujettissementPP;  // seulement sur les PP/MC (SIFISC-11102)
+	private String typeAvatar;
 
 	public TiersIndexableData(Long id, String type, String subType) {
 		super(id, type, subType);
@@ -170,6 +172,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
 		addStoredValue(d, TiersIndexableData.D_DATE_NAISSANCE, IndexerFormatHelper.dateCollectionToString(datesNaissance, IndexerFormatHelper.DateStringMode.STORAGE));
 		addStoredValue(d, TiersIndexableData.ASSUJETTISSEMENT_PP, assujettissementPP);
+		addStoredValue(d, TiersIndexableData.AVATAR, typeAvatar);
 
 		return d;
 	}
@@ -588,5 +591,9 @@ public class TiersIndexableData extends IndexableData {
 		else {
 			return String.format("%s %s", left.trim(), right.trim());
 		}
+	}
+
+	public void setTypeAvatar(String typeAvatar) {
+		this.typeAvatar = typeAvatar;
 	}
 }

@@ -8,13 +8,13 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.avatars.AvatarService;
-import ch.vd.unireg.avatars.TypeAvatar;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.avatar.AvatarService;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.taglibs.JspTagBandeauTiers;
 import ch.vd.uniregctb.taglibs.JspTagInteroperabilite;

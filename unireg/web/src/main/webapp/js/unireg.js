@@ -2693,6 +2693,7 @@ var Search = {
 			table += '<table border="0" cellspacing="0">';
 			table += '<thead><tr class="header">';
 			table += '<th>N° de tiers</th>' +
+				'<th/>' +
 				'<th nowrap>Rôle</th>' +
 				'<th>Nom / Raison sociale</th>' +
 				'<th>Date naissance</th>' +
@@ -2711,6 +2712,12 @@ var Search = {
 
 				table += '<tr class="' + (i % 2 == 1 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				table += '<td><a href="' + App.curl('/tiers/visu.do?id=' + e.numero) + '">' + Tiers.formatNumero(e.numero) + '</a></td>';
+				if (e.typeAvatar != null) {
+					table += '<td><img alt="" src="' + App.curl('/tiers/avatar.do?type=' + e.typeAvatar + '&url_memorize=false') + '" style="height: 2em;"/></td>';
+				}
+				else {
+					table += '<td/>';
+				}
 				table += '<td nowrap>' + StringUtils.escapeHTML(e.role1) + (e.role2 ? '<br>' + StringUtils.escapeHTML(e.role2) : '' ) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? '<br>' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.dateNaissance) + '</td>';

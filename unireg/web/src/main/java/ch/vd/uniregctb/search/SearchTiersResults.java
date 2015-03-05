@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
 
@@ -27,6 +28,7 @@ public class SearchTiersResults {
 		private boolean annule;
 		private boolean debiteurInactif;
 		private String tiersType;
+		private TypeAvatar typeAvatar;
 
 		public Entry(TiersIndexedData data) {
 			this.numero = data.getNumero();
@@ -43,6 +45,7 @@ public class SearchTiersResults {
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
 			this.tiersType = data.getTiersType();
+			this.typeAvatar = data.getTypeAvatar();
 		}
 
 		public Long getNumero() {
@@ -99,6 +102,10 @@ public class SearchTiersResults {
 
 		public String getTiersType() {
 			return tiersType;
+		}
+
+		public TypeAvatar getTypeAvatar() {
+			return typeAvatar;
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -17,8 +18,8 @@ public abstract class ContribuableIndexable<T extends Contribuable> extends Tier
 
 	// private static final Logger LOGGER = LoggerFactory.getLogger(ContribuableIndexable.class);
 
-	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, T contribuable) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, contribuable);
+	public ContribuableIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, T contribuable) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, contribuable);
 	}
 
 	@Override

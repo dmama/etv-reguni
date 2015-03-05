@@ -12,6 +12,7 @@
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="avatarService" ref="avatarService" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
@@ -36,6 +37,10 @@
 	</bean>
 
 	<alias alias="globalTiersIndex" name="globalTiersIndexTracing"/>
+
+	<bean id="avatarService" class="ch.vd.uniregctb.avatar.AvatarServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
 
 	<bean id="globalMessageIdentificationIndexer" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexerImpl">
 		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>

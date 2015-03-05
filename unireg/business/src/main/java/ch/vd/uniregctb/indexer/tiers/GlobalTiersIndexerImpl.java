@@ -25,6 +25,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -80,6 +81,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private ServicePersonneMoraleService servicePM;
+	private AvatarService avatarService;
 	private Dialect dialect;
 	private StatsService statsService;
 	private String serviceName;
@@ -559,7 +561,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         if (tiers instanceof DebiteurPrestationImposable) {
             final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, servicePM, serviceInfra, dpi);
+            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, servicePM, serviceInfra, avatarService, dpi);
         } else if (tiers instanceof PersonnePhysique) {
             final PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
@@ -571,24 +573,24 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	            if (individu == null) {
 		            throw new IndividuNotFoundException(pp);
 	            }
-                indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, individu);
+                indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp, individu);
             }
             // NonHabitant
             else {
-                indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
+                indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, avatarService, pp);
             }
         } else if (tiers instanceof MenageCommun) {
             final MenageCommun cmc = (MenageCommun) tiers;
-            indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, cmc);
+            indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, avatarService, cmc);
         } else if (tiers instanceof Entreprise) {
             final Entreprise entreprise = (Entreprise) tiers;
-	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, entreprise);
+	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, avatarService, entreprise);
         } else if (tiers instanceof AutreCommunaute) {
             final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
-            indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, autreCommunaute);
+            indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, avatarService, autreCommunaute);
         } else if (tiers instanceof CollectiviteAdministrative) {
             final CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
-            indexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, collectivite);
+            indexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, avatarService, collectivite);
         } else {
             final String message = "Le Tiers " + tiers.getNatureTiers() + " n'est pas connu de l'indexation!!!";
             LOGGER.error(message);
@@ -731,7 +733,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         this.tiersService = tiersService;
     }
 
-    public void setAdresseService(AdresseService adresseService) {
+	public void setAvatarService(AvatarService avatarService) {
+		this.avatarService = avatarService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
         this.adresseService = adresseService;
     }
 

@@ -47,6 +47,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-avatars</artifactId>
+			<version>${pom.parent.version}</version>
+			<scope>test</scope>     <!-- en production, les images des avatars sont importées par les dépendances au niveau web/ws -->
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>web-screenshot</artifactId>
 			<version>2.0.0</version>

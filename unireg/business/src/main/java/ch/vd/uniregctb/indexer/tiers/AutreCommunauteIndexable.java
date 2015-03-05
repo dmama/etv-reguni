@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -16,8 +17,8 @@ public class AutreCommunauteIndexable extends ContribuableIndexable<AutreCommuna
 
 	public static final String SUB_TYPE = "autrecommunaute";
 
-	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AutreCommunaute autreCommunaute) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, autreCommunaute);
+	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AvatarService avatarService, AutreCommunaute autreCommunaute) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, avatarService, autreCommunaute);
 	}
 
 	@Override
