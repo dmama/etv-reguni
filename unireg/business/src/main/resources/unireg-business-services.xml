@@ -38,10 +38,6 @@
 
 	<alias alias="globalTiersIndex" name="globalTiersIndexTracing"/>
 
-	<bean id="avatarService" class="ch.vd.uniregctb.avatar.AvatarServiceImpl">
-		<property name="tiersService" ref="tiersService"/>
-	</bean>
-
 	<bean id="globalMessageIdentificationIndexer" class="ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationIndexerImpl">
 		<property name="globalIndex" ref="globalMessageIdentificationIndex"/>
 		<property name="identCtbDAO" ref="identCtbDAO"/>

@@ -223,6 +223,10 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
+	<bean id="avatarService" class="ch.vd.uniregctb.avatar.AvatarServiceImpl">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
+
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
