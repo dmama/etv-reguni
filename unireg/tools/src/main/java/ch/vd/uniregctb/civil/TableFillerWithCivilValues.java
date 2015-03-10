@@ -52,9 +52,9 @@ public class TableFillerWithCivilValues {
 
 	private static final String dbDriverClassName = "oracle.jdbc.OracleDriver";
 
-	private static final String dbUrl = "jdbc:oracle:thin:@sso0209v.etat-de-vaud.ch:1526:FUNIREGI";
+	private static final String dbUrl = "jdbc:oracle:thin:@sli2578v.etat-de-vaud.ch:1527/UNIREGI";
 	private static final String dbUser = "UNIREG";
-	private static final String dbPassword = "uniregi_082";
+	private static final String dbPassword = "nfha6_bwixik";
 
 	private static final String RCPERS_URL = "http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v5";
 	private static final String RCPERS_USER = "gvd0unireg";
