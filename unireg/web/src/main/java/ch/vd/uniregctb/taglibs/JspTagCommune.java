@@ -16,6 +16,6 @@ public class JspTagCommune extends JspTagDatedInfra<Commune> {
 
 	@Override
 	protected Commune getInstance(ServiceInfrastructureService infraService, Integer noOfs, RegDate date) throws ServiceInfrastructureException {
-		return infraService.getCommuneByNumeroOfs(noOfs, date);
+		return noOfs != null ? infraService.getCommuneByNumeroOfs(noOfs, date) : null;
 	}
 }
