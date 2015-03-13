@@ -15,17 +15,22 @@ public class JspTagPays extends JspTagDatedInfra<Pays> {
 
 	@Override
 	protected Pays getInstance(ServiceInfrastructureService infraService, Integer noOfs, RegDate date) throws ServiceInfrastructureException {
-		if (date == null) {
-			final List<Pays> candidates = infraService.getPaysHisto(noOfs);
-			if (candidates == null || candidates.isEmpty()) {
-				return null;
+		if (noOfs != null) {
+			if (date == null) {
+				final List<Pays> candidates = infraService.getPaysHisto(noOfs);
+				if (candidates == null || candidates.isEmpty()) {
+					return null;
+				}
+				else {
+					return candidates.get(candidates.size() - 1);
+				}
 			}
 			else {
-				return candidates.get(candidates.size() - 1);
+				return infraService.getPays(noOfs, date);
 			}
 		}
 		else {
-			return infraService.getPays(noOfs, date);
+			return null;
 		}
 	}
 }
