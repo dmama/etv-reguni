@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.indexer.messageidentification;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.index.Term;
@@ -185,9 +186,9 @@ public abstract class QueryConstructor {
 
 	private static void addDateTraitement(BooleanQuery fullQuery, Date dateTraitementMin, Date dateTraitementMax) throws IndexerException {
 		final Long tsMin = dateTraitementMin == null ? null : dateTraitementMin.getTime();
-		final Long tsMax = dateTraitementMax == null ? null : dateTraitementMax.getTime();
+		final Long tsMax = dateTraitementMax == null ? null : dateTraitementMax.getTime() + TimeUnit.DAYS.toMillis(1);
 		if (tsMin != null || tsMax != null) {
-			fullQuery.add(NumericRangeQuery.newLongRange(MessageIdentificationIndexableData.DATE_MESSAGE, tsMin, tsMax, true, true), BooleanClause.Occur.MUST);
+			fullQuery.add(NumericRangeQuery.newLongRange(MessageIdentificationIndexableData.DATE_TRAITEMENT, tsMin, tsMax, true, false), BooleanClause.Occur.MUST);
 		}
 	}
 }
