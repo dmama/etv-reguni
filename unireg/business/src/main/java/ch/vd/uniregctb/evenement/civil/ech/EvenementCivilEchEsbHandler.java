@@ -56,6 +56,16 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 	private EvenementCivilEchProcessingMode processingMode;
 	private boolean running;
 
+	/**
+	 * Renderer d'un événement civil à la réception (on ne renvoie que les données fournies à la réception de l'événement)
+	 */
+	private static final StringRenderer<EvenementCivilEch> RECEPTION_EVT_CIVIL_RENDERER = new StringRenderer<EvenementCivilEch>() {
+		@Override
+		public String toString(EvenementCivilEch evt) {
+			return String.format("id=%d, refId=%d, type=%s, action=%s, date=%s", evt.getId(), evt.getRefMessageId(), evt.getType(), evt.getAction(), evt.getDateEvenement());
+		}
+	};
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setReceptionHandler(EvenementCivilEchReceptionHandler receptionHandler) {
 		this.receptionHandler = receptionHandler;
@@ -182,9 +192,10 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 
 		final int size = attributs.size();
 		if (size > 0) {
+			final String details = RECEPTION_EVT_CIVIL_RENDERER.toString(ech);
 			final String msg;
 			if (size == 1) {
-				msg = String.format("L'attribut '%s' est obligatoire pour un événement civil à l'entrée dans Unireg", attributs.get(0));
+				msg = String.format("L'attribut '%s' est obligatoire pour un événement civil à l'entrée dans Unireg (%s).", attributs.get(0), details);
 			}
 			else {
 				final StringBuilder b = new StringBuilder("Les attributs ");
@@ -200,7 +211,9 @@ public class EvenementCivilEchEsbHandler implements EsbMessageHandler, Initializ
 					}
 					b.append('\'').append(attr).append('\'');
 				}
-				b.append(" sont obligatoires pour un événement civil à l'entrée dans Unireg");
+				b.append(" sont obligatoires pour un événement civil à l'entrée dans Unireg (");
+				b.append(details);
+				b.append(").");
 				msg = b.toString();
 			}
 			throw new EvenementCivilEchEsbException(EsbBusinessCode.EVT_CIVIL, msg);
