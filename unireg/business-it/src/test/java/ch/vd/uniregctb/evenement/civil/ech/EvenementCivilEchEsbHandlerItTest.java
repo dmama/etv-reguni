@@ -289,7 +289,9 @@ public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 				//noinspection ThrowableResultOfMethodCallIgnored
 				final Throwable t = explosionData.getRight();
 				Assert.assertEquals(EvenementCivilEchEsbException.class, t.getClass());
-				Assert.assertEquals("L'attribut 'date' est obligatoire pour un événement civil à l'entrée dans Unireg", t.getMessage());
+				Assert.assertEquals("L'attribut 'date' est obligatoire pour un événement civil à l'entrée dans Unireg (id="
+						                    + idEvenement + ", refId=" + refMessageId + ", type=" + type + ", action=" + action + ", date=null).",
+				                    t.getMessage());
 			}
 		}
 	}
