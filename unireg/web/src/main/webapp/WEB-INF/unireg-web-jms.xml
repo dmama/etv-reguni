@@ -94,7 +94,7 @@
 				<value>classpath:eVD-0025-1-2.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-1-0.xsd</value>
 				<value>classpath:event/taxation/DossierElectronique-2-0.xsd</value>
-				<value>classpath:event/taxation/DossierElectronique-3-0.xsd</value>
+				<value>classpath:event/taxation/DossierElectronique-3-2.xsd</value>
 			</list>
 		</property>
 	</bean>
