@@ -73,7 +73,7 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 		buildEsbMessageValidator(new Resource[]{
 				new ClassPathResource("event/taxation/DossierElectronique-1-0.xsd"),
 				new ClassPathResource("event/taxation/DossierElectronique-2-0.xsd"),
-				new ClassPathResource("event/taxation/DossierElectronique-3-0.xsd")
+				new ClassPathResource("event/taxation/DossierElectronique-3-2.xsd")
 		});
 
 		initEndpointManager(INPUT_QUEUE, listener);
@@ -241,6 +241,58 @@ public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 		// Lit le message sous format texte
 		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-3.0-exemple.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(10500171, q.getNoContribuable());
+		assertEquals(2014, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.VAUDTAX, q.getTypeDocument());
+		assertEquals("toto@earth.net", q.getEmail());
+		assertEquals("CH2800767000U09565735", q.getIban());
+		assertEquals("0211234567", q.getNoTelephone());
+		assertEquals("0797654321", q.getNoMobile());
+		assertEquals("Toto le rigolo", q.getTitulaireCompte());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testFormatV3_2() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<>();
+		final DossierElectroniqueHandler<?> v1Handler = new V1Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v1");
+			}
+		};
+		final DossierElectroniqueHandler<?> v2Handler = new V2Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				Assert.fail("Un message v3 ne devrait pas arriver dans le handler v2");
+			}
+		};
+		final DossierElectroniqueHandler<?> v3Handler = new V3Handler() {
+			@Override
+			protected void onEvent(EvenementCedi evt, Map<String, String> incomingHeaders) throws EvenementCediException {
+				events.add(evt);
+			}
+		};
+
+		esbHandler.setHandlers(Arrays.asList(v1Handler, v2Handler, v3Handler));
+		esbHandler.afterPropertiesSet();
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/DossierElectronique-3.2-exemple.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
