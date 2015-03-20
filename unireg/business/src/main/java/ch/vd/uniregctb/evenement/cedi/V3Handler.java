@@ -17,7 +17,7 @@ public class V3Handler extends AbstractDossierElectroniqueHandler implements Dos
 
 	@Override
 	public ClassPathResource getRequestXSD() {
-		return new ClassPathResource("event/taxation/DossierElectronique-3-0.xsd");
+		return new ClassPathResource("event/taxation/DossierElectronique-3-2.xsd");
 	}
 
 	@Override
