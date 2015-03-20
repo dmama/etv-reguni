@@ -430,7 +430,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-3-0.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/taxation/DossierElectronique-3-2.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.taxation.v3" />
 		</jxb:schemaBindings>
