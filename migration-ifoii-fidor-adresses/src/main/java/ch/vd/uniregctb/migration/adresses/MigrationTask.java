@@ -77,11 +77,11 @@ final class MigrationTask implements Callable<MigrationResult> {
 			}
 			else {
 				// ni numéro de rue ni numéro de localité... que peut-on bien faire de ça ?
-				return new MigrationResult.NotFound(adresse, null, StringUtils.trimToNull(adresse.rue));
+				return new MigrationResult.NotFound(adresse, null, false, StringUtils.trimToNull(adresse.rue));
 			}
 		}
 		catch (RemoteException | InfrastructureException e) {
-			return new MigrationResult.Erreur(adresse, null, null, e);
+			return new MigrationResult.Erreur(adresse, null, false, null, e);
 		}
 
 		try {
@@ -115,7 +115,7 @@ final class MigrationTask implements Callable<MigrationResult> {
 				// vraiment rien trouvé... (une source pour la prochaine itération, dans le mappingNoOrdrePoste...)
 				if (localitesATester.isEmpty()) {
 					// constat d'échec, aucune localité retrouvée...
-					return new MigrationResult.LocalityNotFound(adresse, noOrdreP, libelleRue);
+					return new MigrationResult.LocalityNotFound(adresse, noOrdreP, false, libelleRue);
 				}
 			}
 			else {
@@ -135,10 +135,10 @@ final class MigrationTask implements Callable<MigrationResult> {
 
 			// 4. constat d'échec... pas de rue avec de nom là... on prend la première localité postale (qui peut être celle fournie en entrée, ou une meilleure - plus récente - approximation de celle-ci...)
 			final int mostProbableSwissZipCodeId = localitesATester.get(0).getLeft();
-			return new MigrationResult.NotFound(adresse, mostProbableSwissZipCodeId, libelleRue);
+			return new MigrationResult.NotFound(adresse, mostProbableSwissZipCodeId, mostProbableSwissZipCodeId != noOrdreP, libelleRue);
 		}
 		catch (Exception e) {
-			return new MigrationResult.Erreur(adresse, noOrdreP, libelleRue, e);
+			return new MigrationResult.Erreur(adresse, noOrdreP, false, libelleRue, e);
 		}
 	}
 

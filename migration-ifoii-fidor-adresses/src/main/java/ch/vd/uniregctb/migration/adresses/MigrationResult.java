@@ -64,11 +64,13 @@ abstract class MigrationResult {
 
 	static class NotFound extends MigrationResult {
 		protected final Integer numeroOrdrePoste;
+		protected final boolean numeroOrdrePosteModifie;
 		protected final String rue;
 
-		NotFound(DataAdresse data, Integer numeroOrdrePoste, String rue) {
+		NotFound(DataAdresse data, Integer numeroOrdrePoste, boolean numeroOrdrePosteModifie, String rue) {
 			super(data);
 			this.numeroOrdrePoste = numeroOrdrePoste;
+			this.numeroOrdrePosteModifie = numeroOrdrePosteModifie;
 			this.rue = rue;
 		}
 
@@ -79,7 +81,8 @@ abstract class MigrationResult {
 			// 1. on avait un numéro de rue avant
 			//      -> il faut l'effacer et placer le libellé de la rue dans la colonne "RUE" et le numéro postal de la localité dans "NUMERO_ORDRE_POSTE"
 			// 2. on n'avait pas de numéro de rue avant
-			//      -> on ne touche à rien ?
+			//      2.1. si le numéro d'ordre poste à été modifié, on le change en base
+			//      2.2. sinon, on ne touche à rien...
 			final Map<String, Object> map;
 			if (data.noRue != null) {
 				map = new LinkedHashMap<>(3);
@@ -87,6 +90,10 @@ abstract class MigrationResult {
 
 				// je ne sais pas quoi faire...
 				map.put(RUE, StringUtils.isBlank(rue) ? "Rue inconnue" : rue);
+				map.put(NUMERO_ORDRE_POSTE, numeroOrdrePoste);
+			}
+			else if (numeroOrdrePosteModifie) {
+				map = new LinkedHashMap<>(1);
 				map.put(NUMERO_ORDRE_POSTE, numeroOrdrePoste);
 			}
 			else {
@@ -98,23 +105,23 @@ abstract class MigrationResult {
 		@Override
 		public String toString() {
 			return getClass().getSimpleName() + "{" + data + " -> {" +
-					"numeroOrdrePoste=" + numeroOrdrePoste +
+					"numeroOrdrePoste=" + numeroOrdrePoste + "(" + (numeroOrdrePosteModifie ? "modifié" : "non modifié") + ")" +
 					", rue=" + enquote(rue) +
 					"}}";
 		}
 	}
 
 	static class LocalityNotFound extends NotFound {
-		LocalityNotFound(DataAdresse data, Integer numeroOrdrePoste, String rue) {
-			super(data, numeroOrdrePoste, rue);
+		LocalityNotFound(DataAdresse data, Integer numeroOrdrePoste, boolean numeroOrdrePosteModifie, String rue) {
+			super(data, numeroOrdrePoste, numeroOrdrePosteModifie, rue);
 		}
 	}
 
 	static class Erreur extends NotFound {
 		protected final Exception e;
 
-		Erreur(DataAdresse data, Integer numeroOrdrePoste, String rue, Exception e) {
-			super(data, numeroOrdrePoste, rue);
+		Erreur(DataAdresse data, Integer numeroOrdrePoste, boolean numeroOrdrePosteModifie, String rue, Exception e) {
+			super(data, numeroOrdrePoste, numeroOrdrePosteModifie, rue);
 			this.e = e;
 		}
 
