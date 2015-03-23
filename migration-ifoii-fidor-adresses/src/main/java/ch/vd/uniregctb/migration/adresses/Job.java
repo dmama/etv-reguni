@@ -176,45 +176,36 @@ public class Job {
 								first = false;
 							}
 							b.append(" WHERE ID=").append(action.getLeft());
+							final String sql = b.toString();
 
-							// TODO remplacer cet affichage bidon de requêtes SQL par la modification réelle en base (telle que commentée plus bas)
-							String sql = b.toString();
-							for (Map.Entry<String, Object> field : action.getRight().entrySet()) {
-								if (field.getValue() != null) {
-									final String valueStr;
-									if (field.getValue() instanceof String) {
-										valueStr = String.format("'%s'", ((String) field.getValue()).replaceAll("'", "''"));
+							LOGGER.info(String.format("%s, params = %s", sql, Job.toString(action.getRight())));
+
+							try (PreparedStatement ps = con.prepareStatement(sql)) {
+								int index = 1;
+								for (Map.Entry<String, Object> field : action.getRight().entrySet()) {
+									final Object value = field.getValue();
+									if (value != null) {
+										if (value instanceof String) {
+											ps.setString(index, (String) value);
+										}
+										else if (value instanceof Integer) {
+											ps.setInt(index, (Integer) value);
+										}
+										else if (value instanceof Long) {
+											ps.setLong(index, (Long) value);
+										}
+										else {
+											throw new IllegalArgumentException("What is that??? " + value.getClass());
+										}
+										++ index;
 									}
-									else {
-										valueStr = field.getValue().toString();
-									}
-									sql = sql.replaceFirst("\\?", Matcher.quoteReplacement(valueStr));
+								}
+
+								final int changed = ps.executeUpdate();
+								if (changed != 1) {
+									throw new RuntimeException("Adresse ID " + action.getLeft() + " : could not be modified...");
 								}
 							}
-							LOGGER.debug(sql);
-
-//							try (PreparedStatement ps = con.prepareStatement(b.toString()) {
-//								for (Map.Entry<String, Object> action : actions.entrySet()) {
-//									final Object value = action.getValue();
-//									if (value != null) {
-//										if (value instanceof String) {
-//											ps.setString(index, (String) value);
-//										}
-//										else if (value instanceof Integer) {
-//											ps.setInt(index, (Integer) value);
-//										}
-//										else if (value instanceof Long) {
-//											ps.setLong(index, (Long) value);
-//										}
-//										++ index;
-//									}
-//								}
-//
-// 								final int changed = ps.executeUpdate();
-//								if (changed != 1) {
-//									throw new RuntimeException("Adresse ID " + res.data.id + " : could not be modified...");
-//								}
-//							}
 						}
 						return null;
 					}
@@ -229,6 +220,30 @@ public class Job {
 				}
 			}
 		}
+	}
+
+	private static String toString(Map<String, Object> map) {
+		// on ne met que les valeurs non-nulles
+		final StringBuilder b = new StringBuilder("{");
+		boolean first = true;
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			final Object value = entry.getValue();
+			if (value != null) {
+				if (!first) {
+					b.append(", ");
+				}
+				b.append(entry.getKey()).append("=");
+				if (value instanceof String) {
+					b.append(enquote((String) value));
+				}
+				else {
+					b.append(value);
+				}
+				first = false;
+			}
+		}
+		b.append("}");
+		return b.toString();
 	}
 
 	private static Integer getNullableInt(ResultSet rs, int index) throws SQLException {
