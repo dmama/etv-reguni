@@ -106,10 +106,11 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @param onrp le numéro technique de la localité
+	 * @param dateReference on cherche une localité valide à la date donnée, ou en tout cas la plus proche
 	 * @return la localité qui corresponds à numéro technique spécifié
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException;
+	Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException;
 
 	/**
 	 * @param localite une localité

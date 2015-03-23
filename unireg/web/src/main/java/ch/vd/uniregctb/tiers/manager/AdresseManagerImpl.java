@@ -388,7 +388,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 				adresseView.setTypeLocalite("suisse");
 				Localite localite = getLocalite(adresseSuisse);
 				if (localite != null) {
-					adresseView.setLocaliteSuisse(localite.getNomAbregeMinuscule());
+					adresseView.setLocaliteSuisse(localite.getNomAbrege());
 					adresseView.setNumeroOrdrePoste(localite.getNoOrdre().toString());
 					adresseView.setNumCommune(localite.getNoCommune().toString());
 				}
@@ -456,9 +456,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 */
 	private Localite getLocalite(AdresseSuisse adresse) {
 		final Integer noLocalite = getNumeroOrdreLocalite(adresse);
-		final Localite localite;
-		localite = getServiceInfrastructureService().getLocaliteByONRP(noLocalite);
-		return localite;
+		return noLocalite == null ? null : getServiceInfrastructureService().getLocaliteByONRP(noLocalite, adresse.getDateFin());
 	}
 
 	/**

@@ -232,7 +232,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 		final MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(type);
-		adresse.setLocalite(localite.getNomAbregeMinuscule());
+		adresse.setLocalite(localite.getNomAbrege());
 		adresse.setRue(rue);
 		adresse.setNumero(numeroMaison);
 		adresse.setCasePostale(casePostale);

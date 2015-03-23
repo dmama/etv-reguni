@@ -8,12 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
@@ -40,6 +44,8 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
  */
 public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceInfrastructureImpl.class);
 
 	private ServiceInfrastructureRaw rawService;
 	private TiersDAO tiersDAO;
@@ -148,9 +154,71 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getLocalites();
 	}
 
+	private static final class Warner {
+		private final ThreadLocal<String> lastMsg = new ThreadLocal<>();
+		public void warn(String msg) {
+			final String previousMsg = lastMsg.get();
+			if (previousMsg == null || !previousMsg.equals(msg)) {
+				LOGGER.warn(msg);
+				lastMsg.set(msg);
+			}
+		}
+	}
+	private final Warner warner = new Warner();
+
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		return rawService.getLocaliteByONRP(onrp);
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		if (dateReference == null) {
+			dateReference = RegDate.get();
+		}
+
+		final List<Localite> candidates = rawService.getLocalitesByONRP(onrp);
+		if (candidates == null || candidates.isEmpty()) {
+			LOGGER.warn("Aucune localité trouvée pour le numéro " + onrp);
+			return null;
+		}
+		if (candidates.size() == 1) {
+			// il n'y en a qu'une, c'est la bonne
+			final Localite seule = candidates.get(0);
+			if (!seule.isValidAt(dateReference)) {
+				warner.warn("La validité de la seule localité avec le numéro " + onrp + " (" + DateRangeHelper.toDisplayString(seule) + ") a été étendue au " + RegDateHelper.dateToDisplayString(dateReference));
+			}
+			return seule;
+		}
+
+		// si la date correspond exactement à une localité, pas de question à se poser, c'est la bonne
+		final Localite exactOne = DateRangeHelper.rangeAt(candidates, dateReference);
+		if (exactOne != null) {
+			return exactOne;
+		}
+
+		// il faut prendre la plus proche... Les localités étant triées dans l'ordre chronologique, on peut facilement trouver la localité avant et celle après
+		Localite before = null;
+		Localite after = null;
+		for (Localite candidate : candidates) {
+			if (RegDateHelper.isBefore(candidate.getDateFin(), dateReference, NullDateBehavior.LATEST)) {
+				before = candidate;
+			}
+			else if (RegDateHelper.isAfter(candidate.getDateDebut(), dateReference, NullDateBehavior.EARLIEST)) {
+				after = candidate;
+				break;      // puisque les candidats sont triés, on peut (= on doit !) s'arrêter là...
+			}
+		}
+
+		final Localite res;
+		if (before == null) {
+			res = after;
+		}
+		else if (after == null) {
+			res = before;
+		}
+		else {
+			final int diffBefore = RegDateHelper.getDaysBetween(before.getDateFin(), dateReference) - 1;      // -1 car la date de fin est entièrement comprise dans l'intervale
+			final int diffAfter = RegDateHelper.getDaysBetween(dateReference, after.getDateDebut());
+			res = (diffBefore < diffAfter ? before : after);
+		}
+		warner.warn("Localité la plus proche du " + RegDateHelper.dateToDisplayString(dateReference) + " pour le numéro " + onrp + " trouvée pour la période " + DateRangeHelper.toDisplayString(res));
+		return res;
 	}
 
 	@Override
@@ -292,9 +360,9 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			commune = null;
 		}
 		else {
-			final Localite localite = getLocaliteByONRP(numeroOrdrePostal);
+			final Localite localite = getLocaliteByONRP(numeroOrdrePostal, date);
 			if (localite == null) {
-				throw new ServiceInfrastructureException("La localité avec le numéro " + numeroOrdrePostal + " n'existe pas");
+				throw new ServiceInfrastructureException("Aucune localité trouvée avec le numéro " + numeroOrdrePostal);
 			}
 			commune = getCommuneByLocalite(localite);
 		}
@@ -529,7 +597,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public boolean estDansLeCanton(final Rue rue) throws ServiceInfrastructureException {
 		final Integer onrp = rue.getNoLocalite();
-		final Localite localite = getLocaliteByONRP(onrp);
+		final Localite localite = getLocaliteByONRP(onrp, rue.getDateFin());
 		return estDansLeCanton(localite.getCommuneLocalite());
 	}
 
@@ -565,8 +633,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			if (onrp == null) {
 				return false;
 			}
-			final Localite localite = getLocaliteByONRP(onrp);
-			Assert.notNull(localite, "La localité avec onrp = " + onrp + " est introuvable.");
+			final Localite localite = getLocaliteByONRP(onrp, adresse.getDateFin());
+			Assert.notNull(localite, "Aucune localité trouvée avec le numéro " + onrp);
 			return estDansLeCanton(localite.getCommuneLocalite());
 		}
 		else {

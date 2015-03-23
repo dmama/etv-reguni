@@ -964,7 +964,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		info.setStreet(rue.getDesignationCourrier());
 		info.setSwissZipCode(rue.getLocalite().getNPA());
 		info.setSwissZipCodeId(rue.getLocalite().getNoOrdre());
-		info.setTown(rue.getLocalite().getNomCompletMinuscule());
+		info.setTown(rue.getLocalite().getNomComplet());
 		return info;
 	}
 
@@ -972,7 +972,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		AddressInformation info = new AddressInformation();
 		info.setStreet(rue.getDesignationCourrier());
 		info.setSwissZipCodeId(rue.getLocalite().getNPA());
-		info.setTown(rue.getLocalite().getNomCompletMinuscule());
+		info.setTown(rue.getLocalite().getNomComplet());
 		info.setCountry("CH"); // on ne connaît pas les rues des autres pays
 		return info;
 	}
@@ -1238,7 +1238,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, courrier.getTypeAdresse());
 			assertNull(courrier.getDateDebut());
 			assertNull(courrier.getDateFin());
-			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), courrier.getLocalite());
+			assertEquals(MockLocalite.Echallens.getNomComplet(), courrier.getLocalite());
 			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), courrier.getRue());
 		}
 
@@ -1249,7 +1249,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Echallens.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1334,7 +1334,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, courrier.getTypeAdresse());
 			assertNull(courrier.getDateDebut());
 			assertNull(courrier.getDateFin());
-			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), courrier.getLocalite());
+			assertEquals(MockLocalite.Aubonne.getNomComplet(), courrier.getLocalite());
 			assertEquals(MockRue.Aubonne.CheminTraverse.getDesignationCourrier(), courrier.getRue());
 		}
 
@@ -1345,7 +1345,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Aubonne.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Aubonne.CheminTraverse.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1373,7 +1373,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(arrivee, adr.getDateDebut());
 			assertEquals(depart, adr.getDateFin());
-			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 		}
 
@@ -1384,7 +1384,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Bussigny.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Bussigny.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Bussigny.RueDeLIndustrie.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1410,7 +1410,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(arrivee, adr.getDateDebut());
 			assertEquals(depart, adr.getDateFin());
-			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 		}
 
@@ -1431,7 +1431,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(nouvelleArrivee, adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Echallens.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1459,7 +1459,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(arrivee, adr.getDateDebut());
 			assertEquals(depart, adr.getDateFin());
-			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 		}
 
@@ -1480,7 +1480,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.SECONDAIRE, adr.getTypeAdresse());
 			assertEquals(nouvelleArrivee, adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Echallens.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1516,7 +1516,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(arrivee, adr.getDateDebut());
 			assertEquals(depart, adr.getDateFin());
-			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 		}
 
@@ -1527,7 +1527,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
 			assertEquals(depart.addMonths(-1), adr.getDateDebut());
 			assertEquals(depart.addMonths(1), adr.getDateFin());
-			assertEquals(MockLocalite.Bussigny.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Bussigny.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Bussigny.RueDeLIndustrie.getDesignationCourrier(), adr.getRue());
 		}
 
@@ -1549,7 +1549,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 			assertEquals(nouvelleArrivee, adr.getDateDebut());
 			assertNull(adr.getDateFin());
-			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockLocalite.Echallens.getNomComplet(), adr.getLocalite());
 			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
 		}
 	}
@@ -1575,7 +1575,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 				assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 				assertEquals(arrivee, adr.getDateDebut());
 				assertNull(adr.getDateFin());
-				assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+				assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 				assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 				assertNull(adr.getLocalisationPrecedente());
 				assertNull(adr.getLocalisationSuivante());
@@ -1594,7 +1594,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 				assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
 				assertEquals(arrivee, adr.getDateDebut());
 				assertEquals(deces, adr.getDateFin());
-				assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+				assertEquals(MockLocalite.Lausanne.getNomComplet(), adr.getLocalite());
 				assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
 				assertNull(adr.getLocalisationPrecedente());
 				assertNotNull(adr.getLocalisationSuivante());

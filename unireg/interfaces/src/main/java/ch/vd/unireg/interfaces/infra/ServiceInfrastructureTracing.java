@@ -298,11 +298,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(final int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(final int onrp) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getLocaliteByONRP(onrp);
+			return target.getLocalitesByONRP(onrp);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;

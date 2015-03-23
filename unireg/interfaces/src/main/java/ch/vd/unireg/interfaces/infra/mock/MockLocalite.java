@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 
@@ -60,7 +62,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite LesCharbonnieres = new MockLocalite(545, 1343, null, "Les Charbonnières", MockCommune.LeLieu);
 
 	//
-	// communes hors-canton
+	// localités hors-canton
 	//
 
 	public static final MockLocalite Chur = new MockLocalite(3970, 7000, null, "Chur", MockCommune.Chur);
@@ -77,43 +79,43 @@ public class MockLocalite implements Localite {
 
 	private Integer chiffreComplementaire;
 	private Integer complementNPA;
-	private RegDate dateFinValidite;
 	private Integer noCommune;
-	private String nomAbregeMajuscule;
-	private String nomAbregeMinuscule;
-	private String nomCompletMajuscule;
-	private String nomCompletMinuscule;
+	private String nomAbrege;
+	private String nomComplet;
 	private Integer noOrdre;
 	private Integer nPA;
-	private boolean valide;
+	private RegDate dateDebut;
+	private RegDate dateFin;
 	private Commune communeLocalite;
 
 	public MockLocalite() {
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}
 
-	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomCompletMinuscule, MockCommune commune) {
+	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nom, MockCommune commune) {
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
 		this.complementNPA = complementNPA;
 		this.noCommune = commune.getNoOFS();
-		this.nomCompletMinuscule = nomCompletMinuscule;
-		this.nomAbregeMinuscule = nomCompletMinuscule;
+		this.nomComplet = nom;
+		this.nomAbrege = nom;
 		this.communeLocalite = commune;
-		this.valide = true;
+		this.dateDebut = null;
+		this.dateFin = null;
 
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}
 
-	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomAbregeMinuscule, String nomCompletMinuscule, MockCommune commune) {
+	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomAbrege, String nomComplet, MockCommune commune) {
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
 		this.complementNPA = complementNPA;
 		this.noCommune = commune.getNoOFS();
-		this.nomCompletMinuscule = nomCompletMinuscule;
-		this.nomAbregeMinuscule = nomAbregeMinuscule;
+		this.nomComplet = nomComplet;
+		this.nomAbrege = nomAbrege;
 		this.communeLocalite = commune;
-		this.valide = true;
+		this.dateDebut = null;
+		this.dateFin = null;
 
 		DefaultMockServiceInfrastructureService.addLocalite(this);
 	}
@@ -137,15 +139,6 @@ public class MockLocalite implements Localite {
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
-		return dateFinValidite;
-	}
-
-	public void setDateFinValidite(RegDate dateFinValidite) {
-		this.dateFinValidite = dateFinValidite;
-	}
-
-	@Override
 	public Integer getNoCommune() {
 		return noCommune;
 	}
@@ -155,39 +148,21 @@ public class MockLocalite implements Localite {
 	}
 
 	@Override
-	public String getNomAbregeMajuscule() {
-		return nomAbregeMajuscule;
+	public String getNomAbrege() {
+		return nomAbrege;
 	}
 
-	public void setNomAbregeMajuscule(String nomAbregeMajuscule) {
-		this.nomAbregeMajuscule = nomAbregeMajuscule;
-	}
-
-	@Override
-	public String getNomAbregeMinuscule() {
-		return nomAbregeMinuscule;
-	}
-
-	public void setNomAbregeMinuscule(String nomAbregeMinuscule) {
-		this.nomAbregeMinuscule = nomAbregeMinuscule;
+	public void setNomAbrege(String nomAbrege) {
+		this.nomAbrege = nomAbrege;
 	}
 
 	@Override
-	public String getNomCompletMajuscule() {
-		return nomCompletMajuscule;
+	public String getNomComplet() {
+		return nomComplet;
 	}
 
-	public void setNomCompletMajuscule(String nomCompletMajuscule) {
-		this.nomCompletMajuscule = nomCompletMajuscule;
-	}
-
-	@Override
-	public String getNomCompletMinuscule() {
-		return nomCompletMinuscule;
-	}
-
-	public void setNomCompletMinuscule(String nomCompletMinuscule) {
-		this.nomCompletMinuscule = nomCompletMinuscule;
+	public void setNomComplet(String nomComplet) {
+		this.nomComplet = nomComplet;
 	}
 
 	@Override
@@ -209,15 +184,6 @@ public class MockLocalite implements Localite {
 	}
 
 	@Override
-	public boolean isValide() {
-		return valide;
-	}
-
-	public void setValide(boolean valide) {
-		this.valide = valide;
-	}
-
-	@Override
 	public Commune getCommuneLocalite() {
 		return communeLocalite;
 	}
@@ -226,4 +192,18 @@ public class MockLocalite implements Localite {
 		communeLocalite = c;
 	}
 
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return dateFin;
+	}
 }

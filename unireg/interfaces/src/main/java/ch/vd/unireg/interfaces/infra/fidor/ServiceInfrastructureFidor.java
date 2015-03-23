@@ -272,17 +272,19 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
 		try {
-			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostales(RegDate.get(), null, onrp, null, null);
+			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostalesHisto(onrp);
 			if (fidorLocalites != null && !fidorLocalites.isEmpty()) {
-				if (fidorLocalites.size() > 1) {
-					throw new ServiceInfrastructureException("Plusieurs localités valides aujourd'hui avec le numéro d'ordre postal " + onrp + " dans l'infrastructure!");
+				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
+				for (PostalLocality fidorLocalite : fidorLocalites) {
+					localites.add(LocaliteImpl.get(fidorLocalite, this));
 				}
-				return LocaliteImpl.get(fidorLocalites.get(0), this);
+				Collections.sort(localites, new DateRangeComparator<Localite>());
+				return localites;
 			}
 			else {
-				return null;
+				return Collections.emptyList();
 			}
 		}
 		catch (FidorClientException e) {
@@ -293,7 +295,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		try {
-			final List<Street> streets = fidorClient.getRuesParNumeroOrdrePosteEtDate(localite.getNoOrdre(), localite.getDateFinValidite());
+			final List<Street> streets = fidorClient.getRuesParNumeroOrdrePosteEtDate(localite.getNoOrdre(), localite.getDateFin());
 			if (streets != null && !streets.isEmpty()) {
 				final List<Rue> rues = new ArrayList<>(streets.size());
 				for (Street st : streets) {

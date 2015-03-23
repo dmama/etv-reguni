@@ -70,7 +70,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 
 		// localité
 		this.casePostale = casePostale;
-		this.localite = localite.getNomAbregeMinuscule();
+		this.localite = localite.getNomAbrege();
 		this.numeroPostal = localite.getNPA().toString();
 		final Commune c = localite.getCommuneLocalite();
 		this.noOfsCommuneAdresse = (c == null ? null : c.getNoOFS());

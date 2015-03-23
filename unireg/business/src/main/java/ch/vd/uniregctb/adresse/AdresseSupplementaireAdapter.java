@@ -98,7 +98,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (adresseSuisse != null) {
 			nomLocalite = super.getLocalite();
 			if (nomLocalite == null) {
-				nomLocalite = getLocalite(adresseSuisse).getNomAbregeMinuscule();
+				nomLocalite = getLocalite(adresseSuisse).getNomAbrege();
 			}
 			return nomLocalite;
 		}
@@ -114,7 +114,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (adresseSuisse != null) {
 			nomLocalite = super.getLocalite();
 			if (nomLocalite == null) {
-				nomLocalite = getLocalite(adresseSuisse).getNomCompletMinuscule();
+				nomLocalite = getLocalite(adresseSuisse).getNomComplet();
 			}
 			return nomLocalite;
 		}
@@ -223,7 +223,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	private Localite getLocalite(AdresseSuisse adresse) {
 		final int noLocalite = getNumeroOrdreLocalite(adresse);
 		final Localite localite;
-		localite = service.getLocaliteByONRP(noLocalite);
+		localite = service.getLocaliteByONRP(noLocalite, adresse.getDateFin());
 		Assert.notNull(localite, "La localité avec le numéro " + noLocalite + " n'existe pas.");
 		return localite;
 	}

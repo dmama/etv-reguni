@@ -113,8 +113,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		return target.getLocaliteByONRP(onrp);
+	public Localite getLocaliteByONRP(int onrp, RegDate dateReference) throws ServiceInfrastructureException {
+		return target.getLocaliteByONRP(onrp, dateReference);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
@@ -21,8 +22,8 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	public String getLocalite() {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
-			final Localite localite = getLocalite(noOrdrePostal);
-			return localite.getNomAbregeMinuscule();
+			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
+			return localite.getNomAbrege();
 		}
 		else {
 			return null;
@@ -33,8 +34,8 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	public String getLocaliteComplete() {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
-			final Localite localite = getLocalite(noOrdrePostal);
-			return localite.getNomCompletMinuscule();
+			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
+			return localite.getNomComplet();
 		}
 		else {
 			return null;
@@ -74,9 +75,9 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	/**
 	 * Retourne la localité correspondant à ce numéro (RTE si pas trouvé)
 	 */
-	private Localite getLocalite(int numeroLocalite) {
+	private Localite getLocalite(int numeroLocalite, RegDate dateReference) {
 		final Localite localite;
-		localite = service.getLocaliteByONRP(numeroLocalite);
+		localite = service.getLocaliteByONRP(numeroLocalite, dateReference);
 		if (localite == null) {
 			throw new RuntimeException("La localité avec le numéro " + numeroLocalite + " est inconnue !");
 		}
@@ -90,7 +91,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	public String getNumeroPostal() {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
-			final Localite localite = getLocalite(noOrdrePostal);
+			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
 			return String.valueOf(localite.getNPA());
 		}
 		else {

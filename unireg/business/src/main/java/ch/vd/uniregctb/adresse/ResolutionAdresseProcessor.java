@@ -139,7 +139,7 @@ public class ResolutionAdresseProcessor {
 		Integer numeroLocalite = rue.getNoLocalite();
 		final Localite localite;
 		try {
-			localite = infraService.getLocaliteByONRP(numeroLocalite);
+			localite = infraService.getLocaliteByONRP(numeroLocalite, adresseSuisse.getDateFin());
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new RuntimeException("Tiers " + adresseSuisse.getTiers().getId() + " Impossible de trouver la localite avec le numéro  " + numeroLocalite + " Message d'erreur:" + e.getMessage());
@@ -150,7 +150,7 @@ public class ResolutionAdresseProcessor {
 
 		adresseSuisse.setRue(rue.getDesignationCourrier());
 		adresseSuisse.setNumeroOrdrePoste(localite.getNoOrdre());
-		r.addAdresseResolue(adresseSuisse, localite.getNomCompletMinuscule());
+		r.addAdresseResolue(adresseSuisse, localite.getNomComplet());
 
 		//SUppression de la référence vers la rue
 		adresseSuisse.setNumeroRue(null);

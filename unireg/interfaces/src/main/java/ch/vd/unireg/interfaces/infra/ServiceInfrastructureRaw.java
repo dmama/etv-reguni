@@ -120,10 +120,10 @@ public interface ServiceInfrastructureRaw {
 
 	/**
 	 * @param onrp le numéro technique de la localité
-	 * @return la localité qui corresponds à numéro technique spécifié
+	 * @return les localités qui ont correspondu au numéro technique spécifié au cours du temps (il ne doit pas y avoir de chevauchement des périodes de validité), triées par ordre chronologique
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException;
+	List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException;
 
 	/**
 	 * @param localite une localité

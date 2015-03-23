@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -201,7 +202,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
+	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
 		Localite localite = null;
 		for (Localite loc : getLocalites()) {
 			if (loc.getNoOrdre() == onrp) {
@@ -209,7 +210,8 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 				break;
 			}
 		}
-		return localite;
+		// TODO le jour où on introduira la notion d'historique dans le Mock, il ne faudra pas oublier de trier les valeurs ici...
+		return Arrays.asList(localite);
 	}
 
 	@Override

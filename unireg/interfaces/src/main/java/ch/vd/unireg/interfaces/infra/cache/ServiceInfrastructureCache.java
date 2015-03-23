@@ -600,53 +600,48 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 
-	private static class KeyGetLocaliteByONRP {
+	private static class KeyGetLocalitesByONRP {
 		final int onrp;
 
-		private KeyGetLocaliteByONRP(int onrp) {
+		private KeyGetLocalitesByONRP(int onrp) {
 			this.onrp = onrp;
 		}
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + onrp;
-			return result;
+			return onrp;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetLocaliteByONRP other = (KeyGetLocaliteByONRP) obj;
-			return onrp == other.onrp;
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetLocalitesByONRP that = (KeyGetLocalitesByONRP) o;
+			return onrp == that.onrp;
 		}
 
 		@Override
 		public String toString() {
-			return "KeyGetLocaliteByONRP{" +
+			return "KeyGetLocalitesByONRP{" +
 					"onrp=" + onrp +
 					'}';
 		}
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		final Localite resultat;
+	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+		final List<Localite> resultat;
 
-		final KeyGetLocaliteByONRP key = new KeyGetLocaliteByONRP(onrp);
+		final KeyGetLocalitesByONRP key = new KeyGetLocalitesByONRP(onrp);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getLocaliteByONRP(onrp);
+			resultat = target.getLocalitesByONRP(onrp);
 			cache.put(new Element(key, resultat));
 		}
 		else {
-			resultat = (Localite) element.getObjectValue();
+			//noinspection unchecked
+			resultat = (List<Localite>) element.getObjectValue();
 		}
 
 		return resultat;

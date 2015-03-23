@@ -198,7 +198,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 						Localite localite = null;
 						if (onrp != null) {
 							try {
-								localite = serviceInfrastructureService.getLocaliteByONRP(onrp);
+								localite = serviceInfrastructureService.getLocaliteByONRP(onrp, null);
 							}
 							catch (ServiceInfrastructureException e) {
 								LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
@@ -207,7 +207,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 						if (localite != null) {
 							//SIFISC-3468: Exception pour la localité de La vallée, on prend le nom de la localité et non de la commune
 							if (OID_LA_VALLEE == oid) {
-								sLocalite = localite.getNomCompletMinuscule();
+								sLocalite = localite.getNomComplet();
 							}
 							else {
 								if (localite.getCommuneLocalite() != null) {

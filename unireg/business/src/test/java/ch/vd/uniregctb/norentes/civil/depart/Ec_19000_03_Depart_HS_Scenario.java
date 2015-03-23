@@ -102,7 +102,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			adresse.setCasePostale(casePostale);
 			adresse.setCommuneAdresse(commune);
 			if (localite != null) {
-				adresse.setLocalite(localite.getNomAbregeMinuscule());
+				adresse.setLocalite(localite.getNomAbrege());
 				adresse.setNumeroPostal(localite.getNPA().toString());
 				final Integer complementNPA = localite.getComplementNPA();
 				adresse.setNumeroPostalComplementaire(complementNPA == null ? null : complementNPA.toString());

@@ -413,7 +413,7 @@ public abstract class IndividuDumper {
 
 	private static boolean isLocaliteHorsCanton(int ordrePoste) {
 		boolean horscanton = false;
-		final Localite localite = infraService.getLocaliteByONRP(ordrePoste);
+		final Localite localite = infraService.getLocaliteByONRP(ordrePoste, null);
 		if (localite != null) {
 			final Commune c = localite.getCommuneLocalite();
 			horscanton = c != null && !c.isVaudoise();

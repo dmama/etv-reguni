@@ -11,6 +11,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -110,7 +111,7 @@ public class TiersAdresseValidator implements Validator {
 				else {
 					try {
 						Integer noOrdre = Integer.parseInt(adresseView.getNumeroOrdrePoste());
-						Localite loc = serviceInfra.getLocaliteByONRP(noOrdre);
+						Localite loc = serviceInfra.getLocaliteByONRP(noOrdre, RegDateHelper.get(adresseView.getDateFin()));
 						if (loc == null) {
 							errors.rejectValue("localiteSuisse", "error.invalid.localite_suisse");
 						}

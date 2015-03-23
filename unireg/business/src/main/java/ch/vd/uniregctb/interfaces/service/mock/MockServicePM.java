@@ -102,7 +102,7 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 			adresse.setRue(rue.getDesignationCourrier());
 		}
 		adresse.setNumeroMaison(numeroMaison);
-		adresse.setLocalite(localite.getNomAbregeMinuscule());
+		adresse.setLocalite(localite.getNomAbrege());
 		adresse.setDateDebutValidite(debutValidite);
 		adresse.setDateFinValidite(finValidite);
 

@@ -1222,7 +1222,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			a.setNumeroAppartement(pp.getNumeroAppartement());
 			a.setNumeroCasePostale(pp.getCasePostale());
 			a.setNumeroMaison(pp.getNumeroMaison());
-			a.setNumeroOrdrePoste(pp.getNumeroOrdrePostal() != null ? pp.getNumeroOrdrePostal() : findNumeroOrdrePostal(pp.getId(), pp.getLocalite(), pp.getNumeroPostal(), pp.getNumeroPostalComplementaire()));
+			a.setNumeroOrdrePoste(pp.getNumeroOrdrePostal() != null ? pp.getNumeroOrdrePostal() : findNumeroOrdrePostal(pp.getId(), pp.getLocalite(), pp.getNumeroPostal(), pp.getNumeroPostalComplementaire(), dateDebut));
 			a.setRue(pp.getRue());
 			a.setTexteCasePostale(StringUtils.isNotBlank(pp.getTexteCasePostale()) || pp.getCasePostale() != null ? TexteCasePostale.parse(pp.getTexteCasePostale()) : null);
 			a.setUsage(TypeAdresseTiers.COURRIER);
@@ -1244,7 +1244,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		}
 	}
 
-	private Integer findNumeroOrdrePostal(long idPartiePrenante, String localite, String npaString, Integer npaComplement) throws EvenementReqDesException {
+	private Integer findNumeroOrdrePostal(long idPartiePrenante, String localite, String npaString, Integer npaComplement, RegDate dateReference) throws EvenementReqDesException {
 		final List<Localite> localites = infraService.getLocalites();
 		final Integer npa;
 		if (npaString != null && Pattern.matches("\\d+", npaString)) {
@@ -1256,9 +1256,9 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 		final List<Localite> candidates = new LinkedList<>();
 		for (Localite candidate : localites) {
-			if (candidate.isValide()
+			if (candidate.isValidAt(dateReference)
 					&& (npa == null || npa.equals(candidate.getNPA()))
-					&& (candidate.getNomCompletMinuscule().equalsIgnoreCase(localite) || candidate.getNomAbregeMinuscule().equalsIgnoreCase(localite))
+					&& (candidate.getNomComplet().equalsIgnoreCase(localite) || candidate.getNomAbrege().equalsIgnoreCase(localite))
 					&& (npaComplement == null || npaComplement.equals(candidate.getComplementNPA()))) {
 				candidates.add(candidate);
 			}
@@ -1275,7 +1275,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			final StringBuilder b = new StringBuilder();
 			b.append("Plusieurs ONRP potentiels pour l'adresse suisse fournie dans la partie prenante ").append(idPartiePrenante).append(" : ");
 			for (Localite l : candidates) {
-				b.append(l.getNomCompletMinuscule()).append(" (").append(l.getNoOrdre()).append(") ");
+				b.append(l.getNomComplet()).append(" (").append(l.getNoOrdre()).append(") ");
 			}
 			LOGGER.warn(b.toString());
 

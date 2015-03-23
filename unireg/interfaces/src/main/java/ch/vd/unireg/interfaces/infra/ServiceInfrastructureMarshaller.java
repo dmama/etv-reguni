@@ -61,8 +61,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		return fidorService.getLocaliteByONRP(onrp);
+	public List<Localite> getLocalitesByONRP(int onrp) throws ServiceInfrastructureException {
+		return fidorService.getLocalitesByONRP(onrp);
 	}
 
 	@Override

@@ -862,7 +862,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final Adresse adresseAvantModif = adresses.iterator().next();
 				Assert.assertNull(adresseAvantModif.getLocalisationSuivante());
 				Assert.assertNull(adresseAvantModif.getDateFin());
-				Assert.assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adresseAvantModif.getLocalite());
+				Assert.assertEquals(MockLocalite.Lausanne.getNomAbrege(), adresseAvantModif.getLocalite());
 			}
 
 			// maintenant, on fait arriver un événement de départ (qui correspond au changement d'adresse)
@@ -909,14 +909,14 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), oldAddress.getLocalisationSuivante().getNoOfs());
 				Assert.assertEquals(LocalisationType.CANTON_VD, oldAddress.getLocalisationSuivante().getType());
 				Assert.assertEquals(dateDepart, oldAddress.getDateFin());
-				Assert.assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), oldAddress.getLocalite());
+				Assert.assertEquals(MockLocalite.Lausanne.getNomAbrege(), oldAddress.getLocalite());
 
 				final Adresse newAddress = iterator.next();
 				Assert.assertNotNull(newAddress);
 				Assert.assertNotNull(newAddress.getLocalisationPrecedente());
 				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), newAddress.getLocalisationPrecedente().getNoOfs());
 				Assert.assertEquals(LocalisationType.CANTON_VD, newAddress.getLocalisationPrecedente().getType());
-				Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), newAddress.getLocalite());
+				Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), newAddress.getLocalite());
 			}
 		}
 		finally {

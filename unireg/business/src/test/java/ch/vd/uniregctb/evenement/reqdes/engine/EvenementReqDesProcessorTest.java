@@ -2989,7 +2989,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setRue("Eisentürstrasse");
 				pp.setNumeroMaison("42");
 				pp.setOfsPays(MockPays.Suisse.getNoOFS());
-				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setLocalite(MockLocalite.Zurich.getNomComplet());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3248,7 +3248,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setRue("Eisentürstrasse");
 				pp.setNumeroMaison("42");
 				pp.setOfsPays(MockPays.Suisse.getNoOFS());
-				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setLocalite(MockLocalite.Zurich.getNomComplet());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3499,7 +3499,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppElle.setRue("Eisentürstrasse");
 				ppElle.setNumeroMaison("42");
 				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3515,7 +3515,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppLui.setRue("Eisentürstrasse");
 				ppLui.setNumeroMaison("421");
 				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3775,7 +3775,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppElle.setRue("Eisentürstrasse");
 				ppElle.setNumeroMaison("42");
 				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3790,7 +3790,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppLui.setRue("Eisentürstrasse");
 				ppLui.setNumeroMaison("421");
 				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -3982,7 +3982,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppElle.setRue("Eisentürstrasse");
 				ppElle.setNumeroMaison("42");
 				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4165,7 +4165,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppElle.setRue("Eisentürstrasse");
 				ppElle.setNumeroMaison("42");
 				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4181,7 +4181,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppLui.setRue("Eisentürstrasse");
 				ppLui.setNumeroMaison("421");
 				ppLui.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppLui.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppLui.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppLui.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppLui.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppLui.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4374,7 +4374,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				ppElle.setRue("Eisentürstrasse");
 				ppElle.setNumeroMaison("42");
 				ppElle.setOfsPays(MockPays.Suisse.getNoOFS());
-				ppElle.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				ppElle.setLocalite(MockLocalite.Zurich.getNomComplet());
 				ppElle.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				ppElle.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				ppElle.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4558,7 +4558,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setRue("Eisentürstrasse");
 				pp.setNumeroMaison("42");
 				pp.setOfsPays(MockPays.Suisse.getNoOFS());
-				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setLocalite(MockLocalite.Zurich.getNomComplet());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4676,7 +4676,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setRue("Eisentürstrasse");
 				pp.setNumeroMaison("42");
 				pp.setOfsPays(MockPays.Suisse.getNoOFS());
-				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setLocalite(MockLocalite.Zurich.getNomComplet());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());
@@ -4813,7 +4813,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp.setRue("Eisentürstrasse");
 				pp.setNumeroMaison("42");
 				pp.setOfsPays(MockPays.Suisse.getNoOFS());
-				pp.setLocalite(MockLocalite.Zurich.getNomCompletMinuscule());
+				pp.setLocalite(MockLocalite.Zurich.getNomComplet());
 				pp.setNumeroPostal(Integer.toString(MockLocalite.Zurich.getNPA()));
 				pp.setNumeroPostalComplementaire(MockLocalite.Zurich.getComplementNPA());
 				pp.setOfsCommune(MockCommune.Zurich.getNoOFS());

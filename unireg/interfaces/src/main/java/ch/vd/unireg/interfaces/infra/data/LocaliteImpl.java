@@ -9,6 +9,7 @@ import ch.vd.fidor.xml.common.v1.Range;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -16,20 +17,18 @@ import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
 
 public class LocaliteImpl implements Localite, Serializable {
 
-	private static final long serialVersionUID = 1366049941506978578L;
+	private static final long serialVersionUID = -177915682771092155L;
 	
 	private final Commune commune;
+	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final Integer chiffreComplementaire;
 	private final Integer complementNPA;
 	private final Integer npa;
 	private final Integer noCommune;
 	private final Integer noOrdre;
-	private final String nomAbregeMajuscule;
-	private final String nomAbregeMinuscule;
-	private final String nomCompletMajuscule;
-	private final String nomCompletMinuscule;
-	private final boolean valide;
+	private final String nomAbrege;
+	private final String nomComplet;
 
 	public static LocaliteImpl get(ch.vd.infrastructure.model.Localite target) {
 		if (target == null) {
@@ -47,17 +46,15 @@ public class LocaliteImpl implements Localite, Serializable {
 
 	private LocaliteImpl(ch.vd.infrastructure.model.Localite target) {
 		this.commune = CommuneImpl.get(target.getCommuneLocalite());
+		this.dateDebut = null;      // les localités du mainframe sont supposées valides depuis toujours...
 		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.chiffreComplementaire = target.getChiffreComplementaire();
 		this.complementNPA = initComplementNPA(target.getComplementNPA());
 		this.npa = target.getNPA();
 		this.noCommune = target.getNoCommune();
 		this.noOrdre = target.getNoOrdre();
-		this.nomAbregeMajuscule = target.getNomAbregeMajuscule();
-		this.nomAbregeMinuscule = target.getNomAbregeMinuscule();
-		this.nomCompletMajuscule = target.getNomCompletMajuscule();
-		this.nomCompletMinuscule = target.getNomCompletMinuscule();
-		this.valide = target.isValide();
+		this.nomAbrege = target.getNomAbregeMinuscule();
+		this.nomComplet = target.getNomCompletMinuscule();
 	}
 
 	private LocaliteImpl(PostalLocality target, ServiceInfrastructureRaw serviceInfra) {
@@ -70,17 +67,15 @@ public class LocaliteImpl implements Localite, Serializable {
 			rangeLocalite = new DateRangeHelper.Range(XmlUtils.toRegDate(validiteLocalite.getDateFrom()), XmlUtils.toRegDate(validiteLocalite.getDateTo()));
 		}
 		this.commune = findCommune(target.getMainMunicipalityId(), rangeLocalite, serviceInfra);
+		this.dateDebut = rangeLocalite != null ? rangeLocalite.getDateDebut() : null;
 		this.dateFin = rangeLocalite != null ? rangeLocalite.getDateFin() : null;
 		this.chiffreComplementaire = null;
 		this.complementNPA = StringUtils.isBlank(target.getSwissZipCodeAddOn()) ? null : Integer.parseInt(target.getSwissZipCodeAddOn());
 		this.npa = (int) target.getSwissZipCode();
 		this.noCommune = target.getMainMunicipalityId();
 		this.noOrdre = target.getSwissZipCodeId();
-		this.nomAbregeMajuscule = target.getShortName();
-		this.nomAbregeMinuscule = target.getShortName();
-		this.nomCompletMajuscule = target.getLongName();
-		this.nomCompletMinuscule = target.getLongName();
-		this.valide = true;
+		this.nomAbrege = target.getShortName();
+		this.nomComplet = target.getLongName();
 	}
 
 	private static Commune findCommune(int ofs, DateRange rangeLocalite, ServiceInfrastructureRaw serviceInfra) {
@@ -127,11 +122,6 @@ public class LocaliteImpl implements Localite, Serializable {
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
-		return dateFin;
-	}
-
-	@Override
 	public Integer getNPA() {
 		return npa;
 	}
@@ -147,32 +137,32 @@ public class LocaliteImpl implements Localite, Serializable {
 	}
 
 	@Override
-	public String getNomAbregeMajuscule() {
-		return nomAbregeMajuscule;
+	public String getNomAbrege() {
+		return nomAbrege;
 	}
 
 	@Override
-	public String getNomAbregeMinuscule() {
-		return nomAbregeMinuscule;
+	public String getNomComplet() {
+		return nomComplet;
 	}
 
 	@Override
-	public String getNomCompletMajuscule() {
-		return nomCompletMajuscule;
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override
-	public String getNomCompletMinuscule() {
-		return nomCompletMinuscule;
+	public RegDate getDateDebut() {
+		return dateDebut;
 	}
 
 	@Override
-	public boolean isValide() {
-		return valide;
+	public RegDate getDateFin() {
+		return dateFin;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("LocaliteImpl{npa=%d, noCommune=%d, valide=%s, nomAbregeMinuscule='%s', noOrdre=%d}", npa, noCommune, valide, nomAbregeMinuscule, noOrdre);
+		return String.format("LocaliteImpl{npa=%d, noCommune=%d, validite=%s, nomAbrege='%s', noOrdre=%d}", npa, noCommune, DateRangeHelper.toDisplayString(dateDebut, dateFin), nomAbrege, noOrdre);
 	}
 }

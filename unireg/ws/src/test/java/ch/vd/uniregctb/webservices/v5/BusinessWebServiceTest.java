@@ -1448,7 +1448,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(info.getComplementaryInformation());
 			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
 			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), info.getTown());
+			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
@@ -1490,7 +1490,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(info.getComplementaryInformation());
 			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
 			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), info.getTown());
+			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
@@ -1532,7 +1532,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(info.getComplementaryInformation());
 			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
 			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), info.getTown());
+			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 
@@ -1574,7 +1574,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNull(info.getComplementaryInformation());
 			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), info.getMunicipalityId());
 			Assert.assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
-			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), info.getTown());
+			Assert.assertEquals(MockLocalite.CossonayVille.getNomAbrege(), info.getTown());
 			Assert.assertEquals((Long) MockLocalite.CossonayVille.getNPA().longValue(), info.getSwissZipCode());
 			Assert.assertEquals(MockPays.Suisse.getCodeIso2(), info.getCountry());
 

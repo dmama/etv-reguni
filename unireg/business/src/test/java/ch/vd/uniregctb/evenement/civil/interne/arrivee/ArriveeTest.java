@@ -142,7 +142,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			public void execute(TransactionStatus status) throws Exception {
 				final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);
 
-				assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdresse().getLocalite());
+				assertEquals(MockLocalite.Lausanne.getNomAbrege(), adapter.getAncienneAdresse().getLocalite());
 				assertEquals(MockCommune.Cossonay.getNomOfficiel(), adapter.getNouvelleCommune().getNomOfficiel());
 			}
 		});

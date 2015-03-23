@@ -164,7 +164,7 @@ public class InfrastructureEditor implements Editor {
 	}
 
 	private static String getCommuneId(long localiteId) {
-		Localite localite = infraService.getLocaliteByONRP((int)localiteId);
+		Localite localite = infraService.getLocaliteByONRP((int)localiteId, null);
 		Integer communeId = (localite == null ? null : localite.getNoCommune());
 		return communeId == null ? null : communeId.toString();
 	}
@@ -208,8 +208,8 @@ public class InfrastructureEditor implements Editor {
 			final Pays pays = infraService.getPays(id.intValue(), null);
 			return pays == null ? "?" : pays.getNomCourt();
 		case LOCALITE:
-			final Localite localite = infraService.getLocaliteByONRP(id.intValue());
-			return localite == null ? "?" : localite.getNomAbregeMinuscule();
+			final Localite localite = infraService.getLocaliteByONRP(id.intValue(), null);
+			return localite == null ? "?" : localite.getNomAbrege();
 		case RUE:
 			final Rue rue = infraService.getRueByNumero(id.intValue());
 			return rue == null ? "?" : rue.getDesignationCourrier();

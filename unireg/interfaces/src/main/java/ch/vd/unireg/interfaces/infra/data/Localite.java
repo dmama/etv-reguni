@@ -1,39 +1,25 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.DateRange;
 
-public interface Localite {
+public interface Localite extends DateRange {
 
-	public Integer getChiffreComplementaire();
+	Integer getChiffreComplementaire();
 
-	public RegDate getDateFinValidite();
+	String getNomAbrege();
 
-	public String getNomAbregeMajuscule();
+	String getNomComplet();
 
-	public String getNomAbregeMinuscule();
+	Integer getNoOrdre();
 
-	public String getNomCompletMajuscule();
+	Integer getNPA();
 
-	public String getNomCompletMinuscule();
+	Integer getComplementNPA();
 
-	public Integer getNoOrdre();
-
-	public Integer getNPA();
-
-	public Integer getComplementNPA();
-
-	public Integer getNoCommune();
-
-	/**
-	 * Indique si la localite est valide à la date du jour.
-	 *
-	 * @return <code>true</code> si la date de fin de validité de la localite n'est pas renseignée ou si la date de fin
-	 *         de validité de la localite est égale ou postérieure à la date du jour.
-	 */
-	public boolean isValide();
+	Integer getNoCommune();
 
 	/**
 	 * @return une commune associée à la localité.
 	 */
-	public Commune getCommuneLocalite();
+	Commune getCommuneLocalite();
 }

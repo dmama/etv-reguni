@@ -186,10 +186,10 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont au A Enney
-			assertEquals(MockLocalite.Enney.getNomCompletMinuscule(),
+			assertEquals(MockLocalite.Enney.getNomComplet(),
 					serviceCivilService.getAdresses(noIndCharles, dateArrivee, false).principale.getLocalite(),
 					"L'adresse principale n'est pas à Enney");
-			assertEquals(MockLocalite.Enney.getNomCompletMinuscule(),
+			assertEquals(MockLocalite.Enney.getNomComplet(),
 					serviceCivilService.getAdresses(noIndGeorgette, dateArrivee, false).principale.getLocalite(),
 			"L'adresse principale n'est pas à Enney");
 		}
