@@ -26,4 +26,58 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="fidor-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.common.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-common-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-post-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.post.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-post-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-postallocalities-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.postallocalities" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-postallocalities-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-postallocality-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.postallocality" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-postallocality-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-street-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.street" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-street-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="fidor-streets-5.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.fidor.xml.ws.v5.streets" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="fidor-streets-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

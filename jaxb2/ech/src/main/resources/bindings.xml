@@ -35,6 +35,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0007/5/eCH-0007-5-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0007.v5" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0007-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0008/2/eCH-0008-2-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0008.v2" />

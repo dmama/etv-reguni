@@ -9,4 +9,12 @@
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0007/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0007/1/eVD-0007-1-0.xsd" />
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0012/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0012/1/eVD-0012-1-1.xsd" />
 
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/common/1" schemaLocation="fidor-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/post/1" schemaLocation="fidor-post-1.xsd" />
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/postallocalities/5" schemaLocation="fidor-postallocalities-5.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/postallocality/5" schemaLocation="fidor-postallocality-5.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/street/5" schemaLocation="fidor-street-5.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/streets/5" schemaLocation="fidor-streets-5.xsd" />
+
 </xs:schema>
