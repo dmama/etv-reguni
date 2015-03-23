@@ -135,7 +135,12 @@ public class Job {
 
 							try {
 								final MigrationResult res = future.get();
-								LOGGER.debug(res.toString());
+								if (res instanceof MigrationResult.Erreur) {
+									LOGGER.error(res.toString(), ((MigrationResult.Erreur) res).e);
+								}
+								else {
+									LOGGER.debug(res.toString());
+								}
 
 								final Map<String, Object> sqlActions = res.getFieldModifications();
 								if (sqlActions != null && !sqlActions.isEmpty()) {
