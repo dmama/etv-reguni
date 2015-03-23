@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,12 +13,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
 
 public class LocaliteImpl implements Localite, Serializable {
 
-	private static final long serialVersionUID = -177915682771092155L;
+	private static final long serialVersionUID = 7217770195343327701L;
 	
 	private final Commune commune;
 	private final RegDate dateDebut;
@@ -37,11 +37,11 @@ public class LocaliteImpl implements Localite, Serializable {
 		return new LocaliteImpl(target);
 	}
 
-	public static LocaliteImpl get(PostalLocality target, ServiceInfrastructureRaw serviceInfra) {
+	public static LocaliteImpl get(PostalLocality target, Map<Integer, List<Commune>> communesByOfsId) {
 		if (target == null) {
 			return null;
 		}
-		return new LocaliteImpl(target, serviceInfra);
+		return new LocaliteImpl(target, communesByOfsId);
 	}
 
 	private LocaliteImpl(ch.vd.infrastructure.model.Localite target) {
@@ -57,7 +57,7 @@ public class LocaliteImpl implements Localite, Serializable {
 		this.nomComplet = target.getNomCompletMinuscule();
 	}
 
-	private LocaliteImpl(PostalLocality target, ServiceInfrastructureRaw serviceInfra) {
+	private LocaliteImpl(PostalLocality target, Map<Integer, List<Commune>> communesByOfsId) {
 		final DateRange rangeLocalite;
 		final Range validiteLocalite = target.getValidity();
 		if (validiteLocalite == null) {
@@ -66,7 +66,7 @@ public class LocaliteImpl implements Localite, Serializable {
 		else {
 			rangeLocalite = new DateRangeHelper.Range(XmlUtils.toRegDate(validiteLocalite.getDateFrom()), XmlUtils.toRegDate(validiteLocalite.getDateTo()));
 		}
-		this.commune = findCommune(target.getMainMunicipalityId(), rangeLocalite, serviceInfra);
+		this.commune = findCommune(target.getMainMunicipalityId(), rangeLocalite, communesByOfsId.get(target.getMainMunicipalityId()));
 		this.dateDebut = rangeLocalite != null ? rangeLocalite.getDateDebut() : null;
 		this.dateFin = rangeLocalite != null ? rangeLocalite.getDateFin() : null;
 		this.chiffreComplementaire = null;
@@ -78,8 +78,7 @@ public class LocaliteImpl implements Localite, Serializable {
 		this.nomComplet = target.getLongName();
 	}
 
-	private static Commune findCommune(int ofs, DateRange rangeLocalite, ServiceInfrastructureRaw serviceInfra) {
-		final List<Commune> communes = serviceInfra.getCommuneHistoByNumeroOfs(ofs);
+	private static Commune findCommune(int ofs, DateRange rangeLocalite, List<Commune> communes) {
 		if (communes == null || communes.isEmpty()) {
 			return null;
 		}

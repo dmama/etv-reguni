@@ -3,8 +3,8 @@ package ch.vd.uniregctb.json;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -252,7 +252,7 @@ public class AutoCompleteInfraController {
 		if (localites == null || localites.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		final HashMap<Integer, Localite> map = new HashMap<>();
+		final Map<Integer, Localite> map = new HashMap<>();
 		for (Localite l : localites) {
 			map.put(l.getNoOrdre(), l);
 		}
@@ -260,7 +260,7 @@ public class AutoCompleteInfraController {
 	}
 
 	private static Set<InfraCategory> parseCategories(String category) {
-		final Set<InfraCategory> categories = new HashSet<>();
+		final Set<InfraCategory> categories = EnumSet.noneOf(InfraCategory.class);
 		if ("rue".equalsIgnoreCase(category)) {
 			categories.add(InfraCategory.RUE);
 		}

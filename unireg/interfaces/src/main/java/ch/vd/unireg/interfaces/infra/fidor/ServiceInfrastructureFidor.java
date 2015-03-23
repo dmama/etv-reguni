@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.fidor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -253,14 +254,32 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		}
 	}
 
+	private static Map<Integer, List<Commune>> buildHistoMap(List<Commune> liste) {
+		final Map<Integer, List<Commune>> map = new HashMap<>(liste.size());
+
+		// rassemblement par numéro OFS
+		for (Commune commune : liste) {
+			List<Commune> slot = map.get(commune.getNoOFS());
+			if (slot == null) {
+				slot = new ArrayList<>();
+				map.put(commune.getNoOFS(), slot);
+			}
+			slot.add(commune);
+		}
+
+		// c'est fini
+		return map;
+	}
+
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		try {
 			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostales(null, null, null, null, null);
 			if (fidorLocalites != null) {
+				final Map<Integer, List<Commune>> map = buildHistoMap(getCommunes());
 				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
 				for (PostalLocality fidorLocalite : fidorLocalites) {
-					localites.add(LocaliteImpl.get(fidorLocalite, this));
+					localites.add(LocaliteImpl.get(fidorLocalite, map));
 				}
 				return localites;
 			}
@@ -276,9 +295,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		try {
 			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostalesHisto(onrp);
 			if (fidorLocalites != null && !fidorLocalites.isEmpty()) {
+				final Map<Integer, List<Commune>> map = buildHistoMap(getCommunes());
 				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
 				for (PostalLocality fidorLocalite : fidorLocalites) {
-					localites.add(LocaliteImpl.get(fidorLocalite, this));
+					localites.add(LocaliteImpl.get(fidorLocalite, map));
 				}
 				Collections.sort(localites, new DateRangeComparator<Localite>());
 				return localites;
