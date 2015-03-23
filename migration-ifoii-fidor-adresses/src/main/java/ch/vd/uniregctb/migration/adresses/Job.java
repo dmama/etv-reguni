@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +42,6 @@ import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import weblogic.jndi.WLInitialContextFactory;
@@ -60,6 +58,7 @@ import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 public class Job {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Job.class);
+	private static final Logger PERF_LOGGER = LoggerFactory.getLogger(TracingFactory.class);
 
 	/**
 	 * Méthode d'entrée du batch
@@ -72,8 +71,6 @@ public class Job {
 			dumpSyntax();
 			return;
 		}
-
-		initLog4j();
 
 		// chargement des propriétés
 		final String propertiesPath = args[0];
@@ -152,7 +149,7 @@ public class Job {
 									LOGGER.error(res.toString(), ((MigrationResult.Erreur) res).e);
 								}
 								else {
-									LOGGER.debug(res.toString());
+									LOGGER.info(res.toString());
 								}
 
 								final Map<String, Object> sqlActions = res.getFieldModifications();
@@ -319,7 +316,7 @@ public class Job {
 
 		final CacheFactory<FidorClient> cacheFactory = new CacheFactory<>(FidorClient.class);
 		final TracingFactory<FidorClient> tracingFactory = new TracingFactory<>(FidorClient.class);
-		return cacheFactory.buildCache(tracingFactory.buildTracing(LOGGER, impl));
+		return cacheFactory.buildCache(tracingFactory.buildTracing(PERF_LOGGER, impl));
 	}
 
 	private static ServiceInfrastructure buildIfoiiClient(Properties properties) throws NamingException, RemoteException, CreateException {
@@ -340,7 +337,7 @@ public class Job {
 		final ServiceInfrastructureHome home = (ServiceInfrastructureHome) PortableRemoteObject.narrow(found, ServiceInfrastructureHome.class);
 
 		final TracingFactory<ServiceInfrastructure> tracingFactory = new TracingFactory<>(ServiceInfrastructure.class);
-		return tracingFactory.buildTracing(LOGGER, home.create());
+		return tracingFactory.buildTracing(PERF_LOGGER, home.create());
 	}
 
 	private static interface ConnectionCallback<T> {
@@ -456,24 +453,5 @@ public class Job {
 			props.load(r);
 			return props;
 		}
-	}
-
-	/**
-	 * Initialise Log4j
-	 */
-	private static void initLog4j() {
-		final Properties properties = new Properties();
-		properties.setProperty("log4j.logger.ch.vd.uniregctb", "DEBUG");
-		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
-		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5.5p [%8.8t] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n");
-		PropertyConfigurator.configure(properties);
-
-		// Ces deux classes semblent avoir l'oreille un peu dure...
-		java.util.logging.Logger l = java.util.logging.Logger.getLogger("org.apache.cxf.bus.spring.BusApplicationContext");
-		l.setLevel(Level.WARNING);
-		l = java.util.logging.Logger.getLogger("org.apache.cxf.service.factory.ReflectionServiceFactoryBean");
-		l.setLevel(Level.WARNING);
 	}
 }
