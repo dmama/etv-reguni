@@ -45,7 +45,8 @@ public class FidorClientImpl implements FidorClient {
 	private String urlsPath = "listOfUrls";
 	private String districtPath = "districtFiscal";
 	private String regionPath = "regionFiscale";
-	private String postalLocalitiesPath = "postalLocalities";
+	private String postalLocalitiesByReferenceDatePath = "postalLocalities/byReferenceDate";
+	private String postalLocalitiesBySwissZipCodeIdPath = "postalLocalities/bySwissZipCodeId";
 	private String postalLocalityPath = "postalLocality";
 	private String streetsByPostalLocalityPath = "streets/byPostalLocality";
 	private String streetsByEstridPath = "streets/byEstrid";
@@ -94,8 +95,12 @@ public class FidorClientImpl implements FidorClient {
 		this.regionPath = regionPath;
 	}
 
-	public void setPostalLocalitiesPath(String postalLocalitiesPath) {
-		this.postalLocalitiesPath = postalLocalitiesPath;
+	public void setPostalLocalitiesByReferenceDatePath(String postalLocalitiesByReferenceDatePath) {
+		this.postalLocalitiesByReferenceDatePath = postalLocalitiesByReferenceDatePath;
+	}
+
+	public void setPostalLocalitiesBySwissZipCodeIdPath(String postalLocalitiesBySwissZipCodeIdPath) {
+		this.postalLocalitiesBySwissZipCodeIdPath = postalLocalitiesBySwissZipCodeIdPath;
 	}
 
 	public void setPostalLocalityPath(String postalLocalityPath) {
@@ -501,7 +506,7 @@ public class FidorClientImpl implements FidorClient {
 	@Override
 	public List<PostalLocality> getLocalitesPostales(RegDate dateReference, Integer npa, Integer noOrdrePostal, String nom, Integer cantonOfsId) {
 		final WebClient wc = createWebClient(60000);    // 10 minutes !
-		wc.path(postalLocalitiesPath);
+		wc.path(postalLocalitiesByReferenceDatePath);
 		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
 		if (npa != null) {
 			wc.query("swissZipCode", npa);
@@ -515,6 +520,24 @@ public class FidorClientImpl implements FidorClient {
 		if (cantonOfsId != null) {
 			wc.query("cantonId", cantonOfsId);
 		}
+
+		try {
+			final PostalLocalities result = wc.get(PostalLocalities.class);
+			if (result == null || result.getNbOfResults() == 0) {
+				return null;
+			}
+			return result.getPostalLocality();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<PostalLocality> getLocalitesPostalesHisto(int noOrdrePostal) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(postalLocalitiesBySwissZipCodeIdPath);
+		wc.path(noOrdrePostal);
 
 		try {
 			final PostalLocalities result = wc.get(PostalLocalities.class);

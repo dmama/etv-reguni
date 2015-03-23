@@ -136,6 +136,12 @@ public interface FidorClient {
 	List<PostalLocality> getLocalitesPostales(RegDate dateReference, Integer npa, Integer noOrdrePostal, String nom, Integer cantonOfsId);
 
 	/**
+	 * @param noOrdrePostal numéro d'ordre postal des localités recherchées
+	 * @return la liste des localités postales ayant porté le numéro d'ordre postal donné au fil du temps
+	 */
+	List<PostalLocality> getLocalitesPostalesHisto(int noOrdrePostal);
+
+	/**
 	 * @param dateReference date de référence (si absente, on prendra la date du jour)
 	 * @param noOrdrePostal numéro d'ordre postal de la localité désirée
 	 * @return la localité postale trouvée, ou <code>null</code> si aucune localité ne correspond aux critères
