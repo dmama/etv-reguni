@@ -26,7 +26,6 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
-import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -403,21 +402,10 @@ public abstract class IndividuDumper {
 			if (commune != null && !commune.isVaudoise()) {
 				return true;
 			}
-			final int ordrePoste = adresse.getNumeroOrdrePostal();
-			if (ordrePoste > 0) {
-				if (isLocaliteHorsCanton(ordrePoste)) {
-					return true;
-				}
-			}
-			final Integer noRue = adresse.getNumeroRue();
-			if (noRue != null) {
-				final Rue rue = infraService.getRueByNumero(noRue, adresse.getDateFin());
-				if (rue != null) {
-					final Integer noLocalite = rue.getNoLocalite();
-					if (noLocalite != null && isLocaliteHorsCanton(noLocalite)) {
-						return true;
-					}
-				}
+			final Integer ordrePoste = adresse.getNumeroOrdrePostal();
+			if (ordrePoste != null) {
+				// si on a une localité, c'est qu'elle est en Suisse
+				return isLocaliteHorsCanton(ordrePoste);
 			}
 		}
 		return false;

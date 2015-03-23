@@ -77,7 +77,7 @@ public class AdresseTiersAnnuleeResolutionExceptionStub implements AdresseGeneri
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return 0;
 	}
 

@@ -281,32 +281,20 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getRues(localite);
 	}
 
-	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
-
-		final int numeroLocalite;
-		if (numeroRue != null && numeroRue > 0) {
-			final Rue rue = getRueByNumero(numeroRue, date);
-			final Integer noLocalite = rue.getNoLocalite();
-			Assert.notNull(noLocalite);
-			numeroLocalite = noLocalite;
-		}
-		else {
-			numeroLocalite = numeroOrdrePostal;
-		}
+	private Commune getCommuneByLocaliteAdresse(Integer numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
 
 		// Recherche de la commune
 		final Commune commune;
 
-		if (numeroLocalite == 0) {
+		if (numeroOrdrePostal == null) {
 			// adresse hors-Suisse
 			commune = null;
 		}
 		else {
-			final Localite localite = getLocaliteByONRP(numeroLocalite);
+			final Localite localite = getLocaliteByONRP(numeroOrdrePostal);
 			if (localite == null) {
-				throw new ServiceInfrastructureException("La localité avec le numéro " + numeroLocalite + " n'existe pas");
+				throw new ServiceInfrastructureException("La localité avec le numéro " + numeroOrdrePostal + " n'existe pas");
 			}
-
 			commune = getCommuneByLocalite(localite);
 		}
 
@@ -319,13 +307,12 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 *
 	 *
 	 * @param adresse           une adresse
-	 * @param numeroRue         une numéro de rue
 	 * @param numeroOrdrePostal un numéro d'ordre postal
 	 * @param date              la date de référence
 	 * @return la commune qui correspond à l'adresse spécifiée; ou <b>null</b> si aucune commune n'a été trouvée.
 	 * @throws ServiceInfrastructureException en cas d'erreur
 	 */
-	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
+	private Commune getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
 		if (adresse == null) {
 			return null;
 		}
@@ -353,7 +340,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 		// 3ème choix : la commune associée à la localité
 		if (commune == null) {
-			commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal, date);
+			commune = getCommuneByLocaliteAdresse(numeroOrdrePostal, date);
 		}
 
 		return commune;
@@ -365,7 +352,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Commune getCommuneByAdresse(Adresse adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
-			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
+			return getCommuneByAdresse(adresse, adresse.getNumeroOrdrePostal(), date);
 		}
 		else {
 			return null;
@@ -378,7 +365,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Commune getCommuneByAdresse(AdresseGenerique adresse, RegDate date) throws ServiceInfrastructureException {
 		if (adresse != null) {
-			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal(), date);
+			return getCommuneByAdresse(adresse, adresse.getNumeroOrdrePostal(), date);
 		}
 		else {
 			return null;
@@ -568,9 +555,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 		final Integer numero = adresse.getNumeroRue();
 		if (numero == null || numero == 0) {
-			int onrp = adresse.getNumeroOrdrePostal();
-			if (onrp == 0) {
-				// la valeur 0 veut dire 'hors suisse' dans le host
+			final Integer onrp = adresse.getNumeroOrdrePostal();
+			if (onrp == null) {
 				return false;
 			}
 			final Localite localite = getLocaliteByONRP(onrp);

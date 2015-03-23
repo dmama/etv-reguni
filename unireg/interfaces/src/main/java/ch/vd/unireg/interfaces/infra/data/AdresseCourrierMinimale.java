@@ -67,7 +67,7 @@ public final class AdresseCourrierMinimale implements Adresse, Serializable {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return 0;
 	}
 

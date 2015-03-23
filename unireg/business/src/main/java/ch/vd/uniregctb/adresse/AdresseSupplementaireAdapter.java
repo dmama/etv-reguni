@@ -12,7 +12,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -99,7 +98,6 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (adresseSuisse != null) {
 			nomLocalite = super.getLocalite();
 			if (nomLocalite == null) {
-
 				nomLocalite = getLocalite(adresseSuisse).getNomAbregeMinuscule();
 			}
 			return nomLocalite;
@@ -163,13 +161,13 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		if (adresseSuisse != null) {
 			return getNumeroOrdreLocalite(adresseSuisse);
 		}
 		else {
 			Assert.notNull(adresseEtrangere);
-			return 0;
+			return null;
 		}
 	}
 
@@ -223,25 +221,15 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	}
 
 	private Localite getLocalite(AdresseSuisse adresse) {
-		final Integer noLocalite = getNumeroOrdreLocalite(adresse);
+		final int noLocalite = getNumeroOrdreLocalite(adresse);
 		final Localite localite;
 		localite = service.getLocaliteByONRP(noLocalite);
 		Assert.notNull(localite, "La localité avec le numéro " + noLocalite + " n'existe pas.");
 		return localite;
 	}
 
-	private Integer getNumeroOrdreLocalite(AdresseSuisse adresse) {
-		final Integer noLocalite;
-		// On passe par le rue, si elle est spécifiée
-		final Integer numeroRue = adresse.getNumeroRue();
-		if (numeroRue != null) {
-			final Rue rue;
-			rue = service.getRueByNumero(numeroRue, getDateFin());
-			noLocalite = rue.getNoLocalite();
-		}
-		else {
-			noLocalite = adresse.getNumeroOrdrePoste();
-		}
+	private int getNumeroOrdreLocalite(AdresseSuisse adresse) {
+		final Integer noLocalite = adresse.getNumeroOrdrePoste();
 		Assert.notNull(noLocalite, "Impossible de déterminer le numéro de localité de l'adresse suisse ID = " + adresse.getId());
 		return noLocalite;
 	}

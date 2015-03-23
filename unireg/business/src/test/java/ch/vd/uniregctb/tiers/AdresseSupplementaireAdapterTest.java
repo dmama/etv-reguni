@@ -76,7 +76,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertEquals("13bis", adapter.getNumero());
 		assertEquals("numero appartement", adapter.getNumeroAppartement());
 		assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adapter.getNumeroRue());
-		assertEquals(MockLocalite.Lausanne.getNoOrdre().intValue(), adapter.getNumeroOrdrePostal());
+		assertEquals(MockLocalite.Lausanne.getNoOrdre(), adapter.getNumeroOrdrePostal());
 		assertEquals(MockLocalite.Lausanne.getNPA().toString(), adapter.getNumeroPostal());
 		assertNull(adapter.getNumeroPostalComplementaire());
 		assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
@@ -124,7 +124,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertEquals("3", adapter.getNumero());
 		assertNull(adapter.getNumeroAppartement());
 		assertNull(adapter.getNumeroRue());
-		assertEquals(0, adapter.getNumeroOrdrePostal());
+		assertNull(adapter.getNumeroOrdrePostal());
 		assertEquals("", adapter.getNumeroPostal());
 		assertEquals("", adapter.getNumeroPostalComplementaire());
 		assertEquals(MockPays.Danemark.getNoOFS(), adapter.getNoOfsPays().intValue());

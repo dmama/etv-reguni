@@ -353,9 +353,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 				pp.setCasePostale(adresse.getCasePostale().getNumero());
 			}
 			pp.setLocalite(adresse.getLocalite());
-			if (adresse.getNumeroOrdrePostal() > 0) {
-				pp.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal());
-			}
+			pp.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal());
 			pp.setNumeroPostal(adresse.getNumeroPostal());
 			pp.setNumeroPostalComplementaire(StringUtils.isNotBlank(adresse.getNumeroPostalComplementaire()) ? Integer.valueOf(adresse.getNumeroPostalComplementaire()) : null);
 			pp.setOfsPays(adresse.getNoOfsPays());

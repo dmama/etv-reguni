@@ -50,7 +50,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
      *
      * @return le numéro d'ordre postal de l'adresse.
      */
-    int getNumeroOrdrePostal();
+    Integer getNumeroOrdrePostal();
 
     /**
      * Retourne le numéro postal de l'adresse.

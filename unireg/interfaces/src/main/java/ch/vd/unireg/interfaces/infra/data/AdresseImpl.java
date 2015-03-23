@@ -167,7 +167,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 

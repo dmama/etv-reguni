@@ -104,7 +104,7 @@ public final class ReqDesAdresseResidence implements Adresse {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePoste;
 	}
 

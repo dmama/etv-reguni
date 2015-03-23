@@ -357,7 +357,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 

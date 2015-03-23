@@ -3,7 +3,6 @@ package ch.vd.uniregctb.adresse;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
@@ -20,40 +19,26 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 
 	@Override
 	public String getLocalite() {
-		String nomLocalite = null;
-
-		Integer noOfsRue = getNumeroRue();
-
-		if (noOfsRue != null && noOfsRue!=0) {
-
-			final Rue rue = getRue(noOfsRue, getDateFin());
-			final int numeroLocalite = rue.getNoLocalite();
-
-			if (numeroLocalite != 0) {
-				final Localite localite = getLocalite(numeroLocalite);
-				nomLocalite = localite.getNomAbregeMinuscule();
-			}
+		final Integer noOrdrePostal = getNumeroOrdrePostal();
+		if (noOrdrePostal != null) {
+			final Localite localite = getLocalite(noOrdrePostal);
+			return localite.getNomAbregeMinuscule();
 		}
-		return nomLocalite;
+		else {
+			return null;
+		}
 	}
 
 	@Override
 	public String getLocaliteComplete() {
-		String nomLocalite = null;
-
-		Integer noOfsRue = getNumeroRue();
-
-		if (noOfsRue != null && noOfsRue!=0) {
-
-			final Rue rue = getRue(noOfsRue, getDateFin());
-			final int numeroLocalite = rue.getNoLocalite();
-
-			if (numeroLocalite != 0) {
-				final Localite localite = getLocalite(numeroLocalite);
-				nomLocalite = localite.getNomCompletMinuscule();
-			}
+		final Integer noOrdrePostal = getNumeroOrdrePostal();
+		if (noOrdrePostal != null) {
+			final Localite localite = getLocalite(noOrdrePostal);
+			return localite.getNomCompletMinuscule();
 		}
-		return nomLocalite;
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -65,26 +50,25 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	 */
 	@Nullable
 	protected String resolveNomRue(@Nullable Integer numeroRue, @Nullable String nomRueLibre) {
-		String rue = nomRueLibre;
-
-		if (numeroRue != null && numeroRue > 0) {
-			final Rue r = getRue(numeroRue, getDateFin());
-			rue = r.getDesignationCourrier();
+		final Rue rue = getRue(numeroRue);
+		if (rue != null) {
+			return rue.getDesignationCourrier();
 		}
-
-		return StringUtils.trimToNull(rue);
+		else {
+			return StringUtils.trimToNull(nomRueLibre);
+		}
 	}
 
-	/**
-	 * Retourne la rue donnée par son numéro (si pas d'exception, forcément non-null)
-	 */
-	private Rue getRue(int numeroRue, RegDate date) {
-		final Rue r;
-		r = service.getRueByNumero(numeroRue, date);
-		if (r == null) {
-			throw new RuntimeException("La rue avec le numéro technique " + numeroRue + " est inconnue !");
+	@Nullable
+	private Rue getRue(@Nullable Integer numeroRue) {
+		if (numeroRue != null) {
+			final Rue rueFin = service.getRueByNumero(numeroRue, getDateFin());
+			if (rueFin != null) {
+				return rueFin;
+			}
+			return service.getRueByNumero(numeroRue, getDateDebut());
 		}
-		return r;
+		return null;
 	}
 
 	/**
@@ -100,32 +84,17 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	}
 
 	/**
-	 * Extrait le numero postal d'un numero de rue existant
+	 * Extrait le numéro postal de la localité
 	 */
 	@Override
 	public String getNumeroPostal() {
-		String numero = null;
-		final Integer numeroRue = getNumeroRue();
-		if (numeroRue != null && numeroRue != 0) {
-			final Rue rue = getRue(numeroRue, getDateFin());
-			final Localite localite = getLocalite(rue.getNoLocalite());
-			numero = Integer.toString(localite.getNPA());
+		final Integer noOrdrePostal = getNumeroOrdrePostal();
+		if (noOrdrePostal != null) {
+			final Localite localite = getLocalite(noOrdrePostal);
+			return String.valueOf(localite.getNPA());
 		}
-		return numero;
-	}
-
-	/**
-	 * Extrait le numéro d'ordre postal d'un numéro de rue existant
-	 */
-	@Override
-	public int getNumeroOrdrePostal() {
-		int noOrdrePostal = 0;
-		final Integer numeroRue = getNumeroRue();
-		if (numeroRue != null && numeroRue != 0) {
-			final Rue rue = getRue(numeroRue, getDateFin());
-			final Localite localite = getLocalite(rue.getNoLocalite());
-			noOrdrePostal = localite.getNoOrdre();
+		else {
+			return null;
 		}
-		return noOrdrePostal;
 	}
 }

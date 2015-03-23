@@ -194,7 +194,7 @@ public abstract class BaseAdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return target.getNumeroOrdrePostal();
 	}
 

@@ -56,7 +56,7 @@ public class AdresseAdapter implements Adresse {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return target.getNumeroOrdrePostal();
 	}
 

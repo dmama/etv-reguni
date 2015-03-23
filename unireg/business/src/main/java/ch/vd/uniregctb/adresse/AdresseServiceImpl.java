@@ -904,7 +904,7 @@ public class AdresseServiceImpl implements AdresseService {
 		adresseEnvoi.addPays(pays);
 
 		adresseEnvoi.setNumeroTechniqueRue(adresse.getNumeroRue());
-		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal() == 0 ? null : adresse.getNumeroOrdrePostal());
+		adresseEnvoi.setNumeroOrdrePostal(adresse.getNumeroOrdrePostal());
 		adresseEnvoi.setEgid(adresse.getEgid());
 		adresseEnvoi.setEwid(adresse.getEwid());
 		adresseEnvoi.setNoOfsCommune(adresse.getNoOfsCommuneAdresse());

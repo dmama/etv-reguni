@@ -115,7 +115,7 @@ public class AdresseGeneriqueAdapterTest {
 
 		assertNull(adapter.getNumeroAppartement());
 		assertNull(adapter.getNumeroRue());
-		assertEquals(0, adapter.getNumeroOrdrePostal());
+		assertNull(adapter.getNumeroOrdrePostal());
 		assertNull(adapter.getNumeroPostalComplementaire());
 	}
 }

@@ -124,9 +124,9 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     String getNumero();
 
     /**
-     * @return le numéro d'ordre postal de l'adresse; ou <b>0</b> si la localité n'est pas renseignée.
+     * @return le numéro d'ordre postal de l'adresse; ou <b>null</b> si la localité n'est pas renseignée.
      */
-    int getNumeroOrdrePostal();
+    Integer getNumeroOrdrePostal();
 
     /**
      * @return le numéro postal de l'adresse.

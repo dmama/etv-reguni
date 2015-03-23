@@ -238,14 +238,8 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
-		final int noOrdrePostal = super.getNumeroOrdrePostal();
-		if (noOrdrePostal != 0) {
-			return noOrdrePostal;
-		}
-		else {
-			return adresse.getNumeroOrdrePostal();
-		}
+	public Integer getNumeroOrdrePostal() {
+		return adresse.getNumeroOrdrePostal();
 	}
 
 	@Override

@@ -148,14 +148,8 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
-		final int noOrdreFourni = adresse.getNumeroOrdrePostal();
-		if (noOrdreFourni == 0) {
-			return super.getNumeroOrdrePostal();
-		}
-		else {
-			return noOrdreFourni;
-		}
+	public Integer getNumeroOrdrePostal() {
+		return adresse.getNumeroOrdrePostal();
 	}
 
 	@Override

@@ -562,7 +562,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE);
 		addDispoView.setLocalite(addIndividu.getLocalite());
-		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());
+		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());      // TODO noOrdreP dans un champ CasePostale ???
 
 		Integer noOfsPays = addIndividu.getNoOfsPays();
 		if (noOfsPays != null) {
@@ -595,7 +595,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		addDispoView.setSource(type.getTypeSource());
 		addDispoView.setRepresentantLegal(getNomCourrier(conseiller));
 		addDispoView.setLocalite(adresse.getLocalite());
-		addDispoView.setNumeroCasePostale(adresse.getNumeroOrdrePostal());
+		addDispoView.setNumeroCasePostale(adresse.getNumeroOrdrePostal());      // TODO noOrdreP dans un champ CasePostale ???
 		addDispoView.setRepresentantId(conseiller.getNumero());
 
 		Integer noOfsPays = adresse.getNoOfsPays();

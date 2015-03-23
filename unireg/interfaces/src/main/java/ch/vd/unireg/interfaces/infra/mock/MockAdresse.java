@@ -182,7 +182,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 

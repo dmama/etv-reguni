@@ -99,7 +99,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return adresse.getNumeroOrdrePostal();
 	}
 
