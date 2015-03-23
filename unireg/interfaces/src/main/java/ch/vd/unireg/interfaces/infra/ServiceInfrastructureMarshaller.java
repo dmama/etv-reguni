@@ -101,6 +101,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		return fidorService.getRuesHisto(numero);
+	}
+
+	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		return hostService.getCollectivite(noColAdm);
 	}

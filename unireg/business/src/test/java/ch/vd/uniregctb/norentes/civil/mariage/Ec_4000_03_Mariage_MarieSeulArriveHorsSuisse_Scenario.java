@@ -61,7 +61,7 @@ public class Ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Scenario extends Maria
 
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
 			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
-			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
+			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, dateArrivee, null);
 		}
 
 		public void prepareMariage() {

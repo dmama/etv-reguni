@@ -2472,7 +2472,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				ids.robert = robert.getNumero();
 
 				final PersonnePhysique jeanne = addNonHabitant("Jeanne", "Nicoud", date(1971, 11, 25), Sexe.FEMININ);
-				addAdresseSuisse(jeanne, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.AvenueDeMarcelin);
+				addAdresseSuisse(jeanne, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Lausanne.RouteGrangeNeuve);
 				ids.jeanne = jeanne.getNumero();
 
 				final PersonnePhysique luc = addNonHabitant("Luc", "Haddoque", date(1952, 7, 29), Sexe.MASCULIN);
@@ -2493,7 +2493,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setNpaSuisse(1000);
+			adresse.setNpaSuisse(1003);
 			criteres.setAdresse(adresse);
 
 			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
@@ -2513,7 +2513,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setNpaSuisse(1000);
+			adresse.setNpaSuisse(1003);
 			criteres.setAdresse(adresse);
 
 			final List<Long> list = service.identifiePersonnePhysique(criteres, null);
@@ -2527,7 +2527,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setPrenoms("Jeanne");
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setNpaSuisse(1000);
+			adresse.setNpaSuisse(1003);
 			criteres.setAdresse(adresse);
 
 			final List<Long> list = service.identifiePersonnePhysique(criteres, null);

@@ -74,7 +74,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 
-				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 
 
 			}

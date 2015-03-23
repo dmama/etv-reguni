@@ -125,7 +125,7 @@ public class ResolutionAdresseProcessor {
 		Rue rue = null;
 		final Integer numeroRueAdresse = adresseSuisse.getNumeroRue();
 		try {
-			rue = infraService.getRueByNumero(numeroRueAdresse, adresseSuisse.getDateFin());
+			rue = infraService.getRueByNumero(numeroRueAdresse);
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new RuntimeException("Tiers " + adresseSuisse.getTiers().getId() + " Impossible de trouver la rue avec le numéro  " + numeroRueAdresse + " Message d'erreur:" + e.getMessage());

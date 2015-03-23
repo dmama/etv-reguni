@@ -406,6 +406,11 @@ public class ServiceInfraGetPaysSimpleCache implements ServiceInfrastructureRaw 
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		return target.getRuesHisto(numero);
+	}
+
+	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		return target.getRueByNumero(numero, date);
 	}

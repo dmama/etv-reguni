@@ -334,8 +334,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertEquals("Monsieur et Madame", adressesAvant.getLine1());
 		assertEquals("Eric Bolomey", adressesAvant.getLine2());
 		assertEquals("Monique Bolomey", adressesAvant.getLine3());
-		assertEquals("Av de Beaulieu", adressesAvant.getLine4());
-		assertEquals("1000 Lausanne", adressesAvant.getLine5());
+		assertEquals("Avenue de Beaulieu", adressesAvant.getLine4());
+		assertEquals("1003 Lausanne", adressesAvant.getLine5());
 		assertNull(adressesAvant.getLine6());
 
 		// On modifie le prénom de madame
@@ -377,8 +377,8 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		assertEquals("Monsieur et Madame", adressesApres.getLine1());
 		assertEquals("Eric Bolomey", adressesApres.getLine2());
 		assertEquals("Gudrun Bolomey", adressesApres.getLine3());
-		assertEquals("Av de Beaulieu", adressesApres.getLine4());
-		assertEquals("1000 Lausanne", adressesApres.getLine5());
+		assertEquals("Avenue de Beaulieu", adressesApres.getLine4());
+		assertEquals("1003 Lausanne", adressesApres.getLine5());
 		assertNull(adressesApres.getLine6());
 	}
 

@@ -146,7 +146,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscalesHisto histo = adresseService.getAdressesFiscalHisto(pp, true);
 		assertEquals(1, histo.courrier.size());
 		final AdresseGenerique courrier0 = histo.courrier.get(0);
-		assertAdresse(date(2000, 1, 1), null, "Genève Secteur de dist.", SourceType.FISCALE, false, courrier0);
+		assertAdresse(date(2000, 1, 1), null, "Genève", SourceType.FISCALE, false, courrier0);
 		assertTrue(courrier0.isAnnule());
 		assertEmpty(histo.domicile);
 		assertEmpty(histo.representation);
@@ -239,7 +239,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// adresses courriers
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), date(1987, 12, 11));
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6, 4), null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, date(2001, 6, 4), null);
 
 				// adresses principales/poursuite
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), date(1987, 12, 11));
@@ -330,7 +330,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(date(1998, 4, 22));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("11B");
-			adresse.setNumeroRue(MockRue.Lausanne.AvenueDeMarcelin.getNoRue());
+			adresse.setNumeroRue(MockRue.Lausanne.AvenueJolimont.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
 			nonhabitant.addAdresseTiers(adresse);
 		}
@@ -559,7 +559,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(null);
 			adresse.setUsage(TypeAdresseTiers.POURSUITE);
 			adresse.setNumeroMaison("1");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			nonhabitant.addAdresseTiers(adresse);
 		}
@@ -569,7 +569,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(null);
 			adresse.setUsage(TypeAdresseTiers.DOMICILE);
 			adresse.setNumeroMaison("11B");
-			adresse.setNumeroRue(MockRue.LesClees.ChampDuRaffour.getNoRue());
+			adresse.setNumeroRue(MockRue.LesClees.PlaceDeLaVille.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.LesClees.getNoOrdre());
 			nonhabitant.addAdresseTiers(adresse);
 		}
@@ -654,7 +654,7 @@ public class AdresseServiceTest extends BusinessTest {
 						1), date(2000, 9, 19));
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(2000, 9, 20), date(2002, 2, 27));
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null,
 						date(2002, 2, 28), date(2002, 3, 14));
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2002, 3,
 						15), null);
@@ -674,7 +674,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(date(2001, 12, 31));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			habitant.addAdresseTiers(adresse);
 		}
@@ -694,7 +694,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(date(2002, 7, 31));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("2");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			habitant.addAdresseTiers(adresse);
 		}
@@ -885,7 +885,7 @@ public class AdresseServiceTest extends BusinessTest {
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -982,12 +982,12 @@ public class AdresseServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteGrangeNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, date(2000, 1, 1), null);
 
 				MockIndividu pierre = addIndividu(noAutreIndividu, date(1953, 11, 2), "Dubois", "Pierre", true);
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -1098,12 +1098,12 @@ public class AdresseServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteGrangeNeuve, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, date(2000, 1, 1), null);
 
 				MockIndividu pierre = addIndividu(noAutreIndividu, date(1953, 11, 2), "Dubois", "Pierre", true);
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -1177,11 +1177,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null,
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteGrangeNeuve, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1,
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, date(2000, 1,
 						1), null);
 			}
 		});
@@ -1195,7 +1195,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(date(2001, 12, 31));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			habitant.addAdresseTiers(adresse);
 		}
@@ -1322,7 +1322,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(null);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			habitant.addAdresseTiers(adresse);
 		}
@@ -1420,7 +1420,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(null);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			habitant.addAdresseTiers(adresse);
 		}
@@ -1507,7 +1507,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// adresses courriers
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), date(2000, 7, 12));
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null,
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null,
 						date(2000, 3, 20), null);
 			}
 		});
@@ -1586,7 +1586,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// adresses courriers
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2020, 1, 1), date(2000, 3, 19));
-				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null,
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null,
 						date(2000, 3, 20), null);
 			}
 		});
@@ -1680,7 +1680,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(null);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			adresse.setAnnule(true);
 			habitant.addAdresseTiers(adresse);
@@ -1812,8 +1812,8 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 			}
@@ -1873,7 +1873,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 				AdresseSuisse adresse = new AdresseSuisse();
 				adresse.setDateDebut(date(1980, 1, 1));
-				adresse.setNumeroRue(MockRue.Lausanne.RouteMaisonNeuve.getNoRue());
+				adresse.setNumeroRue(MockRue.Lausanne.RouteGrangeNeuve.getNoRue());
+				adresse.setNumeroOrdrePoste(MockRue.Lausanne.RouteGrangeNeuve.getNoLocalite());
 				adresse.setNumeroMaison("12");
 				adresse.setUsage(TypeAdresseTiers.COURRIER);
 				principal.addAdresseTiers(adresse);
@@ -1909,22 +1910,22 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdresseGenerique courrier = adresses.courrier.get(0);
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, courrier);
 			assertNull(courrier.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), courrier.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), courrier.getNumeroRue());
 
 			final AdresseGenerique representation = adresses.representation.get(0);
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, representation);
 			assertNull(representation.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), representation.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), representation.getNumeroRue());
 
 			final AdresseGenerique poursuite = adresses.poursuite.get(0);
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, poursuite);
 			assertNull(poursuite.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), poursuite.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), poursuite.getNumeroRue());
 
 			final AdresseGenerique domicile = adresses.domicile.get(0);
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, domicile);
 			assertNull(domicile.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), domicile.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), domicile.getNumeroRue());
 		}
 
 		/*
@@ -1936,16 +1937,16 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, adresses.courrier);
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.courrier.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), adresses.courrier.getNumeroRue());
 
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, adresses.representation);
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.representation.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), adresses.representation.getNumeroRue());
 
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, adresses.poursuite);
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.poursuite.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), adresses.poursuite.getNumeroRue());
 
 			assertAdresse(date(1980, 1, 1), null, "Lausanne", SourceType.PRINCIPAL, true, adresses.domicile);
-			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.domicile.getNumeroRue());
+			assertEquals(MockRue.Lausanne.RouteGrangeNeuve.getNoRue(), adresses.domicile.getNumeroRue());
 
 			assertAdressesByTypeEquals(adresses, menage, date(2008, 1, 1));
 		}
@@ -1996,7 +1997,7 @@ public class AdresseServiceTest extends BusinessTest {
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
@@ -2104,7 +2105,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// la pupille
 				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
@@ -2210,7 +2211,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur
@@ -2377,7 +2378,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur
@@ -2500,16 +2501,16 @@ public class AdresseServiceTest extends BusinessTest {
 				// le principal décéde
 				MockIndividu gilbert = addIndividu(noPrincipal, date(1929, 2, 9), "Cochand", "Gilbert", true);
 				gilbert.setDateDeces(dateDeces);
-				addAdresse(gilbert, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, dateNaissance, null);
+				addAdresse(gilbert, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, null);
 
 				// la conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1928, 6, 17), "Dunner", "Jeanne", false);
-				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, dateNaissance, null);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateNaissance, null);
 				marieIndividus(gilbert, jeanne, date(1976, 1, 7));
 
 				// le curateur
 				MockIndividu jeanDaniel = addIndividu(noCurateur, date(1956, 8, 19), "Vautier", "Jean-Daniel", true);
-				addAdresse(jeanDaniel, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1956, 8, 19), null);
+				addAdresse(jeanDaniel, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminTraverse, null, date(1956, 8, 19), null);
 			}
 		});
 
@@ -2666,7 +2667,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur
@@ -2850,7 +2851,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(jeanne, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur du principal
@@ -2860,7 +2861,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// le tuteur du conjoint
 				MockIndividu jacky = addIndividu(noTuteurConjoint, date(1967, 4, 2), "Dutronc", "Jacky", true);
-				addAdresse(jacky, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null,
+				addAdresse(jacky, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.PlaceDeLaVille, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -3009,7 +3010,7 @@ public class AdresseServiceTest extends BusinessTest {
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
@@ -3103,7 +3104,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// la pupille
 				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
-				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
@@ -3354,7 +3355,7 @@ public class AdresseServiceTest extends BusinessTest {
 						1), date(1987, 12, 11));
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null,
 						date(2001, 6, 4), null);
 			}
 		});
@@ -3478,7 +3479,7 @@ public class AdresseServiceTest extends BusinessTest {
 						1, 1), date(1987, 12, 11));
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.PlaceDeLaVille, null, date(2001, 6,
 						4), null);
 			}
 		});
@@ -3573,7 +3574,7 @@ public class AdresseServiceTest extends BusinessTest {
 				// adresses courriers
 				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), date(1987, 12, 11));
 				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille, date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, date(2001, 6, 4), null);
+				addAdresse(ent, TypeAdressePM.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, MockLocalite.LesClees, date(2001, 6, 4), null);
 
 				// adresses principales/poursuite
 				addAdresse(ent, TypeAdressePM.SIEGE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), date(1987, 12, 11));
@@ -3761,7 +3762,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdresseSuisse representation = new AdresseSuisse();
 		representation.setUsage(TypeAdresseTiers.REPRESENTATION);
 		representation.setDateDebut(date(2008, 9, 18));
-		representation.setNumeroRue(MockRue.Orbe.RueDavall.getNoRue());
+		representation.setNumeroRue(MockRue.Orbe.CheminDeLaTranchee.getNoRue());
 		representation.setNumeroOrdrePoste(MockLocalite.Orbe.getNoOrdre());
 
 		adresseService.addAdresse(nh, representation);
@@ -3804,7 +3805,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdresseSuisse nouvelle = new AdresseSuisse();
 		nouvelle.setUsage(TypeAdresseTiers.COURRIER);
 		nouvelle.setDateDebut(date(2001, 1, 1));
-		nouvelle.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		nouvelle.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 		nouvelle.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 		adresseService.addAdresse(nh, nouvelle);
 
@@ -3838,7 +3839,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdresseSuisse nouvelle = new AdresseSuisse();
 		nouvelle.setUsage(TypeAdresseTiers.COURRIER);
 		nouvelle.setDateDebut(date(2001, 1, 1));
-		nouvelle.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		nouvelle.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 		nouvelle.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 		adresseService.addAdresse(nh, nouvelle);
 
@@ -3883,7 +3884,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdresseSuisse nouvelle = new AdresseSuisse();
 		nouvelle.setUsage(TypeAdresseTiers.COURRIER);
 		nouvelle.setDateDebut(date(2001, 1, 1));
-		nouvelle.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		nouvelle.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 		nouvelle.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 		adresseService.addAdresse(habitant, nouvelle);
 
@@ -3927,7 +3928,7 @@ public class AdresseServiceTest extends BusinessTest {
 		courrier.setUsage(TypeAdresseTiers.COURRIER);
 		courrier.setDateDebut(date(1988, 3, 2));
 		courrier.setDateFin(date(1995, 1, 1));
-		courrier.setNumeroRue(MockRue.Orbe.RueDavall.getNoRue());
+		courrier.setNumeroRue(MockRue.Orbe.CheminDeLaTranchee.getNoRue());
 		courrier.setNumeroOrdrePoste(MockLocalite.Orbe.getNoOrdre());
 		habitant.addAdresseTiers(courrier);
 
@@ -3937,7 +3938,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdresseSuisse nouvelle = new AdresseSuisse();
 		nouvelle.setUsage(TypeAdresseTiers.COURRIER);
 		nouvelle.setDateDebut(date(2001, 1, 1));
-		nouvelle.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		nouvelle.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 		nouvelle.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 		adresseService.addAdresse(habitant, nouvelle);
 
@@ -3967,7 +3968,7 @@ public class AdresseServiceTest extends BusinessTest {
 				AdresseSuisse adresse = new AdresseSuisse();
 				adresse.setUsage(TypeAdresseTiers.COURRIER);
 				adresse.setDateDebut(date(2001, 1, 1));
-				adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+				adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 				adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 				nh.addAdresseTiers(adresse);
 
@@ -4015,7 +4016,7 @@ public class AdresseServiceTest extends BusinessTest {
 				AdresseSuisse adresse2 = new AdresseSuisse();
 				adresse2.setUsage(TypeAdresseTiers.COURRIER);
 				adresse2.setDateDebut(date(2001, 1, 1));
-				adresse2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 				nh.addAdresseTiers(adresse2);
 
@@ -4066,7 +4067,7 @@ public class AdresseServiceTest extends BusinessTest {
 		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 		assertNotNull(adressesHisto);
 		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2009, 8, 29), null, "Genève Secteur de dist.", SourceType.FISCALE, false, adressesHisto.courrier.get(0));
+		assertAdresse(date(2009, 8, 29), null, "Genève", SourceType.FISCALE, false, adressesHisto.courrier.get(0));
 		assertTrue(adressesHisto.courrier.get(1).isAnnule());
 	}
 
@@ -4096,7 +4097,7 @@ public class AdresseServiceTest extends BusinessTest {
 				AdresseSuisse adresse2 = new AdresseSuisse();
 				adresse2.setUsage(TypeAdresseTiers.COURRIER);
 				adresse2.setDateDebut(date(2004, 1, 1));
-				adresse2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 				nh.addAdresseTiers(adresse2);
 
@@ -4157,7 +4158,7 @@ public class AdresseServiceTest extends BusinessTest {
 				AdresseSuisse adresse = new AdresseSuisse();
 				adresse.setUsage(TypeAdresseTiers.COURRIER);
 				adresse.setDateDebut(date(2001, 1, 1));
-				adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+				adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 				adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 				habitant.addAdresseTiers(adresse);
 
@@ -4217,14 +4218,14 @@ public class AdresseServiceTest extends BusinessTest {
 				adresse1.setUsage(TypeAdresseTiers.COURRIER);
 				adresse1.setDateDebut(date(1988, 3, 2));
 				adresse1.setDateFin(date(1995, 1, 1));
-				adresse1.setNumeroRue(MockRue.Orbe.RueDavall.getNoRue());
+				adresse1.setNumeroRue(MockRue.Orbe.CheminDeLaTranchee.getNoRue());
 				adresse1.setNumeroOrdrePoste(MockLocalite.Orbe.getNoOrdre());
 				habitant.addAdresseTiers(adresse1);
 
 				AdresseSuisse adresse2 = new AdresseSuisse();
 				adresse2.setUsage(TypeAdresseTiers.COURRIER);
 				adresse2.setDateDebut(date(2003, 3, 2));
-				adresse2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+				adresse2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 				adresse2.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 				habitant.addAdresseTiers(adresse2);
 
@@ -4264,8 +4265,8 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 			}
@@ -4355,7 +4356,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4409,7 +4410,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -4423,8 +4424,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
@@ -4435,7 +4436,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi1.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi1.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi1.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi1.getLigne6());
 	}
 
@@ -4460,7 +4461,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4511,8 +4512,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -4526,8 +4527,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 	}
 
@@ -4552,7 +4553,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4603,8 +4604,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 
@@ -4619,8 +4620,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 	}
 
@@ -4647,7 +4648,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4706,7 +4707,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -4720,8 +4721,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoiHisto.courrier.get(1);
@@ -4732,7 +4733,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi1.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi1.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi1.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi1.getLigne6());
 	}
 
@@ -4759,7 +4760,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4816,8 +4817,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Marcelin", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue Jolimont", adresseEnvoi.getLigne4());
+		assertEquals("1005 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -4831,8 +4832,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -4843,8 +4844,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
-		assertEquals("Av de Marcelin", adresseEnvoi1.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("Avenue Jolimont", adresseEnvoi1.getLigne4());
+		assertEquals("1005 Lausanne", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONJOINT, adresseEnvoi1.getSource());
 	}
@@ -4870,7 +4871,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -4925,7 +4926,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -4939,8 +4940,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -4952,7 +4953,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi1.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi1.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi1.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONSEIL_LEGAL, adresseEnvoi1.getSource());
 	}
@@ -4978,7 +4979,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(paul, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 
@@ -5031,8 +5032,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Marcelin", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue Jolimont", adresseEnvoi.getLigne4());
+		assertEquals("1005 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5046,8 +5047,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -5058,8 +5059,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
-		assertEquals("Av de Marcelin", adresseEnvoi1.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("Avenue Jolimont", adresseEnvoi1.getLigne4());
+		assertEquals("1005 Lausanne", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONJOINT, adresseEnvoi1.getSource());
 	}
@@ -5129,7 +5130,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(4, adressesHisto.courrier.size());
 		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
+		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2004, 1, 1), date(2004, 12, 31), "Le Sentier", SourceType.CURATELLE, false, adressesHisto.courrier.get(2));
 		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(3));
 
@@ -5150,8 +5151,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi2002.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi2002.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi2002.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi2002.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi2002.getLigne5());
 		assertNull(adresseEnvoi2002.getLigne6());
 
 		// curatelle sur le principal
@@ -5161,7 +5162,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2003.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2003.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2003.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2003.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2003.getLigne5());
 		assertNull(adresseEnvoi2003.getLigne6());
 
 		// curatelle sur le principal et le conjoint
@@ -5171,7 +5172,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2004.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2004.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2004.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2004.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2004.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2004.getLigne6());
 
 		// curatelle sur le conjoint
@@ -5180,8 +5181,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi2005.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2005.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2005.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi2005.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi2005.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi2005.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi2005.getLigne5());
 		assertNull(adresseEnvoi2005.getLigne6());
 
 		// plus du curatelle
@@ -5190,8 +5191,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5205,8 +5206,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -5218,7 +5219,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONJOINT, adresseEnvoi1.getSource());
 
@@ -5230,7 +5231,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2.getLigne6());
 		assertEquals(SourceType.CURATELLE, adresseEnvoi2.getSource());
 
@@ -5241,8 +5242,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi3.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi3.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi3.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi3.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi3.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi3.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi3.getLigne5());
 		assertNull(adresseEnvoi3.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi3.getSource());
 	}
@@ -5312,7 +5313,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(4, adressesHisto.courrier.size());
 		assertAdresse(date(2000, 1, 1), date(2002, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
+		assertAdresse(date(2003, 1, 1), date(2003, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2004, 1, 1), date(2004, 12, 31), "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2));
 		assertAdresse(date(2005, 1, 1), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(3));
 
@@ -5333,8 +5334,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi2002.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi2002.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi2002.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi2002.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi2002.getLigne5());
 		assertNull(adresseEnvoi2002.getLigne6());
 
 		// tutelle sur le principal
@@ -5344,7 +5345,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2003.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2003.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2003.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2003.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2003.getLigne5());
 		assertNull(adresseEnvoi2003.getLigne6());
 
 		// tutelle sur le principal et le conjoint
@@ -5354,7 +5355,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2004.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2004.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2004.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2004.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2004.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2004.getLigne6());
 
 		// tutelle sur le conjoint
@@ -5363,8 +5364,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi2005.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2005.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2005.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi2005.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi2005.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi2005.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi2005.getLigne5());
 		assertNull(adresseEnvoi2005.getLigne6());
 
 		// plus du tutelle
@@ -5373,8 +5374,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5388,8 +5389,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -5401,7 +5402,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONJOINT, adresseEnvoi1.getSource());
 
@@ -5413,7 +5414,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2.getLigne6());
 		assertEquals(SourceType.TUTELLE, adresseEnvoi2.getSource());
 
@@ -5424,8 +5425,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi3.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi3.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi3.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi3.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi3.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi3.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi3.getLigne5());
 		assertNull(adresseEnvoi3.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi3.getSource());
 	}
@@ -5491,7 +5492,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(4, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
+		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1));
 		assertAdresse(date(2005, 1, 1), date(2008, 12, 31), "Neuchâtel", SourceType.CONJOINT, false, adressesHisto.courrier.get(2));
 		assertAdresse(date(2009, 1, 1), null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(3));
 
@@ -5506,7 +5507,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2002.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2002.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2002.getLigne5());
 		assertNull(adresseEnvoi2002.getLigne6());
 
 		// conjoint hors canton => adresse courrier du conjoint utilisée
@@ -5526,7 +5527,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2010.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2010.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2010.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2010.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2010.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2010.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoiHisto = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5540,8 +5541,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 		assertEquals(SourceType.CIVILE, adresseEnvoi0.getSource());
 
@@ -5553,7 +5554,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 		assertEquals(SourceType.CONJOINT, adresseEnvoi1.getSource());
 
@@ -5577,7 +5578,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi3.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi3.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi3.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi3.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi3.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi3.getLigne6());
 		assertEquals(SourceType.TUTELLE, adresseEnvoi3.getSource());
 	}
@@ -5643,7 +5644,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(date(2000, 1, 1), dateDeces.getOneDayBefore(), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(date(2000, 1, 1), dateDeces.getOneDayBefore(), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
 		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
@@ -5656,8 +5657,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1990.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1990.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1990.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi1990.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1990.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi1990.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi1990.getLigne5());
 		assertNull(adresseEnvoi1990.getLigne6());
 
 		// monsieur sous tutelle => adresse de madame
@@ -5667,7 +5668,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2002.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2002.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2002.getLigne5());
 		assertNull(adresseEnvoi2002.getLigne6());
 
 		// madame décédée et monsieur sous tutelle => adresse du tuteur de monsieur
@@ -5677,7 +5678,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2010.getLigne2());
 		assertEquals("Virginie Dupont, défunte", adresseEnvoi2010.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2010.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2010.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2010.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2010.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5691,8 +5692,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoi.courrier.get(1);
@@ -5703,7 +5704,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi2 = adressesEnvoi.courrier.get(2);
@@ -5714,7 +5715,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
 		assertEquals("Virginie Dupont, défunte", adresseEnvoi2.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2.getLigne6());
 	}
 
@@ -5783,7 +5784,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), dateTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(dateTutelle, dateDeces.getOneDayBefore(), "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateTutelle, dateDeces.getOneDayBefore(), "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
 		assertAdresse(dateDeces, null, "Le Sentier", SourceType.TUTELLE, false, adressesHisto.courrier.get(2)); // adresse du tuteur de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
@@ -5796,8 +5797,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1990.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1990.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1990.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi1990.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1990.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi1990.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi1990.getLigne5());
 		assertNull(adresseEnvoi1990.getLigne6());
 
 		// monsieur sous tutelle => adresse de madame
@@ -5807,7 +5808,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2002.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2002.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2002.getLigne5());
 		assertNull(adresseEnvoi2002.getLigne6());
 
 		// séparation du couple => toujours adresse de madame
@@ -5817,7 +5818,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2010.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2010.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi2010.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2010.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi2010.getLigne5());
 		assertNull(adresseEnvoi2010.getLigne6());
 
 		// couple séparé, madame décédée et monsieur sous tutelle => adresse du tuteur de monsieur
@@ -5827,7 +5828,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2012.getLigne2());
 		assertEquals("Virginie Dupont, défunte", adresseEnvoi2012.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2012.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2012.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2012.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2012.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5841,8 +5842,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoi.courrier.get(1);
@@ -5853,7 +5854,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi2 = adressesEnvoi.courrier.get(2);
@@ -5864,7 +5865,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
 		assertEquals("Virginie Dupont, défunte", adresseEnvoi2.getLigne3());
 		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi2.getLigne5());
+		assertEquals("Grand-Rue", adresseEnvoi2.getLigne5());
 		assertEquals("1347 Le Sentier", adresseEnvoi2.getLigne6());
 	}
 
@@ -5925,7 +5926,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(3, adressesHisto.courrier.size());
 		assertAdresse(date(1953, 11, 2), dateDebutTutelle.getOneDayBefore(), "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(0)); // adresse de Monsieur
-		assertAdresse(dateDebutTutelle, dateFinTutelle, "Bussigny-près-Lausanne", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
+		assertAdresse(dateDebutTutelle, dateFinTutelle, "Bussigny", SourceType.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse de Madame
 		assertAdresse(dateFinTutelle.getOneDayAfter(), null, "Lausanne", SourceType.CIVILE, true, adressesHisto.courrier.get(2)); // adresse de Monsieur
 
 		assertAdresse(date(1953, 11, 2), null, "Lausanne", SourceType.CIVILE, false, adressesHisto.domicile.get(0));
@@ -5938,8 +5939,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1970.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1970.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1970.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi1970.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1970.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi1970.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi1970.getLigne5());
 		assertNull(adresseEnvoi1970.getLigne6());
 
 		// monsieur sous tutelle => adresse de madame
@@ -5949,7 +5950,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1973.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1973.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1973.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1973.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1973.getLigne5());
 		assertNull(adresseEnvoi1973.getLigne6());
 
 		// monsieur fin de tutelle => adresse de monsieur
@@ -5958,8 +5959,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1976.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1976.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1976.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi1976.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1976.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi1976.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi1976.getLigne5());
 		assertNull(adresseEnvoi1976.getLigne6());
 
 		// mariage => toujours adresse de monsieur
@@ -5968,8 +5969,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi1981.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi1981.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1981.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi1981.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi1981.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi1981.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi1981.getLigne5());
 		assertNull(adresseEnvoi1981.getLigne6());
 
 		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(menage, true);
@@ -5983,8 +5984,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi0.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi0.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi0.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi0.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi0.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi0.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi0.getLigne5());
 		assertNull(adresseEnvoi0.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi1 = adressesEnvoi.courrier.get(1);
@@ -5995,7 +5996,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Paul Dupont", adresseEnvoi1.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi1.getLigne3());
 		assertEquals("Rue de l'Industrie", adresseEnvoi1.getLigne4());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi1.getLigne5());
+		assertEquals("1030 Bussigny", adresseEnvoi1.getLigne5());
 		assertNull(adresseEnvoi1.getLigne6());
 
 		final AdresseEnvoiDetaillee adresseEnvoi2 = adressesEnvoi.courrier.get(2);
@@ -6005,8 +6006,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi2.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi2.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi2.getLigne3());
-		assertEquals("Av de Beaulieu", adresseEnvoi2.getLigne4());
-		assertEquals("1000 Lausanne", adresseEnvoi2.getLigne5());
+		assertEquals("Avenue de Beaulieu", adresseEnvoi2.getLigne4());
+		assertEquals("1003 Lausanne", adresseEnvoi2.getLigne5());
 		assertNull(adresseEnvoi2.getLigne6());
 	}
 
@@ -6095,7 +6096,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(principal, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
 
 				MockIndividu conjoint = addIndividu(noIndividuConjoint, date(1953, 11, 2), "Duc", "Regina", false);
-				addAdresse(conjoint, TypeAdresseCivil.PRINCIPALE, MockRue.GrangesMarnand.RueDeVerdairuz, null, date(2000, 1, 1), null);
+				addAdresse(conjoint, TypeAdresseCivil.PRINCIPALE, MockRue.GrangesMarnand.ImpasseDeVerdairu, null, date(2000, 1, 1), null);
 			}
 		});
 		final PersonnePhysique principal = addHabitant(noTiersPrincipal, noIndividuPrincipal);
@@ -6123,7 +6124,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", domicilePrincipal.getLigne1());
 		assertEquals("Jean-Jacques Duc", domicilePrincipal.getLigne2());
 		assertEquals("Boulevard de Grancy", domicilePrincipal.getLigne3());
-		assertEquals("1000 Lausanne", domicilePrincipal.getLigne4());
+		assertEquals("1003 Lausanne", domicilePrincipal.getLigne4());
 		assertNull(domicilePrincipal.getLigne5());
 
 		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseFiscale.COURRIER, false));
@@ -6134,7 +6135,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoi domicileConjoint = adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicileConjoint.getLigne1());
 		assertEquals("Regina Duc", domicileConjoint.getLigne2());
-		assertEquals("Rue de Verdairuz", domicileConjoint.getLigne3());
+		assertEquals("Impasse de Verdairu", domicileConjoint.getLigne3());
 		assertEquals("1523 Granges-près-Marnand", domicileConjoint.getLigne4());
 		assertNull(domicileConjoint.getLigne5());
 
@@ -6155,7 +6156,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adresseDomicilPrincipal0.getLigne1());
 		assertEquals("Jean-Jacques Duc", adresseDomicilPrincipal0.getLigne2());
 		assertEquals("Boulevard de Grancy", adresseDomicilPrincipal0.getLigne3());
-		assertEquals("1000 Lausanne", adresseDomicilPrincipal0.getLigne4());
+		assertEquals("1003 Lausanne", adresseDomicilPrincipal0.getLigne4());
 		assertNull(adresseDomicilPrincipal0.getLigne5());
 
 		assertEquals(adressesEnvoiPrincipal.domicile.get(0), adressesEnvoiPrincipal.courrier.get(0));
@@ -6173,7 +6174,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(adresseDomicilConjoint0.getDateFin());
 		assertEquals("Madame", adresseDomicilConjoint0.getLigne1());
 		assertEquals("Regina Duc", adresseDomicilConjoint0.getLigne2());
-		assertEquals("Rue de Verdairuz", adresseDomicilConjoint0.getLigne3());
+		assertEquals("Impasse de Verdairu", adresseDomicilConjoint0.getLigne3());
 		assertEquals("1523 Granges-près-Marnand", adresseDomicilConjoint0.getLigne4());
 		assertNull(adresseDomicilConjoint0.getLigne5());
 
@@ -6214,10 +6215,10 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
-		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", SourceType.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CURATELLE, false, adresses.courrier);
 		assertAdressesEquals(adresses.domicile, adresses.poursuite);
-		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", SourceType.CIVILE, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.CIVILE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.CURATELLE, false, adresses.poursuiteAutreTiers);
 
 		// les adresses d'envoi
@@ -6225,7 +6226,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Marc Staheli", domicile.getLigne2());
 		assertEquals("Rue de l'Industrie", domicile.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", domicile.getLigne4());
+		assertEquals("1030 Bussigny", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
 		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
@@ -6233,7 +6234,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Marc Staheli", courrier.getLigne2());
 		assertEquals("p.a. Alain Bally", courrier.getLigne3());
 		assertEquals("Place Saint-François", courrier.getLigne4());
-		assertEquals("1000 Lausanne", courrier.getLigne5());
+		assertEquals("1003 Lausanne", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
 		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
@@ -6244,7 +6245,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", poursuiteAutreTiers.getLigne1());
 		assertEquals("Alain Bally", poursuiteAutreTiers.getLigne2());
 		assertEquals("Place Saint-François", poursuiteAutreTiers.getLigne3());
-		assertEquals("1000 Lausanne", poursuiteAutreTiers.getLigne4());
+		assertEquals("1003 Lausanne", poursuiteAutreTiers.getLigne4());
 		assertNull(poursuiteAutreTiers.getLigne5());
 		assertEquals(SourceType.CURATELLE, poursuiteAutreTiers.getSource());
 
@@ -6264,7 +6265,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adresseDomicile.getLigne1());
 		assertEquals("Marc Staheli", adresseDomicile.getLigne2());
 		assertEquals("Rue de l'Industrie", adresseDomicile.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", adresseDomicile.getLigne4());
+		assertEquals("1030 Bussigny", adresseDomicile.getLigne4());
 		assertNull(adresseDomicile.getLigne5());
 
 		final AdresseEnvoiDetaillee adresseCourrier = adressesEnvoi.courrier.get(0);
@@ -6275,7 +6276,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Marc Staheli", adresseCourrier.getLigne2());
 		assertEquals("p.a. Alain Bally", adresseCourrier.getLigne3());
 		assertEquals("Place Saint-François", adresseCourrier.getLigne4());
-		assertEquals("1000 Lausanne", adresseCourrier.getLigne5());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
 		assertNull(adresseCourrier.getLigne6());
 
 		assertEquals(adresseDomicile, adressesEnvoi.representation.get(0));
@@ -6288,7 +6289,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adressePoursuiteAutreTiers.getLigne1());
 		assertEquals("Alain Bally", adressePoursuiteAutreTiers.getLigne2());
 		assertEquals("Place Saint-François", adressePoursuiteAutreTiers.getLigne3());
-		assertEquals("1000 Lausanne", adressePoursuiteAutreTiers.getLigne4());
+		assertEquals("1003 Lausanne", adressePoursuiteAutreTiers.getLigne4());
 		assertNull(adressePoursuiteAutreTiers.getLigne5());
 		assertEquals(SourceType.CURATELLE, adressePoursuiteAutreTiers.getSource());
 	}
@@ -6328,7 +6329,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicile.getLigne1());
 		assertEquals("Anabela Lopes", domicile.getLigne2());
-		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("Grand'Rue", domicile.getLigne3());
 		assertEquals("1040 Echallens", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
@@ -6365,7 +6366,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(adresseDomicile.getDateFin());
 		assertEquals("Madame", adresseDomicile.getLigne1());
 		assertEquals("Anabela Lopes", adresseDomicile.getLigne2());
-		assertEquals("Grand Rue", adresseDomicile.getLigne3());
+		assertEquals("Grand'Rue", adresseDomicile.getLigne3());
 		assertEquals("1040 Echallens", adresseDomicile.getLigne4());
 		assertNull(adresseDomicile.getLigne5());
 
@@ -6430,7 +6431,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicile.getLigne1());
 		assertEquals("Anabela Lopes", domicile.getLigne2());
-		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("Grand'Rue", domicile.getLigne3());
 		assertEquals("1040 Echallens", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
@@ -6474,7 +6475,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(adresseDomicile.getDateFin());
 		assertEquals("Madame", adresseDomicile.getLigne1());
 		assertEquals("Anabela Lopes", adresseDomicile.getLigne2());
-		assertEquals("Grand Rue", adresseDomicile.getLigne3());
+		assertEquals("Grand'Rue", adresseDomicile.getLigne3());
 		assertEquals("1040 Echallens", adresseDomicile.getLigne4());
 		assertNull(adresseDomicile.getLigne5());
 
@@ -6756,7 +6757,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", poursuite.getLigne1());
 		assertEquals("Philippe Galley", poursuite.getLigne2());
 		assertEquals("Chemin de Praz-Berthoud", poursuite.getLigne3());
-		assertEquals("1000 Lausanne", poursuite.getLigne4());
+		assertEquals("1003 Lausanne", poursuite.getLigne4());
 		assertNull(poursuite.getLigne5());
 
 		final AdresseEnvoiDetaillee poursuiteAutreTiers = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, false);
@@ -6792,7 +6793,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adressePoursuite.getLigne1());
 		assertEquals("Philippe Galley", adressePoursuite.getLigne2());
 		assertEquals("Chemin de Praz-Berthoud", adressePoursuite.getLigne3());
-		assertEquals("1000 Lausanne", adressePoursuite.getLigne4());
+		assertEquals("1003 Lausanne", adressePoursuite.getLigne4());
 		assertNull(adressePoursuite.getLigne5());
 
 		final AdresseEnvoiDetaillee adressePoursuiteAutreTiers = adressesEnvoi.poursuiteAutreTiers.get(0);
@@ -6802,7 +6803,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur", adressePoursuiteAutreTiers.getLigne1());
 		assertEquals("Philippe Galley", adressePoursuiteAutreTiers.getLigne2());
 		assertEquals("Chemin de Praz-Berthoud", adressePoursuiteAutreTiers.getLigne3());
-		assertEquals("1000 Lausanne", adressePoursuiteAutreTiers.getLigne4());
+		assertEquals("1003 Lausanne", adressePoursuiteAutreTiers.getLigne4());
 		assertNull(adressePoursuiteAutreTiers.getLigne5());
 		assertEquals(SourceType.FISCALE, adressePoursuiteAutreTiers.getSource());
 	}
@@ -6837,15 +6838,15 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
 		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", SourceType.TUTELLE, false, adresses.courrier); // adresse du tuteur
-		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", SourceType.FISCALE, false, adresses.poursuite); // adresse spécifique de poursuite
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.FISCALE, false, adresses.poursuite); // adresse spécifique de poursuite
 		assertAdresse(date(2000, 1, 1), null, "Echallens", SourceType.CIVILE, true, adresses.representation);
-		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", SourceType.FISCALE, false, adresses.poursuiteAutreTiers); // adresse spécifique de poursuite
+		assertAdresse(date(2000, 1, 1), null, "Bussigny", SourceType.FISCALE, false, adresses.poursuiteAutreTiers); // adresse spécifique de poursuite
 
 		// les adresses d'envoi
 		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicile.getLigne1());
 		assertEquals("Anabela Lopes", domicile.getLigne2());
-		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("Grand'Rue", domicile.getLigne3());
 		assertEquals("1040 Echallens", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
@@ -6863,7 +6864,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Madame", poursuite.getLigne1());
 		assertEquals("Anabela Lopes", poursuite.getLigne2());
 		assertEquals("Rue de l'Industrie", poursuite.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", poursuite.getLigne4());
+		assertEquals("1030 Bussigny", poursuite.getLigne4());
 		assertNull(poursuite.getLigne5());
 		assertNull(poursuite.getLigne6());
 
@@ -6871,7 +6872,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Madame", poursuiteAutreTiers.getLigne1());
 		assertEquals("Anabela Lopes", poursuiteAutreTiers.getLigne2());
 		assertEquals("Rue de l'Industrie", poursuiteAutreTiers.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", poursuiteAutreTiers.getLigne4());
+		assertEquals("1030 Bussigny", poursuiteAutreTiers.getLigne4());
 		assertNull(poursuiteAutreTiers.getLigne5());
 		assertNull(poursuiteAutreTiers.getLigne6());
 		assertEquals(SourceType.FISCALE, poursuiteAutreTiers.getSource());
@@ -6891,7 +6892,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(adresseDomicile.getDateFin());
 		assertEquals("Madame", adresseDomicile.getLigne1());
 		assertEquals("Anabela Lopes", adresseDomicile.getLigne2());
-		assertEquals("Grand Rue", adresseDomicile.getLigne3());
+		assertEquals("Grand'Rue", adresseDomicile.getLigne3());
 		assertEquals("1040 Echallens", adresseDomicile.getLigne4());
 		assertNull(adresseDomicile.getLigne5());
 
@@ -6915,7 +6916,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Madame", adressePoursuite.getLigne1());
 		assertEquals("Anabela Lopes", adressePoursuite.getLigne2());
 		assertEquals("Rue de l'Industrie", adressePoursuite.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", adressePoursuite.getLigne4());
+		assertEquals("1030 Bussigny", adressePoursuite.getLigne4());
 		assertNull(adressePoursuite.getLigne5());
 		assertNull(adressePoursuite.getLigne6());
 
@@ -6926,7 +6927,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Madame", adressePoursuiteAutreTiers.getLigne1());
 		assertEquals("Anabela Lopes", adressePoursuiteAutreTiers.getLigne2());
 		assertEquals("Rue de l'Industrie", adressePoursuiteAutreTiers.getLigne3());
-		assertEquals("1030 Bussigny-près-Lausanne", adressePoursuiteAutreTiers.getLigne4());
+		assertEquals("1030 Bussigny", adressePoursuiteAutreTiers.getLigne4());
 		assertNull(adressePoursuiteAutreTiers.getLigne5());
 		assertNull(adressePoursuiteAutreTiers.getLigne6());
 		assertEquals(SourceType.FISCALE, adressePoursuiteAutreTiers.getSource());
@@ -6942,7 +6943,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final PersonnePhysique representant = addNonHabitant("Marcel", "Espol", date(1923, 3, 2), Sexe.MASCULIN);
 		addAdresseSuisse(representant, TypeAdresseTiers.COURRIER, date(1923, 3, 2), null, MockRue.Bussigny.RueDeLIndustrie);
 		final PersonnePhysique represente = addNonHabitant("Julius", "Raeb", date(1923, 3, 2), Sexe.MASCULIN);
-		addAdresseSuisse(represente, TypeAdresseTiers.COURRIER, date(1923, 3, 2), null, MockRue.GrangesMarnand.RueDeVerdairuz);
+		addAdresseSuisse(represente, TypeAdresseTiers.COURRIER, date(1923, 3, 2), null, MockRue.GrangesMarnand.ImpasseDeVerdairu);
 
 		final RepresentationConventionnelle rapport = addRepresentationConventionnelle(represente, representant, date(2000, 1, 1), false);
 		rapport.setAnnule(true);
@@ -6987,7 +6988,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 		dpi.setNom1("Ma petite entreprise");
-		addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Aubonne.RueTrevelin);
+		addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009, 1, 1), null, MockRue.Aubonne.CheminTraverse);
 		final AdresseSuisse dom = addAdresseSuisse(dpi, TypeAdresseTiers.DOMICILE, date(2010, 1, 1), null, MockRue.Bussigny.RueDeLIndustrie);
 		dom.setAnnule(true);
 
@@ -7002,7 +7003,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(2, adresses.domicile.size());
 		assertAdresse(date(2009, 1, 1), null, "Aubonne", SourceType.FISCALE, true, adresses.domicile.get(0));
 		assertTrue(adresses.domicile.get(1).isAnnule());
-		assertAdresse(date(2010, 1, 1), null, "Bussigny-près-Lausanne", SourceType.FISCALE, false, adresses.domicile.get(1));
+		assertAdresse(date(2010, 1, 1), null, "Bussigny", SourceType.FISCALE, false, adresses.domicile.get(1));
 
 		assertNotNull(adresses.poursuite);
 		assertEquals(1, adresses.poursuite.size());
@@ -8174,7 +8175,7 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setPermanente(true);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setNumeroMaison("3");
-			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 			mc.addAdresseTiers(adresse);
 		}

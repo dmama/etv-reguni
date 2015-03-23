@@ -398,7 +398,7 @@ public class TiersServiceTest extends BusinessTest {
 			// Vue de l'habitant pour 1960
 			final Individu ind = tiersService.getIndividu(hab, date(1960, 12, 31), AttributeIndividu.ADRESSES);
 			assertNotNull(ind);
-			assertEquals("Av de Beaulieu", ind.getAdresses().iterator().next().getRue());
+			assertEquals("Avenue de Beaulieu", ind.getAdresses().iterator().next().getRue());
 		}
 
 		{
@@ -410,7 +410,7 @@ public class TiersServiceTest extends BusinessTest {
 			assertEquals(2, adresses.size());
 
 			final Iterator<Adresse> iter = adresses.iterator();
-			assertEquals("Av de Beaulieu", iter.next().getRue());
+			assertEquals("Avenue de Beaulieu", iter.next().getRue());
 			assertEquals("Avenue de la Gare", iter.next().getRue());
 		}
 
@@ -5684,7 +5684,7 @@ public class TiersServiceTest extends BusinessTest {
 				addLiensFiliation(fils, pere, mere, dateNaissanceFils, null);
 				addLiensFiliation(fille, pere, mere, dateNaissanceFille, null);
 
-				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, date(1998, 1, 1), null);
+				addAdresse(mere, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminTraverse, null, date(1998, 1, 1), null);
 				addAdresse(pere, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, date(1998, 1, 1), null);
 				addAdresse(fils, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFils, null);
 				addAdresse(fille, TypeAdresseCivil.PRINCIPALE, MockBatiment.Cully.BatimentChDesColombaires, 1, null, dateNaissanceFille, null);

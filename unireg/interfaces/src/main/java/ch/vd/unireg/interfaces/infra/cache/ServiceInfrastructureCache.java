@@ -1167,6 +1167,52 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	private static class KeyGetRuesHisto {
+		final int numeroRue;
+
+		private KeyGetRuesHisto(int numeroRue) {
+			this.numeroRue = numeroRue;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetRuesHisto that = (KeyGetRuesHisto) o;
+			return numeroRue == that.numeroRue;
+		}
+
+		@Override
+		public int hashCode() {
+			return numeroRue;
+		}
+
+		@Override
+		public String toString() {
+			return "KeyGetRuesHisto{" +
+					"numeroRue=" + numeroRue +
+					'}';
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		final List<Rue> resultat;
+
+		final KeyGetRuesHisto key = new KeyGetRuesHisto(numero);
+		final Element element = shortLivedCache.get(key);
+		if (element == null) {
+			resultat = target.getRuesHisto(numero);
+			shortLivedCache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (List<Rue>) element.getObjectValue();
+		}
+		return resultat;
+	}
+
 	private static class KeyGetRueByLocalite {
 		final int noOrdre;
 

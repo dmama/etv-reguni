@@ -45,8 +45,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 			}
 		});
 
@@ -83,8 +83,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(2000, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 			}
 		});
 
@@ -121,8 +121,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 				individu.setDateDeces(date(2010, 12, 31));
 			}
 		});
@@ -160,8 +160,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 			}
 		});
 
@@ -195,8 +195,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 			}
 		});
 
@@ -231,8 +231,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessorTest extends Busi
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, date(1980, 10, 25), "Malfoy", "Draco", true);
 				addNationalite(individu, MockPays.Suisse, date(1980, 10, 25), null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(2010, 12, 12), null);
 			}
 		});
 

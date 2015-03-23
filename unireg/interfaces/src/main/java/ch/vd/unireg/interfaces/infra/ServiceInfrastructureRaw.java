@@ -133,7 +133,15 @@ public interface ServiceInfrastructureRaw {
 	List<Rue> getRues(Localite localite) throws ServiceInfrastructureException;
 
 	/**
-	 * @param numero le numéro technique d'une rue
+	 *
+	 * @param numero le numéro technique d'une rue (= estrid)
+	 * @return l'historique des rues qui ont porté ce numéro à travers les âges
+	 * @throws ServiceInfrastructureException
+	 */
+	List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException;
+
+	/**
+	 * @param numero le numéro technique d'une rue (= estrid)
 	 * @param date la date de référence
 	 * @return la rue qui correspond au numéro technique spécifié.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure

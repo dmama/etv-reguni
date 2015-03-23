@@ -50,7 +50,6 @@ public class AdresseCivileAdapterTest {
 		evian.setLocalite("Evian");
 		evian.setNumeroPostal(null);
 		evian.setNumeroPostalComplementaire(null);
-		evian.setNumeroOrdrePostal(0);
 		evian.setPays(MockPays.France);
 		evian.setDateDebutValidite(RegDate.get(1980, 1, 1));
 		evian.setDateFinValidite(RegDate.get(1987, 12, 11));

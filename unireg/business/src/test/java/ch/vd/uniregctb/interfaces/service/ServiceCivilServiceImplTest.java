@@ -273,8 +273,8 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(2000, 1, 1), null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, RegDate.get(2000, 1, 1), null);
 			}
 		});
 
@@ -301,7 +301,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, RegDate.get(1980, 5, 12), RegDate.get(2003, 11, 28));
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(2000, 1, 1), null);
 			}
 		});

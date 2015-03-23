@@ -194,12 +194,15 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 				if (collectiviteAdministrative != null) {
 					Adresse adresse = collectiviteAdministrative.getAdresse();
 					if (adresse != null) {
-						final int onrp = adresse.getNumeroOrdrePostal();
+						final Integer onrp = adresse.getNumeroOrdrePostal();
 						Localite localite = null;
-						try {
-							localite = serviceInfrastructureService.getLocaliteByONRP(onrp);
-						} catch (ServiceInfrastructureException e) {
-							LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
+						if (onrp != null) {
+							try {
+								localite = serviceInfrastructureService.getLocaliteByONRP(onrp);
+							}
+							catch (ServiceInfrastructureException e) {
+								LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
+							}
 						}
 						if (localite != null) {
 							//SIFISC-3468: Exception pour la localité de La vallée, on prend le nom de la localité et non de la commune

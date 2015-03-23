@@ -244,7 +244,7 @@ public class EvenementCivilEchServiceTest extends BusinessTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Peticou", "Justin", Sexe.MASCULIN);
 				marieIndividu(individu, dateMariage);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, dateArrivee, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminTraverse, null, dateArrivee, null);
 			}
 		});
 

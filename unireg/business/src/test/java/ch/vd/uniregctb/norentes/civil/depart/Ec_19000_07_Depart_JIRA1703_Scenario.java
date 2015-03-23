@@ -205,6 +205,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		adresseAnnulee.setDateDebut(dateDepart.addDays(1));
 		adresseAnnulee.setNumeroMaison(Integer.toString(26));
 		adresseAnnulee.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+		adresseAnnulee.setNumeroOrdrePoste(MockRue.Lausanne.AvenueDeBeaulieu.getNoLocalite());
 		adresseAnnulee.setUsage(TypeAdresseTiers.COURRIER);
 		adresseAnnulee.setPermanente(true);
 		adresseAnnulee.setAnnule(true);
@@ -214,6 +215,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		adresse.setDateDebut(dateDepart.addDays(1));
 		adresse.setNumeroMaison(Integer.toString(26));
 		adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+		adresse.setNumeroOrdrePoste(MockRue.Lausanne.AvenueDeBeaulieu.getNoLocalite());
 		adresse.setUsage(TypeAdresseTiers.COURRIER);
 		adresse.setPermanente(true);
 		menage.addAdresseTiers(adresse);

@@ -196,10 +196,10 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			assertEquals(1, adresses.poursuite.size());
 			assertEquals(1, adresses.representation.size());
 
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.courrier.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.domicile.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, false, adresses.poursuite.get(0));
-			assertAdresse(date(1980, 1, 1), null, "Bussigny-près-Lausanne", AdresseGenerique.SourceType.FISCALE, true, adresses.representation.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny", AdresseGenerique.SourceType.FISCALE, true, adresses.courrier.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny", AdresseGenerique.SourceType.FISCALE, true, adresses.domicile.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny", AdresseGenerique.SourceType.FISCALE, false, adresses.poursuite.get(0));
+			assertAdresse(date(1980, 1, 1), null, "Bussigny", AdresseGenerique.SourceType.FISCALE, true, adresses.representation.get(0));
 
 			// Les adresses d'envoi
 			final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, true);
@@ -207,7 +207,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 			assertEquals("Arnold Whitenegger", adresseCourrier.getLigne1());
 			assertEquals("Ma petite entreprise", adresseCourrier.getLigne2());
 			assertEquals("Rue de l'Industrie", adresseCourrier.getLigne3());
-			assertEquals("1030 Bussigny-près-Lausanne", adresseCourrier.getLigne4());
+			assertEquals("1030 Bussigny", adresseCourrier.getLigne4());
 			assertNull(adresseCourrier.getLigne5());
 			assertNull(adresseCourrier.getLigne6());
 		}

@@ -78,13 +78,13 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			indCedric = addIndividu(noIndCedric, dateNaissanceCedric, "Donzé", "Cédric", true);
 			addOrigine(indCedric, MockCommune.Neuchatel);
 			addNationalite(indCedric, MockPays.Suisse, dateNaissanceCedric, null);
-			addAdresse(indCedric, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+			addAdresse(indCedric, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 
 			final RegDate dateNaissanceSandra = RegDate.get(1975, 2, 26);
 			indSandra = addIndividu(noIndSandra, dateNaissanceSandra, "Donzé", "Sandra", false);
 			addOrigine(indSandra, MockCommune.Peseux);
 			addNationalite(indSandra, MockPays.Suisse, dateNaissanceSandra, null);
-			addAdresse(indSandra, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+			addAdresse(indSandra, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}

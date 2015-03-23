@@ -2,15 +2,21 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import ch.vd.fidor.xml.common.v1.Range;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.fidor.XmlUtils;
 
 public class RueImpl implements Rue, Serializable {
 
-	private static final long serialVersionUID = 723446726077715687L;
+	private static final long serialVersionUID = 3800908460552624913L;
 	
 	private final String designationCourrier;
 	private final Integer noLocalite;
 	private final Integer noRue;
+	private final DateRange validite;
 
 	public static RueImpl get(ch.vd.infrastructure.model.Rue target) {
 		if (target == null) {
@@ -30,12 +36,21 @@ public class RueImpl implements Rue, Serializable {
 		this.designationCourrier = target.getDesignationCourrier();
 		this.noLocalite = target.getNoLocalite();
 		this.noRue = target.getNoRue();
+		this.validite = null;
 	}
 
 	private RueImpl(Street target) {
 		this.designationCourrier = target.getLongName();
 		this.noLocalite = target.getSwissZipCodeId().get(0);        // TODO on prend la première...
 		this.noRue = target.getEstrid();
+
+		final Range validity = target.getValidity();
+		if (validity != null) {
+			this.validite = new DateRangeHelper.Range(XmlUtils.toRegDate(validity.getDateFrom()), XmlUtils.toRegDate(validity.getDateTo()));
+		}
+		else {
+			this.validite = null;
+		}
 	}
 
 	@Override
@@ -51,6 +66,21 @@ public class RueImpl implements Rue, Serializable {
 	@Override
 	public Integer getNoRue() {
 		return noRue;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return validite == null || validite.isValidAt(date);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
+		return validite == null ? null : validite.getDateDebut();
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return validite == null ? null : validite.getDateFin();
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 
 	protected void ouvrirAdresseEnney(MockIndividu individu, RegDate dateOuverture) {
 		final Collection<Adresse> adrs = individu.getAdresses();
-		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateOuverture, null);
+		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.CheminDAfflon, null, dateOuverture, null);
 		adrs.add(aa);
 	}
 

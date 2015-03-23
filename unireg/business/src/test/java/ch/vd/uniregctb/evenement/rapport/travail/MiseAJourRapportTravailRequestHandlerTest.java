@@ -1222,7 +1222,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, date(2000, 1, 1), null);
 				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
 			}
@@ -1307,7 +1307,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, date(2000, 1, 1), null);
 				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
 			}
@@ -1394,7 +1394,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, date(2000, 1, 1), null);
 				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
 			}
@@ -1491,7 +1491,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, date(2000, 1, 1), null);
 				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
 			}
@@ -1577,7 +1577,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Plantagenet", "Pierre-Henri", Sexe.MASCULIN);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, date(2000, 1, 1), null);
 				addNationalite(ind, MockPays.RoyaumeUni, date(2000, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(2000, 1, 1), null, false);
 			}

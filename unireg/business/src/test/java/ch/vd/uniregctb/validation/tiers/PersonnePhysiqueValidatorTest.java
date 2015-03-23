@@ -596,46 +596,54 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// Adresse courier 1
 		final AdresseSuisse c1 = new AdresseSuisse();
-		c1.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c1.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c1.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c1.setUsage(TypeAdresseTiers.COURRIER);
 		c1.setDateDebut(RegDate.get(2005, 2, 3));
 		c1.setDateFin(RegDate.get(2006, 11, 23));
 		// Adresse courier 2
 		final AdresseSuisse c2 = new AdresseSuisse();
-		c2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c2.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c2.setUsage(TypeAdresseTiers.COURRIER);
 		c2.setDateDebut(RegDate.get(2006, 11, 24));
 		c2.setDateFin(RegDate.get(2007, 6, 12));
 		// Adresse courier 3
 		final AdresseSuisse c3 = new AdresseSuisse();
-		c3.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c3.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c3.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c3.setUsage(TypeAdresseTiers.COURRIER);
 		c3.setDateDebut(RegDate.get(2007, 7, 11));
 		// Adresse courier 4
 		final AdresseSuisse c4 = new AdresseSuisse();
-		c4.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c4.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c4.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c4.setUsage(TypeAdresseTiers.COURRIER);
 		c4.setDateDebut(RegDate.get(2008, 1, 2));
 		// Adresse courier 5
 		final AdresseSuisse c5 = new AdresseSuisse();
-		c5.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c5.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c5.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c5.setUsage(TypeAdresseTiers.COURRIER);
 		c5.setDateDebut(RegDate.get(2006, 12, 1));
 		c5.setDateFin(RegDate.get(2006, 12, 12));
 		// Adresse courier 6
 		final AdresseSuisse c6 = new AdresseSuisse();
-		c6.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c6.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c6.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c6.setUsage(TypeAdresseTiers.COURRIER);
 		c6.setDateFin(RegDate.get(2006, 12, 12));
 		// Adresse domicile 1
 		final AdresseSuisse d1 = new AdresseSuisse();
-		d1.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		d1.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		d1.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		d1.setUsage(TypeAdresseTiers.DOMICILE);
 		d1.setDateDebut(RegDate.get(2005, 12, 1));
 		d1.setDateFin(RegDate.get(2006, 12, 12));
 		// Adresse domicile 2
 		final AdresseSuisse d2 = new AdresseSuisse();
-		d2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		d2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		d2.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		d2.setUsage(TypeAdresseTiers.DOMICILE);
 		d2.setDateDebut(RegDate.get(2006, 12, 13));
 
@@ -718,7 +726,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// Adresse courier 1 annulée
 		final AdresseSuisse c1 = new AdresseSuisse();
-		c1.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c1.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c1.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c1.setUsage(TypeAdresseTiers.COURRIER);
 		c1.setDateDebut(RegDate.get(2005, 2, 3));
 		c1.setDateFin(null);
@@ -727,7 +736,8 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// Adresse courier 2 non-annulée
 		final AdresseSuisse c2 = new AdresseSuisse();
-		c2.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+		c2.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
+		c2.setNumeroOrdrePoste(MockRue.Bex.CheminDeLaForet.getNoLocalite());
 		c2.setUsage(TypeAdresseTiers.COURRIER);
 		c2.setDateDebut(RegDate.get(2005, 2, 2));
 		c2.setDateFin(null);

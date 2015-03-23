@@ -520,6 +520,34 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(final int numero) throws ServiceInfrastructureException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<Rue> list = target.getRuesHisto(numero);
+			items = list == null ? 0 : list.size();
+			return list;
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getRuesHisto", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("numero=%d", numero);
+				}
+			});
+		}
+	}
+
+	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(final int id) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();

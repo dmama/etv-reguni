@@ -54,7 +54,7 @@ public interface AdresseEntreprise {
 	 *
 	 * @return le numéro d'ordre postal de la localité.
 	 */
-	int getNumeroOrdrePostal();
+	Integer getNumeroOrdrePostal();
 
 	/**
 	 * @return le numéro postal d'acheminement de la localité. Par exemple, "1000" pour Lausanne.

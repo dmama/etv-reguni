@@ -179,7 +179,7 @@ public class EFactureServiceTest extends BusinessTest {
 					chollet.setNouveauNoAVS(NO_AVS_CHOLLET);
 					addAdresse(chollet, TypeAdresseCivil.COURRIER, MockRue.Moudon.LeBourg, null, date(1980, 1, 2), null);
 					MockIndividu bochuz = addIndividu(NO_BOCHUZ, date(1980,1,2), "Sherley", "Bochuz", false);
-					addAdresse(bochuz, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(1980, 1, 2), dateMariage.getOneDayBefore());
+					addAdresse(bochuz, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, date(1980, 1, 2), dateMariage.getOneDayBefore());
 					addAdresse(bochuz, TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, null);
 					bochuz.setNouveauNoAVS(NO_AVS_BOCHUZ);
 					MockIndividu berclaz = addIndividu(NO_BERCLAZ, date(1980,1,2), "Stève", "Berclaz", true);

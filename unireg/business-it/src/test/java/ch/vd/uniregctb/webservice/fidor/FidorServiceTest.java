@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.uniregctb.utils.UniregProperties;
 import ch.vd.uniregctb.utils.UniregPropertiesImpl;
@@ -34,24 +35,37 @@ public class FidorServiceTest {
 	}
 
 	@Test
-	public void testGetRue() throws Exception {
+	public void testGetRueParEstrid() throws Exception {
 		final FidorClient wc = buildClient();
-		final Street rue = wc.getRue(null, 1134510);       // Avenue de Longemalle, Renens VD
-		Assert.assertNotNull(rue);
-		Assert.assertEquals("Avenue de Longemalle", rue.getLongName());
+		final List<Street> rues = wc.getRuesParEstrid(1134510, RegDate.get());       // Avenue de Longemalle, Renens VD
+		Assert.assertNotNull(rues);
+		Assert.assertEquals(1, rues.size());
+		Assert.assertEquals("Avenue de Longemalle", rues.get(0).getLongName());
+	}
+
+	@Test
+	public void testGetRueHisto() throws Exception {
+		final FidorClient wc = buildClient();
+		final List<Street> rues = wc.getRuesParEstrid(1134510, null);       // Avenue de Longemalle, Renens VD
+		Assert.assertNotNull(rues);
+
+		Assert.assertTrue(rues.size() > 1);
+		for (Street rue : rues) {
+			Assert.assertEquals("Avenue de Longemalle", rue.getLongName());
+		}
 	}
 
 	@Test
 	public void testGetRueInexistante() throws Exception {
 		final FidorClient wc = buildClient();
-		final Street rue = wc.getRue(null, 0);       // ???
-		Assert.assertNull(rue);
+		final List<Street> rues = wc.getRuesParEstrid(0, RegDate.get());       // ???
+		Assert.assertNull(rues);
 	}
 
 	@Test
 	public void testGetRues() throws Exception {
 		final FidorClient wc = buildClient();
-		final List<Street> streets = wc.getRues(null, MockLocalite.Renens.getNoOrdre());
+		final List<Street> streets = wc.getRuesParNumeroOrdrePosteEtDate(MockLocalite.Renens.getNoOrdre(), null);
 		Assert.assertNotNull(streets);
 		Assert.assertTrue(streets.size() > 80);     // quand le test a été écrit, il y avait 94 rues à Renens VD
 

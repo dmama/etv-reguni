@@ -63,7 +63,7 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 
-				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteGrangeNeuve, null, dateArrivee, null);
 
 			}
 		});
@@ -155,7 +155,7 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDemenagement);
-		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateDemenagement.addDays(1), null);
+		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateDemenagement.addDays(1), null);
 		adrs.add(aa);
 	}
 }

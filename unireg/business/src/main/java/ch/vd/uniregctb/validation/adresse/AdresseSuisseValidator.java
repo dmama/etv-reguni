@@ -14,10 +14,9 @@ public class AdresseSuisseValidator extends AdresseSupplementaireValidator<Adres
 	public ValidationResults validate(AdresseSuisse adr) {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
-			final Integer numeroRue = adr.getNumeroRue();
 			final Integer numeroOrdrePoste = adr.getNumeroOrdrePoste();
-			if ((numeroRue == null || numeroRue == 0) && (numeroOrdrePoste == null || numeroOrdrePoste == 0)) {
-				vr.addError(String.format("Le numéro de rue ou le numéro d'ordre poste doit être renseigné sur une adresse suisse [%s]", adr));
+			if (numeroOrdrePoste == null) {
+				vr.addError(String.format("Le numéro d'ordre poste doit être renseigné sur une adresse suisse [%s]", adr));
 			}
 		}
 		return vr;

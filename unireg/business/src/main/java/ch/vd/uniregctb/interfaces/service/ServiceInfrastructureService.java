@@ -120,11 +120,10 @@ public interface ServiceInfrastructureService {
 
 	/**
 	 * @param numero le numéro technique d'une rue
-	 * @param date
 	 * @return la rue qui correspond au numéro technique spécifié.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException;
+	Rue getRueByNumero(int numero) throws ServiceInfrastructureException;
 
 	/**
 	 * Retourne l'historique d'une commune à partir de son numéro OFS donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.

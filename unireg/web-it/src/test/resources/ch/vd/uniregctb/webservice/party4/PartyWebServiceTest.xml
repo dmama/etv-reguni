@@ -4025,8 +4025,8 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <value>141554</value>
+      <value>150</value>
+      <value>1134061</value>
       <value>12100003</value>
     </row>
     <row>
@@ -4056,8 +4056,8 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <value>141554</value>
+      <value>150</value>
+	  <value>1134061</value>
       <value>12500001</value>
     </row>
     <row>
@@ -4087,8 +4087,8 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <value>32296</value>
+      <value>528</value>
+      <value>1131419</value>
       <value>12500001</value>
     </row>
     <row>
@@ -4118,8 +4118,8 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <value>141554</value>
+	  <value>150</value>
+	  <value>1134061</value>
       <value>12600101</value>
     </row>
     <row>
@@ -4211,8 +4211,8 @@
       <null/>
       <null/>
       <null/>
-      <value>104</value>
-      <value>83404</value>
+      <value>528</value>
+      <value>1131423</value>
       <value>12900001</value>
     </row>
   </table>

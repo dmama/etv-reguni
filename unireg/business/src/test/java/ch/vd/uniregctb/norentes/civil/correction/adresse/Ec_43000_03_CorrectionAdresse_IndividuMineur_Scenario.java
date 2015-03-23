@@ -61,9 +61,9 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, naissance, dateCorrection.getOneDayBefore());
 
-				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null,
 						dateCorrection, null);
-				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null,
 						dateCorrection, null);
 			}
 		});

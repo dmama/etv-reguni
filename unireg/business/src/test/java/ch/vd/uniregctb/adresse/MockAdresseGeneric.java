@@ -94,7 +94,7 @@ final class MockAdresseGeneric implements AdresseGenerique {
 
 	@Override
 	public Integer getNumeroOrdrePostal() {
-		return 0;
+		return null;
 	}
 
 	@Override

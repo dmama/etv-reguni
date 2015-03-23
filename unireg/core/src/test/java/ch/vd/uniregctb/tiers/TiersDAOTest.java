@@ -601,7 +601,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			adresseSuisse.setNumeroMaison("12b");
 			adresseSuisse.setNumeroAppartement("6bis");
 			adresseSuisse.setNumeroOrdrePoste(5423);
-			adresseSuisse.setNumeroRue(87321);
+			adresseSuisse.setNumeroRue(2022311);
 			adressesPostales.add(adresseSuisse);
 
 			AdresseEtrangere adresseEtrangere = new AdresseEtrangere();

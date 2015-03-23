@@ -60,9 +60,9 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
 
-				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null,
 						dateCorrection, null);
-				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null,
 						dateCorrection, null);
 			}
 		});

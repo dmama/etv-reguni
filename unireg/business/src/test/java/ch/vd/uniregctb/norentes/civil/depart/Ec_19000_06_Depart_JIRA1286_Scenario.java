@@ -62,7 +62,7 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 				
 				RegDate dateAmenagement = RegDate.get(2006, 7, 9);
 				addAdresse(indIan, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateAmenagement, null);
-				addAdresse(indIan, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, dateAmenagement, null);
+				addAdresse(indIan, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null, dateAmenagement, null);
 				
 			}
 		});

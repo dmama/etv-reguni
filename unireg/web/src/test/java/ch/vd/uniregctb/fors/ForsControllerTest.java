@@ -469,7 +469,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			protected void init() {
 				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
 				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
-				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
 				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 				           date(1985, 2, 14), null);
@@ -583,7 +583,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			protected void init() {
 				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
 				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
-				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
+				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
 				addAdresse(laurent, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
 				           date(1985, 2, 14), null);

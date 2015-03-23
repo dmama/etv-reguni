@@ -82,7 +82,7 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 						2008, 8, 11), date(2008, 8, 14));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 15), date(2009, 6, 12));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(
 						2009, 6, 13), null);
 				addEtatCivil(georgette, date(1951, 11, 3), TypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(georgette, date(2008, 7, 26), TypeEtatCivil.MARIE);

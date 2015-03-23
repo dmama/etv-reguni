@@ -233,13 +233,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
+				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
+				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
+				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(1980,
+				addAdresse(julie, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, RegDate.get(1980,
 						1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
@@ -1733,7 +1733,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					adresse.setPermanente(true);
 					adresse.setUsage(TypeAdresseTiers.COURRIER);
 					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 					habitant.addAdresseTiers(adresse);
 				}
@@ -1852,7 +1852,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					adresse.setPermanente(true);
 					adresse.setUsage(TypeAdresseTiers.COURRIER);
 					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 					menage.addAdresseTiers(adresse);
 				}
@@ -1863,7 +1863,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					adresse.setPermanente(false);
 					adresse.setUsage(TypeAdresseTiers.DOMICILE);
 					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
 					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
 					menage.addAdresseTiers(adresse);
 				}

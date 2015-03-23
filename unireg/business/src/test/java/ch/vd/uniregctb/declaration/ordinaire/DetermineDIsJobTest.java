@@ -51,11 +51,11 @@ public class DetermineDIsJobTest extends JobTest {
 						date(1987, 12, 12), null);
 
 				MockIndividu christine = addIndividu(333905, date(1953, 11, 2), "Schmidt", "Christine", true);
-				addAdresse(christine, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
+				addAdresse(christine, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null, date(2001, 6,
 						4), null);
 
 				MockIndividu laurent = addIndividu(333908, date(1953, 11, 2), "Schmidt", "Laurent", true);
-				addAdresse(laurent, TypeAdresseCivil.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
+				addAdresse(laurent, TypeAdresseCivil.COURRIER, MockRue.LesClees.PlaceDeLaVille, null,
 						date(2001, 6, 4), null);
 			}
 		});

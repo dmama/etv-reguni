@@ -272,6 +272,17 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		List<Rue> locRues = new ArrayList<>();
+		for (Rue r : rues) {
+			if (r.getNoRue().equals(numero)) {
+				locRues.add(r);
+			}
+		}
+		return locRues;
+	}
+
+	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		Rue rue = null;
 		for (Rue r : rues) {

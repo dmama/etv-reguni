@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-public interface Rue {
+import ch.vd.registre.base.date.DateRange;
+
+public interface Rue extends DateRange {
 
 	String getDesignationCourrier();
 

@@ -89,8 +89,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addFieldsIndividu(charlesPoncet, "01234567", "123.43.765.543", "");
 
 				final MockIndividu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "MEIGNIER", "Marcel", true);
-				addAdresse(marcelMeignier, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
-				addAdresse(marcelMeignier, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, RegDate.get(1964, 12, 2), null);
 
 				final MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
 				philippeMaillard.setNoAVS11("123.45.678");
@@ -532,7 +532,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setNumeroMaison("12");
 			adresse.setNumeroOrdrePoste(528); // Cossonay
-			adresse.setNumeroRue(32296);
+			adresse.setNumeroRue(1131419);
 			adresse.setUsage(TypeAdresseTiers.DOMICILE);
 			adresse.setDateDebut(RegDate.get(2001, 6, 21));
 			adresse.setTiers(nonHab);
@@ -543,7 +543,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setNumeroMaison("12");
 			adresse.setNumeroOrdrePoste(528); // Cossonay
-			adresse.setNumeroRue(32296);
+			adresse.setNumeroRue(1131419);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setDateDebut(RegDate.get(2001, 6, 21));
 			adresse.setDateFin(RegDate.get(2005, 11, 30));
@@ -554,8 +554,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setNumeroMaison("17b");
-			adresse.setNumeroOrdrePoste(104); // Lausanne
-			adresse.setNumeroRue(76437);
+			adresse.setNumeroOrdrePoste(152); // 1005 Lausanne
+			adresse.setNumeroRue(1133753);
 			adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setDateDebut(RegDate.get(2005, 12, 1));
@@ -581,8 +581,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.getNpaCourrier());
-		assertEquals("1000 1304", values.getNpaTous());      // courrier, domicile, poursuite (absent car étranger), représentation (absent car défaut)
+		assertEquals("1005", values.getNpaCourrier());
+		assertEquals("1005 1304", values.getNpaTous());      // courrier, domicile, poursuite (absent car étranger), représentation (absent car défaut)
 		assertContains("Lausanne", values.getLocaliteEtPays());
 		assertContains("Lausanne", values.getLocalite());
 		assertContains(Constants.OUI, values.getDomicileVd());
@@ -608,7 +608,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setNumeroMaison("12");
 			adresse.setNumeroOrdrePoste(528); // Cossonay
-			adresse.setNumeroRue(32296);
+			adresse.setNumeroRue(1131419);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setDateDebut(RegDate.get(2001, 6, 21));
 			adresse.setDateFin(RegDate.get(2005, 11, 30));
@@ -619,8 +619,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		{
 			AdresseSuisse adresse = new AdresseSuisse();
 			adresse.setNumeroMaison("17b");
-			adresse.setNumeroOrdrePoste(104); // Lausanne
-			adresse.setNumeroRue(76437);
+			adresse.setNumeroOrdrePoste(152); // Lausanne
+			adresse.setNumeroRue(1133753);
 			adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setDateDebut(RegDate.get(2005, 12, 1));
@@ -646,8 +646,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.getNpaCourrier());
-		assertEquals("1000", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car étranger), représentation (absent car défaut)
+		assertEquals("1005", values.getNpaCourrier());
+		assertEquals("1005", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car étranger), représentation (absent car défaut)
 		assertContains("Lausanne", values.getLocaliteEtPays());
 		assertContains("Lausanne", values.getLocalite());
 		assertEquals(IndexerFormatHelper.nullValue(), values.getDomicileVd()); // adresse de domicile par défaut -> pas de détermination possible

@@ -118,7 +118,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		doModificationIndividu(noIndAlain, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null));
+				individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateRetourHC, null));
 			}
 		});
 

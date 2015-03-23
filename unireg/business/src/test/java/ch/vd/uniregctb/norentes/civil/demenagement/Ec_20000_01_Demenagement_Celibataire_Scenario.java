@@ -68,9 +68,9 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						RegDate.get(2008, 4, 1), RegDate.get(2008, 6, 30));
 
-				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueJolimont, null,
 						dateDemenagement, null);
-				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null,
+				addAdresse(indConceicao, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null,
 						dateDemenagement, null);
 			}
 		});

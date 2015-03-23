@@ -25,7 +25,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	public String numero;
 	public String numeroAppartement;
 	public Integer numeroRue;
-	public int numeroOrdrePostal;
+	public Integer numeroOrdrePostal;
 	public String numeroPostal;
 	public String numeroPostalComplementaire;
 	public Integer noOfsPays;

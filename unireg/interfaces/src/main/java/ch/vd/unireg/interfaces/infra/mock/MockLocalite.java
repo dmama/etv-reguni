@@ -7,6 +7,9 @@ import ch.vd.unireg.interfaces.infra.data.Localite;
 public class MockLocalite implements Localite {
 
 	public static final MockLocalite Lausanne = new MockLocalite(104, 1000, null, "Lausanne", MockCommune.Lausanne);
+	public static final MockLocalite Lausanne1003 = new MockLocalite(150, 1003, null, "Lausanne", MockCommune.Lausanne);
+	public static final MockLocalite Lausanne1005 = new MockLocalite(152, 1005, null, "Lausanne", MockCommune.Lausanne);
+	public static final MockLocalite Lausanne1006 = new MockLocalite(153, 1006, null, "Lausanne", MockCommune.Lausanne);
 	public static final MockLocalite CossonayVille = new MockLocalite(528, 1304, null, "Cossonay-Ville", MockCommune.Cossonay);
 	public static final MockLocalite Romainmotier = new MockLocalite(564, 1323, null, "Romainmôtier", MockCommune.RomainmotierEnvy);
 	public static final MockLocalite Morges = new MockLocalite(254, 1110, null, "Morges", MockCommune.Morges);
@@ -22,7 +25,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite LIsle = new MockLocalite(293, 1148, null, "L'Isle", MockCommune.LIsle);
 	public static final MockLocalite GrangesMarnand = new MockLocalite(715, 1523, null, "Granges-près-Marnand", MockCommune.GrangesMarnand);
 	public static final MockLocalite Chamblon = new MockLocalite(5876, 1436, null, "Chamblon", MockCommune.Chamblon);
-	public static final MockLocalite Bussigny = new MockLocalite(178, 1030, null, "Bussigny-près-Lausanne", MockCommune.Bussigny);
+	public static final MockLocalite Bussigny = new MockLocalite(178, 1030, null, "Bussigny", MockCommune.Bussigny);
 	public static final MockLocalite Echallens = new MockLocalite(185, 1040, null, "Echallens", MockCommune.Echallens);
 	public static final MockLocalite Lonay = new MockLocalite(174, 1027, null, "Lonay", MockCommune.Lonay);
 	public static final MockLocalite RomanelSurLausanne = new MockLocalite(179, 1032, null, "Romanel-s-Lausanne", "Romanel-sur-Lausanne", MockCommune.RomanelSurLausanne);
@@ -37,7 +40,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Epesses = new MockLocalite(230, 1098, null, "Epesses", MockCommune.Epesses);
 	public static final MockLocalite Gressy = new MockLocalite(5881, 1432, null, "Gressy", MockCommune.Gressy);
 	public static final MockLocalite YverdonLesBains = new MockLocalite(592, 1400, null, "Yverdon-les-Bains", MockCommune.YverdonLesBains);
-	public static final MockLocalite Aubonne = new MockLocalite(5422, 1170, null, "Aubonne", MockCommune.Aubonne);
+	public static final MockLocalite Aubonne = new MockLocalite(299, 1170, null, "Aubonne", MockCommune.Aubonne);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);
@@ -60,13 +63,16 @@ public class MockLocalite implements Localite {
 	// communes hors-canton
 	//
 
+	public static final MockLocalite Chur = new MockLocalite(3970, 7000, null, "Chur", MockCommune.Chur);
 	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
 	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
 	public static final MockLocalite Neuchatel3Serrieres = new MockLocalite(1286, 2003, null, "Neuchâtel 3 Serrières", MockCommune.Neuchatel);
 	public static final MockLocalite Bumpliz = new MockLocalite(3333, 3018, null, "Bumpliz", MockCommune.Bern);
 	public static final MockLocalite Enney = new MockLocalite(839, 1667, null, "Enney", MockCommune.Enney);
 	public static final MockLocalite Zurich = new MockLocalite(8120, 8001, null, "Zurich", MockCommune.Zurich);
-	public static final MockLocalite GeneveSecteurDist = new MockLocalite(368, 1202, null, "Genève Secteur de dist.", MockCommune.Geneve);
+	public static final MockLocalite Zurich8004 = new MockLocalite(4388, 8004, null, "Zurich", MockCommune.Zurich);
+	public static final MockLocalite Zurich8044 = new MockLocalite(4457, 8044, null, "Zurich", MockCommune.Zurich);
+	public static final MockLocalite Geneve = new MockLocalite(368, 1202, null, "Genève", MockCommune.Geneve);
 
 
 	private Integer chiffreComplementaire;

@@ -59,7 +59,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 
 			addAdresse(sylvie, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeSylvie, null);
-			addAdresse(sylvie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeSylvie, null);
+			addAdresse(sylvie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteGrangeNeuve, null, dateArriveeSylvie, null);
 		}
 
 		public void arriveeMonsieur() {
@@ -68,7 +68,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null);
 
 			addAdresse(alexandre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeAlexandre, null);
-			addAdresse(alexandre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAlexandre, null);
+			addAdresse(alexandre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.RouteGrangeNeuve, null, dateArriveeAlexandre, null);
 		}
 
 		public void marionsLes() {

@@ -61,7 +61,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 				addNationalite(indAntoine, MockPays.France, dateNaissance, null);
 				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
 						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
-				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null,
 						dateArriveeBex, null);
 
 

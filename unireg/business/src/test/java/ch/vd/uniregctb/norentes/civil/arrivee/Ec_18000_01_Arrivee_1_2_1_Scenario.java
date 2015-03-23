@@ -90,17 +90,17 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Baschung", "Alain", true);
 				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeVillars, avantDateMariage);
-				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 
 				indJanine = addIndividu(noIndJanine, RegDate.get(1957, 4, 12), "Baschung-Maurer", "Janine", false);
-				addAdresse(indJanine, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLausanne, avantDateMariage);
-				addAdresse(indJanine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indJanine, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeLausanne, avantDateMariage);
+				addAdresse(indJanine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 
 				indJulien = addIndividu(noIndJulien, dateNaissanceJulien, "Baschung", "Julien", true);
-				addAdresse(indJulien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissanceJulien, null);
+				addAdresse(indJulien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateNaissanceJulien, null);
 
 				indFanny = addIndividu(noIndFanny, dateNaissanceFanny, "Baschung", "Fanny", false);
-				addAdresse(indFanny, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissanceFanny, null);
+				addAdresse(indFanny, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateNaissanceFanny, null);
 
 				marieIndividus(indAlain, indJanine, dateMariage);
 			}
@@ -196,7 +196,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArriveeOrbe, null);
+		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.CheminDeLaTranchee, null, dateArriveeOrbe, null);
 		adrs.add(aa);
 	}
 

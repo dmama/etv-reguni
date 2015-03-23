@@ -226,10 +226,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
 
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
 			}
 		});
@@ -358,10 +358,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
 
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeLui, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeElle, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
@@ -479,10 +479,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
 
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeLui, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeElle, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
@@ -607,25 +607,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
 
-				final MockAdresse adrAvantDepartLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateDepart);
+				final MockAdresse adrAvantDepartLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateDepart);
 				adrAvantDepartLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrFranceLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE,null, null,null,null,null,MockPays.France, dateDepart.getOneDayAfter(), dateArriveeLui.getOneDayBefore());
 				adrFranceLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 				adrFranceLui.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeLui, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 
-				final MockAdresse adrAvantDepartElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateDepart);
+				final MockAdresse adrAvantDepartElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateDepart);
 				adrAvantDepartElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrFranceElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE,null, null,null,null,null,MockPays.France, dateDepart.getOneDayAfter(), dateArriveeElle.addMonths(-1));
 				adrFranceElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 				adrFranceElle.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeElle, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 			}
@@ -1711,7 +1711,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividu(elle, dateMariage);
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeElle, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
@@ -1773,7 +1773,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeElle, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -1781,7 +1781,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(lui, MockPays.France, naissanceLui, null);
 
 				marieIndividus(lui,elle, dateMariage);
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeLui, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
@@ -1940,10 +1940,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(elle, MockPays.France, naissanceElle, null);
 				marieIndividus(lui, elle, dateMariage);
 
-				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
 				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
 
-				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArrivee, null);
 				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD,MockCommune.Bussigny.getNoOFS(), null));
 			}
 		});

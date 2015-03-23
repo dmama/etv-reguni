@@ -293,7 +293,27 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		try {
-			final List<Street> streets = fidorClient.getRues(localite.getDateFinValidite(), localite.getNoOrdre());
+			final List<Street> streets = fidorClient.getRuesParNumeroOrdrePosteEtDate(localite.getNoOrdre(), localite.getDateFinValidite());
+			if (streets != null && !streets.isEmpty()) {
+				final List<Rue> rues = new ArrayList<>(streets.size());
+				for (Street st : streets) {
+					rues.add(RueImpl.get(st));
+				}
+				return rues;
+			}
+			else {
+				return Collections.emptyList();
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		try {
+			final List<Street> streets = fidorClient.getRuesParEstrid(numero, null);
 			if (streets != null && !streets.isEmpty()) {
 				final List<Rue> rues = new ArrayList<>(streets.size());
 				for (Street st : streets) {
@@ -313,8 +333,15 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		try {
-			final Street street = fidorClient.getRue(date, numero);
-			return RueImpl.get(street);
+			final RegDate refDate = date != null ? date : RegDate.get();
+			final List<Street> streets = fidorClient.getRuesParEstrid(numero, refDate);
+			if (streets == null || streets.isEmpty()) {
+				return null;
+			}
+			if (streets.size() == 1) {
+				return RueImpl.get(streets.get(0));
+			}
+			throw new ServiceInfrastructureException("Plusieurs rues retournée par FiDoR à un appel par estrid (" + numero + ") et date (" + date + ")");
 		}
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);

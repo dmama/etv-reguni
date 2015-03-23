@@ -62,7 +62,7 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 		adresse.setNumeroCasePostale(1234);
 		adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
-		adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+		adresse.setNumeroOrdrePoste(MockRue.Lausanne.AvenueDeBeaulieu.getNoLocalite());
 
 		final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(adresse, null, false, serviceInfra);
 		assertEquals(adresse, adapter.getAdresse());
@@ -72,15 +72,15 @@ public class AdresseSupplementaireAdapterTest extends WithoutSpringTest {
 		assertNull(adapter.getDateFin());
 		assertEquals("Lausanne", adapter.getLieu());
 		assertEquals("Lausanne", adapter.getLocalite());
-		assertEquals("1000", adapter.getNpa());
+		assertEquals("1003", adapter.getNpa());
 		assertEquals("13bis", adapter.getNumero());
 		assertEquals("numero appartement", adapter.getNumeroAppartement());
 		assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue(), adapter.getNumeroRue());
-		assertEquals(MockLocalite.Lausanne.getNoOrdre(), adapter.getNumeroOrdrePostal());
-		assertEquals(MockLocalite.Lausanne.getNPA().toString(), adapter.getNumeroPostal());
+		assertEquals(MockLocalite.Lausanne1003.getNoOrdre(), adapter.getNumeroOrdrePostal());
+		assertEquals(MockLocalite.Lausanne1003.getNPA().toString(), adapter.getNumeroPostal());
 		assertNull(adapter.getNumeroPostalComplementaire());
 		assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
-		assertEquals("Av de Beaulieu", adapter.getRue());
+		assertEquals("Avenue de Beaulieu", adapter.getRue());
 		assertEquals(SourceType.FISCALE, adapter.getSource().getType());
 		assertEquals("complement", adapter.getComplement());
 	}

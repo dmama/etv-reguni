@@ -706,12 +706,12 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -761,7 +761,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
@@ -860,12 +860,12 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -915,7 +915,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 					}
 				});
 
@@ -973,7 +973,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
@@ -1027,7 +1027,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 					}
 				});
 
@@ -1102,12 +1102,12 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
 			}
@@ -1159,7 +1159,7 @@ public class MetiersServiceTest extends BusinessTest {
 						                                                 null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
@@ -1254,7 +1254,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
@@ -1308,7 +1308,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateSeparation, null));
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
@@ -1599,12 +1599,12 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateMariage.addMonths(10));
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateMariage.addMonths(10));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateMariage.addMonths(10).getOneDayAfter(), null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -1732,12 +1732,12 @@ public class MetiersServiceTest extends BusinessTest {
 				final MockIndividu fabrice = addIndividu(noIndFabrice, naissanceFabrice, "Dunant", "Fabrice", true);
 				final Nationalite nationaliteFabrice = new MockNationalite(naissanceFabrice, null, MockPays.Suisse);
 				fabrice.setNationalites(Arrays.asList(nationaliteFabrice));
-				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, null);
+				addAdresse(fabrice, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, null);
 
 				final MockIndividu georgette = addIndividu(noIndGeorgette, naissanceGeorgette, "Dunant", "Georgette", false);
 				final Nationalite nationaliteGeorgette = new MockNationalite(naissanceGeorgette, null, MockPays.Suisse);
 				georgette.setNationalites(Arrays.asList(nationaliteGeorgette));
-				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateMariage.addMonths(10));
+				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateMariage, dateMariage.addMonths(10));
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, "Avenue des Champs-Elysées", "5", null, null, "75017 Paris", MockPays.France, dateMariage.addMonths(10).getOneDayAfter(), null);
 
 				marieIndividus(fabrice, georgette, dateMariage);
@@ -3078,7 +3078,7 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Frankenstein", "Junior", true);
 				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissance, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateNaissance, null);
 				ind.setDateDeces(dateDeces);
 			}
 		});
@@ -3151,7 +3151,7 @@ public class MetiersServiceTest extends BusinessTest {
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Frankenstein", "Junior", true);
 				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
-				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissance, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateNaissance, null);
 				ind.setDateDeces(dateDeces);
 			}
 		});

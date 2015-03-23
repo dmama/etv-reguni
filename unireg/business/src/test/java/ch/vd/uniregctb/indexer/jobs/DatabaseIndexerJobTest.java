@@ -74,7 +74,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 			private void addDefaultAdressesTo(MockIndividu individu) {
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
-				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, RegDate.get(1980, 11, 2), null);
 			}
 		});
 

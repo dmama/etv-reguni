@@ -45,7 +45,7 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 			protected void init() {
 				final RegDate dateNaissanceLui = date(1960, 1, 26);
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissanceLui, "Casanova", "Paco", true);
-				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceLui, null);
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateNaissanceLui, null);
 				addNationalite(lui, MockPays.Suisse, dateNaissanceLui, null);
 
 				final RegDate dateNaissanceElle = date(1980, 6, 12);
@@ -126,7 +126,7 @@ public class AnnulationDivorceEchProcessorTest extends AbstractEvenementCivilEch
 			protected void init() {
 				final RegDate dateNaissanceLui = date(1960, 1, 26);
 				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissanceLui, "Casanova", "Paco", true);
-				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceLui, null);
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateNaissanceLui, null);
 				addNationalite(lui, MockPays.Suisse, dateNaissanceLui, null);
 
 				final RegDate dateNaissanceElle = date(1980, 6, 12);

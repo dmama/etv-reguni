@@ -77,7 +77,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 				indBea = addIndividu(noIndBea, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
 				addOrigine(indBea, lausanne);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
-				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, RegDate.get(
+				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, RegDate.get(
 						1963, 8, 20), dateDepartHC.getOneDayBefore());
 
 				// mariage : dans le canton

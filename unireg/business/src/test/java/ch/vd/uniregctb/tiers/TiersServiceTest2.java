@@ -63,13 +63,13 @@ public class TiersServiceTest2 extends BusinessTest {
 		assertFalse(pp.isHabitantVD());
 
 		// un individu à Lausanne en résidence principale => habitant
-		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), null));
 		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
 		// un individu à Lausanne en résidence secondaire => habitant
 		individu.getAdresses().clear();
-		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), null));
 		assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
@@ -82,7 +82,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		// un individu à Genève en résidence principale et à Lausanne en résidence secondaire => habitant
 		individu.getAdresses().clear();
 		individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
-		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), null));
+		individu.addAdresse(new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), null));
 		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_HABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
 		assertTrue(pp.isHabitantVD());
 
@@ -90,7 +90,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		// être vaudoises pour la dernière adresse valide...)
 		{
 			individu.getAdresses().clear();
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
@@ -101,7 +101,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		{
 			pp.setHabitant(true);
 			individu.getAdresses().clear();
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null));
@@ -111,7 +111,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		// un individu parti de Lausanne à destination hors-Suisse => nonhabitant
 		{
 			individu.getAdresses().clear();
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
@@ -122,7 +122,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		{
 			individu.getAdresses().clear();
 			individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Morges.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
@@ -133,7 +133,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		{
 			individu.getAdresses().clear();
 			individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));
@@ -144,7 +144,7 @@ public class TiersServiceTest2 extends BusinessTest {
 		{
 			individu.getAdresses().clear();
 			individu.addAdresse(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1970, 1, 1), null));
-			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1970, 1, 1), date(1999, 12, 31));
+			final MockAdresse lausanne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueJolimont, null, date(1970, 1, 1), date(1999, 12, 31));
 			lausanne.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			individu.addAdresse(lausanne);
 			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null));

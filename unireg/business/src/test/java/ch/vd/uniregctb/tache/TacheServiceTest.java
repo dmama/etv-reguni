@@ -2529,7 +2529,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Marcelin", "Emile", date(1946, 1, 5), Sexe.MASCULIN);
 				final RegDate dateArrivee = date(2008, 4, 1);
-				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, dateArrivee, null, MockRue.Bex.RouteDuBoet);
+				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, dateArrivee, null, MockRue.Bex.CheminDeLaForet);
 
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
 				ffp.setModeImposition(ModeImposition.SOURCE);

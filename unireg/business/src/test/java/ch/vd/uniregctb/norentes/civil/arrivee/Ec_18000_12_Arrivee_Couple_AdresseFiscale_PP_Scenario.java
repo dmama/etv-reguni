@@ -83,8 +83,8 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 
 				marieIndividus(indAntoine, indCleo, date(1972, 11, 9));
 
-				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
-				addAdresse(indCleo, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
+				addAdresse(indCleo, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, dateArriveeBex, null);
 			}
 		});
 	}
@@ -114,6 +114,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		final AdresseSuisse adresse = new AdresseSuisse();
 		adresse.setDateDebut(date(2005, 12, 3));
 		adresse.setNumeroRue(MockRue.Vallorbe.GrandRue.getNoRue());
+		adresse.setNumeroOrdrePoste(MockRue.Vallorbe.GrandRue.getNoLocalite());
 		adresse.setNumeroMaison(Integer.toString(12));
 		adresse.setPermanente(false);
 		adresse.setUsage(TypeAdresseTiers.COURRIER);

@@ -73,8 +73,8 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			@Override
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine, date(1952, 2, 21) , "Lenormand", "Antoine", true);
-				addAdresse(indAntoine, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, null, null);
-				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
+				addAdresse(indAntoine, TypeAdresseCivil.COURRIER, MockRue.Bex.CheminDeLaForet, null, null, null);
+				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, null, null);
 			}
 		});
 	}
@@ -91,6 +91,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 		final AdresseSuisse adresse = new AdresseSuisse();
 		adresse.setDateDebut(date(2009, 7, 8));
 		adresse.setNumeroRue(MockRue.Vallorbe.GrandRue.getNoRue());
+		adresse.setNumeroOrdrePoste(MockRue.Vallorbe.GrandRue.getNoLocalite());
 		adresse.setNumeroMaison(Integer.toString(12));
 		adresse.setPermanente(true);
 		adresse.setUsage(TypeAdresseTiers.COURRIER);

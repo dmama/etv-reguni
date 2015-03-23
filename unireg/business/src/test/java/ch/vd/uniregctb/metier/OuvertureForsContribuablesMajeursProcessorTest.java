@@ -377,7 +377,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 				// un autre individu sans nationalité (variante)
 				MockIndividu individu2 = addIndividu(noIndividu2, dateNaissance, "Schmoledu", "Jean", true);
-				addAdresse(individu2, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissance, null);
+				addAdresse(individu2, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateNaissance, null);
 				individu2.setNationalites(Collections.<Nationalite>emptyList());
 			}
 		});

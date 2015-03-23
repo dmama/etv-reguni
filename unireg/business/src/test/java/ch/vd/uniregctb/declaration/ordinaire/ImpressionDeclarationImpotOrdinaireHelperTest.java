@@ -435,7 +435,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
-		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminCurzilles);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminDesClos);
 		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
 		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
 
@@ -472,7 +472,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final int anneeCourante = RegDate.get().year();
 		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
 		final PersonnePhysique pp = addNonHabitant("Maelle", "André", date(1980, 6, 23), Sexe.MASCULIN);
-		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminCurzilles);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(2009, 6, 14), null, MockRue.Aubonne.CheminDesClos);
 		addForPrincipal(pp, date(2008, 6, 15), MotifFor.ARRIVEE_HS, date(2009, 6, 13), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
 		addForPrincipal(pp, date(2009, 6, 14), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
 

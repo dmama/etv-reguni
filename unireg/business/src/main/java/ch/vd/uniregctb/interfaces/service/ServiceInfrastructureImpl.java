@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -451,8 +452,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
-		return rawService.getRueByNumero(numero, date);
+	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+		final List<Rue> histo = rawService.getRuesHisto(numero);
+		if (histo != null && !histo.isEmpty()) {
+			Collections.sort(histo, new DateRangeComparator<Rue>(DateRangeComparator.CompareOrder.DESCENDING));
+			return histo.get(0);        // = la plus récente
+		}
+		return null;
 	}
 
 	@Override
@@ -564,7 +570,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			return estDansLeCanton(localite.getCommuneLocalite());
 		}
 		else {
-			final Rue rue = getRueByNumero(numero, adresse.getDateFin());
+			final Rue rue = getRueByNumero(numero);
 			return estDansLeCanton(rue);
 		}
 	}
@@ -583,7 +589,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			return commune != null && estDansLeCanton(commune);
 		}
 		else {
-			final Rue rue = getRueByNumero(numero, adresse.getDateFin());
+			final Rue rue = getRueByNumero(numero);
 			return estDansLeCanton(rue);
 		}
 	}

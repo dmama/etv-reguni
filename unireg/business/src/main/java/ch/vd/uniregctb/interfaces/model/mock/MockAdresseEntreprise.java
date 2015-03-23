@@ -16,7 +16,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 	private TypeAdressePM type;
 	private Integer numeroTechniqueRue;
 	private Pays pays;
-	private int numeroOrdrePostal;
+	private Integer numeroOrdrePostal;
 	private String numeroPostal;
 	private String numeroPostalComplementaire;
 
@@ -97,7 +97,7 @@ public class MockAdresseEntreprise implements AdresseEntreprise {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 

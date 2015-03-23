@@ -239,7 +239,7 @@ public class PartyRequestHandlerV2Test extends BusinessTest {
 			assertNull(info.getPostOfficeBoxNumber());
 			assertNull(info.getPostOfficeBoxText());
 			assertEquals("Rue des Uttins", info.getStreet());
-			assertEquals(Integer.valueOf(198539), info.getStreetId());
+			assertEquals(MockRue.Chamblon.RueDesUttins.getNoRue(), info.getStreetId());
 			assertEquals(Long.valueOf(1436), info.getSwissZipCode());
 			assertEquals(Integer.valueOf(5876), info.getSwissZipCodeId());
 			assertNull(info.getSwissZipCodeAddOn());

@@ -66,7 +66,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 				addAdresse(indCharles, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeVD, null);
 
 				indNora = addIndividu(noIndNora, RegDate.get(1968, 10, 15), "Von Ballmoos", "Nora", false);
-				addAdresse(indNora, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeVD, null);
+				addAdresse(indNora, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueJolimont, null, dateArriveeVD, null);
 			}
 		});
 	}

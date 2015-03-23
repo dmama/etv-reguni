@@ -1285,7 +1285,7 @@ public class TestData {
 		as0.setNumeroCasePostale(23);
 		as0.setNumeroMaison("19");
 		as0.setNumeroOrdrePoste(254);
-		as0.setNumeroRue(31916);
+		as0.setNumeroRue(1136139);
 		as0.setPermanente(false);
 		as0.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 		as0.setUsage(TypeAdresseTiers.COURRIER);
@@ -1297,7 +1297,8 @@ public class TestData {
 		as1.setDateDebut(RegDate.get(2008, 1, 29));
 		as1.setLogModifDate(new Timestamp(1199142000000L));
 		as1.setNumeroMaison("12");
-		as1.setNumeroRue(32296);
+		as1.setNumeroOrdrePoste(528);
+		as1.setNumeroRue(1131419);
 		as1.setPermanente(false);
 		as1.setUsage(TypeAdresseTiers.COURRIER);
 		pp2.addAdresseTiers(as1);
@@ -1309,7 +1310,7 @@ public class TestData {
 		as2.setLogModifDate(new Timestamp(1199142000000L));
 		as2.setNumeroMaison("12");
 		as2.setNumeroOrdrePoste(254);
-		as2.setNumeroRue(31918);
+		as2.setNumeroRue(1136137);
 		as2.setPermanente(false);
 		as2.setUsage(TypeAdresseTiers.COURRIER);
 		pp13.addAdresseTiers(as2);
@@ -1345,7 +1346,7 @@ public class TestData {
 		as5.setLogModifDate(new Timestamp(1199142000000L));
 		as5.setNumeroMaison("12");
 		as5.setNumeroOrdrePoste(254);
-		as5.setNumeroRue(31916);
+		as5.setNumeroRue(1136139);
 		as5.setPermanente(false);
 		as5.setUsage(TypeAdresseTiers.COURRIER);
 		pp12.addAdresseTiers(as5);
@@ -1356,7 +1357,8 @@ public class TestData {
 		as6.setDateDebut(RegDate.get(2006, 7, 1));
 		as6.setLogModifDate(new Timestamp(1199142000000L));
 		as6.setNumeroMaison("12");
-		as6.setNumeroRue(32296);
+		as6.setNumeroRue(1131419);
+		as6.setNumeroOrdrePoste(528);
 		as6.setPermanente(false);
 		as6.setUsage(TypeAdresseTiers.COURRIER);
 		pp1.addAdresseTiers(as6);

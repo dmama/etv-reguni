@@ -169,6 +169,17 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getRuesHisto", "numero", numero));
+		try {
+			return target.getRuesHisto(numero);
+		}
+		finally {
+			loadMeter.end();
+		}
+	}
+
+	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		loadMeter.start(new MethodCallDescriptor("getRueByNumero", "numero", numero, "date", date));
 		try {

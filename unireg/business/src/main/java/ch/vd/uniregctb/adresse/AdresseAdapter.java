@@ -62,11 +62,11 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	@Nullable
 	private Rue getRue(@Nullable Integer numeroRue) {
 		if (numeroRue != null) {
-			final Rue rueFin = service.getRueByNumero(numeroRue, getDateFin());
+			final Rue rueFin = service.getRueByNumero(numeroRue);
 			if (rueFin != null) {
 				return rueFin;
 			}
-			return service.getRueByNumero(numeroRue, getDateDebut());
+			return service.getRueByNumero(numeroRue);
 		}
 		return null;
 	}

@@ -85,7 +85,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockCommune.Neuchatel);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null);
-				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
+				addAdresse(indSebastien, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null, null, null);
 
 				separeIndividu(indSebastien, dateSeparation);
 			}

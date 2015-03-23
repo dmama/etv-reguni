@@ -170,7 +170,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				ids.janine = janine.getNumero();
 				addForPrincipal(janine, date(1974, 3, 31), ch.vd.uniregctb.type.MotifFor.MAJORITE, veilleMariage, ch.vd.uniregctb.type.MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						MockCommune.Lausanne);
-				addAdresseSuisse(janine, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueDeMarcelin);
+				addAdresseSuisse(janine, TypeAdresseTiers.COURRIER, date(1954, 3, 31), null, MockRue.Lausanne.AvenueJolimont);
 
 				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(paul, janine, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
@@ -247,7 +247,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				final ch.vd.uniregctb.tiers.PersonnePhysique marie = addNonHabitant("Marie", "Bürki", RegDate.get(1954, 1, 1), ch.vd.uniregctb.type.Sexe.FEMININ);
 				ids.marie = marie.getNumero();
-				addAdresseSuisse(marie, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueDeMarcelin);
+				addAdresseSuisse(marie, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
 				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeanpierre, marie, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
@@ -274,12 +274,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 			assertNotNull(menage.getMailAddresses());
 			assertEquals(2, menage.getMailAddresses().size());
-			assertAddress(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.getMailAddresses().get(0)); // adresse de monsieur
-			assertAddress(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.getMailAddresses().get(1)); // adresse de madame (puisque monsieur est sous tutelle)
+			assertAddress(new Date(1947, 1, 1), new Date(2007, 9, 10), "Avenue de Beaulieu", "Lausanne", menage.getMailAddresses().get(0)); // adresse de monsieur
+			assertAddress(new Date(2007, 9, 11), null, "Avenue Jolimont", "Lausanne", menage.getMailAddresses().get(1)); // adresse de madame (puisque monsieur est sous tutelle)
 
 			assertNotNull(menage.getDebtProsecutionAddresses());
 			assertEquals(1, menage.getDebtProsecutionAddresses().size());
-			assertAddress(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne",
+			assertAddress(new Date(1947, 1, 1), null, "Avenue de Beaulieu", "Lausanne",
 					menage.getDebtProsecutionAddresses().get(0)); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
 
 			assertEmpty(menage.getDebtProsecutionAddressesOfOtherParty()); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
@@ -314,7 +314,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 				final ch.vd.uniregctb.tiers.PersonnePhysique myriam = addNonHabitant("Myriam", "Guex-Martin", RegDate.get(1954, 1, 1), ch.vd.uniregctb.type.Sexe.FEMININ);
 				ids.myriam = myriam.getNumero();
-				addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueDeMarcelin);
+				addAdresseSuisse(myriam, TypeAdresseTiers.COURRIER, date(1954, 1, 11), null, MockRue.Lausanne.AvenueJolimont);
 
 				final ch.vd.uniregctb.tiers.EnsembleTiersCouple ensemble = addEnsembleTiersCouple(jeandaniel, myriam, dateMariage, null);
 				ids.menage = ensemble.getMenage().getNumero();
@@ -341,12 +341,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 			assertNotNull(menage.getMailAddresses());
 			assertEquals(2, menage.getMailAddresses().size());
-			assertAddress(new Date(1947, 1, 1), new Date(2007, 9, 10), "Av de Beaulieu", "Lausanne", menage.getMailAddresses().get(0)); // adresse de monsieur
-			assertAddress(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.getMailAddresses().get(1)); // adresse de madame (puisque monsieur est sous conseil légal)
+			assertAddress(new Date(1947, 1, 1), new Date(2007, 9, 10), "Avenue de Beaulieu", "Lausanne", menage.getMailAddresses().get(0)); // adresse de monsieur
+			assertAddress(new Date(2007, 9, 11), null, "Avenue Jolimont", "Lausanne", menage.getMailAddresses().get(1)); // adresse de madame (puisque monsieur est sous conseil légal)
 
 			assertNotNull(menage.getDebtProsecutionAddresses());
 			assertEquals(1, menage.getDebtProsecutionAddresses().size());
-			assertAddress(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.getDebtProsecutionAddresses().get(0)); // adresse de monsieur (non-impacté par le conseil légal)
+			assertAddress(new Date(1947, 1, 1), null, "Avenue de Beaulieu", "Lausanne", menage.getDebtProsecutionAddresses().get(0)); // adresse de monsieur (non-impacté par le conseil légal)
 
 			assertEmpty(menage.getDebtProsecutionAddressesOfOtherParty()); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
 		}
@@ -1486,7 +1486,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
-				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1956,1,1), null, MockRue.Gressy.LesPechauds);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1956,1,1), null, MockRue.Gressy.LesPechaux);
 				return pp.getNumero();
 			}
 		});
@@ -1501,7 +1501,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// pas de rue, pas de numéro
 		final Address address0 = mailAddresses.get(0);
-		assertAddress(newDate(1956, 1, 1), null, "Les Péchauds", "Gressy", address0);
+		assertAddress(newDate(1956, 1, 1), null, "Les Péchaux", "Gressy", address0);
 		assertFalse(address0.isFake()); // il s'agit d'une adresse normale
 
 		final PersonMailAddressInfo personInfo0 = address0.getPerson();
@@ -1515,7 +1515,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(formattedAddress0);
 		assertEquals("Monsieur", formattedAddress0.getLine1());
 		assertEquals("Julien Leproux", formattedAddress0.getLine2());
-		assertEquals("Les Péchauds", formattedAddress0.getLine3());
+		assertEquals("Les Péchaux", formattedAddress0.getLine3());
 		assertEquals("1432 Gressy", formattedAddress0.getLine4());
 		assertNull(formattedAddress0.getLine5());
 	}

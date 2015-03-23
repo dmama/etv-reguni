@@ -51,7 +51,7 @@ public class Ec_18000_05_Arrivee_RollBack_1_Scenario extends EvenementCivilScena
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
 						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
-				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
+				addAdresse(indAlain, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.CheminDeLaForet, null,
 						dateArriveeBex, null);
 
 			}

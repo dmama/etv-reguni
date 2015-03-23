@@ -527,11 +527,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(3, principales.size());
 		assertAdresse(date(1970, 1, 1), date(1981, 12, 31), "Avenue du Funiculaire", "Cossonay-Ville", principales.get(0));
 		assertAdresse(date(1982, 1, 1), date(1999, 12, 31), "Chemin de Riondmorcel", "Cossonay-Ville", principales.get(1));
-		assertAdresse(date(2000, 1, 1), null, "Rue de l'Industrie", "Bussigny-près-Lausanne", principales.get(2));
+		assertAdresse(date(2000, 1, 1), null, "Rue de l'Industrie", "Bussigny", principales.get(2));
 
 		// les dates de fin des adresses secondaires ne doivent pas prendre en compte les adresses principales
 		assertEquals(2, secondaires.size());
-		assertAdresse(date(1970, 1, 1), date(1984, 12, 31), "Ch. des Colombaires", "Cully", secondaires.get(0));
+		assertAdresse(date(1970, 1, 1), date(1984, 12, 31), "Chemin des Colombaires", "Cully", secondaires.get(0));
 		assertAdresse(date(1985, 1, 1), null, "Place du Temple", "Cully", secondaires.get(1));
 	}
 
@@ -579,13 +579,13 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(3, principales.size());
 		assertAdresse(date(1970, 1, 1), date(1981, 12, 31), "Avenue du Funiculaire", "Cossonay-Ville", principales.get(0));
 		assertAdresse(date(1982, 1, 1), date(1999, 12, 31), "Chemin de Riondmorcel", "Cossonay-Ville", principales.get(1));
-		assertAdresse(date(2000, 1, 1), null, "Rue de l'Industrie", "Bussigny-près-Lausanne", principales.get(2));
+		assertAdresse(date(2000, 1, 1), null, "Rue de l'Industrie", "Bussigny", principales.get(2));
 
 		// les séries (= une série par commune) d'adresses secondaires ne doivent pas interagir entres-elles.
 		assertEquals(4, secondaires.size());
 		assertAdresse(date(1970, 1, 1), date(1977, 12, 31), "La Place", "Epesses", secondaires.get(0));
-		assertAdresse(date(1970, 1, 1), date(1984, 12, 31), "Ch. des Colombaires", "Cully", secondaires.get(1));
-		assertAdresse(date(1978, 1, 1), date(1981, 12, 31), "Ch. du Mont", "Epesses", secondaires.get(2));
+		assertAdresse(date(1970, 1, 1), date(1984, 12, 31), "Chemin des Colombaires", "Cully", secondaires.get(1));
+		assertAdresse(date(1978, 1, 1), date(1981, 12, 31), "Chemin du Mont", "Epesses", secondaires.get(2));
 		assertAdresse(date(1985, 1, 1), null, "Place du Temple", "Cully", secondaires.get(3));
 	}
 
@@ -604,7 +604,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		r2.setComesFrom(newDestination(MockCommune.Echallens));
 		r2.setGoesTo(newDestination(MockPays.France));
 
-		final Residence r3 = newResidencePrincipale(date(2009, 11, 1), date(2010, 9, 1), date(2012, 7, 3), MockRue.Lausanne.AvenueDeMarcelin);
+		final Residence r3 = newResidencePrincipale(date(2009, 11, 1), date(2010, 9, 1), date(2012, 7, 3), MockRue.Lausanne.AvenueJolimont);
 		r3.setComesFrom(newDestination(MockCommune.Echallens));
 		r3.setGoesTo(newDestination(MockPays.France));
 
@@ -642,9 +642,9 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// les localisations des adresses principales doivent être nulles lors des déménagements
 		assertEquals(4, principales.size());
-		assertAdresse(date(2009, 9, 4), null, date(2009, 10, 31), newLocalisation(MockCommune.Lausanne), "Grand Rue", "Echallens", principales.get(0));
-		assertAdresse(date(2009, 11, 1), newLocalisation(MockCommune.Echallens), date(2010, 8, 31), null, "Av de Beaulieu", "Lausanne", principales.get(1));
-		assertAdresse(date(2010, 9, 1), null, date(2011, 6, 30), null, "Av de Marcelin", "Lausanne", principales.get(2));
+		assertAdresse(date(2009, 9, 4), null, date(2009, 10, 31), newLocalisation(MockCommune.Lausanne), "Grand'Rue", "Echallens", principales.get(0));
+		assertAdresse(date(2009, 11, 1), newLocalisation(MockCommune.Echallens), date(2010, 8, 31), null, "Avenue de Beaulieu", "Lausanne", principales.get(1));
+		assertAdresse(date(2010, 9, 1), null, date(2011, 6, 30), null, "Avenue Jolimont", "Lausanne", principales.get(2));
 		assertAdresse(date(2011, 7, 1), null, date(2012, 7, 3), newLocalisation(MockPays.France), "Boulevard de Grancy", "Lausanne", principales.get(3));
 	}
 
@@ -690,11 +690,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		}
 
 		assertEquals(2, courriers.size());
-		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Ch. des Colombaires", "Cully", courriers.get(0));
+		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Chemin des Colombaires", "Cully", courriers.get(0));
 		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", courriers.get(1));
 
 		assertEquals(2, principales.size());
-		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Ch. des Colombaires", "Cully", principales.get(0));
+		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Chemin des Colombaires", "Cully", principales.get(0));
 		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", principales.get(1));
 
 		final EtatCivilList ecList = ind.getEtatsCivils();
@@ -1308,7 +1308,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
 		final MockCommune commune = MockCommune.Aubonne;
 		final Destination destination = newDestination(commune);
-		destination.setMailAddress(newAddressInformation(MockRue.Aubonne.RueTrevelin));
+		destination.setMailAddress(newAddressInformation(MockRue.Aubonne.CheminTraverse));
 		res.setGoesTo(destination);
 
 		final List<Residence> residences = Arrays.asList(res);
@@ -1335,7 +1335,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertNull(courrier.getDateDebut());
 			assertNull(courrier.getDateFin());
 			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), courrier.getLocalite());
-			assertEquals(MockRue.Aubonne.RueTrevelin.getDesignationCourrier(), courrier.getRue());
+			assertEquals(MockRue.Aubonne.CheminTraverse.getDesignationCourrier(), courrier.getRue());
 		}
 
 		// adresse courrier ajoutée pour combler le trou depuis le départ
@@ -1346,7 +1346,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
 			assertNull(adr.getDateFin());
 			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), adr.getLocalite());
-			assertEquals(MockRue.Aubonne.RueTrevelin.getDesignationCourrier(), adr.getRue());
+			assertEquals(MockRue.Aubonne.CheminTraverse.getDesignationCourrier(), adr.getRue());
 		}
 	}
 

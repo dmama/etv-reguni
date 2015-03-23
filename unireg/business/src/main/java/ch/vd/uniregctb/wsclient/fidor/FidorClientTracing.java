@@ -482,12 +482,12 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 	}
 
 	@Override
-	public List<Street> getRues(final RegDate dateReference, final int noOrdrePostal) {
+	public List<Street> getRuesParNumeroOrdrePosteEtDate(final int noOrdrePostal, final RegDate dateReference) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final List<Street> rues = target.getRues(dateReference, noOrdrePostal);
+			final List<Street> rues = target.getRuesParNumeroOrdrePosteEtDate(noOrdrePostal, dateReference);
 			if (rues != null) {
 				items = rues.size();
 			}
@@ -498,36 +498,36 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRues", items, new Object() {
+			tracing.end(time, t, "getRuesParNumeroOrdrePostalEtDate", items, new Object() {
 				@Override
 				public String toString() {
-					return String.format("dateReference=%s, noOrdrePostal=%d", ServiceTracing.toString(dateReference), noOrdrePostal);
+					return String.format("noOrdrePostal=%d, dateReference=%s", noOrdrePostal, ServiceTracing.toString(dateReference));
 				}
 			});
 		}
 	}
 
 	@Override
-	public Street getRue(final RegDate dateReference, final int estrid) {
+	public List<Street> getRuesParEstrid(final int estrid, final RegDate dateReference) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final Street rue = target.getRue(dateReference, estrid);
-			if (rue != null) {
-				items = 1;
+			final List<Street> rues = target.getRuesParEstrid(estrid, dateReference);
+			if (rues != null) {
+				items = rues.size();
 			}
-			return rue;
+			return rues;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRue", items, new Object() {
+			tracing.end(time, t, "getRuesParEstrid", items, new Object() {
 				@Override
 				public String toString() {
-					return String.format("dateReference=%s, estrid=%d", ServiceTracing.toString(dateReference), estrid);
+					return String.format("estrid=%d, dateReference=%s", estrid, ServiceTracing.toString(dateReference));
 				}
 			});
 		}

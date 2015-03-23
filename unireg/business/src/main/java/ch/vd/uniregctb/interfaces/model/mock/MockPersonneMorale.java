@@ -7,7 +7,9 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
 import ch.vd.uniregctb.interfaces.model.Capital;
@@ -114,8 +116,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(RegDate.get(1883, 1, 6));
 			siege.setDateFinValidite(null);
-			siege.setNumeroTechniqueRue(30370);
-			siege.setNumeroOrdrePostal(150);
+			siege.setNumeroTechniqueRue(MockRue.Lausanne.PlaceSaintFrancois.getNoRue());
+			siege.setNumeroOrdrePostal(MockRue.Lausanne.PlaceSaintFrancois.getNoLocalite());
 			BCV.addAdresse(siege);
 
 			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
@@ -126,8 +128,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(RegDate.get(2008, 1, 1));
 			courrier.setDateFinValidite(null);
-			courrier.setNumeroTechniqueRue(30370);
-			courrier.setNumeroOrdrePostal(150);
+			courrier.setNumeroTechniqueRue(MockRue.Lausanne.PlaceSaintFrancois.getNoRue());
+			courrier.setNumeroOrdrePostal(MockRue.Lausanne.PlaceSaintFrancois.getNoLocalite());
 			BCV.addAdresse(courrier);
 
 			MockAdresseEntreprise facturation = new MockAdresseEntreprise();
@@ -138,7 +140,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			facturation.setType(TypeAdressePM.FACTURATION);
 			facturation.setDateDebutValidite(RegDate.get(2006, 12, 15));
 			facturation.setDateFinValidite(null);
-			courrier.setNumeroOrdrePostal(150);
+			courrier.setNumeroOrdrePostal(MockLocalite.Lausanne1003.getNoOrdre());
 			BCV.addAdresse(facturation);
 		}
 		{
@@ -150,8 +152,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(null);
 			siege.setDateFinValidite(null);
-			siege.setNumeroTechniqueRue(64718);
-			siege.setNumeroOrdrePostal(4388);
+			siege.setNumeroTechniqueRue(MockRue.Zurich.BadenerStrasse.getNoRue());
+			siege.setNumeroOrdrePostal(MockRue.Zurich.BadenerStrasse.getNoLocalite());
 			KPMG.addAdresse(siege);
 
 			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
@@ -162,8 +164,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setType(TypeAdressePM.COURRIER);
 			courrier.setDateDebutValidite(null);
 			courrier.setDateFinValidite(null);
-			courrier.setNumeroTechniqueRue(30525);
-			courrier.setNumeroOrdrePostal(152);
+			courrier.setNumeroTechniqueRue(MockRue.Lausanne.AvenueGabrielDeRumine.getNoRue());
+			courrier.setNumeroOrdrePostal(MockRue.Lausanne.AvenueGabrielDeRumine.getNoLocalite());
 			KPMG.addAdresse(courrier);
 		}
 
@@ -176,8 +178,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setType(TypeAdressePM.SIEGE);
 			siege.setDateDebutValidite(null);
 			siege.setDateFinValidite(null);
-			siege.setNumeroTechniqueRue(39838);
-			siege.setNumeroOrdrePostal(3970);
+			siege.setNumeroTechniqueRue(MockRue.Chur.Grabenstrasse.getNoRue());
+			siege.setNumeroOrdrePostal(MockRue.Chur.Grabenstrasse.getNoLocalite());
 			CuriaTreuhand.addAdresse(siege);
 		}
 
@@ -186,7 +188,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setComplement("pa Fidu. Commerce & Industrie ");
 			courrier.setRue("Avenue de la Gare");
 			courrier.setNumeroMaison("10");
-			courrier.setNumeroTechniqueRue(30317);
+			courrier.setNumeroTechniqueRue(MockRue.Lausanne.AvenueDeLaGare.getNoRue());
+			courrier.setNumeroOrdrePostal(MockRue.Lausanne.AvenueDeLaGare.getNoLocalite());
 			courrier.setNumeroPostal("1003");
 			courrier.setLocalite("Lausanne");
 			courrier.setType(TypeAdressePM.COURRIER);
@@ -198,7 +201,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			facturation.setComplement("pa Fidu. Commerce & Industrie ");
 			facturation.setRue("Avenue de la Gare");
 			facturation.setNumeroMaison("10");
-			facturation.setNumeroTechniqueRue(30317);
+			courrier.setNumeroTechniqueRue(MockRue.Lausanne.AvenueDeLaGare.getNoRue());
+			courrier.setNumeroOrdrePostal(MockRue.Lausanne.AvenueDeLaGare.getNoLocalite());
 			facturation.setNumeroPostal("1003");
 			facturation.setLocalite("Lausanne");
 			facturation.setType(TypeAdressePM.FACTURATION);
@@ -210,7 +214,8 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setComplement("Fid.Commerce & Industrie S.A. ");
 			siege.setRue("Chemin Messidor");
 			siege.setNumeroMaison("5");
-			siege.setNumeroTechniqueRue(30593);
+			siege.setNumeroTechniqueRue(MockRue.Lausanne.CheminMessidor.getNoRue());
+			siege.setNumeroOrdrePostal(MockRue.Lausanne.CheminMessidor.getNoLocalite());
 			siege.setNumeroPostal("1006");
 			siege.setLocalite("Lausanne");
 			siege.setType(TypeAdressePM.SIEGE);

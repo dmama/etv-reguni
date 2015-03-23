@@ -18,6 +18,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	private static final String GENEVE = "GE";
 	private static final String BALE = "BS";
 	private static final String VALAIS = "VS";
+	private static final String GRISONS = "GR";
 
 	// Quelques communes vaudoises
 	//                                                        OFS   NOM    CANTON
@@ -142,6 +143,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Geneve = new MockCommune(6621, "Genève", GENEVE, null);
 	public static final MockCommune Bale = new MockCommune(2701, "Basel", BALE, null);
 	public static final MockCommune Sierre = new MockCommune(6248, "Sierre", VALAIS, null);
+	public static final MockCommune Chur = new MockCommune(3901, "Chur", GRISONS, null);
 
 	/**
 	 * ce bloque statique est positionné en dernier pour s'assurer que les mocks des communes soient tous initialisés avant d'initialiser

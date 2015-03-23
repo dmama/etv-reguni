@@ -301,6 +301,12 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		return Collections.unmodifiableList(rues);
 	}
 
+	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		final Rue rue = getRueByNumero(numero, null);
+		return rue != null ? Collections.singletonList(rue) : Collections.<Rue>emptyList();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

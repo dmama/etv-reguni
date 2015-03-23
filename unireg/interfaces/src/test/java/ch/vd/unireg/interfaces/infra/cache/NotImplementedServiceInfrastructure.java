@@ -88,6 +88,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
+	public List<Rue> getRuesHisto(int numero) throws ServiceInfrastructureException {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}

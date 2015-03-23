@@ -40,7 +40,7 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 
 		// Adresse valide et annulée => pas d'erreur
 		{
-			adresse.setNumeroRue(1234);
+			adresse.setNumeroOrdrePoste(152);
 			adresse.setAnnule(true);
 			assertFalse(validate(adresse).hasErrors());
 		}
@@ -53,6 +53,7 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 		final AdresseSuisse adresse = new AdresseSuisse();
 		adresse.setUsage(TypeAdresseTiers.COURRIER);
 		adresse.setNumeroRue(MockRue.Bussigny.RueDeLIndustrie.getNoRue());
+		adresse.setNumeroOrdrePoste(MockRue.Bussigny.RueDeLIndustrie.getNoLocalite());
 
 		// Date de début nulle
 		{
@@ -78,6 +79,7 @@ public class AdresseSuisseValidatorTest extends AbstractValidatorTest<AdresseSui
 		adresse.setUsage(TypeAdresseTiers.COURRIER);
 		adresse.setDateDebut(date(2000, 1, 1));
 		adresse.setNumeroRue(MockRue.Bussigny.RueDeLIndustrie.getNoRue());
+		adresse.setNumeroOrdrePoste(MockRue.Bussigny.RueDeLIndustrie.getNoLocalite());
 		adresse.setTexteCasePostale(TexteCasePostale.CASE_POSTALE);
 		adresse.setNpaCasePostale(1040);
 

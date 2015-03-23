@@ -51,7 +51,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, dateArrivee, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateArrivee, null);
 			}
 		});
 
@@ -153,7 +153,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
 				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminCurzilles, null, dateArrivee, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateArrivee, null);
 			}
 		});
 
@@ -303,7 +303,7 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 				final MockAdresse avant = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissance, dateDepartCorrecte);
 				avant.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
 
-				final MockAdresse apres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.RueTrevelin, null, dateDepartCorrecte.addDays(1), null);
+				final MockAdresse apres = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminTraverse, null, dateDepartCorrecte.addDays(1), null);
 				apres.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Echallens.getNoOFS(), null));
 			}
 		});

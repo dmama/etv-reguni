@@ -24,7 +24,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	private final String localiteAbregeMinuscule;
 	private final String localiteCompletMinuscule;
 	private final String numeroMaison;
-	private final int numeroOrdrePostal;
+	private final Integer numeroOrdrePostal;
 	private final String numeroPostal;
 	private final String numeroPostalComplementaire;
 	private final String rue;
@@ -59,7 +59,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.localiteCompletMinuscule = target.getLocaliteCompletMinuscule();
 		this.numeroMaison = target.getNumeroMaison();
-		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
+		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
 		this.rue = target.getRue();
@@ -131,7 +131,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	}
 
 	@Override
-	public int getNumeroOrdrePostal() {
+	public Integer getNumeroOrdrePostal() {
 		return numeroOrdrePostal;
 	}
 

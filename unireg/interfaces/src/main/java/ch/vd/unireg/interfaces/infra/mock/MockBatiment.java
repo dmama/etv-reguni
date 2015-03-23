@@ -42,8 +42,8 @@ public class MockBatiment {
 
 	public static class Gressy {
 		public static final MockBatiment BatimentRueCentrale = new MockBatiment(842713, MockRue.Gressy.RueCentrale);
-		public static final MockBatiment BatimentLesPechauds = new MockBatiment(842701, MockRue.Gressy.LesPechauds);
-		public static final MockBatiment BatimentCheminDuMichamp = new MockBatiment(842706, MockRue.Gressy.CheminDuMichamp);
+		public static final MockBatiment BatimentLesPechauds = new MockBatiment(842701, MockRue.Gressy.LesPechaux);
+		public static final MockBatiment BatimentCheminDuMichamp = new MockBatiment(842706, MockRue.Gressy.CheminDeMichamp);
 	}
 
 	public static class YverdonLesBains {

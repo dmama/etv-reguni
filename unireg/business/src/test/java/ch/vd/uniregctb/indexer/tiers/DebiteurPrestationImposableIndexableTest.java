@@ -294,7 +294,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals(idDpi, dataDpi.getNumero().longValue());
 			assertEquals("Bollet SA", dataDpi.getNom1());
 			assertEquals("Vive les champignons !", dataDpi.getNom2());
-			assertEquals("1000", dataDpi.getNpa());
+			assertEquals("1003", dataDpi.getNpa());
 			assertEquals("Lausanne", dataDpi.getForPrincipal());
 			assertEquals("", dataDpi.getDateNaissance());
 			assertEquals("", dataDpi.getDateDeces());
