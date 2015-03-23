@@ -161,7 +161,7 @@
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagInfra</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<description>le type de l'entité (canton/collectivite/localite/officeImpot/pays/rue)</description>
+			<description>le type de l'entité (canton/collectivite/officeImpot/rue)</description>
 			<name>entityType</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -230,7 +230,7 @@
 	</tag>
 
 	<tag>
-		<description>Interface sur les communes du service infrastructure</description>
+		<description>Interface sur les pays du service infrastructure</description>
 		<name>pays</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagPays</tag-class>
 		<body-content>JSP</body-content>
@@ -242,6 +242,43 @@
 		</attribute>
 		<attribute>
 			<description>la date de référence de validité du pays</description>
+			<name>date</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>nom de la propriété à afficher dans l'élément</description>
+			<name>displayProperty</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>nom de la propriété à afficher dans un tooltip au survol de l'élément</description>
+			<name>titleProperty</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Le type d'escaping à appliquer ('none', 'html' ou 'javascript'). Par défaut, c'est 'html'.</description>
+			<name>escapeMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>Interface sur les localités postales du service infrastructure</description>
+		<name>localite</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagLocalite</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>le numéro d'ordre postal de la localité</description>
+			<name>ofs</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>la date de référence de validité de la localité</description>
 			<name>date</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

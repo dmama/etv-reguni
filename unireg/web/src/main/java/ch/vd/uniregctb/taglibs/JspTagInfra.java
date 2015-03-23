@@ -52,13 +52,6 @@ public class JspTagInfra extends BodyTagSupport {
 		}
 	}
 
-	private static class LocaliteByOnrpMethodInvocator implements Invocator {
-		@Override
-		public Object invoke(ServiceInfrastructureService service, int id) throws InvocationTargetException, IllegalAccessException {
-			return service.getLocaliteByONRP(id, null);
-		}
-	}
-
 	private static final Map<String, Invocator> invocators = new HashMap<>();
 
 	static {
@@ -66,7 +59,6 @@ public class JspTagInfra extends BodyTagSupport {
 		try {
 			invocators.put("canton", new MethodInvocator(clazz.getMethod("getCanton", int.class)));
 			invocators.put("collectivite", new MethodInvocator(clazz.getMethod("getCollectivite", int.class)));
-			invocators.put("localite", new LocaliteByOnrpMethodInvocator());
 			invocators.put("officeImpot", new MethodInvocator(clazz.getMethod("getOfficeImpot", int.class)));
 			invocators.put("rue", new MethodInvocator(clazz.getMethod("getRueByNumero", int.class)));
 		}
