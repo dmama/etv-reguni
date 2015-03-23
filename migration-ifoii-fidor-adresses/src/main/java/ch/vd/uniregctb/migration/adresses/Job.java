@@ -38,9 +38,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -372,7 +374,7 @@ public class Job {
 		}
 	}
 
-	private static final class ConnectionFactory extends BasePoolableObjectFactory<Connection> {
+	private static final class ConnectionFactory extends BasePooledObjectFactory<Connection> {
 		private final String dbUrl;
 		private final String dbUser;
 		private final String dbPwd;
@@ -384,19 +386,25 @@ public class Job {
 		}
 
 		@Override
-		public Connection makeObject() throws SQLException {
+		public Connection create() throws Exception {
 			return DriverManager.getConnection(dbUrl, dbUser, dbPwd);
 		}
 
 		@Override
-		public void destroyObject(Connection obj) throws SQLException {
-			obj.close();
+		public PooledObject<Connection> wrap(Connection obj) {
+			return new DefaultPooledObject<>(obj);
+		}
+
+		@Override
+		public void destroyObject(PooledObject<Connection> p) throws SQLException {
+			p.getObject().close();
 		}
 	}
 
 	private static final class ConnectionPool extends GenericObjectPool<Connection> implements AutoCloseable {
 		private ConnectionPool(String url, String dbUser, String dbPwd, int size) {
-			super(new ConnectionFactory(url, dbUser, dbPwd), size);
+			super(new ConnectionFactory(url, dbUser, dbPwd));
+			setMaxTotal(size);
 		}
 	}
 
