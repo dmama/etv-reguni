@@ -841,7 +841,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 	public static NpaEtLocalite buildNpaEtLocalite(AdresseGenerique adresse) {
 		final String npa = StringUtils.trimToNull(adresse.getNumeroPostal());
-		final String localite = StringUtils.trimToNull(adresse.getLocalite());
+		final String localite = StringUtils.trimToNull(adresse.getLocaliteComplete());
 		if (npa == null && localite == null) {
 			return null;
 		}
