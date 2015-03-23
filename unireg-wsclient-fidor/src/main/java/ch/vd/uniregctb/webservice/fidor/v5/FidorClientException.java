@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservice.fidor.v5;
 
+import javax.xml.bind.JAXBException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,13 @@ public class FidorClientException extends RuntimeException {
 	 */
 	public FidorClientException(ServerWebApplicationException e) {
 		this(buildShortMessage(e), e);
+	}
+
+	/**
+	 * Construit une exception spécifique à partir d'une Exception JAXB
+	 */
+	public FidorClientException(JAXBException e) {
+		this(e.getMessage(), e);
 	}
 
 	/**

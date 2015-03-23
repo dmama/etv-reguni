@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.evd0007.v1.Country;
+import ch.vd.evd0007.v1.ExtendedCanton;
 import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.post.v1.PostalLocality;
+import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.registre.base.date.RegDate;
 
 @SuppressWarnings({"UnusedDeclaration"})
@@ -41,15 +44,14 @@ public interface FidorClient {
 	List<CommuneFiscale> getCommunesParCanton(int ofsId, RegDate date);
 
 	/**
-	 * @param date une date ou <b>null</b> pour obtenir l'historique complet.
-	 * @return toutes les communes valides à la date demandée, ou l'historique complet des communes si la date est nulle.
-	 */
-//	List<CommuneFiscale> getCommunesValides(RegDate date);
-
-	/**
 	 * @return toutes les communes existantes ou ayant existé.
 	 */
 	List<CommuneFiscale> getToutesLesCommunes();
+
+	/**
+	 * @return tous les cantons suisses
+	 */
+	List<ExtendedCanton> getTousLesCantons();
 
 	/**
 	 * @param egid le numéro de bâtiment
@@ -122,4 +124,35 @@ public interface FidorClient {
 	 * @return l'url
 	 */
 	String getUrl(String app, String acces, String targetType, Map<String, String> map);
+
+	/**
+	 * @param dateReference date de référence (si absente, on prendra la date du jour)
+	 * @param npa (optionnel) NPA des localités recherchées
+	 * @param noOrdrePostal (optionnel) numéro d'ordre postal des localités recherchées
+	 * @param nom (optionnel) nom des localités recherchées
+	 * @param cantonOfsId (optionnel) le numéro OFS du canton cible
+	 * @return la liste des localités postales valides à la date de référence qui correspondent aux critères donnés
+	 */
+	List<PostalLocality> getLocalitesPostales(RegDate dateReference, Integer npa, Integer noOrdrePostal, String nom, Integer cantonOfsId);
+
+	/**
+	 * @param dateReference date de référence (si absente, on prendra la date du jour)
+	 * @param noOrdrePostal numéro d'ordre postal de la localité désirée
+	 * @return la localité postale trouvée, ou <code>null</code> si aucune localité ne correspond aux critères
+	 */
+	PostalLocality getLocalitePostale(RegDate dateReference, int noOrdrePostal);
+
+	/**
+	 * @param dateReference date de référence (si absente, on prendra la date du jour)
+	 * @param noOrdrePostal numéro d'ordre postal de la localité cible
+	 * @return la liste des rues de la localité indiquée à la date de référence
+	 */
+	List<Street> getRues(RegDate dateReference, int noOrdrePostal);
+
+	/**
+	 * @param dateReference date de référence (si absente, on prendra la date du jour)
+	 * @param estrid identifiant fédéral de la rue recherchée
+	 * @return la rue identifiée par son identifiant fédéral à la date de référence, ou <code>null</code> si aucune rue ne correspond
+	 */
+	Street getRue(RegDate dateReference, int estrid);
 }

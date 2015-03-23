@@ -1,19 +1,32 @@
 package ch.vd.uniregctb.webservice.fidor.v5;
 
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
 import ch.vd.evd0007.v1.Country;
+import ch.vd.evd0007.v1.ExtendedCanton;
 import ch.vd.evd0007.v1.ListOfPoliticalEntities;
 import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.evd0012.v1.DistrictFiscal;
 import ch.vd.evd0012.v1.ListOfFiscalEntities;
 import ch.vd.evd0012.v1.Logiciel;
 import ch.vd.evd0012.v1.RegionFiscale;
+import ch.vd.fidor.xml.post.v1.PostalLocality;
+import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.fidor.xml.ws.v5.postallocalities.PostalLocalities;
+import ch.vd.fidor.xml.ws.v5.streets.Streets;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -26,11 +39,16 @@ public class FidorClientImpl implements FidorClient {
 
 	private String communesPath = "listOfCommunesFiscales";
 	private String paysPath = "listOfStatesTerritories";
+	private String cantonsPath = "listOfCantons";
 	private String logicielPath = "logiciel";
 	private String allLogicielsPath = "listOfLogiciels";
 	private String urlsPath = "listOfUrls";
 	private String districtPath = "districtFiscal";
 	private String regionPath = "regionFiscale";
+	private String postalLocalitiesPath = "postalLocalities";
+	private String postalLocalityPath = "postalLocality";
+	private String streetPath = "street";
+	private String streetsPath = "streets";
 
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -70,6 +88,22 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setRegionPath(String regionPath) {
 		this.regionPath = regionPath;
+	}
+
+	public void setPostalLocalitiesPath(String postalLocalitiesPath) {
+		this.postalLocalitiesPath = postalLocalitiesPath;
+	}
+
+	public void setPostalLocalityPath(String postalLocalityPath) {
+		this.postalLocalityPath = postalLocalityPath;
+	}
+
+	public void setStreetPath(String streetPath) {
+		this.streetPath = streetPath;
+	}
+
+	public void setStreetsPath(String streetsPath) {
+		this.streetsPath = streetsPath;
 	}
 
 	@Override
@@ -171,6 +205,23 @@ public class FidorClientImpl implements FidorClient {
 				return null;
 			}
 			return list.getListOfResults().getListOfCommunesFiscales().getCommuneFiscale();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<ExtendedCanton> getTousLesCantons() {
+		final WebClient wc = createWebClient(600000); // 10 minutes
+		wc.path(cantonsPath);
+
+		try {
+			final ListOfPoliticalEntities list = wc.get(ListOfPoliticalEntities.class);
+			if (list == null || list.getNumberOfResults().intValue() == 0) {
+				return null;
+			}
+			return list.getListOfResults().getListOfCantons().getExtendedCanton();
 		}
 		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
@@ -439,6 +490,117 @@ public class FidorClientImpl implements FidorClient {
 			return list.getListOfResults().getListOfURL().getUrl().get(0).getUrlAddress();
 		}
 		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<PostalLocality> getLocalitesPostales(RegDate dateReference, Integer npa, Integer noOrdrePostal, String nom, Integer cantonOfsId) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(postalLocalitiesPath);
+		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
+		if (npa != null) {
+			wc.query("swissZipCode", npa);
+		}
+		if (noOrdrePostal != null) {
+			wc.query("swissZipCodeId", noOrdrePostal);
+		}
+		if (StringUtils.isNotBlank(nom)) {
+			wc.query("name", nom);
+		}
+		if (cantonOfsId != null) {
+			wc.query("cantonId", cantonOfsId);
+		}
+
+		try {
+			final PostalLocalities result = wc.get(PostalLocalities.class);
+			if (result == null || result.getNbOfResults() == 0) {
+				return null;
+			}
+			return result.getPostalLocality();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public PostalLocality getLocalitePostale(RegDate dateReference, int noOrdrePostal) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(postalLocalityPath);
+		wc.path(noOrdrePostal);
+		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
+
+		try {
+			final Response response = wc.get();
+			if (response.getStatus() >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+
+			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.postallocality.ObjectFactory.class);
+			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+			//noinspection unchecked
+			final JAXBElement<PostalLocality> data = (JAXBElement<PostalLocality>) unmarshaller.unmarshal((InputStream) response.getEntity());
+			return data.getValue();
+		}
+		catch (ServerWebApplicationException e) {
+			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				return null;
+			}
+			throw new FidorClientException(e);
+		}
+		catch (JAXBException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public List<Street> getRues(RegDate dateReference, int noOrdrePostal) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(streetsPath);
+		wc.path(noOrdrePostal);
+		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
+
+		try {
+			final Streets result = wc.get(Streets.class);
+			if (result == null || result.getNbOfResults() == 0) {
+				return null;
+			}
+			return result.getStreet();
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
+	}
+
+	@Override
+	public Street getRue(RegDate dateReference, int estrid) {
+		final WebClient wc = createWebClient(60000);    // 10 minutes !
+		wc.path(streetPath);
+		wc.path(estrid);
+		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
+
+		try {
+			final Response response = wc.get();
+			if (response.getStatus() >= 400) {
+				throw new ServerWebApplicationException(response);
+			}
+
+			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.street.ObjectFactory.class);
+			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+			//noinspection unchecked
+			final JAXBElement<Street> data = (JAXBElement<Street>) unmarshaller.unmarshal((InputStream) response.getEntity());
+			return data.getValue();
+	}
+		catch (ServerWebApplicationException e) {
+			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+				return null;
+			}
+			throw new FidorClientException(e);
+		}
+		catch (JAXBException e) {
 			throw new FidorClientException(e);
 		}
 	}
