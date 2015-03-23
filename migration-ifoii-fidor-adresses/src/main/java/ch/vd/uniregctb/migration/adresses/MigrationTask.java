@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.adresses;
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Callable;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.fidor.xml.common.v1.Date;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.infrastructure.model.Localite;
 import ch.vd.infrastructure.model.Rue;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.infrastructure.service.ServiceInfrastructure;
@@ -75,55 +77,99 @@ final class MigrationTask implements Callable<MigrationResult> {
 			return new MigrationResult.Erreur(adresse, null, null, e);
 		}
 
-		// si le nom de la rue contient un numéro de maison, on peut essayer de l'enlever
-		final Matcher noMaisonMatcher = NUMERO_MAISON_EXTRACTOR_PATTERN.matcher(StringUtils.trimToEmpty(libelleCanoniqueRue));
-
 		try {
 			// 2. on vérifie que la localité postale existe toujours avec ce numéro d'ordre postal à la date de fin de l'adresse
+			final List<PostalLocality> localitesATester = new LinkedList<>();
 			final PostalLocality pl = findPostalLocalityForDate(noOrdreP, adresse.dateFin);
 			if (pl == null) {
 				// pas de localité postale ?
-				return new MigrationResult.NotFound(adresse, noOrdreP, libelleRue);
-			}
 
-			// 3. on appelle FiDoR pour voir s'il connait une rue avec ce nom dans cette localité
-			Integer estrid = null;
-			String numeroMaison = null;
-			final List<Street> ruesCandidates = fidorClient.getRuesParNumeroOrdrePosteEtDate(pl.getSwissZipCodeId(), adresse.dateFin);
-			if (ruesCandidates != null) {
-				for (Street candidate : ruesCandidates) {
-					if (candidate.getLongName().equalsIgnoreCase(libelleCanoniqueRue) || candidate.getShortName().equalsIgnoreCase(libelleCanoniqueRue)) {
-						estrid = candidate.getEstrid();
-						break;
+				// voyons voir quel NPA le mainframe associait à ce numéro d'ordre poste... on peut peut-être essayer de passer par là...
+				final Localite localiteMainframe = ifoiiClient.getLocalite(noOrdreP);
+				if (localiteMainframe != null && localiteMainframe.getNPA() != null) {
+					final List<PostalLocality> candidates = fidorClient.getLocalitesPostales(adresse.dateFin, localiteMainframe.getNPA(), null, null, null);
+					if (candidates != null && !candidates.isEmpty()) {
+						localitesATester.addAll(candidates);
 					}
 				}
 
-				// on n'a pas trouvé comme ça, mais peut-être qu'en enlevant le numéro de maison ?
-				if (estrid == null && noMaisonMatcher.matches()) {
-					final String sansNumero = noMaisonMatcher.group(1);
-					if (StringUtils.isNotBlank(sansNumero)) {
-						for (Street candidate : ruesCandidates) {
-							if (candidate.getLongName().equalsIgnoreCase(sansNumero) || candidate.getShortName().equalsIgnoreCase(sansNumero)) {
-								estrid = candidate.getEstrid();
-								numeroMaison = noMaisonMatcher.group(2);
-								break;
-							}
+				// vraiment rien trouvé...
+				if (localitesATester.isEmpty()) {
+					// constat d'échec, aucune localité retrouvée...
+					return new MigrationResult.NotFound(adresse, noOrdreP, libelleRue);
+				}
+			}
+			else {
+				localitesATester.add(pl);
+			}
+
+			// 3. on appelle FiDoR pour voir s'il connait une rue avec ce nom dans l'une de ces localités
+			for (PostalLocality aTester : localitesATester) {
+				final FidorInfo info = askFidor(aTester.getSwissZipCodeId(), libelleCanoniqueRue);
+				if (info != null && info.estrid != null) {
+					return new MigrationResult.Ok(adresse, info.estrid, info.noOrdrePostal, info.numeroMaison);
+				}
+			}
+
+			// 4. constat d'échec... pas de rue avec de nom là...
+			final int mostProbableSwissZipCodeId;
+			if (localitesATester.isEmpty()) {
+				mostProbableSwissZipCodeId = noOrdreP;      // c'est peut-être faux, mais on n'a pas mieux
+			}
+			else {
+				mostProbableSwissZipCodeId = localitesATester.get(0).getSwissZipCodeId();
+			}
+			return new MigrationResult.NotFound(adresse, mostProbableSwissZipCodeId, libelleRue);
+		}
+		catch (Exception e) {
+			return new MigrationResult.Erreur(adresse, noOrdreP, libelleRue, e);
+		}
+	}
+
+	private static final class FidorInfo {
+		final Integer estrid;
+		final String numeroMaison;
+		final int noOrdrePostal;
+
+		private FidorInfo(Integer estrid, String numeroMaison, int noOrdrePostal) {
+			this.estrid = estrid;
+			this.numeroMaison = numeroMaison;
+			this.noOrdrePostal = noOrdrePostal;
+		}
+	}
+
+	private FidorInfo askFidor(int noOrdrePostal, String libelleCanoniqueRue) {
+		Integer estrid = null;
+		String numeroMaison = null;
+		final List<Street> ruesCandidates = fidorClient.getRuesParNumeroOrdrePosteEtDate(noOrdrePostal, adresse.dateFin);
+		if (ruesCandidates != null) {
+			for (Street candidate : ruesCandidates) {
+				if (candidate.getLongName().equalsIgnoreCase(libelleCanoniqueRue) || candidate.getShortName().equalsIgnoreCase(libelleCanoniqueRue)) {
+					estrid = candidate.getEstrid();
+					break;
+				}
+			}
+
+			// si le nom de la rue contient un numéro de maison, on peut essayer de l'enlever
+			final Matcher noMaisonMatcher = NUMERO_MAISON_EXTRACTOR_PATTERN.matcher(StringUtils.trimToEmpty(libelleCanoniqueRue));
+
+			// on n'a pas trouvé comme ça, mais peut-être qu'en enlevant le numéro de maison ?
+			if (estrid == null && noMaisonMatcher.matches()) {
+				final String sansNumero = noMaisonMatcher.group(1);
+				if (StringUtils.isNotBlank(sansNumero)) {
+					for (Street candidate : ruesCandidates) {
+						if (candidate.getLongName().equalsIgnoreCase(sansNumero) || candidate.getShortName().equalsIgnoreCase(sansNumero)) {
+							estrid = candidate.getEstrid();
+							numeroMaison = noMaisonMatcher.group(2);
+							break;
 						}
 					}
 				}
 			}
 
-			// c'est fini!
-			if (estrid == null) {
-				return new MigrationResult.NotFound(adresse, pl.getSwissZipCodeId(), libelleRue);
-			}
-			else {
-				return new MigrationResult.Ok(adresse, estrid, pl.getSwissZipCodeId(), numeroMaison);
-			}
+			return new FidorInfo(estrid, numeroMaison, noOrdrePostal);
 		}
-		catch (Exception e) {
-			return new MigrationResult.Erreur(adresse, noOrdreP, libelleRue, e);
-		}
+		return null;
 	}
 
 	/**
