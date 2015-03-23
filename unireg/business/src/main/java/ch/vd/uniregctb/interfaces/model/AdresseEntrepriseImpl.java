@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.infrastructure.model.Rue;
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -34,15 +38,16 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	 * Crée une adresse d'entreprise Unireg à partir de l'adresse d'entreprise Host-interfaces.
 	 *
 	 * @param target l'adresse d'entreprise Host-interfaces
+	 * @param serviceInfrastructure le service infrastructure host-interface pour la résolution des numéros de rues
 	 * @return l'adresse d'entreprise Unireg correspondante; ou <b>null</b> si l'adresse fournie est elle-même nulle ou si elle est située entièrement dans le futur (SIFISC-4625).
 	 */
 	@Nullable
-	public static AdresseEntrepriseImpl get(ch.vd.registre.pm.model.AdresseEntreprise target) {
+	public static AdresseEntrepriseImpl get(ch.vd.registre.pm.model.AdresseEntreprise target, ServiceInfrastructure serviceInfrastructure) {
 		if (target == null) {
 			return null;
 		}
 		final RegDate today = RegDate.get();
-		final AdresseEntrepriseImpl a = new AdresseEntrepriseImpl(target, today);
+		final AdresseEntrepriseImpl a = new AdresseEntrepriseImpl(target, today, serviceInfrastructure);
 		if (a.getDateDebutValidite() != null && a.getDateDebutValidite().isAfter(today)) {
 			// [SIFISC-4625] les adresses dans le futur sont ignorées
 			return null;
@@ -50,20 +55,32 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		return a;
 	}
 
-	private AdresseEntrepriseImpl(ch.vd.registre.pm.model.AdresseEntreprise target, RegDate today) {
+	private AdresseEntrepriseImpl(ch.vd.registre.pm.model.AdresseEntreprise target, RegDate today, ServiceInfrastructure serviceInfrastructure) {
 		this.dateDebut = EntrepriseHelper.get(target.getDateDebutValidite());
 		this.dateFin = initDateFin(target.getDateFinValidite(), today);
 		this.pays = PaysImpl.get(target.getPays());
 		this.complement = target.getComplement();
-		this.numeroTechniqueRue = target.getNumeroTechniqueRue();
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.localiteCompletMinuscule = target.getLocaliteCompletMinuscule();
 		this.numeroMaison = target.getNumeroMaison();
-		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
-		this.rue = target.getRue();
 		this.type = initTypeAdresse(target.getType());
+		if (target.getNumeroTechniqueRue() != null && target.getNumeroTechniqueRue() != 0) {
+			try {
+				final Rue rue = serviceInfrastructure.getRueByNumero(target.getNumeroTechniqueRue());
+				this.rue = rue.getDesignationCourrier();
+				this.numeroOrdrePostal = rue.getNoLocalite();
+			}
+			catch (RemoteException | InfrastructureException e) {
+				throw new RuntimeException("Impossible de récupérer le libellé de la rue " + target.getNumeroTechniqueRue() + " dans le mainframe...", e);
+			}
+		}
+		else {
+			this.rue = target.getRue();
+			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
+		}
+		this.numeroTechniqueRue = null;     // on ne veut plus de ces numéros de rue qui viennent du host!
 	}
 
 	private static TypeAdressePM initTypeAdresse(EnumTypeAdresseEntreprise type) {

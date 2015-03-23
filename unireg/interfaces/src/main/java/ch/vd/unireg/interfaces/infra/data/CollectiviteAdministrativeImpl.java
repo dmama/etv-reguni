@@ -9,7 +9,7 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
-	private static final long serialVersionUID = -7828220740473730387L;
+	private static final long serialVersionUID = 7209754543891090908L;
 	
 	private final Adresse adresse;
 	private final RegDate dateFin;
@@ -28,20 +28,20 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 	private final boolean oid;
 	private final boolean valide;
 
-	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
+	public static CollectiviteAdministrativeImpl get(ch.vd.infrastructure.model.CollectiviteAdministrative target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
 		if (target == null) {
 			return null;
 		}
 		if (EnumTypeCollectivite.SIGLE_CIR.equals(target.getType().getEnumTypeCollectivite())) {
-			return new OfficeImpotImpl(target);
+			return new OfficeImpotImpl(target, serviceInfrastructure);
 		}
 		else {
-			return new CollectiviteAdministrativeImpl(target);
+			return new CollectiviteAdministrativeImpl(target, serviceInfrastructure);
 		}
 	}
 
-	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
-		this.adresse = AdresseImpl.get(target.getAdresse());
+	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.CollectiviteAdministrative target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
+		this.adresse = AdresseImpl.get(target.getAdresse(), serviceInfrastructure);
 		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.adresseEmail = target.getAdresseEmail();
 		this.noCCP = target.getNoCCP();

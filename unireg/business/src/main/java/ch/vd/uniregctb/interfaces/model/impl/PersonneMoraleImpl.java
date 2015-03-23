@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntrepriseImpl;
@@ -59,14 +60,14 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	private List<Mandat> mandats = null;
 
 
-	public static PersonneMoraleImpl get(ch.vd.registre.pm.model.PersonneMorale target) {
+	public static PersonneMoraleImpl get(ch.vd.registre.pm.model.PersonneMorale target, ServiceInfrastructure serviceInfrastructure) {
 		if (target == null) {
 			return null;
 		}
-		return new PersonneMoraleImpl(target);
+		return new PersonneMoraleImpl(target, serviceInfrastructure);
 	}
 
-	private PersonneMoraleImpl(ch.vd.registre.pm.model.PersonneMorale target) {
+	private PersonneMoraleImpl(ch.vd.registre.pm.model.PersonneMorale target, ServiceInfrastructure serviceInfrastructure) {
 		this.dateDebut = EntrepriseHelper.get(target.getDateConstitution());
 		this.dateFin = EntrepriseHelper.get(target.getDateFinActivite());
 		this.dateBouclementFuture = EntrepriseHelper.get(target.getDateBouclementFuture());
@@ -83,7 +84,7 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		this.nomContact = target.getNomContact();
 		this.numeroIDE = buildNumeroIDE(target.getCategorieIDE(), target.getNumeroIDE());
 
-		this.adresses = initAdresses(target.getAdresses());
+		this.adresses = initAdresses(target.getAdresses(), serviceInfrastructure);
 		this.formesJuridiques = initFormesJuridiques(target.getFormesJuridiques());
 		this.comptesBancaires = initComptesBancaires(target.getComptesBancaires());
 		this.capitaux = initCapitaux(target.getCapitaux());
@@ -160,12 +161,12 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		return adresses;
 	}
 
-	private List<AdresseEntreprise> initAdresses(Collection<?> targetAdresses) {
+	private List<AdresseEntreprise> initAdresses(Collection<?> targetAdresses, ServiceInfrastructure serviceInfrastructure) {
 		List<AdresseEntreprise> adresses = new ArrayList<>();
 		if (targetAdresses != null) {
 			for (Object o : targetAdresses) {
 				ch.vd.registre.pm.model.AdresseEntreprise a = (ch.vd.registre.pm.model.AdresseEntreprise) o;
-				AdresseEntrepriseImpl ae = AdresseEntrepriseImpl.get(a);
+				AdresseEntrepriseImpl ae = AdresseEntrepriseImpl.get(a, serviceInfrastructure);
 				if (ae != null) {
 					adresses.add(ae);
 				}

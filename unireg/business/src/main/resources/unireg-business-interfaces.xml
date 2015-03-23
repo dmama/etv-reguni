@@ -45,6 +45,7 @@
 	
 	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServicePersonneMoraleHostInterfaces">
 		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
 	</bean>
 
 	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">

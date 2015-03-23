@@ -208,13 +208,13 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 
 		final AddressInformation info = address.getAddressInformation();
 		assertNotNull(info);
-		assertEquals("Les Uttins", info.getStreet());
+		assertEquals("Rue des Uttins", info.getStreet());
 		assertEquals("Chamblon", info.getTown());
 		assertEquals(Long.valueOf(1436), info.getSwissZipCode());
 		assertEquals(Integer.valueOf(5876), info.getSwissZipCodeId());
 		assertEquals("CH", info.getCountry());
 		assertEquals("Suisse", info.getCountryName());
-		assertEquals(Integer.valueOf(198539), info.getStreetId());
+		assertEquals(Integer.valueOf(1142198), info.getStreetId());
 		assertEquals(Integer.valueOf(8100), info.getCountryId());
 		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
 
@@ -222,7 +222,7 @@ public class PartyAddressRequestEsbHandlerItTest extends PartyRequestEsbHandlerI
 		assertNotNull(formatted);
 		assertEquals("Monsieur", formatted.getLine1());
 		assertEquals("Michel Mabelle", formatted.getLine2());
-		assertEquals("Les Uttins", formatted.getLine3());
+		assertEquals("Rue des Uttins", formatted.getLine3());
 		assertEquals("1436 Chamblon", formatted.getLine4());
 		assertNull(formatted.getLine5());
 	}

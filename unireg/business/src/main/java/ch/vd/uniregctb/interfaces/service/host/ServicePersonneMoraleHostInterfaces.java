@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.service.AttributePM;
 import ch.vd.registre.pm.service.ServicePersonneMorale;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleBase;
 public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBase {
 
 	private ServicePersonneMorale servicePersonneMorale;
+	private ServiceInfrastructure serviceInfrastructure;
 
 	public ServicePersonneMoraleHostInterfaces() {
 		JvmVersionHelper.checkJvmWrtHostInterfaces();
@@ -29,6 +31,11 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePersonneMorale(ServicePersonneMorale servicePersonneMorale) {
 		this.servicePersonneMorale = servicePersonneMorale;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceInfrastructure(ServiceInfrastructure serviceInfrastructure) {
+		this.serviceInfrastructure = serviceInfrastructure;
 	}
 
 	@Override
@@ -45,7 +52,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 	@Override
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		try {
-			return PersonneMoraleImpl.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)));
+			return PersonneMoraleImpl.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)), serviceInfrastructure);
 		}
 		catch (Exception e) {
 			throw new PersonneMoraleException(e);
@@ -62,7 +69,7 @@ public class ServicePersonneMoraleHostInterfaces extends ServicePersonneMoraleBa
 
 			final List<PersonneMorale> personnes = new ArrayList<>(list.size());
 			for (Object o : list) {
-				personnes.add(PersonneMoraleImpl.get((ch.vd.registre.pm.model.PersonneMorale) o));
+				personnes.add(PersonneMoraleImpl.get((ch.vd.registre.pm.model.PersonneMorale) o, serviceInfrastructure));
 			}
 
 			return personnes;

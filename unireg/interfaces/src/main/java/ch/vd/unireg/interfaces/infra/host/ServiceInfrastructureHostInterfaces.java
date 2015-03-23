@@ -341,7 +341,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws ServiceInfrastructureException {
 		try {
-			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm));
+			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm), serviceInfrastructure);
 		}
 		catch (RemoteException | InfrastructureException e) {
 			throw new ServiceInfrastructureException("Acces a la collectivite administrative", e);
@@ -360,7 +360,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			for (Object o : list) {
 				ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
 				if (isValid(c.getDateFinValidite())) {
-					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c);
+					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c, serviceInfrastructure);
 					offices.add((OfficeImpot) oid);
 				}
 			}
@@ -396,7 +396,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(ServiceInfrastructureRaw.SIGLE_CANTON_VD);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {
-					collectivites.add(CollectiviteAdministrativeImpl.get(c));
+					collectivites.add(CollectiviteAdministrativeImpl.get(c, serviceInfrastructure));
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {
-					collectivites.add(CollectiviteAdministrativeImpl.get(c));
+					collectivites.add(CollectiviteAdministrativeImpl.get(c, serviceInfrastructure));
 				}
 			}
 		}

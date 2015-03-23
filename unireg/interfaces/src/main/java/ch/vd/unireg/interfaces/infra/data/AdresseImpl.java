@@ -1,12 +1,15 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.infrastructure.model.Rue;
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -19,7 +22,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 
-	private static final long serialVersionUID = 5461738651523384585L;
+	private static final long serialVersionUID = 5993820226836872810L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -39,7 +42,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final Integer egid;
 	private final Integer ewid;
 
-	public static AdresseImpl get(ch.vd.common.model.Adresse target) {
+	public static AdresseImpl get(ch.vd.common.model.Adresse target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
 		if (target == null) {
 			return null;
 		}
@@ -49,23 +52,34 @@ public class AdresseImpl implements Adresse, Serializable {
 		if (dateFinValidite != null && DateHelper.isNullDate(dateFinValidite)) {
 			return null;
 		}
-		return new AdresseImpl(target);
+		return new AdresseImpl(target, serviceInfrastructure);
 	}
 
-	private AdresseImpl(ch.vd.common.model.Adresse target) {
+	private AdresseImpl(ch.vd.common.model.Adresse target, ch.vd.infrastructure.service.ServiceInfrastructure serviceInfrastructure) {
 		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
 		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.casePostale = CasePostale.parse(target.getCasePostale());
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.numero = target.getNumero();
 		this.numeroAppartement = target.getNumeroAppartement();
-		this.numeroRue = initNoRue(target.getNumeroTechniqueRue());
-		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
-		this.noOfsPays =
-				(target.getPays() == null ? ServiceInfrastructureRaw.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
-		this.rue = target.getRue();
+		this.noOfsPays = (target.getPays() == null ? ServiceInfrastructureRaw.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
+		if (target.getNumeroTechniqueRue() != null && target.getNumeroTechniqueRue() != 0) {
+			try {
+				final Rue rue = serviceInfrastructure.getRueByNumero(target.getNumeroTechniqueRue());
+				this.rue = rue.getDesignationCourrier();
+				this.numeroOrdrePostal = rue.getNoLocalite();
+			}
+			catch (RemoteException | InfrastructureException e) {
+				throw new RuntimeException("Impossible de récupérer le libellé de la rue " + target.getNumeroTechniqueRue() + " dans le mainframe...", e);
+			}
+		}
+		else {
+			this.rue = target.getRue();
+			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
+		}
+		this.numeroRue = null;      // on ne veut plus de ces numéros qui viennent du host !!
 		this.titre = target.getTitre();
 		this.typeAdresse = initTypeAdresse(target.getTypeAdresse());
 
@@ -103,15 +117,6 @@ public class AdresseImpl implements Adresse, Serializable {
 		}
 		else {
 			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + type.getName() + ']');
-		}
-	}
-
-	private static Integer initNoRue(Integer numeroTechniqueRue) {
-		if (numeroTechniqueRue == null || numeroTechniqueRue == 0) {
-			return null;
-		}
-		else {
-			return numeroTechniqueRue;
 		}
 	}
 

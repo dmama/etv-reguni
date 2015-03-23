@@ -55,7 +55,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 	@Test
 	public void testCantons() throws Exception {
-		assertEquals(27, service.getAllCantons().size());
+		assertEquals(26, service.getAllCantons().size());
 	}
 
 	public void testCommunesDeVaud() throws Exception {
