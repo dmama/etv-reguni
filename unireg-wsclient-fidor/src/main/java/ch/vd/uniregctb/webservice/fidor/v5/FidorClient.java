@@ -17,6 +17,12 @@ import ch.vd.registre.base.date.RegDate;
 public interface FidorClient {
 
 	/**
+	 * Simple appel vers FiDoR pour vérifier qu'il est bien là
+	 * @throws ch.vd.uniregctb.webservice.fidor.v5.FidorClientException si ce n'est pas le cas
+	 */
+	void ping();
+
+	/**
 	 * Retourne une commune à partir de son numéro Ofs et d'une date de référence.
 	 *
 	 * @param ofsId un numéro Ofs de commune

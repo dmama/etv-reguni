@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservice.fidor.v5;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -37,6 +38,7 @@ public class FidorClientImpl implements FidorClient {
 	private String username;
 	private String password;
 
+	private String pingPath = "infrastructure/server/ping";
 	private String communesPath = "listOfCommunesFiscales";
 	private String paysPath = "listOfStatesTerritories";
 	private String cantonsPath = "listOfCantons";
@@ -61,6 +63,10 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public void setPingPath(String pingPath) {
+		this.pingPath = pingPath;
 	}
 
 	public void setCommunesPath(String communesPath) {
@@ -113,6 +119,22 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setStreetsByEstridPath(String streetsByEstridPath) {
 		this.streetsByEstridPath = streetsByEstridPath;
+	}
+
+	@Override
+	public void ping() {
+		final WebClient wc = createWebClient(60000);    // 1 minute
+		wc.path(pingPath);
+		wc.accept(MediaType.TEXT_PLAIN_TYPE);
+		try {
+			final String response = wc.get(String.class);
+			if (!"pong".equals(response)) {
+				throw new FidorClientException("Did not receive 'pong' to my 'ping' ('" + response + "')", null);
+			}
+		}
+		catch (ServerWebApplicationException e) {
+			throw new FidorClientException(e);
+		}
 	}
 
 	@Override
