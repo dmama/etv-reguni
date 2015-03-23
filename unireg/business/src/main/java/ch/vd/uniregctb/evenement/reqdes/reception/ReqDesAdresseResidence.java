@@ -26,7 +26,7 @@ public final class ReqDesAdresseResidence implements Adresse {
 	private final String numeroMaison;
 	private final String npa;
 	private final String npaComplementaire;
-	private final int numeroOrdrePoste;
+	private final Integer numeroOrdrePoste;
 	private final String rue;
 	private final String numeroAppartement;
 	private final String titre;
@@ -41,7 +41,7 @@ public final class ReqDesAdresseResidence implements Adresse {
 		this.numeroMaison = dwellingAddress.getHouseNumber();
 		this.npa = String.valueOf(dwellingAddress.getSwissZipCode());
 		this.npaComplementaire = dwellingAddress.getSwissZipCodeAddOn();
-		this.numeroOrdrePoste = dwellingAddress.getSwissZipCodeId() == null ? 0 : dwellingAddress.getSwissZipCodeId();
+		this.numeroOrdrePoste = dwellingAddress.getSwissZipCodeId();
 		this.rue = dwellingAddress.getStreet();
 		this.numeroAppartement = dwellingAddress.getDwellingNumber();
 
@@ -62,7 +62,7 @@ public final class ReqDesAdresseResidence implements Adresse {
 		this.localite = addressInfo.getTown();
 		this.numeroMaison = addressInfo.getHouseNumber();
 		this.numeroAppartement = addressInfo.getDwellingNumber();
-		this.numeroOrdrePoste = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
+		this.numeroOrdrePoste = addressInfo.getSwissZipCodeId();
 		this.npa = addressInfo.getSwissZipCode() != null ? String.valueOf(addressInfo.getSwissZipCode()) : addressInfo.getForeignZipCode();
 		this.npaComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.rue = addressInfo.getStreet();

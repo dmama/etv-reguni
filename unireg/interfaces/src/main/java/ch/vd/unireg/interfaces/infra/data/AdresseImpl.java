@@ -19,7 +19,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -820697734458838998L;
+	private static final long serialVersionUID = 5461738651523384585L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -28,7 +28,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final String numero;
 	private final String numeroAppartement;
 	private final Integer numeroRue;
-	private final int numeroOrdrePostal;
+	private final Integer numeroOrdrePostal;
 	private final String numeroPostal;
 	private final String numeroPostalComplementaire;
 	private final int noOfsPays;
@@ -60,7 +60,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.numero = target.getNumero();
 		this.numeroAppartement = target.getNumeroAppartement();
 		this.numeroRue = initNoRue(target.getNumeroTechniqueRue());
-		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
+		this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
 		this.noOfsPays =

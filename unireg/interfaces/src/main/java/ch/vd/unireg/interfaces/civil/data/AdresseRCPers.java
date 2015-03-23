@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -2461226404182044025L;
+	private static final long serialVersionUID = 3351399275368181976L;
 
 	private final RegDate dateDebut;
 	private RegDate dateFin;
@@ -35,7 +35,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final String numero;
 	private final String numeroAppartement;
 	private final Integer numeroTechniqueRue;
-	private final int numeroOrdrePostal;
+	private final Integer numeroOrdrePostal;
 	private final String numeroPostal;
 	private final String numeroPostalComplementaire;
 	private final int noOfsPays;
@@ -86,7 +86,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numero = addressInfo.getHouseNumber();
 		this.numeroAppartement = addressInfo.getDwellingNumber();
 		this.numeroTechniqueRue = null; // RcPers ne retourne plus ce numéro technique
-		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
+		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId();
 		this.numeroPostal = initNPA(addressInfo);
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = initNoOfsPays(dateDebut, addressInfo.getCountry(), infraService);
@@ -116,7 +116,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numero = addressInfo.getHouseNumber();
 		this.numeroAppartement = addressInfo.getDwellingNumber();
 		this.numeroTechniqueRue = null; // RcPers ne retourne plus ce numéro technique
-		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
+		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId();
 		this.numeroPostal = String.valueOf(addressInfo.getSwissZipCode());
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
@@ -165,7 +165,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numero = null;
 		this.numeroAppartement = null;
 		this.numeroTechniqueRue = null;
-		this.numeroOrdrePostal = 0;
+		this.numeroOrdrePostal = null;
 		this.numeroPostal = null;
 		this.numeroPostalComplementaire = null;
 		this.noOfsPays = noOfsPays;
