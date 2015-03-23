@@ -74,15 +74,14 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		this.messageSource = messageSource;
 	}
 
-	protected String retieveLocaliteOuPays(Tiers tiers) throws AdresseException {
+	protected String retrieveLocaliteOuPays(Tiers tiers) throws AdresseException {
 
 		String localiteOuPays = "";
 
-		AdresseGenerique adresseCourrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
+		final AdresseGenerique adresseCourrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
 		if (adresseCourrier != null) {
-			Integer noOfsPays = adresseCourrier.getNoOfsPays();
-			Pays pays;
-			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays, adresseCourrier.getDateDebut()));
+			final Integer noOfsPays = adresseCourrier.getNoOfsPays();
+			final Pays pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays, adresseCourrier.getDateDebut()));
 			if (pays != null && !pays.isSuisse()) {
 				localiteOuPays = pays.getNomCourt();
 			}
@@ -99,7 +98,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		final List<String> nomCourrier = adresseService.getNomCourrier(tiers, null, false);
 		tiersAssocie.setNomCourrier(nomCourrier);
 
-		tiersAssocie.setLocaliteOuPays(retieveLocaliteOuPays(tiers));
+		tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(tiers));
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
@@ -166,7 +165,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 			if (habitantPrincipal != null) {
 				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
-				tiersAssocie.setLocaliteOuPays(retieveLocaliteOuPays(habitantPrincipal));
+				tiersAssocie.setLocaliteOuPays(retrieveLocaliteOuPays(habitantPrincipal));
 				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
 				if (forFiscalPrincipal != null) {
 					final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
