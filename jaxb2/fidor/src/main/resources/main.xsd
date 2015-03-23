@@ -14,7 +14,6 @@
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/postallocalities/5" schemaLocation="fidor-postallocalities-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/postallocality/5" schemaLocation="fidor-postallocality-5.xsd" />
-	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/street/5" schemaLocation="fidor-street-5.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/fidor/ws/streets/5" schemaLocation="fidor-streets-5.xsd" />
 
 </xs:schema>

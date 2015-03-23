@@ -62,15 +62,6 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="fidor-street-5.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.fidor.xml.ws.v5.street" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="fidor-street-5" />
-		</jxb:bindings>
-	</jxb:bindings>
-
 	<jxb:bindings schemaLocation="fidor-streets-5.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.fidor.xml.ws.v5.streets" />
