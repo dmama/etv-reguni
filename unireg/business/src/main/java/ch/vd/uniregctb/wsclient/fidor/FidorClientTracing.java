@@ -38,6 +38,22 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 	}
 
 	@Override
+	public void ping() {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			target.ping();
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "ping", null);
+		}
+	}
+
+	@Override
 	public CommuneFiscale getCommuneParNoOFS(final int ofsId, final RegDate date) {
 		Throwable t = null;
 		int items = 0;
