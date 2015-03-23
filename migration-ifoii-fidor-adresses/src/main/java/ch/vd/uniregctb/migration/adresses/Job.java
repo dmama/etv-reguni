@@ -223,6 +223,7 @@ public class Job {
 					LOGGER.info("L'exécuteur n'est pas encore arrêté....");
 					Thread.sleep(1000);
 				}
+				LOGGER.info("Fin du programme de migration.");
 			}
 		}
 	}

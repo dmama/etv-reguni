@@ -54,7 +54,7 @@ abstract class MigrationResult {
 
 		@Override
 		public String toString() {
-			return "Ok{" + data + " -> {" +
+			return getClass().getSimpleName() + "{" + data + " -> {" +
 					"estrid=" + estrid +
 					", numeroOrdrePoste=" + numeroOrdrePoste +
 					", numeroMaison=" + enquote(numeroMaison) +
@@ -97,10 +97,16 @@ abstract class MigrationResult {
 
 		@Override
 		public String toString() {
-			return "NotFound{" + data + " -> {" +
+			return getClass().getSimpleName() + "{" + data + " -> {" +
 					"numeroOrdrePoste=" + numeroOrdrePoste +
 					", rue=" + enquote(rue) +
 					"}}";
+		}
+	}
+
+	static class LocalityNotFound extends NotFound {
+		LocalityNotFound(DataAdresse data, Integer numeroOrdrePoste, String rue) {
+			super(data, numeroOrdrePoste, rue);
 		}
 	}
 
@@ -114,7 +120,7 @@ abstract class MigrationResult {
 
 		@Override
 		public String toString() {
-			return "Erreur{" + data + " -> {" +
+			return getClass().getSimpleName() + "{" + data + " -> {" +
 					"numeroOrdrePoste=" + numeroOrdrePoste +
 					", rue=" + enquote(rue) +
 					", e=" + e +
