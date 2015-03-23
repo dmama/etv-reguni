@@ -456,6 +456,32 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 	}
 
 	@Override
+	public List<PostalLocality> getLocalitesPostalesHisto(final int noOrdrePostal) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final List<PostalLocality> pls = target.getLocalitesPostalesHisto(noOrdrePostal);
+			if (pls != null) {
+				items = pls.size();
+			}
+			return pls;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getLocalitesPostalesHisto", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("noOrdrePostal=%d", noOrdrePostal);
+				}
+			});
+		}
+	}
+
+	@Override
 	public PostalLocality getLocalitePostale(final RegDate dateReference, final int noOrdrePostal) {
 		Throwable t = null;
 		int items = 0;
