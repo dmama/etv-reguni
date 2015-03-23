@@ -70,7 +70,7 @@ public class EvenementCivilDataExtractor {
 		fidorClient.setPassword(FIDOR_PWD);
 
 		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
-		infraServiceFiDor.setFidorClientv5(fidorClient);
+		infraServiceFiDor.setFidorClient(fidorClient);
 
 		final ServiceInfrastructureRaw infraServiceCache = new ServiceInfraGetPaysSimpleCache(infraServiceFiDor);
 
