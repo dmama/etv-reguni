@@ -76,7 +76,7 @@ final class MigrationTask implements Callable<MigrationResult> {
 		try {
 			Integer estrid = null;
 			String numeroMaison = null;
-			final List<Street> ruesCandidates = fidorClient.getRues(adresse.dateFin, noOrdreP);
+			final List<Street> ruesCandidates = fidorClient.getRuesParNumeroOrdrePosteEtDate(noOrdreP, adresse.dateFin);
 			if (ruesCandidates != null) {
 				for (Street candidate : ruesCandidates) {
 					if (candidate.getLongName().equalsIgnoreCase(libelleCanoniqueRue) || candidate.getShortName().equalsIgnoreCase(libelleCanoniqueRue)) {
