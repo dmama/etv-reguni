@@ -4,8 +4,10 @@ import javax.ejb.CreateException;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,12 +19,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -77,6 +81,13 @@ public class Job {
 
 		final int nbThreads = Integer.parseInt(props.getProperty("process.nbThreads"));
 
+		LOGGER.info("Récupération des mappings de numéros d'ordre postal...");
+		final Map<Integer, List<Integer>> mappingNoOrdrePoste = buildMappingNoOrdrePoste(props);
+		for (Map.Entry<Integer, List<Integer>> entry : mappingNoOrdrePoste.entrySet()) {
+			LOGGER.info(entry.getKey() + " --> " + Arrays.toString(entry.getValue().toArray()));
+		}
+		LOGGER.info("Récupération de " + mappingNoOrdrePoste.size() + " mappings terminée.");
+
 		// nous avons besoin :
 		// 1. un client fidor
 		// 2. un client ifoii
@@ -118,7 +129,7 @@ public class Job {
 				// postage des tâches
 				final ExecutorCompletionService<MigrationResult> completionService = new ExecutorCompletionService<>(executor);
 				for (DataAdresse adresse : adresses) {
-					completionService.submit(new MigrationTask(fidorClient, ifoiiClient, adresse));
+					completionService.submit(new MigrationTask(fidorClient, ifoiiClient, mappingNoOrdrePoste, adresse));
 				}
 
 				// c'est fini, on n'accepte plus rien
@@ -255,6 +266,43 @@ public class Job {
 	private static Integer getNullableInt(ResultSet rs, int index) throws SQLException {
 		final int value = rs.getInt(index);
 		return rs.wasNull() ? null : value;
+	}
+
+	private static Map<Integer, List<Integer>> buildMappingNoOrdrePoste(Properties properties) throws IOException {
+		// seules les première (numéro ordre poste source) et dernières colonnes (mapping) nous intéressent
+		final Pattern pattern = Pattern.compile("([0-9]+);.*;(([0-9]+)(?:-[0-9]+)*)");
+
+		final String fileName = properties.getProperty("mapping.noOrdreP.file");
+		try (Reader r = new FileReader(fileName);
+			 BufferedReader br = new BufferedReader(r)) {
+
+			final Map<Integer, List<Integer>> map = new TreeMap<>();
+			String line;
+			while ((line = br.readLine()) != null) {
+				final Matcher matcher = pattern.matcher(line);
+				if (!matcher.matches()) {
+					LOGGER.warn("Ligne du fichier de mapping ignorée : " + line);
+				}
+				else {
+					final int noOrdrePosteSource = Integer.parseInt(matcher.group(1));
+					final String mappingStr = matcher.group(2);
+					final List<Integer> mapping = extractMappingValues(mappingStr, '-');
+					if (map.put(noOrdrePosteSource, mapping) != null) {
+						LOGGER.warn("Plusieurs mappings pour le numéro d'ordre postal " + noOrdrePosteSource + ", seul le dernier sera pris en compte.");
+					}
+				}
+			}
+			return map;
+		}
+	}
+
+	private static List<Integer> extractMappingValues(String mappingStr, char separator) {
+		final String[] splitted = mappingStr.split(String.format("%c", separator));
+		final List<Integer> values = new ArrayList<>(splitted.length);
+		for (int i = 0 ; i < splitted.length ; ++ i) {
+			values.add(Integer.parseInt(splitted[i]));
+		}
+		return values;
 	}
 
 	private static FidorClient buildFidorClient(Properties properties) {

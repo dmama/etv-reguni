@@ -4,11 +4,13 @@ import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import ch.vd.fidor.xml.common.v1.Date;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
@@ -28,15 +30,17 @@ final class MigrationTask implements Callable<MigrationResult> {
 
 	private final FidorClient fidorClient;
 	private final ServiceInfrastructure ifoiiClient;
+	private final Map<Integer, List<Integer>> mappingNoOrdrePoste;
 	private final DataAdresse adresse;
 
-	MigrationTask(FidorClient fidorClient, ServiceInfrastructure ifoiiClient, DataAdresse adresse) {
+	MigrationTask(FidorClient fidorClient, ServiceInfrastructure ifoiiClient, Map<Integer, List<Integer>> mappingNoOrdrePoste, DataAdresse adresse) {
 		this.fidorClient = fidorClient;
 		this.ifoiiClient = ifoiiClient;
+		this.mappingNoOrdrePoste = mappingNoOrdrePoste;
 		this.adresse = adresse;
 	}
 
-	private static String canonize(String rue) {
+	static String canonize(String rue) {
 		rue = StringUtils.trimToEmpty(rue);
 		rue = rue.replaceAll("^Av\\. *", "Avenue ");
 		rue = rue.replaceAll("^Bvd\\. *", "Boulevard ");
@@ -44,9 +48,11 @@ final class MigrationTask implements Callable<MigrationResult> {
 		rue = rue.replaceAll("^Pl\\. *", "Place ");
 		rue = rue.replaceAll("^Q\\. *", "Quai ");
 		rue = rue.replaceAll("^R\\. *", "Rue ");
-		rue = rue.replaceAll("^Rte *", "Route ");
+		rue = rue.replaceAll("^Rte\\b\\.? *", "Route ");
+		rue = rue.replaceAll("^Sent\\. *", "Sentier ");
 		rue = rue.replaceAll("\\b' +", "'");
 		rue = rue.replaceAll("\\b- +", "-");
+		rue = rue.replaceAll("\\b([a-zA-ZäöüÄÖÜ]+-?)[Ss][Tt][Rr]\\. *", "$1strasse ");
 		return rue;
 	}
 
@@ -80,40 +86,55 @@ final class MigrationTask implements Callable<MigrationResult> {
 
 		try {
 			// 2. on vérifie que la localité postale existe toujours avec ce numéro d'ordre postal à la date de fin de l'adresse
-			final List<PostalLocality> localitesATester = new LinkedList<>();
+			// (integer = noOrdrePoste, RegDate = date de début de validité de la commune)
+			final List<Pair<Integer, RegDate>> localitesATester = new LinkedList<>();
 			final PostalLocality pl = findPostalLocalityForDate(noOrdreP, adresse.dateFin);
 			if (pl == null) {
 				// pas de localité postale ?
 
-				// voyons voir quel NPA le mainframe associait à ce numéro d'ordre poste... on peut peut-être essayer de passer par là...
-				final Localite localiteMainframe = ifoiiClient.getLocalite(noOrdreP);
-				if (localiteMainframe != null && localiteMainframe.getNPA() != null) {
-					final List<PostalLocality> candidates = fidorClient.getLocalitesPostales(adresse.dateFin, localiteMainframe.getNPA(), null, null, null);
-					if (candidates != null && !candidates.isEmpty()) {
-						localitesATester.addAll(candidates);
+				// il faut donc chercher dans le mapping "en dur", au cas où...
+				if (mappingNoOrdrePoste.containsKey(noOrdreP)) {
+					final RegDate dateBidonDebut = RegDate.get(1900, 1, 1);     // on n'a pas d'adresse avec une date de fin aussi vieille..,
+					for (int remplacant : mappingNoOrdrePoste.get(noOrdreP)) {
+						localitesATester.add(Pair.of(remplacant, dateBidonDebut));
+					}
+				}
+				else {
+					// voyons voir quel NPA le mainframe associait à ce numéro d'ordre poste... on peut peut-être essayer de passer par là...
+					final Localite localiteMainframe = ifoiiClient.getLocalite(noOrdreP);
+					if (localiteMainframe != null && localiteMainframe.getNPA() != null) {
+						final List<PostalLocality> candidates = fidorClient.getLocalitesPostales(adresse.dateFin, localiteMainframe.getNPA(), null, null, null);
+						if (candidates != null && !candidates.isEmpty()) {
+							for (PostalLocality candidate : candidates) {
+								localitesATester.add(Pair.of(candidate.getSwissZipCodeId(), fromDate(candidate.getValidity().getDateFrom())));
+							}
+						}
 					}
 				}
 
-				// vraiment rien trouvé...
+				// vraiment rien trouvé... (une source pour la prochaine itération, dans le mappingNoOrdrePoste...)
 				if (localitesATester.isEmpty()) {
 					// constat d'échec, aucune localité retrouvée...
 					return new MigrationResult.LocalityNotFound(adresse, noOrdreP, libelleRue);
 				}
 			}
 			else {
-				localitesATester.add(pl);
+				localitesATester.add(Pair.of(pl.getSwissZipCodeId(), fromDate(pl.getValidity().getDateFrom())));
 			}
 
 			// 3. on appelle FiDoR pour voir s'il connait une rue avec ce nom dans l'une de ces localités
-			for (PostalLocality aTester : localitesATester) {
-				final FidorInfo info = askFidor(aTester.getSwissZipCodeId(), libelleCanoniqueRue);
+			for (Pair<Integer, RegDate> aTester : localitesATester) {
+				// on recalcule une date de référence pour prendre en compte le cas où Ref-Inf ne connait pas de localité postale avec un numéro donnée
+				// à la date de fin de l'adresse connue, mais seulement plus tard (problématique d'historique tronqué dans le passé...)
+				final RegDate refDate = RegDateHelper.maximum(aTester.getRight(), adresse.dateFin, NullDateBehavior.LATEST);
+				final FidorInfo info = askFidor(aTester.getLeft(), refDate, libelleCanoniqueRue);
 				if (info != null && info.estrid != null) {
 					return new MigrationResult.Ok(adresse, info.estrid, info.noOrdrePostal, info.numeroMaison);
 				}
 			}
 
 			// 4. constat d'échec... pas de rue avec de nom là... on prend la première localité postale (qui peut être celle fournie en entrée, ou une meilleure - plus récente - approximation de celle-ci...)
-			final int mostProbableSwissZipCodeId = localitesATester.get(0).getSwissZipCodeId();
+			final int mostProbableSwissZipCodeId = localitesATester.get(0).getLeft();
 			return new MigrationResult.NotFound(adresse, mostProbableSwissZipCodeId, libelleRue);
 		}
 		catch (Exception e) {
@@ -133,10 +154,10 @@ final class MigrationTask implements Callable<MigrationResult> {
 		}
 	}
 
-	private FidorInfo askFidor(int noOrdrePostal, String libelleCanoniqueRue) {
+	private FidorInfo askFidor(int noOrdrePostal, RegDate refDate, String libelleCanoniqueRue) {
 		Integer estrid = null;
 		String numeroMaison = null;
-		final List<Street> ruesCandidates = fidorClient.getRuesParNumeroOrdrePosteEtDate(noOrdrePostal, adresse.dateFin);
+		final List<Street> ruesCandidates = fidorClient.getRuesParNumeroOrdrePosteEtDate(noOrdrePostal, refDate);
 		if (ruesCandidates != null) {
 			for (Street candidate : ruesCandidates) {
 				if (candidate.getLongName().equalsIgnoreCase(libelleCanoniqueRue) || candidate.getShortName().equalsIgnoreCase(libelleCanoniqueRue)) {
@@ -190,8 +211,14 @@ final class MigrationTask implements Callable<MigrationResult> {
 			}
 		}
 
+		// si on n'a rien trouvé, c'est que la date de référence donnée est avant TOUTES les occurrences des localités avec ce numéro dans Ref-Inf
+		// (cas connu, apparemment, l'historique des données ne remonte pas assez loin pour nous...)
+		if (found == null) {
+			// on prend la première occurrence connue dans Ref-Inf
+			found = histo.get(0);
+		}
 		// la localité est-elle valide à la date de référence ?
-		if (found != null && RegDateHelper.isBefore(fromDate(found.getValidity().getDateTo()), dateReference, NullDateBehavior.LATEST)) {
+		else if (RegDateHelper.isBefore(fromDate(found.getValidity().getDateTo()), dateReference, NullDateBehavior.LATEST)) {
 			// non, pas valide... il faut trouver la suivante si elle existe
 			if (found.getSuccessorSwissZipCodeId() != null) {
 				if (noOrdreP == found.getSuccessorSwissZipCodeId()) {
