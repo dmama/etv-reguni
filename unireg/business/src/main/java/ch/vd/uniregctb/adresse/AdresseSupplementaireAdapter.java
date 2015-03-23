@@ -112,7 +112,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	public String getLocaliteComplete() {
 		String nomLocalite = null;
 		if (adresseSuisse != null) {
-			nomLocalite = super.getLocalite();
+			nomLocalite = super.getLocaliteComplete();
 			if (nomLocalite == null) {
 				nomLocalite = getLocalite(adresseSuisse).getNomComplet();
 			}
