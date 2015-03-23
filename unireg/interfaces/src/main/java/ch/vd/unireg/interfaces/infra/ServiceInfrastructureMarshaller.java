@@ -42,7 +42,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
-		return hostService.getAllCantons();
+		return fidorService.getAllCantons();
 	}
 
 	@Override
@@ -62,12 +62,12 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Override
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		return hostService.getLocaliteByONRP(onrp);
+		return fidorService.getLocaliteByONRP(onrp);
 	}
 
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
-		return hostService.getLocalites();
+		return fidorService.getLocalites();
 	}
 
 	@Override
@@ -91,18 +91,13 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		return hostService.getRueByNumero(numero);
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+		return fidorService.getRueByNumero(numero, date);
 	}
 
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		return hostService.getRues(localite);
-	}
-
-	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		return hostService.getRues(canton);
+		return fidorService.getRues(localite);
 	}
 
 	@Override
@@ -122,7 +117,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
-		return hostService.getCommuneByLocalite(localite);
+		return fidorService.getCommuneByLocalite(localite);
 	}
 
 	@Override
@@ -152,7 +147,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 
 	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
-		return hostService.getLocaliteByNPA(npa);
+		return fidorService.getLocaliteByNPA(npa);
 	}
 
 	@Override

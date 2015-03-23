@@ -148,8 +148,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		return target.getRueByNumero(numero);
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+		return target.getRueByNumero(numero, date);
 	}
 
 	@Override
@@ -160,11 +160,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public List<Rue> getRues(Collection<Localite> localites) throws ServiceInfrastructureException {
 		return target.getRues(localites);
-	}
-
-	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		return target.getRues(canton);
 	}
 
 	@Override

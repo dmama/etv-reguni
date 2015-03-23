@@ -46,7 +46,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
-		<property name="fidorClientv5" ref="fidorClientv5" />
+		<property name="fidorClient" ref="fidorClient" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 

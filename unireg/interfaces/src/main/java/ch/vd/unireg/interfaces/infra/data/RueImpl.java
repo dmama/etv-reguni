@@ -2,9 +2,11 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import ch.vd.fidor.xml.post.v1.Street;
+
 public class RueImpl implements Rue, Serializable {
 
-	private static final long serialVersionUID = -19873225126550620L;
+	private static final long serialVersionUID = 723446726077715687L;
 	
 	private final String designationCourrier;
 	private final Integer noLocalite;
@@ -17,10 +19,23 @@ public class RueImpl implements Rue, Serializable {
 		return new RueImpl(target);
 	}
 
+	public static RueImpl get(Street target) {
+		if (target == null) {
+			return null;
+		}
+		return new RueImpl(target);
+	}
+
 	private RueImpl(ch.vd.infrastructure.model.Rue target) {
 		this.designationCourrier = target.getDesignationCourrier();
 		this.noLocalite = target.getNoLocalite();
 		this.noRue = target.getNoRue();
+	}
+
+	private RueImpl(Street target) {
+		this.designationCourrier = target.getLongName();
+		this.noLocalite = target.getSwissZipCodeId().get(0);        // TODO on prend la première...
+		this.noRue = target.getEstrid();
 	}
 
 	@Override

@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
@@ -262,11 +261,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
 		List<Rue> locRues = new ArrayList<>();
 		for (Rue r : rues) {
@@ -278,7 +272,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		Rue rue = null;
 		for (Rue r : rues) {
 			if (r.getNoRue().equals(numero)) {

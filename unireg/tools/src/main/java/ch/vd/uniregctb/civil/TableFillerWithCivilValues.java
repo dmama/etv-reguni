@@ -101,7 +101,7 @@ public class TableFillerWithCivilValues {
 		fidorClient.setPassword(FIDOR_PWD);
 
 		final ServiceInfrastructureFidor infraServiceFiDor = new ServiceInfrastructureFidor();
-		infraServiceFiDor.setFidorClientv5(fidorClient);
+		infraServiceFiDor.setFidorClient(fidorClient);
 
 		final ServiceInfrastructureTracing infraServiceTracing = new ServiceInfrastructureTracing();
 		infraServiceTracing.setTarget(infraServiceFiDor);

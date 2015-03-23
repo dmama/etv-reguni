@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
@@ -25,7 +26,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 
 		if (noOfsRue != null && noOfsRue!=0) {
 
-			final Rue rue = getRue(noOfsRue);
+			final Rue rue = getRue(noOfsRue, getDateFin());
 			final int numeroLocalite = rue.getNoLocalite();
 
 			if (numeroLocalite != 0) {
@@ -44,7 +45,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 
 		if (noOfsRue != null && noOfsRue!=0) {
 
-			final Rue rue = getRue(noOfsRue);
+			final Rue rue = getRue(noOfsRue, getDateFin());
 			final int numeroLocalite = rue.getNoLocalite();
 
 			if (numeroLocalite != 0) {
@@ -67,7 +68,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		String rue = nomRueLibre;
 
 		if (numeroRue != null && numeroRue > 0) {
-			final Rue r = getRue(numeroRue);
+			final Rue r = getRue(numeroRue, getDateFin());
 			rue = r.getDesignationCourrier();
 		}
 
@@ -77,9 +78,9 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 	/**
 	 * Retourne la rue donnée par son numéro (si pas d'exception, forcément non-null)
 	 */
-	private Rue getRue(int numeroRue) {
+	private Rue getRue(int numeroRue, RegDate date) {
 		final Rue r;
-		r = service.getRueByNumero(numeroRue);
+		r = service.getRueByNumero(numeroRue, date);
 		if (r == null) {
 			throw new RuntimeException("La rue avec le numéro technique " + numeroRue + " est inconnue !");
 		}
@@ -106,7 +107,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		String numero = null;
 		final Integer numeroRue = getNumeroRue();
 		if (numeroRue != null && numeroRue != 0) {
-			final Rue rue = getRue(numeroRue);
+			final Rue rue = getRue(numeroRue, getDateFin());
 			final Localite localite = getLocalite(rue.getNoLocalite());
 			numero = Integer.toString(localite.getNPA());
 		}
@@ -121,7 +122,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		int noOrdrePostal = 0;
 		final Integer numeroRue = getNumeroRue();
 		if (numeroRue != null && numeroRue != 0) {
-			final Rue rue = getRue(numeroRue);
+			final Rue rue = getRue(numeroRue, getDateFin());
 			final Localite localite = getLocalite(rue.getNoLocalite());
 			noOrdrePostal = localite.getNoOrdre();
 		}

@@ -411,7 +411,7 @@ public abstract class IndividuDumper {
 			}
 			final Integer noRue = adresse.getNumeroRue();
 			if (noRue != null) {
-				final Rue rue = infraService.getRueByNumero(noRue);
+				final Rue rue = infraService.getRueByNumero(noRue, adresse.getDateFin());
 				if (rue != null) {
 					final Integer noLocalite = rue.getNoLocalite();
 					if (noLocalite != null && isLocaliteHorsCanton(noLocalite)) {

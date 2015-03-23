@@ -281,11 +281,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		return rawService.getRues(localite);
 	}
 
-	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal) throws ServiceInfrastructureException {
+	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal, RegDate date) throws ServiceInfrastructureException {
 
 		final int numeroLocalite;
 		if (numeroRue != null && numeroRue > 0) {
-			final Rue rue = getRueByNumero(numeroRue);
+			final Rue rue = getRueByNumero(numeroRue, date);
 			final Integer noLocalite = rue.getNoLocalite();
 			Assert.notNull(noLocalite);
 			numeroLocalite = noLocalite;
@@ -353,7 +353,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 		// 3ème choix : la commune associée à la localité
 		if (commune == null) {
-			commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal);
+			commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal, date);
 		}
 
 		return commune;
@@ -464,13 +464,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		return rawService.getRues(canton);
-	}
-
-	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		return rawService.getRueByNumero(numero);
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+		return rawService.getRueByNumero(numero, date);
 	}
 
 	@Override
@@ -583,7 +578,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			return estDansLeCanton(localite.getCommuneLocalite());
 		}
 		else {
-			final Rue rue = getRueByNumero(numero);
+			final Rue rue = getRueByNumero(numero, adresse.getDateFin());
 			return estDansLeCanton(rue);
 		}
 	}
@@ -602,7 +597,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			return commune != null && estDansLeCanton(commune);
 		}
 		else {
-			final Rue rue = getRueByNumero(numero);
+			final Rue rue = getRueByNumero(numero, adresse.getDateFin());
 			return estDansLeCanton(rue);
 		}
 	}

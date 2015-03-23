@@ -305,26 +305,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		try {
-			ArrayList<Rue> rues = new ArrayList<>();
-			final List<?> list = serviceInfrastructure.getRues(canton.getSigleOFS());
-			for (Object o : list) {
-				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
-				rues.add(RueImpl.get(r));
-			}
-			return Collections.unmodifiableList(rues);
-		}
-		catch (RemoteException | InfrastructureException e) {
-			throw new ServiceInfrastructureException("Acces a la liste des rues", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		try {
 			return RueImpl.get(serviceInfrastructure.getRueByNumero(numero));
 		}

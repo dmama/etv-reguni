@@ -88,12 +88,7 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		throw new NotImplementedException();
 	}
 

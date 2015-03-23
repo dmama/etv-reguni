@@ -467,11 +467,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Rue getRueByNumero(final int numero) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(final int numero, final RegDate date) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getRueByNumero(numero);
+			return target.getRueByNumero(numero, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -485,7 +485,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			tracing.end(time, t, "getRueByNumero", new Object() {
 				@Override
 				public String toString() {
-					return String.format("numero=%d", numero);
+					return String.format("numero=%d, date=%s", numero, ServiceTracing.toString(date));
 				}
 			});
 		}
@@ -514,34 +514,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 				@Override
 				public String toString() {
 					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
-				}
-			});
-		}
-	}
-
-	@Override
-	public List<Rue> getRues(final Canton canton) throws ServiceInfrastructureException {
-		Throwable t = null;
-		int items = 0;
-		final long time = tracing.start();
-		try {
-			final List<Rue> list = target.getRues(canton);
-			items = list == null ? 0 : list.size();
-			return list;
-		}
-		catch (ServiceInfrastructureException e) {
-			t = e;
-			throw e;
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "getRues", items, new Object() {
-				@Override
-				public String toString() {
-					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
 				}
 			});
 		}

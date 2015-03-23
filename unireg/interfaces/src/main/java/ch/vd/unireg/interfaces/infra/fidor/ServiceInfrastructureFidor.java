@@ -15,7 +15,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import ch.vd.evd0007.v1.Country;
+import ch.vd.evd0007.v1.ExtendedCanton;
 import ch.vd.evd0012.v1.CommuneFiscale;
+import ch.vd.fidor.xml.post.v1.PostalLocality;
+import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
@@ -24,6 +27,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
+import ch.vd.unireg.interfaces.infra.data.CantonImpl;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
@@ -31,6 +35,7 @@ import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.DistrictImpl;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.LocaliteImpl;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielImpl;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
@@ -39,6 +44,7 @@ import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.RegionImpl;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -67,7 +73,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private FidorClient fidorClient;
 	private UniregCacheManager uniregCacheManager;
 
-	public void setFidorClientv5(FidorClient fidorClient) {
+	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
 	}
 
@@ -170,7 +176,22 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<ExtendedCanton> cantons = fidorClient.getTousLesCantons();
+			if (cantons != null && !cantons.isEmpty()) {
+				final List<Canton> list = new ArrayList<>(cantons.size());
+				for (ExtendedCanton c : cantons) {
+					list.add(CantonImpl.get(c));
+				}
+				return list;
+			}
+			else {
+				return Collections.emptyList();
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
@@ -234,27 +255,70 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostales(null, null, null, null, null);
+			if (fidorLocalites != null) {
+				final List<Localite> localites = new ArrayList<>(fidorLocalites.size());
+				for (PostalLocality fidorLocalite : fidorLocalites) {
+					localites.add(LocaliteImpl.get(fidorLocalite, this));
+				}
+				return localites;
+			}
+			return Collections.emptyList();
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
 	public Localite getLocaliteByONRP(int onrp) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<PostalLocality> fidorLocalites = fidorClient.getLocalitesPostales(RegDate.get(), null, onrp, null, null);
+			if (fidorLocalites != null && !fidorLocalites.isEmpty()) {
+				if (fidorLocalites.size() > 1) {
+					throw new ServiceInfrastructureException("Plusieurs localités valides aujourd'hui avec le numéro d'ordre postal " + onrp + " dans l'infrastructure!");
+				}
+				return LocaliteImpl.get(fidorLocalites.get(0), this);
+			}
+			else {
+				return null;
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		try {
+			final List<Street> streets = fidorClient.getRues(localite.getDateFinValidite(), localite.getNoOrdre());
+			if (streets != null && !streets.isEmpty()) {
+				final List<Rue> rues = new ArrayList<>(streets.size());
+				for (Street st : streets) {
+					rues.add(RueImpl.get(st));
+				}
+				return rues;
+			}
+			else {
+				return Collections.emptyList();
+			}
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+		try {
+			final Street street = fidorClient.getRue(date, numero);
+			return RueImpl.get(street);
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
 	}
 
 	@Override
@@ -292,7 +356,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
+		return localite.getCommuneLocalite();
 	}
 
 	@Override

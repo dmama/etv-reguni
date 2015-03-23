@@ -470,7 +470,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		final Integer numeroRue = adresse.getNumeroRue();
 		if (numeroRue != null) {
 			final Rue rue;
-			rue = getServiceInfrastructureService().getRueByNumero(numeroRue);
+			rue = getServiceInfrastructureService().getRueByNumero(numeroRue, adresse.getDateFin());
 			noLocalite = rue.getNoLocalite();
 		}
 		else {

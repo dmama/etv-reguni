@@ -236,7 +236,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		final Integer numeroRue = adresse.getNumeroRue();
 		if (numeroRue != null) {
 			final Rue rue;
-			rue = service.getRueByNumero(numeroRue);
+			rue = service.getRueByNumero(numeroRue, getDateFin());
 			noLocalite = rue.getNoLocalite();
 		}
 		else {

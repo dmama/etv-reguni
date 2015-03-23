@@ -169,21 +169,10 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 	}
 
 	@Override
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getRues", "canton", canton == null ? null : canton.getSigleOFS()));
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
+		loadMeter.start(new MethodCallDescriptor("getRueByNumero", "numero", numero, "date", date));
 		try {
-			return target.getRues(canton);
-		}
-		finally {
-			loadMeter.end();
-		}
-	}
-
-	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getRueByNumero", "numero", numero));
-		try {
-			return target.getRueByNumero(numero);
+			return target.getRueByNumero(numero, date);
 		}
 		finally {
 			loadMeter.end();

@@ -211,7 +211,7 @@ public class InfrastructureEditor implements Editor {
 			final Localite localite = infraService.getLocaliteByONRP(id.intValue());
 			return localite == null ? "?" : localite.getNomAbregeMinuscule();
 		case RUE:
-			final Rue rue = infraService.getRueByNumero(id.intValue());
+			final Rue rue = infraService.getRueByNumero(id.intValue(), null);
 			return rue == null ? "?" : rue.getDesignationCourrier();
 		default:
 			throw new IllegalArgumentException("La catégorie d'infrastructure [" + category + "] est inconnue !");

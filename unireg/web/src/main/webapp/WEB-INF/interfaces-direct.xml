@@ -54,11 +54,18 @@
 
 	<!-- Client fidor -->
 
-	<bean id="fidorClientv5" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
 		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
 		<property name="username" value="${extprop.webservice.fidor.username}" />
 		<property name="password" value="${extprop.webservice.fidor.password}" />
 	</bean>
+
+	<bean id="fidorClientTracing" class="ch.vd.uniregctb.wsclient.fidor.FidorClientTracing">
+		<property name="statsService" ref="statsService"/>
+		<property name="target" ref="fidorClientRaw"/>
+	</bean>
+
+	<alias name="fidorClientTracing" alias="fidorClient"/>
 
 	<!-- Service infra -->
 
@@ -68,7 +75,7 @@
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
-		<property name="fidorClientv5" ref="fidorClientv5" />
+		<property name="fidorClient" ref="fidorClient" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 

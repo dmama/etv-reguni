@@ -317,7 +317,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		final int NB_CALLS = 1000;
 		final int[] OFS = {8212, 8215, 8100};
 		final Random rnd = new Random();
-		final FidorClient fidorClient = getBean(FidorClient.class, "fidorClientv5");
+		final FidorClient fidorClient = getBean(FidorClient.class, "fidorClient");
 
 		final class GetPays implements Runnable {
 			private final int noOfs;

@@ -1116,49 +1116,48 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetRueByNumero {
-		final int numero;
+	private static class KeyGetRueByNumeroEtDate {
+		private final int numero;
+		private final RegDate date;
 
-		private KeyGetRueByNumero(int numero) {
+		private KeyGetRueByNumeroEtDate(int numero, RegDate date) {
 			this.numero = numero;
+			this.date = date;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetRueByNumeroEtDate that = (KeyGetRueByNumeroEtDate) o;
+			return date == that.date && numero == that.numero;
 		}
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + numero;
+			int result = numero;
+			result = 31 * result + (date != null ? date.hashCode() : 0);
 			return result;
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetRueByNumero other = (KeyGetRueByNumero) obj;
-			return numero == other.numero;
-		}
-
-		@Override
 		public String toString() {
-			return "KeyGetRueByNumero{" +
+			return "KeyGetRueByNumeroEtDate{" +
 					"numero=" + numero +
+					", date=" + date +
 					'}';
 		}
 	}
 
 	@Override
-	public Rue getRueByNumero(int numero) throws ServiceInfrastructureException {
+	public Rue getRueByNumero(int numero, RegDate date) throws ServiceInfrastructureException {
 		final Rue resultat;
 
-		final KeyGetRueByNumero key = new KeyGetRueByNumero(numero);
+		final KeyGetRueByNumeroEtDate key = new KeyGetRueByNumeroEtDate(numero, date);
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
-			resultat = target.getRueByNumero(numero);
+			resultat = target.getRueByNumero(numero, date);
 			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
@@ -1212,59 +1211,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRues(localite);
-			shortLivedCache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<Rue>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetRueByCanton {
-		final int noOfs;
-
-		public KeyGetRueByCanton(Canton canton) {
-			this.noOfs = canton.getNoOFS();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + noOfs;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyGetRueByCanton other = (KeyGetRueByCanton) obj;
-			return noOfs == other.noOfs;
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetRueByCanton{" +
-					"noOfs=" + noOfs +
-					'}';
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<Rue> getRues(Canton canton) throws ServiceInfrastructureException {
-		final List<Rue> resultat;
-
-		final KeyGetRueByCanton key = new KeyGetRueByCanton(canton);
-		final Element element = shortLivedCache.get(key);
-		if (element == null) {
-			resultat = target.getRues(canton);
 			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
