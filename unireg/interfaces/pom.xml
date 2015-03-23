@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-wsclient-fidor</artifactId>
-			<version>5.8-SNAPSHOT</version>
+			<version>5.8</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-cyber</artifactId>
-			<version>3.4</version>
+			<version>3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
