@@ -143,16 +143,16 @@ public interface FidorClient {
 	PostalLocality getLocalitePostale(RegDate dateReference, int noOrdrePostal);
 
 	/**
-	 * @param dateReference date de référence (si absente, on prendra la date du jour)
 	 * @param noOrdrePostal numéro d'ordre postal de la localité cible
+	 * @param dateReference date de référence (si absente, on prendra la date du jour)
 	 * @return la liste des rues de la localité indiquée à la date de référence
 	 */
-	List<Street> getRues(RegDate dateReference, int noOrdrePostal);
+	List<Street> getRuesParNumeroOrdrePosteEtDate(int noOrdrePostal, RegDate dateReference);
 
 	/**
-	 * @param dateReference date de référence (si absente, on prendra la date du jour)
 	 * @param estrid identifiant fédéral de la rue recherchée
-	 * @return la rue identifiée par son identifiant fédéral à la date de référence, ou <code>null</code> si aucune rue ne correspond
+	 * @param dateReference date de référence (si absente, on prendra ira chercher l'historique de la rue en question)
+	 * @return la liste des rues identifiées par les critères donnés
 	 */
-	Street getRue(RegDate dateReference, int estrid);
+	List<Street> getRuesParEstrid(int estrid, RegDate dateReference);
 }

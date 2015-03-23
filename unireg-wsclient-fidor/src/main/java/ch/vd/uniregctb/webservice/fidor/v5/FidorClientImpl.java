@@ -47,8 +47,8 @@ public class FidorClientImpl implements FidorClient {
 	private String regionPath = "regionFiscale";
 	private String postalLocalitiesPath = "postalLocalities";
 	private String postalLocalityPath = "postalLocality";
-	private String streetPath = "street";
-	private String streetsPath = "streets";
+	private String streetsByPostalLocalityPath = "streets/byPostalLocality";
+	private String streetsByEstridPath = "streets/byEstrid";
 
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -64,6 +64,10 @@ public class FidorClientImpl implements FidorClient {
 
 	public void setCommunesPath(String communesPath) {
 		this.communesPath = communesPath;
+	}
+
+	public void setCantonsPath(String cantonsPath) {
+		this.cantonsPath = cantonsPath;
 	}
 
 	public void setPaysPath(String paysPath) {
@@ -98,12 +102,12 @@ public class FidorClientImpl implements FidorClient {
 		this.postalLocalityPath = postalLocalityPath;
 	}
 
-	public void setStreetPath(String streetPath) {
-		this.streetPath = streetPath;
+	public void setStreetsByPostalLocalityPath(String streetsByPostalLocalityPath) {
+		this.streetsByPostalLocalityPath = streetsByPostalLocalityPath;
 	}
 
-	public void setStreetsPath(String streetsPath) {
-		this.streetsPath = streetsPath;
+	public void setStreetsByEstridPath(String streetsByEstridPath) {
+		this.streetsByEstridPath = streetsByEstridPath;
 	}
 
 	@Override
@@ -556,9 +560,9 @@ public class FidorClientImpl implements FidorClient {
 	}
 
 	@Override
-	public List<Street> getRues(RegDate dateReference, int noOrdrePostal) {
+	public List<Street> getRuesParNumeroOrdrePosteEtDate(int noOrdrePostal, RegDate dateReference) {
 		final WebClient wc = createWebClient(60000);    // 10 minutes !
-		wc.path(streetsPath);
+		wc.path(streetsByPostalLocalityPath);
 		wc.path(noOrdrePostal);
 		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
 
@@ -575,32 +579,22 @@ public class FidorClientImpl implements FidorClient {
 	}
 
 	@Override
-	public Street getRue(RegDate dateReference, int estrid) {
+	public List<Street> getRuesParEstrid(int estrid, RegDate dateReference) {
 		final WebClient wc = createWebClient(60000);    // 10 minutes !
-		wc.path(streetPath);
+		wc.path(streetsByEstridPath);
 		wc.path(estrid);
-		wc.path(RegDateHelper.dateToDisplayString(dateReference == null ? RegDate.get() : dateReference));
+		if (dateReference != null) {
+			wc.query("referenceDate", RegDateHelper.dateToDisplayString(dateReference));
+		}
 
 		try {
-			final Response response = wc.get();
-			if (response.getStatus() >= 400) {
-				throw new ServerWebApplicationException(response);
-			}
-
-			final JAXBContext jaxbContext = JAXBContext.newInstance(ch.vd.fidor.xml.ws.v5.street.ObjectFactory.class);
-			final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-			//noinspection unchecked
-			final JAXBElement<Street> data = (JAXBElement<Street>) unmarshaller.unmarshal((InputStream) response.getEntity());
-			return data.getValue();
-	}
-		catch (ServerWebApplicationException e) {
-			if (e.getStatus() == HttpURLConnection.HTTP_NOT_FOUND) {
+			final Streets result = wc.get(Streets.class);
+			if (result == null || result.getNbOfResults() == 0) {
 				return null;
 			}
-			throw new FidorClientException(e);
+			return result.getStreet();
 		}
-		catch (JAXBException e) {
+		catch (ServerWebApplicationException e) {
 			throw new FidorClientException(e);
 		}
 	}
