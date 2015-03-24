@@ -38,4 +38,15 @@
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 
+	<!-- Bean client serviceInfrastructure -->
+	<bean name="_serviceInfrastructure" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
+		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
 </beans>
