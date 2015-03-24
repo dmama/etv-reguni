@@ -609,7 +609,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("Lausanne", info1.getTown());
 		assertEquals("CH", info1.getCountry());
 		assertEquals(Integer.valueOf(150), info1.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(30317), info1.getStreetId());
+		assertNull(info1.getStreetId());
 		assertEquals(TariffZone.SWITZERLAND, info1.getTariffZone());
 
 		// Récupération de l'adresse d'envoi de la PM
