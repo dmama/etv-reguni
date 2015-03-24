@@ -312,7 +312,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 
 		final AddressInformation represInfo2 = repres2.getAddressInformation();
 		assertNotNull(represInfo2);
-		assertEquals(new Integer(32296), represInfo2.getStreetId());
+		assertEquals(new Integer(1131419), represInfo2.getStreetId());
 		assertEquals("1", represInfo2.getHouseNumber());
 		assertEquals(Integer.valueOf(528), represInfo2.getSwissZipCodeId());
 		assertEquals("Avenue du Funiculaire", represInfo2.getStreet());
