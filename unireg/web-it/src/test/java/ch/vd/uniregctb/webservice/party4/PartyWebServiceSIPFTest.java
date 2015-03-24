@@ -589,7 +589,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("Lausanne", info0.getTown());
 		assertEquals("CH", info0.getCountry());
 		assertEquals(Integer.valueOf(153), info0.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(30593), info0.getStreetId());
+		assertNull(info0.getStreetId());
 		assertEquals(TariffZone.SWITZERLAND, info0.getTariffZone());
 
 		final Address addressCourrier1 = adressesCourrier.get(1);
@@ -694,7 +694,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("Genève", infoDomicile.getTown());
 		assertEquals("CH", infoDomicile.getCountry());
 		assertEquals(Integer.valueOf(367), infoDomicile.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(46421), infoDomicile.getStreetId());
+		assertNull(infoDomicile.getStreetId());
 		assertEquals(TariffZone.SWITZERLAND, infoDomicile.getTariffZone());
 
 		final FormattedAddress adresseDomicileFormattee = addressDomicile.getFormattedAddress();
@@ -729,7 +729,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("Genève", infoPoursuite.getTown());
 		assertEquals("CH", infoPoursuite.getCountry());
 		assertEquals(Integer.valueOf(367), infoPoursuite.getSwissZipCodeId());
-		assertEquals(Integer.valueOf(46421), infoPoursuite.getStreetId());
+		assertNull(infoPoursuite.getStreetId());
 		assertEquals(TariffZone.SWITZERLAND, infoPoursuite.getTariffZone());
 
 		final FormattedAddress adressePoursuiteFormattee = addressPoursuite.getFormattedAddress();

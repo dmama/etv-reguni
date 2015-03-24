@@ -695,7 +695,7 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		assertNull(info1.getPostOfficeBoxNumber());
 		assertNull(info1.getPostOfficeBoxText());
 		assertNull(info1.getDwellingNumber());
-		assertEquals(Integer.valueOf(30387), info1.getStreetId());
+		assertEquals(Integer.valueOf(1133688), info1.getStreetId());
 		assertEquals(Integer.valueOf(151), info1.getSwissZipCodeId());
 
 		// ... aussi disponibles :

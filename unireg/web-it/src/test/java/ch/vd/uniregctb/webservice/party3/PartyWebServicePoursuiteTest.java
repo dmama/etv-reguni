@@ -207,7 +207,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		assertEquals(TariffZone.SWITZERLAND, domicile.getAddressInformation().getTariffZone());
 
 		final List<Address> mailAddresses = tiers.getMailAddresses();
-		assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "p.a. OFF.CURATELLES & TUTELLES", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertFormattedAddress(mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress(), "Madame", "Anabela Lopes Magalhaes", "p.a. OFF.CURATELLES & TUTELLES", "Chemin de Mornex 32", "1014 Lausanne Adm cant VD");
 
 		// devrait être ci-après mais l'info n'est pas à jour dans le host : assertFormattedAddress(tiers.getAdressePoursuiteFormattee(), "Justice de Paix des districts du Jura-Nord vaudois et du Gros-de-Vaud", "Case Postale 693", "Rue du Pré 2", "1400 Yverdon-les-Bains");
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
@@ -217,7 +217,7 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
 		assertEquals(OtherPartyAddressType.GUARDIAN, debtProsecutionAddressOfOtherParty.getOtherPartyType());
-		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "Office des curatelles et tutelles", "professionnelles du canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant");
+		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "Office des curatelles et tutelles", "professionnelles du canton de Vaud", "Chemin de Mornex 32", "1014 Lausanne Adm cant VD");
 	}
 
 	@Test
@@ -303,12 +303,12 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 		assertAdresseEquals(domicile.getFormattedAddress(), mailAddresses.get(mailAddresses.size() - 1).getFormattedAddress());
 
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
-		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
+		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1003 Lausanne");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty poursuiteAutreTiers = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
 		assertEquals(OtherPartyAddressType.SPECIFIC, poursuiteAutreTiers.getOtherPartyType());
-		assertFormattedAddress(poursuiteAutreTiers.getBase().getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");
+		assertFormattedAddress(poursuiteAutreTiers.getBase().getFormattedAddress(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1003 Lausanne");
 	}
 
 	private static void assertAdresseEquals(FormattedAddress expected, FormattedAddress actual) {
