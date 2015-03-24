@@ -76,6 +76,7 @@
 			<xs:enumeration value="CONTACT_IMPOT_SOURCE"/>
 			<xs:enumeration value="ANNULE_ET_REMPLACE"/>
 			<xs:enumeration value="PARENTE"/>
+			<xs:enumeration value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"/>
 		</xs:restriction>
 	</xs:simpleType>
 
