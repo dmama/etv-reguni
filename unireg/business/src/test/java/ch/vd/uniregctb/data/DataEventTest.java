@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.data;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.event.data.v1.Relationship;
@@ -19,14 +18,15 @@ public class DataEventTest extends BusinessTest {
 	public void testCoherenceRelationTypeWithEvent(){
 
 		for (TypeRapportEntreTiers typeRapportEntreTier : TypeRapportEntreTiers.values()) {
-			try {
 				Relationship relation= Relationship.valueOf(typeRapportEntreTier.name());
 				assertNotNull(relation);
-			}
-			catch(IllegalArgumentException e){
-				Assert.fail(e.getMessage());
-			}
+		}
+	}
 
+	@Test
+	public void testRelationShipMapping(){
+		for (TypeRapportEntreTiers typeRapportEntreTiers : TypeRapportEntreTiers.values()) {
+			assertNotNull(DataEventJmsSender.getRelationshipMapping(typeRapportEntreTiers));
 		}
 	}
 }

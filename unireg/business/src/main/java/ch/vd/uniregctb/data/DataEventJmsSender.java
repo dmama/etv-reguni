@@ -153,41 +153,7 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 				LOGGER.trace("Emission d'un événement db de changement de la relation de type " + type + " entre les tiers sujet " + sujetId + " et objet " + objetId);
 			}
 
-			final Relationship relationship;
-			switch (type) {
-				case ANNULE_ET_REMPLACE:
-					relationship = Relationship.ANNULE_ET_REMPLACE;
-					break;
-				case APPARTENANCE_MENAGE:
-					relationship = Relationship.APPARTENANCE_MENAGE;
-					break;
-				case CONSEIL_LEGAL:
-					relationship = Relationship.CONSEIL_LEGAL;
-					break;
-				case CONTACT_IMPOT_SOURCE:
-					relationship = Relationship.CONTACT_IMPOT_SOURCE;
-					break;
-				case CURATELLE:
-					relationship = Relationship.CURATELLE;
-					break;
-				case PARENTE:
-					relationship = Relationship.PARENTE;
-					break;
-				case PRESTATION_IMPOSABLE:
-					relationship = Relationship.PRESTATION_IMPOSABLE;
-					break;
-				case REPRESENTATION:
-					relationship = Relationship.REPRESENTATION;
-					break;
-				case TUTELLE:
-					relationship = Relationship.TUTELLE;
-					break;
-				case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
-					relationship = Relationship.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
-					break;
-				default:
-					throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
-			}
+			final Relationship relationship = getRelationshipMapping(type);
 
 			final RelationChangeEvent event = objectFactory.createRelationChangeEvent();
 			event.setRelationType(relationship);
@@ -198,6 +164,50 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		catch (Exception e) {
 			LOGGER.error("Impossible d'envoyer un message de load de la DB", e);
 		}
+	}
+
+	/**Retourne le type au format DataEvent de relation correspondant au rapport entre tiers passé en paramètre
+	 *
+	 * @param type de rapport entre tiers
+	 * @return la correspondance au type passé en paramètre
+	 */
+	protected static Relationship getRelationshipMapping(TypeRapportEntreTiers type) {
+		final Relationship relationship;
+		switch (type) {
+			case ANNULE_ET_REMPLACE:
+				relationship = Relationship.ANNULE_ET_REMPLACE;
+				break;
+			case APPARTENANCE_MENAGE:
+				relationship = Relationship.APPARTENANCE_MENAGE;
+				break;
+			case CONSEIL_LEGAL:
+				relationship = Relationship.CONSEIL_LEGAL;
+				break;
+			case CONTACT_IMPOT_SOURCE:
+				relationship = Relationship.CONTACT_IMPOT_SOURCE;
+				break;
+			case CURATELLE:
+				relationship = Relationship.CURATELLE;
+				break;
+			case PARENTE:
+				relationship = Relationship.PARENTE;
+				break;
+			case PRESTATION_IMPOSABLE:
+				relationship = Relationship.PRESTATION_IMPOSABLE;
+				break;
+			case REPRESENTATION:
+				relationship = Relationship.REPRESENTATION;
+				break;
+			case TUTELLE:
+				relationship = Relationship.TUTELLE;
+				break;
+			case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
+				relationship = Relationship.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
+				break;
+			default:
+				throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
+		}
+		return relationship;
 	}
 
 	@Override
