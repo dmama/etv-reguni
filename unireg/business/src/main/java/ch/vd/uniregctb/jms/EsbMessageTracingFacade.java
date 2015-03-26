@@ -165,12 +165,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public Source getBodyAsSource() {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsSource();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -181,12 +181,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public Document getBodyAsDocument() throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsDocument();
 		}
-		catch (Exception e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -197,12 +197,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public byte[] getBodyAsByteArray() throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsByteArray();
 		}
-		catch (Exception e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -213,12 +213,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public byte[] getBodyAsByteArray(String encoding) throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsByteArray(encoding);
 		}
-		catch (RuntimeException e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -229,12 +229,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public String getBodyAsString() throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsString();
 		}
-		catch (RuntimeException e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -245,12 +245,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public String getBodyAsString(String encoding) throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			return target.getBodyAsString(encoding);
 		}
-		catch (RuntimeException e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -271,12 +271,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public void bodyToOutputStream(OutputStream out) throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			target.bodyToOutputStream(out);
 		}
-		catch (RuntimeException e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}
@@ -287,12 +287,12 @@ public class EsbMessageTracingFacade implements EsbMessage, EsbMessageWrapper {
 
 	@Override
 	public void bodyToOutputStream(OutputStream out, String encoding) throws Exception {
-		Exception t = null;
+		Throwable t = null;
 		final long start = recorder.start();
 		try {
 			target.bodyToOutputStream(out, encoding);
 		}
-		catch (RuntimeException e) {
+		catch (Exception | Error e) {
 			t = e;
 			throw e;
 		}

@@ -45,7 +45,7 @@ public class EFactureClientTracing implements EFactureClient, InitializingBean, 
 			}
 			return histo;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

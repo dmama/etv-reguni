@@ -34,7 +34,11 @@ public class ServiceUpiTracing implements ServiceUpiRaw, InitializingBean, Dispo
 			}
 			return ind;
 		}
-		catch (RuntimeException e) {
+		catch (ServiceUpiException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

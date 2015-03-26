@@ -39,7 +39,7 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -69,7 +69,7 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

@@ -46,7 +46,11 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			}
 			return ind;
 		}
-		catch (RuntimeException e) {
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -70,7 +74,11 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -96,7 +104,11 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			}
 			return ind;
 		}
-		catch (RuntimeException e) {
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -122,7 +134,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			}
 			return ind;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -143,7 +155,11 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 		try {
 			target.ping();
 		}
-		catch (RuntimeException e) {
+		catch (ServiceCivilException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

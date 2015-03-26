@@ -60,7 +60,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -80,7 +80,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -108,7 +108,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -131,7 +131,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -156,7 +156,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -181,7 +181,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -209,7 +209,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -237,7 +237,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -260,7 +260,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -288,7 +288,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -308,7 +308,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -336,7 +336,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -359,7 +359,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -382,7 +382,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -402,7 +402,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -427,7 +427,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -452,7 +452,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -477,7 +477,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -505,7 +505,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -533,7 +533,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -558,7 +558,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -586,7 +586,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -625,7 +625,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -653,7 +653,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -673,7 +673,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -701,7 +701,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -721,7 +721,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -746,7 +746,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -771,7 +771,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -799,7 +799,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -819,7 +819,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -844,7 +844,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -865,7 +865,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		try {
 			target.ping();
 		}
-		catch (RuntimeException e) {
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

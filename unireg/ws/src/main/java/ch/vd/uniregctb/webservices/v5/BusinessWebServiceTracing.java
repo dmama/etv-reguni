@@ -66,89 +66,129 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 
 	@Override
 	public SecurityResponse getSecurityOnParty(String user, int partyNo) {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getSecurityOnParty(user, partyNo);
 		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getSecurityOnParty", null);
+			tracing.end(time, t, "getSecurityOnParty", null);
 		}
 	}
 
 	@Override
 	public void setAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user, boolean blocked) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			target.setAutomaticRepaymentBlockingFlag(partyNo, user, blocked);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "setAutomaticRepaymentBlockingFlag", null);
+			tracing.end(time, t, "setAutomaticRepaymentBlockingFlag", null);
 		}
 	}
 
 	@Override
 	public boolean getAutomaticRepaymentBlockingFlag(int partyNo, UserLogin user) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getAutomaticRepaymentBlockingFlag(partyNo, user);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getAutomaticRepaymentBlockingFlag", null);
+			tracing.end(time, t, "getAutomaticRepaymentBlockingFlag", null);
 		}
 	}
 
 	@Override
 	public OrdinaryTaxDeclarationAckResponse ackOrdinaryTaxDeclarations(UserLogin user, OrdinaryTaxDeclarationAckRequest request) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.ackOrdinaryTaxDeclarations(user, request);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "ackOrdinaryTaxDeclarations", null);
+			tracing.end(time, t, "ackOrdinaryTaxDeclarations", null);
 		}
 	}
 
 	@Override
 	public DeadlineResponse newOrdinaryTaxDeclarationDeadline(int partyNo, int pf, int seqNo, UserLogin user, DeadlineRequest request) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.newOrdinaryTaxDeclarationDeadline(partyNo, pf, seqNo, user, request);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "newOrdinaryTaxDeclarationDeadline", null);
+			tracing.end(time, t, "newOrdinaryTaxDeclarationDeadline", null);
 		}
 	}
 
 	@Override
 	public TaxOffices getTaxOffices(int municipalityId, @Nullable RegDate date) {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getTaxOffices(municipalityId, date);
 		}
+		catch (RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getTaxOffices", null);
+			tracing.end(time, t, "getTaxOffices", null);
 		}
 	}
 
 	@Override
 	public PartyNumberList getModifiedTaxPayers(UserLogin user, Date since, Date until) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getModifiedTaxPayers(user, since, until);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getModifiedTaxPayers", null);
+			tracing.end(time, t, "getModifiedTaxPayers", null);
 		}
 	}
 
 	@Override
 	public DebtorInfo getDebtorInfo(UserLogin user, int debtorNo, int pf) throws AccessDeniedException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getDebtorInfo(user, debtorNo, pf);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getDebtorInfo", null);
+			tracing.end(time, t, "getDebtorInfo", null);
 		}
 	}
 
@@ -157,41 +197,57 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 	                                   @Nullable String townOrCountry, @Nullable RegDate dateOfBirth, @Nullable String socialInsuranceNumber, @Nullable String uidNumber,
 	                                   @Nullable Integer taxResidenceFSOId, boolean onlyActiveMainTaxResidence, @Nullable Set<PartySearchType> partyTypes,
 	                                   @Nullable DebtorCategory debtorCategory, @Nullable Boolean activeParty, @Nullable Long oldWithholdingNumber) throws AccessDeniedException, IndexerException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.searchParty(user, partyNo, name, nameSearchMode, townOrCountry, dateOfBirth, socialInsuranceNumber, uidNumber, taxResidenceFSOId, onlyActiveMainTaxResidence,
 			                          partyTypes, debtorCategory, activeParty, oldWithholdingNumber);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "searchParty", null);
+			tracing.end(time, t, "searchParty", null);
 		}
 	}
 
 	@Override
 	public List<CorporationEvent> searchCorporationEvent(UserLogin user, @Nullable Integer corporationId, @Nullable String eventCode,
 	                                                     @Nullable RegDate startDate, @Nullable RegDate endDate) throws AccessDeniedException, EmptySearchCriteriaException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.searchCorporationEvent(user, corporationId, eventCode, startDate, endDate);
 		}
+		catch (AccessDeniedException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "searchCorporationEvent", null);
+			tracing.end(time, t, "searchCorporationEvent", null);
 		}
 	}
 
 	@Override
 	public Party getParty(UserLogin user, int partyNo, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getParty(user, partyNo, parts);
 		}
+		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getParty", null);
+			tracing.end(time, t, "getParty", null);
 		}
 	}
 
 	@Override
 	public Parties getParties(UserLogin user, List<Integer> partyNos, @Nullable Set<PartyPart> parts) throws AccessDeniedException, ServiceException {
+		Throwable t = null;
 		final long time = tracing.start();
 		int resultSize = 0;
 		try {
@@ -205,19 +261,28 @@ public class BusinessWebServiceTracing implements BusinessWebService, Initializi
 			}
 			return parties;
 		}
+		catch (AccessDeniedException | ServiceException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, null, "getParties", resultSize, null);
+			tracing.end(time, t, "getParties", resultSize, null);
 		}
 	}
 
 	@Override
 	public ImageData getAvatar(int partyNo) throws ServiceException {
+		Throwable t = null;
 		final long time = tracing.start();
 		try {
 			return target.getAvatar(partyNo);
 		}
+		catch (ServiceException | RuntimeException | Error e) {
+			t = e;
+			throw e;
+		}
 		finally {
-			tracing.end(time, "getAvatar", null);
+			tracing.end(time, t, "getAvatar", null);
 		}
 	}
 }

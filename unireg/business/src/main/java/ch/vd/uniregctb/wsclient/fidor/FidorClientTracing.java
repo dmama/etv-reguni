@@ -44,7 +44,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 		try {
 			target.ping();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -65,7 +65,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return commune;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -91,7 +91,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return communes;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -117,7 +117,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return communes;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -143,7 +143,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return cantons;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -164,7 +164,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return communes;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -185,7 +185,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return commune;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -211,7 +211,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pays;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -237,7 +237,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pays;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -263,7 +263,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pays;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -289,7 +289,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pays;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -310,7 +310,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return l;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -336,7 +336,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return ls;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -357,7 +357,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return district;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -383,7 +383,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return region;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -409,7 +409,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return url;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -456,7 +456,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pls;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -483,7 +483,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pls;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -509,7 +509,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return pl;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -535,7 +535,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return rues;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -561,7 +561,7 @@ public class FidorClientTracing implements FidorClient, InitializingBean, Dispos
 			}
 			return rues;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

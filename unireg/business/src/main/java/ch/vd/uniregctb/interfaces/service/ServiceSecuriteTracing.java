@@ -42,7 +42,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -66,7 +66,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			items = operateur != null ? 1 : 0;
 			return operateur;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -90,7 +90,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			items = operateur != null ? 1 : 0;
 			return operateur;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -111,7 +111,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 		try {
 			return target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -135,7 +135,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

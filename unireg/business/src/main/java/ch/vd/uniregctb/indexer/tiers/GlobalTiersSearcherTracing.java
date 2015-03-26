@@ -55,7 +55,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -80,7 +80,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -105,7 +105,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -130,7 +130,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -155,7 +155,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -176,7 +176,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 		try {
 			return target.getAllIds();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -192,7 +192,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 		try {
 			target.checkCoherenceIndex(existingIds, statusManager, callback);
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -208,7 +208,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 		try {
 			return target.getApproxDocCount();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -224,7 +224,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 		try {
 			return target.getExactDocCount();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -244,7 +244,7 @@ public class GlobalTiersSearcherTracing implements GlobalTiersSearcher, Initiali
 			t = e;
 			throw e;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

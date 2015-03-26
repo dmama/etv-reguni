@@ -43,7 +43,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			items = list == null ? 0 : list.getNumberOfResults().intValue();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -67,7 +67,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			items = list == null ? 0 : list.getNumberOfResults().intValue();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -91,7 +91,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			items = list == null ? 0 : list.getNumberOfResults().intValue();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -117,7 +117,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			}
 			return event;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -149,7 +149,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			}
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -198,7 +198,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 		try {
 			return target.getInfoPersonUpi(avs13);
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

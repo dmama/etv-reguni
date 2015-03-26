@@ -59,7 +59,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			}
 			return ids;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -80,7 +80,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			}
 			return pm;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -104,7 +104,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -130,7 +130,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			}
 			return et;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -154,7 +154,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -180,7 +180,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			}
 			return adresses;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -206,7 +206,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			}
 			return adressesHisto;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
@@ -230,7 +230,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			items = list == null ? 0 : list.size();
 			return list;
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}

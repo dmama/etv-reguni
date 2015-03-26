@@ -37,7 +37,7 @@ public class EsbMessageValidatorTracing implements EsbMessageValidator {
 		try {
 			target.validate(msg);
 		}
-		catch (ESBValidationException | RuntimeException e) {
+		catch (ESBValidationException | RuntimeException | Error e) {
 			t = e;
 			throw e;
 		}
