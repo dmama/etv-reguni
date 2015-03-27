@@ -30,28 +30,29 @@ public class EditiqueListeRecapJob extends JobDefinition {
 		final JobParam param = new JobParam();
 		param.setDescription("Date fin de période");
 		param.setName(S_PARAM_DATE_FIN_PERIODE);
-		param.setMandatory(true);
+		param.setMandatory(false);
 		param.setType(new JobParamRegDate());
 		addParameterDefinition(param, null);
 	}
 
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
+
+		// [SIFISC-15006] si la date n'est pas renseignée dans les paramètres du batch, on prend la fin du mois courant
 		final RegDate dateFinPeriode = getRegDateValue(params, S_PARAM_DATE_FIN_PERIODE);
-		final RegDate dateFinMoisPeriode = dateFinPeriode.getLastDayOfTheMonth();
+		final RegDate dateFinMoisPeriode = dateFinPeriode == null ? RegDate.get().getLastDayOfTheMonth() : dateFinPeriode.getLastDayOfTheMonth();
 
 		final StatusManager status = getStatusManager();
 
 		final EnvoiLRsResults results = listeRecapService.imprimerAllLR(dateFinMoisPeriode, status);
 		if (results == null) {
-			final String message = String.format("L'envoi en masse des LRs pour le %s a échoué", RegDateHelper
-					.dateToDisplayString(dateFinPeriode));
+			final String message = String.format("L'envoi en masse des LRs pour le %s a échoué", RegDateHelper.dateToDisplayString(dateFinMoisPeriode));
 			Audit.error(message);
 			return;
 		}
 		final EnvoiLRsRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
-		final String message = "L'envoi en masse des LRs pour le " + RegDateHelper.dateToDisplayString(dateFinPeriode) + " est terminé.";
+		final String message = "L'envoi en masse des LRs pour le " + RegDateHelper.dateToDisplayString(dateFinMoisPeriode) + " est terminé.";
 		Audit.success(message, rapport);
 	}
 
