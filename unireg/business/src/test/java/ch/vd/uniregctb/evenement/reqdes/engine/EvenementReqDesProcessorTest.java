@@ -15,10 +15,13 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -43,6 +46,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.OriginePersonnePhysique;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -51,6 +55,7 @@ import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -59,6 +64,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcessingTest {
@@ -1271,11 +1277,11 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				pp1.setRue("Rue de la porte en bois");
 				pp1.setNumeroMaison("13b");
 				pp1.setSexe(Sexe.FEMININ);
-				pp1.setSourceCivile(false);
-				pp1.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
-				pp1.setLocalite("Meulin");
-				pp1.setNumeroPostal("77415");
 				pp1.setSourceCivile(true);
+				pp1.setCategorieEtranger(CategorieEtranger._06_FRONTALIER_G);
+				pp1.setOfsCommune(MockCommune.CheseauxSurLausanne.getNoOFS());
+				pp1.setLocalite(MockLocalite.CheseauxSurLausanne.getNomComplet());
+				pp1.setNumeroPostal(MockLocalite.CheseauxSurLausanne.getNPA().toString());
 
 				pp1.setDateEtatCivil(dateMariage);
 				pp1.setDateNaissance(date(1965, 9, 27));
@@ -2969,7 +2975,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			public Long doInTransaction(TransactionStatus status) {
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("zainotaire", "Duchmol", "Alexandra"), null, dateActe, "4879846498");
 				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
-				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba",  "Valentine Catherine Julie");
+				final PartiePrenante pp = addPartiePrenante(ut, "Cordoba", "Valentine Catherine Julie");
 				pp.setNomNaissance("Dumoulin");
 				pp.setNomMere("Delaplanche");
 				pp.setPrenomsMere("Sophie Mafalda");
@@ -6497,6 +6503,801 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals(dateDeces, ffp.getDateFin());
 				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
 				Assert.assertFalse(ffp.isAnnule());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source civile qui a une adresse de résidence vaudoise ne doit pas être refusé à cause de la source civile
+	 * (-> il ne donnera lieu à aucune modification, cependant)
+	 */
+	@Test
+	public void testResidenceVaudoiseEtSourceCivile() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setSourceCivile(true);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Lausanne");
+				pp.setOfsCommune(MockCommune.Lausanne.getNoOFS());
+				pp.setNumeroPostal("1004");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source fiscale qui a une adresse de résidence vaudoise doit être refusé à cause de l'adresse vaudoise
+	 */
+	@Test
+	public void testResidenceVaudoiseEtSourceFiscale() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // source fiscale !
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Lausanne");
+				pp.setOfsCommune(MockCommune.Lausanne.getNoOFS());
+				pp.setNumeroPostal("1004");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("La commune de résidence (%s/%d) est vaudoise.", MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS()), erreur.getMessage());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+
+				// on ne doit avoir modifié personne !
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Labarrière", tiersService.getDecompositionNomPrenom(pp, false).getNom());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source "création" qui a une adresse de résidence vaudoise doit être refusé à cause de l'adresse vaudoise
+	 */
+	@Test
+	public void testResidenceVaudoiseEtSourceCreation() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Lausanne");
+				pp.setOfsCommune(MockCommune.Lausanne.getNoOFS());
+				pp.setNumeroPostal("1004");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("La commune de résidence (%s/%d) est vaudoise.", MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS()), erreur.getMessage());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+
+				// on ne doit avoir modifié personne !
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Labarrière", tiersService.getDecompositionNomPrenom(pp, false).getNom());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source civile qui a une adresse de résidence non-vaudoise doit être refusé à cause de l'incohérence (quelque chose n'a pas été pris en compte)
+	 */
+	@Test
+	public void testResidenceSuisseNonVaudoiseEtSourceCivile() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bern);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setSourceCivile(true);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite(MockLocalite.Bumpliz.getNomComplet());
+				pp.setOfsCommune(MockCommune.Bern.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Bumpliz.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("La commune de résidence (%s/%d) n'est pas vaudoise (%s) alors que la source indiquée est civile.",
+				                                  MockCommune.Bern.getNomOfficiel(), MockCommune.Bern.getNoOFS(), MockCommune.Bern.getSigleCanton()),
+				                    erreur.getMessage());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source civile qui a une adresse de résidence à l'étranger doit être refusé à cause de l'incohérence (quelque chose n'a pas été pris en compte)
+	 */
+	@Test
+	public void testResidenceEtrangereEtSourceCivile() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bern);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setSourceCivile(true);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.EN_ERREUR, ut.getEtat());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(String.format("Le pays de résidence (%d) est hors-Suisse alors que la source indiquée est civile.", MockPays.Allemagne.getNoOFS()), erreur.getMessage());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source fiscale qui a une adresse de résidence non-vaudoise ne doit pas être refusé
+	 */
+	@Test
+	public void testResidenceSuisseNonVaudoiseEtSourceFiscale() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // source fiscale !
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Genève");
+				pp.setOfsCommune(MockCommune.Geneve.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Geneve.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+
+				// on doit avoir modifié le nom
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Dumoulin", pp.getNom());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source fiscale qui a une adresse de résidence non-vaudoise ne doit pas être refusé
+	 */
+	@Test
+	public void testResidenceEtrangereEtSourceFiscale() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockPays.France);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+				pp.setNumeroContribuable(ctb.getNumero());      // source fiscale !
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.France.getNoOFS());
+				pp.setLocalite("Annecy");
+				pp.setNumeroPostal("74000");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// on ne doit avoir créé personne !
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(Collections.singletonList(ids.ppId), allPps);
+
+				// on doit avoir modifié le nom
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals("Dumoulin", pp.getNom());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source "création" qui a une adresse de résidence vaudoise doit être refusé à cause de l'adresse vaudoise
+	 */
+	@Test
+	public void testResidenceSuisseNonVaudoiseEtSourceCreation() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Geneve);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+
+				pp.setRue("Avenue du Simplon");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Suisse.getNoOFS());
+				pp.setLocalite("Genève");
+				pp.setOfsCommune(MockCommune.Geneve.getNoOFS());
+				pp.setNumeroPostal(MockLocalite.Geneve.getNPA().toString());
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// on doit avoir créé un nouveau contribuable
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(2, allPps.size());
+				Collections.sort(allPps);
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+
+				final Long newId = allPps.get(1);
+				Assert.assertNotNull(newId);
+				Assert.assertEquals(newId, ut.getPartiesPrenantes().iterator().next().getNumeroContribuableCree());
+
+				final PersonnePhysique newPP = (PersonnePhysique) tiersDAO.get(newId);
+				Assert.assertNotNull(newPP);
+				Assert.assertEquals("Dumoulin", newPP.getNom());
+
+				final ForsParType fpt = newPP.getForsParType(true);
+				Assert.assertEquals(1, fpt.principaux.size());
+				Assert.assertEquals(1, fpt.secondaires.size());
+
+				final ForFiscalPrincipal ffp = fpt.principaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateActe, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+
+				final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateActe, ffs.getDateDebut());
+				Assert.assertNull(ffs.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertNull(ffs.getMotifFermeture());
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-14606 : un individu de source "création" qui a une adresse de résidence vaudoise doit être refusé à cause de l'adresse vaudoise
+	 */
+	@Test
+	public void testResidenceEtrangereEtSourceCreation() throws Exception {
+
+		final long noIndividu = 237839123426L;
+		final RegDate dateNaissance = date(1985, 10, 20);
+		final RegDate dateActe = date(2013, 6, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, dateNaissance, "Labarrière", "Philistin", Sexe.MASCULIN);
+			}
+		});
+
+		final class Ids {
+			long ppId;
+			long utId;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique ctb = addHabitant(noIndividu);
+				addForPrincipal(ctb, dateNaissance.addYears(18), MotifFor.MAJORITE, MockPays.Allemagne);
+
+				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("tabou", "Taboumata", "Oli"), null, dateActe, "541154651");
+				final UniteTraitement ut = addUniteTraitement(evt, EtatTraitement.A_TRAITER, null);
+				final PartiePrenante pp = addPartiePrenante(ut, "Dumoulin", "Philistin");
+				pp.setNomMere("Delaplanche");
+				pp.setPrenomsMere("Sophie Mafalda");
+				pp.setNomPere("Dumoulin");
+				pp.setPrenomsPere("François Robert");
+				pp.setOfsPaysNationalite(MockPays.Suisse.getNoOFS());
+				pp.setSexe(Sexe.MASCULIN);
+				pp.setDateNaissance(dateNaissance);
+
+				pp.setRue("Nizzaallee");
+				pp.setNumeroMaison("7");
+				pp.setOfsPays(MockPays.Allemagne.getNoOFS());
+				pp.setLocalite("Aachen");
+				pp.setNumeroPostal("52064");
+
+				final TransactionImmobiliere ti1 = addTransactionImmobiliere(evt, "Propriété Morges", ModeInscription.INSCRIPTION, TypeInscription.PROPRIETE, MockCommune.Morges.getNoOFS());
+				addRole(pp, ti1, TypeRole.ACQUEREUR);
+
+				final Ids ids = new Ids();
+				ids.ppId = ctb.getNumero();
+				ids.utId = ut.getId();
+				return ids;
+			}
+		});
+
+		// traiter l'unité
+		traiteUniteTraitement(ids.utId);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
+				Assert.assertNotNull(ut);
+				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
+				Assert.assertEquals(0, ut.getErreurs().size());
+
+				// on doit avoir créé un nouveau contribuable
+				final List<Long> allPps = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+				Assert.assertNotNull(allPps);
+				Assert.assertEquals(2, allPps.size());
+				Collections.sort(allPps);
+				Assert.assertEquals((Long) ids.ppId, allPps.get(0));
+
+				final Long newId = allPps.get(1);
+				Assert.assertNotNull(newId);
+				Assert.assertEquals(newId, ut.getPartiesPrenantes().iterator().next().getNumeroContribuableCree());
+
+				final PersonnePhysique newPP = (PersonnePhysique) tiersDAO.get(newId);
+				Assert.assertNotNull(newPP);
+				Assert.assertEquals("Dumoulin", newPP.getNom());
+
+				final ForsParType fpt = newPP.getForsParType(true);
+				Assert.assertEquals(1, fpt.principaux.size());
+				Assert.assertEquals(1, fpt.secondaires.size());
+
+				final ForFiscalPrincipal ffp = fpt.principaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateActe, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+
+				final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateActe, ffs.getDateDebut());
+				Assert.assertNull(ffs.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertNull(ffs.getMotifFermeture());
 			}
 		});
 	}

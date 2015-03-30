@@ -572,9 +572,16 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				final Commune commune = infraService.getCommuneByNumeroOfs(ofsCommuneDomicile, dateActe);
 				checkCommune(ofsCommuneDomicile, dateActe, commune, errorCollector);
 
+				// [SIFISC-14606] La commune peut être vaudoise si la source est civile
 				// la commune de résidence ne doit pas être vaudoise pour une mise à jour automatique
-				if (commune != null && commune.isVaudoise()) {
+				if (commune != null && commune.isVaudoise() && !pp.isSourceCivile()) {
 					errorCollector.addNewMessage(String.format("La commune de résidence (%s/%d) est vaudoise.", commune.getNomOfficiel(), ofsCommuneDomicile));
+				}
+
+				// [SIFISC-14606] si la source est civile, la commune doit être vaudoise
+				if (commune != null && !commune.isVaudoise() && pp.isSourceCivile()) {
+					errorCollector.addNewMessage(String.format("La commune de résidence (%s/%d) n'est pas vaudoise (%s) alors que la source indiquée est civile.",
+					                                           commune.getNomOfficiel(), ofsCommuneDomicile, commune.getSigleCanton()));
 				}
 			}
 			else {
@@ -582,6 +589,11 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				final Integer ofsPays = pp.getOfsPays();
 				if (ofsPays != null && ofsPays == ServiceInfrastructureService.noOfsSuisse) {
 					errorCollector.addNewMessage("Le pays de résidence ne peut pas être la Suisse en l'absence de commune de résidence.");
+				}
+
+				// [SIFISC-14606] si la source est civile, l'adresse de résidence à l'étranger doit être refusée
+				if (ofsPays != null && ofsPays != ServiceInfrastructureService.noOfsSuisse && pp.isSourceCivile()) {
+					errorCollector.addNewMessage(String.format("Le pays de résidence (%d) est hors-Suisse alors que la source indiquée est civile.", ofsPays));
 				}
 			}
 
