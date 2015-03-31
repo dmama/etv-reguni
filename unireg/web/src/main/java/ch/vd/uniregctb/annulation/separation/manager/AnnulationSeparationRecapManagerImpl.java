@@ -74,7 +74,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 		if (forFiscalPrincipal != null &&
 				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT == forFiscalPrincipal.getMotifFermeture()) {
 
-			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menageCommun, forFiscalPrincipal.getDateFin().getOneDayBefore());
+			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menageCommun, forFiscalPrincipal.getDateFin());
 			if (ensembleTiersCouple != null) {
 				TiersGeneralView premierPPView = tiersGeneralManager.getPersonnePhysique(ensembleTiersCouple.getPrincipal(), true);
 				annulationSeparationRecapView.setPremierePersonne(premierPPView);
