@@ -77,258 +77,192 @@
 		</table>
 	</fieldset>
 
-	<div id="adresseEditTabs">
-		<ul>
-			<li id="createNewAdresseTab">
-				<a href="#tabContent_createNewAdresseTab"><fmt:message key="label.creer.nouvelle.adresse" /></a>
-			</li>
-			<li id="repriseAdresseTab">
-				<a href="#tabContent_repriseAdresseTab"><fmt:message key="label.reutiliser.adresse.civile" /></a>
-			</li>
-		</ul>
+	<c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
+	<c:set var="lengthadrnum" value="<%=LengthConstants.ADRESSE_NUM%>" scope="request" />
 
-		<div id="tabContent_createNewAdresseTab" class="situation_fiscale">
-			<c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
-			<c:set var="lengthadrnum" value="<%=LengthConstants.ADRESSE_NUM%>" scope="request" />
+	<fieldset><legend><span><fmt:message key="label.nouvelleAdresse" /></span></legend>
+		<div id="adresse_saisie" >
+			<table border="0">
+				<unireg:nextRowClass reset="0"/>
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="30em"></td>
+					<td>
+						<div style="margin-left:1em">
+							<c:if test="${command.id != null}">
+								<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
+							</c:if>
+							<c:if test="${command.id == null}">
+								<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
+							</c:if>
+							<label for="typeLocalite1"><fmt:message key="label.suisse" /></label><br>
 
-			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
-			<fieldset><legend><span><fmt:message key="label.nouvelleAdresse" /></span></legend>
-				<div id="adresse_saisie" >
-					<table border="0">
-					<tr class="odd">
-						<td width="30em"></td>
-						<td>
-							<div style="margin-left:1em">
-								<c:if test="${command.id != null}">
-									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="true"/>
-								</c:if>
-								<c:if test="${command.id == null}">
-									<form:radiobutton path="typeLocalite" onclick="selectLocalite('localite_suisse');" value="suisse" disabled="false"/>
-								</c:if>
-								<label for="typeLocalite1"><fmt:message key="label.suisse" /></label><br>
-
-								<c:if test="${command.id != null}">
-									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
-								</c:if>
-								<c:if test="${command.id == null}">
-									<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
-								</c:if>
-								<label for="typeLocalite2"><fmt:message key="label.etranger" /></label>
-							</div>
-						</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr class="even">
-						<td><fmt:message key="label.complements" />:</td>
-						<td colspan="3">
+							<c:if test="${command.id != null}">
+								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="true" />
+							</c:if>
+							<c:if test="${command.id == null}">
+								<form:radiobutton path="typeLocalite" onclick="selectLocalite('pays');" value="pays"  disabled="false" />
+							</c:if>
+							<label for="typeLocalite2"><fmt:message key="label.etranger" /></label>
+						</div>
+					</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.complements" />:</td>
+					<td colspan="3">
 						<form:input path="complements" cssErrorClass="input-with-errors"
-						size ="100" maxlength="${lengthadrnom}" /></td>
-					</tr>
-					<tr class="odd">
-						<td>
-							<div id="div_label_localite_suisse"><fmt:message key="label.localite.suisse" />:</div>
-							<div id="div_label_pays_npa" style="display:none;"><fmt:message key="label.npa.localite" /> :</div>
-						</td>
-						<td>
-							<div id="div_input_localite_suisse">
-								<form:input path="localiteSuisse" id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
-								<form:hidden path="numeroOrdrePoste" id="numeroOrdrePoste"  />
-								<form:hidden path="numCommune" id="numCommune"  />
-								<script>
-									$(function() {
-										Autocomplete.infra('localite', '#localiteSuisse', true, function(item) {
-											if (item) {
-												$('#numeroOrdrePoste').val(item.id1);
-												$('#numCommune').val(item.id2);
-												// [SIFISC-1507] en cas de saisie correcte d'une localité, on supprime un éventuel message d'erreur Spring associé au champ
-												$('#localiteSuisse').removeClass('input-with-errors');
-												$('#localiteSuisse\\.errors').hide();
-											}
-											else {
-												$('#numeroOrdrePoste').val(null);
-												$('#numCommune').val(null);
-											}
-											$('#numeroRue').val('');
-											$('#rue').val('');
-
-											// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
-											Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
-												if (i) {
-													$('#numeroRue').val(i.id1);
-													$('#numeroOrdrePoste').val(i.id2);
-												}
-												else {
-													$('#numeroRue').val(null);
-													// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
-												}
-											});
-
-											AddressEdit_Adjust();
-										});
-									});
-								</script>
-								<form:errors path="localiteSuisse" cssClass="error"/>
-							</div>
-							<div id="div_input_pays_npa" style="display:none;">
-								<form:input path="localiteNpa" cssErrorClass="input-with-errors"
-								size ="20" maxlength="${lengthadrnum}" />
-								<form:errors path="localiteNpa" cssClass="error"/>
-							</div>
-						</td>
-						<td>
-							<div id="div_label_lieu" style="display:none;">
-							<fmt:message key="label.complement.localite" />:</div>
-						</td>
-						<td>
-							<div id="div_input_lieu" style="display:none;">
-								<form:input path="complementLocalite" id="complementLocalite" cssErrorClass="input-with-errors"
-								size ="20" maxlength="${lengthadrnom}" />
-								<form:errors path="complementLocalite" cssClass="error"/>
-							</div>
-						</td>
-					</tr>
-					<tr class="even" id="div_pays" style="display:none;">
-						<td><fmt:message key="label.paysEtranger" />:</td>
-						<td colspan="3" >
-								<form:hidden path="paysOFS" id="paysOFS"/>
-								<form:input path="paysNpa" id="pays" cssErrorClass="input-with-errors" size ="20" />
-								<form:errors path="paysNpa" cssClass="error"/>
-								<script>
-									$(function() {
-										Autocomplete.infra('etatOuTerritoire', '#pays', true, function(item) {
-											$('#paysOFS').val(item ? item.id1 : null);
-										});
-									});
-								</script>
-						</td>
-					</tr>
-					<tr class="even">
-						<td><fmt:message key="label.rue" />&nbsp;:</td>
-						<td>
-							<form:input path="rue" id="rue" size ="25" cssErrorClass="input-with-errors" maxlength="${lengthadrnom}" />
-							<form:errors path="rue" cssClass="error"/>
-							<form:hidden path="numeroRue" id="numeroRue"/>
+						            size ="100" maxlength="${lengthadrnom}" /></td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td>
+						<div id="div_label_localite_suisse"><fmt:message key="label.localite.suisse" />:</div>
+						<div id="div_label_pays_npa" style="display:none;"><fmt:message key="label.npa.localite" /> :</div>
+					</td>
+					<td>
+						<div id="div_input_localite_suisse">
+							<form:input path="localiteSuisse" id="localiteSuisse" cssErrorClass="input-with-errors" size ="25" />
+							<form:hidden path="numeroOrdrePoste" id="numeroOrdrePoste"  />
+							<form:hidden path="numCommune" id="numCommune"  />
 							<script>
 								$(function() {
-									Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
-										if (i) {
-											$('#numeroRue').val(i.id1);
-											$('#numeroOrdrePoste').val(i.id2);
+									Autocomplete.infra('localite', '#localiteSuisse', true, function(item) {
+										if (item) {
+											$('#numeroOrdrePoste').val(item.id1);
+											$('#numCommune').val(item.id2);
+											// [SIFISC-1507] en cas de saisie correcte d'une localité, on supprime un éventuel message d'erreur Spring associé au champ
+											$('#localiteSuisse').removeClass('input-with-errors');
+											$('#localiteSuisse\\.errors').hide();
 										}
 										else {
-											$('#numeroRue').val(null);
-											// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
+											$('#numeroOrdrePoste').val(null);
+											$('#numCommune').val(null);
 										}
-										if ($('#div_pays').is(":visible")) {
-											// [SIFISC-832] on ne valide pas les rues pour les adresses étrangères
-											$('#rue').removeClass('error');
-										}
+										$('#numeroRue').val('');
+										$('#rue').val('');
+
+										// à chaque changement de localité, on adapte l'autocompletion sur la rue en conséquence
+										Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
+											if (i) {
+												$('#numeroRue').val(i.id1);
+												$('#numeroOrdrePoste').val(i.id2);
+											}
+											else {
+												$('#numeroRue').val(null);
+												// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
+											}
+										});
+
+										AddressEdit_Adjust();
 									});
 								});
 							</script>
-						</td>
-						<td><fmt:message key="label.numero.maison" />:</td>
-						<td>
-							<form:input path="numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors"
-							size ="5" maxlength="${lengthadrnum}" />
-							<form:errors path="numeroMaison" cssClass="error"/>
-						</td>
-					</tr>
-					<tr class="odd">
-						<td><fmt:message key="label.numero.appartement" />&nbsp;:</td>
-						<td colspan="3">
-							<form:input path="numeroAppartement" id="numeroAppartement" cssErrorClass="input-with-errors"
-							size ="5" maxlength="${lengthadrnum}" />
-							<form:errors path="numeroAppartement" cssClass="error"/>
-						</td>
-					</tr>
-					<tr class="even">
-						<td><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
-						<td>
-							<form:select path="texteCasePostale" id="texteCasePostale">
-								<form:option value="" ></form:option>
-								<form:options items="${textesCasePostale}" />
-							</form:select>
-						</td>
-						<td id="td_case_postale_label"><fmt:message key="label.case.postale" /> :</td>
-						<td	id="td_case_postale">
-							<form:input path="numeroCasePostale" id="numeroCasePostale" cssErrorClass="input-with-errors" size ="5" />
-							<form:errors path="numeroCasePostale" cssClass="error"/>
-						</td>
-					</tr>
-					<tr class="odd">
-						<td><fmt:message key="label.adresse.permanente" />&nbsp;:</td>
-						<td>
-							<form:checkbox path="permanente" id="adressePermanente" cssErrorClass="input-with-errors" />
-							<form:errors path="permanente" cssClass="error"/>
-						</td>
-						<td id="td_npa_case_postale_label"><fmt:message key="label.npa.case.postale" /> :</td>
-						<td	id="td_npa_case_postale">
-							<form:input path="npaCasePostale" id="npaCasePostale" cssErrorClass="input-with-errors" size ="4" />
-							<form:errors path="npaCasePostale" cssClass="error"/>
-						</td>
+							<form:errors path="localiteSuisse" cssClass="error"/>
+						</div>
+						<div id="div_input_pays_npa" style="display:none;">
+							<form:input path="localiteNpa" cssErrorClass="input-with-errors"
+							            size ="20" maxlength="${lengthadrnum}" />
+							<form:errors path="localiteNpa" cssClass="error"/>
+						</div>
+					</td>
+					<td>
+						<div id="div_label_lieu" style="display:none;">
+							<fmt:message key="label.complement.localite" />:</div>
+					</td>
+					<td>
+						<div id="div_input_lieu" style="display:none;">
+							<form:input path="complementLocalite" id="complementLocalite" cssErrorClass="input-with-errors"
+							            size ="20" maxlength="${lengthadrnom}" />
+							<form:errors path="complementLocalite" cssClass="error"/>
+						</div>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass frozen="true"/>" id="div_pays" style="display:none;">
+					<td><fmt:message key="label.paysEtranger" />:</td>
+					<td colspan="3" >
+						<form:hidden path="paysOFS" id="paysOFS"/>
+						<form:input path="paysNpa" id="pays" cssErrorClass="input-with-errors" size ="20" />
+						<form:errors path="paysNpa" cssClass="error"/>
+						<script>
+							$(function() {
+								Autocomplete.infra('etatOuTerritoire', '#pays', true, function(item) {
+									$('#paysOFS').val(item ? item.id1 : null);
+								});
+							});
+						</script>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.rue" />&nbsp;:</td>
+					<td>
+						<form:input path="rue" id="rue" size ="25" cssErrorClass="input-with-errors" maxlength="${lengthadrnom}" />
+						<form:errors path="rue" cssClass="error"/>
+						<form:hidden path="numeroRue" id="numeroRue"/>
+						<script>
+							$(function() {
+								Autocomplete.infra('rue&numCommune=' + $('#numCommune').val(), '#rue', true, function(i) {
+									if (i) {
+										$('#numeroRue').val(i.id1);
+										$('#numeroOrdrePoste').val(i.id2);
+									}
+									else {
+										$('#numeroRue').val(null);
+										// [UNIREG-3408] On n'annule pas le numéro de localité car il doit être possible de saisir une rue non-référencée
+									}
+									if ($('#div_pays').is(":visible")) {
+										// [SIFISC-832] on ne valide pas les rues pour les adresses étrangères
+										$('#rue').removeClass('error');
+									}
+								});
+							});
+						</script>
+					</td>
+					<td><fmt:message key="label.numero.maison" />:</td>
+					<td>
+						<form:input path="numeroMaison" id="numeroMaison" cssErrorClass="input-with-errors"
+						            size ="5" maxlength="${lengthadrnum}" />
+						<form:errors path="numeroMaison" cssClass="error"/>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.numero.appartement" />&nbsp;:</td>
+					<td colspan="3">
+						<form:input path="numeroAppartement" id="numeroAppartement" cssErrorClass="input-with-errors"
+						            size ="5" maxlength="${lengthadrnum}" />
+						<form:errors path="numeroAppartement" cssClass="error"/>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.texte.case.postale" />&nbsp;:</td>
+					<td>
+						<form:select path="texteCasePostale" id="texteCasePostale">
+							<form:option value="" ></form:option>
+							<form:options items="${textesCasePostale}" />
+						</form:select>
+					</td>
+					<td id="td_case_postale_label"><fmt:message key="label.case.postale" /> :</td>
+					<td	id="td_case_postale">
+						<form:input path="numeroCasePostale" id="numeroCasePostale" cssErrorClass="input-with-errors" size ="5" />
+						<form:errors path="numeroCasePostale" cssClass="error"/>
+					</td>
+				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.adresse.permanente" />&nbsp;:</td>
+					<td>
+						<form:checkbox path="permanente" id="adressePermanente" cssErrorClass="input-with-errors" />
+						<form:errors path="permanente" cssClass="error"/>
+					</td>
+					<td id="td_npa_case_postale_label"><fmt:message key="label.npa.case.postale" /> :</td>
+					<td	id="td_npa_case_postale">
+						<form:input path="npaCasePostale" id="npaCasePostale" cssErrorClass="input-with-errors" size ="4" />
+						<form:errors path="npaCasePostale" cssClass="error"/>
+					</td>
 
-					</tr>
+				</tr>
 
-					</table>
-				</div>
-			</fieldset>
-
+			</table>
 		</div>
-
-		<div id="tabContent_repriseAdresseTab" class="editTiers">
-			<c:if test="${not empty command.adresseDisponibles}">
-				<c:if test="${command.nature != 'DebiteurPrestationImposable' && command.nature != 'NonHabitant'}">
-					<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
-					<fieldset>
-					<legend><span><fmt:message key="title.edition.adresseActives" /></span></legend>
-					<table>
-						<display:table 	name="command.adresseDisponibles" id="adresse" pagesize="10" class="display" sort="list">
-
-								<display:column sortable ="true" titleKey="label.adresse.source">
-									<fmt:message key="option.source.${adresse.source}" />
-								</display:column>
-								<display:column  sortable ="true" titleKey="label.type.adresseCivil">
-									<c:if test="${adresse.typeAdresseToString != null}">
-										<fmt:message key="option.type.adresse.civil.${adresse.typeAdresseToString}" />
-									</c:if>
-								</display:column>
-								<display:column property="representantLegal" sortable ="true" titleKey="label.representant"  />
-								<display:column property="rue"  sortable ="true" titleKey="label.rueCasePostale">
-								</display:column>
-								<display:column property ="localite" sortable ="true" titleKey="label.localite" />
-								<display:column  property ="paysNpa" sortable ="true" titleKey="label.pays" />
-								<display:column  sortable ="true" titleKey="label.reprise">
-								<c:if test="${adresse.source != null && adresse.source =='CIVILE'}">
-									<a href="#" class="copy" onclick="reprise('repriseCivil','<c:out value="${adresse_rowNum - 1}"/>')"><span class="copy">Reprise Civil</span></a>
-								</c:if>
-								<c:if test="${adresse.source != null && (adresse.source =='CONSEIL_LEGAL' || adresse.source =='TUTELLE')}">
-									<a href="#" class="copy" onclick="reprise('reprise','<c:out value="${adresse_rowNum - 1}"/>')"><span class="copy">Reprise Representant</span></a>
-								</c:if>
-								</display:column>
-						</display:table>
-					</table>
-					</fieldset>
-				</c:if>
-			</c:if>
-		</div>
-
-		<script>
-			$(function() {
-				$("#adresseEditTabs").tabs();
-			});
-			
-			function reprise(mode,index) {
-					var form = document.getElementById('formAddAdresse');
-					form.mode.value =	mode ;
-					form.index.value = index ;
-					form.action = 'adresse.do';
-					form.submit();
-			}
-		</script>
-
-	</div>
+	</fieldset>
 
 	<div id="adresse_add">
 
@@ -399,7 +333,7 @@
 
 <script type="text/javascript" language="Javascript.1.3">
 
-	$(function() {
+	$(function () {
 		AddressEdit_Adjust();
 		$("#texteCasePostale").keyup(TexteCasePostale_OnChange); // autrement les changements de sélection effectués au clavier ne sont pas pris en compte
 		$("#texteCasePostale").change(TexteCasePostale_OnChange);
@@ -452,30 +386,30 @@
 	}
 
 	function selectLocalite(name) {
-		if( name == 'pays' ){
+		if (name == 'pays') {
 			$('#div_label_localite_suisse').hide();
 			$('#div_input_localite_suisse').hide();
-			$('#div_pays').show();	
+			$('#div_pays').show();
 			$('#div_label_lieu').show();
-			$('#div_input_lieu').show();	
-			$('#div_label_pays_npa').show();	
+			$('#div_input_lieu').show();
+			$('#div_label_pays_npa').show();
 			$('#div_input_pays_npa').show();
 		}
-		if( name == 'localite_suisse' ){
+		if (name == 'localite_suisse') {
 			$('#div_label_localite_suisse').show();
 			$('#div_input_localite_suisse').show();
-			$('#div_pays').hide();	
+			$('#div_pays').hide();
 			$('#div_label_lieu').hide();
-			$('#div_input_lieu').hide();	
-			$('#div_label_pays_npa').hide();	
+			$('#div_input_lieu').hide();
+			$('#div_label_pays_npa').hide();
 			$('#div_input_pays_npa').hide();
 		}
 		AddressEdit_Adjust();
+
+		var table = $('#adresse_saisie');
+		table.find('tr').removeClass('even');
+		table.find('tr').removeClass('odd');
+		table.find('tr:visible:even').addClass('even');
+		table.find('tr:visible:odd').addClass('odd');
 	}
-	<c:if test="${command.typeLocalite == 'suisse'}">
-	selectLocalite('suisse');
-	</c:if>
-	<c:if test="${command.typeLocalite == 'pays'}">
-	selectLocalite('pays');
-	</c:if>
 </script>
