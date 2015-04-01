@@ -76,10 +76,13 @@
 					</c:if>
 				</td>
 			</tr>
-			<tr class="<unireg:nextRowClass/>" >
-				<td><fmt:message key="label.complement.nomInstitutionFinanciere" />&nbsp;:</td>
-				<td><c:out value="${command.complement.compteBancaire.nomInstitutionCompteBancaire}"/></td>
-			</tr>
+			<%-- SIFISC-15128 : le champ du nom de l'institution financière n'a de sens que sur les entreprises aujourd'hui --%>
+			<c:if test="${command.natureTiers == 'Entreprise'}">
+				<tr class="<unireg:nextRowClass/>" >
+					<td><fmt:message key="label.complement.nomInstitutionFinanciere" />&nbsp;:</td>
+					<td><c:out value="${command.complement.compteBancaire.nomInstitutionCompteBancaire}"/></td>
+				</tr>
+			</c:if>
 			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 				<td><c:out value="${command.complement.compteBancaire.titulaireCompteBancaire}"/></td>
