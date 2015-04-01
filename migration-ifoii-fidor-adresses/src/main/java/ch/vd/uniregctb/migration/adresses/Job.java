@@ -18,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import weblogic.jndi.WLInitialContextFactory;
 import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.infrastructure.service.ServiceInfrastructureHome;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl;
 
@@ -101,7 +103,7 @@ public class Job {
 			final List<DataAdresse> adresses = doInNewConnection(connectionPool, new ConnectionCallback<List<DataAdresse>>() {
 				@Override
 				public List<DataAdresse> doInConnection(Connection con) throws SQLException {
-					final String sql = "SELECT ID, DATE_FIN, RUE, NUMERO_ORDRE_POSTE, NUMERO_RUE FROM ADRESSE_TIERS WHERE ADR_TYPE='AdresseSuisse' ORDER BY ID";
+					final String sql = "SELECT ID, DATE_FIN, RUE, NUMERO_ORDRE_POSTE, NUMERO_RUE, TIERS_ID, ANNULATION_DATE FROM ADRESSE_TIERS WHERE ADR_TYPE='AdresseSuisse' ORDER BY ID";
 					final List<DataAdresse> list = new LinkedList<>();
 					try (PreparedStatement st = con.prepareStatement(sql)) {
 						try (ResultSet rs = st.executeQuery()) {
@@ -112,7 +114,9 @@ public class Job {
 								final String rue = rs.getString(3);
 								final Integer noOrdreP = getNullableInt(rs, 4);
 								final Integer noRue = getNullableInt(rs, 5);
-								list.add(new DataAdresse(id, dateFin, rue, noOrdreP, noRue));
+								final long tiersId = rs.getBigDecimal(6).longValue();
+								final Timestamp annulation = rs.getTimestamp(7);
+								list.add(new DataAdresse(id, dateFin, rue, noOrdreP, noRue, tiersId, RegDateHelper.get(annulation)));
 							}
 						}
 					}
@@ -340,7 +344,7 @@ public class Job {
 		return tracingFactory.buildTracing(PERF_LOGGER, home.create());
 	}
 
-	private static interface ConnectionCallback<T> {
+	private interface ConnectionCallback<T> {
 		T doInConnection(Connection con) throws SQLException;
 	}
 

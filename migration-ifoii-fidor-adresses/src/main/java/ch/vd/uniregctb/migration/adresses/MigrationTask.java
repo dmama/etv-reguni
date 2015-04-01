@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.fidor.xml.common.v1.Date;
 import ch.vd.fidor.xml.post.v1.PostalLocality;
@@ -25,6 +27,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 final class MigrationTask implements Callable<MigrationResult> {
+
+	private static final Logger DUBIOUS_LOGGER = LoggerFactory.getLogger("ch.vd.uniregctb.dubious");
 
 	private static final Pattern NUMERO_MAISON_EXTRACTOR_PATTERN = Pattern.compile("(.*) +(\\d.*)");
 
@@ -135,6 +139,35 @@ final class MigrationTask implements Callable<MigrationResult> {
 
 			// 4. constat d'échec... pas de rue avec de nom là... on prend la première localité postale (qui peut être celle fournie en entrée, ou une meilleure - plus récente - approximation de celle-ci...)
 			final int mostProbableSwissZipCodeId = localitesATester.get(0).getLeft();
+			if (mostProbableSwissZipCodeId != noOrdreP && DUBIOUS_LOGGER.isWarnEnabled()) {
+				final String noRue = adresse.noRue != null ? String.format("%d (%s)", adresse.noRue, libelleRue) : null;
+				final String nomRue = StringUtils.isNotBlank(adresse.rue) ? String.format("'%s'", StringUtils.trim(adresse.rue)) : null;
+				final PostalLocality locality = findPostalLocalityForDate(mostProbableSwissZipCodeId, adresse.dateFin);
+				final String npaLocalitePrise = locality != null ? String.format("%d %s", locality.getSwissZipCode(), locality.getLongName()) : "???";
+				final Localite localiteMainframe = ifoiiClient.getLocalite(noOrdreP);
+				final String npaLocaliteMainframe = localiteMainframe != null ? String.format("%d (%d %s)", noOrdreP, localiteMainframe.getNPA(), localiteMainframe.getNomCompletMinuscule()) : Integer.toString(noOrdreP);
+				final String detailsFinOuAnnulation;
+				if (adresse.dateFin != null || adresse.dateAnnulation != null) {
+					final StringBuilder b = new StringBuilder();
+					if (adresse.dateFin != null) {
+						b.append("fermée le ").append(RegDateHelper.dateToDisplayString(adresse.dateFin));
+					}
+					if (adresse.dateAnnulation != null) {
+						if (b.length() > 0) {
+							b.append(", ");
+						}
+						b.append("annulée");
+					}
+					detailsFinOuAnnulation = b.toString();
+				}
+				else {
+					detailsFinOuAnnulation = "active";
+				}
+				DUBIOUS_LOGGER.warn(String.format("Adresse %d du tiers %d (%s): données du mainframe {onrp=%s, rue=%s, noRue=%s}, onrp pris par défaut %d (%s)",
+				                                  adresse.id, adresse.tiersId, detailsFinOuAnnulation,
+				                                  npaLocaliteMainframe, nomRue, noRue,
+				                                  mostProbableSwissZipCodeId, npaLocalitePrise));
+			}
 			return new MigrationResult.NotFound(adresse, mostProbableSwissZipCodeId, mostProbableSwissZipCodeId != noOrdreP, libelleRue);
 		}
 		catch (Exception e) {

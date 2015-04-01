@@ -8,7 +8,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>migration-ifoii-fidor-adresses</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>migration-ifoii-fidor-adresses</name>
