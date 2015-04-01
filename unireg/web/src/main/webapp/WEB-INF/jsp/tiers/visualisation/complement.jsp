@@ -139,20 +139,6 @@
 		</display:table>
 	</c:if>
 </fieldset>
-<c:if test="{command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
-<fieldset>
-	<legend><span><fmt:message key="label.complement.divers" /></span></legend>
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr class="<unireg:nextRowClass/>" >
-			<td  width="25%"><fmt:message key="label.complement.ancienNumSourcier" />&nbsp;:</td>
-			<td>
-				<c:out value="${command.complement.ancienNumeroSourcier}"/>
-			</td>
-		</tr>
-	</table>
-</fieldset>
-</c:if>
 <!-- Fin Complements -->
 		
 
