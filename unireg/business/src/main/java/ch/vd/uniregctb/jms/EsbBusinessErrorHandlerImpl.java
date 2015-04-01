@@ -32,7 +32,7 @@ public class EsbBusinessErrorHandlerImpl implements EsbBusinessErrorHandler {
 	public void onBusinessError(EsbMessage esbMessage, String errorDescription, @Nullable Throwable throwable, EsbBusinessCode errorCode) throws Exception {
 		final EsbMessageImpl m = buildEsbErrorMessage(esbMessage, errorDescription, throwable, errorCode);
 		m.setServiceDestination(destinationQueue);
-		esbTemplate.send(esbMessage);
+		esbTemplate.send(m);
 	}
 
 	protected static EsbMessageImpl buildEsbErrorMessage(EsbMessage esbMessage, String errorDescription, Throwable throwable, EsbBusinessCode errorCode) throws IOException {
