@@ -412,4 +412,11 @@
 		table.find('tr:visible:even').addClass('even');
 		table.find('tr:visible:odd').addClass('odd');
 	}
+
+	<c:if test="${command.typeLocalite == 'suisse'}">
+		selectLocalite('localite_suisse');
+	</c:if>
+	<c:if test="${command.typeLocalite == 'pays'}">
+		selectLocalite('pays');
+	</c:if>
 </script>
