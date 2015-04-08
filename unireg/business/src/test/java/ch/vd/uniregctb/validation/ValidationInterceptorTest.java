@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.validation.ValidationException;
@@ -116,7 +115,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
-					final PersonnePhysique jean = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, jeanId);
+					final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
 					final ValidationResults results = validationService.validate(jean);
 					Assert.assertEquals(1, results.errorsCount());
 					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
@@ -173,16 +172,16 @@ public class ValidationInterceptorTest extends BusinessTest {
 				public Object doInTransaction(TransactionStatus status) {
 
 					// Jean est invalide mais non-modifié dans la session courante, il ne sera donc pas validé automatiquement pour lui-même
-					final PersonnePhysique jean = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, jeanId);
+					final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, jeanId);
 					final ValidationResults results = validationService.validate(jean);
 					Assert.assertEquals(1, results.errorsCount());
 					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
 
 					MenageCommun menage = new MenageCommun();
-					menage = (MenageCommun) hibernateTemplate.merge(menage);
+					menage = hibernateTemplate.merge(menage);
 
 					AppartenanceMenage rapport = new AppartenanceMenage(date(2011, 3, 12), null, jean, menage);
-					rapport = (AppartenanceMenage) hibernateTemplate.merge(rapport);
+					rapport = hibernateTemplate.merge(rapport);
 					AbstractSpringTest.assertEmpty(validationService.validate(rapport).getErrors()); // la join-entité elle-même est valide
 					
 					return null;
@@ -222,7 +221,6 @@ public class ValidationInterceptorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testValidationOnSave() throws Exception {
 
 		// On teste que si le nom est NULL, on a une erreur de validation
@@ -232,20 +230,24 @@ public class ValidationInterceptorTest extends BusinessTest {
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nh = new PersonnePhysique(false);
 					hibernateTemplate.merge(nh);
-					fail();
 					return null;
 				}
 			});
+			fail();
 		}
 		catch (ValidationException e) {
 			assertEquals(1, e.getErrors().size());
 		}
 
 		// On teste que si le nom est PAS null, on n'a pas d'erreurs de validation
-		{
-			PersonnePhysique nh = new PersonnePhysique(false);
-			nh.setNom("toto");
-			hibernateTemplate.merge(nh);
-		}
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique nh = new PersonnePhysique(false);
+				nh.setNom("toto");
+				hibernateTemplate.merge(nh);
+				return null;
+			}
+		});
 	}
 }

@@ -2401,9 +2401,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					arrivee.validate(collector, collector);
 
 					arrivee.handle(collector);
-					fail();
 				}
 			});
+			fail();
 		}
 		catch (ValidationException e) {
 			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé
@@ -2669,9 +2669,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 					final MessageCollector collector = buildMessageCollector();
 					arrivee.validate(collector, collector);
 					arrivee.handle(collector);
-					fail();
 				}
 			});
+			fail();
 		}
 		catch (ValidationException e) {
 			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé

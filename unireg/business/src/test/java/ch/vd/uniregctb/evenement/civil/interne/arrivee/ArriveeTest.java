@@ -737,9 +737,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 					final MessageCollector collector = buildMessageCollector();
 					arrivee.validate(collector, collector);
 					arrivee.handle(collector);
-					fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
 				}
 			});
+			fail("Il aurait dû y avoir une erreur de validation sur la date de validité du for créé");
 		}
 		catch (ValidationException e) {
 			assertEquals(1, e.getErrors().size());

@@ -4191,9 +4191,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testAddAndSaveForSurCommuneFaitiereFractions() throws Exception {
-		final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
 
 		final ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(date(1998, 10, 4));
@@ -4205,7 +4203,13 @@ public class TiersServiceTest extends BusinessTest {
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		try {
-			tiersDAO.addAndSave(pp, f);
+			doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final PersonnePhysique pp = addNonHabitant("Emilie", "Jolie", date(1980, 10, 4), Sexe.FEMININ);
+					tiersDAO.addAndSave(pp, f);
+				}
+			});
 			Assert.fail("L'appel aurait dû sauter car la commune est une commune faîtière de fractions de communes");
 		}
 		catch (ValidationException e) {

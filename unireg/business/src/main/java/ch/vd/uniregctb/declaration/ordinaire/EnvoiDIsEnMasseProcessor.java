@@ -151,9 +151,8 @@ public class EnvoiDIsEnMasseProcessor {
 
 			// Traite les contribuables par lots
 			final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-			final ParallelBatchTransactionTemplateWithResults<Long, EnvoiDIsResults>
-					template = new ParallelBatchTransactionTemplateWithResults<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
-			                                                                                                                                     transactionManager, status, AuthenticationInterface.INSTANCE);
+			final ParallelBatchTransactionTemplateWithResults<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplateWithResults<>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			                                                                                                                                      transactionManager, status, AuthenticationInterface.INSTANCE);
 			template.execute(rapportFinal, new BatchWithResultsCallback<Long, EnvoiDIsResults>() {
 
 				@Override

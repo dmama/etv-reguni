@@ -1,11 +1,17 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.hibernate.CallbackException;
+import org.hibernate.type.Type;
 import org.junit.Test;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -14,15 +20,19 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -36,6 +46,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.AbstractEnvoiDIsResults.Ignore;
 import ch.vd.uniregctb.declaration.ordinaire.AbstractEnvoiDIsResults.IgnoreType;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.DeclarationsCache;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -50,11 +62,14 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.validation.EntityValidator;
+import ch.vd.uniregctb.validation.ValidationService;
 
 import static ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireTest.assertCodeControleIsValid;
 import static org.junit.Assert.assertEquals;
@@ -72,6 +87,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	private EnvoiDIsEnMasseProcessor processor;
 	private ParametreAppService parametreAppService;
 	private AdresseService adresseService;
+	private ModificationInterceptor modificationInterceptor;
+	private ValidationService validationService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -89,6 +106,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
+
+		modificationInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
+		validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
@@ -382,6 +402,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
+		final int annee = 2012;
+
 		// initialisation des contribuables, fors, tâches
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -389,8 +411,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+				final PeriodeFiscale periode = addPeriodeFiscale(annee);
+				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
 				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
 				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
@@ -398,14 +420,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// for fiscal ouvert à Lausanne -> assujetti
 				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
-				addForPrincipal(marc, date(1980, 1, 1), MotifFor.ARRIVEE_HC, date(2007,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(marc, date(2007, 7, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addForPrincipal(marc, date(1980, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForPrincipal(marc, date(annee, 7, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
 
-				final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.tache1Id = tache1.getId();
-				final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 31), date(annee, 7, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, null, colAdm);
 				ids.tache2Id = tache2.getId();
 				return null;
@@ -417,11 +439,11 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final RegDate dateTraitement = date(2009, 1, 15);
+				final RegDate dateTraitement = date(annee + 1, 1, 15);
 				final List<Long> idsCtb = Arrays.asList(ids.marcId);
 
-				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
-				processor.traiterBatch(idsCtb, rapport, 2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
+				final EnvoiDIsResults rapport = new EnvoiDIsResults(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+				processor.traiterBatch(idsCtb, rapport, annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
 				return null;
 			}
 		});
@@ -441,8 +463,16 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				}
 			});
 
+			// les numéros de séquence doivent se suivre...
 			assertEquals(1, (int) diTriees.get(0).getNumero());
 			assertEquals(2, (int) diTriees.get(1).getNumero());
+
+			// .. et les codes de contrôle doivent être les mêmes
+			assertNotNull(diTriees.get(0).getCodeControle());
+			assertNotNull(diTriees.get(1).getCodeControle());
+			assertEquals(diTriees.get(0).getCodeControle(), 6, diTriees.get(0).getCodeControle().length());
+			assertEquals(diTriees.get(1).getCodeControle(), 6, diTriees.get(1).getCodeControle().length());
+			assertEquals(diTriees.get(0).getCodeControle(), diTriees.get(1).getCodeControle());
 		}
 	}
 
@@ -532,7 +562,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			final TacheEnvoiDeclarationImpot tacheJacques = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tacheJacquesId);
 			assertFalse(processor.traiterTache(tacheJacques, dateTraitement, rapport, cache, dcache));
 			assertEquals(1, rapport.ctbsIgnores.size());
-			final Ignore ignore = (Ignore) rapport.ctbsIgnores.get(0);
+			final Ignore ignore = rapport.ctbsIgnores.get(0);
 			assertEquals(IgnoreType.CTB_EXCLU, ignore.raison);
 		}
 	}
@@ -1169,7 +1199,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 		assertEquals(1, results.ctbsIgnores.size());
-		Ignore ignore =(Ignore)results.ctbsIgnores.get(0);
+		Ignore ignore = results.ctbsIgnores.get(0);
 		assertEquals("Décédé en fin d'année",ignore.details);
 
 
@@ -1236,7 +1266,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+		         ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	/**
@@ -1334,8 +1364,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				assertEquals(1, (int) diAnnulee.getNumero());
 
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
-				final TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON,
-						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.AUTOMATIQUE, 0, colAdm);
 
 				return pp.getNumero();
 			}
@@ -1468,7 +1497,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(annee,3,31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee,8,31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+				addForPrincipal(pp, date(annee, 4, 1), MotifFor.DEPART_HS, date(annee, 8, 31), MotifFor.ARRIVEE_HS, MockPays.Colombie);
 				addForPrincipal(pp, date(annee, 9, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
@@ -1661,5 +1690,284 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(0, results.ctbsIndigents.size());
 
 		assertEquals(Arrays.asList(ppId), results.ctbsAvecDiGeneree);
+	}
+
+	/**
+	 * Permet de vérifier le nombre de flushes effectués lors de l'envoi d'un lot de DI
+	 */
+	@Test
+	public void testNombreFlushes() throws Exception {
+
+		final Map<Class<?>, Map<Serializable, MutableInt>> changed = new HashMap<>();
+		final class Interceptor implements ModificationSubInterceptor {
+			@Override
+			public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
+				synchronized (changed) {
+					final Map<Serializable, MutableInt> clazzMap = changed.get(entity.getClass());
+					if (clazzMap == null) {
+						final Map<Serializable, MutableInt> newClazzMap = new HashMap<>();
+						newClazzMap.put(id, new MutableInt(1));
+						changed.put(entity.getClass(), newClazzMap);
+					}
+					else {
+						final MutableInt count = clazzMap.get(id);
+						if (count == null) {
+							clazzMap.put(id, new MutableInt(1));
+						}
+						else {
+							count.increment();
+						}
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public void postFlush() throws CallbackException {
+			}
+
+			@Override
+			public void preTransactionCommit() {
+			}
+
+			@Override
+			public void postTransactionCommit() {
+			}
+
+			@Override
+			public void postTransactionRollback() {
+			}
+		}
+
+		final long noIndividu1 = 24648724567L;
+		final long noIndividu2 = 467423L;
+		final int annee = 2014;
+
+		// initialisation des données civiles
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind1 = addIndividu(noIndividu1, null, "Dugland", "Aristide", Sexe.MASCULIN);
+				addAdresse(ind1, TypeAdresseCivil.PRINCIPALE, MockRue.Morges.RueDeLAvenir, null, date(2000, 1, 1), null);
+				addNationalite(ind1, MockPays.Suisse, date(2000, 1, 1), null);
+
+				final MockIndividu ind2 = addIndividu(noIndividu2, null, "Glandu", "Iphigénie", Sexe.FEMININ);
+				addAdresse(ind2, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, date(2010, 4, 14), null);
+				addNationalite(ind2, MockPays.Suisse, date(2000, 1, 1), null);
+			}
+		});
+
+		final class Ids {
+			long pp1;
+			long pp2;
+		}
+
+		// initialisation des données fiscales
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+
+				final PersonnePhysique pp1 = addHabitant(noIndividu1);
+				addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+				                pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
+
+				final PersonnePhysique pp2 = addHabitant(noIndividu2);
+				addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+				                pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
+
+				final Ids ids = new Ids();
+				ids.pp1 = pp1.getNumero();
+				ids.pp2 = pp2.getNumero();
+				return ids;
+			}
+		});
+
+		final Interceptor sub = new Interceptor();
+		modificationInterceptor.register(sub);
+		try {
+
+			//
+			// A partir de maintenant, tous les flushes seront passés par mon joli intercepteur "sub", qui va mettre à jour la map "changed"
+			//
+
+			// lancement du traitement
+			final RegDate dateTraitement = date(annee + 1, 1, 15);
+			final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
+			assertNotNull(results);
+			assertEquals(2, results.nbCtbsTotal);
+
+			// contrôle du nombre de flushs
+			assertNotNull(changed);
+			for (Map.Entry<Class<?>, Map<Serializable, MutableInt>> mainEntry : changed.entrySet()) {
+				for (Map.Entry<Serializable, MutableInt> entry : mainEntry.getValue().entrySet()) {
+					if (DeclarationImpotOrdinaire.class.isAssignableFrom(mainEntry.getKey())) {
+						// une fois à la création, puis à la clôture de la transaction car les délais et états (par exemple) ont été rajoutés après
+						assertEquals("Les déclarations d'impôt devraient avoir été flushées 2 fois", 2, entry.getValue().intValue());
+					}
+					else {
+						assertEquals("Les entités " + mainEntry.getClass().getSimpleName() + " devraient n'avoir été flushées qu'une seule fois", 1, entry.getValue().intValue());
+					}
+				}
+			}
+		}
+		finally {
+			modificationInterceptor.unregister(sub);
+		}
+
+		// vérification que toutes les DI ont bien été générées comme attendu
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
+					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					assertNotNull(decls);
+					assertEquals(1, decls.size());
+
+					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					assertNotNull(di);
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					assertNotNull(decls);
+					assertEquals(1, decls.size());
+
+					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					assertNotNull(di);
+				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Permet de vérifier le nombre de validations de tiers effectués lors de l'envoi d'un lot de DI
+	 */
+	@Test
+	public void testNombreValidationsTiers() throws Exception {
+
+		final Map<Long, MutableInt> validated = new HashMap<>();
+		final class Validator implements EntityValidator<PersonnePhysique> {
+			@Override
+			public ValidationResults validate(PersonnePhysique entity) {
+				synchronized (validated) {
+					final MutableInt count = validated.get(entity.getNumero());
+					if (count == null) {
+						validated.put(entity.getNumero(), new MutableInt(1));
+					}
+					else {
+						count.increment();
+					}
+				}
+				return null;
+			}
+		}
+
+		final long noIndividu1 = 24648724567L;
+		final long noIndividu2 = 467423L;
+		final int annee = 2014;
+
+		// initialisation des données civiles
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind1 = addIndividu(noIndividu1, null, "Dugland", "Aristide", Sexe.MASCULIN);
+				addAdresse(ind1, TypeAdresseCivil.PRINCIPALE, MockRue.Morges.RueDeLAvenir, null, date(2000, 1, 1), null);
+				addNationalite(ind1, MockPays.Suisse, date(2000, 1, 1), null);
+
+				final MockIndividu ind2 = addIndividu(noIndividu2, null, "Glandu", "Iphigénie", Sexe.FEMININ);
+				addAdresse(ind2, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, date(2010, 4, 14), null);
+				addNationalite(ind2, MockPays.Suisse, date(2000, 1, 1), null);
+			}
+		});
+
+		final class Ids {
+			long pp1;
+			long pp2;
+		}
+
+		// initialisation des données fiscales
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final CollectiviteAdministrative oidLausanneOuest = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				final CollectiviteAdministrative oidMorges = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+
+				final PersonnePhysique pp1 = addHabitant(noIndividu1);
+				addForPrincipal(pp1, date(2000, 1, 1), MotifFor.INDETERMINE, MockCommune.Morges);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+				                pp1, Qualification.AUTOMATIQUE, 0, oidMorges);
+
+				final PersonnePhysique pp2 = addHabitant(noIndividu2);
+				addForPrincipal(pp2, date(2010, 4, 14), MotifFor.INDETERMINE, MockCommune.Renens);
+				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
+				                pp2, Qualification.AUTOMATIQUE, 0, oidLausanneOuest);
+
+				final Ids ids = new Ids();
+				ids.pp1 = pp1.getNumero();
+				ids.pp2 = pp2.getNumero();
+				return ids;
+			}
+		});
+
+		final Validator sub = new Validator();
+		validationService.registerValidator(PersonnePhysique.class, sub);
+		try {
+
+			//
+			// A partir de maintenant, toutes les validations sur des personnes physiques seront passées par mon joli validateur "sub", qui va mettre à jour la map "validated"
+			//
+
+			// lancement du traitement
+			final RegDate dateTraitement = date(annee + 1, 1, 15);
+			final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 1000, dateTraitement, false, 1, null);
+			assertNotNull(results);
+			assertEquals(2, results.nbCtbsTotal);
+
+			// contrôle du nombre de validations des tiers
+			assertNotNull(validated);
+			assertEquals(2, validated.size());
+			for (Map.Entry<Long, MutableInt> entry : validated.entrySet()) {
+				assertEquals("Le tiers " + entry.getKey() + " n'aurait dû être validé qu'une seule fois", 1, entry.getValue().intValue());
+			}
+		}
+		finally {
+			validationService.unregisterValidator(PersonnePhysique.class, sub);
+		}
+
+		// vérification que toutes les DI ont bien été générées comme attendu
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp1);
+					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					assertNotNull(decls);
+					assertEquals(1, decls.size());
+
+					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					assertNotNull(di);
+				}
+				{
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.pp2);
+					final List<Declaration> decls = pp.getDeclarationsForPeriode(annee, false);
+					assertNotNull(decls);
+					assertEquals(1, decls.size());
+
+					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+					assertNotNull(di);
+				}
+				return null;
+			}
+		});
 	}
 }
