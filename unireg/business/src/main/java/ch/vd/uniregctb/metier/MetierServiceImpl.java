@@ -2268,7 +2268,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 		else {
 			reopenRapportsSujetAt(tiers, date);
-			reopenRapportsObjetAt(tiers, date);
 		}
 	}
 

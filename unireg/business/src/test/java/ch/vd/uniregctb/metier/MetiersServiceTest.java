@@ -31,7 +31,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -44,12 +43,10 @@ import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -2465,142 +2462,6 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertFalse(pp.isHabitantVD());
 				Assert.assertNull(tiersService.getDateDeces(pp));
 				return null;
-			}
-		});
-	}
-
-	/**
-	 * [SIFISC-14437] il faut ré-ouvrir tous les rapports entre tiers précédemment fermés à la date du décès (et pas seulement les rapports "sujet")
-	 */
-	@Test
-	public void testAnnulationDecesEtReouvertureRapportsEntreTiers() throws Exception {
-
-		final long noIndividu = 436782456L;
-		final RegDate dateDeces = date(2015, 3, 1);
-
-		// mise en place civile
-		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
-			@Override
-			protected void init() {
-				final MockIndividu individu = addIndividu(noIndividu, date(1958, 4, 12), "Gump", "Forrest", Sexe.MASCULIN);
-				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
-			}
-		});
-
-		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final PersonnePhysique pupille = addNonHabitant("Philomène", "Smith", date(1945, 6, 30), Sexe.FEMININ);
-				addTutelle(pupille, pp, null, date(2014, 1, 1), null);
-
-				final PersonnePhysique epouse = addNonHabitant("Lee", "Harper-Gump", date(1960, 7, 21), Sexe.FEMININ);
-				addEnsembleTiersCouple(pp, epouse, date(1995, 8, 3), null);
-
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
-				addRapportPrestationImposable(dpi, epouse, date(2000, 7, 1), dateDeces, false);     // par hasard, la même date -> ce rapport ne doit en aucun cas être réouvert à l'annulation du décès du mari !
-
-				return pp.getNumero();
-			}
-		});
-
-		// on décède le monsieur
-		doModificationIndividu(noIndividu, new IndividuModification() {
-			@Override
-			public void modifyIndividu(MockIndividu individu) {
-				individu.setDateDeces(dateDeces);
-			}
-		});
-
-		// on traite le décès fiscal
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.deces(defunt, dateDeces, null, null);
-			}
-		});
-
-		// on vérifie maintenant que tous les rapports sont fermés à la date de décès
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
-				Assert.assertEquals(1, objets.size());
-				for (RapportEntreTiers ret : objets) {
-					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					Assert.assertFalse(ret.toString(), ret.isAnnule());
-				}
-				final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
-				Assert.assertEquals(1, sujets.size());
-				for (RapportEntreTiers ret : sujets) {
-					Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					Assert.assertFalse(ret.toString(), ret.isAnnule());
-				}
-			}
-		});
-
-		// maintenant, on annule le décès
-		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
-			@Override
-			public void execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique defunt = (PersonnePhysique) tiersDAO.get(ppId);
-				metierService.annuleDeces(defunt, dateDeces);
-			}
-		});
-
-		// et on vérifie que tous les rapports précédemment fermés à la date de décès sont bien ré-ouverts
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				int decompte = 0;
-
-				final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
-				Assert.assertEquals(2, objets.size());
-				for (RapportEntreTiers ret : objets) {
-					if (ret.isAnnule()) {
-						++ decompte;
-						Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					}
-					else {
-						-- decompte;
-						Assert.assertNull(ret.toString(), ret.getDateFin());
-					}
-				}
-				Assert.assertEquals(0, decompte);
-
-				final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
-				Assert.assertEquals(2, sujets.size());
-				for (RapportEntreTiers ret : sujets) {
-					if (ret.isAnnule()) {
-						++ decompte;
-						Assert.assertEquals(ret.toString(), dateDeces, ret.getDateFin());
-					}
-					else {
-						-- decompte;
-						Assert.assertNull(ret.toString(), ret.getDateFin());
-					}
-				}
-				Assert.assertEquals(0, decompte);
-			}
-		});
-
-		// vérification sur l'épouse, le rapport de prestation imposable ne doit pas avoir bougé (= pas de ré-ouverture!)
-		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateDeces);      // le couple revit, normalement
-				Assert.assertNotNull(couple);
-				final PersonnePhysique epouse = couple.getConjoint(pp);
-				Assert.assertNotNull(epouse);
-
-				final RapportEntreTiers rt = epouse.getDernierRapportSujet(TypeRapportEntreTiers.PRESTATION_IMPOSABLE);
-				Assert.assertNotNull(rt);
-				Assert.assertEquals(dateDeces, rt.getDateFin());
 			}
 		});
 	}
