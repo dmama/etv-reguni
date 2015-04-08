@@ -97,17 +97,20 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 
 	@Override
 	public void preTransactionCommit() {
-		// on est censé être passé par un flush...
-		final Set<?> toValidate = this.toValidate.get();
-		try {
-			if (!toValidate.isEmpty()) {
-				throw new IllegalStateException("Il y a encore " + toValidate.size() + " entité(s) à valider au moment du pré-commit (pas de flush ??)...");
-			}
-		}
-		finally {
-			// on enlève tout pour la prochaine fois
-			toValidate.clear();
-		}
+
+		// old-TO-DO (msi) mémoriser l'entité et déplacer la validation du onChange vers le preTransactionCommit.
+		// Non, en fait il n'est pas possible de déplacer la validation juste avant le commit de la transaction.
+		// Le problème est que les durées de vie de la transaction Spring et de la session Hibernate ne sont pas absolument pareilles. Dans certains cas, le preTransactionCommit sera appelé alors que
+		// la session Spring est encore valide (pour les transactions ouvertes par les @Transactional, car la session sera fermée par un listener sur le même preTransactionCommit), mais dans d'autres
+		// cas (par exemple les batches qui ouvrent une transaction puis une session nestée à travers le BatchTransactionTemplate) la session est déjà invalide lors de la fermeture de la transaction
+		// et les collections Hibernate non-initialisées font sauter une exception lors de la validation.
+
+		// JDE : en fait, on peut essayer de concillier les deux
+		// -> dans les cas levés par le @Transactional il n'y aura pas eu de flush avant (il vient apparemment après), donc on peut lancer le #postFlush ici
+		// -> dans les cas des batchs (= utilisation du TransactionTemplate en général), le flush a déjà été fait (et donc le #postFlush aussi) et l'appeler
+		//    ici ne fait pas de mal (= il n'y a plus rien dedans...)
+
+		postFlush();
 	}
 
 	@Override
