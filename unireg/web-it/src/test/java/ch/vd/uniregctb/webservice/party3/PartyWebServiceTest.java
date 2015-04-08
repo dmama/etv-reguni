@@ -255,7 +255,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(courrierInfo1);
 		assertNull(courrierInfo1.getStreetId());
 		assertEquals("Route de Saint-Prex", courrierInfo1.getStreet());
-		assertEquals("10", courrierInfo1.getHouseNumber());
+		assertEquals("8", courrierInfo1.getHouseNumber());
 		assertEquals(Integer.valueOf(283), courrierInfo1.getSwissZipCodeId());
 		assertEquals(Long.valueOf(1168), courrierInfo1.getSwissZipCode());
 		assertEquals("Villars-sous-Yens", courrierInfo1.getTown());
@@ -300,7 +300,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNotNull(represInfo1);
 		assertNull(represInfo1.getStreetId());
 		assertEquals("Route de Saint-Prex", represInfo1.getStreet());
-		assertEquals("10", represInfo1.getHouseNumber());
+		assertEquals("8", represInfo1.getHouseNumber());
 		assertEquals(Integer.valueOf(283), represInfo1.getSwissZipCodeId());
 		assertEquals(Long.valueOf(1168), represInfo1.getSwissZipCode());
 		assertEquals("Villars-sous-Yens", represInfo1.getTown());
@@ -1216,17 +1216,24 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
 			assertNotNull(pp);
 
-			// le permis B a expiré le 30.11.2014
-			assertNull(pp.getCategory());
+			assertEquals(NaturalPersonCategory.C_03_C_PERMIT, pp.getCategory());
 
 			final List<NaturalPersonCategoryPeriod> cats = pp.getCategories();
 			assertNotNull(cats);
-			assertEquals(1, cats.size());
+			assertEquals(2, cats.size());
 
-			final NaturalPersonCategoryPeriod cat = cats.get(0);
-			assertNotNull(cat);
-			assertEquals(NaturalPersonCategory.C_02_B_PERMIT, cat.getCategory());
-			assertEquals(newDate(2014, 11, 30), cat.getDateTo());
+			{
+				final NaturalPersonCategoryPeriod cat = cats.get(0);
+				assertNotNull(cat);
+				assertEquals(NaturalPersonCategory.C_02_B_PERMIT, cat.getCategory());
+				assertEquals(newDate(2014, 11, 30), cat.getDateTo());
+			}
+			{
+				final NaturalPersonCategoryPeriod cat = cats.get(1);
+				assertNotNull(cat);
+				assertEquals(NaturalPersonCategory.C_03_C_PERMIT, cat.getCategory());
+				assertEquals(newDate(2019, 11, 30), cat.getDateTo());
+			}
 		}
 	}
 
