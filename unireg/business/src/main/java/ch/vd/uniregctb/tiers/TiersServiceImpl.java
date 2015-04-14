@@ -4190,13 +4190,17 @@ public class TiersServiceImpl implements TiersService {
     @NotNull
     @Override
     public Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage) {
-        return getPersonnesPhysiques(menage, false).keySet();
+        return getPersonnesPhysiques(menage, false,null).keySet();
     }
+	@NotNull
+	private Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage,Integer ageMaximum) {
+		return getPersonnesPhysiques(menage, false,ageMaximum).keySet();
+	}
 
     @NotNull
     @Override
     public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage) {
-        return getPersonnesPhysiques(menage, true);
+        return getPersonnesPhysiques(menage, true,null);
     }
 
     /**
@@ -4205,7 +4209,7 @@ public class TiersServiceImpl implements TiersService {
      * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
      */
     @NotNull
-    private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
+    private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules,Integer ageMaximum) {
         final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<>(aussiRapportsAnnules ? 4 : 2);
         final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
         if (rapports != null) {
@@ -4235,8 +4239,9 @@ public class TiersServiceImpl implements TiersService {
                                 }
                             }
                         }
-                        if (!ignore) {
-                            personnes.put(sujet, r);
+	                    final boolean ageMaximumAtteint = isRapportPlusVieuxQueAgeMaximum(r, ageMaximum);
+                        if (!ignore && !ageMaximumAtteint) {
+		                   personnes.put(sujet, r);
                         }
                     }
                 }
@@ -4745,6 +4750,11 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp) {
+
+		return getAllMenagesCommuns(pp,null);
+	}
+
+	private List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp,Integer ageMaximum) {
 		if (pp == null) {
 			return null;
 		}
@@ -4758,24 +4768,34 @@ public class TiersServiceImpl implements TiersService {
 		List<MenageCommun> menageCommuns =null;
 		for (RapportEntreTiers rapport : rapportsEntreTiers) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType()) {
-					if (menageCommuns == null) {
-						menageCommuns =  new ArrayList<>();
-					}
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				if (menageCommuns == null) {
+					menageCommuns =  new ArrayList<>();
+				}
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				final boolean ageMaximumAtteint = isRapportPlusVieuxQueAgeMaximum(rapport, ageMaximum);
+				if (!ageMaximumAtteint ) {
 					menageCommuns.add(mc);
+				}
+
 			}
 		}
 
 		return menageCommuns;
 	}
 
+	private boolean isRapportPlusVieuxQueAgeMaximum(RapportEntreTiers rapport, Integer ageMaximum) {
+		//Si la date de début du ménage commun ajouté à l'age maximum est plus petit que lannée courante, on est plus vieux que l
+		//l'age maximum
+		return ageMaximum != null && rapport.getDateFin()!=null && rapport.getDateFin().year() +ageMaximum < RegDate.get().year();
+	}
 
 	@Override
 	public boolean isSousInfluenceDecisions(Contribuable ctb) {
 		final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
 
 		final Set<Contribuable> contribuablesToCheck = new HashSet<>();
-		construireListeTiersLies(ctb,contribuablesToCheck);
+		final int ageMaximumLienVersTiers = 5;
+		construireListeTiersLies(ctb,contribuablesToCheck, ageMaximumLienVersTiers);
 		//Verification sur tous les ctb trouvés
 		for (Contribuable ctbToCheck : contribuablesToCheck) {
 			if (ctbToCheck.hasDecisionRecenteFor(dateMinimalEffet)) {
@@ -4785,27 +4805,29 @@ public class TiersServiceImpl implements TiersService {
 
 		return false;
 	}
-//TODO parametrer une age maximum pour les couples fermés à considérer
-	private void construireListeTiersLies(Contribuable ctb, Set<Contribuable> tiersLies) {
+	private void construireListeTiersLies(Contribuable ctb, Set<Contribuable> tiersLies, int ageMaximum) {
 		if (tiersLies == null) {
 			tiersLies = new HashSet<>();
 		}
 
+
 		tiersLies.add(ctb);
 		if (ctb instanceof PersonnePhysique) {
-			List<MenageCommun> menages = getAllMenagesCommuns((PersonnePhysique) ctb);
-			for (MenageCommun menage : menages) {
-				if (!tiersLies.contains(menage)) {
-					construireListeTiersLies(menage, tiersLies);
-				}
+			List<MenageCommun> menages = getAllMenagesCommuns((PersonnePhysique) ctb,ageMaximum);
+			if (menages != null) {
+				for (MenageCommun menage : menages) {
+					if (!tiersLies.contains(menage)) {
+						construireListeTiersLies(menage, tiersLies,ageMaximum);
+					}
 
+				}
 			}
 		}
 		else if (ctb instanceof MenageCommun) {
-			final Set<PersonnePhysique> membres = getPersonnesPhysiques((MenageCommun) ctb);
+			final Set<PersonnePhysique> membres = getPersonnesPhysiques((MenageCommun) ctb,ageMaximum);
 			for (PersonnePhysique membre : membres) {
 				if (!tiersLies.contains(membre)) {
-					construireListeTiersLies(membre, tiersLies);
+					construireListeTiersLies(membre, tiersLies, ageMaximum);
 				}
 
 			}

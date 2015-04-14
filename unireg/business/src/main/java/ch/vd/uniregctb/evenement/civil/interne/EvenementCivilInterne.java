@@ -536,10 +536,10 @@ public abstract class EvenementCivilInterne {
 		if (ctbToCheck != null) {
 			//[SIFISC-12624]
 			//Si une décision aci en cours est présente, on met l'évenement en erreur
-			if (ctbToCheck.hasDecisionAciValidAt(dateEvenement) || evenementIsAnterieurDecision(ctbToCheck, dateEvenement)) {
+			if (context.getTiersService().isSousInfluenceDecisions(ctbToCheck) || evenementIsAnterieurDecision(ctbToCheck, dateEvenement)) {
 				String messageErreur = null;
 				if (ctbOfEvent == null) {
-					messageErreur = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+					messageErreur = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 							FormatNumeroHelper.numeroCTBToDisplay(ctbToCheck.getNumero()));
 				}
 				else {

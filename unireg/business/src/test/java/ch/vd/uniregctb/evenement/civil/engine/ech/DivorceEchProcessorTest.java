@@ -526,7 +526,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
@@ -588,7 +588,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
@@ -652,8 +652,8 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) a un conjoint (%s) qui fait l'objet d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()));
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
@@ -725,8 +725,8 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(couple.getNumero()));
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

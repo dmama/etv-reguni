@@ -138,7 +138,7 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 
-	@Test(timeout = 10000L)
+	@Test
 	public void testVeuvageAvecDecisionAci() throws Exception {
 
 		final long noMadame = 46215611L;
@@ -227,8 +227,8 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%s) qui fait l'objet d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(mc.getNumero()));
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(madame.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

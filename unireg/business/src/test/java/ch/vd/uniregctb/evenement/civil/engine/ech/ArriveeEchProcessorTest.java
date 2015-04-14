@@ -2667,7 +2667,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(erreurs);
 				assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(virginie.getNumero()));
 				assertEquals(message, erreur.getMessage());
 				return null;
@@ -2749,7 +2749,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(erreurs);
 				assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(ppLui.getNumero()));
 				assertEquals(message, erreur.getMessage());
 				return null;

@@ -15,7 +15,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -547,8 +546,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	 * @return true si l'utilisateur a le droit de modifier un ctb sous décision ou si il n'y a pas de décision ouverte, false sinon
 	 */
 	private boolean isCtbModifiableSelonRoleEtDecisions(Contribuable contribuable, String visa, int oid) {
-		final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
-		if (contribuable.hasDecisionRecenteFor(dateMinimalEffet)) {
+		if (tiersService.isSousInfluenceDecisions(contribuable)) {
 			return SecurityHelper.isGranted(securityProvider, Role.GEST_DECISION_ACI, visa, oid);
 		}
 		else {

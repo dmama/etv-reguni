@@ -199,8 +199,8 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 				Assert.assertNotNull(ffp.getDateFin());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
-				String message = String.format("Le contribuable trouvé (%s) appartient à un ménage  (%S) qui fait l'objet d'une décision ACI",
-						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(mc.getNumero()));
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(monsieur.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}

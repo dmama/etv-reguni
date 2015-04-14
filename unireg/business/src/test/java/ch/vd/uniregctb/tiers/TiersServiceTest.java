@@ -7896,7 +7896,8 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertTrue(pp.getBlocageRemboursementAutomatique());
 
-				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.SOURCE);
+				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC,
+						ModeImposition.SOURCE);
 			}
 		});
 
@@ -8167,7 +8168,8 @@ public class TiersServiceTest extends BusinessTest {
 
 				// départ du couple vers l'étranger
 				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
-				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE, MotifFor.DEPART_HS);
+				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE,
+						MotifFor.DEPART_HS);
 			}
 		});
 
@@ -8375,7 +8377,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				tiersService.updateDecisionAci(amodifier,null,"Nouvelle Remarque",null);
+				tiersService.updateDecisionAci(amodifier, null, "Nouvelle Remarque", null);
 			}
 		});
 
@@ -8390,8 +8392,8 @@ public class TiersServiceTest extends BusinessTest {
 				assertFalse(decisionsAci.isEmpty());
 				assertEquals(1, decisionsAci.size());
 				DecisionAci d = decisionsAci.get(0);
-				assertEquals(idsDecision.idOriginal,d.getId());
-				assertEquals("Nouvelle Remarque",d.getRemarque());
+				assertEquals(idsDecision.idOriginal, d.getId());
+				assertEquals("Nouvelle Remarque", d.getRemarque());
 
 			}
 		});
@@ -8438,7 +8440,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,null,null,MockCommune.Aubonne.getNoOFS());
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier, null, null, MockCommune.Aubonne.getNoOFS());
 				idsDecision.idNouvel = modifiee.getId();
 			}
 		});
@@ -8519,7 +8521,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertEquals(1, decisionsAci.size());
 				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
 				assertFalse(dOriginal.isAnnule());
-				assertEquals(date(2013, 5, 6),dOriginal.getDateFin());
+				assertEquals(date(2013, 5, 6), dOriginal.getDateFin());
 				assertEquals("Ma remarque",dOriginal.getRemarque());
 
 			}
@@ -8567,7 +8569,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2012,12,10),"finalemeent rien",MockCommune.Lausanne.getNoOFS());
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2012,12,10),"finalement rien",MockCommune.Lausanne.getNoOFS());
 				idsDecision.idNouvel = modifiee.getId();
 			}
 		});
@@ -8584,21 +8586,23 @@ public class TiersServiceTest extends BusinessTest {
 				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
 				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
 				assertTrue(dOriginal.isAnnule());
-				assertEquals(MockCommune.Lausanne.getNoOFS(),dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MockCommune.Lausanne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
 				assertEquals(date(2012,12,10),dNouvelle.getDateFin());
-				assertEquals("finalemeent rien",dNouvelle.getRemarque());
+				assertEquals("finalement rien",dNouvelle.getRemarque());
 
 
 			}
 		});
 	}
 
+	//une personne se marie 2 fois, en moins de 5 ans, on pose une décision ACI sur son ex.
+	//Il doit être sous influence,
 	@Test
-	public void testinfluenceDecisionsSimple() throws Exception {
+	public void testinfluenceDecisionsSurExConjoint() throws Exception {
 
 		final long noIndividuLui = 236723537L;
-		final long noIndividuElle = 231923537L;
-		final long noIndividuElleEx = 236733537L;
+		final long noIndividuElle = 231923587L;
+		final long noIndividuElleEx = 236736537L;
 		final class IdsDecision {
 			public Long idOriginal;
 			Long idNouvel;
@@ -8618,8 +8622,10 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
 				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
 				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
-				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(2008,5,1));
-				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(2013,5,7),null);
+				final int anneeFinAncienCouple = RegDate.get().year() -4;
+				final int anneeDebutNouveauCouple = RegDate.get().year() -3;
+				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
 				final MenageCommun mc = etc.getMenage();
 				final MenageCommun mcEx = etcEx.getMenage();
 				final Ids ids = new Ids();
@@ -8637,8 +8643,8 @@ public class TiersServiceTest extends BusinessTest {
 		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
 			@Override
 			public IdsDecision doInTransaction(TransactionStatus status) {
-				final PersonnePhysique mEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
-				DecisionAci d = addDecisionAci(mEx,date(2013,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				DecisionAci d = addDecisionAci(personneEx,date(2013,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
 				final IdsDecision idDec = new IdsDecision();
 				idDec.idOriginal = d.getId();
 				return idDec;
@@ -8646,17 +8652,103 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 
-		// vérification de l'état après départ
+		// vérification de la situation sur le nouveau couple,
+		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppLui);
-				Assert.assertNotNull(pp);
-				assertTrue(tiersService.isSousInfluenceDecisions(pp));
+				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+				Assert.assertNotNull(ppLui);
+				assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
 
-				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menageCommun);
-				Assert.assertNotNull(mc);
-				assertTrue(tiersService.isSousInfluenceDecisions(mc));
+				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+				Assert.assertNotNull(nouveauMc);
+				assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
+
+				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+				Assert.assertNotNull(ppElle);
+				assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
+			}
+		});
+	}
+
+	@Test
+	public void testinfluenceDecisionsApresMenageVieuxDeCinqAns() throws Exception {
+
+		final long noIndividuLui = 236723537L;
+		final long noIndividuElle = 231923587L;
+		final long noIndividuElleEx = 236736537L;
+		final class IdsDecision {
+			public Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppLui;
+			long ppElle;
+			long ppElleEx;
+			long menageCommun;
+			long menageCommunEx;
+		}
+		final int anneeDebutDecisionAci = RegDate.get().year() -1;
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+				final int anneeFinAncienCouple = RegDate.get().year() -6;
+				final int anneeDebutNouveauCouple = RegDate.get().year() -3;
+
+				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m,mmEx,date(2001,3,7),date(anneeFinAncienCouple,5,1));
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(m,mm,date(anneeDebutNouveauCouple,5,7),null);
+				final MenageCommun mc = etc.getMenage();
+				final MenageCommun mcEx = etcEx.getMenage();
+				final Ids ids = new Ids();
+				ids.ppLui = m.getNumero();
+				ids.ppElle = mm.getNumero();
+				ids.ppElleEx = mmEx.getNumero();
+				ids.menageCommun = mc.getNumero();
+				ids.menageCommunEx = mcEx.getNumero();
+
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				DecisionAci d = addDecisionAci(personneEx,date(anneeDebutDecisionAci,11,1),null,MockCommune.Lausanne.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+
+		// vérification de la situation sur le nouveau couple,
+		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+				Assert.assertNotNull(ppLui);
+				assertFalse(tiersService.isSousInfluenceDecisions(ppLui));
+
+				final PersonnePhysique ppEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				Assert.assertNotNull(ppEx);
+				assertTrue(tiersService.isSousInfluenceDecisions(ppEx));
+
+				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+				Assert.assertNotNull(nouveauMc);
+				assertFalse(tiersService.isSousInfluenceDecisions(nouveauMc));
+
+				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+				Assert.assertNotNull(ppElle);
+				assertFalse(tiersService.isSousInfluenceDecisions(ppElle));
 			}
 		});
 	}

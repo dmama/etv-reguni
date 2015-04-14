@@ -33,7 +33,6 @@ import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
@@ -222,8 +221,7 @@ public class TiersManager implements MessageSourceAware {
 			}
 			Collections.sort(decisionsView,new DecisionAciViewComparator());
 			tiersView.setDecisionsAci(decisionsView);
-			final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
-			tiersView.setDecisionRecente(contribuable.hasDecisionRecenteFor(dateMinimalEffet));
+			tiersView.setDecisionRecente(tiersService.isSousInfluenceDecisions(contribuable));
 		}
 
 	}

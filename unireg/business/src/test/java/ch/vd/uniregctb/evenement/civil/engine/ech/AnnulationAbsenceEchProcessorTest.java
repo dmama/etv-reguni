@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -10,13 +12,16 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class AnnulationAbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
@@ -81,6 +86,71 @@ public class AnnulationAbsenceEchProcessorTest extends AbstractEvenementCivilEch
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertNull(ffp.getDateFin());
+				return null;
+			}
+		});
+	}
+	@Test(timeout = 10000L)
+	public void testAnnulationAbsenceAvecDecisionAci() throws Exception {
+
+		final long noIndividu = 3289432164723L;
+		final RegDate dateAbsence = date(2012, 2, 15);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1945, 5, 8), "Guèréfini", "Carla", false);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				pp.setDateDeces(dateAbsence);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateAbsence, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+				addDecisionAci(pp,date(2005,6,1),null,MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil d'annulation d'absence
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(23562435641278L);
+				evt.setType(TypeEvenementCivilEch.ABSENCE);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateAbsence);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
+						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
+				Assert.assertEquals(message, erreur.getMessage());
 				return null;
 			}
 		});

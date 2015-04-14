@@ -162,7 +162,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;
@@ -236,7 +236,7 @@ public class AbsenceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI",
+				String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI",
 						FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
 				Assert.assertEquals(message, erreur.getMessage());
 				return null;

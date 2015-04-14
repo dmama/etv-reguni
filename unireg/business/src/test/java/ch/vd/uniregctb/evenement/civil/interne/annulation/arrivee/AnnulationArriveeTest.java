@@ -795,7 +795,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 			Assert.fail("L'événement n'aurait pas dû passer : l'individu possède une décision ACI");
 		}
 		catch (EvenementCivilException e) {
-			final String message = String.format("Le contribuable trouvé (%s) fait l'objet d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
+			final String message = String.format("Le contribuable trouvé (%s) est sous l'influence d'une décision ACI", FormatNumeroHelper.numeroCTBToDisplay(ppId));
 			Assert.assertEquals(message, e.getMessage());
 		}
 
