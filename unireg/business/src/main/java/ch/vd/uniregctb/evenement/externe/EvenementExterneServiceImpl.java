@@ -3,8 +3,9 @@ package ch.vd.uniregctb.evenement.externe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -136,8 +137,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 				throw new EvenementExterneException("Pour un quittancement la date de retour est requise.");
 			}
 			// Si la date de retour est renseignée, elle ne se situe pas dans le futur et le retour n’a pas encore été enregistré.
-			if (DateHelper.isAfter(quittance.getDateEvenement(), DateHelper.getCurrentDate())) {
-				throw new EvenementExterneException(String.format("La date de retour (%s) ne peut se situer dans le futur", DateHelper.dateTimeToDisplayString(quittance.getDateEvenement())));
+			//Transformation en RegDate pour n'avoir à comparer que les jours.
+			final RegDate regDateEvenement = RegDateHelper.get(quittance.getDateEvenement());
+			if (RegDateHelper.isAfter(regDateEvenement, RegDate.get(), NullDateBehavior.LATEST)) {
+				throw new EvenementExterneException(String.format("La date de retour (%s) ne peut se situer dans le futur", RegDateHelper.dateToDisplayString(regDateEvenement)));
 			}
 		}
 		else if (quittance.getType() == TypeQuittance.ANNULATION) {

@@ -10,6 +10,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -93,6 +94,16 @@ public class EvenementExterneV3EsbHandlerTest extends AbstractEvenementExterneEs
 	}
 
 	@Test
+	public void testEvenementQuittancementDesynchroHeure() throws Exception {
+		doTestNewEvenementQuittancementDesynchroHeure(new MessageCreator() {
+			@Override
+			public EsbMessage createNewMessage(long dpiId, RegDate dateDebut, RegDate dateFin, RegDate dateQuittancement) throws Exception {
+				return createMessageQuittancementDansFutur(dpiId, dateDebut, dateFin);
+			}
+		});
+	}
+
+	@Test
 	public void testEvenementAnnulationDoubleQuittancement() throws Exception {
 		doTestNewEvenementAnnulationDoubleQuittancement(new MessageCreator() {
 			@Override
@@ -104,6 +115,9 @@ public class EvenementExterneV3EsbHandlerTest extends AbstractEvenementExterneEs
 
 	private EsbMessage createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
 		return createEsbMessage(createEvenementQuittancement(Evenement.QUITTANCE, noCtb, Liste.LR, debutPeriode, finPeriode, dateEvenement));
+	}
+	private EsbMessage createMessageQuittancementDansFutur(long noCtb, RegDate debutPeriode, RegDate finPeriode) throws Exception {
+		return createEsbMessage(createEvenementQuittancementDansFutur(Evenement.QUITTANCE, noCtb, Liste.LR, debutPeriode, finPeriode));
 	}
 
 	private EsbMessage createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
@@ -149,6 +163,48 @@ public class EvenementExterneV3EsbHandlerTest extends AbstractEvenementExterneEs
 		evenement.setTimestamp(XmlUtils.date2xmlcal(new Date()));
 		evenement.setBusinessId(businessId);
 		evenement.setDateEvenement(XmlUtils.regdate2xmlcal(dateEvenement));
+
+		return evenement;
+	}
+
+	private static EvtListe createEvenementQuittancementDansFutur(Evenement quitancement, Long numeroCtb, Liste listeType, RegDate dateDebut,
+	                                                              RegDate dateFin) {
+
+		assertNotNull("le type de quittancement est obligation", quitancement);
+		assertNotNull("Le numero du débiteur est obligatoire", numeroCtb);
+		assertNotNull("la date du début du récapitulatif est obligatoire", dateDebut);
+
+		final String businessId = "123456789";
+
+		final PeriodeDeclaration periodeDeclaration = new PeriodeDeclaration();
+		periodeDeclaration.setDateDebut(XmlUtils.regdate2xmlcal(dateDebut));
+		if (dateFin != null) {
+			periodeDeclaration.setDateFin(XmlUtils.regdate2xmlcal(dateFin));
+		}
+
+		final CaracteristiquesListe identification = new CaracteristiquesListe();
+		identification.setTypeListe(listeType);
+		identification.setNumeroSequence(BigInteger.valueOf(1));
+		identification.setPeriodeDeclaration(periodeDeclaration);
+		identification.setPeriodeFiscale(BigInteger.valueOf(dateDebut.year()));
+
+		final CaracteristiquesDebiteur debiteur = new CaracteristiquesDebiteur();
+		debiteur.setNumeroDebiteur(numeroCtb.intValue());
+
+		final EvtListe evenement = new EvtListe();
+		evenement.setUtilisateur(new Utilisateur("testuser", 22));
+		evenement.setCaracteristiquesListe(identification);
+		evenement.setTypeEvenement(quitancement);
+		evenement.setCaracteristiquesDebiteur(debiteur);
+		evenement.setCodeApplication("test");
+		evenement.setVersionApplication("0.0");
+		evenement.setTimestamp(XmlUtils.date2xmlcal(new Date()));
+		evenement.setBusinessId(businessId);
+		final Date currentDate = DateHelper.getCurrentDate();
+		final long longCurrentDate = currentDate.getTime();
+		//2 mn dans le futur
+		final long longFuturDate= longCurrentDate + 120000;
+		evenement.setDateEvenement(XmlUtils.date2xmlcal(new Date(longFuturDate)));
 
 		return evenement;
 	}

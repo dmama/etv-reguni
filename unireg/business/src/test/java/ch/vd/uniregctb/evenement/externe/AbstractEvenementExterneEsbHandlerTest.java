@@ -506,5 +506,71 @@ public abstract class AbstractEvenementExterneEsbHandlerTest extends BusinessTes
 			}
 		});
 	}
+	//SIFISC-15259
+	//Permet de tester qu'un message avec une date devenement dans le futur de quelques minutes mais sur la même journée ne provoque pas d'exception
+	protected void doTestNewEvenementQuittancementDesynchroHeure(final MessageCreator msgCreator) throws Exception {
 
+		final RegDate dateDebut = date(2015, 1, 1);
+		final RegDate dateFin = PeriodiciteDecompte.MENSUEL.getFinPeriode(dateDebut);
+		final RegDate dateQuittancement = RegDate.get();
+
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, dateDebut);
+				dpi.setNom1("DebiteurTest");
+				addForDebiteur(dpi, dateDebut, MotifFor.INDETERMINE, null, null, MockCommune.Lausanne);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2015);
+
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.MENSUEL, pf);
+
+				return dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = msgCreator.createNewMessage(dpiId, dateDebut, dateFin, dateQuittancement);
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+				assertEquals(1, evts.size());
+				assertNotNull(evts.get(0));
+				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final Set<Declaration> lrs = dpi.getDeclarations();
+				assertNotNull(lrs);
+				assertEquals(1, lrs.size());
+
+				final DeclarationImpotSource lr = (DeclarationImpotSource) lrs.iterator().next();
+				assertNotNull(lr);
+
+				final List<EtatDeclaration> etats = lr.getEtatsSorted();
+				assertNotNull(etats);
+				assertEquals(2, etats.size());      // l'état "EMISE", puis les deux états "RETOURNEE", dont l'un est annulé
+
+				final EtatDeclaration etatEmission = etats.get(0);
+				assertNotNull(etatEmission);
+				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
+				assertEquals(dateFin,  etatEmission.getDateObtention());
+				assertFalse(etatEmission.isAnnule());
+
+
+				final EtatDeclaration dernierEtat = lr.getDernierEtat();
+				assertNotNull(dernierEtat);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
+				assertFalse(dernierEtat.isAnnule());
+				return null;
+			}
+		});
+	}
 }
