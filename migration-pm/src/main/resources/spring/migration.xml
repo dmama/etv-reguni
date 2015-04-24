@@ -4,11 +4,22 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 	<bean id="migrator" class="ch.vd.uniregctb.migration.pm.Migrator">
-		<property name="regpmTransactionManager" ref="regpmTransactionManager"/>
-		<property name="sessionFactory" ref="regpmSessionFactory"/>
-		<property name="bouclementService" ref="bouclementService"/>
+		<property name="mode" value="${migration.mode}"/>
+		<property name="fromDbFeeder" ref="fromDbFeeder"/>
+		<property name="serializationIntermediary" ref="serializationIntermediary"/>
+		<property name="migrationWorker" ref="migrationWorker"/>
 	</bean>
 
-	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
+	<bean id="fromDbFeeder" class="ch.vd.uniregctb.migration.pm.FromDbFeeder">
+		<property name="regpmTransactionManager" ref="regpmTransactionManager"/>
+		<property name="sessionFactory" ref="regpmSessionFactory"/>
+	</bean>
+
+	<bean id="serializationIntermediary" class="ch.vd.uniregctb.migration.pm.SerializationIntermediary">
+		<property name="fsDirectory" value="${migration.dump.dir}"/>
+	</bean>
+
+	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.MigrationWorker">
+	</bean>
 
 </beans>

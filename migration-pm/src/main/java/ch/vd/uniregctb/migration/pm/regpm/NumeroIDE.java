@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.regpm;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
@@ -16,7 +17,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.LongZeroIsNullUserType;
 		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		@TypeDef(name = "LongZeroIsNull", typeClass = LongZeroIsNullUserType.class)
 })
-public class NumeroIDE {
+public class NumeroIDE implements Serializable {
 
 	private String categorie;
 	private Long numero;

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.regpm;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
@@ -11,7 +12,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 
 @Embeddable
 @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class)
-public class ContactEntreprise {
+public class ContactEntreprise implements Serializable {
 
 	private String nom;
 	private String prenom;

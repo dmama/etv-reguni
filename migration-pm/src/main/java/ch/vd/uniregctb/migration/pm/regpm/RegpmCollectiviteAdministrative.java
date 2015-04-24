@@ -24,7 +24,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		          @TypeDef(name = "RegDate", typeClass = RegDateUserType.class)
           })
-public class RegpmCollectiviteAdministrative extends RegpmEntity implements WithLongId{
+public class RegpmCollectiviteAdministrative extends RegpmEntity implements WithLongId {
 
 	private Long id;
 	private String nomCourt;

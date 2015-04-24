@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.regpm;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import org.hibernate.annotations.Columns;
@@ -18,7 +19,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.MutationTimestampUserType;
 		          @TypeDef(name = "Timestamp", typeClass = MutationTimestampUserType.class),
 		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class)
          })
-public abstract class RegpmEntity {
+public abstract class RegpmEntity implements Serializable {
 
 	private Timestamp lastMutationTimestamp;
 	private String lastMutationOperator;
