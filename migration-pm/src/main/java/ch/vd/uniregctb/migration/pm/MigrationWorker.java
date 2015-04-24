@@ -1,6 +1,10 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,7 +19,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -129,23 +135,48 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				nbEnCours.decrementAndGet();
 
 				try {
-					// TODO faire quelque chose de ce résultat de migration!
 					final MigrationResult res = future.get();
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug("Résultat de migration reçu : " + res);
 					}
+
+					// utilisation des loggers pour les fichiers/listes de contrôle
+					for (MigrationResult.CategorieListe cat : MigrationResult.CategorieListe.values()) {
+						final List<Pair<MigrationResult.NiveauMessage, String>> messages = res.getMessages(cat);
+						if (!messages.isEmpty()) {
+							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResult.CategorieListe.class.getName(), cat.name()));
+							messages.forEach(msg -> log(logger, msg.getLeft(), msg.getRight()));
+						}
+					}
 				}
 				catch (ExecutionException e) {
-					final Throwable cause = e.getCause();
-					if (cause instanceof MigrationException) {
-						// TODO ajouter les données dans le rapport d'erreur
-					}
-					else {
-						// TODO que faire?
-					}
+					LOGGER.error("Exception inattendue", e.getCause());
 				}
 			}
 		}
+	}
+
+	private static void log(Logger logger, MigrationResult.NiveauMessage niveau, String msg) {
+		final Consumer<String> realLogger;
+		switch (niveau) {
+		case DEBUG:
+			realLogger = logger::debug;
+			break;
+		case ERROR:
+			realLogger = logger::error;
+			break;
+		case INFO:
+			realLogger = logger::info;
+			break;
+		case WARN:
+			realLogger = logger::warn;
+			break;
+		default:
+			throw new IllegalArgumentException("Niveau invalide : " + niveau);
+		}
+
+		// envoi dans le log
+		realLogger.accept(msg);
 	}
 
 	private class MigrationTask implements Callable<MigrationResult> {
@@ -156,11 +187,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 
 		@Override
-		public MigrationResult call() throws MigrationException {
+		public MigrationResult call() {
+			final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
+			final Set<Long> idsIndividus = graphe.getIndividus().keySet();
 			try {
 				while (true) {
-					final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
-					final Set<Long> idsIndividus = graphe.getIndividus().keySet();
 					final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
 					if (ticket != null) {
 						try {
@@ -177,11 +208,31 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 					}
 				}
 			}
-			catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				LOGGER.error("Interrupted !");
-				throw new RuntimeException("Interrupted !");
+			catch (Throwable t) {
+				if (t instanceof InterruptedException) {
+					Thread.currentThread().interrupt();
+				}
+
+				final MigrationResult res = new MigrationResult();
+				final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
+				res.addMessage(MigrationResult.CategorieListe.ERREUR_GENERIQUE, MigrationResult.NiveauMessage.ERROR, msg);
+				return res;
 			}
+		}
+	}
+
+	private static String dump(Throwable t) {
+		try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+			pw.print(t.getClass().getName());
+			pw.print(": ");
+			pw.println(t.getMessage());
+			t.printStackTrace(pw);
+			pw.flush();
+			return sw.toString();
+		}
+		catch (IOException e) {
+			LOGGER.error("Pas pu générer le message d'erreur pour l'exception reçue", t);
+			return "Erreur inattendue (voir logs applicatifs à " + new Date() + ")";
 		}
 	}
 
