@@ -29,6 +29,7 @@
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
+		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
@@ -133,8 +134,11 @@
 
 	<!-- quelques DAO -->
 
-	<bean id="uniregHibernateDao" class="ch.vd.uniregctb.common.BaseDAOImpl" abstract="true">
-		<property name="sessionFactory" ref="uniregSessionFactory" />
+	<bean id="uniregGenericHibernateDao" class="ch.vd.registre.base.dao.GenericDAOImpl" abstract="true">
+		<property name="sessionFactory" ref="uniregSessionFactory"/>
+	</bean>
+
+	<bean id="uniregHibernateDao" class="ch.vd.uniregctb.common.BaseDAOImpl" parent="uniregGenericHibernateDao" abstract="true">
 		<property name="hibernateTemplate" ref="uniregHibernateTemplate"/>
 	</bean>
 

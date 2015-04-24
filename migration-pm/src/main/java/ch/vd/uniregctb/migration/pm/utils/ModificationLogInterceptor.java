@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
@@ -70,7 +70,7 @@ public class ModificationLogInterceptor extends AbstractLinkedInterceptor {
 		boolean modified = false;
 		if (entity instanceof HibernateEntity && objectHasChanged(propertyNames, currentState, previousState)) {
 			modified = assignValue(LOG_MUSER, propertyNames, currentState, AuthenticationHelper.getCurrentPrincipal(), false);
-			modified = assignValue(LOG_MDATE, propertyNames, currentState, DateHelper.getCurrentDate(), false) || modified;
+			modified = assignValue(LOG_MDATE, propertyNames, currentState, now(), false) || modified;
 		}
 		return modified;
 	}
@@ -80,13 +80,17 @@ public class ModificationLogInterceptor extends AbstractLinkedInterceptor {
 		boolean modified = false;
 		if (entity instanceof HibernateEntity) {
 			final String user = AuthenticationHelper.getCurrentPrincipal();
-			final Date now = DateHelper.getCurrentDate();
+			final Timestamp now = now();
 			modified = assignValue(LOG_CUSER, propertyNames, currentState, user, completeOnly);
 			modified = assignValue(LOG_MUSER, propertyNames, currentState, user, completeOnly) || modified;
 			modified = assignValue(LOG_CDATE, propertyNames, currentState, now, completeOnly) || modified;
 			modified = assignValue(LOG_MDATE, propertyNames, currentState, now, completeOnly) || modified;
 		}
 		return modified;
+	}
+
+	private static Timestamp now() {
+		return new Timestamp(DateHelper.getCurrentDate().getTime());
 	}
 
 	/**

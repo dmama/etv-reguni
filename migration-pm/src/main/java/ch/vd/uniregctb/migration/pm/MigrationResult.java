@@ -3,11 +3,12 @@ package ch.vd.uniregctb.migration.pm;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	 * Les messages à logguer, relatifs à une migration
 	 */
 	private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> msgs = new EnumMap<>(MigrationResultMessage.CategorieListe.class);
+
 	/**
 	 * Données maintenues pour les enregistrements de structures de données à consolider
 	 * pendant la transaction
@@ -96,7 +98,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
 	                                                     Function<? super D, ?> keyExtractor,
 	                                                     BinaryOperator<D> dataMerger,
-	                                                     BiConsumer<? super D, MigrationResultProduction> consolidator) {
+	                                                     Consumer<? super D> consolidator) {
 
 		if (preCommitRegistrations.containsKey(dataClass)) {
 			throw new IllegalArgumentException("Un enregistrement a déjà été fait pour la classe " + dataClass.getName());
@@ -116,17 +118,9 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 			throw new IllegalArgumentException("Aucun enregistrement n'a été fait pour la classe " + data.getClass().getName());
 		}
 
-		//noinspection unchecked
 		final Map<Object, D> dataMap = registration.data;
 		final Object key = registration.keyExtractor.apply(data);
-		if (dataMap.containsKey(key)) {
-			final D oldData = dataMap.get(key);
-			final D newData = registration.dataMerger.apply(oldData, data);
-			dataMap.put(key, newData);
-		}
-		else {
-			dataMap.put(key, data);
-		}
+		dataMap.merge(key, data, registration.dataMerger);
 	}
 
 	/**
@@ -135,11 +129,9 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	public void consolidatePreTransactionCommitRegistrations() {
 		for (PreTransactionCommitRegistration<?> registration : preCommitRegistrations.values()) {
 			final Map<Object, ?> dataMap = registration.data;
-			for (Object data : dataMap.values()) {
-				//noinspection unchecked
-				final BiConsumer<Object, MigrationResultProduction> consolidator = (BiConsumer<Object, MigrationResultProduction>) registration.consolidator;
-				consolidator.accept(data, this);
-			}
+			//noinspection unchecked
+			final Consumer<Object> consolidator = (Consumer<Object>) registration.consolidator;
+			dataMap.values().forEach(consolidator);
 		}
 	}
 
@@ -178,14 +170,14 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	private static final class PreTransactionCommitRegistration<D> {
 		final Function<? super D, ?> keyExtractor;
 		final BinaryOperator<D> dataMerger;
-		final BiConsumer<? super D, MigrationResultProduction> consolidator;
+		final Consumer<? super D> consolidator;
 		final Map<Object, D> data;
 
-		public PreTransactionCommitRegistration(Function<? super D, ?> keyExtractor, BinaryOperator<D> dataMerger, BiConsumer<? super D, MigrationResultProduction> consolidator) {
+		public PreTransactionCommitRegistration(Function<? super D, ?> keyExtractor, BinaryOperator<D> dataMerger, Consumer<? super D> consolidator) {
 			this.keyExtractor = keyExtractor;
 			this.dataMerger = dataMerger;
 			this.consolidator = consolidator;
-			this.data = new HashMap<>();
+			this.data = new LinkedHashMap<>();      // pour garder l'ordre, en test...
 		}
 	}
 }

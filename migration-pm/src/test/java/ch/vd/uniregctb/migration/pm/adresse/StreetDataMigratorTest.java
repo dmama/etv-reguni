@@ -32,6 +32,7 @@ import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 		"classpath:spring/validation.xml",
 		"classpath:spring/interfaces.xml",
 		"classpath:spring/migration.xml",
+		"classpath:spring/ut-database.xml",
 		"classpath:spring/ut-properties.xml"
 })
 public class StreetDataMigratorTest extends AbstractSpringTest {

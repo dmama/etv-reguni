@@ -77,7 +77,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebutEffectif;
 		if (domicileDebut == null) {
 			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, String.format("l'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
+			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
 			                                                                                                                             DateRangeHelper.toDisplayString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
 		}
 		else {
@@ -87,7 +87,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// s'il n'y a pas eu de changemenent de commune entre les deux dates, ces entrées sont normalement les mêmes
 		// (comme je ne sais pas si les Map.Entry sont des constructions pour l'extérieur ou des externalisations de données internes, je préfère juste comparer la clé)
 		if (domicileDebutEffectif.getKey() == domicileFin.getKey()) {
-			return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(range)));
+			return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(domicileDebutEffectif.getKey(), range.getDateFin())));
 		}
 		else {
 			// il y a eu changement de communes... il faut donc préparer plusieurs cas
@@ -117,10 +117,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	@Override
 	public void initMigrationResult(MigrationResult mr) {
 		super.initMigrationResult(mr);
+
+		// on va regrouper les données (communes et dates) par entité juridique afin de créer,
+		// pour chacune d'entre elles, les fors secondaires qui vont bien
 		mr.registerPreTransactionCommitCallback(ForsSecondairesData.class,
 		                                        d -> d.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData(d1.entiteJuridiqueSupplier, MAP_MERGER.apply(d1.communes, d2.communes)),
-		                                        this::createForsSecondaires);
+		                                        d -> createForsSecondaires(d, mr));
 	}
 
 	/**
@@ -203,9 +206,18 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	                                                Collection<RegpmEtablissementStable> etablissementsStables) {
 
 		// les domiciles avec leurs dates d'établissement
-		final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles = domiciles.stream()
-				.filter(de -> !de.isRectifiee())
-				.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), null, TreeMap::new));
+		final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
+		if (domiciles != null && !domiciles.isEmpty()) {
+			// on trie les entités avant de les collecter en map afin de s'assurer que, à dates égales,
+			// c'est le dernier qui aura raison...
+			mapDomiciles = domiciles.stream()
+					.filter(de -> !de.isRectifiee())
+					.sorted()
+					.collect(Collectors.toMap(RegpmDomicileEtablissement::getDateValidite, Function.identity(), (u, v) -> v, TreeMap::new));
+		}
+		else {
+			mapDomiciles = Collections.emptyNavigableMap();
+		}
 
 		// les informations, par communes, des périodes concernées
 		final Map<RegpmCommune, List<DateRange>> mapFors = etablissementsStables.stream()
@@ -215,10 +227,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				                          pair -> Collections.singletonList(pair.getValue()),
 				                          LIST_MERGER));
 
-		mr.addPreTransactionCommitData(new ForsSecondairesData(entiteJuridique, mapFors));
+		// s'il y a des données relatives à des fors secondaires, on les envoie...
+		if (!mapFors.isEmpty()) {
+			mr.addPreTransactionCommitData(new ForsSecondairesData(entiteJuridique, mapFors));
+		}
 	}
 
-	private static final class ForsSecondairesData {
+	protected static final class ForsSecondairesData {
 
 		final KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier;
 		final Map<RegpmCommune, List<DateRange>> communes;
