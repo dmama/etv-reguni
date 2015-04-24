@@ -121,4 +121,21 @@
 		<property name="sessionFactory" ref="uniregSessionFactory"/>
 	</bean>
 
+	<bean id="uniregHibernateDialect" class="ch.vd.shared.hibernate.config.OracleDialectWithNvarchar"/>
+
+	<!-- quelques DAO -->
+
+	<bean id="uniregHibernateDao" class="ch.vd.uniregctb.common.BaseDAOImpl" abstract="true">
+		<property name="sessionFactory" ref="uniregSessionFactory" />
+		<property name="hibernateTemplate" ref="uniregHibernateTemplate"/>
+	</bean>
+
+	<bean id="uniregHibernateTemplate" class="ch.vd.uniregctb.hibernate.HibernateTemplateImpl">
+		<property name="sessionFactory" ref="uniregSessionFactory" />
+	</bean>
+
+	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="uniregHibernateDao">
+		<property name="dialect" ref="uniregHibernateDialect" />
+	</bean>
+
 </beans>

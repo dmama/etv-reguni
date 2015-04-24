@@ -41,9 +41,9 @@ public class MigrationResult {
 		LOCALITE_DEVINEE,
 
 		/**
-		 * Erreurs inattendues, par exemple...
+		 * Erreurs inattendues, par exemple, messages génériques en général (??)...
 		 */
-		ERREUR_GENERIQUE,
+		GENERIQUE,
 
 		/**
 		 * L'adresse trouvée dans RegPM n'est pas équivalente à celle de RCEnt

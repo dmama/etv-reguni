@@ -22,14 +22,18 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeMandatUserType;
 @Entity
 @Table(name = "MANDAT")
 @TypeDefs({
-		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
-		          @TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
-		          @TypeDef(name = "TypeMandat", typeClass = TypeMandatUserType.class)
-          })
+		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
+		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
+		@TypeDef(name = "TypeMandat", typeClass = TypeMandatUserType.class)
+})
 public class RegpmMandat extends RegpmEntity {
+
+	private static final long serialVersionUID = -5567446787120562544L;
 
 	@Embeddable
 	private static class PK implements Serializable {
+
+		private static final long serialVersionUID = -2762881677178709397L;
 
 		private Integer noSequence;
 		private Long idEntreprise;
@@ -66,6 +70,14 @@ public class RegpmMandat extends RegpmEntity {
 			int result = noSequence != null ? noSequence.hashCode() : 0;
 			result = 31 * result + (idEntreprise != null ? idEntreprise.hashCode() : 0);
 			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "PK{" +
+					"noSequence=" + noSequence +
+					", idEntreprise=" + idEntreprise +
+					'}';
 		}
 	}
 

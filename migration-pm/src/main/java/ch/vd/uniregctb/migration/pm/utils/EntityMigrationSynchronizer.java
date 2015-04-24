@@ -18,7 +18,7 @@ public class EntityMigrationSynchronizer {
 	/**
 	 * Interface de ticket l'on prend ou relâche
 	 */
-	public static interface Ticket {
+	public interface Ticket {
 	}
 
 	/**
@@ -34,6 +34,9 @@ public class EntityMigrationSynchronizer {
 			this.lockedIndividualIds = individualIds;
 		}
 
+		/**
+		 * @return le synchronizer qui a émis le ticket, utilisé pour valider le ticket lors de sa relaxation
+		 */
 		private EntityMigrationSynchronizer outer() {
 			return EntityMigrationSynchronizer.this;
 		}
@@ -212,12 +215,12 @@ public class EntityMigrationSynchronizer {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
 	}
 
-	private static SortedSet<Long> buildSortedSet(Collection<Long> idsEntreprise) {
-		if (idsEntreprise == null || idsEntreprise.isEmpty()) {
+	private static SortedSet<Long> buildSortedSet(Collection<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
 			return Collections.emptyNavigableSet();
 		}
 
-		return idsEntreprise.stream()
+		return ids.stream()
 				.filter(id -> id != null)
 				.collect(Collectors.toCollection(TreeSet::new));
 	}

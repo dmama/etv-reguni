@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -21,16 +22,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 
+import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
+import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
 
@@ -47,6 +58,13 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private StreetDataMigrator streetDataMigrator;
 	private PlatformTransactionManager uniregTransactionManager;
+	private SessionFactory uniregSessionFactory;
+	private RcPersClient rcpersClient;
+	private TiersDAO tiersDAO;
+
+	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
+	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
+	private EntityMigrator<RegpmIndividu> individuMigrator;
 
 	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
 		this.streetDataMigrator = streetDataMigrator;
@@ -56,33 +74,29 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.uniregTransactionManager = uniregTransactionManager;
 	}
 
+	public void setUniregSessionFactory(SessionFactory uniregSessionFactory) {
+		this.uniregSessionFactory = uniregSessionFactory;
+	}
+
+	public void setRcpersClient(RcPersClient rcpersClient) {
+		this.rcpersClient = rcpersClient;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
+
+		this.entrepriseMigrator = new EntrepriseMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
+		this.etablissementMigrator = new EtablissementMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
+		this.individuMigrator = new IndividuMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcpersClient);
+
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
 		                                       new ArrayBlockingQueue<>(20),
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),
-		                                       (r, executor) -> {
-			                                       final BlockingQueue<Runnable> queue = executor.getQueue();
-			                                       boolean sent = false;
-			                                       try {
-				                                       while (!sent) {
-					                                       if (executor.isShutdown()) {
-						                                       // this will trigger the abort policy
-						                                       break;
-					                                       }
-
-					                                       // if sent successfully, that's the key out of the loop!
-					                                       sent = queue.offer(r, 1, TimeUnit.SECONDS);
-				                                       }
-			                                       }
-			                                       catch (InterruptedException e) {
-				                                       Thread.currentThread().interrupt();
-			                                       }
-
-			                                       if (!sent) {
-				                                       ABORT_POLICY.rejectedExecution(r, executor);
-			                                       }
-		                                       });
+		                                       MigrationWorker::rejectionExecutionHandler);
 
 		this.completionService = new ExecutorCompletionService<>(this.executor);
 		this.gatheringThread = new Thread("Gathering") {
@@ -104,6 +118,35 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			}
 		};
 		this.gatheringThread.start();
+	}
+
+	/**
+	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
+	 * qu'une place se libère
+	 * @param r action à placer sur la queue
+	 * @param executor exécuteur qui a refusé la tâche
+	 */
+	private static void rejectionExecutionHandler(Runnable r, ThreadPoolExecutor executor) {
+		final BlockingQueue<Runnable> queue = executor.getQueue();
+		boolean sent = false;
+		try {
+			while (!sent) {
+				if (executor.isShutdown()) {
+					// this will trigger the abort policy
+					break;
+				}
+
+				// if sent successfully, that's the key out of the loop!
+				sent = queue.offer(r, 1, TimeUnit.SECONDS);
+			}
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		if (!sent) {
+			ABORT_POLICY.rejectedExecution(r, executor);
+		}
 	}
 
 	@Override
@@ -220,7 +263,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 				final MigrationResult res = new MigrationResult();
 				final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
-				res.addMessage(MigrationResult.CategorieListe.ERREUR_GENERIQUE, MigrationResult.NiveauMessage.ERROR, msg);
+				res.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.ERROR, msg);
 				return res;
 			}
 		}
@@ -242,15 +285,56 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	}
 
 	private MigrationResult migrate(Graphe graphe) throws MigrationException {
-		// TODO à implémenter...
-		try {
-			Thread.sleep(5000);
-		}
-		catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
 		final MigrationResult mr = new MigrationResult();
+
+		// tout le graphe sera migré dans une transaction globale
+		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.execute(status -> {
+			doMigrate(graphe, mr);
+			return null;
+		});
+
 		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResult.CategorieListe.PM_MIGREE, MigrationResult.NiveauMessage.INFO, String.format("Entreprise %d migrée", id)));
 		return mr;
+	}
+
+	/**
+	 * Appelé dans un contexte transactionnel
+	 * @param graphe le graphe d'objets à migrer
+	 * @param mr le collecteur de résultats/remarques de migration
+	 */
+	private void doMigrate(Graphe graphe, MigrationResult mr) {
+
+		// on commence par les entreprises, puis les établissements, puis les individus TODO ne faudrait-il pas traiter les individus d'abord ?
+		// on collecte les liens entre ces entités au fur et à mesure
+		// à la fin, on ajoute les liens
+
+		final IdMapper idMapper = new IdMapper();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
+		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
+		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
+		addLinks(linkCollector.getCollectedLinks());
+	}
+
+	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
+	}
+
+	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
+	}
+
+	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
+	}
+
+	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
+		if (links != null && !links.isEmpty()) {
+			links.stream()
+					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
+					.forEach(ret -> uniregSessionFactory.getCurrentSession().merge(ret));
+		}
 	}
 }

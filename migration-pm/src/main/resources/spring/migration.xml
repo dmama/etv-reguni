@@ -23,6 +23,9 @@
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.MigrationWorker">
 		<property name="streetDataMigrator" ref="streetDataMigrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
+		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+		<property name="rcpersClient" ref="rcpersClient"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
