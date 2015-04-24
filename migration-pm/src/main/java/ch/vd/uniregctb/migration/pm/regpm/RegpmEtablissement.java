@@ -56,13 +56,14 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private NumeroIDE numeroIDE;
 	private Long numeroCantonal;
 	private RegpmEntreprise entreprise;
+	private RegpmIndividu individu;
 	private RegpmLocalitePostale localitePostale;
 	private RegpmRue rue;
 	private Set<RegpmEtablissementStable> etablissementsStables;
 	private Set<RegpmEtablissement> succursales;
 	private SortedSet<RegpmDomicileEtablissement> domicilesEtablissements;
 
-	// no individu, no institution ?, ...
+	// no institution ?, mandat contribuable ?, ...
 
 	@Id
 	@Column(name = "NO_ETABLISSEMENT")
@@ -261,6 +262,16 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
 	public void setNumeroCantonal(Long numeroCantonal) {
 		this.numeroCantonal = numeroCantonal;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "FK_INDNO")
+	public RegpmIndividu getIndividu() {
+		return individu;
+	}
+
+	public void setIndividu(RegpmIndividu individu) {
+		this.individu = individu;
 	}
 
 	@ManyToOne

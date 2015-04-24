@@ -11,24 +11,28 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 
 public class EntityLinkCollector {
 
+	private final List<EntityLink> collectedLinks = new LinkedList<>();
+
+	public void addLink(EntityLink link) {
+		collectedLinks.add(link);
+	}
+
+	public List<EntityLink> getCollectedLinks() {
+		return collectedLinks;
+	}
+
 	// TODO il y en a sans doute d'autre...
 	public enum LinkType {
 
 		/**
-		 * Lien entre un établissement et son entreprise parente
+		 * Lien entre un établissement et son entreprise/individu parent
 		 */
-		ETABLISSEMENT_ENTREPRISE,
-
-		/**
-		 * Lien entre un établissement et la personne physique exerçant une activité indépendante
-		 */
-		ETABLISSEMENT_PERSONNE_PHYSIQUE,
+		ETABLISSEMENT_ENTITE_JURIDIQUE,
 
 		/**
 		 * Lien entre un mandant et son mandataire
@@ -98,38 +102,17 @@ public class EntityLinkCollector {
 		public abstract R toRapportEntreTiers();
 	}
 
-	public static final class EtablissementEntrepriseLink extends EntityLink<Etablissement, Entreprise, RapportEntreTiers> {
+	public static final class EtablissementEntiteJuridiqueLink<T extends Tiers> extends EntityLink<Etablissement, T, RapportEntreTiers> {
 
-		public EtablissementEntrepriseLink(Supplier<Etablissement> etablissement, Supplier<Entreprise> entreprise, RegDate dateDebut, RegDate dateFin) {
-			super(LinkType.ETABLISSEMENT_ENTREPRISE, etablissement, entreprise, dateDebut, dateFin);
+		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, Supplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
+			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
 		}
 
 		public Etablissement resolveEtablissement() {
 			return resolveSource();
 		}
 
-		public Entreprise resolveEntreprise() {
-			return resolveDestination();
-		}
-
-		@Override
-		public RapportEntreTiers toRapportEntreTiers() {
-			// TODO implémenter le rapport entre tiers qui va bien et l'instancier avec les bonnes dates,
-			throw new NotImplementedException("A implémenter...");
-		}
-	}
-
-	public static final class EtablissementPersonnePhysiqueLink extends EntityLink<Etablissement, PersonnePhysique, RapportEntreTiers> {
-
-		public EtablissementPersonnePhysiqueLink(Supplier<Etablissement> etablissement, Supplier<PersonnePhysique> personnePhysique, RegDate dateDebut, RegDate dateFin) {
-			super(LinkType.ETABLISSEMENT_PERSONNE_PHYSIQUE, etablissement, personnePhysique, dateDebut, dateFin);
-		}
-
-		public Etablissement resolveEtablissement() {
-			return resolveSource();
-		}
-
-		public PersonnePhysique resolvePersonnePhysique() {
+		public T resolveEntiteJuridique() {
 			return resolveDestination();
 		}
 
@@ -181,15 +164,5 @@ public class EntityLinkCollector {
 			// TODO implémenter le rapport entre tiers qui va bien et l'instancier avec les bonnes dates,
 			throw new NotImplementedException("A implémenter...");
 		}
-	}
-
-	private final List<EntityLink> collectedLinks = new LinkedList<>();
-
-	public void addLink(EntityLink link) {
-		collectedLinks.add(link);
-	}
-
-	public List<EntityLink> getCollectedLinks() {
-		return collectedLinks;
 	}
 }

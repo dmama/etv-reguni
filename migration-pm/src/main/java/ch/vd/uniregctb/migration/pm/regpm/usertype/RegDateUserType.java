@@ -12,6 +12,7 @@ import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.hibernate.type.GenericUserType;
@@ -44,7 +45,7 @@ public class RegDateUserType extends GenericUserType implements UserType {
 		RegDate result = null;
 		if (!rs.wasNull() && date != null) {
 			try {
-				result = RegDateHelper.get(date);
+				result = RegDateHelper.get(date, DateConstants.EXTENDED_VALIDITY_RANGE);
 			}
 			catch (RuntimeException e) {
 				LOGGER.error("Impossible de récupérer la valeur de la RegDate =" + date + " name=" + name + " owner=" + owner);

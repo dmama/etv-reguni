@@ -39,74 +39,6 @@ public class FromDbFeeder implements Feeder {
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory sessionFactory;
 
-	public void setRegpmTransactionManager(PlatformTransactionManager regpmTransactionManager) {
-		this.regpmTransactionManager = regpmTransactionManager;
-	}
-
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-
-	@Override
-	public void feed(Worker worker) throws Exception {
-		// première étape, allons chercher les identifiants des entreprises à migrer...
-		LOGGER.info("Récupération des entreprises de RegPM à migrer...");
-		final List<Long> ids = getIds();
-		LOGGER.info("Récupération des identifiants des " + ids.size() + " entreprises de RegPM terminée.");
-
-		// container des identifiants des entreprises déjà présentes dans un graphe
-		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
-
-		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
-		for (long id : ids) {
-//		for (long id : Arrays.asList(27, 848, 61)) {
-			if (!idsDejaTrouvees.contains(id)) {
-				final Graphe graphe = loadGraphe(id);
-				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
-				worker.onGraphe(graphe);
-			}
-		}
-	}
-
-	private List<Long> getIds() {
-		final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
-		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				//noinspection JpaQlInspection
-				final Query query = session.createQuery("select e.id from RegpmEntreprise e");
-				//noinspection unchecked
-				return query.list();
-			}
-		});
-	}
-
-	private Graphe loadGraphe(final long idEntreprise) {
-		final long start = System.nanoTime();
-		final Graphe graphe = new Graphe();     // vide au départ...
-		try {
-			final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
-			template.setReadOnly(true);
-			template.execute(new TransactionCallbackWithoutResult() {
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					final Session session = sessionFactory.getCurrentSession();
-					final RegpmEntreprise pm = (RegpmEntreprise) session.get(RegpmEntreprise.class, idEntreprise);
-					forceLoad(pm, graphe);
-				}
-			});
-			return graphe;
-		}
-		finally {
-			final long end = System.nanoTime();
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Chargement de l'entreprise " + idEntreprise + " (" + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms) : " + graphe);
-			}
-		}
-	}
-
 	private static void forceLoad(RegpmEtablissement etablissement, Graphe graphe) {
 		if (!graphe.register(etablissement)) {
 			return;
@@ -115,8 +47,9 @@ public class FromDbFeeder implements Feeder {
 		// lazy init
 		etablissement.getDomicilesEtablissements().size();
 
-		// chargement de l'entreprise liée
+		// chargement de l'entreprise/individu lié(e)
 		forceLoad(etablissement.getEntreprise(), graphe);
+		forceLoad(etablissement.getIndividu(), graphe);
 
 		// chargement des succursales
 		for (RegpmEtablissement succ : etablissement.getSuccursales()) {
@@ -237,5 +170,73 @@ public class FromDbFeeder implements Feeder {
 		}
 
 		// TODO immeubles, documents dégrèvement, rattachements propriétaires... (si nécessaire dans cette phase de migration)
+	}
+
+	public void setRegpmTransactionManager(PlatformTransactionManager regpmTransactionManager) {
+		this.regpmTransactionManager = regpmTransactionManager;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	@Override
+	public void feed(Worker worker) throws Exception {
+		// première étape, allons chercher les identifiants des entreprises à migrer...
+		LOGGER.info("Récupération des entreprises de RegPM à migrer...");
+		final List<Long> ids = getIds();
+		LOGGER.info("Récupération des identifiants des " + ids.size() + " entreprises de RegPM terminée.");
+
+		// container des identifiants des entreprises déjà présentes dans un graphe
+		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
+
+		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
+		for (long id : ids) {
+//		for (long id : Arrays.asList(27, 848, 61)) {
+			if (!idsDejaTrouvees.contains(id)) {
+				final Graphe graphe = loadGraphe(id);
+				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
+				worker.onGraphe(graphe);
+			}
+		}
+	}
+
+	private List<Long> getIds() {
+		final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
+		template.setReadOnly(true);
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final Session session = sessionFactory.getCurrentSession();
+				//noinspection JpaQlInspection
+				final Query query = session.createQuery("select e.id from RegpmEntreprise e");
+				//noinspection unchecked
+				return query.list();
+			}
+		});
+	}
+
+	private Graphe loadGraphe(final long idEntreprise) {
+		final long start = System.nanoTime();
+		final Graphe graphe = new Graphe();     // vide au départ...
+		try {
+			final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
+			template.setReadOnly(true);
+			template.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					final Session session = sessionFactory.getCurrentSession();
+					final RegpmEntreprise pm = (RegpmEntreprise) session.get(RegpmEntreprise.class, idEntreprise);
+					forceLoad(pm, graphe);
+				}
+			});
+			return graphe;
+		}
+		finally {
+			final long end = System.nanoTime();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Chargement de l'entreprise " + idEntreprise + " (" + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms) : " + graphe);
+			}
+		}
 	}
 }

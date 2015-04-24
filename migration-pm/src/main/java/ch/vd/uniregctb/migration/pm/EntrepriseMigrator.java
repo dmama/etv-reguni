@@ -33,10 +33,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
@@ -65,7 +63,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	@Override
-	protected void doMigrate(RegpmEntreprise regpm, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// TODO migrer l'entreprise (ou la retrouver déjà migrée en base)
@@ -73,11 +71,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
-			mr.addMessage(MigrationResult.CategorieListe.PM_MIGREE, MigrationResult.NiveauMessage.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
+			mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
 			unireg = saveEntityToDb(new Entreprise(regpm.getId()));
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
+		// TODO générer l'établissement principal (= siège...)
 		// TODO ajouter un flag sur l'entreprise pour vérifier si elle est déjà migrée ou pas... (problématique de reprise sur incident pendant la migration)
 		// TODO migrer les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
 
@@ -87,42 +86,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
-	}
-
-	/**
-	 * Le côté polymorphique d'une relation est en général exprimé dans RegPM par plusieurs liens distincts, dont un seul est non-vide. Dans Unireg,
-	 * il n'y a en général qu'un seul lien vers une entité à caractère polymorphique... Cette méthode permet donc de transcrire une façon de faire
-	 * dans l'autre.
-	 * @param idMapper mapper des identifiants RegPM -> Unireg
-	 * @param entrepriseSupplier accès au lien vers une entreprise
-	 * @param etablissementSupplier accès au lien vers un établissement
-	 * @param individuSupplier accès au lien vers un individu
-	 * @return un accès vers l'entité Unireg correspondant à l'entité (entreprise, établissement ou individu) de RegPM liée&nbsp;; cet accès n'est pas résolvable immédiatement
-	 * mais est plutôt destiné à être résolu une fois toutes les entités d'un graphe migrées&nbsp;; la valeur retournée est nulle dans le cas où aucun des accès en entrée n'a
-	 * fourni une entité.
-	 */
-	@Nullable
-	private Supplier<? extends Tiers> getPolymorphicSupplier(IdMapper idMapper,
-	                                                         @Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
-	                                                         @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
-	                                                         @Nullable Supplier<RegpmIndividu> individuSupplier) {
-
-		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
-		if (entreprise != null) {
-			return getEntrepriseByRegpmIdSupplier(idMapper, entreprise.getId());
-		}
-
-		final RegpmEtablissement etablissement = etablissementSupplier != null ? etablissementSupplier.get() : null;
-		if (etablissement != null) {
-			return getEtablissementByRegpmIdSupplier(idMapper, etablissement.getId());
-		}
-
-		final RegpmIndividu individu = individuSupplier != null ? individuSupplier.get() : null;
-		if (individu != null) {
-			return getIndividuByRegpmIdSupplier(idMapper, individu.getId());
-		}
-
-		return null;
 	}
 
 	/**
@@ -150,7 +113,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param linkCollector collecteur de liens à créer
 	 * @param idMapper mapper des identifiants RegPM -> Unireg
 	 */
-	private void migrateMandataires(RegpmEntreprise regpm, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void migrateMandataires(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// un supplier qui va renvoyer l'entreprise en cours de migration
 		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
 
@@ -160,7 +123,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
 			final Supplier<? extends Tiers> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
 			if (mandataire == null) {
-				mr.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
+				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
 				return;
 			}
 
@@ -173,7 +136,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Migration des déclarations d'impôts, de leurs états, délais...
 	 */
-	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResult mr) {
+	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		// boucle sur chacune des déclarations
 		regpm.getDossiersFiscaux().forEach(dossier -> {
@@ -270,7 +233,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return etats;
 	}
 
-	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResult mr) {
+	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		// TODO sont-ce vraiment des fors de classe ForFiscalPrincipal qu'il faut instancier ? (problème avec le mode d'imposition qui n'a rien à faire là pour les PM...)
 
@@ -286,14 +249,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			else if (f.getOfsPays() != null) {
 				if (f.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-					mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
+					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
 					return Optional.empty();
 				}
 				ffp.setNumeroOfsAutoriteFiscale(f.getOfsPays());
 				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 			}
 			else {
-				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
 				return Optional.empty();
 			}
 			ffp.setTiers(unireg);
@@ -363,7 +326,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		liste.forEach(unireg::addForFiscal);
 	}
 
-	private void migrateForsSecondaires(RegpmEntreprise regpm, Entreprise unireg, MigrationResult mr) {
+	private void migrateForsSecondaires(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		final Function<RegpmForSecondaire, Optional<ForFiscalSecondaire>> mapper = f -> {
 			final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
@@ -380,12 +343,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				ffs.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 			}
 			else {
-				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For secondaire %d sans autorité fiscale", f.getId()));
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For secondaire %d sans autorité fiscale", f.getId()));
 				return Optional.empty();
 			}
 
 			if (ffs.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.WARN, String.format("For secondaire %d hors Vaud", f.getId()));
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN, String.format("For secondaire %d hors Vaud", f.getId()));
 			}
 
 			ffs.setTiers(unireg);
@@ -393,6 +356,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		};
 
 		// TODO comment différencier les fors fiscaux "immeuble" des fors fiscaux "établissement stable" ?
+		// TODO les fors "établissement stable" ne devraient-ils pas être recalculés d'après les entités RegpmEtablissementStable sur les établissements liés ?
 
 		// construction de la liste des fors secondaires
 		regpm.getForsSecondaires().stream()

@@ -67,4 +67,27 @@ public class RegpmCommune extends RegpmEntity implements WithLongId {
 	public void setCanton(RegpmCanton canton) {
 		this.canton = canton;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final RegpmCommune that = (RegpmCommune) o;
+
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (noOfs != null ? !noOfs.equals(that.noOfs) : that.noOfs != null) return false;
+		if (nom != null ? !nom.equals(that.nom) : that.nom != null) return false;
+		return canton == that.canton;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (noOfs != null ? noOfs.hashCode() : 0);
+		result = 31 * result + (nom != null ? nom.hashCode() : 0);
+		result = 31 * result + (canton != null ? canton.hashCode() : 0);
+		return result;
+	}
 }

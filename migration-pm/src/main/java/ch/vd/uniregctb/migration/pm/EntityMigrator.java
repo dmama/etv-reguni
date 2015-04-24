@@ -11,11 +11,17 @@ import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 public interface EntityMigrator<T extends RegpmEntity> {
 
 	/**
+	 * Permet d'initialiser des structures de données dans le résultat avant toute migration
+	 * @param mr structure à initialiser
+	 */
+	void initMigrationResult(MigrationResult mr);
+
+	/**
 	 * Migre l'entité donnée
 	 * @param entity entité à migrer
 	 * @param mr récipiendaire de messages à logguer
 	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	void migrate(T entity, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper);
+	void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper);
 }

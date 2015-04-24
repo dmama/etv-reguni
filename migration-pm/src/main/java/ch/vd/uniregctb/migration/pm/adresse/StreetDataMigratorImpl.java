@@ -18,7 +18,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
@@ -30,6 +30,33 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 
 	private FidorClient fidorClient;
 	private Map<Integer, List<Integer>> mappingNosOrdrePoste;
+
+	private static String canonize(String rue) {
+		rue = StringUtils.trimToEmpty(rue);
+		rue = rue.replaceAll("^Av\\. *", "Avenue ");
+		rue = rue.replaceAll("^Bvd\\. *", "Boulevard ");
+		rue = rue.replaceAll("^Ch\\. *", "Chemin ");
+		rue = rue.replaceAll("^Pl\\. *", "Place ");
+		rue = rue.replaceAll("^Q\\. *", "Quai ");
+		rue = rue.replaceAll("^R\\. *", "Rue ");
+		rue = rue.replaceAll("^Rte\\b\\.? *", "Route ");
+		rue = rue.replaceAll("^Sent\\. *", "Sentier ");
+		rue = rue.replaceAll("\\b' +", "'");
+		rue = rue.replaceAll("\\b- +", "-");
+		rue = rue.replaceAll("\\b([a-zA-ZäöüÄÖÜ]+-?)[Ss][Tt][Rr]\\. *", "$1strasse ");
+		return rue;
+	}
+
+	private static RegDate fromDate(Date date) {
+		if (date == null) {
+			return null;
+		}
+		return RegDate.get(date.getYear(), date.getMonth(), date.getDay());
+	}
+
+	private static RegDate getDateReference(AdresseAvecRue adresse) {
+		return adresse.getDateFin() == null ? adresse.getDateDebut() : adresse.getDateFin();
+	}
 
 	public void setFidorClient(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
@@ -135,25 +162,9 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			                                  detailsFin,
 			                                  npaLocaliteMainframe, nomRue, noRue,
 			                                  mostProbableSwissZipCodeId, npaLocalitePrise);
-			result.addMessage(MigrationResult.CategorieListe.ADRESSES, MigrationResult.NiveauMessage.INFO, msg);
+			result.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.INFO, msg);
 		}
 		return result;
-	}
-
-	private static String canonize(String rue) {
-		rue = StringUtils.trimToEmpty(rue);
-		rue = rue.replaceAll("^Av\\. *", "Avenue ");
-		rue = rue.replaceAll("^Bvd\\. *", "Boulevard ");
-		rue = rue.replaceAll("^Ch\\. *", "Chemin ");
-		rue = rue.replaceAll("^Pl\\. *", "Place ");
-		rue = rue.replaceAll("^Q\\. *", "Quai ");
-		rue = rue.replaceAll("^R\\. *", "Rue ");
-		rue = rue.replaceAll("^Rte\\b\\.? *", "Route ");
-		rue = rue.replaceAll("^Sent\\. *", "Sentier ");
-		rue = rue.replaceAll("\\b' +", "'");
-		rue = rue.replaceAll("\\b- +", "-");
-		rue = rue.replaceAll("\\b([a-zA-ZäöüÄÖÜ]+-?)[Ss][Tt][Rr]\\. *", "$1strasse ");
-		return rue;
 	}
 
 	/**
@@ -202,29 +213,6 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 		return found;
 	}
 
-	private static RegDate fromDate(Date date) {
-		if (date == null) {
-			return null;
-		}
-		return RegDate.get(date.getYear(), date.getMonth(), date.getDay());
-	}
-
-	private static RegDate getDateReference(AdresseAvecRue adresse) {
-		return adresse.getDateFin() == null ? adresse.getDateDebut() : adresse.getDateFin();
-	}
-
-	private static final class FidorInfo {
-		final Street street;
-		final String numeroMaison;
-		final int noOrdrePostal;
-
-		private FidorInfo(Street street, String numeroMaison, int noOrdrePostal) {
-			this.street = street;
-			this.numeroMaison = numeroMaison;
-			this.noOrdrePostal = noOrdrePostal;
-		}
-	}
-
 	@Nullable
 	private FidorInfo askFidor(int noOrdrePostal, RegDate refDate, String libelleCanoniqueRue) {
 		Street street = null;
@@ -258,5 +246,17 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			return new FidorInfo(street, numeroMaison, noOrdrePostal);
 		}
 		return null;
+	}
+
+	private static final class FidorInfo {
+		final Street street;
+		final String numeroMaison;
+		final int noOrdrePostal;
+
+		private FidorInfo(Street street, String numeroMaison, int noOrdrePostal) {
+			this.street = street;
+			this.numeroMaison = numeroMaison;
+			this.noOrdrePostal = noOrdrePostal;
+		}
 	}
 }

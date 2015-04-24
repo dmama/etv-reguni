@@ -2,14 +2,16 @@ package ch.vd.uniregctb.migration.pm;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,56 +22,7 @@ import org.jetbrains.annotations.NotNull;
  *     <li>...</li>
  * </ul>
  */
-public class MigrationResult {
-
-	/**
-	 * Enumération des différentes listes de contrôle
-	 * // TODO il y en a sûrement d'autres...
-	 */
-	public enum CategorieListe {
-
-		/**
-		 * Cas ok qui indique qu'une PM est migrée
-		 */
-		PM_MIGREE,
-
-		/**
-		 * Erreurs inattendues, par exemple, messages génériques en général (??)...
-		 */
-		GENERIQUE,
-
-		/**
-		 * Erreurs/messages liés à la migration des adresses
-		 */
-		ADRESSES,
-
-		/**
-		 * Erreurs/messages liés à la migration des individus PM
-		 */
-		INDIVIDUS_PM,
-
-		/**
-		 * Erreurs/messages liés à la migration des fors
-		 */
-		FORS
-	}
-
-	public enum NiveauMessage {
-		DEBUG,
-		INFO,
-		WARN,
-		ERROR
-	}
-	
-	public static class Message {
-		final NiveauMessage niveau;
-		final String texte;
-
-		private Message(NiveauMessage niveau, String texte) {
-			this.niveau = niveau;
-			this.texte = texte;
-		}
-	}
+public class MigrationResult implements MigrationResultProduction, MigrationResultMessageProvider {
 
 	/**
 	 * Runnables enregistrables pendant la transaction, qui sont lancés une fois la transaction terminée (avec succès)
@@ -77,9 +30,14 @@ public class MigrationResult {
 	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
 
 	/**
-	 * Les messages à loggeur, relatifs à une migration
+	 * Les messages à logguer, relatifs à une migration
 	 */
-	private final Map<CategorieListe, List<Message>> msgs = new EnumMap<>(CategorieListe.class);
+	private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> msgs = new EnumMap<>(MigrationResultMessage.CategorieListe.class);
+	/**
+	 * Données maintenues pour les enregistrements de structures de données à consolider
+	 * pendant la transaction
+	 */
+	private final Map<Class<?>, PreTransactionCommitRegistration<?>> preCommitRegistrations = new HashMap<>();
 
 	/**
 	 * Appelé lors de la migration dès qu'un message doit sortir dans une liste de contrôle
@@ -87,17 +45,17 @@ public class MigrationResult {
 	 * @param niveau le niveau du message
 	 * @param msg le message
 	 */
-	public void addMessage(CategorieListe cat, NiveauMessage niveau, String msg) {
-		addMessage(cat, new Message(niveau, msg));
+	public void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg) {
+		addMessage(cat, new MigrationResultMessage(niveau, msg));
 	}
 
-	private void addMessage(CategorieListe cat, Message msg) {
-		final List<Message> liste = getOrCreateMessageList(cat);
+	private void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage msg) {
+		final List<MigrationResultMessage> liste = getOrCreateMessageList(cat);
 		liste.add(msg);
 	}
 
-	private List<Message> getOrCreateMessageList(CategorieListe cat) {
-		List<Message> liste = msgs.get(cat);
+	private List<MigrationResultMessage> getOrCreateMessageList(MigrationResultMessage.CategorieListe cat) {
+		List<MigrationResultMessage> liste = msgs.get(cat);
 		if (liste == null) {
 			liste = new LinkedList<>();
 			msgs.put(cat, liste);
@@ -106,32 +64,9 @@ public class MigrationResult {
 	}
 
 	@NotNull
-	public List<Message> getMessages(CategorieListe cat) {
-		final List<Message> found = msgs.get(cat);
+	public List<MigrationResultMessage> getMessages(MigrationResultMessage.CategorieListe cat) {
+		final List<MigrationResultMessage> found = msgs.get(cat);
 		return found == null ? Collections.emptyList() : found;
-	}
-
-	public void addAll(MigrationResult results, String prefixe) {
-
-		// d'abord, les messages enregistrés localement doivent être repris au niveau global avec un préfixe
-		results.msgs.entrySet().forEach(entry -> {
-			final CategorieListe cat = entry.getKey();
-			final List<Message> newMessages;
-			if (StringUtils.isNotBlank(prefixe)) {
-				newMessages = entry.getValue().stream()
-						.map(source -> new Message(source.niveau, String.format("%s : %s", prefixe, source.texte)))
-						.collect(Collectors.toList());
-			}
-			else {
-				newMessages = entry.getValue();
-			}
-			if (newMessages != null) {
-				newMessages.forEach(msg -> addMessage(cat, msg));
-			}
-		});
-
-		// les callbacks enregistrés localement doivent être propagés tout en haut
-		postTransactionCallbacks.addAll(results.postTransactionCallbacks);
 	}
 
 	/**
@@ -150,13 +85,71 @@ public class MigrationResult {
 		postTransactionCallbacks.clear();
 	}
 
+	/**
+	 * Enregistre un traitement a effectuer avant la fin de la transaction
+	 * @param dataClass classe de la donnée postée (on n'acceptera qu'un seul enregistrement par classe !)
+	 * @param keyExtractor extracteur de la clé de regroupement pour les données postées
+	 * @param dataMerger fusionneur des données associées à une clé postée plusieurs fois
+	 * @param consolidator opération finale à effectuée sur les données consolidées
+	 * @param <D> type des données postées et traitées
+	 */
+	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
+	                                                     Function<? super D, ?> keyExtractor,
+	                                                     BinaryOperator<D> dataMerger,
+	                                                     BiConsumer<? super D, MigrationResultProduction> consolidator) {
+
+		if (preCommitRegistrations.containsKey(dataClass)) {
+			throw new IllegalArgumentException("Un enregistrement a déjà été fait pour la classe " + dataClass.getName());
+		}
+		preCommitRegistrations.put(dataClass, new PreTransactionCommitRegistration<>(keyExtractor, dataMerger, consolidator));
+	}
+
+	/**
+	 * Enregistre une donnée qui sera intégrée aux autres et traitée en fin de transaction
+	 * @param data donnée à intégrer
+	 * @param <D> type de la donnée
+	 */
+	public <D> void addPreTransactionCommitData(@NotNull D data) {
+		//noinspection unchecked
+		final PreTransactionCommitRegistration<D> registration = (PreTransactionCommitRegistration<D>) preCommitRegistrations.get(data.getClass());
+		if (registration == null) {
+			throw new IllegalArgumentException("Aucun enregistrement n'a été fait pour la classe " + data.getClass().getName());
+		}
+
+		//noinspection unchecked
+		final Map<Object, D> dataMap = registration.data;
+		final Object key = registration.keyExtractor.apply(data);
+		if (dataMap.containsKey(key)) {
+			final D oldData = dataMap.get(key);
+			final D newData = registration.dataMerger.apply(oldData, data);
+			dataMap.put(key, newData);
+		}
+		else {
+			dataMap.put(key, data);
+		}
+	}
+
+	/**
+	 * Consolide (= appelle le consolidator) pour les données postées
+	 */
+	public void consolidatePreTransactionCommitRegistrations() {
+		for (PreTransactionCommitRegistration<?> registration : preCommitRegistrations.values()) {
+			final Map<Object, ?> dataMap = registration.data;
+			for (Object data : dataMap.values()) {
+				//noinspection unchecked
+				final BiConsumer<Object, MigrationResultProduction> consolidator = (BiConsumer<Object, MigrationResultProduction>) registration.consolidator;
+				consolidator.accept(data, this);
+			}
+		}
+	}
+
 	@Override
 	public String toString() {
 
-		final class Denormalized extends Message {
+		final class Denormalized extends MigrationResultMessage {
 			final CategorieListe cat;
 
-			Denormalized(NiveauMessage niveau, String texte, CategorieListe cat) {
+			Denormalized(Niveau niveau, String texte, CategorieListe cat) {
 				super(niveau, texte);
 				this.cat = cat;
 			}
@@ -176,5 +169,23 @@ public class MigrationResult {
 				.flatMap(Function.<Stream<Denormalized>>identity())
 				.map(Object::toString)
 				.collect(Collectors.joining(System.lineSeparator()));
+	}
+
+	/**
+	 * Données maintenues pour un type de données à consolider
+	 * @param <D> type des données à consolider
+	 */
+	private static final class PreTransactionCommitRegistration<D> {
+		final Function<? super D, ?> keyExtractor;
+		final BinaryOperator<D> dataMerger;
+		final BiConsumer<? super D, MigrationResultProduction> consolidator;
+		final Map<Object, D> data;
+
+		public PreTransactionCommitRegistration(Function<? super D, ?> keyExtractor, BinaryOperator<D> dataMerger, BiConsumer<? super D, MigrationResultProduction> consolidator) {
+			this.keyExtractor = keyExtractor;
+			this.dataMerger = dataMerger;
+			this.consolidator = consolidator;
+			this.data = new HashMap<>();
+		}
 	}
 }

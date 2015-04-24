@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 import ch.vd.fidor.xml.post.v1.Street;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 
 public class StreetData implements Serializable {
 
-	private static final long serialVersionUID = -6035522894829991090L;
+	private static final long serialVersionUID = 9056265155575909581L;
 
 	private final String nomRue;
 	private final String noPolice;
@@ -39,31 +40,7 @@ public class StreetData implements Serializable {
 		this.localitePostale = localitePostale;
 	}
 
-	public static class AvecEstrid extends StreetData {
-		public AvecEstrid(Street street, String noPolice, int swissZipCodeId) {
-			super(street, noPolice, swissZipCodeId);
-		}
-	}
-
-	public static class AucuneNomenclatureTrouvee extends StreetData {
-		public AucuneNomenclatureTrouvee(String nomRue, String noPolice, String lieu) {
-			super(nomRue, noPolice, null, null, null, lieu);
-		}
-	}
-
-	public static class LocaliteAbsenteRefinf extends StreetData {
-		public LocaliteAbsenteRefinf(String nomRue, String noPolice, int noOrdreP, Integer npa, Integer npaComplementaire, String localitePostale) {
-			super(nomRue, noPolice, noOrdreP, npa, npaComplementaire, localitePostale);
-		}
-	}
-
-	public static class RueInconnue extends StreetData {
-		public RueInconnue(String nomRue, String noPolice, int noOrdreP) {
-			super(nomRue, noPolice, noOrdreP, null, null, null);
-		}
-	}
-
-	public void addMessage(MigrationResult.CategorieListe cat, MigrationResult.NiveauMessage niveau, String msg) {
+	public void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg) {
 		messages.addMessage(cat, niveau, msg);
 	}
 
@@ -103,5 +80,29 @@ public class StreetData implements Serializable {
 	public String toString() {
 		return String.format("%s{nomRue='%s', noPolice='%s', estrid=%d, noOrdreP=%d, npa=%d, npaComplementaire=%d, localitePostale='%s'}",
 		                     getClass().getSimpleName(), nomRue, noPolice, estrid, noOrdreP, npa, npaComplementaire, localitePostale);
+	}
+
+	public static class AvecEstrid extends StreetData {
+		public AvecEstrid(Street street, String noPolice, int swissZipCodeId) {
+			super(street, noPolice, swissZipCodeId);
+		}
+	}
+
+	public static class AucuneNomenclatureTrouvee extends StreetData {
+		public AucuneNomenclatureTrouvee(String nomRue, String noPolice, String lieu) {
+			super(nomRue, noPolice, null, null, null, lieu);
+		}
+	}
+
+	public static class LocaliteAbsenteRefinf extends StreetData {
+		public LocaliteAbsenteRefinf(String nomRue, String noPolice, int noOrdreP, Integer npa, Integer npaComplementaire, String localitePostale) {
+			super(nomRue, noPolice, noOrdreP, npa, npaComplementaire, localitePostale);
+		}
+	}
+
+	public static class RueInconnue extends StreetData {
+		public RueInconnue(String nomRue, String noPolice, int noOrdreP) {
+			super(nomRue, noPolice, noOrdreP, null, null, null);
+		}
 	}
 }

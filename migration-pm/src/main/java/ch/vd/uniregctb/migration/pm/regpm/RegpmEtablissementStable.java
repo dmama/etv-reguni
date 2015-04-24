@@ -11,7 +11,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.LongZeroIsNullUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
@@ -23,7 +26,45 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "LongZeroIsNull", typeClass = LongZeroIsNullUserType.class)
 })
-public class RegpmEtablissementStable extends RegpmEntity {
+public class RegpmEtablissementStable extends RegpmEntity implements DateRange {
+
+	private PK id;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+
+	@EmbeddedId
+	public PK getId() {
+		return id;
+	}
+
+	public void setId(PK id) {
+		this.id = id;
+	}
+
+	@Column(name = "DAD_VALIDITE")
+	@Type(type = "RegDate")
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
+	@Column(name = "DAF_VALIDITE")
+	@Type(type = "RegDate")
+	public RegDate getDateFin() {
+		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
 
 	/**
 	 * Ils ont fait une clé primaire avec le numéro de l'établissement et un numéro de séquence
@@ -75,38 +116,5 @@ public class RegpmEtablissementStable extends RegpmEntity {
 		public void setIdEtablissement(Long idEtablissement) {
 			this.idEtablissement = idEtablissement;
 		}
-	}
-
-	private PK id;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-
-	@EmbeddedId
-	public PK getId() {
-		return id;
-	}
-
-	public void setId(PK id) {
-		this.id = id;
-	}
-
-	@Column(name = "DAD_VALIDITE")
-	@Type(type = "RegDate")
-	public RegDate getDateDebut() {
-		return dateDebut;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	@Column(name = "DAF_VALIDITE")
-	@Type(type = "RegDate")
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 }

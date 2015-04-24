@@ -52,12 +52,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private static final RejectedExecutionHandler ABORT_POLICY = new ThreadPoolExecutor.AbortPolicy();
 
 	private static final String VISA_MIGRATION = "[MigrationPM]";
-
-	private ExecutorService executor;
-	private CompletionService<MigrationResult> completionService;
-	private Thread gatheringThread;
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
+	private ExecutorService executor;
+	private CompletionService<MigrationResultMessageProvider> completionService;
+	private Thread gatheringThread;
 	private volatile boolean started;
 	private MigrationMode mode;
 
@@ -71,6 +70,73 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
 	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
 	private EntityMigrator<RegpmIndividu> individuMigrator;
+
+	/**
+	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
+	 * qu'une place se libère
+	 * @param r action à placer sur la queue
+	 * @param executor exécuteur qui a refusé la tâche
+	 */
+	private static void rejectionExecutionHandler(Runnable r, ThreadPoolExecutor executor) {
+		final BlockingQueue<Runnable> queue = executor.getQueue();
+		boolean sent = false;
+		try {
+			while (!sent) {
+				if (executor.isShutdown()) {
+					// this will trigger the abort policy
+					break;
+				}
+
+				// if sent successfully, that's the key out of the loop!
+				sent = queue.offer(r, 1, TimeUnit.SECONDS);
+			}
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
+		if (!sent) {
+			ABORT_POLICY.rejectedExecution(r, executor);
+		}
+	}
+
+	private static void log(Logger logger, MigrationResultMessage.Niveau niveau, String msg) {
+		final Consumer<String> realLogger;
+		switch (niveau) {
+		case DEBUG:
+			realLogger = logger::debug;
+			break;
+		case ERROR:
+			realLogger = logger::error;
+			break;
+		case INFO:
+			realLogger = logger::info;
+			break;
+		case WARN:
+			realLogger = logger::warn;
+			break;
+		default:
+			throw new IllegalArgumentException("Niveau invalide : " + niveau);
+		}
+
+		// envoi dans le log
+		realLogger.accept(msg);
+	}
+
+	private static String dump(Throwable t) {
+		try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+			pw.print(t.getClass().getName());
+			pw.print(": ");
+			pw.println(t.getMessage());
+			t.printStackTrace(pw);
+			pw.flush();
+			return sw.toString();
+		}
+		catch (IOException e) {
+			LOGGER.error("Pas pu générer le message d'erreur pour l'exception reçue", t);
+			return "Erreur inattendue (voir logs applicatifs à " + new Date() + ")";
+		}
+	}
 
 	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
 		this.streetDataMigrator = streetDataMigrator;
@@ -136,35 +202,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	/**
-	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
-	 * qu'une place se libère
-	 * @param r action à placer sur la queue
-	 * @param executor exécuteur qui a refusé la tâche
-	 */
-	private static void rejectionExecutionHandler(Runnable r, ThreadPoolExecutor executor) {
-		final BlockingQueue<Runnable> queue = executor.getQueue();
-		boolean sent = false;
-		try {
-			while (!sent) {
-				if (executor.isShutdown()) {
-					// this will trigger the abort policy
-					break;
-				}
-
-				// if sent successfully, that's the key out of the loop!
-				sent = queue.offer(r, 1, TimeUnit.SECONDS);
-			}
-		}
-		catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-
-		if (!sent) {
-			ABORT_POLICY.rejectedExecution(r, executor);
-		}
-	}
-
 	@Override
 	public void destroy() throws Exception {
 		final List<Runnable> remaining = executor.shutdownNow();
@@ -194,21 +231,21 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private void gather() throws InterruptedException {
 		while ((!started && !executor.isTerminated()) || (started && nbEnCours.intValue() > 0)) {
-			final Future<MigrationResult> future = completionService.poll(1, TimeUnit.SECONDS);
+			final Future<MigrationResultMessageProvider> future = completionService.poll(1, TimeUnit.SECONDS);
 			if (future != null) {
 				nbEnCours.decrementAndGet();
 
 				try {
-					final MigrationResult res = future.get();
+					final MigrationResultMessageProvider res = future.get();
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug("Résultat de migration reçu : " + res);
 					}
 
 					// utilisation des loggers pour les fichiers/listes de contrôle
-					for (MigrationResult.CategorieListe cat : MigrationResult.CategorieListe.values()) {
-						final List<MigrationResult.Message> messages = res.getMessages(cat);
+					for (MigrationResultMessage.CategorieListe cat : MigrationResultMessage.CategorieListe.values()) {
+						final List<MigrationResultMessage> messages = res.getMessages(cat);
 						if (!messages.isEmpty()) {
-							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResult.CategorieListe.class.getName(), cat.name()));
+							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResultMessage.CategorieListe.class.getName(), cat.name()));
 							messages.forEach(msg -> log(logger, msg.niveau, msg.texte));
 						}
 					}
@@ -220,30 +257,84 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	private static void log(Logger logger, MigrationResult.NiveauMessage niveau, String msg) {
-		final Consumer<String> realLogger;
-		switch (niveau) {
-		case DEBUG:
-			realLogger = logger::debug;
-			break;
-		case ERROR:
-			realLogger = logger::error;
-			break;
-		case INFO:
-			realLogger = logger::info;
-			break;
-		case WARN:
-			realLogger = logger::warn;
-			break;
-		default:
-			throw new IllegalArgumentException("Niveau invalide : " + niveau);
+	private MigrationResultMessageProvider migrate(Graphe graphe) throws MigrationException {
+		final MigrationResult mr = new MigrationResult();
+
+		// initialisation des structures de resultats
+		entrepriseMigrator.initMigrationResult(mr);
+		etablissementMigrator.initMigrationResult(mr);
+		individuMigrator.initMigrationResult(mr);
+
+		// tout le graphe sera migré dans une transaction globale
+		AuthenticationHelper.pushPrincipal(VISA_MIGRATION);
+		try {
+			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.execute(status -> {
+				doMigrate(graphe, mr);
+				return null;
+			});
+
+			// une fois la transaction terminée, on passe les callbacks enregistrés
+			try {
+				mr.runPostTransactionCallbacks();
+			}
+			catch (Exception e) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
+			}
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 
-		// envoi dans le log
-		realLogger.accept(msg);
+		// un dernier log avant de partir
+		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.INFO, String.format("Entreprise %d migrée", id)));
+		return mr;
 	}
 
-	private class MigrationTask implements Callable<MigrationResult> {
+	/**
+	 * Appelé dans un contexte transactionnel
+	 * @param graphe le graphe d'objets à migrer
+	 * @param mr le collecteur de résultats/remarques de migration
+	 */
+	private void doMigrate(Graphe graphe, MigrationResult mr) {
+
+		// on commence par les entreprises, puis les établissements, puis les individus TODO ne faudrait-il pas traiter les individus d'abord ?
+		// on collecte les liens entre ces entités au fur et à mesure
+		// à la fin, on ajoute les liens
+
+		final IdMapper idMapper = new IdMapper();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
+		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
+		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
+		addLinks(linkCollector.getCollectedLinks());
+
+		// lance les consolidations nécessaires
+		mr.consolidatePreTransactionCommitRegistrations();
+	}
+
+	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
+	}
+
+	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
+	}
+
+	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
+	}
+
+	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
+		if (links != null && !links.isEmpty()) {
+			links.stream()
+					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
+					.forEach(ret -> uniregSessionFactory.getCurrentSession().merge(ret));
+		}
+	}
+
+	private class MigrationTask implements Callable<MigrationResultMessageProvider> {
 		private final Graphe graphe;
 
 		private MigrationTask(Graphe graphe) {
@@ -251,7 +342,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 
 		@Override
-		public MigrationResult call() {
+		public MigrationResultMessageProvider call() {
 			final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
 			final Set<Long> idsIndividus = graphe.getIndividus().keySet();
 			try {
@@ -279,93 +370,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 				final MigrationResult res = new MigrationResult();
 				final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
-				res.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.ERROR, msg);
+				res.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, msg);
 				return res;
 			}
-		}
-	}
-
-	private static String dump(Throwable t) {
-		try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-			pw.print(t.getClass().getName());
-			pw.print(": ");
-			pw.println(t.getMessage());
-			t.printStackTrace(pw);
-			pw.flush();
-			return sw.toString();
-		}
-		catch (IOException e) {
-			LOGGER.error("Pas pu générer le message d'erreur pour l'exception reçue", t);
-			return "Erreur inattendue (voir logs applicatifs à " + new Date() + ")";
-		}
-	}
-
-	private MigrationResult migrate(Graphe graphe) throws MigrationException {
-		final MigrationResult mr = new MigrationResult();
-
-		// tout le graphe sera migré dans une transaction globale
-		AuthenticationHelper.pushPrincipal(VISA_MIGRATION);
-		try {
-			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(status -> {
-				doMigrate(graphe, mr);
-				return null;
-			});
-
-			// une fois la transaction terminée, on passe les callbacks enregistrés
-			try {
-				mr.runPostTransactionCallbacks();
-			}
-			catch (Exception e) {
-				mr.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
-			}
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-		}
-
-		// un dernier log avant de partir
-		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResult.CategorieListe.PM_MIGREE, MigrationResult.NiveauMessage.INFO, String.format("Entreprise %d migrée", id)));
-		return mr;
-	}
-
-	/**
-	 * Appelé dans un contexte transactionnel
-	 * @param graphe le graphe d'objets à migrer
-	 * @param mr le collecteur de résultats/remarques de migration
-	 */
-	private void doMigrate(Graphe graphe, MigrationResult mr) {
-
-		// on commence par les entreprises, puis les établissements, puis les individus TODO ne faudrait-il pas traiter les individus d'abord ?
-		// on collecte les liens entre ces entités au fur et à mesure
-		// à la fin, on ajoute les liens
-
-		final IdMapper idMapper = new IdMapper();
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
-		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
-		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
-		addLinks(linkCollector.getCollectedLinks());
-	}
-
-	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
-		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
-	}
-
-	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
-		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
-	}
-
-	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
-		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
-	}
-
-	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
-		if (links != null && !links.isEmpty()) {
-			links.stream()
-					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
-					.forEach(ret -> uniregSessionFactory.getCurrentSession().merge(ret));
 		}
 	}
 }
