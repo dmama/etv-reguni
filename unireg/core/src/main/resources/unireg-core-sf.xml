@@ -157,6 +157,7 @@
 		<value>ch.vd.uniregctb.reqdes.UniteTraitement</value>
 		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
 		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
+		<value>ch.vd.uniregctb.tiers.Bouclement</value>
 	</util:list>
 
 	<!-- La session factory -->
