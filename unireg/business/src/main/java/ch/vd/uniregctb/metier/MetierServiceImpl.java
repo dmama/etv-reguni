@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1687,7 +1688,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des rapports tiers-ménage
 		 */
-		reopenRapportsObjetAt(menage, date.getOneDayBefore());
+		reopenRapportsObjetAt(menage, date.getOneDayBefore(), EnumSet.allOf(TypeRapportEntreTiers.class));
 
 		/*
 		 * Réouverture des fors du ménage commun
@@ -2004,9 +2005,9 @@ public class MetierServiceImpl implements MetierService {
 		for (ForFiscalSecondaire forFiscalSecondaire : forsSecondaires) {
 			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore()) && forFiscalSecondaire.getMotifFermeture() == motifOuverture) {
 				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
-						date, forFiscalSecondaire.getMotifRattachement(),
-						forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-						forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
+				                                                                     date, forFiscalSecondaire.getMotifRattachement(),
+				                                                                     forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
+				                                                                     forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
 				if (ffs != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalSecondaire(contribuable, ffs, dateFermeture, motifFermeture);
 				}
@@ -2204,7 +2205,7 @@ public class MetierServiceImpl implements MetierService {
 		tiersService.annuleForsOuvertsAu(tiers, date.getOneDayAfter(), MotifFor.VEUVAGE_DECES);
 
 		if (menageCommun == null) {
-			reopenRapportsEntreTiers(tiers, date);
+			reopenRapportsEntreTiers(tiers, date, EnumSet.allOf(TypeRapportEntreTiers.class));
 
 			/*
 			 * Réouverture des fors du célibataire/divorcé/séparé
@@ -2225,8 +2226,13 @@ public class MetierServiceImpl implements MetierService {
 
 			/*
 			 * Réouverture des rapports APPARTENANCE_MENAGE & ceux des membres du ménage
+			 * (pour faire le pendant avec ce qui se passe dans le traitement du décès, on ré-ouvre tous les rapports sur l'ancien décédé et seulement les rapports
+			 * d'appartenance ménage sur l'éventuel conjoint).
 			 */
-			reopenRapportsEntreTiers(menageCommun, date);
+			reopenRapportsEntreTiers(tiers, date, EnumSet.allOf(TypeRapportEntreTiers.class));
+			if (conjoint != null) {
+				reopenRapportsEntreTiers(conjoint, date, EnumSet.of(TypeRapportEntreTiers.APPARTENANCE_MENAGE));
+			}
 
 			/*
 			 * Réouverture des fors du ménage commun
@@ -2248,45 +2254,32 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Réouvre les rapports entre tiers fermés à cette date. Si le tiers est un menage commun, réouvre les rapports des membres de celui-ci.
-	 *
-	 * @param tiers
-	 * @param date
+	 * Réouvre les rapports entre tiers de certains types fermés à cette date.
+	 * @param tiers tiers sur lequel réouvrir ces rapports
+	 * @param date date de fermeture des rapports à ré-ouvrir
+	 * @param typesConcernes types de rapports concernés par la ré-ouverture
 	 */
-	private void reopenRapportsEntreTiers(Tiers tiers, RegDate date) {
-
-		if (tiers instanceof MenageCommun) {
-			MenageCommun menageCommun = (MenageCommun) tiers;
-
-			/*
-			 * Réouverture des rapports sur les membres du ménage
-			 */
-			EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menageCommun, date);
-			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(couple.getMenage())) {
-				reopenRapportsEntreTiers(pp, date);
-			}
-		}
-		else {
-			reopenRapportsSujetAt(tiers, date);
-		}
+	private void reopenRapportsEntreTiers(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
+		reopenRapportsSujetAt(tiers, date, typesConcernes);
+		reopenRapportsObjetAt(tiers, date, typesConcernes);
 	}
 
 	/**
-	 * Réouvre tous les rapports-sujet qui sont fermés à la date spécifiée.
-	 *
-	 * @param rapports
+	 * Réouvre tous les rapports de certains types qui sont fermés à la date spécifiée.
+	 * @param rapports les rapports à inspecter
 	 * @param date     la date de fermeture des rapports qu'il faut réouvrir.
+	 * @param typesConcernes types de rapports concernés par la ré-ouverture
 	 */
-	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date) {
+	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
 
 		final List<RapportEntreTiers> rapportsAOuvrir = new ArrayList<>();
 		final List<RapportEntreTiers> rapportsAAnnuler = new ArrayList<>();
 
 		// On analyse les rapports en question
 		for (RapportEntreTiers rapport : rapports) {
-			if (!rapport.isAnnule() && rapport.getDateFin() == date) {
+			if (!rapport.isAnnule() && rapport.getDateFin() == date && typesConcernes.contains(rapport.getType())) {
 				// duplique le rapport et réouvre le nouveau
-				RapportEntreTiers nouveauRapport = rapport.duplicate();
+				final RapportEntreTiers nouveauRapport = rapport.duplicate();
 				nouveauRapport.setDateFin(null);
 				// ajout à la liste des rapports à ajouter
 				rapportsAOuvrir.add(nouveauRapport);
@@ -2312,9 +2305,10 @@ public class MetierServiceImpl implements MetierService {
 	 *
 	 * @param tiers le tiers dont on veut réouvrir des rapports objet
 	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 * @param typesConcernes types de rapports concernés par la ré-ouverture
 	 */
-	private void reopenRapportsObjetAt(Tiers tiers, RegDate date) {
-		reopenRapportsAt(tiers.getRapportsObjet(), date);
+	private void reopenRapportsObjetAt(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
+		reopenRapportsAt(tiers.getRapportsObjet(), date, typesConcernes);
 	}
 
 	/**
@@ -2322,9 +2316,10 @@ public class MetierServiceImpl implements MetierService {
 	 *
 	 * @param tiers le tiers dont on veut réouvrir des rapports sujet
 	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 * @param typesConcernes types de rapports concernés par la ré-ouverture
 	 */
-	private void reopenRapportsSujetAt(Tiers tiers, RegDate date) {
-		reopenRapportsAt(tiers.getRapportsSujet(), date);
+	private void reopenRapportsSujetAt(Tiers tiers, RegDate date, Set<TypeRapportEntreTiers> typesConcernes) {
+		reopenRapportsAt(tiers.getRapportsSujet(), date, typesConcernes);
 	}
 
 	@Override
