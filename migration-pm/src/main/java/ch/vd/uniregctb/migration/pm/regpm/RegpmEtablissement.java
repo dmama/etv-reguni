@@ -42,7 +42,7 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private RegDate dateInscriptionRC;
 	private RegDate dateRadiationRC;
 	private String enseigne;
-	private RegDate dateInformation;
+	private RegDate dateInformation;        // Date à partir de laquelle les divers services communaux signalent à la Chancellerie PM la présence d'un établissement sur leur territoire.
 	private String noTelephone;
 	private String noFax;
 	private String chez;

@@ -12,6 +12,7 @@ import org.hibernate.annotations.TypeDefs;
 
 import ch.vd.uniregctb.migration.pm.regpm.usertype.CodeCollectiviteUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.GenreContributionUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.ObjectImpotUserType;
 
 @Entity
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.ObjectImpotUserType;
 @TypeDefs({
 		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		          @TypeDef(name = "CodeCollectivite", typeClass = CodeCollectiviteUserType.class),
+		          @TypeDef(name = "GenreContribution", typeClass = GenreContributionUserType.class),
 		          @TypeDef(name = "ObjectImpot", typeClass = ObjectImpotUserType.class)
           })
 public class RegpmTypeContribution extends RegpmEntity implements WithLongId {
@@ -29,7 +31,7 @@ public class RegpmTypeContribution extends RegpmEntity implements WithLongId {
 	private String designationAbregee;
 	private String designationLongue1;
 	private String designationLongue2;
-	private String genreContribution;
+	private RegpmGenreContribution genreContribution;
 	private RegpmObjectImpot objectImpot;
 
 	@Id
@@ -93,12 +95,12 @@ public class RegpmTypeContribution extends RegpmEntity implements WithLongId {
 	}
 
 	@Column(name = "GENRE_CONTRIBUTION")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "1"))
-	public String getGenreContribution() {
+	@Type(type = "GenreContribution")
+	public RegpmGenreContribution getGenreContribution() {
 		return genreContribution;
 	}
 
-	public void setGenreContribution(String genreContribution) {
+	public void setGenreContribution(RegpmGenreContribution genreContribution) {
 		this.genreContribution = genreContribution;
 	}
 

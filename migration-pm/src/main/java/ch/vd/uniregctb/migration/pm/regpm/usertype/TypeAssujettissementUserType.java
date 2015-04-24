@@ -1,50 +1,23 @@
 package ch.vd.uniregctb.migration.pm.regpm.usertype;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.usertype.UserType;
-
-import ch.vd.shared.hibernate.type.GenericUserType;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 
-public class TypeAssujettissementUserType extends GenericUserType implements UserType {
+public class TypeAssujettissementUserType extends EnumIntegerMappingUserType<RegpmTypeAssujettissement> {
 
-	/**
-	 * Types SQL.
-	 */
-	private static final int[] SQL_TYPES = {
-			Types.INTEGER
-	};
+	private static final Map<Integer, RegpmTypeAssujettissement> MAPPING = buildMapping();
 
-	@Override
-	public int[] sqlTypes() {
-		return SQL_TYPES;
+	private static Map<Integer, RegpmTypeAssujettissement> buildMapping() {
+		final Map<Integer, RegpmTypeAssujettissement> map = new HashMap<>();
+		map.put(1, RegpmTypeAssujettissement.LILIC);
+		map.put(2, RegpmTypeAssujettissement.LIFD);
+		map.put(3, RegpmTypeAssujettissement.SANS);
+		return map;
 	}
 
-	@Override
-	public Class<RegpmTypeAssujettissement> returnedClass() {
-		return RegpmTypeAssujettissement.class;
-	}
-
-	@Override
-	public RegpmTypeAssujettissement nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
-		final String name = names[0];
-		final int index = rs.getInt(name);
-		if (!rs.wasNull()) {
-			return RegpmTypeAssujettissement.valueOf(index);
-		}
-		else {
-			return null;
-		}
-	}
-
-	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
-		throw new RuntimeException("Cette conversion ne devrait pas être utilisée.");
+	public TypeAssujettissementUserType() {
+		super(RegpmTypeAssujettissement.class, MAPPING);
 	}
 }

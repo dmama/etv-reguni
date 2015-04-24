@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
@@ -22,15 +23,21 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.LongZeroIsNullUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.NatureDroitUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeFondationUserType;
 
 @Entity
 @Table(name = "ENTREPRISE")
 @TypeDefs({
 		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
+		@TypeDef(name = "NatureDroit", typeClass = NatureDroitUserType.class),
+		@TypeDef(name = "TypeFondation", typeClass = TypeFondationUserType.class),
+		@TypeDef(name = "BooleanYesNo", typeClass = BooleanYesNoUserType.class),
 		@TypeDef(name = "LongZeroIsNull", typeClass = LongZeroIsNullUserType.class)
 })
 public class RegpmEntreprise extends RegpmEntity implements WithLongId {
@@ -60,16 +67,25 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private ContactEntreprise contact2;
 	private RegDate dateConstitution;
 	private RegDate dateDissolution;
-	private String natureDroit;
-	private String typeFondation;
+	private RegpmNatureDroit natureDroit;
+	private RegpmTypeFondation typeFondation;
+	private String loiReglement;
 	private RegDate dateDebutSocietePersonnes;
 	private RegDate dateFinSocietePersonnes;
 	private String enseigne;
 	private RegDate dateRequisitionRadiation;
-	private RegDate dateAutRadiation;       // ?
+	private RegDate dateAutRadiation;       // Date à laquelle l'ACI signale au Registre du Commerce qu'elle ne formule pas d'opposition à ce qu'il radie une entreprise de son registre.
+	private boolean etablissementHS;        // indique qu'il y aura une répartition internationale et que le dossier devra être traité manuellement (taxation)
 	private RegDate dateBouclementFutur;
+	private RegDate dateDebutLivrRecette;   // Date à partir de laquelle tout document émis en différé doit transiter par la Recette (Perception).
+	private RegDate dateFinLivrRecette;     // Date à partir de laquelle tout document émis en différé ne doit plus transiter par la Recette (Perception).
+	private String commentaireLivrRecette;  // Permet de commenter la raison pour laquelle tout document émis en différé doit transiter par la Recette (Perception).
+	private boolean etablissementHC;        // indique qu'il y aura une répartition intercantonale et que le dossier devra être traité manuellement (taxation)
+	private String numeroREE;
 	private NumeroIDE numeroIDE;
 	private Long numeroCantonal;
+	private RegpmCommune commune;
+	private RegpmInstitutionFinanciere institutionFinanciere;
 	private SortedSet<RaisonSociale> raisonsSociales;
 	private SortedSet<InscriptionRC> inscriptionsRC;
 	private SortedSet<RadiationRC> radiationsRC;
@@ -354,23 +370,33 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	}
 
 	@Column(name = "NATURE_DROIT")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "10"))
-	public String getNatureDroit() {
+	@Type(type = "NatureDroit")
+	public RegpmNatureDroit getNatureDroit() {
 		return natureDroit;
 	}
 
-	public void setNatureDroit(String natureDroit) {
+	public void setNatureDroit(RegpmNatureDroit natureDroit) {
 		this.natureDroit = natureDroit;
 	}
 
 	@Column(name = "TY_FONDATION")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "15"))
-	public String getTypeFondation() {
+	@Type(type = "TypeFondation")
+	public RegpmTypeFondation getTypeFondation() {
 		return typeFondation;
 	}
 
-	public void setTypeFondation(String typeFondation) {
+	public void setTypeFondation(RegpmTypeFondation typeFondation) {
 		this.typeFondation = typeFondation;
+	}
+
+	@Column(name = "LOI_REGLEMENT")
+	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "30"))
+	public String getLoiReglement() {
+		return loiReglement;
+	}
+
+	public void setLoiReglement(String loiReglement) {
+		this.loiReglement = loiReglement;
 	}
 
 	@Column(name = "DAD_STE_PERSONNES")
@@ -423,6 +449,16 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 		this.dateAutRadiation = dateAutRadiation;
 	}
 
+	@Column(name = "ETABLISSEMENT_HS")
+	@Type(type = "BooleanYesNo", parameters = @Parameter(name = "default", value = "false"))
+	public boolean isEtablissementHS() {
+		return etablissementHS;
+	}
+
+	public void setEtablissementHS(boolean etablissementHS) {
+		this.etablissementHS = etablissementHS;
+	}
+
 	@Column(name = "DA_BOUCL_FUTUR")
 	@Type(type = "RegDate")
 	public RegDate getDateBouclementFutur() {
@@ -431,6 +467,56 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setDateBouclementFutur(RegDate dateBouclementFutur) {
 		this.dateBouclementFutur = dateBouclementFutur;
+	}
+
+	@Column(name = "DAD_LIVR_RECETTE")
+	@Type(type = "RegDate")
+	public RegDate getDateDebutLivrRecette() {
+		return dateDebutLivrRecette;
+	}
+
+	public void setDateDebutLivrRecette(RegDate dateDebutLivrRecette) {
+		this.dateDebutLivrRecette = dateDebutLivrRecette;
+	}
+
+	@Column(name = "DAF_LIVR_RECETTE")
+	@Type(type = "RegDate")
+	public RegDate getDateFinLivrRecette() {
+		return dateFinLivrRecette;
+	}
+
+	public void setDateFinLivrRecette(RegDate dateFinLivrRecette) {
+		this.dateFinLivrRecette = dateFinLivrRecette;
+	}
+
+	@Column(name = "COMMENT_LIVR_RECET")
+	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "30"))
+	public String getCommentaireLivrRecette() {
+		return commentaireLivrRecette;
+	}
+
+	public void setCommentaireLivrRecette(String commentaireLivrRecette) {
+		this.commentaireLivrRecette = commentaireLivrRecette;
+	}
+
+	@Column(name = "ETABLISSEMENT_HC")
+	@Type(type = "BooleanYesNo", parameters = @Parameter(name = "default", value = "false"))
+	public boolean isEtablissementHC() {
+		return etablissementHC;
+	}
+
+	public void setEtablissementHC(boolean etablissementHC) {
+		this.etablissementHC = etablissementHC;
+	}
+
+	@Column(name = "NO_REE")
+	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "8"))
+	public String getNumeroREE() {
+		return numeroREE;
+	}
+
+	public void setNumeroREE(String numeroREE) {
+		this.numeroREE = numeroREE;
 	}
 
 	@Embedded
@@ -450,6 +536,26 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setNumeroCantonal(Long numeroCantonal) {
 		this.numeroCantonal = numeroCantonal;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "FK_COMMUNENO")
+	public RegpmCommune getCommune() {
+		return commune;
+	}
+
+	public void setCommune(RegpmCommune commune) {
+		this.commune = commune;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "FK_INSTIT_FINNO")
+	public RegpmInstitutionFinanciere getInstitutionFinanciere() {
+		return institutionFinanciere;
+	}
+
+	public void setInstitutionFinanciere(RegpmInstitutionFinanciere institutionFinanciere) {
+		this.institutionFinanciere = institutionFinanciere;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

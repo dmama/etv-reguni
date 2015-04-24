@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
@@ -22,6 +20,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeDemandeDelaiUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDemandeDelaiUserType;
 
 @Entity
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDemandeDelaiUserType;
 @TypeDefs({
 		          @TypeDef(name = "BooleanYesNo", typeClass = BooleanYesNoUserType.class),
 		          @TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
+		          @TypeDef(name = "TypeDemandeDelai", typeClass = TypeDemandeDelaiUserType.class),
 		          @TypeDef(name = "TypeEtatDemandeDelai", typeClass = TypeEtatDemandeDelaiUserType.class)
           })
 public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparable<RegpmDemandeDelaiSommation> {
@@ -144,7 +144,7 @@ public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparabl
 	}
 
 	@Column(name = "TYPE")
-	@Enumerated(EnumType.STRING)
+	@Type(type = "TypeDemandeDelai")
 	public RegpmTypeDemandeDelai getType() {
 		return type;
 	}

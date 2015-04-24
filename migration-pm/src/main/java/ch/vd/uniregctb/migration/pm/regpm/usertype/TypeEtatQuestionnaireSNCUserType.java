@@ -1,46 +1,24 @@
 package ch.vd.uniregctb.migration.pm.regpm.usertype;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.usertype.UserType;
-
-import ch.vd.shared.hibernate.type.GenericUserType;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatQuestionnaireSNC;
 
-public class TypeEtatQuestionnaireSNCUserType extends GenericUserType implements UserType {
+public class TypeEtatQuestionnaireSNCUserType extends EnumCharMappingUserType<RegpmTypeEtatQuestionnaireSNC> {
 
-	private static final int[] SQL_TYPES = {
-			Types.CHAR
-	};
+	private static final Map<String, RegpmTypeEtatQuestionnaireSNC> MAPPING = buildMapping();
 
-	@Override
-	public int[] sqlTypes() {
-		return SQL_TYPES;
+	private static Map<String, RegpmTypeEtatQuestionnaireSNC> buildMapping() {
+		final Map<String, RegpmTypeEtatQuestionnaireSNC> map = new HashMap<>();
+		map.put("ANNULE", RegpmTypeEtatQuestionnaireSNC.ANNULE);
+		map.put("ENVOYE", RegpmTypeEtatQuestionnaireSNC.ENVOYE);
+		map.put("RECU", RegpmTypeEtatQuestionnaireSNC.RECU);
+		map.put("TAXE", RegpmTypeEtatQuestionnaireSNC.TAXE);
+		return map;
 	}
 
-	@Override
-	public Class<RegpmTypeEtatQuestionnaireSNC> returnedClass() {
-		return RegpmTypeEtatQuestionnaireSNC.class;
-	}
-
-	@Override
-	public RegpmTypeEtatQuestionnaireSNC nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
-		final String name = names[0];
-		final String code = StringUtils.trimToNull(rs.getString(name));
-		if (code != null && !rs.wasNull()) {
-			return RegpmTypeEtatQuestionnaireSNC.valueOf(code);
-		}
-		return null;
-	}
-
-	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
-		throw new RuntimeException("Cette conversion ne devrait pas être utilisée.");
+	public TypeEtatQuestionnaireSNCUserType() {
+		super(RegpmTypeEtatQuestionnaireSNC.class, MAPPING);
 	}
 }

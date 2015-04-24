@@ -34,12 +34,11 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
 	private Long id;
 	private Long navs13;
-	private String noCantonal;
+	private String noContribuableIT;
 	private String nom;
 	private String prenom;
 	private Sexe sexe;
 	private RegDate dateNaissance;
-	private String noRefCantonal;
 	private SortedSet<RegpmCaracteristiquesIndividu> caracteristiques;
 	private Set<RegpmAdresseIndividu> adresses;
 
@@ -64,12 +63,12 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
 	@Column(name = "NO_CANTONAL")
 	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "9"))
-	public String getNoCantonal() {
-		return noCantonal;
+	public String getNoContribuableIT() {
+		return noContribuableIT;
 	}
 
-	public void setNoCantonal(String noCantonal) {
-		this.noCantonal = noCantonal;
+	public void setNoContribuableIT(String noContribuableIT) {
+		this.noContribuableIT = noContribuableIT;
 	}
 
 	@Column(name = "NOM")
@@ -110,16 +109,6 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
 	public void setDateNaissance(RegDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
-	}
-
-	@Column(name = "NO_REF_CANTONAL")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "9"))
-	public String getNoRefCantonal() {
-		return noRefCantonal;
-	}
-
-	public void setNoRefCantonal(String noRefCantonal) {
-		this.noRefCantonal = noRefCantonal;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)

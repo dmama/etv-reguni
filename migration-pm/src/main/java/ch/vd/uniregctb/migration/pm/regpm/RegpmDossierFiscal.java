@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.SortedSet;
 
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
@@ -25,12 +24,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.MotifEnvoiUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDossierFiscalUserType;
 
 @Entity
 @Table(name = "DOSSIER_FISCAL")
 @TypeDefs({
 		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
+		@TypeDef(name = "TypeEtatDossierFiscal", typeClass = TypeEtatDossierFiscalUserType.class),
 		@TypeDef(name = "MotifEnvoi", typeClass = MotifEnvoiUserType.class)
 })
 public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmDossierFiscal> {
@@ -93,7 +94,7 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 	private RegDate dateRetour;
 	private RegDate dateEnvoiSommation;
 	private RegDate delaiSommation;
-	private String codeEtat;        // TODO les valeurs possibles ont l'air d'être "AMENDE_DD", "EN_SAISIE", "TRAITE", "01", "02", "03", "04"
+	private RegpmTypeEtatDossierFiscal etat;
 	private Integer pf;
 	private Integer noParAnnee;
 	private RegpmAssujettissement assujettissement;
@@ -169,13 +170,13 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 	}
 
 	@Column(name = "CODE_ETAT")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "20"))
-	public String getCodeEtat() {
-		return codeEtat;
+	@Type(type = "TypeEtatDossierFiscal")
+	public RegpmTypeEtatDossierFiscal getEtat() {
+		return etat;
 	}
 
-	public void setCodeEtat(String codeEtat) {
-		this.codeEtat = codeEtat;
+	public void setEtat(RegpmTypeEtatDossierFiscal etat) {
+		this.etat = etat;
 	}
 
 	@Column(name = "ANNEE_FISCALE")
