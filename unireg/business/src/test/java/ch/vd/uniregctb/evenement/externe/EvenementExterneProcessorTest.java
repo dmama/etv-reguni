@@ -336,6 +336,159 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 		});
 	}
 
+	//SIFISC-15261
+	@Test
+	public void testRelance2Quittancements2AnnulationsEt1QuittancementFinal() throws Exception {
+
+		final int annee = 2015;
+		final RegDate dateDebut = date(annee, 1, 1);
+		final RegDate dateFin = date(annee, 3, 31);
+		final Date premierQuittancement = RegDate.get().addDays(-10).asJavaDate();
+		final Date quittancement = RegDate.get().addDays(-3).asJavaDate();
+
+		final class Ids {
+			final long dpiId;
+			final long evtQ1Id;
+			final long evtQ2Id;
+			final long evtQ3Id;
+			final long evtA1Id;
+			final long evtA2Id;
+
+			Ids(long dpiId, long evtQ1Id,long evtQ2Id,long evtQ3Id,long evtA1Id,long evtA2Id) {
+				this.dpiId = dpiId;
+				this.evtQ1Id = evtQ1Id;
+				this.evtQ2Id = evtQ2Id;
+				this.evtQ3Id = evtQ3Id;
+				this.evtA1Id = evtA1Id;
+				this.evtA2Id = evtA2Id;
+			}
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				addForDebiteur(dpi, dateDebut, MotifFor.DEBUT_PRESTATION_IS, null, null, MockCommune.Lausanne);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final DeclarationImpotSource lr = addLR(dpi, dateDebut, PeriodiciteDecompte.TRIMESTRIEL, pf);
+
+					//Première quittance/annulation
+					final QuittanceLR quittance1 = new QuittanceLR();
+					quittance1.setTiers(dpi);
+					quittance1.setBusinessId("Evénement de test");
+					quittance1.setType(TypeQuittance.QUITTANCEMENT);
+					quittance1.setDateEvenement(quittancement);
+					quittance1.setDateDebut(dateDebut);
+					quittance1.setDateFin(dateFin);
+					quittance1.setEtat(EtatEvenementExterne.ERREUR);
+					quittance1.setErrorMessage("Pas pu...");
+					final QuittanceLR quittanceSauvee1 = hibernateTemplate.merge(quittance1);
+
+					final QuittanceLR annulation1 = new QuittanceLR();
+					annulation1.setTiers(dpi);
+					annulation1.setBusinessId("Evénement de test");
+					annulation1.setType(TypeQuittance.ANNULATION);
+					annulation1.setDateEvenement(quittancement);
+					annulation1.setDateDebut(dateDebut);
+					annulation1.setDateFin(dateFin);
+					annulation1.setEtat(EtatEvenementExterne.ERREUR);
+					annulation1.setErrorMessage("Pas pu...");
+					final QuittanceLR annulationSauvee1 = hibernateTemplate.merge(annulation1);
+
+
+					//Seconde quittance/annulation
+					final QuittanceLR quittance2 = new QuittanceLR();
+					quittance2.setTiers(dpi);
+					quittance2.setBusinessId("Evénement de test");
+					quittance2.setType(TypeQuittance.QUITTANCEMENT);
+					quittance2.setDateEvenement(quittancement);
+					quittance2.setDateDebut(dateDebut);
+					quittance2.setDateFin(dateFin);
+					quittance2.setEtat(EtatEvenementExterne.ERREUR);
+					quittance2.setErrorMessage("Pas pu...");
+					final QuittanceLR quittanceSauvee2 = hibernateTemplate.merge(quittance2);
+
+					final QuittanceLR annulation2 = new QuittanceLR();
+					annulation2.setTiers(dpi);
+					annulation2.setBusinessId("Evénement de test");
+					annulation2.setType(TypeQuittance.ANNULATION);
+					annulation2.setDateEvenement(quittancement);
+					annulation2.setDateDebut(dateDebut);
+					annulation2.setDateFin(dateFin);
+					annulation2.setEtat(EtatEvenementExterne.ERREUR);
+					annulation2.setErrorMessage("Pas pu...");
+					final QuittanceLR annulationSauvee2 = hibernateTemplate.merge(annulation2);
+
+
+					//Dernière quittance
+					final QuittanceLR quittance3 = new QuittanceLR();
+					quittance3.setTiers(dpi);
+					quittance3.setBusinessId("Evénement de test");
+					quittance3.setType(TypeQuittance.QUITTANCEMENT);
+					quittance3.setDateEvenement(quittancement);
+					quittance3.setDateDebut(dateDebut);
+					quittance3.setDateFin(dateFin);
+					quittance3.setEtat(EtatEvenementExterne.ERREUR);
+					quittance3.setErrorMessage("Pas pu...");
+					final QuittanceLR quittanceSauvee3 = hibernateTemplate.merge(quittance3);
+
+				return new Ids(dpi.getNumero(), quittanceSauvee1.getId(),quittanceSauvee2.getId(),quittanceSauvee3.getId(),annulationSauvee1.getId(),annulationSauvee2.getId());
+			}
+		});
+
+		final TraiterEvenementExterneResult result = processor.traiteEvenementsExternes(RegDate.get(), 1, null);
+		Assert.assertNotNull(result);
+		Assert.assertEquals(5, result.nbEvenementTotal);
+		//Assert.assertNotNull(result.traites);
+		//Assert.assertEquals(5, result.traites.size());
+		//Assert.assertNotNull(result.erreurs);
+		//Assert.assertEquals(0, result.erreurs.size());
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+
+				// la LR doit être quittancée
+				final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(ids.dpiId);
+				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
+				final Set<EtatDeclaration> etats = lr.getEtats();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(4, etats.size());       // "EMISE", 2x "RETOURNEE et annulée", 1 RETOURNEE
+
+				// vérification que l'état "RETOURNEE" pré-existant a bien été annulé
+				boolean etatRetourneAnnuleTrouve = false;
+				int nombreEmise = 0;
+				int nombreRetourneeAnnule = 0;
+				int nombreRetournee = 0;
+				for (EtatDeclaration etat : etats) {
+					if (etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+						nombreRetourneeAnnule++;
+					}
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.EMISE) {
+						nombreEmise++;
+					}
+					if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+						nombreRetournee++;
+					}
+
+				}
+
+				Assert.assertEquals(1,nombreEmise);
+				Assert.assertEquals(2, nombreRetourneeAnnule);
+				Assert.assertEquals(1,nombreRetournee);
+
+				// test de l'état final de la déclaration après traitement de tous ces événements
+				final EtatDeclaration etat = lr.getDernierEtat();
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
+				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+
+				return null;
+			}
+		});
+	}
+
 	@Test
 	public void testRelanceAnnulationQuittancementSansRetourPrealable() throws Exception {
 

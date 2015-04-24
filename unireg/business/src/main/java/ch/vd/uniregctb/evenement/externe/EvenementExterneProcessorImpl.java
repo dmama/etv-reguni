@@ -7,6 +7,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -94,6 +95,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(EvenementExterne.class);
 				crit.add(Restrictions.in("id", batch));
+				crit.addOrder(Order.asc("id"));
 				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 				//noinspection unchecked
 				return crit.list();
