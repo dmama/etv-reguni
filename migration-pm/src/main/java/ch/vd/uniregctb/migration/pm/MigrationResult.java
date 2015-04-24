@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,7 +27,7 @@ public class MigrationResult {
 	 * Enumération des différentes listes de contrôle
 	 * // TODO il y en a sûrement d'autres...
 	 */
-	public static enum CategorieListe {
+	public enum CategorieListe {
 
 		/**
 		 * Cas ok qui indique qu'une PM est migrée
@@ -34,7 +35,13 @@ public class MigrationResult {
 		PM_MIGREE,
 
 		/**
-		 * Erreurs inattendues, par exemple
+		 * Lors de la migration de l'adresse du mainframe, la localité a été "devinée" par rapport à la liste des localités maintenant disponibles dans RefInf pour la même commune
+		 * (la rue n'a été trouvée dans aucune des localités existantes)
+		 */
+		LOCALITE_DEVINEE,
+
+		/**
+		 * Erreurs inattendues, par exemple...
 		 */
 		ERREUR_GENERIQUE,
 
@@ -45,7 +52,7 @@ public class MigrationResult {
 
 	}
 
-	public static enum NiveauMessage {
+	public enum NiveauMessage {
 		DEBUG,
 		INFO,
 		WARN,
@@ -71,8 +78,12 @@ public class MigrationResult {
 	 * @param msg le message
 	 */
 	public void addMessage(CategorieListe cat, NiveauMessage niveau, String msg) {
+		addMessage(cat, new Message(niveau, msg));
+	}
+
+	private void addMessage(CategorieListe cat, Message msg) {
 		final List<Message> liste = getOrCreateMessageList(cat);
-		liste.add(new Message(niveau, msg));
+		liste.add(msg);
 	}
 
 	private List<Message> getOrCreateMessageList(CategorieListe cat) {
@@ -88,6 +99,24 @@ public class MigrationResult {
 	public List<Message> getMessages(CategorieListe cat) {
 		final List<Message> found = msgs.get(cat);
 		return found == null ? Collections.emptyList() : found;
+	}
+
+	public void addAll(MigrationResult results, String prefixe) {
+		results.msgs.entrySet().forEach(entry -> {
+			final CategorieListe cat = entry.getKey();
+			final List<Message> newMessages;
+			if (StringUtils.isNotBlank(prefixe)) {
+				newMessages = entry.getValue().stream()
+						.map(source -> new Message(source.niveau, String.format("%s : %s", prefixe, source.texte)))
+						.collect(Collectors.toList());
+			}
+			else {
+				newMessages = entry.getValue();
+			}
+			if (newMessages != null) {
+				newMessages.forEach(msg -> addMessage(cat, msg));
+			}
+		});
 	}
 
 	@Override

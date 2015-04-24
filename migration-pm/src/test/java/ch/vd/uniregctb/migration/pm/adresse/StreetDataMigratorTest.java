@@ -3,7 +3,6 @@ package ch.vd.uniregctb.migration.pm.adresse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -114,12 +113,7 @@ public class StreetDataMigratorTest extends AbstractSpringTest {
 			int envoyees = 0;
 //			for (final RegpmAdresseEntreprise adresse : adresses.subList(0, 10000)) {
 			for (final RegpmAdresseEntreprise adresse : adresses) {
-				completionService.submit(new Callable<Data>() {
-					@Override
-					public Data call() throws Exception {
-						return new Data(migrator.migrate(adresse), adresse.getId());
-					}
-				});
+				completionService.submit(() -> new Data(migrator.migrate(adresse), adresse.getId()));
 				++ envoyees;
 			}
 

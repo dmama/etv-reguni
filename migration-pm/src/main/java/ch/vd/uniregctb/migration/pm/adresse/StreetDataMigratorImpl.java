@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
@@ -118,7 +119,25 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 
 		// 4. constat d'échec... pas de rue avec de nom là... on prend la première localité postale (qui peut être celle fournie en entrée, ou une meilleure - plus récente - approximation de celle-ci...)
 		final int mostProbableSwissZipCodeId = localitesATester.get(0).getLeft();
-		return new StreetData.RueInconnue(libelleRue, adresse.getNoPolice(), mostProbableSwissZipCodeId);
+		final StreetData.RueInconnue result = new StreetData.RueInconnue(libelleRue, adresse.getNoPolice(), mostProbableSwissZipCodeId);
+		if (mostProbableSwissZipCodeId != noOrdreP) {
+			final String noRue = adresse.getRue() != null ? String.format("%d (%s)", adresse.getRue().getId(), adresse.getRue().getDesignationCourrier()) : null;
+			final String nomRue = StringUtils.isNotBlank(adresse.getNomRue()) ? String.format("'%s'", adresse.getNomRue()) : null;
+			final PostalLocality locality = findPostalLocalityForDate(mostProbableSwissZipCodeId, adresse.getDateFin());
+			final String npaLocalitePrise = locality != null ? String.format("%d %s", locality.getSwissZipCode(), locality.getLongName()) : "???";
+
+			final String npaLocaliteMainframe = String.format("%d (%d %s)", localitePostale.getNoOrdreP(), localitePostale.getNpa(), localitePostale.getNomLong());
+			final String detailsFin = adresse.getDateFin() != null
+					? String.format("fermée le %s", RegDateHelper.dateToDisplayString(adresse.getDateFin()))
+					: "active";
+
+			final String msg = String.format("Adresse %s: données du mainframe {onrp=%s, rue=%s, noRue=%s}, onrp pris par défaut %d (%s)",
+			                                  detailsFin,
+			                                  npaLocaliteMainframe, nomRue, noRue,
+			                                  mostProbableSwissZipCodeId, npaLocalitePrise);
+			result.addMessage(MigrationResult.CategorieListe.LOCALITE_DEVINEE, MigrationResult.NiveauMessage.INFO, msg);
+		}
+		return result;
 	}
 
 	private static String canonize(String rue) {

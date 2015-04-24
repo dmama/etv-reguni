@@ -3,10 +3,11 @@ package ch.vd.uniregctb.migration.pm.adresse;
 import java.io.Serializable;
 
 import ch.vd.fidor.xml.post.v1.Street;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
 
 public class StreetData implements Serializable {
 
-	private static final long serialVersionUID = -9105347630775104243L;
+	private static final long serialVersionUID = -6035522894829991090L;
 
 	private final String nomRue;
 	private final String noPolice;
@@ -15,6 +16,8 @@ public class StreetData implements Serializable {
 	private final Integer npa;
 	private final Integer npaComplementaire;
 	private final String localitePostale;
+
+	private final MigrationResult messages = new MigrationResult();
 
 	protected StreetData(Street street, String noPolice, int swissZipCodeId) {
 		this.nomRue = null;
@@ -58,6 +61,14 @@ public class StreetData implements Serializable {
 		public RueInconnue(String nomRue, String noPolice, int noOrdreP) {
 			super(nomRue, noPolice, noOrdreP, null, null, null);
 		}
+	}
+
+	public void addMessage(MigrationResult.CategorieListe cat, MigrationResult.NiveauMessage niveau, String msg) {
+		messages.addMessage(cat, niveau, msg);
+	}
+
+	public MigrationResult getMessages() {
+		return messages;
 	}
 
 	public String getNomRue() {

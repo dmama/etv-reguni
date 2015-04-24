@@ -61,29 +61,26 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
 		                                       new ArrayBlockingQueue<>(20),
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),
-		                                       new RejectedExecutionHandler() {
-			                                       @Override
-			                                       public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-				                                       final BlockingQueue<Runnable> queue = executor.getQueue();
-				                                       boolean sent = false;
-				                                       try {
-					                                       while (!sent) {
-						                                       if (executor.isShutdown()) {
-							                                       // this will trigger the abort policy
-							                                       break;
-						                                       }
-
-						                                       // if sent successfully, that's the key out of the loop!
-						                                       sent = queue.offer(r, 1, TimeUnit.SECONDS);
+		                                       (r, executor) -> {
+			                                       final BlockingQueue<Runnable> queue = executor.getQueue();
+			                                       boolean sent = false;
+			                                       try {
+				                                       while (!sent) {
+					                                       if (executor.isShutdown()) {
+						                                       // this will trigger the abort policy
+						                                       break;
 					                                       }
-				                                       }
-				                                       catch (InterruptedException e) {
-					                                       Thread.currentThread().interrupt();
-				                                       }
 
-				                                       if (!sent) {
-					                                       ABORT_POLICY.rejectedExecution(r, executor);
+					                                       // if sent successfully, that's the key out of the loop!
+					                                       sent = queue.offer(r, 1, TimeUnit.SECONDS);
 				                                       }
+			                                       }
+			                                       catch (InterruptedException e) {
+				                                       Thread.currentThread().interrupt();
+			                                       }
+
+			                                       if (!sent) {
+				                                       ABORT_POLICY.rejectedExecution(r, executor);
 			                                       }
 		                                       });
 
