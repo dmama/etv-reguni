@@ -31,6 +31,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
@@ -49,6 +50,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private static final Logger LOGGER = LoggerFactory.getLogger(MigrationWorker.class);
 
 	private static final RejectedExecutionHandler ABORT_POLICY = new ThreadPoolExecutor.AbortPolicy();
+
+	private static final String VISA_MIGRATION = "[MigrationPM]";
 
 	private ExecutorService executor;
 	private CompletionService<MigrationResult> completionService;
@@ -301,19 +304,25 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		final MigrationResult mr = new MigrationResult();
 
 		// tout le graphe sera migré dans une transaction globale
-		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		template.execute(status -> {
-			doMigrate(graphe, mr);
-			return null;
-		});
-
-		// une fois la transaction terminée, on passe les callbacks enregistrés
+		AuthenticationHelper.pushPrincipal(VISA_MIGRATION);
 		try {
-			mr.runPostTransactionCallbacks();
+			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			template.execute(status -> {
+				doMigrate(graphe, mr);
+				return null;
+			});
+
+			// une fois la transaction terminée, on passe les callbacks enregistrés
+			try {
+				mr.runPostTransactionCallbacks();
+			}
+			catch (Exception e) {
+				mr.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
+			}
 		}
-		catch (Exception e) {
-			mr.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 
 		// un dernier log avant de partir

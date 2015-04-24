@@ -92,6 +92,14 @@
 		<property name="annotatedClasses" ref="uniregHibernateAnnotatedClasses" />
 		<property name="dataSource" ref="uniregDataSource" />
 		<property name="hibernateProperties" ref="uniregHibernateProperties" />
+		<property name="entityInterceptor" ref="uniregEntityInterceptor"/>
+	</bean>
+
+	<bean id="uniregEntityInterceptor" class="ch.vd.shared.hibernate.interceptor.ChainingInterceptor"/>
+
+	<bean id="modificationLogInterceptor" class="ch.vd.uniregctb.migration.pm.utils.ModificationLogInterceptor">
+		<property name="chainingInterceptor" ref="uniregEntityInterceptor" />
+		<property name="completeOnly" value="true"/>
 	</bean>
 
 	<util:properties id="uniregHibernateProperties">
