@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<!-- Evolution sur version 1-1 : 																																	-->
+<!--      Creation du type noticeRequestAddress																											-->
+<!--																																											-->
+<!--																																											-->
+<xs:schema xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0021/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:annotation>
+		<xs:documentation xml:lang="fr">Extrait en partie de la norme eCH-0010 v6</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="addressLineType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="streetType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="60"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="houseNumberType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="dwellingNumberType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="postOfficeBoxNumberType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:maxInclusive value="99999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="postOfficeBoxTextType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="swissZipCodeType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1000"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="swissZipCodeAddOnType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="swissZipCodeIdType">
+		<xs:restriction base="xs:int"/>
+	</xs:simpleType>
+	<xs:simpleType name="foreignZipCodeType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="federalBuildingIdType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="xCoordinateType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="480000"/>
+			<xs:maxInclusive value="840000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="yCoordinateType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="70000"/>
+			<xs:maxInclusive value="300000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="localityType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="townType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="40"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="countryIdType">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1000"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="countryIdISO2Type">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="2"/>
+			<xs:minLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="countryNameShortType">
+		<xs:restriction base="xs:token">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="countryType">
+		<xs:sequence>
+			<xs:element name="countryId" type="eVD-0021:countryIdType" minOccurs="0"/>
+			<xs:element name="countryIdISO2" type="eVD-0021:countryIdISO2Type" minOccurs="0"/>
+			<xs:element name="countryName" type="eVD-0021:countryNameShortType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="addressType">
+		<xs:sequence>
+			<xs:element name="addressLine1" type="eVD-0021:addressLineType" minOccurs="0"/>
+			<xs:element name="addressLine2" type="eVD-0021:addressLineType" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="street" type="eVD-0021:streetType"/>
+				<xs:element name="houseNumber" type="eVD-0021:houseNumberType" minOccurs="0"/>
+				<xs:element name="dwellingNumber" type="eVD-0021:dwellingNumberType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="postOfficeBoxText" type="eVD-0021:postOfficeBoxTextType"/>
+				<xs:element name="postOfficeBoxNumber" type="eVD-0021:postOfficeBoxNumberType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:element name="locality" type="eVD-0021:localityType" minOccurs="0"/>
+			<xs:element name="town" type="eVD-0021:townType"/>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="swissZipCode" type="eVD-0021:swissZipCodeType"/>
+					<xs:element name="swissZipCodeAddOn" type="eVD-0021:swissZipCodeAddOnType" minOccurs="0"/>
+					<xs:element name="swissZipCodeId" type="eVD-0021:swissZipCodeIdType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:element name="foreignZipCode" type="eVD-0021:foreignZipCodeType" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="country" type="eVD-0021:countryType" minOccurs="0"/>
+			<xs:element name="federalBuildingId" type="eVD-0021:federalBuildingIdType" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="xCoordinate" type="eVD-0021:xCoordinateType"/>
+				<xs:element name="yCoordinate" type="eVD-0021:yCoordinateType"/>
+			</xs:sequence>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestAddressType">
+		<xs:sequence>
+			<xs:element name="addressLine1" type="eVD-0021:addressLineType" minOccurs="0"/>
+			<xs:element name="addressLine2" type="eVD-0021:addressLineType" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="street" type="eVD-0021:streetType"/>
+				<xs:element name="houseNumber" type="eVD-0021:houseNumberType" minOccurs="0"/>
+				<xs:element name="dwellingNumber" type="eVD-0021:dwellingNumberType" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0">
+				<xs:element name="postOfficeBoxText" type="eVD-0021:postOfficeBoxTextType"/>
+				<xs:element name="postOfficeBoxNumber" type="eVD-0021:postOfficeBoxNumberType" minOccurs="0"/>
+				<xs:element name="postOfficeBoxSwissZipCode" type="eVD-0021:swissZipCodeType"/>
+				<xs:element name="postOfficeBoxSwissZipCodeAddOn" type="eVD-0021:swissZipCodeAddOnType" minOccurs="0"/>
+				<xs:element name="postOfficeBoxSwissZipCodeId" type="eVD-0021:swissZipCodeIdType" minOccurs="0"/>
+				<xs:element name="postOfficeBoxTown" type="eVD-0021:townType"/>
+			</xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="swissZipCode" type="eVD-0021:swissZipCodeType"/>
+					<xs:element name="swissZipCodeAddOn" type="eVD-0021:swissZipCodeAddOnType" minOccurs="0"/>
+					<xs:element name="swissZipCodeId" type="eVD-0021:swissZipCodeIdType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="foreignZipCode" type="eVD-0021:foreignZipCodeType" minOccurs="0"/>
+					<xs:element name="locality" type="eVD-0021:localityType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="town" type="eVD-0021:townType"/>
+			<xs:element name="country" type="eVD-0021:countryType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

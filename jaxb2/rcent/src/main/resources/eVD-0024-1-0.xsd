@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<!--																																											-->
+<!-- Evolution sur version 1-1 : 																																	-->
+<!--      																																										-->
+<!--      nouveau type : noticeRequestType																													-->
+<!--      nouveau type : noticeRequestHeaderType						 																					-->
+<!--      nouveau type : noticeRequestBodyType																											-->
+<!--      nouvel élément : noticeRequest									 																					-->
+<!--      																					 																					-->
+<!--																																											-->
+<xs:schema xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns="http://evd.vd.ch/xmlns/eVD-0024/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0024/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-0.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-0.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0004/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd"/>
+	<xs:complexType name="searchCriteriaType">
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="organisationIdentifier" type="eVD-0022:identifierType" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="0"/>
+				<xs:element name="street" type="eVD-0021:streetType" minOccurs="0"/>
+				<xs:element name="houseNumber" type="eVD-0021:houseNumberType" minOccurs="0"/>
+				<xs:element name="swissZipCode" type="eVD-0021:swissZipCodeType" minOccurs="0"/>
+				<xs:element name="municipalityId" type="eVD-0022:municipalityIdType" minOccurs="0"/>
+				<xs:element name="town" type="eVD-0021:townType" minOccurs="0"/>
+				<xs:element name="country" type="eVD-0021:countryIdType" minOccurs="0"/>
+				<xs:element name="uidRegisterstatus" type="eVD-0022:uidRegisterStatusType" minOccurs="0"/>
+				<xs:element name="commercialRegisterStatus" type="eVD-0022:commercialRegisterStatusType" minOccurs="0"/>
+				<xs:element name="commercialRegisterEntryStatus" type="eVD-0022:commercialRegisterEntryStatusType" minOccurs="0"/>
+				<xs:element name="vatRegisterStatus" type="eVD-0022:vatRegisterStatusType" minOccurs="0"/>
+				<xs:element name="vatRegisterEntryStatus" type="eVD-0022:vatRegisterEntryStatusType" minOccurs="0"/>
+				<xs:element name="documentNumber" type="xs:string" minOccurs="0"/>
+				<xs:element name="publicationDate" type="xs:date" minOccurs="0"/>
+				<xs:element name="legalForm" type="eVD-0022:legalFormType" minOccurs="0"/>
+				<xs:element name="nogaCode" type="xs:string" minOccurs="0"/>
+				<xs:element name="contains" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="history" type="xs:boolean" minOccurs="0"/>
+				<xs:element name="maxHits" type="xs:integer" minOccurs="0"/>
+			</xs:sequence>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="asynchronousSearchRequestType">
+		<xs:sequence>
+			<xs:element name="criteria" type="searchCriteriaType" minOccurs="0"/>
+			<xs:element name="referenceDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="outputHistory" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="maxOrganisationsByResponse" type="xs:integer" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="asynchronousSearchResponseType">
+		<xs:sequence>
+			<xs:element name="request" type="asynchronousSearchRequestType"/>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="totalResponsesCount" type="xs:integer"/>
+					<xs:element name="indexOfThisResponse" type="xs:integer"/>
+					<xs:element name="organisationData" type="eVD-0022:organisationDataType" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:element name="error" type="eVD-0004:errorType"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestType">
+		<xs:sequence>
+			<xs:element name="noticeRequestHeader" type="noticeRequestHeaderType"/>
+			<xs:element name="noticeRequestBody" type="noticeRequestBodyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="noticeRequestStatusCodeType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="noticeRequestStatusType">
+		<xs:sequence>
+			<xs:element name="noticeRequestStatusCode" type="noticeRequestStatusCodeType"/>
+			<xs:element name="noticeRequestStatusDate" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestReportType">
+		<xs:sequence>
+			<xs:element name="noticeRequest" type="noticeRequestType"/>
+			<xs:element name="noticeRequestStatus" type="noticeRequestStatusType"/>
+			<xs:element name="listOfErrors" type="errorType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="asynchronousSearchRequest" type="asynchronousSearchRequestType"/>
+	<xs:element name="asynchronousSearchResponse" type="asynchronousSearchResponseType"/>
+	<xs:element name="noticeRoot" type="eVD-0022:noticeRootType"/>
+	<xs:element name="noticeRequest" type="noticeRequestType"/>
+	<xs:element name="noticeRequestReport" type="noticeRequestReportType"/>
+	<xs:complexType name="noticeRequestHeaderType">
+		<xs:sequence>
+			<xs:element name="noticeRequestId" type="eVD-0022:noticeIdType"/>
+			<xs:element name="typeOfNoticeRequest" type="eVD-0022:typeOfNoticeRequestType"/>
+			<xs:element name="noticeRequestDateTime" type="xs:dateTime"/>
+			<xs:element name="scheduledDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="organisationLocationCantonalId" type="eVD-0022:cantonalIdType" minOccurs="0"/>
+			<xs:element name="IDESource" type="eVD-0022:identifierType" minOccurs="0"/>
+			<xs:element name="userId" type="xs:string" minOccurs="0"/>
+			<xs:element name="userPhoneNumber" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestBodyType">
+		<xs:sequence>
+			<xs:element name="organisationLocationName" type="eVD-0022:nameType" minOccurs="0"/>
+			<xs:element name="organisationLocationAdditionalName" type="eVD-0022:nameType" minOccurs="0"/>
+			<xs:element name="organisationLocationReplacementCantonalId" type="eVD-0022:cantonalIdType" minOccurs="0"/>
+			<xs:element name="organisationLocationAddress" type="eVD-0021:noticeRequestAddressType" minOccurs="0"/>
+			<xs:element name="kindOfLocation" type="eVD-0022:kindOfLocationType" minOccurs="0"/>
+			<xs:element name="organisationCantonalId" type="eVD-0022:cantonalIdType" minOccurs="0"/>
+			<xs:element name="organisationLocationLegalForm" type="eVD-0022:legalFormType" minOccurs="0"/>
+			<xs:element name="branchText" type="xs:string" minOccurs="0"/>
+			<xs:element name="organisationLocationLiquidationReason" type="eVD-0022:liquidationReasonType" minOccurs="0"/>
+			<xs:element name="person" type="eVD-0022:personSummaryType" minOccurs="0"/>
+			<xs:element name="comment" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="errorType">
+		<xs:sequence>
+			<xs:element name="errorId" type="xs:token"/>
+			<xs:element name="errorDescription" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

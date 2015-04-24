@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>unireg-jaxb2-party</artifactId>
+	<artifactId>unireg-jaxb2-rcent</artifactId>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,18 +16,13 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>Unireg - Party Beans JAXB2</name>
-	<description>Beans JAXB2 qui décrivent les données d'un tiers (party en anglais)</description>
+	<name>Unireg - Beans RCEnt</name>
+	<description>Les beans JAXB2 du projet RCEnt</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-common</artifactId>
-			<version>${pom.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>unireg-jaxb2-ech</artifactId>
 			<version>${pom.parent.version}</version>
 		</dependency>
 	</dependencies>
@@ -47,7 +42,6 @@
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
 						<include>ech-bindings.xml</include>
-						<include>common-bindings.xml</include>
 						<include>bindings.xml</include>
 					</bindingIncludes>
 					<args>
@@ -96,8 +90,8 @@
 					</dependency>
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
-						<artifactId>jaxb2-basics</artifactId>
-						<version>0.5.3</version>
+					   <artifactId>jaxb2-basics</artifactId>
+					   <version>0.5.3</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -109,7 +103,7 @@
 					<source>1.7</source>
 					<target>1.7</target>
 					<excludes>
-						<!-- on exclut les répertoires des beans qui correspondent aux XSDs des projets unireg-jaxb2-common et unireg-jaxb2-ech, car ils ont déjà été compilés dans ceux-ci -->
+						<!-- on exclut les répertoires des beans qui correspondent aux XSDs du projet unireg-jaxb2-ech, car ils ont déjà été compilés dans ce dernier -->
 						<exclude>ch/ech/**</exclude>
 						<exclude>ch/vd/unireg/xml/common/**</exclude>
 						<exclude>ch/vd/unireg/xml/exception/**</exclude>
