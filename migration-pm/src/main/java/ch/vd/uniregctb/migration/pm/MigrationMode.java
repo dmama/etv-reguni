@@ -3,6 +3,11 @@ package ch.vd.uniregctb.migration.pm;
 public enum MigrationMode {
 
 	/**
+	 * Ne fait aucune opération de migration
+	 */
+	NOOP,
+
+	/**
 	 * Prend les données du mainframe, et les sauvegarde dans des fichiers locaux (= pas de migration !), utilisé en tests
 	 */
 	DUMP,

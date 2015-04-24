@@ -69,6 +69,14 @@ public class MigrationResult {
 		}
 	}
 
+	/**
+	 * Runnables enregistrables pendant la transaction, qui sont lancés une fois la transaction terminée (avec succès)
+	 */
+	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
+
+	/**
+	 * Les messages à loggeur, relatifs à une migration
+	 */
 	private final Map<CategorieListe, List<Message>> msgs = new EnumMap<>(CategorieListe.class);
 
 	/**
@@ -102,6 +110,8 @@ public class MigrationResult {
 	}
 
 	public void addAll(MigrationResult results, String prefixe) {
+
+		// d'abord, les messages enregistrés localement doivent être repris au niveau global avec un préfixe
 		results.msgs.entrySet().forEach(entry -> {
 			final CategorieListe cat = entry.getKey();
 			final List<Message> newMessages;
@@ -117,6 +127,25 @@ public class MigrationResult {
 				newMessages.forEach(msg -> addMessage(cat, msg));
 			}
 		});
+
+		// les callbacks enregistrés localement doivent être propagés tout en haut
+		postTransactionCallbacks.addAll(results.postTransactionCallbacks);
+	}
+
+	/**
+	 * Enregistre un callback à appeler une fois la transaction courante committée
+	 * @param callback appelé une fois la transaction committée (l'appel se fera hors de tout contexte transactionnel !)
+	 */
+	public void addPostTransactionCallback(@NotNull Runnable callback) {
+		postTransactionCallbacks.add(callback);
+	}
+
+	/**
+	 * Appelle un a un tous les callbacks précédemment enregistrés, et vide la liste
+	 */
+	public void runPostTransactionCallbacks() {
+		postTransactionCallbacks.forEach(Runnable::run);
+		postTransactionCallbacks.clear();
 	}
 
 	@Override

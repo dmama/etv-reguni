@@ -34,6 +34,7 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
@@ -55,12 +56,14 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
 	private volatile boolean started;
+	private MigrationMode mode;
 
 	private StreetDataMigrator streetDataMigrator;
 	private PlatformTransactionManager uniregTransactionManager;
 	private SessionFactory uniregSessionFactory;
 	private RcPersClient rcpersClient;
 	private TiersDAO tiersDAO;
+	private NonHabitantIndex nonHabitantIndex;
 
 	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
 	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
@@ -86,12 +89,20 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.tiersDAO = tiersDAO;
 	}
 
+	public void setNonHabitantIndex(NonHabitantIndex nonHabitantIndex) {
+		this.nonHabitantIndex = nonHabitantIndex;
+	}
+
+	public void setMode(MigrationMode mode) {
+		this.mode = mode;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
 		this.entrepriseMigrator = new EntrepriseMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
 		this.etablissementMigrator = new EtablissementMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
-		this.individuMigrator = new IndividuMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcpersClient);
+		this.individuMigrator = new IndividuMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcpersClient, nonHabitantIndex);
 
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
 		                                       new ArrayBlockingQueue<>(20),
@@ -117,7 +128,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				}
 			}
 		};
-		this.gatheringThread.start();
+		if (this.mode == MigrationMode.FROM_DUMP || this.mode == MigrationMode.DIRECT) {
+			this.gatheringThread.start();
+		}
 	}
 
 	/**
@@ -295,6 +308,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			return null;
 		});
 
+		// une fois la transaction terminée, on passe les callbacks enregistrés
+		try {
+			mr.runPostTransactionCallbacks();
+		}
+		catch (Exception e) {
+			mr.addMessage(MigrationResult.CategorieListe.GENERIQUE, MigrationResult.NiveauMessage.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
+		}
+
+		// un dernier log avant de partir
 		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResult.CategorieListe.PM_MIGREE, MigrationResult.NiveauMessage.INFO, String.format("Entreprise %d migrée", id)));
 		return mr;
 	}

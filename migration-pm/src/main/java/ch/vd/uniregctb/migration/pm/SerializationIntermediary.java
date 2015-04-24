@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -69,11 +70,7 @@ public class SerializationIntermediary implements Worker, Feeder {
 				return "rien (???)";
 			}
 			else {
-				final StringBuilder b = new StringBuilder(array.get(0));
-				for (int i = 1 ; i < array.size() ; ++ i) {
-					b.append(", ").append(array.get(i));
-				}
-				return b.toString();
+				return array.stream().collect(Collectors.joining(", "));
 			}
 		}
 	}
@@ -98,12 +95,7 @@ public class SerializationIntermediary implements Worker, Feeder {
 		// on va traiter les fichiers dans l'ordre où ils ont été entrés
 		final Pattern fileNamePattern = Pattern.compile("[0-9]{8}\\.data");
 		final File[] files = fsDirectory.toFile().listFiles((FilenameFilter) new RegexFileFilter(fileNamePattern));
-		Arrays.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+		Arrays.sort(files, Comparator.comparing(File::getName));
 
 		// on envoie chaque graphe dans le worker
 		for (File file : files) {
@@ -142,9 +134,9 @@ public class SerializationIntermediary implements Worker, Feeder {
 		     PrintStream ps = new PrintStream(fos, false, "UTF-8")) {
 
 			// dump de toutes les entrées
-			for (Map.Entry<File, Ids> entry : map.entrySet()) {
-				ps.println(String.format("%s : %s", entry.getKey().getName(), entry.getValue()));
-			}
+			map.entrySet().stream()
+					.map(entry -> String.format("%s : %s", entry.getKey().getName(), entry.getValue()))
+					.forEach(ps::println);
 		}
 	}
 }

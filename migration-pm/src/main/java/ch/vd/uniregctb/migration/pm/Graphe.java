@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -36,11 +37,7 @@ public class Graphe implements Serializable {
 			return "rien (???)";
 		}
 		else {
-			final StringBuilder b = new StringBuilder(array.get(0));
-			for (int i = 1 ; i < array.size() ; ++ i) {
-				b.append(", ").append(array.get(i));
-			}
-			return b.toString();
+			return array.stream().collect(Collectors.joining(", "));
 		}
 	}
 

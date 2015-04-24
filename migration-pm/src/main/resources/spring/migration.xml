@@ -26,6 +26,8 @@
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
 		<property name="rcpersClient" ref="rcpersClient"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
+		<property name="mode" value="${migration.mode}"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
@@ -35,6 +37,22 @@
 	<bean id="streetDataMigrator" class="ch.vd.uniregctb.migration.pm.adresse.StreetDataMigratorImpl">
 		<property name="fidorClient" ref="fidorClient"/>
 		<property name="mappingNosOrdrePoste" ref="noOrdrePosteProvider"/>
+	</bean>
+
+	<bean id="nonHabitantIndex" class="ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex">
+		<property name="index">
+			<bean class="ch.vd.uniregctb.migration.pm.indexeur.IndexImpl">
+				<constructor-arg name="indexPath" value="${indexeur.nh.dir}"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="migrationInitializer" class="ch.vd.uniregctb.migration.pm.MigrationInitializer">
+		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
+		<property name="nonHabitantIndexToBeCleared" value="${indexeur.nh.create}"/>
+		<property name="registrar" ref="migrator"/>
+		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
+		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
 	</bean>
 
 </beans>
