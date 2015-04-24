@@ -17,7 +17,9 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.type.DayMonth;
@@ -42,6 +44,22 @@ public class BouclementServiceImpl implements BouclementService {
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * Apparemment, dans les RegDate, 28.02.2015 + 12M -> 28.2.2016 même si 2016 est bissextile
+	 * @param date date de départ
+	 * @param nbMonths nombre de mois (positif !)
+	 * @param ancrageOnEndOfMonth <code>true</code> si on doit se coller à la fin du mois
+	 * @return la date de départ déplacée de <i>n</i> mois vers le futur
+	 * @throws java.lang.IllegalArgumentException si le nombre de mois demandé est strictement négatif
+	 */
+	private static RegDate addMonths(RegDate date, int nbMonths, boolean ancrageOnEndOfMonth) {
+		if (nbMonths < 0) {
+			throw new IllegalArgumentException("Seuls les déplacements vers le futur sont supportés ici.");
+		}
+		final RegDate brutto = date.addMonths(nbMonths);
+		return ancrageOnEndOfMonth ? brutto.getLastDayOfTheMonth() : brutto;
 	}
 
 	@Override
@@ -78,12 +96,7 @@ public class BouclementServiceImpl implements BouclementService {
 
 		RegDate candidate = ancrageCourant.nextAfterOrEqual(activeBouclement.getDateDebut());
 		while (candidate.isBefore(premiereDateAcceptable) && (seuilNext == null || candidate.isBefore(seuilNext))) {
-			candidate = candidate.addMonths(periodeMois);
-
-			// apparemment, dans les RegDate, 28.02.2015 + 12M -> 28.2.2016 même si 2016 est bissextile
-			if (ancrageOnEndOfMonth) {
-				candidate = candidate.getLastDayOfTheMonth();
-			}
+			candidate = addMonths(candidate, periodeMois, ancrageOnEndOfMonth);
 		}
 
 		// si on a dépassé la date de début de la prochaine périodicité, c'est elle qui dirige, maintenant...
@@ -171,6 +184,31 @@ public class BouclementServiceImpl implements BouclementService {
 		return new TreeSet<>(hashSet);
 	}
 
+	/**
+	 * @param origin date de départ
+	 * @param target date d'arrivée
+	 * @return nombre de mois minimal pour partir de la date de départ et arriver au moins à la date d'arrivée
+	 */
+	private static int getMonths(@NotNull RegDate origin, @NotNull RegDate target) {
+
+		final DayMonth dmOrigin = DayMonth.get(origin);
+		final DayMonth dmTarget = DayMonth.get(target);
+
+		// il existe un nombre entier d'année entre les deux points ?
+		if (dmOrigin.isEndOfMonth() && dmTarget.isEndOfMonth() && dmOrigin.month() == dmTarget.month()) {
+			return 12 * (target.year() - origin.year());
+		}
+		// il existe un nombre entier de mois entre les deux points ?
+		else if (DayMonth.isSameDayOfMonth(dmOrigin, dmTarget)) {
+			return 12 * (target.year() - origin.year()) + target.month() - origin.month();
+		}
+		else {
+			// on construit une période qui passe de manière certaine au dessus du prochain point
+			final int pm =  12 * (target.year() - origin.year()) + target.month() - origin.month();
+			return origin.addMonths(pm).isBefore(target) ? pm + 1 : pm;
+		}
+	}
+
 	@Override
 	public List<Bouclement> extractBouclementsDepuisDates(Collection<RegDate> datesBouclements, int periodeMoisFinale) {
 
@@ -183,46 +221,67 @@ public class BouclementServiceImpl implements BouclementService {
 		// la liste finale
 		final List<Bouclement> liste = new LinkedList<>();
 
-		// une sorte de buffer temporaire pour construire la liste finale
+		// dernier bouclement inséré dans la collection finale (= bouclement actif)
 		Bouclement tmp = null;
 
-		// on boucle sur les dates, en ayant toujours en tête la suivante
+		// on boucle sur les dates, en ayant toujours en tête la suivante et la précédente
 		final MovingWindow<RegDate> wnd = new MovingWindow<>(new ArrayList<>(sortedDates));
 		while (wnd.hasNext()) {
 			final MovingWindow.Snapshot<RegDate> snap = wnd.next();
 			final RegDate dateCourante = snap.getCurrent();
 			final RegDate dateSuivante = snap.getNext();
+			final RegDate datePrecedente = snap.getPrevious();
+			final RegDate dateDebutChoisie;
 
-			final DayMonth ancrageCourant = DayMonth.get(dateCourante);
-			final DayMonth nouvelAncrage = dateSuivante == null ? ancrageCourant : DayMonth.get(dateSuivante);
+			if (tmp != null) {
 
-			final boolean ancragesMemeFinDeMois = ancrageCourant.isEndOfMonth() && nouvelAncrage.isEndOfMonth() && ancrageCourant.month() == nouvelAncrage.month();
-			final boolean ancragesMemeJourDuMois = DayMonth.isSameDayOfMonth(ancrageCourant, nouvelAncrage);
+				// tmp != null -> ce n'est donc pas le premier passage, donc datePrecedente est forcément non-vide
+				final DayMonth dmDatePrecedente = DayMonth.get(datePrecedente);
+				final RegDate dateAttendueSansChangement = addMonths(datePrecedente, tmp.getPeriodeMois(), dmDatePrecedente.isEndOfMonth());
+				if (dateCourante == dateAttendueSansChangement && (dateSuivante != null || periodeMoisFinale == tmp.getPeriodeMois())) {
+					// on continue sur la même lancée -> pas de changement de direction à prévoir
+					continue;
+				}
 
-			final int periodeMois;
-			if (ancrageCourant == nouvelAncrage || ancragesMemeFinDeMois) {
-				// même ancrage, il faut juste vérifier la différence en années (et donc en mois) entre les deux dates
-				periodeMois = dateSuivante == null ? periodeMoisFinale : 12 * (dateSuivante.year() - dateCourante.year());
-			}
-			else if (ancragesMemeJourDuMois) {
-				// même jour dans le mois, il y a donc un nombre de mois entier entre les deux dates
-				periodeMois = 12 * (dateSuivante.year() - dateCourante.year()) + dateSuivante.month() - dateCourante.month();
+				// plage possible pour le changement de direction ?
+				final RegDate dateMax = RegDateHelper.minimum(dateCourante, dateAttendueSansChangement.getOneDayBefore(), NullDateBehavior.LATEST);
+				final RegDate dateMin = datePrecedente.getOneDayAfter();
+				final RegDate dateDebutMoisMax = RegDate.get(dateMax.year(), dateMax.month(), 1);
+				if (dateDebutMoisMax.isAfterOrEqual(dateMin)) {
+					// on essaie de mettre les dates de début en début de mois quand c'est possible
+					dateDebutChoisie = dateDebutMoisMax;
+				}
+				else {
+					// début de mois pas possible : on prend la date minimale qui fait le boulot
+					dateDebutChoisie = dateMin;
+				}
 			}
 			else {
-				// on construit une période qui passe de manière certaine au dessus du prochain seuil
-				// TODO doit-on arrondir en années entières ?
-				final int pm =  12 * (dateSuivante.year() - dateCourante.year()) + dateSuivante.month() - dateCourante.month();
-				periodeMois = dateCourante.addMonths(pm).isBefore(dateSuivante) ? pm + 1 : pm;
+				// on essaie de mettre les dates de début en début de mois
+				dateDebutChoisie = RegDate.get(dateCourante.year(), dateCourante.month(), 1);
 			}
 
-			final boolean mustChange = tmp != null && (tmp.getPeriodeMois() != periodeMois || !DayMonth.isSameDayOfMonth(tmp.getAncrage(), ancrageCourant));
-			if (tmp == null || mustChange) {
-				tmp = new Bouclement();
-				tmp.setDateDebut(dateCourante);
-				tmp.setAncrage(ancrageCourant);
-				tmp.setPeriodeMois(periodeMois);
-				liste.add(tmp);
+			// écart entre la date courante et la suivante ?
+			final int periodeMois = dateSuivante == null ? periodeMoisFinale : getMonths(dateCourante, dateSuivante);
+			int periodeMoisChoisie = periodeMois;
+
+			// mais si l'écart n'est modifié que temporairement (= s'il revient à la même valeur juste après), ce qui correspond à un cas de décalage de date de bouclement
+			// en conservant le même cycle, on peut peut-être s'économiser un peu de sueur
+			final RegDate dateSuivanteSuivante = snap.getNextAfterNext();
+			if (tmp != null && dateSuivanteSuivante != null) {
+				// si la dateSuivanteSuivante n'est pas nulle, c'est que la dateSuivante n'est pas nulle non plus (on a enlevé les nulls...)
+				//noinspection ConstantConditions
+				final int periodeMoisSuivante = getMonths(dateSuivante, dateSuivanteSuivante);
+				if (periodeMoisSuivante == tmp.getPeriodeMois() && periodeMois < 2 * periodeMoisSuivante) {
+					periodeMoisChoisie = periodeMoisSuivante;
+				}
 			}
+
+			tmp = new Bouclement();
+			tmp.setDateDebut(dateDebutChoisie);
+			tmp.setAncrage(DayMonth.get(dateCourante));
+			tmp.setPeriodeMois(periodeMoisChoisie);
+			liste.add(tmp);
 		}
 
 		// repassage en ArrayList une fois la taille connue
