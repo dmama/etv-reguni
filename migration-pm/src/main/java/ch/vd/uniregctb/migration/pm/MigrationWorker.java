@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -99,6 +98,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				catch (InterruptedException e) {
 					LOGGER.error("Gathering thread interrupted!", e);
 				}
+				catch (RuntimeException | Error e) {
+					LOGGER.error("Exception thrown in gathering thread", e);
+				}
 				finally {
 					LOGGER.info("Gathering thread is now done.");
 				}
@@ -148,10 +150,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 					// utilisation des loggers pour les fichiers/listes de contrôle
 					for (MigrationResult.CategorieListe cat : MigrationResult.CategorieListe.values()) {
-						final List<Pair<MigrationResult.NiveauMessage, String>> messages = res.getMessages(cat);
+						final List<MigrationResult.Message> messages = res.getMessages(cat);
 						if (!messages.isEmpty()) {
 							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResult.CategorieListe.class.getName(), cat.name()));
-							messages.forEach(msg -> log(logger, msg.getLeft(), msg.getRight()));
+							messages.forEach(msg -> log(logger, msg.niveau, msg.texte));
 						}
 					}
 				}
@@ -250,6 +252,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		return null;
+		final MigrationResult mr = new MigrationResult();
+		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResult.CategorieListe.PM_MIGREE, MigrationResult.NiveauMessage.INFO, String.format("Entreprise %d migrée", id)));
+		return mr;
 	}
 }
