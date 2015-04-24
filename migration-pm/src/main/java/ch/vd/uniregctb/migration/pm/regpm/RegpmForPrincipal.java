@@ -69,6 +69,11 @@ public class RegpmForPrincipal extends RegpmEntity implements Comparable<RegpmFo
 			return result;
 		}
 
+		@Override
+		public String toString() {
+			return String.format("{idEntreprise=%d, seqNo=%d}", idEntreprise, seqNo);
+		}
+
 		@Column(name = "NO_SEQUENCE")
 		public Integer getSeqNo() {
 			return seqNo;

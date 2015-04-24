@@ -34,7 +34,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
-	private static final MigrationResult.CategorieListe CATEGORIE_LISTE = MigrationResult.CategorieListe.GENERIQUE;
+	private static final MigrationResult.CategorieListe CATEGORIE_LISTE = MigrationResult.CategorieListe.INDIVIDUS_PM;
 
 	private final RcPersClient rcpersClient;
 	private final NonHabitantIndex nonHabitantIndex;

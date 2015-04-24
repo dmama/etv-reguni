@@ -135,7 +135,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			                                  detailsFin,
 			                                  npaLocaliteMainframe, nomRue, noRue,
 			                                  mostProbableSwissZipCodeId, npaLocalitePrise);
-			result.addMessage(MigrationResult.CategorieListe.LOCALITE_DEVINEE, MigrationResult.NiveauMessage.INFO, msg);
+			result.addMessage(MigrationResult.CategorieListe.ADRESSES, MigrationResult.NiveauMessage.INFO, msg);
 		}
 		return result;
 	}

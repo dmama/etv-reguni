@@ -1,17 +1,23 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -20,11 +26,16 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
@@ -32,8 +43,14 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
@@ -62,9 +79,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		idMapper.addEntreprise(regpm, unireg);
 
 		// TODO ajouter un flag sur l'entreprise pour vérifier si elle est déjà migrée ou pas... (problématique de reprise sur incident pendant la migration)
-		// TODO migrer les fors, les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
+		// TODO migrer les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
 
 		migrateDeclarations(regpm, unireg, mr);
+		migrateForsPrincipaux(regpm, unireg, mr);
+		migrateForsSecondaires(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
@@ -249,5 +268,137 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// TODO la taxation d'office (= échéance, au sens Unireg) existait-elle ?
 
 		return etats;
+	}
+
+	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResult mr) {
+
+		// TODO sont-ce vraiment des fors de classe ForFiscalPrincipal qu'il faut instancier ? (problème avec le mode d'imposition qui n'a rien à faire là pour les PM...)
+
+		final Function<RegpmForPrincipal, Optional<ForFiscalPrincipal>> mapper = f -> {
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+			ffp.setDateDebut(f.getDateValidite());
+			ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+			if (f.getCommune() != null) {
+				final RegpmCommune commune = f.getCommune();
+				ffp.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+				ffp.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+			}
+			else if (f.getOfsPays() != null) {
+				if (f.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+					mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
+					return Optional.empty();
+				}
+				ffp.setNumeroOfsAutoriteFiscale(f.getOfsPays());
+				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
+			}
+			else {
+				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
+				return Optional.empty();
+			}
+			ffp.setTiers(unireg);
+			return Optional.of(ffp);
+		};
+
+		final List<ForFiscalPrincipal> liste = regpm.getForsPrincipaux().stream()
+				.map(mapper)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
+				.collect(Collectors.toList());
+
+		// assignation des dates de fin
+		RegDate dateFinCourante = regpm.getDateFinFiscale();
+		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(liste)) {
+			ffp.setDateFin(dateFinCourante);
+			dateFinCourante = ffp.getDateDebut().getOneDayBefore();
+		}
+
+		// assignation des motifs
+		final MovingWindow<ForFiscalPrincipal> wnd = new MovingWindow<>(liste);
+		while (wnd.hasNext()) {
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snap = wnd.next();
+			final ForFiscalPrincipal current = snap.getCurrent();
+			final ForFiscalPrincipal previous = snap.getPrevious();
+			final ForFiscalPrincipal next = snap.getNext();
+
+			// le tout premier for a un motif d'ouverture indéterminé
+			if (previous == null) {
+				current.setMotifOuverture(MotifFor.INDETERMINE);
+			}
+
+			// le tout dernier for a un motif de fermeture indéterminé si la date de fermeture est non-nulle
+			if (next == null && current.getDateFin() != null) {
+				current.setMotifFermeture(MotifFor.INDETERMINE);
+			}
+
+			// comparaison des types d'autorité fiscales pour les mutations
+			if (next != null) {
+				final TypeAutoriteFiscale currentTAF = current.getTypeAutoriteFiscale();
+				final TypeAutoriteFiscale nextTAF = next.getTypeAutoriteFiscale();
+				final MotifFor motif;
+				if (currentTAF == nextTAF) {
+					// TODO il y a sans doute d'autres possibilités, comme une fusion de communes...
+					motif = MotifFor.DEMENAGEMENT_VD;
+				}
+				else if (nextTAF == TypeAutoriteFiscale.PAYS_HS) {
+					motif = MotifFor.DEPART_HS;
+				}
+				else if (currentTAF == TypeAutoriteFiscale.PAYS_HS) {
+					motif = MotifFor.ARRIVEE_HS;
+				}
+				else if (nextTAF == TypeAutoriteFiscale.COMMUNE_HC) {
+					motif = MotifFor.DEPART_HC;
+				}
+				else {
+					motif = MotifFor.ARRIVEE_HC;
+				}
+
+				current.setMotifFermeture(motif);
+				next.setMotifOuverture(motif);
+			}
+		}
+
+		// on les ajoute au tiers
+		liste.forEach(unireg::addForFiscal);
+	}
+
+	private void migrateForsSecondaires(RegpmEntreprise regpm, Entreprise unireg, MigrationResult mr) {
+
+		final Function<RegpmForSecondaire, Optional<ForFiscalSecondaire>> mapper = f -> {
+			final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+			ffs.setDateDebut(f.getDateDebut());
+			ffs.setDateFin(f.getDateFin());
+			ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+			ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+			ffs.setMotifFermeture(f.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
+			ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
+
+			final RegpmCommune commune = f.getCommune();
+			if (commune != null) {
+				ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+				ffs.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+			}
+			else {
+				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.ERROR, String.format("For secondaire %d sans autorité fiscale", f.getId()));
+				return Optional.empty();
+			}
+
+			if (ffs.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				mr.addMessage(MigrationResult.CategorieListe.FORS, MigrationResult.NiveauMessage.WARN, String.format("For secondaire %d hors Vaud", f.getId()));
+			}
+
+			ffs.setTiers(unireg);
+			return Optional.of(ffs);
+		};
+
+		// TODO comment différencier les fors fiscaux "immeuble" des fors fiscaux "établissement stable" ?
+
+		// construction de la liste des fors secondaires
+		regpm.getForsSecondaires().stream()
+				.map(mapper)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.forEach(unireg::addForFiscal);
 	}
 }

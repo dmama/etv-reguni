@@ -15,12 +15,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Résultat de la migration d'un graphe<br/>
  * <ul>
- *     <li>mapping entre numéro de contribuable des pm/établissements... et les données de regpm</li>
  *     <li>contributions aux listes de contrôle à sortir...</li>
+ *     <li>callback à lancer une fois la transaction committée...</li>
  *     <li>...</li>
  * </ul>
  */
-// TODO mettre quelque chose dedans !
 public class MigrationResult {
 
 	/**
@@ -35,21 +34,24 @@ public class MigrationResult {
 		PM_MIGREE,
 
 		/**
-		 * Lors de la migration de l'adresse du mainframe, la localité a été "devinée" par rapport à la liste des localités maintenant disponibles dans RefInf pour la même commune
-		 * (la rue n'a été trouvée dans aucune des localités existantes)
-		 */
-		LOCALITE_DEVINEE,
-
-		/**
 		 * Erreurs inattendues, par exemple, messages génériques en général (??)...
 		 */
 		GENERIQUE,
 
 		/**
-		 * L'adresse trouvée dans RegPM n'est pas équivalente à celle de RCEnt
+		 * Erreurs/messages liés à la migration des adresses
 		 */
-		ADRESSE_DIFFERENTE,
+		ADRESSES,
 
+		/**
+		 * Erreurs/messages liés à la migration des individus PM
+		 */
+		INDIVIDUS_PM,
+
+		/**
+		 * Erreurs/messages liés à la migration des fors
+		 */
+		FORS
 	}
 
 	public enum NiveauMessage {
