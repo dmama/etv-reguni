@@ -114,6 +114,18 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
+	 * Appelé par qui le veut bien à la création d'une nouvelle entité migrée, afin d'initialiser les valeurs des colonnes LOG_CDATE, LOG_CUSER, LOG_MDATE et LOG_MUSER
+	 * @param src entité de RegPM qui fournit ces informations
+	 * @param dest entité d'Unireg qui les utilise
+	 */
+	protected static void copyCreationMutation(RegpmEntity src, HibernateEntity dest) {
+		dest.setLogCreationUser(src.getLastMutationOperator());
+		dest.setLogCreationDate(src.getLastMutationTimestamp());
+		dest.setLogModifUser(src.getLastMutationOperator());
+		dest.setLogModifDate(src.getLastMutationTimestamp());
+	}
+
+	/**
 	 * @param clazz la classe de l'entité à récupérer depuis la base de données Unireg
 	 * @param id identifiant de l'entité à récupérer
 	 * @param <E> type de l'entité récupérée

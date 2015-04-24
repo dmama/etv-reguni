@@ -31,7 +31,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 		"classpath:spring/ut-database.xml",
 		"classpath:spring/ut-properties.xml"
 })
-public class AbstractEntityMigratorTest extends AbstractSpringTest {
+public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 
 	private static final Iterator<Long> ID_GENERATOR = new Iterator<Long>() {
 		private final AtomicLong seqNext = new AtomicLong(0);

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,11 +10,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -31,6 +34,9 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 	private EtablissementMigrator migrator;
 
+	private static final String REGPM_VISA = "REGPM";
+	private static final Timestamp REGPM_MODIF = new Timestamp(DateHelper.getCurrentDate().getTime() - TimeUnit.DAYS.toMillis(2000));   // 2000 jours ~ 5.5 années
+
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
@@ -41,6 +47,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEtablissement etablissement = new RegpmEtablissement();
 		etablissement.setId(id);
 		etablissement.setEntreprise(entreprise);
+		etablissement.setLastMutationOperator(REGPM_VISA);
+		etablissement.setLastMutationTimestamp(REGPM_MODIF);
 		return etablissement;
 	}
 
@@ -68,6 +76,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		// création d'un établissement stable
 		final RegpmEtablissementStable stable = new RegpmEtablissementStable();
+		stable.setLastMutationOperator(REGPM_VISA);
+		stable.setLastMutationTimestamp(REGPM_MODIF);
 		stable.setId(new RegpmEtablissementStable.PK(newSeqNo, etablissement.getId()));
 		stable.setDateDebut(dateDebut);
 		stable.setDateFin(dateFin);
@@ -90,6 +100,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		// création d'une entrée de domicile
 		final RegpmDomicileEtablissement domicile = new RegpmDomicileEtablissement();
+		domicile.setLastMutationOperator(REGPM_VISA);
+		domicile.setLastMutationTimestamp(REGPM_MODIF);
 		domicile.setId(new RegpmDomicileEtablissement.PK(newSeqNo, etablissement.getId()));
 		domicile.setDateValidite(dateDebut);
 		domicile.setCommune(commune);
@@ -100,6 +112,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	private static RegpmEntreprise buildEntreprise(long id) {
 		final RegpmEntreprise entreprise = new RegpmEntreprise();
 		entreprise.setId(id);
+		entreprise.setLastMutationOperator(REGPM_VISA);
+		entreprise.setLastMutationTimestamp(REGPM_MODIF);
 		return entreprise;
 	}
 

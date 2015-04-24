@@ -165,12 +165,18 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 	}
 
+	private static Etablissement createEtablissement(RegpmEtablissement regpm) {
+		final Etablissement unireg = new Etablissement();
+		copyCreationMutation(regpm, unireg);
+		return unireg;
+	}
+
 	@Override
 	protected void doMigrate(RegpmEtablissement regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// on crée forcément un nouvel établissement
-		final Etablissement unireg = saveEntityToDb(new Etablissement());
+		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));
 		idMapper.addEtablissement(regpm, unireg);
 
 		// TODO vérifier que l'on doit bien prendre en compte les liens vers les individus... (si c'est le cas, les graphes ne doivent pas être construits seulement à partir des identifiants d'entreprises)

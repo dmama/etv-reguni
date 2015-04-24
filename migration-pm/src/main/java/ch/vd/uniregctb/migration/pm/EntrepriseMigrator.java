@@ -62,6 +62,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return String.format("Entreprise %d", entity.getId());
 	}
 
+	private static Entreprise createEntreprise(RegpmEntreprise regpm) {
+		final Entreprise unireg = new Entreprise(regpm.getId());
+		copyCreationMutation(regpm, unireg);
+		return unireg;
+	}
+
 	@Override
 	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
@@ -72,7 +78,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		Entreprise unireg = getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
 			mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
-			unireg = saveEntityToDb(new Entreprise(regpm.getId()));
+			unireg = saveEntityToDb(createEntreprise(regpm));
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
@@ -144,6 +150,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final PeriodeFiscale pf = getEntityFromDb(PeriodeFiscale.class, dossier.getPf());
 
 			DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+			copyCreationMutation(dossier, di);
 			di.setTiers(unireg);
 			di = saveEntityToDb(di);
 			unireg.getDeclarations().add(di);
@@ -159,21 +166,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				di.setAnnulationUser(Optional.ofNullable(dossier.getLastMutationOperator()).orElse(AuthenticationHelper.getCurrentPrincipal()));
 				di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(DateHelper::getCurrentDate));
 			}
-
-			// TODO dates/visas de création/modification
 		});
 	}
 
 	/**
 	 * Génération des délais de dépôt
 	 */
-	private Set<DelaiDeclaration> migrateDelaisDeclaration(RegpmDossierFiscal dossier, Declaration di) {
+	private static Set<DelaiDeclaration> migrateDelaisDeclaration(RegpmDossierFiscal dossier, Declaration di) {
 
 		final Set<DelaiDeclaration> delais = new LinkedHashSet<>();
 
 		// délai initial
 		if (dossier.getDelaiRetour() != null) {
 			final DelaiDeclaration delai = new DelaiDeclaration();
+			copyCreationMutation(dossier, delai);
 			delai.setConfirmationEcrite(false);
 			delai.setDateDemande(dossier.getDateEnvoi());           // TODO le délai initial est "demandé" à la date d'envoi, non ?
 			delai.setDateTraitement(dossier.getDateEnvoi());
@@ -185,6 +191,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// fonction de conversion
 		final Function<RegpmDemandeDelaiSommation, DelaiDeclaration> mapper = regpm -> {
 			final DelaiDeclaration delai = new DelaiDeclaration();
+			copyCreationMutation(regpm, delai);
 			delai.setConfirmationEcrite(regpm.isImpressionLettre());        // TODO cela suppose une clé d'archivage, non ?
 			delai.setDateDemande(regpm.getDateDemande());
 			delai.setDateTraitement(regpm.getDateReception());              // TODO on est sûr ce de mapping ?
@@ -209,7 +216,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des états d'une déclaration
 	 */
-	private Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, Declaration di) {
+	private static Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, Declaration di) {
 
 		final Set<EtatDeclaration> etats = new LinkedHashSet<>();
 
@@ -239,6 +246,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		final Function<RegpmForPrincipal, Optional<ForFiscalPrincipal>> mapper = f -> {
 			final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+			copyCreationMutation(f, ffp);
 			ffp.setDateDebut(f.getDateValidite());
 			ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -330,6 +338,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		final Function<RegpmForSecondaire, Optional<ForFiscalSecondaire>> mapper = f -> {
 			final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+			copyCreationMutation(f, ffs);
 			ffs.setDateDebut(f.getDateDebut());
 			ffs.setDateFin(f.getDateFin());
 			ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
