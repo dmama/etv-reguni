@@ -41,7 +41,7 @@ public class RegpmEtatEntreprise extends RegpmEntity implements Comparable<Regpm
 	 * Ils ont fait une clé primaire avec le numéro de l'entreprise et un numéro de séquence
 	 */
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer seqNo;
 		private Long idEntreprise;
@@ -52,6 +52,15 @@ public class RegpmEtatEntreprise extends RegpmEntity implements Comparable<Regpm
 		public PK(Integer seqNo, Long idEntreprise) {
 			this.seqNo = seqNo;
 			this.idEntreprise = idEntreprise;
+		}
+
+		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idEntreprise, o.idEntreprise);
+			if (comparison == 0) {
+				comparison = seqNo - o.seqNo;
+			}
+			return comparison;
 		}
 
 		@Override
@@ -98,7 +107,11 @@ public class RegpmEtatEntreprise extends RegpmEntity implements Comparable<Regpm
 
 	@Override
 	public int compareTo(@NotNull RegpmEtatEntreprise o) {
-		return NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
+		}
+		return comparison;
 	}
 
 	@EmbeddedId

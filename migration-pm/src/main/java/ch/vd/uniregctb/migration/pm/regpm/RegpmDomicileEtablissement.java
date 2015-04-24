@@ -32,7 +32,7 @@ public class RegpmDomicileEtablissement extends RegpmEntity implements Comparabl
 	 * Ils ont fait une clé primaire avec le numéro de l'établissement et un numéro de séquence
 	 */
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer seqNo;
 		private Long idEtablissement;
@@ -43,6 +43,15 @@ public class RegpmDomicileEtablissement extends RegpmEntity implements Comparabl
 		public PK(Integer seqNo, Long idEtablissement) {
 			this.seqNo = seqNo;
 			this.idEtablissement = idEtablissement;
+		}
+
+		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idEtablissement, o.idEtablissement);
+			if (comparison == 0) {
+				comparison = seqNo - o.seqNo;
+			}
+			return comparison;
 		}
 
 		@Override
@@ -87,7 +96,11 @@ public class RegpmDomicileEtablissement extends RegpmEntity implements Comparabl
 
 	@Override
 	public int compareTo(@NotNull RegpmDomicileEtablissement o) {
-		return NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
+		}
+		return comparison;
 	}
 
 	@EmbeddedId

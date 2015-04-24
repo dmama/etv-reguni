@@ -40,7 +40,7 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 	 * Ils ont fait une clé primaire avec le numéro de l'assujetissement et un numéro de séquence
 	 */
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer seqNo;
 		private Long idAssujettissement;
@@ -51,6 +51,15 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 		public PK(Integer seqNo, Long idAssujettissement) {
 			this.seqNo = seqNo;
 			this.idAssujettissement = idAssujettissement;
+		}
+
+		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idAssujettissement, o.idAssujettissement);
+			if (comparison == 0) {
+				comparison = seqNo - o.seqNo;
+			}
+			return comparison;
 		}
 
 		@Override
@@ -106,6 +115,9 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 		int comparison = pf - o.pf;
 		if (comparison == 0) {
 			comparison = noParAnnee - o.noParAnnee;
+		}
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
 		}
 		return comparison;
 	}

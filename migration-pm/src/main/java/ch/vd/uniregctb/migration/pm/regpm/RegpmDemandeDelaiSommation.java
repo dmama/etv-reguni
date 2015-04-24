@@ -34,11 +34,45 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDemandeDelaiUserType;
 public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparable<RegpmDemandeDelaiSommation> {
 
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer noSequence;
 		private Integer noSequenceDossierFiscal;
 		private Long idAssujettissement;
+
+		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idAssujettissement, o.idAssujettissement);
+			if (comparison == 0) {
+				comparison = noSequenceDossierFiscal - o.noSequenceDossierFiscal;
+			}
+			if (comparison == 0) {
+				comparison = noSequence - o.noSequence;
+			}
+			return comparison;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final PK pk = (PK) o;
+
+			if (idAssujettissement != null ? !idAssujettissement.equals(pk.idAssujettissement) : pk.idAssujettissement != null) return false;
+			if (noSequence != null ? !noSequence.equals(pk.noSequence) : pk.noSequence != null) return false;
+			if (noSequenceDossierFiscal != null ? !noSequenceDossierFiscal.equals(pk.noSequenceDossierFiscal) : pk.noSequenceDossierFiscal != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = noSequence != null ? noSequence.hashCode() : 0;
+			result = 31 * result + (noSequenceDossierFiscal != null ? noSequenceDossierFiscal.hashCode() : 0);
+			result = 31 * result + (idAssujettissement != null ? idAssujettissement.hashCode() : 0);
+			return result;
+		}
 
 		@Column(name = "NO_SEQUENCE")
 		public Integer getNoSequence() {
@@ -81,7 +115,11 @@ public class RegpmDemandeDelaiSommation extends RegpmEntity implements Comparabl
 
 	@Override
 	public int compareTo(@NotNull RegpmDemandeDelaiSommation o) {
-		return NullDateBehavior.EARLIEST.compare(dateDemande, o.dateDemande);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateDemande, o.dateDemande);
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
+		}
+		return comparison;
 	}
 
 	@EmbeddedId

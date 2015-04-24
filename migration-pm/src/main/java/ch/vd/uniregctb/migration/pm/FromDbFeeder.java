@@ -59,7 +59,7 @@ public class FromDbFeeder implements Feeder {
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
 		for (long id : ids) {
-//		for (long id : Arrays.asList(848, 61)) {
+//		for (long id : Arrays.asList(27, 848, 61)) {
 			if (!idsDejaTrouvees.contains(id)) {
 				final Graphe graphe = loadGraphe(id);
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());

@@ -30,7 +30,11 @@ public class InscriptionRC extends RegpmEntity implements Comparable<Inscription
 
 	@Override
 	public int compareTo(@NotNull InscriptionRC o) {
-		return NullDateBehavior.EARLIEST.compare(dateInscription, o.dateInscription);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateInscription, o.dateInscription);
+		if (comparison == 0) {
+			comparison = Long.compare(id, o.id);
+		}
+		return comparison;
 	}
 
 	@Id

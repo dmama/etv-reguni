@@ -30,7 +30,11 @@ public class RadiationRC extends RegpmEntity implements Comparable<RadiationRC>,
 
 	@Override
 	public int compareTo(@NotNull RadiationRC o) {
-		return NullDateBehavior.EARLIEST.compare(dateRadiation, o.dateRadiation);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateRadiation, o.dateRadiation);
+		if (comparison == 0) {
+			comparison = Long.compare(id, o.id);
+		}
+		return comparison;
 	}
 
 	@Id

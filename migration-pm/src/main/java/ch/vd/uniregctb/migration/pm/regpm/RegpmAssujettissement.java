@@ -31,7 +31,11 @@ public class RegpmAssujettissement extends RegpmEntity implements Comparable<Reg
 
 	@Override
 	public int compareTo(@NotNull RegpmAssujettissement o) {
-		return NullDateBehavior.EARLIEST.compare(dateDebut, o.dateDebut);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateDebut, o.dateDebut);
+		if (comparison == 0) {
+			comparison = Long.compare(id, o.id);
+		}
+		return comparison;
 	}
 
 	@Id

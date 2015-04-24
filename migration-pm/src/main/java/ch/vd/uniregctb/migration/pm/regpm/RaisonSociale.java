@@ -35,7 +35,11 @@ public class RaisonSociale extends RegpmEntity implements Comparable<RaisonSocia
 
 	@Override
 	public int compareTo(@NotNull RaisonSociale o) {
-		return NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		if (comparison == 0) {
+			comparison = Long.compare(id, o.id);
+		}
+		return comparison;
 	}
 
 	@Id

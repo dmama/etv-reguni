@@ -30,7 +30,7 @@ public class RegpmCaracteristiquesIndividu extends RegpmEntity implements Compar
 	 * Ils ont fait une clé primaire avec le numéro de l'individu et un numéro de séquence
 	 */
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer seqNo;
 		private Long idIndividu;
@@ -57,6 +57,15 @@ public class RegpmCaracteristiquesIndividu extends RegpmEntity implements Compar
 			int result = seqNo != null ? seqNo.hashCode() : 0;
 			result = 31 * result + (idIndividu != null ? idIndividu.hashCode() : 0);
 			return result;
+		}
+
+		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idIndividu, o.idIndividu);
+			if (comparison == 0) {
+				comparison = seqNo - o.seqNo;
+			}
+			return comparison;
 		}
 
 		@Column(name = "NO_SEQUENCE")
@@ -98,7 +107,11 @@ public class RegpmCaracteristiquesIndividu extends RegpmEntity implements Compar
 
 	@Override
 	public int compareTo(@NotNull RegpmCaracteristiquesIndividu o) {
-		return NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		int comparison = NullDateBehavior.EARLIEST.compare(dateValidite, o.dateValidite);
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
+		}
+		return comparison;
 	}
 
 	@EmbeddedId

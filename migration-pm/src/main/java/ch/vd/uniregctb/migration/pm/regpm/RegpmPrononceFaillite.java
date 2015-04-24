@@ -32,7 +32,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 public class RegpmPrononceFaillite extends RegpmEntity implements Comparable<RegpmPrononceFaillite> {
 
 	@Embeddable
-	public static class PK implements Serializable {
+	public static class PK implements Serializable, Comparable<PK> {
 
 		private Integer noSeq;
 		private Long idEntreprise;
@@ -66,6 +66,18 @@ public class RegpmPrononceFaillite extends RegpmEntity implements Comparable<Reg
 		}
 
 		@Override
+		public int compareTo(@NotNull PK o) {
+			int comparison = Long.compare(idEntreprise, o.idEntreprise);
+			if (comparison == 0) {
+				comparison = noSequenceEtatEntreprise - o.noSequenceEtatEntreprise;
+			}
+			if (comparison == 0) {
+				comparison = noSeq - o.noSeq;
+			}
+			return comparison;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
@@ -95,7 +107,11 @@ public class RegpmPrononceFaillite extends RegpmEntity implements Comparable<Reg
 
 	@Override
 	public int compareTo(@NotNull RegpmPrononceFaillite o) {
-		return NullDateBehavior.EARLIEST.compare(datePrononceFaillite, o.datePrononceFaillite);
+		int comparison = NullDateBehavior.EARLIEST.compare(datePrononceFaillite, o.datePrononceFaillite);
+		if (comparison == 0) {
+			comparison = id.compareTo(o.id);
+		}
+		return comparison;
 	}
 
 	@EmbeddedId
