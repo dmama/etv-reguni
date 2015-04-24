@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
 
@@ -33,6 +34,12 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private Thread gatheringThread;
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private volatile boolean started;
+
+	private StreetDataMigrator streetDataMigrator;
+
+	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
+		this.streetDataMigrator = streetDataMigrator;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

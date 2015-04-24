@@ -10,11 +10,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -39,8 +37,6 @@ public class Job {
 			return;
 		}
 
-		initLog4j();
-
 		// chargement des propriétés
 		final String propertiesPath = args[0];
 		final File propertiesFile = new File(propertiesPath);
@@ -52,6 +48,7 @@ public class Job {
 
 		// chargement du contexte spring
 		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/properties.xml",
+		                                                                                  "classpath:spring/interfaces.xml",
 		                                                                                  "classpath:spring/migration.xml",
 		                                                                                  "classpath:spring/regpm.xml");
 		context.registerShutdownHook();
@@ -95,24 +92,5 @@ public class Job {
 			props.load(r);
 			return props;
 		}
-	}
-
-	/**
-	 * Initialise Log4j
-	 */
-	private static void initLog4j() {
-		final Properties properties = new Properties();
-		properties.setProperty("log4j.logger.ch.vd.uniregctb", "DEBUG");
-		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
-		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5.5p [%8.8t] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n");
-		PropertyConfigurator.configure(properties);
-
-		// Ces deux classes semblent avoir l'oreille un peu dure...
-		java.util.logging.Logger l = java.util.logging.Logger.getLogger("org.apache.cxf.bus.spring.BusApplicationContext");
-		l.setLevel(Level.WARNING);
-		l = java.util.logging.Logger.getLogger("org.apache.cxf.service.factory.ReflectionServiceFactoryBean");
-		l.setLevel(Level.WARNING);
 	}
 }

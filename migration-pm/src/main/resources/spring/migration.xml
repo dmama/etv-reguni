@@ -8,6 +8,7 @@
 		<property name="fromDbFeeder" ref="fromDbFeeder"/>
 		<property name="serializationIntermediary" ref="serializationIntermediary"/>
 		<property name="migrationWorker" ref="migrationWorker"/>
+		<property name="enabled" value="${migrator.enabled}"/>
 	</bean>
 
 	<bean id="fromDbFeeder" class="ch.vd.uniregctb.migration.pm.FromDbFeeder">
@@ -20,6 +21,16 @@
 	</bean>
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.MigrationWorker">
+		<property name="streetDataMigrator" ref="streetDataMigrator"/>
+	</bean>
+
+	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
+		<constructor-arg value="${mapping.noOrdreP.file}"/>
+	</bean>
+
+	<bean id="streetDataMigrator" class="ch.vd.uniregctb.migration.pm.adresse.StreetDataMigratorImpl">
+		<property name="fidorClient" ref="fidorClient"/>
+		<property name="mappingNosOrdrePoste" ref="noOrdrePosteProvider"/>
 	</bean>
 
 </beans>

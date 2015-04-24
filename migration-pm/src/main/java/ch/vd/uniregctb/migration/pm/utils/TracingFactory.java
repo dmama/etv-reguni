@@ -10,21 +10,52 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public class TracingFactory<T> {
+public final class TracingFactory<T> implements FactoryBean<T>, InitializingBean {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TracingFactory.class);
 
 	private final Class<T> targetInterface;
+	private final T target;
 
-	public TracingFactory(Class<T> targetInterface) {
+	private T proxy;
+
+	public TracingFactory(Class<T> targetInterface, T target) {
 		this.targetInterface = targetInterface;
+		this.target = target;
 		if (targetInterface == null || !targetInterface.isInterface()) {
 			throw new IllegalArgumentException("targetInterface must be an interface!");
 		}
+		if (target == null) {
+			throw new IllegalArgumentException("target must not be null!");
+		}
+		if (!targetInterface.isAssignableFrom(target.getClass())) {
+			throw new IllegalArgumentException("target must implement " + targetInterface.getName() + " interface!");
+		}
 	}
 
-	public T buildTracing(Logger logger, T target) {
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		//noinspection unchecked
-		return (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, new Handler(logger, target));
+		this.proxy = (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, new Handler(LOGGER, target));
+	}
+
+	@Override
+	public T getObject() throws Exception {
+		return proxy;
+	}
+
+	@Override
+	public Class<T> getObjectType() {
+		return targetInterface;
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return true;
 	}
 
 	private class Handler implements InvocationHandler {

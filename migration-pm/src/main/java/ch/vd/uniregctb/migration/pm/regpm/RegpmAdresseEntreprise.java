@@ -27,7 +27,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeAdresseEntrepriseUserType
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "TypeAdresseEntreprise", typeClass = TypeAdresseEntrepriseUserType.class)
 })
-public class RegpmAdresseEntreprise extends RegpmEntity {
+public class RegpmAdresseEntreprise extends RegpmEntity implements AdresseAvecRue {
 
 	/**
 	 * Ils ont fait une clé primaire avec le numéro de l'entreprise et le type d'adresse (-> pas d'historique...)
@@ -104,6 +104,18 @@ public class RegpmAdresseEntreprise extends RegpmEntity {
 	@Transient
 	public RegpmTypeAdresseEntreprise getTypeAdresse() {
 		return id != null ? id.getTypeAdresse() : null;
+	}
+
+	@Transient
+	@Override
+	public RegDate getDateDebut() {
+		return getDateValidite();
+	}
+
+	@Transient
+	@Override
+	public RegDate getDateFin() {
+		return null;
 	}
 
 	@Column(name = "DA_VALIDITE")

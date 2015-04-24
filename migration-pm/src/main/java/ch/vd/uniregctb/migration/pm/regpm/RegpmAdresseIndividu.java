@@ -26,7 +26,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeAdresseIndividuUserType;
 		          @TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		          @TypeDef(name = "TypeAdresseIndividu", typeClass = TypeAdresseIndividuUserType.class)
           })
-public class RegpmAdresseIndividu extends RegpmEntity {
+public class RegpmAdresseIndividu extends RegpmEntity implements AdresseAvecRue {
 
 	@Embeddable
 	public static class PK implements Serializable {
@@ -76,7 +76,7 @@ public class RegpmAdresseIndividu extends RegpmEntity {
 	private RegDate dateAnnulation;
 	private String chez;
 	private String nomRue;
-	private String numeroPolice;
+	private String noPolice;
 	private String lieu;
 	private Long egid;
 	private Long ewid;
@@ -156,12 +156,12 @@ public class RegpmAdresseIndividu extends RegpmEntity {
 
 	@Column(name = "NO_POLICE")
 	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value ="10"))
-	public String getNumeroPolice() {
-		return numeroPolice;
+	public String getNoPolice() {
+		return noPolice;
 	}
 
-	public void setNumeroPolice(String numeroPolice) {
-		this.numeroPolice = numeroPolice;
+	public void setNoPolice(String noPolice) {
+		this.noPolice = noPolice;
 	}
 
 	@Column(name = "LIEU")

@@ -14,6 +14,7 @@ public class Migrator implements SmartLifecycle {
 	private FromDbFeeder fromDbFeeder;
 	private SerializationIntermediary serializationIntermediary;
 	private MigrationWorker migrationWorker;
+	private boolean enabled = true;
 
 	private Thread thread;
 
@@ -33,9 +34,13 @@ public class Migrator implements SmartLifecycle {
 		this.migrationWorker = migrationWorker;
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Override
 	public boolean isAutoStartup() {
-		return true;
+		return enabled;
 	}
 
 	@Override

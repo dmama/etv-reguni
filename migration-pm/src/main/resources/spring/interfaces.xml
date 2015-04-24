@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+		<property name="serviceUrl" value="${fidor.url}"/>
+		<property name="username" value="${fidor.user}"/>
+		<property name="password" value="${fidor.password}"/>
+	</bean>
+
+	<bean id="fidorClientTracing" class="ch.vd.uniregctb.migration.pm.utils.TracingFactory">
+		<constructor-arg value="ch.vd.uniregctb.webservice.fidor.v5.FidorClient"/>
+		<constructor-arg ref="fidorClientRaw"/>
+	</bean>
+
+	<bean id="fidorClientCache" class="ch.vd.uniregctb.migration.pm.utils.CacheFactory">
+		<constructor-arg value="ch.vd.uniregctb.webservice.fidor.v5.FidorClient"/>
+		<constructor-arg ref="fidorClientTracing"/>
+	</bean>
+
+	<alias name="fidorClientCache" alias="fidorClient"/>
+
+</beans>
