@@ -23,6 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.migration.pm.AbstractSpringTest;
+import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
@@ -111,11 +112,13 @@ public class StreetDataMigratorTest extends AbstractSpringTest {
 		try {
 			final CompletionService<Data> completionService = new ExecutorCompletionService<>(executorService);
 
+			final MigrationResultCollector mrBase = new MigrationResultCollector();
+
 			// et on boucle !
 			int envoyees = 0;
 //			for (final RegpmAdresseEntreprise adresse : adresses.subList(0, 10000)) {
 			for (final RegpmAdresseEntreprise adresse : adresses) {
-				completionService.submit(() -> new Data(migrator.migrate(adresse), adresse.getId()));
+				completionService.submit(() -> new Data(migrator.migrate(adresse, mrBase.withMessagePrefix("Adresse " + adresse.getId())), adresse.getId()));
 				++ envoyees;
 			}
 

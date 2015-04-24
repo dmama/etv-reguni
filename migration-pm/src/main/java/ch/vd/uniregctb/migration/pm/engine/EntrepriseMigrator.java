@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -315,14 +316,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// boucle sur chacune des déclarations
 		regpm.getDossiersFiscaux().forEach(dossier -> {
 
-			final PeriodeFiscale pf = getEntityFromDb(PeriodeFiscale.class, dossier.getPf());
+			final Map<String, Object> criteria = new HashMap<>();
+			criteria.put("annee", dossier.getPf());
+			final List<PeriodeFiscale> pfs = getEntitiesFromDb(PeriodeFiscale.class, criteria);
+			if (pfs == null || pfs.size() != 1) {
+				throw new IllegalStateException("La période fiscale " + dossier.getPf() + " n'existe pas dans Unireg.");
+			}
+			final PeriodeFiscale pf = pfs.get(0);
 
 			DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 			copyCreationMutation(dossier, di);
-			di.setTiers(unireg);
-			di = saveEntityToDb(di);
-			unireg.getDeclarations().add(di);
-
 			di.setDateDebut(dossier.getAssujettissement().getDateDebut());
 			di.setDateFin(dossier.getAssujettissement().getDateFin());
 			di.setDelais(migrateDelaisDeclaration(dossier, di));
@@ -334,6 +337,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				di.setAnnulationUser(Optional.ofNullable(dossier.getLastMutationOperator()).orElse(AuthenticationHelper.getCurrentPrincipal()));
 				di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(DateHelper::getCurrentDate));
 			}
+
+			unireg.addDeclaration(di);
 		});
 	}
 

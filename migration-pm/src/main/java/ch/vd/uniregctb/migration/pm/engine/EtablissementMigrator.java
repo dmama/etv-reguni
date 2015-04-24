@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
@@ -218,6 +220,16 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.distinct()
 				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
 				.forEach(msg -> mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, msg));
+
+		// adresse
+		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
+		// TODO adresse permanente ou pas ?
+		// TODO enseigne dans le complément d'adresse ?
+		final AdresseTiers adresse = buildAdresse(regpm.getAdresse(), mr, regpm::getEnseigne, false);
+		if (adresse != null) {
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			unireg.addAdresseTiers(adresse);
+		}
 
 		// TODO migrer l'enseigne, les coordonnées financières...
 	}

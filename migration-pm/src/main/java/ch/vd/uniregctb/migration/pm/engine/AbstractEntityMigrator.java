@@ -13,17 +13,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseSupplementaire;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.adresse.StreetData;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
@@ -255,6 +263,22 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
+	 * Méthode qui permet d'aller chercher des entités dans la base de données Unireg sans forcément connaître leur identifiant
+	 * @param clazz classe des entités visées
+	 * @param criteria critères (attribut / valeur)
+	 * @param <E> type des entitées visées
+	 * @return la liste des entités trouvées
+	 */
+	protected final <E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria) {
+		final Criteria c = uniregSessionFactory.getCurrentSession().createCriteria(clazz);
+		if (criteria != null) {
+			criteria.entrySet().stream().forEach(entry -> c.add(Restrictions.eq(entry.getKey(), entry.getValue())));
+		}
+		//noinspection unchecked
+		return c.list();
+	}
+
+	/**
 	 * @param entity l'entité à sauvegarder en base de données Unireg
 	 * @param <E> type de l'entité
 	 * @return l'entité après sauvegarde
@@ -317,5 +341,64 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		public int hashCode() {
 			return key.hashCode();
 		}
+	}
+
+	/**
+	 * Construit une adresse tiers (= surcharge d'adresse civile) à partir des données fournie.<br/>
+	 * Les champs {@link AdresseTiers#usage}, {@link AdresseTiers#tiers} et {@link AdresseTiers#id} ne sont pas remplis.<br/>
+	 * L'entité retournée n'est rattachée à aucune session Hibernate.
+	 * @param source source des données de l'adresse
+	 * @param mr collecteurs de messages de suivi
+	 * @param complement supplier pour la valeur du "complément"
+	 * @param permanente <code>true</code> si l'adresse doit être flaggée comme "permanente"
+	 * @return une adresse presque prête à persister
+	 */
+	protected AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultProduction mr, @Nullable Supplier<String> complement, boolean permanente) {
+		final StreetData streetData = streetDataMigrator.migrate(source, mr);
+		final AdresseSupplementaire dest;
+		if (streetData != null) {
+			// on ne migre pas une adresse qui ne contient ni rue ni localité postale...
+			if (streetData instanceof StreetData.AucuneNomenclatureTrouvee) {
+				return null;
+			}
+
+			// adresse suisse
+			dest = buildAdresseSuisse(streetData);
+		}
+		else {
+			// adresse étrangère
+			dest = buildAdresseEtrangere(source);
+		}
+		dest.setDateDebut(source.getDateDebut());
+		dest.setDateFin(source.getDateFin());
+		dest.setPermanente(permanente);
+		dest.setComplement(complement != null ? complement.get() : null);
+		return dest;
+	}
+
+	private static AdresseSuisse buildAdresseSuisse(StreetData streetData) {
+		final AdresseSuisse a = new AdresseSuisse();
+		a.setNpaCasePostale(null);
+		a.setNumeroAppartement(null);
+		a.setNumeroCasePostale(null);
+		a.setNumeroMaison(streetData.getNoPolice());
+		a.setNumeroOrdrePoste(streetData.getNoOrdreP());
+		a.setNumeroRue(streetData.getEstrid());
+		a.setRue(streetData.getNomRue());
+		a.setTexteCasePostale(null);
+		return a;
+	}
+
+	private static AdresseEtrangere buildAdresseEtrangere(AdresseAvecRue source) {
+		final AdresseEtrangere a = new AdresseEtrangere();
+		a.setComplementLocalite(null);
+		a.setNumeroAppartement(null);
+		a.setNumeroCasePostale(null);
+		a.setNumeroMaison(source.getNoPolice());
+		a.setNumeroOfsPays(source.getOfsPays());
+		a.setNumeroPostalLocalite(source.getLieu());
+		a.setRue(source.getNomRue());
+		a.setTexteCasePostale(null);
+		return a;
 	}
 }

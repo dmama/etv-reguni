@@ -62,6 +62,11 @@ public class RegpmAdresseEntreprise extends RegpmEntity implements AdresseAvecRu
 			return result;
 		}
 
+		@Override
+		public String toString() {
+			return String.format("{typeAdresse=%s, idEntreprise=%d}", typeAdresse, idEntreprise);
+		}
+
 		@Column(name = "TY_ADRESSE")
 		@Type(type = "TypeAdresseEntreprise")
 		public RegpmTypeAdresseEntreprise getTypeAdresse() {

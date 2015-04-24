@@ -1,20 +1,21 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.migration.pm.AbstractSpringTest;
+import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
@@ -36,7 +37,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 })
 public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 
-	private static final Iterator<Long> ID_GENERATOR = new Iterator<Long>() {
+	protected static final Iterator<Long> ID_GENERATOR = new Iterator<Long>() {
 		private final AtomicLong seqNext = new AtomicLong(0);
 
 		@Override
@@ -85,55 +86,6 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 	}
 
 	/**
-	 * Implémentation de l'interface {@link MigrationResultProduction} qui ne fait que collecter les données envoyées,
-	 * dans un but de contrôle
-	 */
-	public static class MigrationResultCollector implements MigrationResultProduction {
-
-		private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> messages = new HashMap<>();
-		private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
-		private final Map<Class<?>, List<?>> preTransactionCommitData = new HashMap<>();
-
-		@Override
-		public void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg) {
-			List<MigrationResultMessage> forCat = messages.get(cat);
-			if (forCat == null) {
-				forCat = new LinkedList<>();
-				messages.put(cat, forCat);
-			}
-			forCat.add(new MigrationResultMessage(niveau, msg));
-		}
-
-		@Override
-		public void addPostTransactionCallback(@NotNull Runnable callback) {
-			postTransactionCallbacks.add(callback);
-		}
-
-		@Override
-		public <D> void addPreTransactionCommitData(@NotNull D data) {
-			//noinspection unchecked
-			List<D> dataList = (List<D>) preTransactionCommitData.get(data.getClass());
-			if (dataList == null) {
-				dataList = new LinkedList<>();
-				preTransactionCommitData.put(data.getClass(), dataList);
-			}
-			dataList.add(data);
-		}
-
-		public Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> getMessages() {
-			return messages;
-		}
-
-		public List<Runnable> getPostTransactionCallbacks() {
-			return postTransactionCallbacks;
-		}
-
-		public Map<Class<?>, List<?>> getPreTransactionCommitData() {
-			return preTransactionCommitData;
-		}
-	}
-
-	/**
 	 * Lance une migration d'une entité (à l'intérieur d'une nouvelle transaction)
 	 * @param entity entité à migrer
 	 * @param migrator migrateur à utiliser
@@ -144,6 +96,32 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 			migrator.migrate(entity, mr, linkCollector, idMapper);
 			return null;
 		});
+	}
+
+	/**
+	 * Calcul de numéro de séquence pour un nouvel élément dans une collection (-> max + 1)
+	 * @param elements collection dans laquelle on souhaite ajouter un nouvel élément
+	 * @param seqNoExtractor extracteur des numéros de séquence des éléments existants
+	 * @param <T> type des éléments dans la collection
+	 * @return le prochain numéro de séquence disponible
+	 */
+	protected static <T> int computeNewSeqNo(Collection<T> elements, Function<? super T, Integer> seqNoExtractor) {
+		final int biggestSoFar = elements.stream()
+				.map(seqNoExtractor)
+				.max(Comparator.<Integer>naturalOrder())
+				.orElse(0);
+		return biggestSoFar + 1;
+	}
+
+	/**
+	 * Ajoute une période fiscale en base de données Unireg
+	 * @param annee l'année de la PF
+	 * @return la période fiscale
+	 */
+	protected PeriodeFiscale addPeriodeFiscale(int annee) {
+		final PeriodeFiscale pf = new PeriodeFiscale();
+		pf.setAnnee(annee);
+		return (PeriodeFiscale) getUniregSessionFactory().getCurrentSession().merge(pf);
 	}
 
 	/**

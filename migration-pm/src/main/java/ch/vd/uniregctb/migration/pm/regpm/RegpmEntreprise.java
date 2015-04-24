@@ -12,8 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
@@ -667,6 +672,19 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setExercicesCommerciaux(SortedSet<RegpmExerciceCommercial> exercicesCommerciaux) {
 		this.exercicesCommerciaux = exercicesCommerciaux;
+	}
+
+	/**
+	 * Il n'y a qu'une seule adresse par entreprise et par type dans RegPM
+	 * @return une map indexée par le type de l'adresse en regard
+	 */
+	@Transient
+	public Map<RegpmTypeAdresseEntreprise, RegpmAdresseEntreprise> getAdressesTypees() {
+		return adresses.stream()
+				.collect(Collectors.toMap(RegpmAdresseEntreprise::getTypeAdresse,
+				                          Function.identity(),
+				                          (u,v) -> { throw new IllegalArgumentException("Plusieurs adresses pour un même type (" + u.getTypeAdresse() + ")"); },
+				                          () -> new EnumMap<>(RegpmTypeAdresseEntreprise.class)));
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)

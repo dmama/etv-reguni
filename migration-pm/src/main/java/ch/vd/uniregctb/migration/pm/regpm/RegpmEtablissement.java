@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -20,7 +21,9 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.LongZeroIsNullUserType;
@@ -69,6 +72,63 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 
 	// no institution ?, mandat contribuable ?, ...
+
+	/**
+	 * Une façade de l'adresse portée par l'établissement qui peut entrer dans le StreetDataMigrator
+	 */
+	private class Adresse implements AdresseAvecRue {
+
+		@Override
+		public RegDate getDateDebut() {
+			return etablissementsStables.stream()
+					.map(RegpmEtablissementStable::getDateDebut)
+					.min(NullDateBehavior.EARLIEST::compare)
+					.orElse(null);
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return etablissementsStables.stream()
+					.map(RegpmEtablissementStable::getDateFin)
+					.max(NullDateBehavior.LATEST::compare)
+					.orElse(null);
+		}
+
+		@Override
+		public String getNomRue() {
+			return nomRue;
+		}
+
+		@Override
+		public String getNoPolice() {
+			return noPolice;
+		}
+
+		@Override
+		public String getLieu() {
+			return null;
+		}
+
+		@Override
+		public RegpmLocalitePostale getLocalitePostale() {
+			return localitePostale;
+		}
+
+		@Override
+		public RegpmRue getRue() {
+			return rue;
+		}
+
+		@Override
+		public Integer getOfsPays() {
+			return ServiceInfrastructureService.noOfsSuisse;
+		}
+	}
+
+	@Transient
+	public AdresseAvecRue getAdresse() {
+		return new Adresse();
+	}
 
 	@Id
 	@Column(name = "NO_ETABLISSEMENT")

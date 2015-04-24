@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
@@ -67,7 +68,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 	}
 
 	@Override
-	public StreetData migrate(AdresseAvecRue adresse) {
+	public StreetData migrate(AdresseAvecRue adresse, MigrationResultProduction mr) {
 
 		// on écarte de suite les adresses hors-Suisse
 		if (adresse.getOfsPays() != null && ServiceInfrastructureService.noOfsSuisse != adresse.getOfsPays()) {
@@ -92,6 +93,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 		}
 		else {
 			// ni rue ni localité de la nomenclature officielle (étranger sans indication de pays?)
+			mr.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.WARN, "Adresse trouvée sans rue ni localité postale.");
 			return new StreetData.AucuneNomenclatureTrouvee(adresse.getNomRue(), adresse.getNoPolice(), adresse.getLieu());
 		}
 
@@ -126,6 +128,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			// vraiment rien trouvé... (une source pour la prochaine itération, dans le mappingNoOrdrePoste...)
 			if (localitesATester.isEmpty()) {
 				// constat d'échec, aucune localité retrouvée...
+				mr.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.ERROR, String.format("La localité %d n'existe plus dans Ref-Inf et il y a été impossible de lui trouver un successeur.", noOrdreP));
 				return new StreetData.LocaliteAbsenteRefinf(libelleRue, adresse.getNoPolice(), noOrdreP, localitePostale.getNpa(), localitePostale.getNpaChiffreComplementaire(), localitePostale.getNomLong());
 			}
 		}
@@ -140,6 +143,8 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			final RegDate refDate = RegDateHelper.maximum(aTester.getRight(), adresse.getDateFin(), NullDateBehavior.LATEST);
 			final FidorInfo info = askFidor(aTester.getLeft(), refDate, libelleCanoniqueRue);
 			if (info != null && info.street != null) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.INFO, String.format("Adresse '%s' à '%s' mappée sur l'estrid %d",
+				                                                                                                                libelleRue, localitePostale.getNomLong(), info.street.getEstrid()));
 				return new StreetData.AvecEstrid(info.street, info.numeroMaison, info.noOrdrePostal);
 			}
 		}
@@ -162,7 +167,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			                                  detailsFin,
 			                                  npaLocaliteMainframe, nomRue, noRue,
 			                                  mostProbableSwissZipCodeId, npaLocalitePrise);
-			result.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.INFO, msg);
+			mr.addMessage(MigrationResultMessage.CategorieListe.ADRESSES, MigrationResultMessage.Niveau.WARN, msg);
 		}
 		return result;
 	}
