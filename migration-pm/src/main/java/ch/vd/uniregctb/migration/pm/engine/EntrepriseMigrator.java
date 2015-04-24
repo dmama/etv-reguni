@@ -1,9 +1,12 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -14,6 +17,8 @@ import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -28,6 +33,10 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.migration.pm.MigrationConstants;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -39,9 +48,11 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -52,6 +63,11 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
+
+	/**
+	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
+	 */
+	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
 	private final RcEntClient rcentClient;
 
@@ -72,6 +88,151 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return unireg;
 	}
 
+	private static class ControleForsSecondairesData {
+		final Set<RegpmForSecondaire> regpm;
+		final KeyedSupplier<Entreprise> entrepriseSupplier;
+
+		public ControleForsSecondairesData(Set<RegpmForSecondaire> regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.regpm = regpm;
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	@Override
+	public void initMigrationResult(MigrationResult mr) {
+		super.initMigrationResult(mr);
+
+		// enregistrement de la consolidation pour la constitution des fors "immeuble"
+		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Immeuble.class,
+		                                        MigrationConstants.PHASE_FORS_IMMEUBLES,
+		                                        k -> k.entiteJuridiqueSupplier,
+		                                        (d1, d2) -> new ForsSecondairesData.Immeuble(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
+		                                        d -> createForsSecondairesImmeuble(d, mr));
+
+		// enregistrement d'un callback pour le contrôle des fors secondaires après création
+		mr.registerPreTransactionCommitCallback(ControleForsSecondairesData.class,
+		                                        MigrationConstants.PHASE_CONTROLE_FORS_SECONDAIRES,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> controleForsSecondaires(d, mr));
+	}
+
+	/**
+	 * Consolidation de toutes les migrations de PM par rapport au contrôle final des fors secondaires
+	 * @param data données de l'entreprise
+	 * @param masterMr collecteur de messages de suivi
+	 */
+	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultProduction masterMr) {
+		final EntityKey keyEntiteJuridique = data.entrepriseSupplier.getKey();
+		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
+		final Entreprise entreprise = data.entrepriseSupplier.get();
+
+		// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
+		final Map<Integer, List<DateRange>> avantMigration = data.regpm.stream()
+				.collect(Collectors.toMap(fs -> fs.getCommune().getNoOfs(), Collections::singletonList, DATE_RANGE_LIST_MERGER));
+		final Map<Integer, List<DateRange>> apresMigration = entreprise.getForsFiscaux().stream()
+				.filter(f -> f instanceof ForFiscalSecondaire)
+				.collect(Collectors.toMap(ForFiscal::getNumeroOfsAutoriteFiscale, Collections::singletonList, DATE_RANGE_LIST_MERGER));
+
+		// rien avant, rien après, pas la peine de continuer...
+		if (avantMigration.isEmpty() && apresMigration.isEmpty()) {
+			return;
+		}
+
+		// des communes présentes d'un côté et pas du tout de l'autre ?
+		final Set<Integer> ofsSeulementAvant = avantMigration.keySet().stream().filter(ofs -> !apresMigration.containsKey(ofs)).collect(Collectors.toSet());
+		final Set<Integer> ofsSeulementApres = apresMigration.keySet().stream().filter(ofs -> !avantMigration.containsKey(ofs)).collect(Collectors.toSet());
+		if (!ofsSeulementAvant.isEmpty()) {
+			for (Integer ofs : ofsSeulementAvant) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
+				              String.format("Il n'y a plus de fors secondaires sur la commune OFS %d (avant : %s).", ofs, toDisplayString(avantMigration.get(ofs))));
+			}
+		}
+		if (!ofsSeulementApres.isEmpty()) {
+			for (Integer ofs : ofsSeulementApres) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
+				              String.format("Il n'y avait pas de fors secondaires sur la commune OFS %d (maintenant : %s).", ofs, toDisplayString(apresMigration.get(ofs))));
+			}
+		}
+
+		// et sur les communes effectivement en commun, il faut comparer les périodes
+		final Set<Integer> ofsCommunes = avantMigration.keySet().stream().filter(apresMigration::containsKey).collect(Collectors.toSet());
+		if (!ofsCommunes.isEmpty()) {
+			for (Integer ofs : ofsCommunes) {
+				final List<DateRange> rangesAvant = avantMigration.get(ofs);
+				final List<DateRange> rangesApres = apresMigration.get(ofs);
+				if (!sameDateRanges(rangesAvant, rangesApres)) {
+					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
+					              String.format("Sur la commune OFS %d, la couverture des fors secondaires n'est plus la même : avant (%s) et après (%s).",
+					                            ofs, toDisplayString(rangesAvant), toDisplayString(rangesApres)));
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param list une liste de ranges
+	 * @return une représentation String de cette liste
+	 */
+	private static String toDisplayString(List<DateRange> list) {
+		return list.stream().map(DateRangeHelper::toDisplayString).collect(Collectors.joining(", "));
+	}
+
+	/**
+	 * Les listes de ranges en entrée sont supposés triés
+	 * @param l1 une liste de ranges
+	 * @param l2 une autre liste de ranges
+	 * @return <code>true</code> si les listes contiennent les mêmes plages de dates
+	 */
+	private static boolean sameDateRanges(List<DateRange> l1, List<DateRange> l2) {
+		boolean same = l1.size() == l2.size();
+		if (same) {
+			for (Iterator<DateRange> i1 = l1.iterator(), i2 = l2.iterator(); i1.hasNext() && i2.hasNext() && same; ) {
+				final DateRange r1 = i1.next();
+				final DateRange r2 = i2.next();
+				same = DateRangeHelper.equals(r1, r2);
+			}
+		}
+		return same;
+	}
+
+	/**
+	 * Consolidation de toutes les demandes de créations de fors secondaires "immeuble" pour une PM
+	 * @param data les données consolidées des communes/dates sur lesquels les fors doivent être créés
+	 * @param masterMr le collecteur de messages de suivi
+	 */
+	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultProduction masterMr) {
+		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
+		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
+		final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
+		for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
+
+			final RegpmCommune commune = communeData.getKey();
+			if (commune.getCanton() != RegpmCanton.VD) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
+				              String.format("For(s) secondaire(s) 'immeuble' sur la commune de %s (%d) sise dans le canton %s.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+			}
+
+			for (DateRange dates : communeData.getValue()) {
+				final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+				ffs.setDateDebut(dates.getDateDebut());
+				ffs.setDateFin(dates.getDateFin());
+				ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+				ffs.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+				ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+				ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+				ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+				ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
+				ffs.setTiers(entiteJuridique);
+				entiteJuridique.addForFiscal(ffs);
+
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
+				                                                                                                            DateRangeHelper.toDisplayString(dates),
+				                                                                                                            commune.getNoOfs()));
+			}
+		}
+	}
+
 	@Override
 	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
@@ -86,13 +247,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
+		// enregistrement de cette entreprise pour un contrôle final des fors secondaires (une fois que tous les immeubles et établissements ont été visés)
+		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
+
 		// TODO générer l'établissement principal (= siège...)
 		// TODO ajouter un flag sur l'entreprise pour vérifier si elle est déjà migrée ou pas... (problématique de reprise sur incident pendant la migration)
 		// TODO migrer les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
 
 		migrateDeclarations(regpm, unireg, mr);
 		migrateForsPrincipaux(regpm, unireg, mr);
-		migrateForsSecondaires(regpm, unireg, mr);
+		migrateImmeubles(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
@@ -196,7 +360,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Function<RegpmDemandeDelaiSommation, DelaiDeclaration> mapper = regpm -> {
 			final DelaiDeclaration delai = new DelaiDeclaration();
 			copyCreationMutation(regpm, delai);
-			delai.setConfirmationEcrite(regpm.isImpressionLettre());        // TODO cela suppose une clé d'archivage, non ?
+			delai.setConfirmationEcrite(false);                             // les documents ne doivent pas être retrouvés dans Unireg, mais par le DPerm s'il le faut
 			delai.setDateDemande(regpm.getDateDemande());
 			delai.setDateTraitement(regpm.getDateReception());              // TODO on est sûr ce de mapping ?
 			delai.setDeclaration(di);
@@ -236,7 +400,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// retour
 		if (dossier.getDateRetour() != null) {
-			etats.add(new EtatDeclarationRetournee(dossier.getDateRetour(), "CEDI"));       // TODO source = CEDI ?
+			etats.add(new EtatDeclarationRetournee(dossier.getDateRetour(), SOURCE_RETOUR_DI_MIGREE));
 		}
 
 		// TODO la taxation d'office (= échéance, au sens Unireg) existait-elle ?
@@ -297,6 +461,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final ForFiscalPrincipal previous = snap.getPrevious();
 			final ForFiscalPrincipal next = snap.getNext();
 
+			// TODO les motifs doivent peut-être venir des inscriptions/radiations au RC
+
 			// le tout premier for a un motif d'ouverture indéterminé
 			if (previous == null) {
 				current.setMotifOuverture(MotifFor.INDETERMINE);
@@ -338,44 +504,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		liste.forEach(unireg::addForFiscal);
 	}
 
-	private void migrateForsSecondaires(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	private void migrateImmeubles(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		// les fors secondaires devront être créés sur l'entreprise migrée
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
 
-		final Function<RegpmForSecondaire, Optional<ForFiscalSecondaire>> mapper = f -> {
-			final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-			copyCreationMutation(f, ffs);
-			ffs.setDateDebut(f.getDateDebut());
-			ffs.setDateFin(f.getDateFin());
-			ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-			ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-			ffs.setMotifFermeture(f.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
-			ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
+		// les immeubles en possession directe
+		final Map<RegpmCommune, List<DateRange>> mapDirecte = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());
+	    if (!mapDirecte.isEmpty()) {
+		    mr.addPreTransactionCommitData(new ForsSecondairesData.Immeuble(moi, mapDirecte));
+	    }
 
-			final RegpmCommune commune = f.getCommune();
-			if (commune != null) {
-				ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
-				ffs.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-			}
-			else {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For secondaire %d sans autorité fiscale", f.getId()));
-				return Optional.empty();
-			}
-
-			if (ffs.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN, String.format("For secondaire %d hors Vaud", f.getId()));
-			}
-
-			ffs.setTiers(unireg);
-			return Optional.of(ffs);
-		};
-
-		// TODO comment différencier les fors fiscaux "immeuble" des fors fiscaux "établissement stable" ?
-		// TODO les fors "établissement stable" ne devraient-ils pas être recalculés d'après les entités RegpmEtablissementStable sur les établissements liés ?
-
-		// construction de la liste des fors secondaires
-		regpm.getForsSecondaires().stream()
-				.map(mapper)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.forEach(unireg::addForFiscal);
+		// les immeubles en possession via un groupe
+		final Map<RegpmCommune, List<DateRange>> mapViaGroupe = couvertureDepuisAppartenancesGroupeProprietaire(regpm.getAppartenancesGroupeProprietaire());
+		if (!mapViaGroupe.isEmpty()) {
+			mr.addPreTransactionCommitData(new ForsSecondairesData.Immeuble(moi, mapViaGroupe));
+		}
 	}
 }

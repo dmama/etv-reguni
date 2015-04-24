@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -20,12 +19,15 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.uniregctb.migration.pm.MigrationConstants;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -45,19 +47,6 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
-
-	private static final BinaryOperator<List<DateRange>> LIST_MERGER = (l1, l2) -> {
-		final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
-				.sorted(new DateRangeComparator<>())
-				.collect(Collectors.toList());
-		return DateRangeHelper.merge(liste);
-	};
-
-	private static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> MAP_MERGER = (m1, m2) -> {
-		//noinspection CodeBlock2Expr
-		return Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, LIST_MERGER));
-	};
 
 	private final RcEntClient rcentClient;
 
@@ -123,11 +112,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		super.initMigrationResult(mr);
 
 		// on va regrouper les données (communes et dates) par entité juridique afin de créer,
-		// pour chacune d'entre elles, les fors secondaires qui vont bien
-		mr.registerPreTransactionCommitCallback(ForsSecondairesData.class,
+		// pour chacune d'entre elles, les fors secondaires "activité" qui vont bien
+		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Activite.class,
+		                                        MigrationConstants.PHASE_FORS_ACTIVITE,
 		                                        d -> d.entiteJuridiqueSupplier,
-		                                        (d1, d2) -> new ForsSecondairesData(d1.entiteJuridiqueSupplier, MAP_MERGER.apply(d1.communes, d2.communes)),
-		                                        d -> createForsSecondaires(d, mr));
+		                                        (d1, d2) -> new ForsSecondairesData.Activite(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
+		                                        d -> createForsSecondairesEtablissement(d, mr));
 	}
 
 	/**
@@ -135,20 +125,19 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param data les données collectées pour une entité juridique
 	 * @param masterMr le collecteur de messages de suivi
 	 */
-	private void createForsSecondaires(ForsSecondairesData data, MigrationResultProduction masterMr) {
+	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultProduction masterMr) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
 		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
 		final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 		for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
 			// TODO attention, dans le cas d'un individu, les fors secondaires peuvent devoir être créés sur un couple !!
-			// TODO il convient peut-être également de vérifier que des fors secondaires équivalents ne sont pas déjà là... (y compris sur les entreprises, puisque l'on migre les fors secondaires directement également)
 			// TODO l'établissement principal doit-il générer un for secondaire ?
 
 			final RegpmCommune commune = communeData.getKey();
 			if (commune.getCanton() != RegpmCanton.VD) {
 				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("For(s) secondaire(s) sur la commune de %s (%d) sise dans le canton %s.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+				              String.format("For(s) secondaire(s) 'activité' sur la commune de %s (%d) sise dans le canton %s.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
 			}
 
 			for (DateRange dates : communeData.getValue()) {
@@ -164,7 +153,9 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				ffs.setTiers(entiteJuridique);
 				entiteJuridique.addForFiscal(ffs);
 
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire %s ajouté sur la commune %d.", DateRangeHelper.toDisplayString(dates), commune.getNoOfs()));
+				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
+				                                                                                                            DateRangeHelper.toDisplayString(dates),
+				                                                                                                            commune.getNoOfs()));
 			}
 		}
 	}
@@ -183,7 +174,10 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));
 		idMapper.addEtablissement(regpm, unireg);
 
-		// TODO vérifier que l'on doit bien prendre en compte les liens vers les individus... (si c'est le cas, les graphes ne doivent pas être construits seulement à partir des identifiants d'entreprises)
+		// les liens vers les individus (= activités indépendantes) doivent bien être pris en compte pour les mandataires, par exemple.
+		// en revanche, cela ne signifie pas que l'on doivent aller remplir les graphes de départ avec les établissements d'individus
+		// pour eux-mêmes (-> on ne traite les activités indépendantes "PP" que dans le cas où elles sont mandatrices de quelque chose...)
+
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
 		final KeyedSupplier<? extends Tiers> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
 		if (entiteJuridique == null) {
@@ -206,7 +200,25 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			}
 		}
 
-		// TODO que fait-on des "succursales" d'un établissement ?
+		// on ne fait rien des "succursales" d'un établissement, car il n'y en a aucune dans le modèle RegPM
+
+		// on ne fait rien non plus avec les rattachements propriétaires (directs ou via groupe) des établissements, car ceux-ci n'ont pas la personalité juridique
+		// (mais on loggue les cas)
+		regpm.getRattachementsProprietaires().stream()
+				.map(AbstractEntityMigrator::couvertureDepuisRattachementProprietaire)
+				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
+				.map(Pair::getKey)
+				.distinct()
+				.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
+				.forEach(msg -> mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, msg));
+		regpm.getAppartenancesGroupeProprietaire().stream()
+				.map(AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire)
+				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
+				.map(Pair::getKey)
+				.distinct()
+				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
+				.forEach(msg -> mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, msg));
+
 		// TODO migrer l'enseigne, les coordonnées financières...
 	}
 
@@ -235,23 +247,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.flatMap(List::stream)
 				.collect(Collectors.toMap(Pair::getKey,
 				                          pair -> Collections.singletonList(pair.getValue()),
-				                          LIST_MERGER));
+				                          DATE_RANGE_LIST_MERGER));
 
 		// s'il y a des données relatives à des fors secondaires, on les envoie...
 		if (!mapFors.isEmpty()) {
-			mr.addPreTransactionCommitData(new ForsSecondairesData(entiteJuridique, mapFors));
-		}
-	}
-
-	protected static final class ForsSecondairesData {
-
-		final KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier;
-		final Map<RegpmCommune, List<DateRange>> communes;
-
-		public ForsSecondairesData(KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier,
-		                           Map<RegpmCommune, List<DateRange>> communes) {
-			this.entiteJuridiqueSupplier = entiteJuridiqueSupplier;
-			this.communes = communes;
+			mr.addPreTransactionCommitData(new ForsSecondairesData.Activite(entiteJuridique, mapFors));
 		}
 	}
 }

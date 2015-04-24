@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -23,6 +23,8 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;

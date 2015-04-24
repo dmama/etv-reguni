@@ -12,7 +12,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 
 @Entity
@@ -20,12 +23,17 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 @TypeDefs({
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class)
 })
-public class RegpmRattachementProprietaire extends RegpmEntity implements WithLongId {
+public class RegpmRattachementProprietaire extends RegpmEntity implements WithLongId, DateRange {
 
 	private Long id;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private RegpmImmeuble immeuble;
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
 
 	@Id
 	@Column(name = "NUMERO")

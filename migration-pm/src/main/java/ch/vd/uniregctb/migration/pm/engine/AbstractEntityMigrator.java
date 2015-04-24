@@ -1,17 +1,37 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
@@ -26,6 +46,103 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected final SessionFactory uniregSessionFactory;
 	protected final StreetDataMigrator streetDataMigrator;
 	protected final TiersDAO tiersDAO;
+
+	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER = (l1, l2) -> {
+		final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
+				.sorted(new DateRangeComparator<>())
+				.collect(Collectors.toList());
+		return DateRangeHelper.merge(liste);
+	};
+
+	protected static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
+			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
+
+	/**
+	 * Remplit l'ensemble donné en paramètre avec les communes concernées par l'immeuble, en évitant la récursivité infinie
+	 * @param immeuble immeuble à inspecter
+	 * @param idsImmeublesDejaVus ensemble des identifiants des immeubles déjà rencontrés (pour bloquer la récursivité infinie)
+	 */
+	@NotNull
+	private static Set<RegpmCommune> findCommunes(RegpmImmeuble immeuble, Set<Long> idsImmeublesDejaVus) {
+		// on est déjà passé ici ?
+		if (immeuble == null || idsImmeublesDejaVus.contains(immeuble.getId())) {
+			return Collections.emptySet();
+		}
+
+		// comme ça on ne repassera plus sur cet immeuble...
+		idsImmeublesDejaVus.add(immeuble.getId());
+
+		final Set<RegpmCommune> communes = new HashSet<>();
+		if (immeuble.getCommune() != null) {
+			communes.add(immeuble.getCommune());
+		}
+		communes.addAll(findCommunes(immeuble.getParcelle(), idsImmeublesDejaVus));
+		return communes;
+	}
+
+	@NotNull
+	protected static Set<RegpmCommune> findCommunes(RegpmImmeuble immeuble) {
+		return findCommunes(immeuble, new HashSet<>());
+	}
+
+	/**
+	 * Méthode utilitaire d'agrégation de listes de couples (commune / plage de dates) en une map
+	 * @param elements éléments dont on extrait, individuellement, les couples (commune / plage de dates)
+	 * @param couvertureIndividuelle la fonction de conversion entre un élément et une liste de couples (commune / plage de dates)
+	 * @param <T> le type des éléments source
+	 * @return une map, indexée par commune, des plages de dates couvertes (ces plages sont fusionnées et ordonnées)
+	 */
+	private static <T> Map<RegpmCommune, List<DateRange>> couverture(Collection<T> elements, Function<T, Stream<Pair<RegpmCommune, DateRange>>> couvertureIndividuelle) {
+		return elements.stream()
+				.map(couvertureIndividuelle)
+				.flatMap(Function.identity())
+				.collect(Collectors.toMap(Pair::getKey,
+				                          pair -> Collections.singletonList(pair.getValue()),
+				                          DATE_RANGE_LIST_MERGER));
+	}
+
+	/**
+	 * Extraction des plages de dates de couverture de communes depuis un rattachement propriétaire
+	 * @param rattachement le rattachement propriétaire
+	 * @return stream des communes couvertes avec les dates de couverture
+	 */
+	protected static Stream<Pair<RegpmCommune, DateRange>> couvertureDepuisRattachementProprietaire(RegpmRattachementProprietaire rattachement) {
+		return findCommunes(rattachement.getImmeuble()).stream().map(commune -> Pair.of(commune, rattachement));
+	}
+
+	/**
+	 * Extraction des plages de dates de couverture de communes depuis un ensemble de rattachements propriétaire
+	 * @param rattachements les rattachements propriétaire
+	 * @return une map, indexée par commune, des plages de dates couvertes (ces plages sont fusionnées et ordonnées)
+	 */
+	protected static Map<RegpmCommune, List<DateRange>> couvertureDepuisRattachementsProprietaires(Collection<RegpmRattachementProprietaire> rattachements) {
+		return couverture(rattachements, AbstractEntityMigrator::couvertureDepuisRattachementProprietaire);
+	}
+
+	/**
+	 * Extraction des plages de dates de couverture de commune depuis une appartenance à un groupe propriétaire (le problème
+	 * est de tenir compte à la fois des dates d'appartenance au groupe et des dates des rattachements propriétaire du groupe)
+	 * @param appartenance l'appartenance à un groupe propriétaire
+	 * @return stream des communes couvertes avec les dates de couverture
+	 */
+	protected static Stream<Pair<RegpmCommune, DateRange>> couvertureDepuisAppartenanceGroupeProprietaire(RegpmAppartenanceGroupeProprietaire appartenance) {
+		final DateRange rangeAppartenance = appartenance;
+		return appartenance.getGroupeProprietaire().getRattachementsProprietaires().stream()
+				.map(AbstractEntityMigrator::couvertureDepuisRattachementProprietaire)
+				.flatMap(Function.identity())
+				.filter(pair -> DateRangeHelper.intersect(rangeAppartenance, pair.getValue()))
+				.map(pair -> Pair.of(pair.getKey(), DateRangeHelper.intersection(rangeAppartenance, pair.getValue())));
+	}
+
+	/**
+	 * Extraction des plages de dates de couverture de commune depuis une collection d'appartenances à des groupes propriétaire
+	 * @param appartenances les appartenances aux groupes
+	 * @return une map, indexée par commune, des plages de dates couvertes (ces plages sont fusionnées et ordonnées)
+	 */
+	protected static Map<RegpmCommune, List<DateRange>> couvertureDepuisAppartenancesGroupeProprietaire(Collection<RegpmAppartenanceGroupeProprietaire> appartenances) {
+		return couverture(appartenances, AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire);
+	}
 
 	protected AbstractEntityMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO) {
 		this.uniregSessionFactory = uniregSessionFactory;

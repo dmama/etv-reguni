@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,6 +35,13 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.uniregctb.migration.pm.Graphe;
+import ch.vd.uniregctb.migration.pm.MigrationException;
+import ch.vd.uniregctb.migration.pm.MigrationMode;
+import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
+import ch.vd.uniregctb.migration.pm.Worker;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -252,7 +259,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 						final List<MigrationResultMessage> messages = res.getMessages(cat);
 						if (!messages.isEmpty()) {
 							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResultMessage.CategorieListe.class.getName(), cat.name()));
-							messages.forEach(msg -> log(logger, msg.niveau, msg.texte));
+							messages.forEach(msg -> log(logger, msg.getNiveau(), msg.getTexte()));
 						}
 					}
 				}

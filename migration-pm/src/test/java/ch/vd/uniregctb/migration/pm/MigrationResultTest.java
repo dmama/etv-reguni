@@ -40,12 +40,12 @@ public class MigrationResultTest {
 			final MigrationResultMessage.Niveau expectedNiveau = MigrationResultMessage.Niveau.values()[indexNiveau];
 
 			final MigrationResultMessage msg = messages.get(i);
-			Assert.assertEquals(expectedNiveau, msg.niveau);
+			Assert.assertEquals(expectedNiveau, msg.getNiveau());
 			if (isPrefixExpected) {
-				Assert.assertEquals(Integer.toString(i), String.format("Mon préfixe : Message avec préfixe %s/%s", expectedCat, expectedNiveau), msg.texte);
+				Assert.assertEquals(Integer.toString(i), String.format("Mon préfixe : Message avec préfixe %s/%s", expectedCat, expectedNiveau), msg.getTexte());
 			}
 			else {
-				Assert.assertEquals(Integer.toString(i), String.format("Message sans préfixe %s/%s", expectedCat, expectedNiveau), msg.texte);
+				Assert.assertEquals(Integer.toString(i), String.format("Message sans préfixe %s/%s", expectedCat, expectedNiveau), msg.getTexte());
 			}
 		}
 	}
@@ -67,6 +67,7 @@ public class MigrationResultTest {
 		// enregistrement de la structure
 
 		mr.registerPreTransactionCommitCallback(MyDataToConsolidate.class,
+		                                        1,
 		                                        d -> d.key,
 		                                        (d1, d2) -> new MyDataToConsolidate(d1.key, String.format("%s,%s", d1.msg, d2.msg)),
 		                                        d -> mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.INFO, String.format("%d -> %s", d.key, d.msg)));
@@ -101,13 +102,13 @@ public class MigrationResultTest {
 		Assert.assertEquals(2, msgs.size());
 		{
 			final MigrationResultMessage msg = msgs.get(0);
-			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.niveau);
-			Assert.assertEquals("42 -> La,Réponse,A,La,Grande,Question,De,L',Univers", msg.texte);
+			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.getNiveau());
+			Assert.assertEquals("42 -> La,Réponse,A,La,Grande,Question,De,L',Univers", msg.getTexte());
 		}
 		{
 			final MigrationResultMessage msg = msgs.get(1);
-			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.niveau);
-			Assert.assertEquals("1 -> Hein?,Aaaah ok...", msg.texte);
+			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.getNiveau());
+			Assert.assertEquals("1 -> Hein?,Aaaah ok...", msg.getTexte());
 		}
 	}
 }

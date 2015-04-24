@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +14,9 @@ import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.migration.pm.AbstractSpringTest;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -156,14 +159,14 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 
 		final Pattern pattern = Pattern.compile(regex);
 		final MigrationResultMessage candidate = messages.stream()
-				.filter(msg -> msg.texte != null && pattern.matcher(msg.texte).find())
+				.filter(msg -> msg.getTexte() != null && pattern.matcher(msg.getTexte()).find())
 				.findAny()
 				.orElse(null);
 
 		// on va faire un joli message pour voir tous les messages
 		if (candidate == null) {
 			final String msgs = messages.stream()
-					.map(msg -> msg.texte)
+					.map(MigrationResultMessage::getTexte)
 					.collect(Collectors.joining(System.lineSeparator()));
 			Assert.fail("Aucun message ne correspond à la regex '" + regex + "' dans la catégorie " + cat + " : \n" + msgs);
 		}

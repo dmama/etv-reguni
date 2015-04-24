@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,6 +42,11 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	 * pendant la transaction
 	 */
 	private final Map<Class<?>, PreTransactionCommitRegistration<?>> preCommitRegistrations = new HashMap<>();
+
+	/**
+	 * Ordonnancement des traitements de consolidation des données pendant la transaction
+	 */
+	private final SortedMap<Integer, Class<?>> preCommitRegistrationSortingOrder = new TreeMap<>();
 
 	/**
 	 * Appelé lors de la migration dès qu'un message doit sortir dans une liste de contrôle
@@ -80,7 +87,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	}
 
 	/**
-	 * Appelle un a un tous les callbacks précédemment enregistrés, et vide la liste
+	 * Appelle un à un tous les callbacks précédemment enregistrés, et vide la liste
 	 */
 	public void runPostTransactionCallbacks() {
 		postTransactionCallbacks.forEach(Runnable::run);
@@ -90,12 +97,14 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	/**
 	 * Enregistre un traitement a effectuer avant la fin de la transaction
 	 * @param dataClass classe de la donnée postée (on n'acceptera qu'un seul enregistrement par classe !)
+	 * @param consolidationPhaseIndicator indicateur de l'emplacement de cette consolidation dans la grande liste des consolidations
 	 * @param keyExtractor extracteur de la clé de regroupement pour les données postées
 	 * @param dataMerger fusionneur des données associées à une clé postée plusieurs fois
 	 * @param consolidator opération finale à effectuée sur les données consolidées
 	 * @param <D> type des données postées et traitées
 	 */
 	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
+	                                                     int consolidationPhaseIndicator,
 	                                                     Function<? super D, ?> keyExtractor,
 	                                                     BinaryOperator<D> dataMerger,
 	                                                     Consumer<? super D> consolidator) {
@@ -103,7 +112,11 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		if (preCommitRegistrations.containsKey(dataClass)) {
 			throw new IllegalArgumentException("Un enregistrement a déjà été fait pour la classe " + dataClass.getName());
 		}
+		if (preCommitRegistrationSortingOrder.containsKey(consolidationPhaseIndicator)) {
+			throw new IllegalArgumentException("Le numéro de phase " + consolidationPhaseIndicator + " a déjà été utilisé.");
+		}
 		preCommitRegistrations.put(dataClass, new PreTransactionCommitRegistration<>(keyExtractor, dataMerger, consolidator));
+		preCommitRegistrationSortingOrder.put(consolidationPhaseIndicator, dataClass);
 	}
 
 	/**
@@ -124,15 +137,18 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	}
 
 	/**
-	 * Consolide (= appelle le consolidator) pour les données postées
+	 * Consolide (= appelle le consolidator) pour toutes les données postées, en tenant compte de l'ordonnancement
+	 * entre les différentes consolidations
 	 */
 	public void consolidatePreTransactionCommitRegistrations() {
-		for (PreTransactionCommitRegistration<?> registration : preCommitRegistrations.values()) {
-			final Map<Object, ?> dataMap = registration.data;
-			//noinspection unchecked
-			final Consumer<Object> consolidator = (Consumer<Object>) registration.consolidator;
-			dataMap.values().forEach(consolidator);
-		}
+		preCommitRegistrationSortingOrder.values().stream()
+				.map(preCommitRegistrations::get)
+				.forEach(registration -> {
+					final Map<Object, ?> dataMap = registration.data;
+					//noinspection unchecked
+					final Consumer<Object> consolidator = (Consumer<Object>) registration.consolidator;
+					dataMap.values().forEach(consolidator);
+				});
 	}
 
 	@Override
@@ -148,7 +164,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 
 			@Override
 			public String toString() {
-				return String.format("cat=%s, niveau=%s, texte='%s'", cat, niveau, texte);
+				return String.format("cat=%s, niveau=%s, texte='%s'", cat, getNiveau(), getTexte());
 			}
 		}
 
@@ -157,7 +173,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		}
 
 		return msgs.entrySet().stream()
-				.map(entry -> entry.getValue().stream().map(msg -> new Denormalized(msg.niveau, msg.texte, entry.getKey())))
+				.map(entry -> entry.getValue().stream().map(msg -> new Denormalized(msg.getNiveau(), msg.getTexte(), entry.getKey())))
 				.flatMap(Function.<Stream<Denormalized>>identity())
 				.map(Object::toString)
 				.collect(Collectors.joining(System.lineSeparator()));

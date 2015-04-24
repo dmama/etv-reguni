@@ -14,7 +14,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 
@@ -24,7 +27,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 		@TypeDef(name = "BooleanYesNo", typeClass = BooleanYesNoUserType.class),
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class)
 })
-public class RegpmAppartenanceGroupeProprietaire extends RegpmEntity {
+public class RegpmAppartenanceGroupeProprietaire extends RegpmEntity implements DateRange {
 
 	/**
 	 * Ils ont fait une clé primaire avec le numéro du groupe et un numéro de séquence
@@ -85,6 +88,11 @@ public class RegpmAppartenanceGroupeProprietaire extends RegpmEntity {
 	private RegDate dateFin;
 	private boolean leader;
 	private RegpmGroupeProprietaire groupeProprietaire;
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
 
 	@EmbeddedId
 	public PK getId() {

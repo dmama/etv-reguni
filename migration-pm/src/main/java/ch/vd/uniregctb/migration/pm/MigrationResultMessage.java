@@ -2,13 +2,22 @@ package ch.vd.uniregctb.migration.pm;
 
 public class MigrationResultMessage {
 
-	final Niveau niveau;
-	final String texte;
+	private final Niveau niveau;
+	private final String texte;
 
 	public MigrationResultMessage(Niveau niveau, String texte) {
 		this.niveau = niveau;
 		this.texte = texte;
 	}
+
+	public Niveau getNiveau() {
+		return niveau;
+	}
+
+	public String getTexte() {
+		return texte;
+	}
+
 	/**
 	 * Enumération des différentes listes de contrôle
 	 * // TODO il y en a sûrement d'autres...

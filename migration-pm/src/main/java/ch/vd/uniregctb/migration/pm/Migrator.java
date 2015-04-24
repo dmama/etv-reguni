@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
+import ch.vd.uniregctb.migration.pm.engine.MigrationWorker;
+
 public class Migrator implements SmartLifecycle, MigrationInitializationRegistrar {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Migrator.class);

@@ -20,7 +20,7 @@
 		<property name="fsDirectory" value="${migration.dump.dir}"/>
 	</bean>
 
-	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.MigrationWorker">
+	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
 		<property name="streetDataMigrator" ref="streetDataMigrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -21,6 +21,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -149,9 +150,9 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS).stream()
-				.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
 
@@ -199,9 +200,9 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS).stream()
-				.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
 
@@ -250,9 +251,9 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS).stream()
-				.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
 
@@ -305,22 +306,22 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultMessage> msgsEtablissements = mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
 		if (msgsEtablissements != null) {
 			msgsEtablissements.stream()
-					.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+					.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 					.findAny()
-					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 		}
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
 		Assert.assertEquals(1, preCommitData.size());
-		Assert.assertTrue(preCommitData.containsKey(EtablissementMigrator.ForsSecondairesData.class));
+		Assert.assertTrue(preCommitData.containsKey(ForsSecondairesData.Activite.class));
 		{
 			//noinspection unchecked
-			final List<EtablissementMigrator.ForsSecondairesData> data = (List<EtablissementMigrator.ForsSecondairesData>) preCommitData.get(EtablissementMigrator.ForsSecondairesData.class);
+			final List<ForsSecondairesData.Activite> data = (List<ForsSecondairesData.Activite>) preCommitData.get(ForsSecondairesData.Activite.class);
 			Assert.assertEquals(1, data.size());
 
 			{
-				final EtablissementMigrator.ForsSecondairesData fsData = data.get(0);
+				final ForsSecondairesData.Activite fsData = data.get(0);
 				Assert.assertNotNull(fsData);
 				Assert.assertEquals(EntityKey.Type.ENTREPRISE, fsData.entiteJuridiqueSupplier.getKey().getType());
 				Assert.assertEquals(noEntreprise, fsData.entiteJuridiqueSupplier.getKey().getId());
@@ -380,23 +381,23 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS).stream()
-				.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
 		Assert.assertEquals(1, preCommitData.size());
-		Assert.assertTrue(preCommitData.containsKey(EtablissementMigrator.ForsSecondairesData.class));
+		Assert.assertTrue(preCommitData.containsKey(ForsSecondairesData.Activite.class));
 		{
 			//noinspection unchecked
-			final List<EtablissementMigrator.ForsSecondairesData> data = (List<EtablissementMigrator.ForsSecondairesData>) preCommitData.get(EtablissementMigrator.ForsSecondairesData.class);
+			final List<ForsSecondairesData.Activite> data = (List<ForsSecondairesData.Activite>) preCommitData.get(ForsSecondairesData.Activite.class);
 			Assert.assertEquals(1, data.size());
 
 			{
-				final EtablissementMigrator.ForsSecondairesData fsData = data.get(0);
+				final ForsSecondairesData.Activite fsData = data.get(0);
 				Assert.assertNotNull(fsData);
 				Assert.assertEquals(EntityKey.Type.ENTREPRISE, fsData.entiteJuridiqueSupplier.getKey().getType());
 				Assert.assertEquals(noEntreprise, fsData.entiteJuridiqueSupplier.getKey().getId());
@@ -460,22 +461,22 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultMessage> msgsEtablissements = mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
 		if (msgsEtablissements != null) {
 			msgsEtablissements.stream()
-					.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+					.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 					.findAny()
-					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 		}
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
 		Assert.assertEquals(1, preCommitData.size());
-		Assert.assertTrue(preCommitData.containsKey(EtablissementMigrator.ForsSecondairesData.class));
+		Assert.assertTrue(preCommitData.containsKey(ForsSecondairesData.Activite.class));
 		{
 			//noinspection unchecked
-			final List<EtablissementMigrator.ForsSecondairesData> data = (List<EtablissementMigrator.ForsSecondairesData>) preCommitData.get(EtablissementMigrator.ForsSecondairesData.class);
+			final List<ForsSecondairesData.Activite> data = (List<ForsSecondairesData.Activite>) preCommitData.get(ForsSecondairesData.Activite.class);
 			Assert.assertEquals(1, data.size());
 
 			{
-				final EtablissementMigrator.ForsSecondairesData fsData = data.get(0);
+				final ForsSecondairesData.Activite fsData = data.get(0);
 				Assert.assertNotNull(fsData);
 				Assert.assertEquals(EntityKey.Type.ENTREPRISE, fsData.entiteJuridiqueSupplier.getKey().getType());
 				Assert.assertEquals(noEntreprise, fsData.entiteJuridiqueSupplier.getKey().getId());
@@ -544,9 +545,9 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultMessage> msgsEtablissements = mr.getMessages().get(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
 		if (msgsEtablissements != null) {
 			msgsEtablissements.stream()
-					.filter(msg -> !msg.texte.startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+					.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
 					.findAny()
-					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.texte)));
+					.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 		}
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
@@ -554,14 +555,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
 		Assert.assertEquals(1, preCommitData.size());
-		Assert.assertTrue(preCommitData.containsKey(EtablissementMigrator.ForsSecondairesData.class));
+		Assert.assertTrue(preCommitData.containsKey(ForsSecondairesData.Activite.class));
 		{
 			//noinspection unchecked
-			final List<EtablissementMigrator.ForsSecondairesData> data = (List<EtablissementMigrator.ForsSecondairesData>) preCommitData.get(EtablissementMigrator.ForsSecondairesData.class);
+			final List<ForsSecondairesData.Activite> data = (List<ForsSecondairesData.Activite>) preCommitData.get(ForsSecondairesData.Activite.class);
 			Assert.assertEquals(1, data.size());
 
 			{
-				final EtablissementMigrator.ForsSecondairesData fsData = data.get(0);
+				final ForsSecondairesData.Activite fsData = data.get(0);
 				Assert.assertNotNull(fsData);
 				Assert.assertEquals(EntityKey.Type.ENTREPRISE, fsData.entiteJuridiqueSupplier.getKey().getType());
 				Assert.assertEquals(noEntreprise, fsData.entiteJuridiqueSupplier.getKey().getId());

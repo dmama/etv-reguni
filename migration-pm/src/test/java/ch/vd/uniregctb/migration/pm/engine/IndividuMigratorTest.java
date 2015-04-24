@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
@@ -85,9 +86,9 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.texte.startsWith("Individu " + noIndividuRegpm + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM,
@@ -141,9 +142,9 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.texte.startsWith("Individu " + noIndividu + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividu + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
@@ -188,9 +189,9 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.texte.startsWith("Individu " + noIndividu + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividu + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
@@ -245,9 +246,9 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.texte.startsWith("Individu " + noIndividuRegpm + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé un individu \\([0-9]+\\) de RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
@@ -311,9 +312,9 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.texte.startsWith("Individu " + noIndividuRegpm + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.texte)));
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bL'individu RCPers [0-9]+ ne peut être renvoyé \\(Personne .* introuvable\\)\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
