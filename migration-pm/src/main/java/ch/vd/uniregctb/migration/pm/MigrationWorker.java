@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
 
@@ -33,6 +36,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private CompletionService<MigrationResult> completionService;
 	private Thread gatheringThread;
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
+	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
 	private volatile boolean started;
 
 	private StreetDataMigrator streetDataMigrator;
@@ -44,7 +48,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
-		                                       new ArrayBlockingQueue<Runnable>(20),
+		                                       new ArrayBlockingQueue<>(20),
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),
 		                                       new RejectedExecutionHandler() {
 			                                       @Override
@@ -76,11 +80,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.gatheringThread = new Thread("Gathering") {
 			@Override
 			public void run() {
+				LOGGER.info("Gathering thread starting...");
 				try {
 					gather();
 				}
 				catch (InterruptedException e) {
 					LOGGER.error("Gathering thread interrupted!", e);
+				}
+				finally {
+					LOGGER.info("Gathering thread is now done.");
 				}
 			}
 		};
@@ -150,9 +158,24 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		@Override
 		public MigrationResult call() throws MigrationException {
 			try {
-				// TODO à implémenter...
-				Thread.sleep(5000);
-				return null;
+				while (true) {
+					final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
+					final Set<Long> idsIndividus = graphe.getIndividus().keySet();
+					final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
+					if (ticket != null) {
+						try {
+							return migrate(graphe);
+						}
+						finally {
+							synchronizer.release(ticket);
+						}
+					}
+					else {
+						LOGGER.info(String.format("L'une des entreprises %s ou des individus %s est déjà en cours de migration en ce moment même... On attend...",
+						                          Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
+						                          Arrays.toString(idsIndividus.toArray(new Long[idsIndividus.size()]))));
+					}
+				}
 			}
 			catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
@@ -160,5 +183,16 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				throw new RuntimeException("Interrupted !");
 			}
 		}
+	}
+
+	private MigrationResult migrate(Graphe graphe) throws MigrationException {
+		// TODO à implémenter...
+		try {
+			Thread.sleep(5000);
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		return null;
 	}
 }
