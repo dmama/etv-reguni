@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -40,7 +41,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
-		migrator = new EtablissementMigrator(getUniregSessionFactory(), getStreetDataMigrator(), getTiersDAO());
+		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
+		migrator = new EtablissementMigrator(getUniregSessionFactory(), getStreetDataMigrator(), getTiersDAO(), rcentClient);
 	}
 
 	private static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

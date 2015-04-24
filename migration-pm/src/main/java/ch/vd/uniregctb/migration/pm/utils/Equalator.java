@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.function.BiPredicate;
 
 @FunctionalInterface
-public interface Equalator<T> {
+public interface Equalator<T> extends BiPredicate<T, T> {
 
 	/**
-	 * @param data1 donnée 1
-	 * @param data2 donnée 2
-	 * @return <code>true</code> si les deux entités doivent être considérées comme égales
+	 * Equalator qui se base sur le résultat de la méthode {@link Object#equals(Object)} pour deux objets non-nulls.
+	 * Si l'un des deux objets est null, les deux doivent l'être pour que l'égalité soit déclarée.
 	 */
-	boolean areEquals(@Nullable T data1, @Nullable T data2);
+	Equalator<Object> DEFAULT = (u, v) -> u == v || (u != null && v != null && u.equals(v));
+
 }

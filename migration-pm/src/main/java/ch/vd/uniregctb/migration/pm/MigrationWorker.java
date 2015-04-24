@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
+import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
@@ -64,6 +65,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private PlatformTransactionManager uniregTransactionManager;
 	private SessionFactory uniregSessionFactory;
 	private RcPersClient rcpersClient;
+	private RcEntClient rcentClient;
 	private TiersDAO tiersDAO;
 	private NonHabitantIndex nonHabitantIndex;
 
@@ -154,6 +156,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.rcpersClient = rcpersClient;
 	}
 
+	public void setRcentClient(RcEntClient rcentClient) {
+		this.rcentClient = rcentClient;
+	}
+
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -169,8 +175,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		this.entrepriseMigrator = new EntrepriseMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
-		this.etablissementMigrator = new EtablissementMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO);
+		this.entrepriseMigrator = new EntrepriseMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcentClient);
+		this.etablissementMigrator = new EtablissementMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcentClient);
 		this.individuMigrator = new IndividuMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcpersClient, nonHabitantIndex);
 
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,

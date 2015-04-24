@@ -25,6 +25,7 @@
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
 		<property name="rcpersClient" ref="rcpersClient"/>
+		<property name="rcentClient" ref="rcentClient"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
 		<property name="mode" value="${migration.mode}"/>

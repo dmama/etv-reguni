@@ -41,4 +41,21 @@
 
 	<alias name="rcpersClientTracing" alias="rcpersClient"/>
 
+	<!-- RCEnt -->
+
+	<bean id="rcentClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+		<property name="baseUrl" value="${rcent.url}"/>
+		<property name="username" value="${rcent.user}"/>
+		<property name="password" value="${rcent.password}"/>
+		<property name="organisationPath" value="organisation/ct.vd.party"/>
+		<property name="organisationsOfNoticePath" value="organisationsOfNotice"/>
+	</bean>
+
+	<bean id="rcentClientTracing" class="ch.vd.uniregctb.migration.pm.utils.TracingFactory">
+		<constructor-arg value="ch.vd.unireg.wsclient.rcent.RcEntClient"/>
+		<constructor-arg ref="rcentClientRaw"/>
+	</bean>
+
+	<alias name="rcentClientTracing" alias="rcentClient"/>
+
 </beans>

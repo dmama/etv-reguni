@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -52,8 +53,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
-	public EntrepriseMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO) {
+	private final RcEntClient rcentClient;
+
+	public EntrepriseMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO, RcEntClient rcentClient) {
 		super(uniregSessionFactory, streetDataMigrator, tiersDAO);
+		this.rcentClient = rcentClient;
 	}
 
 	@Nullable

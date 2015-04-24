@@ -108,7 +108,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		if (data1 == data2) {
 			return true;
 		}
-		return !(data1 == null || data2 == null) && equalator.areEquals(data1, data2);
+		return !(data1 == null || data2 == null) && equalator.test(data1, data2);
 	}
 
 	private static long getRcPersId(List<NamedPersonId> ids) {

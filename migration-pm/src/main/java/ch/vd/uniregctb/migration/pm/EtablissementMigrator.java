@@ -25,6 +25,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -58,8 +59,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, LIST_MERGER));
 	};
 
-	public EtablissementMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO) {
+	private final RcEntClient rcentClient;
+
+	public EtablissementMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO, RcEntClient rcentClient) {
 		super(uniregSessionFactory, streetDataMigrator, tiersDAO);
+		this.rcentClient = rcentClient;
 	}
 
 	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {
