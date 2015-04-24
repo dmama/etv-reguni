@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.regpm;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -55,6 +56,8 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private String nomInstitutionFinanciere;
 	private NumeroIDE numeroIDE;
 	private Long numeroCantonal;
+	private SortedSet<InscriptionRC> inscriptionsRC;
+	private SortedSet<RadiationRC> radiationsRC;
 	private RegpmEntreprise entreprise;
 	private RegpmIndividu individu;
 	private RegpmLocalitePostale localitePostale;
@@ -62,6 +65,8 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private Set<RegpmEtablissementStable> etablissementsStables;
 	private Set<RegpmEtablissement> succursales;
 	private SortedSet<RegpmDomicileEtablissement> domicilesEtablissements;
+	private Set<RegpmRattachementProprietaire> rattachementsProprietaires;
+	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 
 	// no institution ?, mandat contribuable ?, ...
 
@@ -264,6 +269,28 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 		this.numeroCantonal = numeroCantonal;
 	}
 
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ETABNO")
+	@Sort(type = SortType.NATURAL)
+	public SortedSet<InscriptionRC> getInscriptionsRC() {
+		return inscriptionsRC;
+	}
+
+	public void setInscriptionsRC(SortedSet<InscriptionRC> inscriptionsRC) {
+		this.inscriptionsRC = inscriptionsRC;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ETABNO")
+	@Sort(type = SortType.NATURAL)
+	public SortedSet<RadiationRC> getRadiationsRC() {
+		return radiationsRC;
+	}
+
+	public void setRadiationsRC(SortedSet<RadiationRC> radiationsRC) {
+		this.radiationsRC = radiationsRC;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "FK_INDNO")
 	public RegpmIndividu getIndividu() {
@@ -333,5 +360,25 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
 	public void setDomicilesEtablissements(SortedSet<RegpmDomicileEtablissement> domicilesEtablissements) {
 		this.domicilesEtablissements = domicilesEtablissements;
+	}
+
+	@OneToMany
+	@JoinColumn(name = "FK_ETABNO")
+	public Set<RegpmRattachementProprietaire> getRattachementsProprietaires() {
+		return rattachementsProprietaires;
+	}
+
+	public void setRattachementsProprietaires(Set<RegpmRattachementProprietaire> rattachementsProprietaires) {
+		this.rattachementsProprietaires = rattachementsProprietaires;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ETABNO")
+	public Set<RegpmAppartenanceGroupeProprietaire> getAppartenancesGroupeProprietaire() {
+		return appartenancesGroupeProprietaire;
+	}
+
+	public void setAppartenancesGroupeProprietaire(Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire) {
+		this.appartenancesGroupeProprietaire = appartenancesGroupeProprietaire;
 	}
 }

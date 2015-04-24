@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -13,21 +16,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssocieSC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLiquidateur;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmLiquidation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 
 /**
  * Feeder qui va chercher les données des PM dans la base de données du mainframe
@@ -39,6 +45,34 @@ public class FromDbFeeder implements Feeder {
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory sessionFactory;
 
+	private static void forceLoad(RegpmImmeuble immeuble, Graphe graphe) {
+		if (!graphe.register(immeuble)) {
+			return;
+		}
+
+		// le lien vers la parcelle
+		forceLoad(immeuble.getParcelle(), graphe);
+	}
+
+	private static void forceLoadProprietaire(Graphe graphe, Supplier<Collection<RegpmRattachementProprietaire>> rattachementsProprietaires, Supplier<Collection<RegpmAppartenanceGroupeProprietaire>> appartenancesGroupeProprietaire) {
+		// rattachements propriétaires directs
+		final Collection<RegpmRattachementProprietaire> rattachements = rattachementsProprietaires != null ? rattachementsProprietaires.get() : Collections.emptyList();
+		for (RegpmRattachementProprietaire rattachement : rattachements) {
+			forceLoad(rattachement.getImmeuble(), graphe);
+		}
+
+		// rattachements propriétaires au travers de groupes de propriétaires
+		final Collection<RegpmAppartenanceGroupeProprietaire> appartenancesGroupe = appartenancesGroupeProprietaire != null ? appartenancesGroupeProprietaire.get() : Collections.emptyList();
+		for (RegpmAppartenanceGroupeProprietaire appartenance : appartenancesGroupe) {
+			final RegpmGroupeProprietaire groupe = appartenance.getGroupeProprietaire();
+			if (groupe != null) {
+				for (RegpmRattachementProprietaire rattachement : groupe.getRattachementsProprietaires()) {
+					forceLoad(rattachement.getImmeuble(), graphe);
+				}
+			}
+		}
+	}
+
 	private static void forceLoad(RegpmEtablissement etablissement, Graphe graphe) {
 		if (!graphe.register(etablissement)) {
 			return;
@@ -46,6 +80,8 @@ public class FromDbFeeder implements Feeder {
 
 		// lazy init
 		etablissement.getDomicilesEtablissements().size();
+		etablissement.getInscriptionsRC().size();
+		etablissement.getRadiationsRC().size();
 
 		// chargement de l'entreprise/individu lié(e)
 		forceLoad(etablissement.getEntreprise(), graphe);
@@ -55,6 +91,9 @@ public class FromDbFeeder implements Feeder {
 		for (RegpmEtablissement succ : etablissement.getSuccursales()) {
 			forceLoad(succ, graphe);
 		}
+
+		// immeubles
+		forceLoadProprietaire(graphe, etablissement::getRattachementsProprietaires, etablissement::getAppartenancesGroupeProprietaire);
 	}
 
 	private static void forceLoad(RegpmIndividu individu, Graphe graphe) {
@@ -169,7 +208,10 @@ public class FromDbFeeder implements Feeder {
 			}
 		}
 
-		// TODO immeubles, documents dégrèvement, rattachements propriétaires... (si nécessaire dans cette phase de migration)
+		// immeubles
+		forceLoadProprietaire(graphe, pm::getRattachementsProprietaires, pm::getAppartenancesGroupeProprietaire);
+
+		// TODO documents dégrèvement... (si nécessaire dans cette phase de migration)
 	}
 
 	public void setRegpmTransactionManager(PlatformTransactionManager regpmTransactionManager) {
@@ -192,7 +234,7 @@ public class FromDbFeeder implements Feeder {
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
 		for (long id : ids) {
-//		for (long id : Arrays.asList(27, 848, 61)) {
+//		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
 			if (!idsDejaTrouvees.contains(id)) {
 				final Graphe graphe = loadGraphe(id);
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
@@ -204,15 +246,12 @@ public class FromDbFeeder implements Feeder {
 	private List<Long> getIds() {
 		final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
 		template.setReadOnly(true);
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final Session session = sessionFactory.getCurrentSession();
-				//noinspection JpaQlInspection
-				final Query query = session.createQuery("select e.id from RegpmEntreprise e");
-				//noinspection unchecked
-				return query.list();
-			}
+		return template.execute(status -> {
+			final Session session = sessionFactory.getCurrentSession();
+			//noinspection JpaQlInspection
+			final Query query = session.createQuery("select e.id from RegpmEntreprise e");
+			//noinspection unchecked
+			return (List<Long>) query.list();
 		});
 	}
 

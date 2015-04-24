@@ -108,6 +108,8 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private Set<RegpmMandat> mandataires;
 	private SortedSet<RegpmQuestionnaireSNC> questionnairesSNC;
 	private SortedSet<RegpmCapital> capitaux;
+	private Set<RegpmRattachementProprietaire> rattachementsProprietaires;
+	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 
 	@Id
 	@Column(name = "NO_ENTREPRISE")
@@ -790,5 +792,25 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setCapitaux(SortedSet<RegpmCapital> capitaux) {
 		this.capitaux = capitaux;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ENTPRNO")
+	public Set<RegpmRattachementProprietaire> getRattachementsProprietaires() {
+		return rattachementsProprietaires;
+	}
+
+	public void setRattachementsProprietaires(Set<RegpmRattachementProprietaire> rattachementsProprietaires) {
+		this.rattachementsProprietaires = rattachementsProprietaires;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ENTPRNO")
+	public Set<RegpmAppartenanceGroupeProprietaire> getAppartenancesGroupeProprietaire() {
+		return appartenancesGroupeProprietaire;
+	}
+
+	public void setAppartenancesGroupeProprietaire(Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire) {
+		this.appartenancesGroupeProprietaire = appartenancesGroupeProprietaire;
 	}
 }

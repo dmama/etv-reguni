@@ -16,6 +16,7 @@ import org.hibernate.annotations.TypeDefs;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.LongAsFixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeAdresseIndividuUserType;
 
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeAdresseIndividuUserType;
 @Table(name = "ADR_INDIVIDU")
 @TypeDefs({
 		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
+		          @TypeDef(name = "LongAsFixedChar", typeClass = LongAsFixedCharUserType.class),
 		          @TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		          @TypeDef(name = "TypeAdresseIndividu", typeClass = TypeAdresseIndividuUserType.class)
           })
@@ -175,6 +177,7 @@ public class RegpmAdresseIndividu extends RegpmEntity implements AdresseAvecRue 
 	}
 
 	@Column(name = "EGID")
+	@Type(type = "LongAsFixedChar")
 	public Long getEgid() {
 		return egid;
 	}
@@ -184,6 +187,7 @@ public class RegpmAdresseIndividu extends RegpmEntity implements AdresseAvecRue 
 	}
 
 	@Column(name = "EWID")
+	@Type(type = "LongAsFixedChar")
 	public Long getEwid() {
 		return ewid;
 	}

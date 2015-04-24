@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 
@@ -19,10 +20,11 @@ public class Graphe implements Serializable {
 	private final Map<Long, RegpmEntreprise> entreprises = new TreeMap<>();
 	private final Map<Long, RegpmEtablissement> etablissements = new TreeMap<>();
 	private final Map<Long, RegpmIndividu> individus = new TreeMap<>();
+	private final Map<Long, RegpmImmeuble> immeubles = new TreeMap<>();
 
 	@Override
 	public String toString() {
-		final List<String> array = new ArrayList<>(3);
+		final List<String> array = new ArrayList<>(4);
 		if (!entreprises.isEmpty()) {
 			array.add(String.format("%d entreprise(s) (%s)", entreprises.size(), Arrays.toString(entreprises.keySet().toArray(new Long[entreprises.size()]))));
 		}
@@ -31,6 +33,9 @@ public class Graphe implements Serializable {
 		}
 		if (!individus.isEmpty()) {
 			array.add(String.format("%d individu(s) (%s)", individus.size(), Arrays.toString(individus.keySet().toArray(new Long[individus.size()]))));
+		}
+		if (!immeubles.isEmpty()) {
+			array.add(String.format("%d immeuble(s) (%s)", immeubles.size(), Arrays.toString(immeubles.keySet().toArray(new Long[immeubles.size()]))));
 		}
 
 		if (array.isEmpty()) {
@@ -51,6 +56,10 @@ public class Graphe implements Serializable {
 
 	public Map<Long, RegpmIndividu> getIndividus() {
 		return Collections.unmodifiableMap(individus);
+	}
+
+	public Map<Long, RegpmImmeuble> getImmeubles() {
+		return Collections.unmodifiableMap(immeubles);
 	}
 
 	/**
@@ -75,6 +84,14 @@ public class Graphe implements Serializable {
 	 */
 	public boolean register(RegpmIndividu individu) {
 		return register(individu, individus);
+	}
+
+	/**
+	 * @param immeuble immeuble à enregistrer
+	 * @return <code>true</code> si l'immeuble a été enregistré, <code>false</code> s'il l'était déjà
+	 */
+	public boolean register(RegpmImmeuble immeuble) {
+		return register(immeuble, immeubles);
 	}
 
 	/**
