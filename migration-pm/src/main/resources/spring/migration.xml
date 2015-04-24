@@ -22,6 +22,7 @@
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.MigrationWorker">
 		<property name="streetDataMigrator" ref="streetDataMigrator"/>
+		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">

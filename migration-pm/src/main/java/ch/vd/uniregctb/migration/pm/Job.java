@@ -1,18 +1,11 @@
 package ch.vd.uniregctb.migration.pm;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.InvariantReloadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -37,12 +30,6 @@ public class Job {
 			return;
 		}
 
-		// chargement des propriétés
-		final String propertiesPath = args[0];
-		final File propertiesFile = new File(propertiesPath);
-		final Properties props = loadProperties(propertiesFile);
-		dumpProperties(props);
-
 		// on le met dans l'environnement afin que le PreferencesPlaceholderConfigurer le prenne en compte...
 		System.setProperty("ch.vd.unireg.migration.pm.conf", args[0]);
 
@@ -50,8 +37,21 @@ public class Job {
 		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/properties.xml",
 		                                                                                  "classpath:spring/interfaces.xml",
 		                                                                                  "classpath:spring/migration.xml",
+		                                                                                  "classpath:spring/database.xml",
 		                                                                                  "classpath:spring/regpm.xml");
 		context.registerShutdownHook();
+
+		// rechargement des propriétés pour dump dans les logs
+		final PropertiesConfiguration properties = new PropertiesConfiguration();
+		properties.setReloadingStrategy(new InvariantReloadingStrategy());
+		properties.setEncoding("UTF-8");
+		properties.setListDelimiter((char) 0); // Disabled
+		// Fais le chargement a la fin quand on a disabled le delimiter
+		properties.setFileName(args[0]);
+		properties.load();
+
+		// Dump des properties
+		dumpProperties(properties);
 
 		// !! la suite se passe dans le thread créé par la classe Migrator !!
 	}
@@ -60,22 +60,14 @@ public class Job {
 		System.err.println("Le job prend un paramètre qui correspond au chemin d'accès au fichier de configuration.");
 	}
 
-	private static void dumpProperties(Properties props) {
+	private static void dumpProperties(PropertiesConfiguration props) {
 		final Pattern pwdPattern = Pattern.compile("\\bpassword\\b", Pattern.CASE_INSENSITIVE);
-		final List<String> propertyNames = new ArrayList<>(props.stringPropertyNames());
-		Collections.sort(propertyNames);
 		final StringBuilder b = new StringBuilder("Dump des propriétés du traitement :").append(System.lineSeparator());
-		for (String key : propertyNames) {
-			final Matcher matcher = pwdPattern.matcher(key);
-			final String value;
-			if (matcher.find()) {
-				value = "********";
-			}
-			else {
-				value = enquote(props.getProperty(key));
-			}
-			b.append(String.format("\t%s -> %s", key, value)).append(System.lineSeparator());
-		}
+		final Iterable<String> iterableNames = props::getKeys;
+		b.append(StreamSupport.stream(iterableNames.spliterator(), false)
+				         .sorted()
+				         .map(key -> String.format("\t%s -> %s", key, pwdPattern.matcher(key).find() ? "*******" : enquote(props.getString(key))))
+				         .collect(Collectors.joining(System.lineSeparator())));
 		LOGGER.info(b.toString());
 	}
 
@@ -84,13 +76,5 @@ public class Job {
 			return "null";
 		}
 		return String.format("'%s'", str);
-	}
-
-	private static Properties loadProperties(File file) throws IOException {
-		try (InputStream is = new FileInputStream(file); Reader r = new InputStreamReader(is, "UTF-8")) {
-			final Properties props = new Properties();
-			props.load(r);
-			return props;
-		}
 	}
 }

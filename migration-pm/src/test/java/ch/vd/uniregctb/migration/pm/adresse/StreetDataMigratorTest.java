@@ -29,6 +29,7 @@ import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
 @ContextConfiguration(locations = {
 		"classpath:spring/regpm.xml",
+		"classpath:spring/database.xml",
 		"classpath:spring/interfaces.xml",
 		"classpath:spring/migration.xml",
 		"classpath:spring/ut-properties.xml"

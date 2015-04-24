@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<util:list id="uniregHibernateAnnotatedClasses">
+		<value>ch.vd.uniregctb.adresse.AdresseAutreTiers</value>
+		<value>ch.vd.uniregctb.adresse.AdresseCivile</value>
+		<value>ch.vd.uniregctb.adresse.AdresseEtrangere</value>
+		<value>ch.vd.uniregctb.adresse.AdressePM</value>
+		<value>ch.vd.uniregctb.adresse.AdresseSuisse</value>
+		<value>ch.vd.uniregctb.adresse.AdresseTiers</value>
+		<value>ch.vd.uniregctb.adresse.AdresseSupplementaire</value>
+		<value>ch.vd.uniregctb.audit.AuditLine</value>
+		<value>ch.vd.uniregctb.declaration.Declaration</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</value>
+		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
+		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
+		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
+		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
+		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
+		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
+		<value>ch.vd.uniregctb.declaration.Periodicite</value>
+		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
+		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
+		<value>ch.vd.uniregctb.tiers.Contribuable</value>
+		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.Entreprise</value>
+		<value>ch.vd.uniregctb.tiers.Etablissement</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipal</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalSecondaire</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
+		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.IdentificationPersonne</value>
+		<value>ch.vd.uniregctb.tiers.IdentificationEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.MenageCommun</value>
+		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
+		<value>ch.vd.uniregctb.tiers.AppartenanceMenage</value>
+		<value>ch.vd.uniregctb.tiers.Parente</value>
+		<value>ch.vd.uniregctb.tiers.RapportPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.RepresentationConventionnelle</value>
+		<value>ch.vd.uniregctb.tiers.RepresentationLegale</value>
+		<value>ch.vd.uniregctb.tiers.Tutelle</value>
+		<value>ch.vd.uniregctb.tiers.Curatelle</value>
+		<value>ch.vd.uniregctb.tiers.ConseilLegal</value>
+		<value>ch.vd.uniregctb.tiers.ContactImpotSource</value>
+		<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
+		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
+		<value>ch.vd.uniregctb.tiers.Tiers</value>
+		<value>ch.vd.uniregctb.tiers.Tache</value>
+		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>
+		<value>ch.vd.uniregctb.tiers.TacheControleDossier</value>
+		<value>ch.vd.uniregctb.tiers.TacheTransmissionDossier</value>
+		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot</value>
+		<value>ch.vd.uniregctb.tiers.TacheNouveauDossier</value>
+		<value>ch.vd.uniregctb.tiers.DroitAcces</value>
+		<value>ch.vd.uniregctb.tiers.Remarque</value>
+		<value>ch.vd.uniregctb.mouvement.MouvementDossier</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossier</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur</value>
+		<value>ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossier</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierArchives</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierClassementGeneral</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierClassementIndependants</value>
+		<value>ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel</value>
+		<value>ch.vd.uniregctb.mouvement.BordereauMouvementDossier</value>
+		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
+		<value>ch.vd.uniregctb.rf.Immeuble</value>
+		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
+		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
+		<!--<value>ch.vd.uniregctb.tiers.Bouclement</value>-->
+	</util:list>
+
+	<!-- La session factory -->
+	<bean id="uniregSessionFactory" class="ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean">
+		<property name="description" value="Unireg"/>
+		<property name="annotatedClasses" ref="uniregHibernateAnnotatedClasses" />
+		<property name="dataSource" ref="uniregDataSource" />
+		<property name="hibernateProperties" ref="uniregHibernateProperties" />
+	</bean>
+
+	<util:properties id="uniregHibernateProperties">
+		<prop key="hibernate.connection.autocommit">false</prop>
+		<prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
+		<prop key="hibernate.show_sql">false</prop>
+		<prop key="hibernate.jdbc.batch_size">0</prop>
+		<prop key="hibernate.jdbc.use_streams_for_binary">true</prop>
+		<prop key="hibernate.dialect">ch.vd.shared.hibernate.config.OracleDialectWithNvarchar</prop>
+		<prop key="hibernate.query.substitutions">true 1, false 0</prop>
+		<prop key="hibernate.hbm2ddl.auto">validate</prop>
+		<prop key="hibernate.default_schema">${unireg.jdbc.schema}</prop>
+	</util:properties>
+
+	<bean id="uniregDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${unireg.jdbc.driver.class}" />
+		<property name="url" value="${unireg.jdbc.url}" />
+		<property name="username" value="${unireg.jdbc.user}" />
+		<property name="password" value="${unireg.jdbc.password}" />
+		<property name="maxTotal" value="${unireg.jdbc.pool.size}" />
+		<property name="maxIdle" value="${unireg.jdbc.pool.size}" />
+		<property name="minIdle" value="0" />
+		<property name="initialSize" value="0" />
+	</bean>
+
+	<bean id="uniregTransactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="uniregSessionFactory"/>
+	</bean>
+
+</beans>

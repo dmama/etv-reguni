@@ -34,6 +34,14 @@
 		<appender-ref ref="PERF"/>
 	</logger>
 
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="INFO" />
+	</logger>
+
 	<root level="info">
 		<!--<appender-ref ref="CONSOLE"/>-->
 		<appender-ref ref="MAIN" />

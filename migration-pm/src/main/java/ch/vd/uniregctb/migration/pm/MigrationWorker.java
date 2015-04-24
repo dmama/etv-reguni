@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
@@ -46,9 +47,14 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private volatile boolean started;
 
 	private StreetDataMigrator streetDataMigrator;
+	private PlatformTransactionManager uniregTransactionManager;
 
 	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
 		this.streetDataMigrator = streetDataMigrator;
+	}
+
+	public void setUniregTransactionManager(PlatformTransactionManager uniregTransactionManager) {
+		this.uniregTransactionManager = uniregTransactionManager;
 	}
 
 	@Override

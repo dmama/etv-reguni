@@ -38,6 +38,9 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory regpmSessionFactory;
 
+	private PlatformTransactionManager uniregTransactionManager;
+	private SessionFactory uniregSessionFactory;
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
@@ -59,6 +62,8 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	public final void setup() throws Exception {
 		this.regpmTransactionManager = getBean(PlatformTransactionManager.class, "regpmTransactionManager");
 		this.regpmSessionFactory = getBean(SessionFactory.class, "regpmSessionFactory");
+		this.uniregTransactionManager = getBean(PlatformTransactionManager.class, "uniregTransactionManager");
+		this.uniregSessionFactory = getBean(SessionFactory.class, "uniregSessionFactory");
 		onSetup();
 	}
 
@@ -83,9 +88,22 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		return regpmSessionFactory;
 	}
 
+	protected final PlatformTransactionManager getUniregTransactionManager() {
+		return uniregTransactionManager;
+	}
+
+	protected final SessionFactory getUniregSessionFactory() {
+		return uniregSessionFactory;
+	}
+
 	protected final <T> T doInRegpmTransaction(TransactionCallback<T> callback) {
 		final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
 		template.setReadOnly(true);     // on n'écrit jamais rien dans regpm!
+		return template.execute(callback);
+	}
+
+	protected final <T> T doInUniregTransaction(TransactionCallback<T> callback) {
+		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
 		return template.execute(callback);
 	}
 
