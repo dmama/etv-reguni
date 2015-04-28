@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -40,7 +41,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	protected void onSetup() throws Exception {
 		super.onSetup();
 		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
-		migrator = new EntrepriseMigrator(getUniregSessionFactory(), getStreetDataMigrator(), getTiersDAO(), rcentClient);
+		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+
+		migrator = new EntrepriseMigrator();
+		migrator.setPeriodeFiscaleDAO(periodeFiscaleDAO);
+		migrator.setRcentClient(rcentClient);
+		migrator.setStreetDataMigrator(getStreetDataMigrator());
+		migrator.setTiersDAO(getTiersDAO());
+		migrator.setUniregSessionFactory(getUniregSessionFactory());
 	}
 
 	/**
@@ -137,7 +145,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testMigrationDeclarations() throws Exception {
+	public void testMigrationDeclarationEmise() throws Exception {
 
 		final int pf = 2014;
 		final long noEntreprise = 1234L;
@@ -186,6 +194,80 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNotNull(etat);
 			Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
 			Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
+			return null;
+		});
+	}
+
+	@Test
+	public void testMigrationDeclarationAvecAutresEtats() throws Exception {
+
+		final int pf = 2014;
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30), RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, RegDate.get(pf, 7, 12));
+		df.setDateEnvoiSommation(df.getDelaiRetour().addDays(30));
+		df.setDelaiSommation(df.getDateEnvoiSommation().addDays(45));
+		df.setDateRetour(df.getDateEnvoiSommation().addDays(10));
+
+		// on crée d'abord la PF en base
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(pf);
+			return null;
+		});
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		// .. et une déclaration dessus
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getUniregSessionFactory().getCurrentSession().get(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Declaration> declarations = entreprise.getDeclarations();
+			Assert.assertNotNull(declarations);
+			Assert.assertEquals(1, declarations.size());
+
+			final Declaration declaration = declarations.iterator().next();
+			Assert.assertNotNull(declaration);
+			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
+			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
+			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
+
+			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(3, etats.size());
+			{
+				final EtatDeclaration etat = etats.get(0);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(1);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12).addDays(225 + 30), etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(2);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12).addDays(225 + 30 + 10), etat.getDateObtention());
+			}
 			return null;
 		});
 	}

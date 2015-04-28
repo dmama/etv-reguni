@@ -150,4 +150,6 @@
 		<property name="dialect" ref="uniregHibernateDialect" />
 	</bean>
 
+	<bean id="periodeFiscaleDAO" class="ch.vd.uniregctb.declaration.PeriodeFiscaleDAOImpl" parent="uniregHibernateDao"/>
+
 </beans>

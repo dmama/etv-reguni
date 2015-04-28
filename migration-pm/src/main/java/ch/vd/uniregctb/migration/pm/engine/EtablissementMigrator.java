@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
@@ -29,7 +28,6 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
@@ -41,7 +39,6 @@ import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -50,10 +47,9 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
 
-	private final RcEntClient rcentClient;
+	private RcEntClient rcentClient;
 
-	public EtablissementMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO, RcEntClient rcentClient) {
-		super(uniregSessionFactory, streetDataMigrator, tiersDAO);
+	public void setRcentClient(RcEntClient rcentClient) {
 		this.rcentClient = rcentClient;
 	}
 

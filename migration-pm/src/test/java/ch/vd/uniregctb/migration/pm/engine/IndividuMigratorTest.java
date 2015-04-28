@@ -34,7 +34,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
 		nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		nonHabitantIndex.overwriteIndex();
-		migrator = new IndividuMigrator(getUniregSessionFactory(), getStreetDataMigrator(), getTiersDAO(), rcpersClient, nonHabitantIndex);
+
+		migrator = new IndividuMigrator();
+		migrator.setNonHabitantIndex(nonHabitantIndex);
+		migrator.setRcpersClient(rcpersClient);
+		migrator.setStreetDataMigrator(getStreetDataMigrator());
+		migrator.setTiersDAO(getTiersDAO());
+		migrator.setUniregSessionFactory(getUniregSessionFactory());
 	}
 
 	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {

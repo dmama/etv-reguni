@@ -43,7 +43,12 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	protected void onSetup() throws Exception {
 		super.onSetup();
 		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
-		migrator = new EtablissementMigrator(getUniregSessionFactory(), getStreetDataMigrator(), getTiersDAO(), rcentClient);
+
+		migrator = new EtablissementMigrator();
+		migrator.setRcentClient(rcentClient);
+		migrator.setStreetDataMigrator(getStreetDataMigrator());
+		migrator.setTiersDAO(getTiersDAO());
+		migrator.setUniregSessionFactory(getUniregSessionFactory());
 	}
 
 	private static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

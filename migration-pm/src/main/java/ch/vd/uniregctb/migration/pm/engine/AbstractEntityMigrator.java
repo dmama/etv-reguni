@@ -51,9 +51,9 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
-	protected final SessionFactory uniregSessionFactory;
-	protected final StreetDataMigrator streetDataMigrator;
-	protected final TiersDAO tiersDAO;
+	protected SessionFactory uniregSessionFactory;
+	protected StreetDataMigrator streetDataMigrator;
+	protected TiersDAO tiersDAO;
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER = (l1, l2) -> {
 		final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
@@ -152,9 +152,15 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		return couverture(appartenances, AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire);
 	}
 
-	protected AbstractEntityMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO) {
+	public void setUniregSessionFactory(SessionFactory uniregSessionFactory) {
 		this.uniregSessionFactory = uniregSessionFactory;
+	}
+
+	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
 		this.streetDataMigrator = streetDataMigrator;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 

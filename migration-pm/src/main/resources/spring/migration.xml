@@ -21,14 +21,32 @@
 	</bean>
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
-		<property name="streetDataMigrator" ref="streetDataMigrator"/>
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
-		<property name="rcpersClient" ref="rcpersClient"/>
-		<property name="rcentClient" ref="rcentClient"/>
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
 		<property name="mode" value="${migration.mode}"/>
+		<property name="entrepriseMigrator" ref="entrepriseMigrator"/>
+		<property name="etablissementMigrator" ref="etablissementMigrator"/>
+		<property name="individuMigrator" ref="individuMigrator"/>
+	</bean>
+
+	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
+		<property name="streetDataMigrator" ref="streetDataMigrator"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+	</bean>
+
+	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
+		<property name="rcentClient" ref="rcentClient"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+	</bean>
+
+	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
+		<property name="rcentClient" ref="rcentClient"/>
+	</bean>
+
+	<bean id="individuMigrator" class="ch.vd.uniregctb.migration.pm.engine.IndividuMigrator" parent="entityMigrator">
+		<property name="rcpersClient" ref="rcpersClient"/>
+		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">

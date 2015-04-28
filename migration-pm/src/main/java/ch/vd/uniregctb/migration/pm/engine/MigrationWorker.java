@@ -30,8 +30,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
-import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
@@ -42,15 +40,12 @@ import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.Worker;
-import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
-import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -68,13 +63,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private volatile boolean started;
 	private MigrationMode mode;
 
-	private StreetDataMigrator streetDataMigrator;
 	private PlatformTransactionManager uniregTransactionManager;
 	private SessionFactory uniregSessionFactory;
-	private RcPersClient rcpersClient;
-	private RcEntClient rcentClient;
-	private TiersDAO tiersDAO;
-	private NonHabitantIndex nonHabitantIndex;
 
 	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
 	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
@@ -147,10 +137,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
-		this.streetDataMigrator = streetDataMigrator;
-	}
-
 	public void setUniregTransactionManager(PlatformTransactionManager uniregTransactionManager) {
 		this.uniregTransactionManager = uniregTransactionManager;
 	}
@@ -159,33 +145,24 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.uniregSessionFactory = uniregSessionFactory;
 	}
 
-	public void setRcpersClient(RcPersClient rcpersClient) {
-		this.rcpersClient = rcpersClient;
-	}
-
-	public void setRcentClient(RcEntClient rcentClient) {
-		this.rcentClient = rcentClient;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
-	public void setNonHabitantIndex(NonHabitantIndex nonHabitantIndex) {
-		this.nonHabitantIndex = nonHabitantIndex;
-	}
-
 	public void setMode(MigrationMode mode) {
 		this.mode = mode;
 	}
 
+	public void setEntrepriseMigrator(EntityMigrator<RegpmEntreprise> entrepriseMigrator) {
+		this.entrepriseMigrator = entrepriseMigrator;
+	}
+
+	public void setEtablissementMigrator(EntityMigrator<RegpmEtablissement> etablissementMigrator) {
+		this.etablissementMigrator = etablissementMigrator;
+	}
+
+	public void setIndividuMigrator(EntityMigrator<RegpmIndividu> individuMigrator) {
+		this.individuMigrator = individuMigrator;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
-		this.entrepriseMigrator = new EntrepriseMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcentClient);
-		this.etablissementMigrator = new EtablissementMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcentClient);
-		this.individuMigrator = new IndividuMigrator(uniregSessionFactory, streetDataMigrator, tiersDAO, rcpersClient, nonHabitantIndex);
-
 		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
 		                                       new ArrayBlockingQueue<>(20),
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),

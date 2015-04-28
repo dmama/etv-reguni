@@ -3,7 +3,6 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -33,12 +31,12 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
@@ -57,7 +55,6 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -70,11 +67,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
-	private final RcEntClient rcentClient;
+	private RcEntClient rcentClient;
+	private PeriodeFiscaleDAO periodeFiscaleDAO;
 
-	public EntrepriseMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO, RcEntClient rcentClient) {
-		super(uniregSessionFactory, streetDataMigrator, tiersDAO);
+	public void setRcentClient(RcEntClient rcentClient) {
 		this.rcentClient = rcentClient;
+	}
+
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
+		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 
 	@Nullable
@@ -316,13 +317,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// boucle sur chacune des déclarations
 		regpm.getDossiersFiscaux().forEach(dossier -> {
 
-			final Map<String, Object> criteria = new HashMap<>();
-			criteria.put("annee", dossier.getPf());
-			final List<PeriodeFiscale> pfs = getEntitiesFromDb(PeriodeFiscale.class, criteria);
-			if (pfs == null || pfs.size() != 1) {
+			final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(dossier.getPf());
+			if (pf == null) {
 				throw new IllegalStateException("La période fiscale " + dossier.getPf() + " n'existe pas dans Unireg.");
 			}
-			final PeriodeFiscale pf = pfs.get(0);
 
 			DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 			copyCreationMutation(dossier, di);

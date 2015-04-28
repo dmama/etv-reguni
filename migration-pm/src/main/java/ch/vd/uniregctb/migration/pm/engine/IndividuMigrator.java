@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,26 +24,26 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.Equalator;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	private static final MigrationResultMessage.CategorieListe CATEGORIE_LISTE = MigrationResultMessage.CategorieListe.INDIVIDUS_PM;
 
-	private final RcPersClient rcpersClient;
-	private final NonHabitantIndex nonHabitantIndex;
+	private RcPersClient rcpersClient;
+	private NonHabitantIndex nonHabitantIndex;
 
-	public IndividuMigrator(SessionFactory uniregSessionFactory, StreetDataMigrator streetDataMigrator, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
-		super(uniregSessionFactory, streetDataMigrator, tiersDAO);
+	public void setRcpersClient(RcPersClient rcpersClient) {
 		this.rcpersClient = rcpersClient;
+	}
+
+	public void setNonHabitantIndex(NonHabitantIndex nonHabitantIndex) {
 		this.nonHabitantIndex = nonHabitantIndex;
 	}
 
