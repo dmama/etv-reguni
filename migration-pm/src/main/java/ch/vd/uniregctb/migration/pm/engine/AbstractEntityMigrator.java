@@ -43,10 +43,10 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
@@ -221,7 +221,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * fourni une entité.
 	 */
 	@Nullable
-	protected KeyedSupplier<? extends Tiers> getPolymorphicSupplier(IdMapper idMapper,
+	protected KeyedSupplier<? extends Contribuable> getPolymorphicSupplier(IdMapper idMapper,
 	                                                                @Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
 	                                                                @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
 	                                                                @Nullable Supplier<RegpmIndividu> individuSupplier) {

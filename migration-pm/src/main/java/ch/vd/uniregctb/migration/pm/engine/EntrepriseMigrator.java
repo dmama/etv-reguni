@@ -56,6 +56,7 @@ import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -309,7 +310,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		regpm.getMandataires().forEach(mandat -> {
 
 			// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
-			final Supplier<? extends Tiers> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
+			final Supplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
 			if (mandataire == null) {
 				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
 				return;

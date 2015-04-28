@@ -8,9 +8,12 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -102,7 +105,7 @@ public class EntityLinkCollector {
 		public abstract R toRapportEntreTiers();
 	}
 
-	public static final class EtablissementEntiteJuridiqueLink<T extends Tiers> extends EntityLink<Etablissement, T, RapportEntreTiers> {
+	public static final class EtablissementEntiteJuridiqueLink<T extends Contribuable> extends EntityLink<Etablissement, T, RapportEntreTiers> {
 
 		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, Supplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
 			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
@@ -118,12 +121,11 @@ public class EntityLinkCollector {
 
 		@Override
 		public RapportEntreTiers toRapportEntreTiers() {
-			// TODO implémenter le rapport entre tiers qui va bien et l'instancier avec les bonnes dates,
-			throw new NotImplementedException("A implémenter...");
+			return new ActiviteEconomique(getDateDebut(), getDateFin(), resolveEntiteJuridique(), resolveEtablissement());
 		}
 	}
 
-	public static final class MandantMandataireLink<S extends Tiers, D extends Tiers> extends EntityLink<S, D, RapportEntreTiers> {
+	public static final class MandantMandataireLink<S extends Contribuable, D extends Contribuable> extends EntityLink<S, D, RapportEntreTiers> {
 
 		// TODO rajouter un type de mandat ?
 		public MandantMandataireLink(Supplier<S> mandant, Supplier<D> mandataire, RegDate dateDebut, RegDate dateFin) {
@@ -140,8 +142,7 @@ public class EntityLinkCollector {
 
 		@Override
 		public RapportEntreTiers toRapportEntreTiers() {
-			// TODO implémenter le rapport entre tiers qui va bien et l'instancier avec les bonnes dates,
-			throw new NotImplementedException("A implémenter...");
+			return new Mandat(getDateDebut(), getDateFin(), resolveMandant(), resolveMandataire());
 		}
 	}
 
@@ -161,8 +162,7 @@ public class EntityLinkCollector {
 
 		@Override
 		public RapportEntreTiers toRapportEntreTiers() {
-			// TODO implémenter le rapport entre tiers qui va bien et l'instancier avec les bonnes dates,
-			throw new NotImplementedException("A implémenter...");
+			return new FusionEntreprises(getDateDebut(), getDateFin(), resolveEntrepriseFusionnante(), resolveEntrepriseFusionnee());
 		}
 	}
 }

@@ -36,6 +36,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -177,7 +178,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// pour eux-mêmes (-> on ne traite les activités indépendantes "PP" que dans le cas où elles sont mandatrices de quelque chose...)
 
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
-		final KeyedSupplier<? extends Tiers> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
+		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
 		if (entiteJuridique == null) {
 			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
 		}
