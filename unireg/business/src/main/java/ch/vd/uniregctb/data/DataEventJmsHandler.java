@@ -168,6 +168,9 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
 					type = TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
 					break;
+				case ACTIVITE_ECONOMIQUE:
+					type = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
+					break;
 				default:
 					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
