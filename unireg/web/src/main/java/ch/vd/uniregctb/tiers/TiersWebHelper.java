@@ -75,6 +75,12 @@ public abstract class TiersWebHelper {
 		else if (rapport instanceof ActiviteEconomique) {
 			return String.format("%s %s une activité économique au travers de l'établissement %s", nomSujet, fermeOuAnnule ? "exerçait" : "exerce", nomObjet);
 		}
+		else if (rapport instanceof Mandat) {
+			return String.format("%s %s un mandat à %s", nomSujet, fermeOuAnnule ? "confiait" : "confie", nomObjet);
+		}
+		else if (rapport instanceof FusionEntreprises) {
+			return String.format("%s (n°%d) a fusionné pour donner %s (n°%d)", nomSujet, sujetId, nomObjet, objetId);
+		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + ']');
 		}

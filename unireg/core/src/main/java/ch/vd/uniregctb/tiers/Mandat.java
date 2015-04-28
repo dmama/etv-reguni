@@ -10,54 +10,56 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 /**
  * <pre>
  *   +----------------+                   +------------------+
- *   | Contribuable   |                   | Etablissement    |
+ *   |    Mandant     |                   |    Mandataire    |
  *   +----------------+                   +------------------+
  *           ^                                        ^
  *           ¦  sujet  +--------------------+  objet  ¦
- *           +---------| ActiviteEconomique |---------+
+ *           +---------|      Mandat        |---------+
  *                     +--------------------+
  * </pre>
  */
 @Entity
-@DiscriminatorValue("ActiviteEconomique")
-public class ActiviteEconomique extends RapportEntreTiers {
+@DiscriminatorValue("Mandat")
+public class Mandat extends RapportEntreTiers {
 
-	private static final String PERSONNE = "personne";
-	private static final String ETABLISSEMENT = "établissement";
+	private static final String MANDANT = "mandant";
+	private static final String MANDATAIRE = "mandataire";
 
-	public ActiviteEconomique() {
+	// TODO il manque le type de mandat
+
+	public Mandat() {
 		// empty
 	}
 
-	public ActiviteEconomique(RegDate dateDebut, RegDate dateFin, Contribuable personneMoraleOuPhysique, Etablissement etablissement) {
-		super(dateDebut, dateFin, personneMoraleOuPhysique, etablissement);
+	public Mandat(RegDate dateDebut, RegDate dateFin, Contribuable mandant, Contribuable mandataire) {
+		super(dateDebut, dateFin, mandant, mandataire);
 	}
 
-	protected ActiviteEconomique(ActiviteEconomique src) {
+	protected Mandat(Mandat src) {
 		super(src);
 	}
 
 	@Override
 	@Transient
 	public TypeRapportEntreTiers getType() {
-		return TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
+		return TypeRapportEntreTiers.MANDAT;
 	}
 
 	@Override
 	@Transient
 	public String getDescriptionTypeObjet() {
-		return ETABLISSEMENT;
+		return MANDATAIRE;
 	}
 
 	@Override
 	@Transient
 	public String getDescriptionTypeSujet() {
-		return PERSONNE;
+		return MANDANT;
 	}
 
 	@Override
 	public RapportEntreTiers duplicate() {
-		return new ActiviteEconomique(this);
+		return new Mandat(this);
 	}
 
 }

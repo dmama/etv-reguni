@@ -171,6 +171,12 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				case ACTIVITE_ECONOMIQUE:
 					type = TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE;
 					break;
+				case MANDAT:
+					type = TypeRapportEntreTiers.MANDAT;
+					break;
+				case FUSION_ENTREPRISES:
+					type = TypeRapportEntreTiers.FUSION_ENTREPRISES;
+					break;
 				default:
 					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}

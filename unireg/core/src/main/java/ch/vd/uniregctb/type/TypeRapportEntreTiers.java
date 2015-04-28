@@ -7,6 +7,8 @@ import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.FusionEntreprises;
+import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -147,6 +149,30 @@ public enum TypeRapportEntreTiers {
 		@Override
 		public Class<? extends RapportEntreTiers> getRapportClass() {
 			return ActiviteEconomique.class;
+		}
+	},
+
+	MANDAT {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new Mandat();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return Mandat.class;
+		}
+	},
+
+	FUSION_ENTREPRISES {
+		@Override
+		public RapportEntreTiers newInstance() {
+			return new FusionEntreprises();
+		}
+
+		@Override
+		public Class<? extends RapportEntreTiers> getRapportClass() {
+			return FusionEntreprises.class;
 		}
 	};
 
