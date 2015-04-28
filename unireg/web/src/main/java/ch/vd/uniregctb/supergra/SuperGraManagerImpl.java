@@ -51,6 +51,7 @@ import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.taglibs.formInput.MultilineString;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AssujettissementParSubstitution;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -922,6 +924,22 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public AttributeView build(Property p, Object value, SuperGraContext context) {
 				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
 				return new AttributeView(p.getName(), "substituant", Tiers.class, entity, false, false, false);
+			}
+		});
+
+		// Activité économique
+		builders.put(new AttributeKey(ActiviteEconomique.class, "sujetId"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "personne", Tiers.class, entity, false, false, false);
+			}
+		});
+		builders.put(new AttributeKey(ActiviteEconomique.class, "objetId"), new AttributeBuilder() {
+			@Override
+			public AttributeView build(Property p, Object value, SuperGraContext context) {
+				final HibernateEntity entity = (value == null ? null : context.getEntity(new EntityKey(EntityType.Tiers, (Long) value)));
+				return new AttributeView(p.getName(), "établissement", Etablissement.class, entity, false, false, false);
 			}
 		});
 

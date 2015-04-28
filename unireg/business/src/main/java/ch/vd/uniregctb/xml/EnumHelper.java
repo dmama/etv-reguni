@@ -1151,6 +1151,7 @@ public abstract class EnumHelper {
 			// ce type ne devrait pas être utilisé tel quel, mais plutôt découpé en PARENT/CHILD
 			throw new IllegalArgumentException("Erreur de mapping?");
 		case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
+		case ACTIVITE_ECONOMIQUE:
 			throw new IllegalArgumentException("Erreur de mapping?");
 		default:
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');

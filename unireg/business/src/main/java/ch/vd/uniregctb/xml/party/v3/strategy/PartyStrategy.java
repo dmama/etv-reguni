@@ -224,7 +224,9 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE,
-			TypeRapportEntreTiers.PARENTE, TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION));
+	                                                                                                                    TypeRapportEntreTiers.PARENTE,
+	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
+	                                                                                                                    TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE));
 
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {

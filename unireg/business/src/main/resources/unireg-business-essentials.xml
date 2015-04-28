@@ -286,6 +286,7 @@
 	<bean id="curatelleValidator" class="ch.vd.uniregctb.validation.rapport.CuratelleValidator" parent="representationLegaleValidator" />
 	<bean id="conseilLegalValidator" class="ch.vd.uniregctb.validation.rapport.ConseilLegalValidator" parent="representationLegaleValidator" />
 	<bean id="assujettissementParSubstitutionValidator" class="ch.vd.uniregctb.validation.rapport.AssujettissementParSubstitutionValidator" parent="rapportEntreTiersValidator" />
+	<bean id="activiteEconomiqueValidator" class="ch.vd.uniregctb.validation.rapport.ActiviteEconomiqueValidator" parent="rapportEntreTiersValidator"/>
 
 	<bean id="tacheValidator" class="ch.vd.uniregctb.validation.tache.TacheValidator" abstract="true" parent="entityValidator" />
 	<bean id="defaultTacheValidator" class="ch.vd.uniregctb.validation.tache.DefaultTacheValidator" parent="tacheValidator" />

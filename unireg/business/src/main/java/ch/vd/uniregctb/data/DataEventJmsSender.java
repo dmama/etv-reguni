@@ -204,6 +204,9 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
 				relationship = Relationship.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
 				break;
+			case ACTIVITE_ECONOMIQUE:
+				relationship = Relationship.ACTIVITE_ECONOMIQUE;
+				break;
 			default:
 				throw new IllegalArgumentException("Type de relation inconnu = [" + type + ']');
 		}

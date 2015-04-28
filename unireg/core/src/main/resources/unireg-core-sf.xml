@@ -70,6 +70,7 @@
 		<value>ch.vd.uniregctb.tiers.ConseilLegal</value>
 		<value>ch.vd.uniregctb.tiers.ContactImpotSource</value>
 		<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
+		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
