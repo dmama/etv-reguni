@@ -165,6 +165,9 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 				case TUTELLE:
 					type = TypeRapportEntreTiers.TUTELLE;
 					break;
+				case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
+					type = TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION;
+					break;
 				default:
 					throw new IllegalArgumentException("Type de relation inconnu : " + event.getRelationType());
 			}
