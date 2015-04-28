@@ -52,7 +52,12 @@ public class MigrationResultMessage {
 		/**
 		 * Erreurs/messages liés à la migration des fors
 		 */
-		FORS
+		FORS,
+
+		/**
+		 * Erreurs/messages liés à la migration des déclarations
+		 */
+		DECLARATIONS
 	}
 
 	public enum Niveau {

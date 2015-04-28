@@ -12,26 +12,101 @@
 	<appender name="MAIN" class="ch.qos.logback.core.FileAppender">
 		<file>log/migration.log</file>
 		<append>true</append>
-		<!-- encoders are assigned the type
-			 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8thread] %msg%n</pattern>
+			<pattern>%-5level [%-20logger{20}] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8thread] %msg%n</pattern>
 		</encoder>
 	</appender>
 
 	<appender name="PERF" class="ch.qos.logback.core.FileAppender">
 		<file>log/perfs.log</file>
 		<append>true</append>
-		<!-- encoders are assigned the type
-			 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
 		<encoder>
-			<pattern>%-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %msg%n</pattern>
-			<!--<pattern>[perf] %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} | %msg%n</pattern>-->
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %msg%n</pattern>
 		</encoder>
 	</appender>
 
+	<!-- -->
+	<!-- Appenders/loggers spécifiques pour les listes de contrôles -->
+
+	<appender name="ADRESSES" class="ch.qos.logback.core.FileAppender">
+		<file>log/adresses.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.ADRESSES" additivity="false">
+		<appender-ref ref="ADRESSES"/>
+	</logger>
+
+	<appender name="INDIVIDUS_PM" class="ch.qos.logback.core.FileAppender">
+		<file>log/individus-pm.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.INDIVIDUS_PM" additivity="false">
+		<appender-ref ref="INDIVIDUS_PM"/>
+	</logger>
+
+	<appender name="ETABLISSEMENTS" class="ch.qos.logback.core.FileAppender">
+		<file>log/etablissements.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.ETABLISSEMENTS" additivity="false">
+		<appender-ref ref="ETABLISSEMENTS"/>
+	</logger>
+
+	<appender name="FORS" class="ch.qos.logback.core.FileAppender">
+		<file>log/fors.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.FORS" additivity="false">
+		<appender-ref ref="FORS"/>
+	</logger>
+
+	<appender name="DECLARATIONS" class="ch.qos.logback.core.FileAppender">
+		<file>log/declarations.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.DECLARATIONS" additivity="false">
+		<appender-ref ref="DECLARATIONS"/>
+	</logger>
+
+	<!-- tous les messages envoyés par la migration dans les MigrationResults seront loggués ici s'ils ne sont pas explicitement pris en compte par un autre logger -->
+	<appender name="OTHERS" class="ch.qos.logback.core.FileAppender">
+		<file>log/suivi-global.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [-8c] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe" additivity="false">
+		<appender-ref ref="OTHERS"/>
+	</logger>
+
+
+	<!-- -->
+	<!-- Logger généraux -->
+
 	<logger name="ch.vd.uniregctb.migration.pm.utils.TracingFactory" additivity="false">
 		<appender-ref ref="PERF"/>
+	</logger>
+
+	<logger name="org.springframework">
+		<level value="INFO" />
 	</logger>
 
 	<logger name="org.hibernate">

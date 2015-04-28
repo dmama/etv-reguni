@@ -88,10 +88,20 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
 		@Override
 		public RegDate getDateFin() {
+			// si l'un des établissements stables a une date de fin vide, la date de fin est vide
+			final boolean finVideExiste = etablissementsStables.stream()
+					.filter(e -> e.getDateFin() == null)
+					.findAny()
+					.isPresent();
+			if (finVideExiste) {
+				return null;
+			}
+
+			// aucune date de fin vide -> on prend la plus récente
 			return etablissementsStables.stream()
 					.map(RegpmEtablissementStable::getDateFin)
 					.max(NullDateBehavior.LATEST::compare)
-					.orElse(null);
+					.get();
 		}
 
 		@Override

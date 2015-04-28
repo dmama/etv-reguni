@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -38,12 +39,13 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 /**
  * Feeder qui va chercher les données des PM dans la base de données du mainframe
  */
-public class FromDbFeeder implements Feeder {
+public class FromDbFeeder implements Feeder, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FromDbFeeder.class);
 
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory sessionFactory;
+	private volatile boolean shutdownInProgress = false;
 
 	private static void forceLoad(RegpmImmeuble immeuble, Graphe graphe) {
 		if (!graphe.register(immeuble)) {
@@ -223,6 +225,11 @@ public class FromDbFeeder implements Feeder {
 	}
 
 	@Override
+	public void destroy() throws Exception {
+		this.shutdownInProgress = true;
+	}
+
+	@Override
 	public void feed(Worker worker) throws Exception {
 		// première étape, allons chercher les identifiants des entreprises à migrer...
 		LOGGER.info("Récupération des entreprises de RegPM à migrer...");
@@ -235,10 +242,15 @@ public class FromDbFeeder implements Feeder {
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
 		for (long id : ids) {
 //		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
-			if (!idsDejaTrouvees.contains(id)) {
+			if (!idsDejaTrouvees.contains(id) && !shutdownInProgress) {
 				final Graphe graphe = loadGraphe(id);
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
 				worker.onGraphe(graphe);
+			}
+
+			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
+			if (Thread.currentThread().isInterrupted()) {
+				break;
 			}
 		}
 	}

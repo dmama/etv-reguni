@@ -59,8 +59,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
-	private Thread gatheringThread;
-	private volatile boolean started;
+	private GatheringThread gatheringThread;
 	private MigrationMode mode;
 
 	private PlatformTransactionManager uniregTransactionManager;
@@ -169,24 +168,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		                                       MigrationWorker::rejectionExecutionHandler);
 
 		this.completionService = new ExecutorCompletionService<>(this.executor);
-		this.gatheringThread = new Thread("Gathering") {
-			@Override
-			public void run() {
-				LOGGER.info("Gathering thread starting...");
-				try {
-					gather();
-				}
-				catch (InterruptedException e) {
-					LOGGER.error("Gathering thread interrupted!", e);
-				}
-				catch (RuntimeException | Error e) {
-					LOGGER.error("Exception thrown in gathering thread", e);
-				}
-				finally {
-					LOGGER.info("Gathering thread is now done.");
-				}
-			}
-		};
+		this.gatheringThread = new GatheringThread();
 		if (this.mode == MigrationMode.FROM_DUMP || this.mode == MigrationMode.DIRECT) {
 			this.gatheringThread.start();
 		}
@@ -194,56 +176,90 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	@Override
 	public void destroy() throws Exception {
-		final List<Runnable> remaining = executor.shutdownNow();
-		nbEnCours.addAndGet(-remaining.size());
-		awaitTermination();
+		executor.shutdownNow();
+		awaitExecutorTermination();
+		gatheringThread.requestStop();
 		gatheringThread.join();
+	}
+
+	/**
+	 * Thread de récupération (et de log) des résultats de migration
+	 */
+	private final class GatheringThread extends Thread {
+
+		private volatile boolean stopOnNextLoop = false;
+		private volatile boolean stopOnExhaustion = false;
+
+		public GatheringThread() {
+			super("Gathering");
+		}
+
+		@Override
+		public void run() {
+			LOGGER.info("Gathering thread starting...");
+			try {
+				while (!(stopOnNextLoop || (stopOnExhaustion && nbEnCours.get() == 0))) {
+					final Future<MigrationResultMessageProvider> future = completionService.poll(1, TimeUnit.SECONDS);
+					if (future != null) {
+						nbEnCours.decrementAndGet();
+
+						try {
+							final MigrationResultMessageProvider res = future.get();
+							if (LOGGER.isDebugEnabled()) {
+								LOGGER.debug("Résultat de migration reçu : " + res);
+							}
+
+							// utilisation des loggers pour les fichiers/listes de contrôle
+							for (MigrationResultMessage.CategorieListe cat : MigrationResultMessage.CategorieListe.values()) {
+								final List<MigrationResultMessage> messages = res.getMessages(cat);
+								if (!messages.isEmpty()) {
+									final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResultMessage.CategorieListe.class.getName(), cat.name()));
+									messages.forEach(msg -> log(logger, msg.getNiveau(), msg.getTexte()));
+								}
+							}
+						}
+						catch (ExecutionException e) {
+							LOGGER.error("Exception inattendue", e.getCause());
+						}
+					}
+				}
+			}
+			catch (InterruptedException e) {
+				LOGGER.error("Gathering thread interrupted!", e);
+			}
+			catch (RuntimeException | Error e) {
+				LOGGER.error("Exception thrown in gathering thread", e);
+			}
+			finally {
+				LOGGER.info("Gathering thread is now done.");
+			}
+		}
+
+		public void requestStop() {
+			this.stopOnNextLoop = true;
+		}
+
+		public void signalFeedingOver() {
+			this.stopOnExhaustion = true;
+		}
 	}
 
 	@Override
 	public void onGraphe(Graphe graphe) throws Exception {
 		completionService.submit(new MigrationTask(graphe));
 		nbEnCours.incrementAndGet();
-		started = true;
 	}
 
 	@Override
 	public void feedingOver() throws InterruptedException {
 		executor.shutdown();
-		awaitTermination();
+		awaitExecutorTermination();
+		gatheringThread.signalFeedingOver();
 	}
 
-	private void awaitTermination() throws InterruptedException {
+	private void awaitExecutorTermination() throws InterruptedException {
 		while (!executor.isTerminated()) {
 			executor.awaitTermination(1, TimeUnit.SECONDS);
-		}
-	}
-
-	private void gather() throws InterruptedException {
-		while ((!started && !executor.isTerminated()) || (started && nbEnCours.intValue() > 0)) {
-			final Future<MigrationResultMessageProvider> future = completionService.poll(1, TimeUnit.SECONDS);
-			if (future != null) {
-				nbEnCours.decrementAndGet();
-
-				try {
-					final MigrationResultMessageProvider res = future.get();
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Résultat de migration reçu : " + res);
-					}
-
-					// utilisation des loggers pour les fichiers/listes de contrôle
-					for (MigrationResultMessage.CategorieListe cat : MigrationResultMessage.CategorieListe.values()) {
-						final List<MigrationResultMessage> messages = res.getMessages(cat);
-						if (!messages.isEmpty()) {
-							final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResultMessage.CategorieListe.class.getName(), cat.name()));
-							messages.forEach(msg -> log(logger, msg.getNiveau(), msg.getTexte()));
-						}
-					}
-				}
-				catch (ExecutionException e) {
-					LOGGER.error("Exception inattendue", e.getCause());
-				}
-			}
 		}
 	}
 

@@ -17,10 +17,12 @@ import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
@@ -42,6 +44,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		super.onSetup();
 		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
 		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
 
 		migrator = new EntrepriseMigrator();
 		migrator.setPeriodeFiscaleDAO(periodeFiscaleDAO);
@@ -49,6 +52,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.setStreetDataMigrator(getStreetDataMigrator());
 		migrator.setTiersDAO(getTiersDAO());
 		migrator.setUniregSessionFactory(getUniregSessionFactory());
+		migrator.setBouclementService(bouclementService);
 	}
 
 	/**
@@ -59,8 +63,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	static RegpmEntreprise buildEntreprise(long id) {
 		final RegpmEntreprise entreprise = new RegpmEntreprise();
 		entreprise.setId(id);
-		entreprise.setLastMutationOperator(REGPM_VISA);
-		entreprise.setLastMutationTimestamp(REGPM_MODIF);
+		assignMutationVisa(entreprise, REGPM_VISA, REGPM_MODIF);
 
 		// initialisation des collections à des collections vides tout comme on les trouverait avec une entité
 		// extraite de la base de données
@@ -94,6 +97,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmAssujettissement addAssujettissement(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateFin, RegpmTypeAssujettissement type) {
 		final RegpmAssujettissement a = new RegpmAssujettissement();
+		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
 		a.setDateDebut(dateDebut);
 		a.setDateFin(dateFin);
 		a.setType(type);
@@ -102,9 +106,10 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return a;
 	}
 
-	static RegpmDossierFiscal addDossierFiscal(RegpmEntreprise entreprise, RegpmAssujettissement assujettissement, RegDate dateEnvoi) {
+	static RegpmDossierFiscal addDossierFiscal(RegpmEntreprise entreprise, RegpmAssujettissement assujettissement, int pf, RegDate dateEnvoi) {
 		final RegpmDossierFiscal df = new RegpmDossierFiscal();
 		df.setId(new RegpmDossierFiscal.PK(computeNewSeqNo(entreprise.getDossiersFiscaux(), d -> d.getId().getSeqNo()), assujettissement.getId()));
+		assignMutationVisa(df, REGPM_VISA, REGPM_MODIF);
 		df.setAssujettissement(assujettissement);
 		df.setDateEnvoi(dateEnvoi);
 		df.setDelaiRetour(dateEnvoi.addDays(225));
@@ -112,12 +117,22 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		df.setEtat(RegpmTypeEtatDossierFiscal.ENVOYE);
 		df.setMotifEnvoi(RegpmMotifEnvoi.FIN_EXERCICE);
 
-		final int pf = assujettissement.getDateFin().year();
 		df.setNoParAnnee(computeNewSeqNo(entreprise.getDossiersFiscaux().stream().filter(d -> d.getPf() == pf).collect(Collectors.toList()),
 		                                 RegpmDossierFiscal::getNoParAnnee));
 		df.setPf(pf);
 		entreprise.getDossiersFiscaux().add(df);
 		return df;
+	}
+
+	static RegpmExerciceCommercial addExerciceCommercial(RegpmEntreprise entreprise, RegpmDossierFiscal dossierFiscal, RegDate dateDebut, RegDate dateFin) {
+		final RegpmExerciceCommercial ex = new RegpmExerciceCommercial();
+		ex.setId(new RegpmExerciceCommercial.PK(computeNewSeqNo(entreprise.getExercicesCommerciaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(ex, REGPM_VISA, REGPM_MODIF);
+		ex.setDateDebut(dateDebut);
+		ex.setDateFin(dateFin);
+		ex.setDossierFiscal(dossierFiscal);
+		entreprise.getExercicesCommerciaux().add(ex);
+		return ex;
 	}
 
 	@Test
@@ -150,8 +165,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final int pf = 2014;
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30), RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, RegDate.get(pf, 7, 12));
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
 
 		// on crée d'abord la PF en base
 		doInUniregTransaction(false, status -> {
@@ -204,11 +220,12 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final int pf = 2014;
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30), RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, RegDate.get(pf, 7, 12));
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
 		df.setDateEnvoiSommation(df.getDelaiRetour().addDays(30));
 		df.setDelaiSommation(df.getDateEnvoiSommation().addDays(45));
 		df.setDateRetour(df.getDateEnvoiSommation().addDays(10));
+		final RegpmExerciceCommercial ex = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
 
 		// on crée d'abord la PF en base
 		doInUniregTransaction(false, status -> {

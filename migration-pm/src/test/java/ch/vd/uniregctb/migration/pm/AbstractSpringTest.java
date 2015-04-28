@@ -28,6 +28,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -43,10 +44,20 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
-		                        DependencyInjectionTestExecutionListener.class,
-		                        DirtiesContextTestExecutionListener.class,
-		                        TransactionalTestExecutionListener.class
-                        })
+		DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations = {
+		"classpath:spring/regpm.xml",
+		"classpath:spring/database.xml",
+		"classpath:spring/validation.xml",
+		"classpath:spring/interfaces.xml",
+		"classpath:spring/migration.xml",
+		"classpath:spring/services.xml",
+		"classpath:spring/ut-database.xml",
+		"classpath:spring/ut-properties.xml"
+})
 public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;

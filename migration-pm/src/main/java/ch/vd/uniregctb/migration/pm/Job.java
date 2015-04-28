@@ -39,6 +39,7 @@ public class Job {
 		                                                                                  "classpath:spring/migration.xml",
 		                                                                                  "classpath:spring/database.xml",
 		                                                                                  "classpath:spring/validation.xml",
+		                                                                                  "classpath:spring/services.xml",
 		                                                                                  "classpath:spring/regpm.xml");
 		context.registerShutdownHook();
 

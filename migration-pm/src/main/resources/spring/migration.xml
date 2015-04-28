@@ -38,6 +38,7 @@
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
 		<property name="rcentClient" ref="rcentClient"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">

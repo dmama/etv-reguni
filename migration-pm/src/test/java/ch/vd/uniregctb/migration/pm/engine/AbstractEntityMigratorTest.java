@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -10,7 +11,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -26,15 +26,6 @@ import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
-@ContextConfiguration(locations = {
-		"classpath:spring/regpm.xml",
-		"classpath:spring/database.xml",
-		"classpath:spring/validation.xml",
-		"classpath:spring/interfaces.xml",
-		"classpath:spring/migration.xml",
-		"classpath:spring/ut-database.xml",
-		"classpath:spring/ut-properties.xml"
-})
 public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 
 	protected static final Iterator<Long> ID_GENERATOR = new Iterator<Long>() {
@@ -148,5 +139,10 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 					.collect(Collectors.joining(System.lineSeparator()));
 			Assert.fail("Aucun message ne correspond à la regex '" + regex + "' dans la catégorie " + cat + " : \n" + msgs);
 		}
+	}
+
+	protected static void assignMutationVisa(RegpmEntity entity, String visa, Timestamp ts) {
+		entity.setLastMutationOperator(visa);
+		entity.setLastMutationTimestamp(ts);
 	}
 }

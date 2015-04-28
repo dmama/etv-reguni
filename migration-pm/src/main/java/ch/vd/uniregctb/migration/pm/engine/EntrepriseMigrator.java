@@ -3,15 +3,18 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +36,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
@@ -42,6 +46,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
@@ -50,6 +55,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -69,6 +75,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private RcEntClient rcentClient;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
+	private BouclementService bouclementService;
 
 	public void setRcentClient(RcEntClient rcentClient) {
 		this.rcentClient = rcentClient;
@@ -76,6 +83,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	}
+
+	public void setBouclementService(BouclementService bouclementService) {
+		this.bouclementService = bouclementService;
 	}
 
 	@Nullable
@@ -256,6 +267,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// TODO ajouter un flag sur l'entreprise pour vérifier si elle est déjà migrée ou pas... (problématique de reprise sur incident pendant la migration)
 		// TODO migrer les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
 
+		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarations(regpm, unireg, mr);
 		migrateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
@@ -309,35 +321,115 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		});
 	}
 
+	private void migrateExercicesCommerciaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		final RegDate dateBouclementFutur = regpm.getDateBouclementFutur();
+		final List<RegDate> datesBouclements;
+		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
+		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+			final RegpmExerciceCommercial dernierConnu = exercicesCommerciaux.last();
+			final RegDate dateFinDernierExercice = dernierConnu.getDateFin();
+
+			// c'est apparemment le cas qui apparaît tout le temps :
+			// la déclaration (= dossier fiscal) de la PF précédente a déjà été envoyée, mais aucun exercice commercial
+			// n'a encore été généré, et la date de bouclement futur correspond déjà à la fin de la PF courante)
+			// -> je dois bien créer un exercice commercial dans Unireg entre les deux (= pour la DI envoyée)
+
+			// TODO que faire si la date de bouclement futur est nulle ?
+
+			final Stream.Builder<RegDate> additionalDatesStreamBuilder = Stream.builder();
+			if (dateBouclementFutur != null) {
+				if (dateFinDernierExercice.addYears(1).compareTo(dateBouclementFutur) < 0) {
+					additionalDatesStreamBuilder.accept(dateFinDernierExercice.addYears(1));
+				}
+				additionalDatesStreamBuilder.accept(dateBouclementFutur);
+			}
+			final Stream<RegDate> additionalDatesStream = additionalDatesStreamBuilder.build();
+
+			// la liste des dates à prendre en compte pour le calcul des bouclements à la sauce Unireg
+			datesBouclements = Stream.concat(exercicesCommerciaux.stream().map(RegpmExerciceCommercial::getDateFin), additionalDatesStream)
+					.collect(Collectors.toList());
+		}
+		else if (dateBouclementFutur != null) {
+			// TODO aucun exercice commercial... comment trouver la date de début de l'exercice en cours ?
+			datesBouclements = Collections.singletonList(dateBouclementFutur);
+		}
+		else {
+			// TODO que faire pour les entreprises qui n'ont ni exercices commerciaux ni date de bouclement futur ?
+			datesBouclements = Collections.emptyList();
+		}
+
+		// calcul des périodicités...
+		final List<Bouclement> bouclements = bouclementService.extractBouclementsDepuisDates(datesBouclements, 12);
+
+		// TODO sauvegarder ces bouclements et les associer à l'entreprise dans Unireg
+
+	}
+
+	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin) {
+		final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(dossier.getPf());
+		if (pf == null) {
+			throw new IllegalStateException("La période fiscale " + dossier.getPf() + " n'existe pas dans Unireg.");
+		}
+
+		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		copyCreationMutation(dossier, di);
+		di.setDateDebut(dateDebut);
+		di.setDateFin(dateFin);
+		di.setDelais(migrateDelaisDeclaration(dossier, di));
+		di.setEtats(migrateEtatsDeclaration(dossier, di));
+		di.setNumero(dossier.getNoParAnnee());
+		di.setPeriode(pf);
+
+		if (dossier.getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
+			di.setAnnulationUser(Optional.ofNullable(dossier.getLastMutationOperator()).orElse(AuthenticationHelper.getCurrentPrincipal()));
+			di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(DateHelper::getCurrentDate));
+		}
+		return di;
+	}
+
 	/**
 	 * Migration des déclarations d'impôts, de leurs états, délais...
 	 */
 	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		// boucle sur chacune des déclarations
-		regpm.getDossiersFiscaux().forEach(dossier -> {
+		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(regpm.getDossiersFiscaux().size());
 
-			final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(dossier.getPf());
-			if (pf == null) {
-				throw new IllegalStateException("La période fiscale " + dossier.getPf() + " n'existe pas dans Unireg.");
+		// boucle sur chacun des exercices commerciaux
+		regpm.getExercicesCommerciaux().forEach(exercice -> {
+
+			final RegpmDossierFiscal dossier = exercice.getDossierFiscal();
+			if (dossier != null) {
+
+				// on collecte les dossiers fiscaux attachés aux exercices commerciaux
+				// pour trouver au final ceux qui ne le sont pas (= les déclarations envoyées mais pas encore traitées ???)
+				dossiersFiscauxAttribuesAuxExercicesCommerciaux.add(dossier);
+
+				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin());
+				unireg.addDeclaration(di);
 			}
-
-			DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
-			copyCreationMutation(dossier, di);
-			di.setDateDebut(dossier.getAssujettissement().getDateDebut());
-			di.setDateFin(dossier.getAssujettissement().getDateFin());
-			di.setDelais(migrateDelaisDeclaration(dossier, di));
-			di.setEtats(migrateEtatsDeclaration(dossier, di));
-			di.setNumero(dossier.getNoParAnnee());
-			di.setPeriode(pf);
-
-			if (dossier.getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
-				di.setAnnulationUser(Optional.ofNullable(dossier.getLastMutationOperator()).orElse(AuthenticationHelper.getCurrentPrincipal()));
-				di.setAnnulationDate(Optional.ofNullable((Date) dossier.getLastMutationTimestamp()).orElseGet(DateHelper::getCurrentDate));
-			}
-
-			unireg.addDeclaration(di);
 		});
+
+		// ensuite, il faut éventuellement trouver une déclaration envoyée mais pour laquelle je n'ai pas encore
+		// d'entrée dans la table des exercices commerciaux
+		regpm.getDossiersFiscaux().stream()
+				.filter(dossier -> !dossiersFiscauxAttribuesAuxExercicesCommerciaux.contains(dossier))
+				.forEach(dossier -> {
+
+					// si la PF est celle de la prochaine date de bouclement, alors on peut la créer...
+					if (regpm.getDateBouclementFutur() != null && regpm.getDateBouclementFutur().year() == dossier.getPf()) {
+
+						// TODO comment évaluer la date de début ?
+						final RegDate dateDebut = null;
+						final Declaration di = migrateDeclaration(dossier, dateDebut, regpm.getDateBouclementFutur());
+						unireg.addDeclaration(di);
+					}
+					else {
+						// TODO que faire avec ces dossiers ? Ils correspondent pourtant à une déclaration envoyée, mais pourquoi n'y a-t-il pas d'exercice commercial associé ?
+						mr.addMessage(MigrationResultMessage.CategorieListe.DECLARATIONS, MigrationResultMessage.Niveau.WARN,
+						              String.format("Dossier fiscal %d/%d sans exercice commercial associé.", dossier.getPf(), dossier.getNoParAnnee()));
+					}
+				});
 	}
 
 	/**

@@ -107,6 +107,11 @@ public class SerializationIntermediary implements Worker, Feeder {
 				graphe = (Graphe) ois.readObject();
 			}
 			worker.onGraphe(graphe);
+
+			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
+			if (Thread.currentThread().isInterrupted()) {
+				break;
+			}
 		}
 	}
 

@@ -18,7 +18,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -27,15 +26,6 @@ import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
 
-@ContextConfiguration(locations = {
-		"classpath:spring/regpm.xml",
-		"classpath:spring/database.xml",
-		"classpath:spring/validation.xml",
-		"classpath:spring/interfaces.xml",
-		"classpath:spring/migration.xml",
-		"classpath:spring/ut-database.xml",
-		"classpath:spring/ut-properties.xml"
-})
 public class StreetDataMigratorTest extends AbstractSpringTest {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StreetDataMigratorTest.class);
