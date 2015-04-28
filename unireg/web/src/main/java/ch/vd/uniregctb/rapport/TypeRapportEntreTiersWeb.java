@@ -15,7 +15,8 @@ public enum TypeRapportEntreTiersWeb {
 	PARENTE,
 	CONTACT_IMPOT_SOURCE,
 	ANNULE_ET_REMPLACE,
-	ASSUJETTISSEMENT_PAR_SUBSTITUTION;
+	ASSUJETTISSEMENT_PAR_SUBSTITUTION,
+	ACTIVITE_ECONOMIQUE;
 
 	public static TypeRapportEntreTiersWeb fromCore(TypeRapportEntreTiers t) {
 		return TypeRapportEntreTiersWeb.valueOf(t.name());
