@@ -4884,6 +4884,11 @@ public class TiersServiceImpl implements TiersService {
 			// le ménage est terminé, mais en raison du décès du conjoint
 			return StatutMenageCommun.TERMINE_SUITE_DECES;
 		}
+		//SIFISC-15258
+		final ForFiscalPrincipal dernierFor = menageCommun.getDernierForFiscalPrincipal();
+		if ((dernierFor != null) && (dernierFor.getMotifFermeture() != null) && (dernierFor.getMotifFermeture() == MotifFor.VEUVAGE_DECES)) {
+			return StatutMenageCommun.TERMINE_SUITE_DECES;
+		}
 
 		// dans tous les autres cas, il s'agit d'une séparation/divorce normal
 		return StatutMenageCommun.TERMINE_SUITE_SEPARATION;

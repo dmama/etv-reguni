@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -29,6 +30,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
@@ -366,5 +368,91 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testSommationDiSurMenageAvecUnMembresDecede() throws Exception {
+		final Long noIndLui = 1234567L;
+		final Long noIndElle = 1234568L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu indElle = addIndividu(noIndElle, date(1942,1,1), "Maksimovic", "Radislavka", Sexe.MASCULIN);
+				addAdresse(indElle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1982,3,1), null);
+
+			}
+		});
+
+
+		final RegDate dateMariage = RegDate.get(2008, 1, 1);
+		final RegDate dateVeuvage = RegDate.get(2014, 3,28 );
+		class Ids {
+			final long mcId;
+			final long luiId;
+			final long elleId;
+			final long diId;
+			Ids(long mcId, long diId,long lui, long elle) {
+				this.mcId = mcId;
+				this.diId = diId;
+				luiId = lui;
+				elleId = elle;
+			}
+		}
+
+		// pas de validation : nécessaire pour créer le for sur un ménage commun sans appartenance ménage existante
+		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+
+				PersonnePhysique pLui =addNonHabitant("Slavko", " Maksimovic", date(1942, 2, 1), Sexe.MASCULIN);
+				//pLui.setNumeroIndividu(noIndLui);
+				PersonnePhysique pElle = addHabitant(noIndElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(pLui, pElle, dateMariage, dateVeuvage);
+				final MenageCommun menage = etc.getMenage();
+				addForPrincipal(menage, dateMariage, MotifFor.ARRIVEE_HS, dateVeuvage, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+
+				final RegDate dateEmission = RegDate.get(2015, 1, 19);
+				final RegDate dateDelaiInitial = RegDate.get(2015, 3, 20);
+				final PeriodeFiscale periode = addPeriodeFiscale(2014);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(menage, periode, date(2014, 1, 1), dateVeuvage, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(dateDelaiInitial);
+				declaration.addDelai(delai);
+
+				return new Ids(menage.getId(), declaration.getId(),pLui.getNumero(),pElle.getNumero());
+			}
+		});
+
+		// test de construction des données des sommations à envoyer à l'éditique
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				{
+					final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.diId);
+					final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+					FichierImpressionDocument fichier;
+					try {
+						fichier = impressionSommationDIHelper.remplitSommationDI(params);
+					}
+					catch (EditiqueException e) {
+						throw new RuntimeException(e);
+
+					}
+					//On ne doit avoir qu'une seule sommation et pas 2 sommations séparés			}
+					assertEquals("On devrait avoir 1 document pour le survivant", 1, fichier.getFichierImpression().getDocumentArray().length);
+					assertNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
+
+
+				}
+
+				return null;
+			}
+		});
+
 	}
 }
