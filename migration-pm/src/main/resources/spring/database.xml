@@ -30,7 +30,9 @@
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
+		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
+		<value>ch.vd.uniregctb.tiers.Bouclement</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
@@ -43,8 +45,10 @@
 		<value>ch.vd.uniregctb.tiers.ForFiscalSecondaire</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
 		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.FusionEntreprises</value>
 		<value>ch.vd.uniregctb.tiers.IdentificationPersonne</value>
 		<value>ch.vd.uniregctb.tiers.IdentificationEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.Mandat</value>
 		<value>ch.vd.uniregctb.tiers.MenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.PersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.RapportEntreTiers</value>
@@ -84,7 +88,6 @@
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
 		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
-		<!--<value>ch.vd.uniregctb.tiers.Bouclement</value>-->
 	</util:list>
 
 	<!-- La session factory -->
