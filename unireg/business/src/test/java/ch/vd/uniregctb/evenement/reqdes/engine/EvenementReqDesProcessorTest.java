@@ -851,7 +851,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pphysique = addNonHabitant("Inconnu", "Aubataillon", date(dateNaissance.year()), Sexe.MASCULIN);
-				addForPrincipal(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+				addForPrincipal(pphysique, dateAchatPrecedent, null, MockPays.France);
 				addForSecondaire(pphysique, dateAchatPrecedent, MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final EvenementReqDes evt = addEvenementReqDes(new InformationsActeur("moinot", "Petiboulot", "Tranquille"), null, dateActe, "3783");
@@ -4639,7 +4639,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
 					final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
-					Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 					Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
@@ -5639,7 +5639,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
 						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
-						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+						Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 						Assert.assertNull(ffp.getMotifFermeture());
 						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 						Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
@@ -5805,7 +5805,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 						Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 
 						final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
-						Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+						Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 						Assert.assertNull(ffp.getMotifFermeture());
 						Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 						Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
@@ -7180,7 +7180,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals((Integer) MockCommune.Geneve.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(dateActe, ffp.getDateDebut());
 				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 				Assert.assertNull(ffp.getMotifFermeture());
 
 				final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
@@ -7287,7 +7287,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(dateActe, ffp.getDateDebut());
 				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());     // [SIFISC-15290] Le premier for HC/HS créé par ReqDes ne doit pas avoir de motif d'ouverture
 				Assert.assertNull(ffp.getMotifFermeture());
 
 				final ForFiscalSecondaire ffs = fpt.secondaires.get(0);

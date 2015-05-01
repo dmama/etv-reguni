@@ -803,7 +803,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 						}
 					}
 					else {
-						tiersService.openForFiscalPrincipal(assujetti, dateActe, MotifRattachement.DOMICILE, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, MotifFor.ACHAT_IMMOBILIER);
+						// [SIFISC-15290] A la création du tout premier for principal HC/HS par ReqDes, le motif d'ouverture doit être laissé vide
+						tiersService.openForFiscalPrincipal(assujetti, dateActe, MotifRattachement.DOMICILE, newLocalisation.getLeft(), newLocalisation.getRight(), modeImposition, null);
 					}
 				}
 
