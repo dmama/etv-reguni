@@ -1983,6 +1983,485 @@ public class TiersServiceTest extends BusinessTest {
 		assertForGestion(date(2000, 1, 1), null, 4321, histo.get(0));
 	}
 
+
+	/*
+	   Calcul du for de gestion
+	   Contribuable avec  1 for principal vaudois dans avec un départ HC
+
+	                                           +--------------------------------+
+for principal	                               | Mode imposition: ORDINAIRE     |
+	                                           +--------------------------------+
+	                                        arrivée HS                     Départ HC
+
+	    |-------------------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                                   fin PF
+	*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableForsAvecDepartHorsCanton() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		final RegDate dateFinForAvecDepartHC = date(2014, 10, 1);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+		//Le for avec Départ HC fait qu'il n'y a pas d'assujettissement sur le canton
+		assertNull(tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+	}
+
+
+	/*
+	   Calcul du for de gestion
+	   Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un départ HC
+
+	                    ----------------------------------------+                        +--------------------------------+
+for principal	              Mode imposition: ORDINAIRE        |                        | Mode imposition: ORDINAIRE     |
+	                    ----------------------------------------+                        +--------------------------------+
+	                                                       Départ HS                 arrivée HS                     Départ HC
+
+	    |-------------------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                                   fin PF
+	*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsEt1DepartHorsCanton() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForHS = date(2014, 2, 1);
+		final RegDate dateDebutForHS = date(2001, 1, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForHS, dateFinForHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateFinForAvecDepartHC = date(2014, 10, 1);
+		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+		//Le for avec Départ Hors Suisse est for de gestion
+		assertForGestion(dateDebutForHS, dateFinForHS, 5586, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+	}
+
+
+
+	/*
+	   Calcul du for de gestion
+	   Contribuable avec  3 fors principaux vaudois dans la même PF: le premier et le second finissent en déménagement, le dernier est un départ HC
+
+	                    +---------------------------------+-----------------------------+--------------------------------+
+for principal	        |             Bussigny            |             Morges          |              Lausanne          |
+	                    +---------------------------------+-----------------------------+--------------------------------+
+	                   arivee HS                        demenagement VD             demenagement VD                  Départ HC
+
+	    |-------------------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                                   fin PF
+	*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable3ForsEt1DepartHorsCanton() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateDebutFor1 = date(2015, 1, 1);
+		final RegDate dateFinFor1 = date(2015, 3, 31);
+		final RegDate dateDebutFor2 = date(2015, 4, 1);
+		final RegDate dateFinFor2 = date(2015, 7, 31);
+		final RegDate dateDebutFor3 = date(2015,8 , 1);
+		final RegDate dateFinFor3 = date(2015, 8, 31);
+		ForFiscalPrincipal forPrincipalBussigny = addForPrincipal(c, dateDebutFor1, dateFinFor1, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalMorges = addForPrincipal(c, dateDebutFor2, dateFinFor2, MockCommune.Morges.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalLausanne = addForPrincipal(c, dateDebutFor3, dateFinFor3, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.DOMICILE);
+		forPrincipalBussigny.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalMorges.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
+		//Aucun for de gestion connu
+		assertNull(tiersService.getDernierForGestionConnu(c, date(2015, 12, 31)));
+		assertNull(tiersService.getDernierForGestionConnu(c,null));
+	}
+
+	/*
+   Calcul du for de gestion
+   Contribuable avec  3 fors principaux vaudois dans la même PF et 1 dasn la période précédente: le dernier est un départ HC
+
+	               --------------------+---------------------------------+-----------------------------+--------------------------------+
+     for principal	 Echallens         |             Bussigny            |             Morges          |              Lausanne          |
+                   --------------------+---------------------------------+-----------------------------+--------------------------------+
+				                   demenagement VD                     demenagement VD            demenagement VD                Départ HC
+
+	             ----------------------|-------------------------------------------------------------------------------------------------------------|
+                                     debut PF                                                                                                      fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable4ForsEt1DepartHorsCanton() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateDebutFor0 = date(2012, 1, 1);
+		final RegDate dateFinFor0 = date(2014, 12, 31);
+		final RegDate dateDebutFor1 = date(2015, 1, 1);
+		final RegDate dateFinFor1 = date(2015, 3, 31);
+		final RegDate dateDebutFor2 = date(2015, 4, 1);
+		final RegDate dateFinFor2 = date(2015, 7, 31);
+		final RegDate dateDebutFor3 = date(2015,8 , 1);
+		final RegDate dateFinFor3 = date(2015, 8, 31);
+		ForFiscalPrincipal forPrincipalEchallens = addForPrincipal(c, dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalBussigny = addForPrincipal(c, dateDebutFor1, dateFinFor1, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalMorges = addForPrincipal(c, dateDebutFor2, dateFinFor2, MockCommune.Morges.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalLausanne = addForPrincipal(c, dateDebutFor3, dateFinFor3, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalBussigny.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalMorges.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
+		assertNull(tiersService.getForGestionActif(c,date(2015,3,1)));
+		final ForGestion dernierForGestionConnu = tiersService.getDernierForGestionConnu(c, null);
+		assertNotNull(dernierForGestionConnu);
+		assertForGestion(dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), dernierForGestionConnu);
+		final List<ForGestion> forsGestionHisto = tiersService.getForsGestionHisto(c);
+		assertEquals(1,forsGestionHisto.size());
+		final ForGestion forGestionHistorique = forsGestionHisto.get(0);
+		assertForGestion(dateDebutFor0, null, MockCommune.Echallens.getNoOFS(), forGestionHistorique);
+
+	}
+
+
+
+	/*
+   Calcul du for de gestion
+   Contribuable avec  3 fors principaux vaudois dans la même PF et 1 dans la période précédente et qui déborde sur la periode
+    courante: le dernier est un départ HC
+
+	               -------------------------+---------------------------------+-----------------------------+--------------------------------+
+     for principal	 Echallens              |             Bussigny            |             Morges          |              Lausanne          |
+                   -------------------------+---------------------------------+-----------------------------+--------------------------------+
+				                   demenagement VD                     demenagement VD            demenagement VD                Départ HC
+
+	             ----------------------|-------------------------------------------------------------------------------------------------------------|
+                                     debut PF                                                                                                      fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable4Fors1DansPeriodePrecedente1DepartHorsCanton() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateDebutFor0 = date(2012, 1, 1);
+		final RegDate dateFinFor0 = date(2014, 12, 31);
+		final RegDate dateDebutFor1 = date(2015, 1, 1);
+		final RegDate dateFinFor1 = date(2015, 3, 31);
+		final RegDate dateDebutFor2 = date(2015, 4, 1);
+		final RegDate dateFinFor2 = date(2015, 7, 31);
+		final RegDate dateDebutFor3 = date(2015,8 , 1);
+		final RegDate dateFinFor3 = date(2015, 8, 31);
+		ForFiscalPrincipal forPrincipalEchallens = addForPrincipal(c, dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalBussigny = addForPrincipal(c, dateDebutFor1, dateFinFor1, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalMorges = addForPrincipal(c, dateDebutFor2, dateFinFor2, MockCommune.Morges.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalLausanne = addForPrincipal(c, dateDebutFor3, dateFinFor3, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalBussigny.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalMorges.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
+		//Le for avec Départ Hors Suisse est for de gestion
+		assertNull(tiersService.getForGestionActif(c, date(2015, 12, 31)));
+		final ForGestion dernierForGestionConnu = tiersService.getDernierForGestionConnu(c, null);
+		assertNotNull(dernierForGestionConnu);
+		assertEquals(dateDebutFor0, dernierForGestionConnu.getDateDebut());
+		assertEquals(MockCommune.Echallens.getNoOFS(),dernierForGestionConnu.getNoOfsCommune());
+		assertForGestion(dateDebutFor0, null, MockCommune.Echallens.getNoOFS(), tiersService.getForsGestionHisto(c).get(0));
+	}
+
+
+
+	/*
+	   Calcul du for de gestion
+	   Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un départ HC mIXTE 2
+
+	                    ----------------------------------------+                        +--------------------------------+
+for principal	              Mode imposition: ORDINAIRE        |                        | Mode imposition: MIXTE_2       |
+	                    ----------------------------------------+                        +--------------------------------+
+	                                                       Départ HS                 arrivée HS                     Départ HC
+
+	    |-------------------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                                   fin PF
+	*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsEt1DepartHorsCantonMixte2() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForHS = date(2014, 2, 1);
+		final RegDate dateDebutForHS = date(2001, 1, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForHS, dateFinForHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateFinForAvecDepartHC = date(2014, 10, 1);
+		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+		forFiscalPrincipalAvecDepartHC.setModeImposition(ModeImposition.MIXTE_137_2);
+		//Le for avec Départ Hors canton est for de gestion
+		assertForGestion(dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+	}
+
+
+/*
+   Calcul du for de gestion
+   Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un départ HC
+   1 for secondaire vaudois fermé avant le départ hors suisses
+
+                    ----------------------------+
+For scondaire                                   |
+                    ----------------------------+
+
+
+					----------------------------------------+                        +--------------------------------+
+For principal	       Mode imposition: ORDINAIRE           |                        |   Mode imposition: ORDINAIRE   |
+					----------------------------------------+                        +--------------------------------+
+													   Départ HS                 arrivée HS                     Départ HC
+
+	|-------------------------------------------------------------------------------------------------------------------------|
+ debut PF                                                                                                                   fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsPrincipalForSecondaireAvantDepartHS() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForAvecDepartHS = date(2014, 2, 1);
+		final RegDate dateDebutForAvecDepartHS = date(2001, 1, 1);
+		final RegDate dateDebutForSecondaire = date(2001, 2, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForAvecDepartHS, dateFinForAvecDepartHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateFinForHC = date(2014, 10, 1);
+		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+
+		addForSecondaire(c, dateDebutForSecondaire, dateFinForAvecDepartHS.addMonths(-1), 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for avec Départ Hors Suisse est for de gestion
+		assertForGestion(dateDebutForAvecDepartHS, dateFinForAvecDepartHS, 5586, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+
+	}
+
+
+	/*
+   Calcul du for de gestion
+   Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un départ HC
+   1 for secondaire vaudois fermé avant le départ hors suisses
+
+                    ----------------------------------------+
+For secondaire                                              |
+                    ----------------------------------------+
+
+
+					----------------------------------------+                        +--------------------------------+
+For principal	         Mode imposition: ORDINAIRE         |                        |Mode imposition: ORDINAIRE      |
+					----------------------------------------+                        +--------------------------------+
+													   Départ HS                 arrivée HS                     Départ HC
+
+	|-------------------------------------------------------------------------------------------------------------------------|
+ debut PF                                                                                                                   fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsPrincipalForSecondaireMemeFinDepartHS() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForAvecDepartHS = date(2014, 2, 1);
+		final RegDate dateDebutForAvecDepartHS = date(2001, 1, 1);
+		final RegDate dateDebutForSecondaire = date(2001, 1, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForAvecDepartHS, dateFinForAvecDepartHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateFinForHC = date(2014, 10, 1);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, date(2014, 6, 15), dateFinForHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+
+		addForSecondaire(c, dateDebutForAvecDepartHS, dateDebutForSecondaire, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for avec Départ Hors Suisse est for de gestion
+		assertForGestion(dateDebutForAvecDepartHS, dateFinForAvecDepartHS, 5586, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+
+	}
+
+
+	/*
+   Calcul du for de gestion
+   Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un départ HC
+   1 for secondaire vaudois fermé entre le départ hors suisse et l'arrivée HS
+
+                    -----------------------------------------------+
+For secondaire                                                     |
+                    -----------------------------------------------+
+
+
+					----------------------------------------+                        +--------------------------------+
+For principal	        Mode imposition: ORDINAIRE          |                        |    Mode imposition: ORDINAIRE  |
+					----------------------------------------+                        +--------------------------------+
+													   Départ HS                 arrivée HS                     Départ HC
+
+	|-------------------------------------------------------------------------------------------------------------------------|
+ debut PF                                                                                                                   fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsPrincipalForSecondaireApresFinDepartHS() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForHS = date(2014, 2, 1);
+		final RegDate dateDebutForHS = date(2001, 1, 1);
+		final RegDate dateDebutForSecondaire = date(2001, 2, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForHS, dateFinForHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateDebutForHC = date(2014, 6, 15);
+		final RegDate dateFinForHC = date(2014, 10, 1);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForHC, dateFinForHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+		final RegDate dateFinForSecondaire = date(2014, 5, 1);
+		addForSecondaire(c, dateDebutForSecondaire, dateFinForSecondaire, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for secondaire  est for de gestion
+		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, 4321, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+
+	}
+
+	/*
+Calcul du for de gestion
+Contribuable avec  2 fors principaux vaudois dans la même PF: le premier est un départ HS, le second un sourcier mixte_2 avec départ HC
+1 for secondaire vaudois fermé entre le départ hors suisse et l'arrivée HS
+
+				-----------------------------------------------+
+For secondaire                                                 |
+				-----------------------------------------------+
+
+
+				----------------------------------------+                        +--------------------------------+
+For principal	        Mode imposition: ORDINAIRE      |                        |    Mode imposition: MIXTE_2    |
+				----------------------------------------+                        +--------------------------------+
+												   Départ HS                 arrivée HS                     Départ HC
+
+|-------------------------------------------------------------------------------------------------------------------------|
+debut PF                                                                                                                   fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForsPrincipalForSecondaireApresFinDepartHSEtMixte2() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateFinForHS = date(2014, 2, 1);
+		final RegDate dateDebutForHS = date(2001, 1, 1);
+		ForFiscalPrincipal forPrincipalAvecDepartHS = addForPrincipal(c, dateDebutForHS, dateFinForHS, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalAvecDepartHS.setMotifFermeture(MotifFor.DEPART_HS);
+		final RegDate dateFinForAvecDepartHC = date(2014, 10, 1);
+		final RegDate dateDebutForAvecDepartHC = date(2014, 6, 15);
+		final ForFiscalPrincipal forFiscalPrincipalAvecDepartHC = addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forFiscalPrincipalAvecDepartHC.setMotifFermeture(MotifFor.DEPART_HC);
+		forFiscalPrincipalAvecDepartHC.setModeImposition(ModeImposition.MIXTE_137_2);
+		final RegDate dateFinForSecondaire = date(2014, 5, 1);
+		addForSecondaire(c, dateDebutForHS, dateFinForSecondaire, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for avec départ HC  est for de gestion
+		assertForGestion(dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5887, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+
+	}
+
+
+
+	//Calcul du for de gestion
+	//Contribuable avec un for principal hors-canton et un for secondaire ouvert dans le canton et fermé avant le départ  hors Canton
+	/*
+	                       --------------------------------+
+	  For scondaire                                        |
+	                       --------------------------------+
+
+	                       --------------------------------------------------------------------------+
+	 For Principal vaudois                  Mode imposition: ORDINAIRE                               |
+	                       --------------------------------------------------------------------------+
+	                                                                                              Départ HC
+
+	    |----------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                          fin PF
+	*/
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableDepartHorsCantonEtUnForSecondaire() {
+
+		PersonnePhysique c = new PersonnePhysique(false);
+		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
+		final RegDate dateFinForAvecDepartHC = date(2014, 6, 14);
+		ForFiscalPrincipal forPrincipal =  addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+		final RegDate dateDebutForSecondaire = date(2001, 2, 1);
+		final RegDate dateFinForSecondaire = date(2014, 3, 20);
+		addForSecondaire(c, dateDebutForSecondaire, dateFinForSecondaire, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for secondaire  est for de gestion
+		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, 4321, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+	}
+
+	//Calcul du for de gestion
+	//Contribuable avec un for principal hors-canton sourcier MIXTE_2 et un for secondaire ouvert dans le canton et fermé avant le départ  hors Canton
+	/*
+	                       --------------------------------+
+	  For scondaire                                        |
+	                       --------------------------------+
+
+	                       --------------------------------------------------------------------------+
+	 For Principal vaudois             Mode imposition MIXTE_2                                       |
+	                       --------------------------------------------------------------------------+
+	                                                                                              Départ HC
+
+	    |----------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                          fin PF
+	*/
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableDepartHorsCantonMixte2EtUnForSecondaire() {
+
+		PersonnePhysique c = new PersonnePhysique(false);
+		final RegDate dateFinforAvecDepartHC = date(2014, 6, 14);
+		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
+		ForFiscalPrincipal forPrincipal =  addForPrincipal(c, dateDebutForAvecDepartHC, dateFinforAvecDepartHC, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+		forPrincipal.setModeImposition(ModeImposition.MIXTE_137_2);
+		final RegDate dateDebutForSecondaire = date(2001, 1, 1);
+		final RegDate dateFinForSecondaire = date(2014, 3, 20);
+		addForSecondaire(c, dateDebutForAvecDepartHC, dateFinForSecondaire, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for depart HC  est for de gestion
+		assertForGestion(dateDebutForAvecDepartHC, dateFinforAvecDepartHC, 5586, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+	}
+
+	//Calcul du for de gestion
+	//Contribuable avec un for principal hors-canton et un for secondaire ouvert dans le canton
+	/*
+	                       ----------------------------------------------------------+
+	  For scondaire                                                                   ---->>>
+	                       ----------------------------------------------------------+
+
+	                       ------------------------------------------------+
+	 For Principal vaudois                                                 |
+	                       ------------------------------------------------+
+	                                                                    Départ HC
+
+	    |----------------------------------------------------------------------------------------------------------------|
+	 debut PF                                                                                                          fin PF
+	*/
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableDepartHorsCantonEtUnForSecondaireOuvert() {
+
+		PersonnePhysique c = new PersonnePhysique(false);
+		final RegDate dateDebutForAvecDepartHC = date(2001, 1, 1);
+		final RegDate dateFinForAvecDepartHC = date(2014, 6, 14);
+		ForFiscalPrincipal forPrincipal =  addForPrincipal(c, dateDebutForAvecDepartHC, dateFinForAvecDepartHC, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+		final RegDate dateDebutForSecondaire = date(2005, 3, 20);
+		addForSecondaire(c, dateDebutForSecondaire, null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.IMMEUBLE_PRIVE);
+		//Le for secondaire  est for de gestion
+		assertForGestion(dateDebutForSecondaire, null, 4321, tiersService.getDernierForGestionConnu(c, date(2014, 1, 1)));
+	}
+
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalHorsCantonEtDeuxForsSecondairesSeRecoupant() {

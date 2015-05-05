@@ -170,7 +170,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				f.setMotifRattachement(MotifRattachement.DOMICILE);
 				f.setModeImposition(ModeImposition.ORDINAIRE);
 				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				f.setMotifFermeture(MotifFor.DEPART_HC);
+				f.setMotifFermeture(MotifFor.DEPART_HS);
 				nh.addForFiscal(f);
 
 				nh = (PersonnePhysique) tiersDAO.save(nh);
@@ -181,6 +181,38 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		Tiers nh = tiersDAO.get(id);
 		assertNotNull(nh);
 		assertEquals(oidLausanne, nh.getOfficeImpotId());
+	}
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testOfficeImpotContribuableAvecForPrincipalFermeParDepartHC() throws Exception {
+
+		Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique nh = new PersonnePhysique(false);
+				nh.setNom("Dupres");
+
+				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				f.setDateDebut(date(2000, 1, 1));
+				f.setDateFin(date(2008, 1, 1));
+				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				f.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+				f.setMotifRattachement(MotifRattachement.DOMICILE);
+				f.setModeImposition(ModeImposition.ORDINAIRE);
+				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				f.setMotifFermeture(MotifFor.DEPART_HC);
+				nh.addForFiscal(f);
+
+				nh = (PersonnePhysique) tiersDAO.save(nh);
+				return nh.getNumero();
+			}
+		});
+
+		Tiers nh = tiersDAO.get(id);
+		assertNotNull(nh);
+		assertEquals(oidLausanne,nh.getOfficeImpotId());
 	}
 
 	@Test

@@ -1285,9 +1285,23 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Transient
 	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
 
+		return getForsFiscauxPrincipauxOuvertsApres(date,true);
+	}
+
+	/**
+	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
+	 * @param date date de référence
+	 * @param withAnnule indique si on veut les fors annulées
+	 * @return liste des fors principaux demandés
+	 */
+	@Transient
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date, boolean withAnnule) {
+
 		Assert.notNull(date);
 		List<ForFiscalPrincipal> fors = new ArrayList<>();
-		for (ForFiscal ff : getForsFiscauxSorted()) {
+
+		final List<ForFiscal> forsFiscauxSorted= withAnnule ? getForsFiscauxSorted(): getForsFiscauxNonAnnules(true);
+		for (ForFiscal ff : forsFiscauxSorted) {
 			if (ff.isPrincipal() && date.isBeforeOrEqual(ff.getDateDebut())) {
 				fors.add((ForFiscalPrincipal) ff);
 			}

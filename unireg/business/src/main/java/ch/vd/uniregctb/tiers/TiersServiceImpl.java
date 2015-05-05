@@ -68,6 +68,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.common.NationaliteHelper;
 import ch.vd.uniregctb.common.NumeroIDEHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -91,6 +92,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
@@ -3779,7 +3781,8 @@ public class TiersServiceImpl implements TiersService {
                 // Les fors principaux hors canton/Suisse ou avec un mode d'imposition Source ne peuvent pas être des fors de gestion
                 if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == f.getTypeAutoriteFiscale()) {
                     ForFiscalPrincipal fp = (ForFiscalPrincipal) f;
-                    if (ModeImposition.SOURCE != fp.getModeImposition()) {
+                    if (isConformePourForGestion(tiers,fp,date)) {
+
                         forPrincipal = fp;
                         break; // pas besoin de chercher plus loin
                     }
@@ -3864,6 +3867,66 @@ public class TiersServiceImpl implements TiersService {
 
         return forGestion == null ? null : new ForGestion(forGestion);
     }
+
+	/**SIFISC-14122
+	 * Permet de savoir si un for fiscal est compatible  avec les régles de determination d'un for de gestion à savoir:
+	 * - Le mode d'imposition est Différent de source.
+	 * - Si le for est fermé, le motif de fermeture est différent d'un départ HC sauf pour les mixte_2 ou si la date de fin est au 31.12 de la période
+	 * @param f for fiscal à analyser
+	 * @param date de référence pour analyser le for de gestion, peut être nulle
+	 * @return vrai si le for est éligible pour etre for de gestion, false sinon
+	 */
+	private boolean isConformePourForGestion(Tiers tiers, ForFiscalPrincipal f, @Nullable RegDate date) {
+
+		//Découpage précis afin de faciliter la compréhension des différents cas
+		final Integer periodeReference = RegDateHelper.getYear(date);
+		final RegDate dernierJourAnnee = periodeReference!=null ? RegDateHelper.get(periodeReference, 12, 31) :null;
+		final boolean isDateFinForDansPeriodeReference= periodeReference !=null && periodeReference.equals(RegDateHelper.getYear(f.getDateFin()));
+		final boolean isFermetureDernierJourAnnee = dernierJourAnnee!=null && RegDateHelper.equals(f.getDateFin(), dernierJourAnnee);
+		final boolean isSourcier = f.getModeImposition() == ModeImposition.SOURCE;
+		final boolean isDepartHorsCantonDansPeriode =  isDateFinForDansPeriodeReference && f.getMotifFermeture() == MotifFor.DEPART_HC;
+		final boolean isMixte2 = f.getModeImposition() == ModeImposition.MIXTE_137_2;
+
+
+		//Le ssourciers n'ont pas de for de gestion
+		if (isSourcier) {
+			return false;
+		}
+
+		//Un départ hors canton dans la période avant le dernier jour de l'année  pour un non mixte 2
+		//Dans ce cas, pas la peine d'aller plus loin, ce n'est pas un candidat pour être for de gestion
+		if (isDepartHorsCantonDansPeriode && !isFermetureDernierJourAnnee && !isMixte2) {
+			return false;
+		}
+
+		//On récupère pour le for en cours d'analyse la liste des fors vaudois suivants accolés et ouverts dans la même période
+		//Si on en trouve un avec un départ hors canton, le for en cours d'analyse ne peut pas être for de gestion
+		List<ForFiscalPrincipal> principaux = tiers.getForsFiscauxPrincipauxOuvertsApres(f.getDateDebut());
+		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
+		//Devrait être toujours vrai car on doit retrouver en début le for que l'on analyse
+		if (iter.hasNext()) {
+			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
+			final ForFiscalPrincipalContext forPrincipalContext = new ForFiscalPrincipalContext(snapshot);
+			//On retrouve le for principal dans la movingWindow, on peut l'analyser
+			final ForFiscalPrincipal current = forPrincipalContext.getCurrent();
+			if (forPrincipalContext.hasNext()) {
+				final List<ForFiscalPrincipal> nexts = forPrincipalContext.getAllNext();
+				for (ForFiscalPrincipal next : nexts) {
+					final boolean memePeriode = RegDateHelper.getYear(next.getDateDebut()).equals(RegDateHelper.getYear(current.getDateDebut()));
+					if (next.getMotifFermeture() == MotifFor.DEPART_HC && memePeriode) {
+						//ON trouve un for avec un départ hors canton collé au for analysé
+						// avec une date de début sur la même période,
+						return false;
+					}
+				}
+			}
+
+		}
+		// on a passé tous les tests, on est conforme à la définition d'un for de gestion
+		return true;
+
+	}
+
 
     /**
      * {@inheritDoc}

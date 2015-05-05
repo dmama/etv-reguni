@@ -958,7 +958,8 @@ public class TacheServiceTest extends BusinessTest {
 
 				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
 				assertNotNull(raoul);
-				assertEquals(Integer.valueOf(MockOfficeImpot.OID_ORBE.getNoColAdm()), raoul.getOfficeImpotId());
+				//Pas d'office d'impot car départ HC avant le 31.12 de la période;
+				assertNull(raoul.getOfficeImpotId());
 
 				final CollectiviteAdministrative oidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
 				assertNotNull(oidOrbe);
