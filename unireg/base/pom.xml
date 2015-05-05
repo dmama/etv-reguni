@@ -460,17 +460,6 @@
 			</modules>
 		</profile>
 
-		<!-- ================= Profile qui ne génère par les wars mais juste les jars internes =================== -->
-		<profile>
-			<id>no-war</id>
-			<modules>
-				<module>../core</module>
-				<module>../interfaces</module>
-				<module>../business</module>
-				<module>../avatars</module>
-			</modules>
-		</profile>
-
 		<!-- ================= Profile pour les developpeurs pour éviter l'utilisation du cache centralisé Nexus ================= -->
 
 		<profile>
