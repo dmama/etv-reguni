@@ -3871,7 +3871,7 @@ public class TiersServiceImpl implements TiersService {
 	/**SIFISC-14122
 	 * Permet de savoir si un for fiscal est compatible  avec les régles de determination d'un for de gestion à savoir:
 	 * - Le mode d'imposition est Différent de source.
-	 * - Si le for est fermé, le motif de fermeture est différent d'un départ HC sauf pour les mixte_2 ou si la date de fin est au 31.12 de la période
+	 * - Si le for est fermé, le motif de fermeture est différent d'un mariage, d'une séparation ou d'un départ HC,  sauf pour les mixte_2 dans le cas d'un départ HC ou si la date de fin est au 31.12 de la période
 	 * @param f for fiscal à analyser
 	 * @param date de référence pour analyser le for de gestion, peut être nulle
 	 * @return vrai si le for est éligible pour etre for de gestion, false sinon
@@ -3879,13 +3879,14 @@ public class TiersServiceImpl implements TiersService {
 	private boolean isConformePourForGestion(Tiers tiers, ForFiscalPrincipal f, @Nullable RegDate date) {
 
 		//Découpage précis afin de faciliter la compréhension des différents cas
-		final Integer periodeReference = RegDateHelper.getYear(date);
-		final RegDate dernierJourAnnee = periodeReference!=null ? RegDateHelper.get(periodeReference, 12, 31) :null;
-		final boolean isDateFinForDansPeriodeReference= periodeReference !=null && periodeReference.equals(RegDateHelper.getYear(f.getDateFin()));
-		final boolean isFermetureDernierJourAnnee = dernierJourAnnee!=null && RegDateHelper.equals(f.getDateFin(), dernierJourAnnee);
+		final Integer periodeReference = date!=null ?RegDateHelper.getYear(date):RegDateHelper.getYear(RegDate.get());
+		final RegDate dernierJourAnnee =  RegDateHelper.get(periodeReference, 12, 31);
+		final boolean isDateFinForDansPeriodeReference=periodeReference.equals(RegDateHelper.getYear(f.getDateFin()));
+		final boolean isFermetureDernierJourAnnee =RegDateHelper.equals(f.getDateFin(), dernierJourAnnee);
 		final boolean isSourcier = f.getModeImposition() == ModeImposition.SOURCE;
-		final boolean isDepartHorsCantonDansPeriode =  isDateFinForDansPeriodeReference && f.getMotifFermeture() == MotifFor.DEPART_HC;
-		final boolean isMixte2 = f.getModeImposition() == ModeImposition.MIXTE_137_2;
+		final boolean isDeparHorsCantonPourMixte2 = f.getModeImposition() == ModeImposition.MIXTE_137_2 && f.getMotifFermeture() == MotifFor.DEPART_HC;
+
+		final boolean isFermeturePourMotifNotableDansPeriode = isDateFinForDansPeriodeReference && hasMotifFermetureSupprimantAssujettisssement(f);
 
 
 		//Le ssourciers n'ont pas de for de gestion
@@ -3893,9 +3894,9 @@ public class TiersServiceImpl implements TiersService {
 			return false;
 		}
 
-		//Un départ hors canton dans la période avant le dernier jour de l'année  pour un non mixte 2
+		//Un départ hors canton non mixte 2, un mariage ou une séparation  dans la période avant le dernier jour de l'année
 		//Dans ce cas, pas la peine d'aller plus loin, ce n'est pas un candidat pour être for de gestion
-		if (isDepartHorsCantonDansPeriode && !isFermetureDernierJourAnnee && !isMixte2) {
+		if (isFermeturePourMotifNotableDansPeriode && !isFermetureDernierJourAnnee && !isDeparHorsCantonPourMixte2) {
 			return false;
 		}
 
@@ -3912,10 +3913,10 @@ public class TiersServiceImpl implements TiersService {
 			if (forPrincipalContext.hasNext()) {
 				final List<ForFiscalPrincipal> nexts = forPrincipalContext.getAllNext();
 				for (ForFiscalPrincipal next : nexts) {
-					final boolean memePeriode = RegDateHelper.getYear(next.getDateDebut()).equals(RegDateHelper.getYear(current.getDateDebut()));
-					if (next.getMotifFermeture() == MotifFor.DEPART_HC && memePeriode) {
+					final boolean isFermeDansPeriode = periodeReference.equals(RegDateHelper.getYear(next.getDateFin()));
+					if (hasMotifFermetureSupprimantAssujettisssement(next) && isFermeDansPeriode) {
 						//ON trouve un for avec un départ hors canton collé au for analysé
-						// avec une date de début sur la même période,
+						// avec une date de fin dans la période,
 						return false;
 					}
 				}
@@ -3925,6 +3926,18 @@ public class TiersServiceImpl implements TiersService {
 		// on a passé tous les tests, on est conforme à la définition d'un for de gestion
 		return true;
 
+	}
+
+	/**
+	 * Permet de savoir si un for a un motif de fermeture suceptible de supprimer un sassujettissement
+	 * @param f for a analyser
+	 * @return true si le for est fermé pour un  départ, un mariage ou une séparation, false pour tout autre motif de fermeture
+	 */
+	private boolean hasMotifFermetureSupprimantAssujettisssement(ForFiscalPrincipal f){
+		final boolean isDepartHorsCantonDansPeriode =  f.getMotifFermeture() == MotifFor.DEPART_HC;
+		final boolean isMariageDansPeriode =   f.getMotifFermeture() == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION;
+		final boolean isSeparationDansPeriode = f.getMotifFermeture() == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT;
+		return isDepartHorsCantonDansPeriode || isMariageDansPeriode || isSeparationDansPeriode;
 	}
 
 

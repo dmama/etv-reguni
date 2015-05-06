@@ -2074,7 +2074,7 @@ for principal	        |             Bussigny            |             Morges    
 		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
 		//Aucun for de gestion connu
 		assertNull(tiersService.getDernierForGestionConnu(c, date(2015, 12, 31)));
-		assertNull(tiersService.getDernierForGestionConnu(c,null));
+		assertNull(tiersService.getDernierForGestionConnu(c, null));
 	}
 
 	/*
@@ -2100,7 +2100,7 @@ for principal	        |             Bussigny            |             Morges    
 		final RegDate dateFinFor1 = date(2015, 3, 31);
 		final RegDate dateDebutFor2 = date(2015, 4, 1);
 		final RegDate dateFinFor2 = date(2015, 7, 31);
-		final RegDate dateDebutFor3 = date(2015,8 , 1);
+		final RegDate dateDebutFor3 = date(2015, 8, 1);
 		final RegDate dateFinFor3 = date(2015, 8, 31);
 		ForFiscalPrincipal forPrincipalEchallens = addForPrincipal(c, dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
@@ -2110,12 +2110,12 @@ for principal	        |             Bussigny            |             Morges    
 		forPrincipalBussigny.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 		forPrincipalMorges.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
-		assertNull(tiersService.getForGestionActif(c,date(2015,3,1)));
+		assertNull(tiersService.getForGestionActif(c, date(2015, 3, 1)));
 		final ForGestion dernierForGestionConnu = tiersService.getDernierForGestionConnu(c, null);
 		assertNotNull(dernierForGestionConnu);
 		assertForGestion(dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), dernierForGestionConnu);
 		final List<ForGestion> forsGestionHisto = tiersService.getForsGestionHisto(c);
-		assertEquals(1,forsGestionHisto.size());
+		assertEquals(1, forsGestionHisto.size());
 		final ForGestion forGestionHistorique = forsGestionHisto.get(0);
 		assertForGestion(dateDebutFor0, null, MockCommune.Echallens.getNoOFS(), forGestionHistorique);
 
@@ -2164,6 +2164,48 @@ for principal	        |             Bussigny            |             Morges    
 		assertEquals(dateDebutFor0, dernierForGestionConnu.getDateDebut());
 		assertEquals(MockCommune.Echallens.getNoOFS(),dernierForGestionConnu.getNoOfsCommune());
 		assertForGestion(dateDebutFor0, null, MockCommune.Echallens.getNoOFS(), tiersService.getForsGestionHisto(c).get(0));
+	}
+
+	/*
+Calcul du for de gestion
+Contribuable avec  3 fors principaux vaudois dans la même PF et 1 dans la période précédente et qui déborde sur la periode
+courante: le dernier est un départ HC dans la période suivante
+
+			   -------------------------+---------------------------------+-----------------------------+--------------------------------+
+ for principal	 Echallens              |             Bussigny            |             Morges          |              Lausanne          |
+			   -------------------------+---------------------------------+-----------------------------+--------------------------------+
+							   demenagement VD                     demenagement VD            demenagement VD                Départ HC
+
+			 ----------------------|----------------------------------------------------------------------------------------|------------------
+								 debut PF                                                                                 fin PF
+*/
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable4Fors1DansPeriodePrecedente1DepartHorsCantonPeriodeSuivante() {
+
+		PersonnePhysique c = new PersonnePhysique(true);
+		final RegDate dateDebutFor0 = date(2011, 1, 1);
+		final RegDate dateFinFor0 = date(2013, 12, 31);
+		final RegDate dateDebutFor1 = date(2014, 1, 1);
+		final RegDate dateFinFor1 = date(2014, 3, 31);
+		final RegDate dateDebutFor2 = date(2014, 4, 1);
+		final RegDate dateFinFor2 = date(2014, 7, 31);
+		final RegDate dateDebutFor3 = date(2014,8 , 1);
+		final RegDate dateFinFor3 = date(2015, 3, 31);
+		ForFiscalPrincipal forPrincipalEchallens = addForPrincipal(c, dateDebutFor0, dateFinFor0, MockCommune.Echallens.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalBussigny = addForPrincipal(c, dateDebutFor1, dateFinFor1, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalMorges = addForPrincipal(c, dateDebutFor2, dateFinFor2, MockCommune.Morges.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		ForFiscalPrincipal forPrincipalLausanne = addForPrincipal(c, dateDebutFor3, dateFinFor3, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		forPrincipalBussigny.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalMorges.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		forPrincipalLausanne.setMotifFermeture(MotifFor.DEPART_HC);
+		//Le for avec Départ Hors Suisse est for de gestion
+		assertNull(tiersService.getForGestionActif(c, date(2015, 12, 31)));
+		final ForGestion dernierForGestionConnu = tiersService.getDernierForGestionConnu(c, null);
+		assertNotNull(dernierForGestionConnu);
+		assertEquals(dateDebutFor3, dernierForGestionConnu.getDateDebut());
+		assertEquals(MockCommune.Lausanne.getNoOFS(), dernierForGestionConnu.getNoOfsCommune());
 	}
 
 
@@ -2317,6 +2359,7 @@ For principal	        Mode imposition: ORDINAIRE          |                     
 				MotifRattachement.IMMEUBLE_PRIVE);
 		//Le for secondaire  est for de gestion
 		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, 4321, tiersService.getDernierForGestionConnu(c, date(2014, 12, 31)));
+		assertForGestion(dateDebutForSecondaire, dateFinForSecondaire, 4321, tiersService.getDernierForGestionConnu(c, null));
 
 	}
 
