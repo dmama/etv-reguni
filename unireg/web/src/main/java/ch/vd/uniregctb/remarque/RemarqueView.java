@@ -14,8 +14,8 @@ import ch.vd.uniregctb.tiers.Remarque;
 public class RemarqueView implements Annulable {
 
 	private static final Pattern EOL_PATTERN = Pattern.compile("\n|\r|\r\n");
-	private static final Pattern HEAD_LINE_TRIMING_PATTERN = Pattern.compile("^([\\s]*(\n|\r|\r\n))+");
-	private static final Pattern TAIL_LINE_TRIMING_PATTERN = Pattern.compile("((\n|\r|\r\n)[\\s]*)+$");
+	private static final Pattern HEAD_LINE_TRIMING_PATTERN = Pattern.compile("^\\s*");
+	private static final Pattern TAIL_LINE_TRIMING_PATTERN = Pattern.compile("\\s*$");
 
 	private final Long id;
 	private final String date;
@@ -87,11 +87,12 @@ public class RemarqueView implements Annulable {
 	 * @param text le texte à épurer
 	 * @return le texte épuré
 	 */
-	private static String trimLines(String text) {
+	protected static String trimLines(String text) {
 		if (text == null) {
 			return StringUtils.EMPTY;
 		}
-		return TAIL_LINE_TRIMING_PATTERN.matcher(HEAD_LINE_TRIMING_PATTERN.matcher(text).replaceAll(StringUtils.EMPTY)).replaceAll(StringUtils.EMPTY);
+		final String noHead = HEAD_LINE_TRIMING_PATTERN.matcher(text).replaceAll(StringUtils.EMPTY);
+		return TAIL_LINE_TRIMING_PATTERN.matcher(noHead).replaceAll(StringUtils.EMPTY);
 	}
 
 	/**
