@@ -351,13 +351,15 @@
             <jxb:typesafeEnumMember name="REACTIVATION" value="4"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
-    <!--
-    <jxb:bindings node="//xs:simpleType[@name='XXXXXXXXXXXXX']">
-        <jxb:typesafeEnumClass name="XXXXXXXXXXXX">
-            <jxb:typesafeEnumMember name="XXXXX" value="YYYY"/>
-            <jxb:typesafeEnumMember name="XXXXX" value="YYYY"/>
-            <jxb:typesafeEnumMember name="XXXXX" value="YYYY"/>
+    <jxb:bindings node="//xs:simpleType[@name='noticeRequestStatusCodeType']">
+        <jxb:typesafeEnumClass name="NoticeRequestStatusCode">
+            <jxb:typesafeEnumMember name="AUTRE" value="0"/>
+            <jxb:typesafeEnumMember name="A_TRANSMETTRE" value="1"/>
+            <jxb:typesafeEnumMember name="A_ANALYSER" value="2"/>
+            <jxb:typesafeEnumMember name="TRANSMIS" value="3"/>
+            <jxb:typesafeEnumMember name="TRAITE_IDE" value="4"/>
+            <jxb:typesafeEnumMember name="REJET_IDE" value="5"/>
+            <jxb:typesafeEnumMember name="REJET_RCENT" value="6"/>
         </jxb:typesafeEnumClass>
     </jxb:bindings>
--->
 </jxb:bindings>

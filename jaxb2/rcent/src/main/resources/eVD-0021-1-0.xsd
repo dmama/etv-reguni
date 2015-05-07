@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
 <!-- Evolution sur version 1-1 : 																																	-->
 <!--      Creation du type noticeRequestAddress																											-->
-<!--																																											-->
+<!--	   Attribut town du type adressType devient optionnel																							-->
 <!--																																											-->
 <xs:schema xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0021/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:annotation>
@@ -86,7 +86,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="countryIdType">
-		<xs:restriction base="xs:integer">
+		<xs:restriction base="xs:int">
 			<xs:minInclusive value="1000"/>
 			<xs:maxInclusive value="9999"/>
 		</xs:restriction>
@@ -123,7 +123,7 @@
 				<xs:element name="postOfficeBoxNumber" type="eVD-0021:postOfficeBoxNumberType" minOccurs="0"/>
 			</xs:sequence>
 			<xs:element name="locality" type="eVD-0021:localityType" minOccurs="0"/>
-			<xs:element name="town" type="eVD-0021:townType"/>
+			<xs:element name="town" type="eVD-0021:townType" minOccurs="0"/>
 			<xs:choice>
 				<xs:sequence>
 					<xs:element name="swissZipCode" type="eVD-0021:swissZipCodeType"/>

@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<!-- Nouveau types : listOfNoticeRequestType																												-->
+<!-- Nouvel élément : listOfNoticeRequest																													-->
+<!--																																											-->
+<!--																																											-->
 <xs:schema xmlns="http://evd.vd.ch/xmlns/eVD-0023/1" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0023/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-0.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-0.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0004/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd"/>
+	<xs:element name="noticeRequest" type="eVD-0022:noticeRequestType"/>
+	<xs:element name="organisationData" type="eVD-0022:organisationDataType"/>
 	<xs:complexType name="listOfFoundItemsType">
 		<xs:sequence>
-			<xs:element name="numberOfResults" type="xs:integer"/>
-			<xs:element name="totalNumberOfResults" type="xs:integer"/>
-			<xs:element name="currentPage" type="xs:integer"/>
-			<xs:element name="totalNumberOfPages" type="xs:integer"/>
-			<xs:element name="results" type="eVD-0022:resultsType" minOccurs="0"/>
+			<xs:element name="numberOfResults" type="xs:int"/>
+			<xs:element name="totalNumberOfResults" type="xs:int"/>
+			<xs:element name="currentPage" type="xs:int"/>
+			<xs:element name="totalNumberOfPages" type="xs:int"/>
+			<xs:element name="results" type="eVD-0022:resultsType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="listOfNoticeRequestType">
+		<xs:sequence>
+			<xs:element name="numberOfResults" type="xs:int"/>
+			<xs:element name="totalNumberOfResults" type="xs:int"/>
+			<xs:element name="currentPage" type="xs:int"/>
+			<xs:element name="totalNumberOfPages" type="xs:int"/>
+			<xs:element name="results" type="eVD-0022:noticeRequestReportType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="listOfNoticeRequest" type="listOfNoticeRequestType"/>
 	<xs:element name="listOfFoundItems" type="listOfFoundItemsType"/>
 	<xs:element name="organisationsOfNotice" type="eVD-0022:organisationsOfNoticeType"/>
 </xs:schema>

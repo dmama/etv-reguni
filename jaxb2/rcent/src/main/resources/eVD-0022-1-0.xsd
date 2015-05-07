@@ -9,15 +9,21 @@
 <!--      Modification de personType : ajout de l'attribut RCPersData (booleen) permettant d'indiquer si les données				-->
 <!--												 diffusées sur les personnes proviennent de RCPers ou de RCEnt								-->
 <!--      Nouveau type typeOfNoticeRequestType																											-->
+<!--      nouveau type : noticeRequestType																													-->
+<!--      nouveau type : noticeRequestHeaderType						 																					-->
+<!--      nouveau type : noticeRequestBodyType																											-->
 <!--      Nouveau type branchTextType																															-->
 <!--      Nouveau type personShortType																														-->
 <!--      CommercialRegisterDataType : fusion des 2 adresses (cantonale et fédérale en une seule, nommée legalAdress	-->
 <!--      uidRegisterDataType : fusion des 2 adresses (main et additional en une seule, nommée effectiveAdress				-->
 <!--	   organisationLocationType : ajout de l'établissement de remplacement (attribut replacement)									-->
+<!--	   organisationLocationType : ajout des établissements remplacés (attribut replaced)												-->
+<!--	   organisationType : ajout des entreprises remplacées (attribut replaced)																-->
 <!--	   uidRegisterDataType : status devient obligatoire																								-->
 <!--      headerType : senderIdentification renommé en senderName, format changé en senderNameType (nouveau type)	-->
 <!--      headerType : correction du type senderReferenceData de token à string																-->
 <!--	   changement sur partyType : suppression du choice person/organisation remplacé par person uniquement				-->
+<!--	   correction sur noticeOrganisationType : element organisationIdentifiaction corrigé à organisationIdentification			-->
 <!--																																											-->
 <xs:schema xmlns="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0022/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-0.xsd"/>
@@ -436,6 +442,56 @@
 			<xs:maxLength value="3"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="noticeRequestStatusCodeType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+			<xs:enumeration value="6"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="noticeRequestStatusType">
+		<xs:sequence>
+			<xs:element name="noticeRequestStatusCode" type="noticeRequestStatusCodeType"/>
+			<xs:element name="noticeRequestStatusDate" type="xs:date"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestType">
+		<xs:sequence>
+			<xs:element name="noticeRequestHeader" type="noticeRequestHeaderType"/>
+			<xs:element name="noticeRequestBody" type="noticeRequestBodyType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestHeaderType">
+		<xs:sequence>
+			<xs:element name="noticeRequestId" type="noticeIdType"/>
+			<xs:element name="typeOfNoticeRequest" type="typeOfNoticeRequestType"/>
+			<xs:element name="noticeRequestDateTime" type="xs:dateTime"/>
+			<xs:element name="scheduledDate" type="xs:date" minOccurs="0"/>
+			<xs:element name="organisationLocationCantonalId" type="cantonalIdType" minOccurs="0"/>
+			<xs:element name="IDESource" type="identifierType" minOccurs="0"/>
+			<xs:element name="userId" type="xs:string" minOccurs="0"/>
+			<xs:element name="userPhoneNumber" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestBodyType">
+		<xs:sequence>
+			<xs:element name="organisationLocationName" type="nameType" minOccurs="0"/>
+			<xs:element name="organisationLocationAdditionalName" type="nameType" minOccurs="0"/>
+			<xs:element name="organisationLocationReplacementCantonalId" type="cantonalIdType" minOccurs="0"/>
+			<xs:element name="organisationLocationAddress" type="eVD-0021:noticeRequestAddressType" minOccurs="0"/>
+			<xs:element name="kindOfLocation" type="kindOfLocationType" minOccurs="0"/>
+			<xs:element name="organisationCantonalId" type="cantonalIdType" minOccurs="0"/>
+			<xs:element name="organisationLocationLegalForm" type="legalFormType" minOccurs="0"/>
+			<xs:element name="branchText" type="xs:string" minOccurs="0"/>
+			<xs:element name="organisationLocationLiquidationReason" type="liquidationReasonType" minOccurs="0"/>
+			<xs:element name="person" type="personSummaryType" minOccurs="0"/>
+			<xs:element name="comment" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="identifierType">
 		<xs:sequence>
 			<xs:element name="identifierCategory" type="xs:string"/>
@@ -456,10 +512,23 @@
 			<xs:element name="organisationLocationIdentification" type="identificationType"/>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="errorType">
+		<xs:sequence>
+			<xs:element name="errorId" type="xs:token"/>
+			<xs:element name="errorDescription" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="noticeRequestReportType">
+		<xs:sequence>
+			<xs:element name="noticeRequest" type="noticeRequestType"/>
+			<xs:element name="noticeRequestStatus" type="noticeRequestStatusType"/>
+			<xs:element name="listOfErrors" type="errorType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="resultsType">
-		<xs:choice maxOccurs="unbounded">
-			<xs:element name="organisationFound" type="identificationType"/>
-			<xs:element name="organisationLocationFound" type="organisationLocationIdentificationType"/>
+		<xs:choice>
+			<xs:element name="organisation" type="identificationType"/>
+			<xs:element name="organisationLocation" type="organisationLocationIdentificationType"/>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="postOfficeBoxType">
@@ -586,7 +655,8 @@
 			<xs:element name="organisationLocation" type="organisationLocationType" maxOccurs="unbounded"/>
 			<xs:element name="transferTo" type="identificationType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="transferFrom" type="identificationType" minOccurs="0" maxOccurs="unbounded"/>
-			<xs:element name="replacement" type="identificationType" minOccurs="0"/>
+			<xs:element name="replacedBy" type="identificationType" minOccurs="0"/>
+			<xs:element name="inReplacementOf" type="identificationType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="organisationLocationType">
@@ -602,19 +672,20 @@
 			<xs:element name="nogaCode" type="xs:token" minOccurs="0"/>
 			<xs:element name="uidRegisterData" type="uidRegisterDataType" minOccurs="0"/>
 			<xs:element name="vatRegisterData" type="vatRegisterDataType" minOccurs="0"/>
-			<xs:element name="replacement" type="identificationType" minOccurs="0"/>
+			<xs:element name="replacedBy" type="identificationType" minOccurs="0"/>
+			<xs:element name="inReplacementOf" type="identificationType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="organisationsOfNoticeType">
 		<xs:sequence>
 			<xs:element name="noticeId" type="noticeIdType"/>
-			<xs:element name="numberOfResults" type="xs:integer"/>
+			<xs:element name="numberOfResults" type="xs:int"/>
 			<xs:element name="results" type="organisationType" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="noticeOrganisationType">
 		<xs:sequence>
-			<xs:element name="organisationIdentifiaction" type="identificationType"/>
+			<xs:element name="organisationIdentification" type="identificationType"/>
 			<xs:element name="organisation" type="organisationType"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -696,7 +767,6 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:element name="organisationData" type="organisationDataType"/>
 	<xs:complexType name="organisationSnapshotType">
 		<xs:sequence>
 			<xs:element name="beginValidityDate" type="xs:date"/>
