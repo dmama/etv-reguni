@@ -43,6 +43,8 @@
 					<bindingIncludes>
 						<include>ech-bindings.xml</include>
 						<include>bindings.xml</include>
+						<include>eVD-0022-1-0-enum-bindings.xml</include>
+						<include>eVD-0024-1-0-enum-bindings.xml</include>
 					</bindingIncludes>
 					<args>
 						<arg>-extension</arg>
