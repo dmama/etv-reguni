@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public interface AssujettissementService {
 
@@ -27,7 +28,7 @@ public interface AssujettissementService {
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
 	 *          en cas d'impossibilité de calculer l'assujettissement
 	 */
-	List<Assujettissement> determineRole(Contribuable ctb) throws AssujettissementException;
+	List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
 	/**
 	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement <i>du point de vue de la source</i>.
@@ -37,7 +38,7 @@ public interface AssujettissementService {
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
 	 *          en cas d'impossibilité de calculer l'assujettissement
 	 */
-	List<SourcierPur> determineSource(Contribuable ctb) throws AssujettissementException;
+	List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
 	/**
 	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS sont donnés en paramètre

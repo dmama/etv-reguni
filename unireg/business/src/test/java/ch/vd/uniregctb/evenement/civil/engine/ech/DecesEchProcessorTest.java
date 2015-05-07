@@ -25,6 +25,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -647,7 +648,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(survivantId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
 				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());

@@ -140,6 +140,9 @@ public enum TypeRapportEntreTiers {
 		}
 	},
 
+	/**
+	 * @since 6.0
+	 */
 	ACTIVITE_ECONOMIQUE {
 		@Override
 		public RapportEntreTiers newInstance() {
@@ -152,6 +155,9 @@ public enum TypeRapportEntreTiers {
 		}
 	},
 
+	/**
+	 * @since 6.0
+	 */
 	MANDAT {
 		@Override
 		public RapportEntreTiers newInstance() {
@@ -164,6 +170,9 @@ public enum TypeRapportEntreTiers {
 		}
 	},
 
+	/**
+	 * @since 6.0
+	 */
 	FUSION_ENTREPRISES {
 		@Override
 		public RapportEntreTiers newInstance() {

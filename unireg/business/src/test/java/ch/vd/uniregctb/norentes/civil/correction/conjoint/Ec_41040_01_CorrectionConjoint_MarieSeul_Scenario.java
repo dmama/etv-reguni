@@ -14,7 +14,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -103,16 +102,14 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 		PersonnePhysique rafa = addHabitant(noIndRafa);
 		{
 			noHabRafa = rafa.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(rafa, commune, dateArrivee, avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(rafa, commune, dateArrivee, avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// maria
 		PersonnePhysique maria = addHabitant(noIndMaria);
 		{
 			noHabMaria = maria.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(maria, commune, dateArrivee, null, MotifFor.DEMENAGEMENT_VD, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(maria, commune, dateArrivee, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 
 		// ménage
@@ -121,8 +118,7 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 			menage = (MenageCommun)tiersDAO.save(menage);
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, rafa, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		}
 	}
 

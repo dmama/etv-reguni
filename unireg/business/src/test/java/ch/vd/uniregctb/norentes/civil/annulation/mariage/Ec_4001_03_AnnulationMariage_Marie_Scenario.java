@@ -9,6 +9,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -72,14 +73,12 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		// Maurice
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		ForFiscalPrincipal ffpMomo = addForFiscalPrincipal(momo, commune, dateDebutMomo, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		ffpMomo.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(momo, commune, dateDebutMomo, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// Béatrice
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		ForFiscalPrincipal ffpBea = addForFiscalPrincipal(bea, commune, datedebutBea, dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		ffpBea.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(bea, commune, datedebutBea, dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// Ménage commun
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
@@ -87,22 +86,21 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 
-		ForFiscalPrincipal ffpMennage = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-		ffpMennage.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 	}
 
 	@Check(id=1, descr="Vérifie que les habitants ont chacun un For fermé et le For du ménage est ouvert")
 	public void check1() {
 		{
 			PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
-			ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + momo.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 		}
 		{
 			PersonnePhysique bea = (PersonnePhysique) tiersDAO.get(noHabBea);
-			ForFiscalPrincipal ffp = bea.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = bea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + bea.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
@@ -110,7 +108,7 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage a plus d'un for principal");
-			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");

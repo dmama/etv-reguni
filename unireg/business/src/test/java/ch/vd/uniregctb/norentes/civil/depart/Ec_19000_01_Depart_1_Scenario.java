@@ -16,6 +16,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -157,11 +158,11 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 			final List<ForFiscal> list = hab.getForsFiscauxSorted();
 
 			// For fermé sur Bex
-			final ForFiscalPrincipal ffpFerme = (ForFiscalPrincipal)list.get(list.size()-2);
+			final ForFiscalPrincipal ffpFerme = (ForFiscalPrincipal) list.get(list.size()-2);
 			assertEquals(dateDepartBex, ffpFerme.getDateFin(), "Le for sur Bex n'est pas fermé à la bonne date");
 
 			// For ouvert sur Zurich
-			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal)list.get(list.size()-1);
+			final ForFiscalPrincipalPP ffpOuvert = (ForFiscalPrincipalPP) list.get(list.size()-1);
 			assertEquals(dateArriveeZurich, ffpOuvert.getDateDebut(), "Le for sur zurich n'est pas ouvert à la bonne date");
 			assertEquals(NouvelleCommuneZurich, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -80,7 +80,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNotNull(pp);
 				Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
@@ -137,7 +137,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNotNull(pp);
 				Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
@@ -194,7 +194,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNotNull(pp);
 				Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(date(1992, 2, 1), ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
@@ -258,7 +258,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNotNull(pp);
 				Assert.assertNull(pp.getDateDeces());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(dateVeuvage, ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
@@ -283,7 +283,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				Assert.assertNull(pp.getDateDeces());
 
 				{
-					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateDebut, ffp.getDateDebut());
 					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
@@ -300,7 +300,7 @@ public class AnnulationDecesRecapManagerTest extends WebTest {
 				final MenageCommun mc = couple.getMenage();
 				Assert.assertNotNull(mc);
 				{
-					final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+					final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateMariage, ffp.getDateDebut());
 					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());

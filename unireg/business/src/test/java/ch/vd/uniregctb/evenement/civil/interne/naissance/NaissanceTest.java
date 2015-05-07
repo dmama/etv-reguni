@@ -28,7 +28,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -75,7 +74,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance.");
 
 		{
-			List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
+			List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -88,7 +87,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
+		List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié
@@ -104,7 +103,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test de traitement d'un événement de naissance en fin d'année.");
 
 		{
-			final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
+			final List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
 			assertEquals("le tiers correspondant au nouveau n'a pas été créé", 0, tierss.size());
 		}
 
@@ -117,7 +116,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		assertFalse("Une erreur est survenue lors du traitement de la naissance", collector.hasErreurs());
 
-		final List<Tiers> tierss = allTiersOfType(PersonnePhysique.class);
+		final List<PersonnePhysique> tierss = allTiersOfType(PersonnePhysique.class);
 		assertEquals("le tiers correspondant au nouveau n'a pas été créé", 1, tierss.size());
 		/*
 		 * une événement doit être créé et un événement doit être publié

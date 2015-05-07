@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -89,7 +90,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
 				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(maxwell, 2011, r));			}
 		});
@@ -98,7 +99,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				final PeriodeImposition piFelicien = processor.getPeriodeImpositionEnFinDePeriodeFiscale(felicien, 2011, r);
 				assertNotNull(piFelicien);
@@ -111,7 +112,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(bernard, 2011, r));
 			}
@@ -121,7 +122,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final Contribuable lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique lamda = addNonHabitant("Lamda", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(lamda, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2011, 8, 20), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				assertNull(processor.getPeriodeImpositionEnFinDePeriodeFiscale(lamda, 2011, r));
 			}

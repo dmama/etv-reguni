@@ -23,7 +23,6 @@
 				<entry key="ch.vd.unireg.xml.event.party.party.v3.PartyRequest" value-ref="partyRequestHandlerV3" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v2.CreateNonresidentRequest" value-ref="createNonresidentRequestHandlerV2" />
-				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV1" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v2.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v3.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV3" />
@@ -123,11 +122,6 @@
 
 	<bean id="createNonresidentRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandlerV2">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
-
-	<bean id="aperiodicTaxLiabilityRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandler">
-		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="aperiodicTaxLiabilityRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandlerV2">

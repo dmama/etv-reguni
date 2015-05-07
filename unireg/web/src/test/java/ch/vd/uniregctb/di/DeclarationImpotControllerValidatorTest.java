@@ -17,7 +17,6 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -88,7 +87,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
 
 				// Un contribuable quelconque
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(eric, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -144,7 +143,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
 
 				// Un contribuable quelconque
-				Contribuable jeanne = addNonHabitant("Jeanne", "dupont", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique jeanne = addNonHabitant("Jeanne", "dupont", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.jeanneId = jeanne.getNumero();
 				addForPrincipal(jeanne, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(jeanne, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -192,7 +191,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
 
 				// Un contribuable quelconque
-				Contribuable gustave = addNonHabitant("Gustave", "Eiffel", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique gustave = addNonHabitant("Gustave", "Eiffel", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.gustaveId = gustave.getNumero();
 				addForPrincipal(gustave, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(gustave, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -249,7 +248,7 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
 
 				// Un contribuable quelconque
-				Contribuable coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.coridonId = coridon.getNumero();
 				addForPrincipal(coridon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,

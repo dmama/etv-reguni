@@ -50,11 +50,13 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
- * personne peut être: - Une personne physique, connu ou non du contrôle des habitants - Une organisation (personne morale ou entité sans
- * personnalité juridique, connue ou non du registre des personnes morales). - Une autre communauté de personnes sans personnalité juridique
- * complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
- * (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).
- *
+ * personne peut être:
+ * <ul>
+ *     <li>Une personne physique, connue ou non du contrôle des habitants</li>
+ *     <li>Une organisation (personne morale ou entité sans personnalité juridique, connue ou non du registre des personnes morales)</li>
+ *     <li>Une autre communauté de personnes sans personnalité juridique complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
+ *     (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).</li>
+ * </ul>
  */
 @Entity
 @Table(name = "TIERS")
@@ -639,7 +641,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return Renvoie les fors principaux
 	 */
 	@Transient
-	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
+	public List<? extends ForFiscalPrincipal> getForsFiscauxPrincipauxActifsSorted() {
 		List<ForFiscalPrincipal> ffps = null;
 		if (forsFiscaux != null) {
 			ffps = new ArrayList<>();
@@ -648,7 +650,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 					ffps.add((ForFiscalPrincipal) ff);
 				}
 			}
-			Collections.sort(ffps, new DateRangeComparator<ForFiscalPrincipal>());
+			Collections.sort(ffps, new DateRangeComparator<ForFiscal>());
 		}
 		return ffps;
 	}
@@ -661,8 +663,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	public List<ForFiscal> getForsFiscauxSorted() {
 		List<ForFiscal> fors = null;
 		if (forsFiscaux != null) {
-			fors = new ArrayList<>();
-			fors.addAll(forsFiscaux);
+			fors = new ArrayList<>(forsFiscaux);
 			Collections.sort(fors, new DateRangeComparator<ForFiscal>() {
 				@Override
 				public int compare(ForFiscal o1, ForFiscal o2) {
@@ -1085,7 +1086,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * @return vrai s'il existe un for principal (ou une succession ininterrompue de fors principaux) durant la période spécifiée.
 	 */
-	public static boolean existForPrincipal(List<ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
+	public static boolean existForPrincipal(List<? extends ForFiscalPrincipal> principaux, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 
 		int indexCandidat = -1;
 

@@ -2051,7 +2051,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	public void testDeterminePassageSourceOrdinaireObtentionPermisCAvecSeparationAuDebutDAnnee() throws Exception {
 
 		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement, même dans le cas particulier d'une séparation au début d'année.
-		final Contribuable maria = createContribuableSansFor(10342164L);
+		final PersonnePhysique maria = createContribuableSansFor(10342164L);
 		addForPrincipal(maria, date(2011, 2, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2011, 4, 26), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
 		addForPrincipal(maria, date(2011, 4, 27), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.ORDINAIRE);
 
@@ -2068,7 +2068,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	public void testDeterminePassageSourceOrdinaireObtentionPermisCPuisDemenagementVDDansLAnnee() throws Exception {
 
 		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement ! Cas spécial du contribuable qui déménage ensuite dans l'année
-		final Contribuable jacqueline = createContribuableSansFor(10346089L);
+		final PersonnePhysique jacqueline = createContribuableSansFor(10346089L);
 		addForPrincipal(jacqueline, date(2011, 1, 10), MotifFor.PERMIS_C_SUISSE, date(2011, 6, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey, ModeImposition.ORDINAIRE);
 		addForPrincipal(jacqueline, date(2011, 6, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
 
@@ -2085,7 +2085,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	public void testDeterminePassageSourceOrdinaireObtentionPermisCPuisDemenagementVDDansLeMois() throws Exception {
 
 		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement ! Cas spécial du contribuable qui déménage ensuite dans le même mois
-		final Contribuable vjollca = createContribuableSansFor(10342784L);
+		final PersonnePhysique vjollca = createContribuableSansFor(10342784L);
 		addForPrincipal(vjollca, date(2004, 12, 28), MotifFor.MAJORITE, date(2010, 3, 17), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
 		addForPrincipal(vjollca, date(2010, 3, 18), MotifFor.PERMIS_C_SUISSE, date(2010, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
 		addForPrincipal(vjollca, date(2010, 4, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -2852,18 +2852,12 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineCasCompletementTordu() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10000171L);
+		final PersonnePhysique paul = createContribuableSansFor(10000171L);
 
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 12, 18), MotifFor.DEPART_HS, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
-
+		addForPrincipal(paul, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 12, 18), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 		addForPrincipal(paul, date(2005, 12, 19), MotifFor.DEMENAGEMENT_VD, date(2008, 5, 28), MotifFor.DEMENAGEMENT_VD, MockPays.France);
-
-		fp = addForPrincipal(paul, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
-
-		fp = addForPrincipal(paul, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForPrincipal(paul, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(paul, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey, ModeImposition.MIXTE_137_2);
 
 		addForSecondaire(paul, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -2933,15 +2927,13 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFausseArriveeHorsSuisse() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10002045L);
+		final PersonnePhysique paul = createContribuableSansFor(10002045L);
 
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 10, 9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne);
-		fp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 10, 9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne, ModeImposition.SOURCE);
 
 		// le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse.
 		// Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.
-		fp = addForPrincipal(paul, date(2003, 10, 10), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForPrincipal(paul, date(2003, 10, 10), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 
 		// 2000
 		{
@@ -2983,7 +2975,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFausseArriveeHorsSuisse2() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10003318L);
+		final PersonnePhysique paul = createContribuableSansFor(10003318L);
 
 		addForPrincipal(paul, date(2002, 5, 31), MotifFor.INDETERMINE, date(2002, 6, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		// le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse.
@@ -3114,7 +3106,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineFauxDepartHS() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10004709L);
+		final PersonnePhysique paul = createContribuableSansFor(10004709L);
 
 		// Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement
 		// au 31 décembre pour motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré
@@ -3165,7 +3157,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHSAchatImmeubleEtArriveeHC() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10008508L);
+		final PersonnePhysique paul = createContribuableSansFor(10008508L);
 
 		addForPrincipal(paul, date(1995, 11, 2), MotifFor.ARRIVEE_HS, date(1997, 3, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(1997, 3, 3), MotifFor.DEMENAGEMENT_VD, date(2004, 12, 31), MotifFor.DEPART_HC, MockPays.Albanie);
@@ -3189,7 +3181,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierMixteHorsSuisseAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createSourcierMixteHorsSuisseAvecImmeuble_Invalide();
+		final PersonnePhysique paul = createSourcierMixteHorsSuisseAvecImmeuble_Invalide();
 
 		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
@@ -3209,7 +3201,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierHCDepartHSEtAchatImmeuble() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor(10019036L);
+		final PersonnePhysique paul = createContribuableSansFor(10019036L);
 
 		addForPrincipal(paul, date(2004, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 6, 14), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel, ModeImposition.SOURCE);
 		addForPrincipal(paul, date(2004, 6, 15), MotifFor.DEPART_HC, date(2004, 7, 10), MotifFor.DEPART_HC, MockPays.Danemark);
@@ -3237,10 +3229,9 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHSSourcierEtArriveeHSOrdinaireMemeMois() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10441002L);
+		final PersonnePhysique ctb = createContribuableSansFor(10441002L);
 
-		ForFiscalPrincipal fp = addForPrincipal(ctb, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 13), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2009, 8, 14), MotifFor.DEPART_HS, date(2009, 8, 18), MotifFor.ARRIVEE_HS, MockPays.Colombie);
 		addForPrincipal(ctb, date(2009, 8, 19), MotifFor.ARRIVEE_HS, date(2009, 12, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2009, 12, 14), MotifFor.DEPART_HS, MockPays.EtatsUnis);
@@ -3258,7 +3249,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineAchatImmeubleEtMariageDansLAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(17907715L);
+		final PersonnePhysique ctb = createContribuableSansFor(17907715L);
 		addForPrincipal(ctb, date(1993, 1, 6), MotifFor.INDETERMINE, date(2008, 2, 29), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2008, 3, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
 		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens.getNoOFS(),
@@ -3301,7 +3292,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineContribuableAvecDeuxForFiscauxPrincipauxHSDisjointsDansLaMemeAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(30928601L);
+		final PersonnePhysique ctb = createContribuableSansFor(30928601L);
 		addForPrincipal(ctb, date(1976, 1, 7), MotifFor.INDETERMINE, date(1980, 1, 6), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForPrincipal(ctb, date(1980, 12, 30), MotifFor.INDETERMINE, MockPays.PaysInconnu);
 		addForSecondaire(ctb, date(1980, 12, 30), MotifFor.ACHAT_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3318,7 +3309,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineMariagePPVaudoisAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10003677L);
+		final PersonnePhysique ctb = createContribuableSansFor(10003677L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
 		                 MotifRattachement.IMMEUBLE_PRIVE);
@@ -3335,7 +3326,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSeparationMenageVaudoisAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003679L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003679L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
 		                 MotifRattachement.IMMEUBLE_PRIVE);
@@ -3352,7 +3343,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineMariagePPHorsCantonAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10003680L);
+		final PersonnePhysique ctb = createContribuableSansFor(10003680L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Morges.getNoOFS(),
 		                 MotifRattachement.IMMEUBLE_PRIVE);
@@ -3369,7 +3360,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSeparationMenageHorsCantonAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003681L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003681L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(),
 		                 MotifRattachement.IMMEUBLE_PRIVE);
@@ -3386,7 +3377,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleEtMariageMemeAnneePPVaudois() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10003682L);
+		final PersonnePhysique ctb = createContribuableSansFor(10003682L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -3402,7 +3393,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleEtSeparationMemeAnneeMenageVaudois() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003683L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003683L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -3418,7 +3409,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleEtMariageMemeAnneePPHorsCanton() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10003685L);
+		final PersonnePhysique ctb = createContribuableSansFor(10003685L);
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -3434,7 +3425,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleEtSeparationMemeAnneeMenageHorsCanton() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003684L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003684L, date(2003, 5, 23), date(2006, 9, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 5, 23), MotifFor.INDETERMINE, date(2006, 9, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 5, 23), MotifFor.ACHAT_IMMOBILIER, date(2006, 9, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
 
@@ -3450,7 +3441,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHCAvecImmeublePuisMariageMemeAnneePP() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10010236L);
+		final PersonnePhysique ctb = createContribuableSansFor(10010236L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne.getNoOFS(),
@@ -3466,7 +3457,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHCAvecImmeublePuisSeparationMemeAnneeMenage() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003578L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003578L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne.getNoOFS(),
@@ -3482,7 +3473,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHCVenteImmeublePuisMariageMemeAnneePP() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10000032L);
+		final PersonnePhysique ctb = createContribuableSansFor(10000032L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3497,7 +3488,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHCVenteImmeublePuisSeparationMemeAnneeMenage() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10000033L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10000033L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 8, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3512,7 +3503,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisMariageMemeAnneePP() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10000034L);
+		final PersonnePhysique ctb = createContribuableSansFor(10000034L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
@@ -3527,7 +3518,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisSeparationMemeAnneeMenage() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10000035L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10000035L, date(2003, 7, 11), date(2003, 8, 1)).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
@@ -3542,7 +3533,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisMariageEtEnfinSeparationMemeAnneePP() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10000036L);
+		final PersonnePhysique ctb = createContribuableSansFor(10000036L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
@@ -3561,7 +3552,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisSeparationEtEnfinReconciliationMemeAnneeMenage() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10000037L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10000037L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
@@ -3580,7 +3571,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisMariagePuisDepartHCEtEnfinSeparationMemeAnneePP() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10000038L);
+		final PersonnePhysique ctb = createContribuableSansFor(10000038L);
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.RomanelSurLausanne);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3599,7 +3590,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineVenteImmeubleArriveeHCPuisSeparationPuisDepartHCEtEnfinReconciliationMemeAnneeMenage() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10000039L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10000039L, date(2003, 7, 11), date(2003, 8, 1), date(2003, 10, 23), null).getMenage();
 		addForPrincipal(ctb, date(2003, 7, 11), MotifFor.INDETERMINE, date(2003, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2003, 7, 11), MotifFor.ACHAT_IMMOBILIER, date(2003, 7, 20), MotifFor.VENTE_IMMOBILIER, MockCommune.RomanelSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForPrincipal(ctb, date(2003, 8, 1), MotifFor.ARRIVEE_HC, date(2003, 8, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.RomanelSurLausanne);
@@ -3618,7 +3609,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineContribuableAvecDeuxImmeublesHCDisjointsDansLaMemeAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(30928601L);
+		final PersonnePhysique ctb = createContribuableSansFor(30928601L);
 		addForPrincipal(ctb, date(2007, 3, 7), MotifFor.INDETERMINE, date(2007, 5, 30), MotifFor.INDETERMINE, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2007, 9, 12), MotifFor.INDETERMINE, MockCommune.Geneve);
 		addForSecondaire(ctb, date(2007, 3, 7), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER, MockCommune.Morges.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3636,10 +3627,9 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSourcierMixteHCAchatImmeubleEtArriveeHCMemeAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10010236L);
+		final PersonnePhysique ctb = createContribuableSansFor(10010236L);
 		addForPrincipal(ctb, date(2004, 1, 29), MotifFor.INDETERMINE, date(2004, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve);
-		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2004, 2, 1), MotifFor.ARRIVEE_HC, MockCommune.Nyon);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2004, 2, 1), MotifFor.ARRIVEE_HC, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
 		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = service.determine(ctb);
@@ -3654,7 +3644,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineCtbMariageEtSeparationDeuxFoisDansAnneeEtMotifsBizarres() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(36502102L);
+		final PersonnePhysique ctb = createContribuableSansFor(36502102L);
 		addForPrincipal(ctb, date(2001, 5, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 26), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
 		addForPrincipal(ctb, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2001, 12, 27), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Chamblon);
 
@@ -3668,7 +3658,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePPMariageEtSeparationDansAnneeMaisMotifIndetermine() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(36216757L);
+		final PersonnePhysique ctb = createContribuableSansFor(36216757L);
 		addForPrincipal(ctb, date(1997, 1, 1), MotifFor.ARRIVEE_HS, date(2000, 3, 24), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Croy);
 		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
@@ -3685,7 +3675,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineMenageSeparationEtReconciliationDansAnneeMaisMotifIndetermine() throws Exception {
 
-		final Contribuable ctb = createMenageSansFor(10003678L, date(1997, 1, 1), date(2000, 3, 24), date(2000, 10, 3), null).getMenage();
+		final MenageCommun ctb = createMenageSansFor(10003678L, date(1997, 1, 1), date(2000, 3, 24), date(2000, 10, 3), null).getMenage();
 		addForPrincipal(ctb, date(1997, 1, 1), MotifFor.ARRIVEE_HS, date(2000, 3, 24), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Croy);
 		addForPrincipal(ctb, date(2000, 10, 3), MotifFor.INDETERMINE, date(2001, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
 		addForPrincipal(ctb, date(2001, 2, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
@@ -3702,7 +3692,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsSuisseLe31Decembre() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10048078L);
+		final PersonnePhysique ctb = createContribuableSansFor(10048078L);
 		addForPrincipal(ctb, date(2005, 10, 27), MotifFor.INDETERMINE, date(2007, 1, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2007, 2, 1), MotifFor.ARRIVEE_HC, date(2007, 12, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
@@ -3722,7 +3712,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsSuisseEtArriveeHorsSuisseMemeJour() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(41010811L);
+		final PersonnePhysique ctb = createContribuableSansFor(41010811L);
 		addForPrincipal(ctb, date(1991, 1, 6), MotifFor.ARRIVEE_HS, date(1997, 12, 26), MotifFor.DEPART_HS, MockCommune.YverdonLesBains);
 		addForPrincipal(ctb, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, date(1997, 12, 27), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		addForSecondaire(ctb, date(1997, 12, 27), MotifFor.ACHAT_IMMOBILIER, date(1997, 12, 27), MotifFor.VENTE_IMMOBILIER, MockCommune.YverdonLesBains.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -3742,7 +3732,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsSuisseDansHorsCantonSourcier() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10556134L);
+		final PersonnePhysique ctb = createContribuableSansFor(10556134L);
 		addForPrincipal(ctb, date(2008, 2, 1), MotifFor.INDETERMINE, date(2008, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD, date(2010, 5, 31), MotifFor.DEPART_HS, MockCommune.Epesses, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2010, 6, 1), MotifFor.DEPART_HS, date(2011, 3, 31), MotifFor.DEMENAGEMENT_VD, MockPays.France, ModeImposition.SOURCE);
@@ -3762,7 +3752,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePassageSourcierOrdinaireDepartHCMemeAnneeEtRetour1erJanvierAnneeSuivante() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10603986L);
+		final PersonnePhysique ctb = createContribuableSansFor(10603986L);
 		addForPrincipal(ctb, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 2, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2009, 2, 2), MotifFor.ARRIVEE_HC, date(2010, 12, 7), MotifFor.PERMIS_C_SUISSE, MockCommune.Mies, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2010, 12, 8), MotifFor.PERMIS_C_SUISSE, date(2011, 3, 9), MotifFor.DEPART_HC, MockCommune.Mies);
@@ -3788,7 +3778,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineForPrincipalFermetureMotifMariageEtOuvertureMotifVeuvageLeLendemain() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10603987L);
+		final PersonnePhysique ctb = createContribuableSansFor(10603987L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 2, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2009, 2, 2), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 
@@ -3808,7 +3798,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineForPrincipalFermetureDecesEtOuvertureMotifVeuvageLeLendemain() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10035699L);
+		final PersonnePhysique ctb = createContribuableSansFor(10035699L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 7, 31), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 
@@ -3827,7 +3817,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonDepense() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10035700L);
+		final PersonnePhysique ctb = createContribuableSansFor(10035700L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 7, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.DEPENSE);
 		addForPrincipal(ctb, date(2005, 8, 1), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
 
@@ -3846,7 +3836,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcePuisPassageAMixte1DansLAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10867397L);
+		final PersonnePhysique ctb = createContribuableSansFor(10867397L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 3, 31), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 4, 1), MotifFor.ARRIVEE_HC, date(2012, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 8, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
@@ -3867,7 +3857,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcePuisPassageAOrdinaireDansLAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10867398L);
+		final PersonnePhysique ctb = createContribuableSansFor(10867398L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 3, 31), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 4, 1), MotifFor.ARRIVEE_HC, date(2012, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 8, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
@@ -3888,7 +3878,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcePuisPassageAMixte2DansLAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10716129L);
+		final PersonnePhysique ctb = createContribuableSansFor(10716129L);
 		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 5, 4), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 5, 5), MotifFor.ARRIVEE_HC, date(2012, 8, 30), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 9, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
@@ -3909,7 +3899,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcePuisPassageAOrdinaireSuiviDeMariageDansLAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10802574L);
+		final PersonnePhysique ctb = createContribuableSansFor(10802574L);
 		addForPrincipal(ctb, date(2012, 9, 26), MotifFor.ARRIVEE_HC, date(2012, 10, 7), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2012, 10, 8), MotifFor.CHGT_MODE_IMPOSITION, date(2012, 12, 29), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne,
 		                ModeImposition.ORDINAIRE);
@@ -3928,7 +3918,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerDemenagementVDSourcierPuisPassageOrdinaireLaMemeAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10553402L);
+		final PersonnePhysique ctb = createContribuableSansFor(10553402L);
 		addForPrincipal(ctb, date(2006, 4, 1), MotifFor.DEMENAGEMENT_VD, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, date(2008, 11, 18), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Prilly, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2008, 11, 19), MotifFor.INDETERMINE, date(2010, 2, 11), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Prilly);
@@ -3946,7 +3936,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerPlusieursDemenagementVDSourcierMixte() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(99619010L);
+		final PersonnePhysique ctb = createContribuableSansFor(99619010L);
 		addForPrincipal(ctb, date(2000, 5, 31), MotifFor.INDETERMINE, date(2003, 11, 17), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2003, 11, 18), MotifFor.DEMENAGEMENT_VD, date(2004, 11, 29), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2004, 11, 30), MotifFor.DEMENAGEMENT_VD, date(2010, 11, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
@@ -3965,7 +3955,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerPlusieursDemenagementVDSourcierMixtePuisDepartHorsCanton() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10799600L);
+		final PersonnePhysique ctb = createContribuableSansFor(10799600L);
 		addForPrincipal(ctb, date(2011, 2, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2011, 4, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens, ModeImposition.MIXTE_137_1);
 		addForPrincipal(ctb, date(2011, 5, 1), MotifFor.DEMENAGEMENT_VD, date(2011, 5, 31), MotifFor.DEPART_HC, MockCommune.Morges, ModeImposition.MIXTE_137_1);
 		addForPrincipal(ctb, date(2011, 6, 1), MotifFor.DEPART_HC, MockCommune.Geneve, ModeImposition.SOURCE);
@@ -3984,7 +3974,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerSourcierPassageOrdinaireUnJourPuisRetourSourcier() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10503559L);
+		final PersonnePhysique ctb = createContribuableSansFor(10503559L);
 		addForPrincipal(ctb, date(2008, 11, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 1), MotifFor.DEPART_HC, MockCommune.Nyon, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2009, 8, 2), MotifFor.DEPART_HC, date(2010, 5, 15), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2010, 5, 16), MotifFor.ARRIVEE_HC, date(2010, 5, 16), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.YverdonLesBains, ModeImposition.ORDINAIRE);
@@ -4008,7 +3998,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerFermetureForSourcierMixteRaisonDeces() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10054692L);
+		final PersonnePhysique ctb = createContribuableSansFor(10054692L);
 		addForPrincipal(ctb, date(2006, 1, 1), MotifFor.INDETERMINE, date(2012, 9, 1), MotifFor.VEUVAGE_DECES, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
 
 		final List<Assujettissement> liste = service.determine(ctb);
@@ -4024,7 +4014,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerOuvertureForSourcierMixteRaisonDeces() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(56109712L);
+		final PersonnePhysique ctb = createContribuableSansFor(56109712L);
 		addForPrincipal(ctb, date(1999, 10, 12), MotifFor.VEUVAGE_DECES, MockCommune.Prilly, ModeImposition.MIXTE_137_2);
 
 		final List<Assujettissement> liste = service.determine(ctb);
@@ -4037,7 +4027,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminerDepartHSPuisArriveeHSMemeAnneeSourcier() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10743138L);
+		final PersonnePhysique ctb = createContribuableSansFor(10743138L);
 		addForPrincipal(ctb, date(2010, 5, 15), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 		                date(2010, 10, 4), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 		addForPrincipal(ctb, date(2010, 10, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 10, 7), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
@@ -4062,7 +4052,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineHcVenteDernierImmeublePuisDemenagementFinAnnee() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor(10763698L);
+		final PersonnePhysique ctb = createContribuableSansFor(10763698L);
 		addForPrincipal(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		addForPrincipal(ctb, date(2013, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bern);
 		addForSecondaire(ctb, date(2010, 10, 20), MotifFor.ACHAT_IMMOBILIER, date(2012, 5, 8), MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4082,7 +4072,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate arrivee = date(2013, 1, 1);
 		final RegDate depart = date(2013, 6, 12);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 
@@ -4108,7 +4098,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus status) throws Exception {
-					final Contribuable ctb = createContribuableSansFor();
+					final PersonnePhysique ctb = createContribuableSansFor();
 					addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Moudon, ModeImposition.MIXTE_137_2);
 					addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 
@@ -4134,7 +4124,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final RegDate obtention = date(2013, 5, 1);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
 		addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon);
 
@@ -4159,7 +4149,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 				@Override
 				public void execute(TransactionStatus status) throws Exception {
-					final Contribuable ctb = createContribuableSansFor();
+					final PersonnePhysique ctb = createContribuableSansFor();
 					addForPrincipal(ctb, date(2013, 1, 1), MotifFor.ARRIVEE_HS, obtention.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon, ModeImposition.SOURCE);
 					addForPrincipal(ctb, obtention, MotifFor.PERMIS_C_SUISSE, obtention.addMonths(5), MotifFor.DEPART_HS, MockCommune.Moudon);
 
@@ -4178,7 +4168,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertNull(listeLausanneSansFor);
 
@@ -4190,7 +4180,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneHorsCantonImmeuble() throws Exception {
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4213,7 +4203,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneHorsSuisseImmeuble() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
 		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4240,7 +4230,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneVaudois() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4282,7 +4272,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneSuivantArriveeHSAvecForSecondaireImmeubleDeMixte2() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 2, 18), MotifFor.DEPART_HS, MockCommune.Prilly, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2005, 2, 19), MotifFor.DEMENAGEMENT_VD, date(2008, 5, 28), MotifFor.DEMENAGEMENT_VD, MockPays.France);
 		// trou ici : pas de for principal entre le 29.5.2008 et le 6.7.2008
@@ -4315,10 +4305,9 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommunePassageHCSourcePurAVaudoisMixte() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2007, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2007, 8, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
-		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2007, 8, 1), MotifFor.INDETERMINE, MockCommune.Aubonne, ModeImposition.MIXTE_137_2);
 		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFS()));
@@ -4336,7 +4325,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate achat = date(2001, 3, 12);
 		final RegDate arrivee = date(2007, 7, 1);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
 		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4366,7 +4355,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate achat = date(2001, 3, 12);
 		final RegDate depart = date(2007, 7, 1);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(1980, 1, 1), MotifFor.MAJORITE, depart, MotifFor.DEPART_HC, MockCommune.Moudon);
 		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -4428,7 +4417,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveDemenagementVaudois() throws Exception {
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2005, 2, 4), MotifFor.ARRIVEE_HS, date(2006, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2006, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Leysin);
 
@@ -4480,7 +4469,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate arrivee = date(2012, 3, 12);
 		final RegDate depart = date(2012, 12, 31);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HS, depart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
 
@@ -4501,7 +4490,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate departHC = date(2012, 7, 25);
 		final RegDate retourHC = date(2012, 11, 9);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, departHC.getOneDayAfter(), MotifFor.DEPART_HC, retourHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Bern);
 		addForPrincipal(ctb, retourHC, MotifFor.ARRIVEE_HC, MockCommune.Aigle);
@@ -4525,7 +4514,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final RegDate retourHSversHC = date(2012, 10, 24);
 		final RegDate retourHC = date(2012, 11, 9);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		addForPrincipal(ctb, arriveeHS, MotifFor.ARRIVEE_HS, departHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, departHC.getOneDayAfter(), MotifFor.DEPART_HC, departHSdepuisHC, MotifFor.DEPART_HS, MockCommune.Bern);
 		addForPrincipal(ctb, departHSdepuisHC.getOneDayAfter(), MotifFor.DEPART_HS, retourHSversHC.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
@@ -4717,7 +4706,7 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un seul for source ouvert
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(date(2000, 1, 1), null, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP(date(2000, 1, 1), null, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4725,8 +4714,8 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un seul for source fermé l'année suivante
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2002, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2002, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4734,11 +4723,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un deux fors source
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp2);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4746,11 +4735,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for ordinaire annulé
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			ffp2.setAnnule(true);
 //			pp.addForFiscal(ffp2);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
@@ -4759,8 +4748,8 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for secondaire
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
 //			final ForFiscalSecondaire ffs1 = new ForFiscalSecondaire(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 //			pp.addForFiscal(ffs1);
@@ -4770,11 +4759,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for ordinaire l'année suivante
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2001, 5, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2001, 5, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp2);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4782,11 +4771,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for ordinaire l'année précédente
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp0 =
-//					new ForFiscalPrincipal(date(1999, 5, 3), date(1999, 12, 31), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp0 =
+//					new ForFiscalPrincipalPP(date(1999, 5, 3), date(1999, 12, 31), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp0);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4794,11 +4783,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source, puis un for ordinaire mais qui se ferme dans l'année
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp2);
 //			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4806,11 +4795,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for ordinaire dans l'année (collés)
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp2);
 //			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4818,11 +4807,11 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source et un for ordinaire dans l'année (disjoints)
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 5, 4), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 5, 4), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp2);
 //			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}
@@ -4830,14 +4819,14 @@ public class AssujettissementServiceTest extends MetierTest {
 //		// un contribuable avec un for source, puis un for ordinaire qui se ferme et un autre qui s'ouvre en suivant, le tout dans l'année
 //		{
 //			final PersonnePhysique pp = new PersonnePhysique(false);
-//			final ForFiscalPrincipal ffp1 =
-//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			final ForFiscalPrincipalPP ffp1 =
+//					new ForFiscalPrincipalPP(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 //			pp.addForFiscal(ffp1);
-//			final ForFiscalPrincipal ffp2 =
-//					new ForFiscalPrincipal(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+//			final ForFiscalPrincipalPP ffp2 =
+//					new ForFiscalPrincipalPP(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 //			pp.addForFiscal(ffp2);
-//			final ForFiscalPrincipal ffp3 =
-//					new ForFiscalPrincipal(date(2000, 11, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			final ForFiscalPrincipalPP ffp3 =
+//					new ForFiscalPrincipalPP(date(2000, 11, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 //			pp.addForFiscal(ffp3);
 //			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
 //		}

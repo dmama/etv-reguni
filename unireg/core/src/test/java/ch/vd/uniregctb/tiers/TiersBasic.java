@@ -78,7 +78,6 @@ public class TiersBasic {
 				Entreprise e0 = new Entreprise();
 				e0.setNumero(9876L);
 				e0.setMouvementsDossier(new HashSet());
-				e0.setSituationsFamille(new HashSet());
 				e0.setDebiteurInactif(false);
 				e0.setLogModifDate(new Timestamp(1199142000000L));
 				e0.setAdressesTiers(new HashSet());
@@ -146,7 +145,6 @@ public class TiersBasic {
 				ac0.setFormeJuridique(FormeJuridique.ASS);
 				ac0.setNom("Communaute XYZ");
 				ac0.setMouvementsDossier(new HashSet());
-				ac0.setSituationsFamille(new HashSet());
 				ac0.setDebiteurInactif(false);
 				ac0.setLogModifDate(new Timestamp(1199142000000L));
 				ac0.setAdressesTiers(new HashSet());
@@ -346,7 +344,7 @@ public class TiersBasic {
 				pp0.addRapportSujet(cis0);
 				dpi0.addRapportObjet(cis0);
 
-				ForFiscalPrincipal ffp0 = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP ffp0 = new ForFiscalPrincipalPP();
 				ffp0.setDateFin(RegDate.get(2006, 8, 31));
 				ffp0.setDateDebut(RegDate.get(2006, 3, 1));
 				ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);

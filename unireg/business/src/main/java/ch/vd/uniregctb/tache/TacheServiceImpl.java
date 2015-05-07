@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
@@ -72,7 +74,6 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
-import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -241,6 +242,15 @@ public class TacheServiceImpl implements TacheService {
         }
     }
 
+	/**
+	 * [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
+	 * @param ffp un for principal
+	 * @return <code>true</code> si ce for implique une exclusion de la mécanique des tâches et des calculs d'OID (pour le moment, les fors principaux PP "Source" ont cet effet)
+	 */
+	private static boolean isExcludingFromTaskManagement(@NotNull ForFiscalPrincipal ffp) {
+ 		return ffp instanceof ForFiscalPrincipalPP && ((ForFiscalPrincipalPP) ffp).getModeImposition() == ModeImposition.SOURCE;
+	}
+
     /**
 	 * Genere une tache à partir de la fermeture d'un for principal
 	 *
@@ -258,9 +268,7 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		final ModeImposition modeImposition = forPrincipal.getModeImposition();
-		if (modeImposition == ModeImposition.SOURCE) {
-			// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
+		if (isExcludingFromTaskManagement(forPrincipal)) {
 			return;
 		}
 
@@ -318,12 +326,6 @@ public class TacheServiceImpl implements TacheService {
 		}
 	}
 
-	private void generateTacheTransmissionDossier(Contribuable contribuable, CollectiviteAdministrative collectiviteAssignee) {
-		Assert.notNull(collectiviteAssignee);
-		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectiviteAssignee);
-		tacheDAO.save(tache);
-	}
-
 	/**
 	 * Génère une tâche à partir de la fermeture d'un for secondaire
 	 *
@@ -341,9 +343,7 @@ public class TacheServiceImpl implements TacheService {
 			return;
 		}
 
-		final ModeImposition modeImposition = forsAt.principal.getModeImposition();
-		if (modeImposition == ModeImposition.SOURCE) {
-			// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
+		if (isExcludingFromTaskManagement(forsAt.principal)) {
 			return;
 		}
 
@@ -400,10 +400,8 @@ public class TacheServiceImpl implements TacheService {
 			return; // rien à faire
 		}
 
-		final ModeImposition modeImposition = forFiscal.getModeImposition();
-		if (modeImposition == ModeImposition.SOURCE) {
-			// les sourciers ne recoivent pas de DIs (et donc pas de dossier non plus)
-			return; // pas de tâche sur les sourciers purs [UNIREG-1888]
+		if (isExcludingFromTaskManagement(forFiscal)) {
+			return;
 		}
 
 		// [UNIREG-2378] Les fors principaux HC ou HS ne donnent pas lieu à des générations de tâches
@@ -1003,7 +1001,7 @@ public class TacheServiceImpl implements TacheService {
 							dernierForFiscalVaudois = f;
 						}
 						if (f.isAnnule()) {
-							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipal) f).getModeImposition() != ModeImposition.SOURCE)) {
+							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
 								dernierForFiscalVaudoisNonSourceAnnule = f;
 								break;
 							}
@@ -1146,7 +1144,7 @@ public class TacheServiceImpl implements TacheService {
 		ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(null);
 
 		// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
-		if (forPrincipal != null && forPrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && forPrincipal.getModeImposition() != ModeImposition.SOURCE) {
+		if (forPrincipal != null && forPrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !isExcludingFromTaskManagement(forPrincipal)) {
 			final MotifRattachement motifRattachement = forFiscal.getMotifRattachement();
 			if (motifRattachement == MotifRattachement.ACTIVITE_INDEPENDANTE || motifRattachement == MotifRattachement.IMMEUBLE_PRIVE) {
 				generateTacheNouveauDossier(contribuable);

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -28,8 +27,10 @@ import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -66,11 +67,16 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			return null;
 		}
 
-		return determine(ctb, fpt, null);
+		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+			return determine((ContribuableImpositionPersonnesPhysiques) ctb, fpt, null);
+		}
+
+		// TODO [SIPM] pour le moment, on ne traite que les PP, voir comment faire pour les PM
+		return null;
 	}
 
 	@Override
-	public List<Assujettissement> determineRole(Contribuable ctb) throws AssujettissementException {
+	public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
 
 		if (ctb.isAnnule()) {
 			// un contribuable annulé n'est évidemment pas assujetti
@@ -83,10 +89,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		return determineRole(ctb, fpt, null);
-	}
+}
 
 	@Override
-	public List<SourcierPur> determineSource(Contribuable ctb) throws AssujettissementException {
+	public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
 
 		if (ctb.isAnnule()) {
 			// un contribuable annulé n'est évidemment pas assujetti
@@ -117,7 +123,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// l'assujettissement ne considère que les fors principaux et secondaires pour le moment
 		// (peut-être un jour y aura-t-il aussi les fors autres éléments imposables)
 
-		return determine(ctb, fpt, noOfsCommunesVaudoises);
+		if (ctb instanceof ContribuableImpositionPersonnesPhysiques) {
+			return determine((ContribuableImpositionPersonnesPhysiques) ctb, fpt, noOfsCommunesVaudoises);
+		}
+
+		// TODO [SIPM] pour le moment, on ne traite que les PP, voir comment faire pour les PM
+		return null;
 	}
 
 	/**
@@ -209,9 +220,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return la liste des assujettissements; ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement du contribuable.
 	 */
-	private List<Assujettissement> determine(Contribuable ctb, ForsParType fors, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fors, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		try {
-			ajouteForsPrincipauxFictifs(fors.principaux);
+			ajouteForsPrincipauxFictifs(fors.principauxPP);
 			final List<Assujettissement> role = determineRole(ctb, fors, noOfsCommunesVaudoises);
 			final List<SourcierPur> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
@@ -247,16 +258,16 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	@NotNull
-	private List<SourcierPur> determineSource(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
-		final Fractionnements fractionnements = new FractionnementsSource(fors.principaux);
+		final Fractionnements<ForFiscalPrincipalPP> fractionnements = new FractionnementsSource(fors.principauxPP);
 
 		List<SourcierPur> list = new ArrayList<>();
 
-		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(fors.principaux);
+		final MovingWindow<ForFiscalPrincipalPP> iter = new MovingWindow<>(fors.principauxPP);
 		while (iter.hasNext()) {
-			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
-			final ForFiscalPrincipal ffp = snapshot.getCurrent();
+			final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iter.next();
+			final ForFiscalPrincipalPP ffp = snapshot.getCurrent();
 			final boolean forVaudois = ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 
 			// de manière générale, un for fiscal avec un mode d'imposition source va générer un assujettissement source
@@ -264,7 +275,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
 					(noOfsCommunesVaudoises == null || (forVaudois && noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())))) {
 
-				final ForFiscalPrincipalContext ffpContext = new ForFiscalPrincipalContext(snapshot);
+				final ForFiscalPrincipalContext<ForFiscalPrincipalPP> ffpContext = new ForFiscalPrincipalContext<>(snapshot);
 				final RegDate dateDebut = determineDateDebutAssujettissementSource(ffpContext, fractionnements);
 				final RegDate dateFin = determineDateFinAssujettissementSource(ffpContext, fractionnements);
 
@@ -350,7 +361,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		// on ajoute l'assujettissement courant
-		list = DateRangeHelper.override(entete, Arrays.asList(current), callback);
+		list = DateRangeHelper.override(entete, Collections.singletonList(current), callback);
 		// et on finit avec le reste
 		list.addAll(queue);
 
@@ -381,19 +392,19 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		// on commence par ajouter l'assujettissement suivant (des fois qu'il chevauche un des assujettissements de l'entête)
-		list = DateRangeHelper.override(entete, Arrays.<SourcierPur>asList(next), callback);
+		list = DateRangeHelper.override(entete, Collections.singletonList(next), callback);
 		// puis on ajouter l'assujettissement courant
-		list = DateRangeHelper.override(list, Arrays.<SourcierPur>asList(current), callback);
+		list = DateRangeHelper.override(list, Collections.singletonList(current), callback);
 		// et on finit avec le reste
 		list.addAll(queue);
 
 		return list;
 	}
 
-	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
+	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext<ForFiscalPrincipalPP> ffpContext, Fractionnements<ForFiscalPrincipalPP> fractionnements) {
 
-		final ForFiscalPrincipal precedent = ffpContext.getPrevious();
-		final ForFiscalPrincipal courant = ffpContext.getCurrent();
+		final ForFiscalPrincipalPP precedent = ffpContext.getPrevious();
+		final ForFiscalPrincipalPP courant = ffpContext.getCurrent();
 		final RegDate debut = courant.getDateDebut();
 
 		final Fraction fraction = fractionnements.getAt(debut);
@@ -418,10 +429,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 	}
 
-	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
+	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext<ForFiscalPrincipalPP> ffpContext, Fractionnements<ForFiscalPrincipalPP> fractionnements) {
 
-		final ForFiscalPrincipal suivant = ffpContext.getNext();
-		final ForFiscalPrincipal courant = ffpContext.getCurrent();
+		final ForFiscalPrincipalPP suivant = ffpContext.getNext();
+		final ForFiscalPrincipalPP courant = ffpContext.getCurrent();
 		final RegDate fin = courant.getDateFin();
 
 		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
@@ -450,12 +461,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 	}
 
-	private List<Assujettissement> determineRole(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		// Détermination des données d'assujettissement brutes
-		final Fractionnements fractionnements = new FractionnementsRole(fors.principaux);
-		final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
+		final Fractionnements<ForFiscalPrincipalPP> fractionnements = new FractionnementsRole(fors.principauxPP);
+		final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principauxPP);
 
-		final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
+		final DataList domicile = determineAssujettissementDomicile(fors.principauxPP, fractionnements, casParticuliers, noOfsCommunesVaudoises);
 		domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
 		assertCoherenceRanges(domicile);
 
@@ -474,18 +485,18 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 *
 	 * @param forsPrincipaux les fors principaux (non-fictifs) du contribuable.
 	 */
-	private static void ajouteForsPrincipauxFictifs(List<ForFiscalPrincipal> forsPrincipaux) {
+	private static void ajouteForsPrincipauxFictifs(List<ForFiscalPrincipalPP> forsPrincipaux) {
 
-		List<ForFiscalPrincipal> forsFictifs = null;
+		List<ForFiscalPrincipalPP> forsFictifs = null;
 
 		// [UNIREG-2444] si un for fiscal principal possède un motif d'ouverture d'obtention de permis C et qu'il n'y a pas de for fiscal principal précédent,
 		// on suppose que le contribuable était sourcier et qu'il y a passage du rôle source pur au rôle ordinaire. Dans les faits pour ne pas casser l'algorithme général,
 		// on ajoute artificiellement un for principal avec le mode d'imposition source.
-		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(forsPrincipaux);
+		final MovingWindow<ForFiscalPrincipalPP> iter = new MovingWindow<>(forsPrincipaux);
 		while (iter.hasNext()) {
-			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
-			final ForFiscalPrincipal current = snapshot.getCurrent();
-			final ForFiscalPrincipal previous = snapshot.getPrevious();
+			final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iter.next();
+			final ForFiscalPrincipalPP current = snapshot.getCurrent();
+			final ForFiscalPrincipalPP previous = snapshot.getPrevious();
 
 			if (current.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE && (previous == null || !DateRangeHelper.isCollatable(previous, current))) {
 				// On ajoute un for principal source compris entre le début de l'année et la date d'ouverture du for principal courant. Cette période est raccourcie si nécessaire.
@@ -497,8 +508,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				else {
 					debut = RegDateHelper.maximum(RegDate.get(current.getDateDebut().year(), 1, 1), previous.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST);
 				}
-				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, MotifFor.INDETERMINE, fin, MotifFor.PERMIS_C_SUISSE, current.getNumeroOfsAutoriteFiscale(),
-						current.getTypeAutoriteFiscale(), current.getMotifRattachement(), ModeImposition.SOURCE);
+				final ForFiscalPrincipalPP forFictif = new ForFiscalPrincipalPP(debut, MotifFor.INDETERMINE, fin, MotifFor.PERMIS_C_SUISSE, current.getNumeroOfsAutoriteFiscale(),
+				                                                                current.getTypeAutoriteFiscale(), current.getMotifRattachement(), ModeImposition.SOURCE);
 				if (forsFictifs == null) {
 					forsFictifs = new ArrayList<>();
 				}
@@ -671,7 +682,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param principaux les fors fiscaux principaux du contribuable
 	 * @return les cas particulières détectés.
 	 */
-	private static CasParticuliers determineCasParticuliers(Contribuable ctb, List<ForFiscalPrincipal> principaux) {
+	private static CasParticuliers determineCasParticuliers(ContribuableImpositionPersonnesPhysiques ctb, List<ForFiscalPrincipalPP> principaux) {
 		final boolean menageCommun = ctb instanceof MenageCommun;
 		CasParticuliers cas = new CasParticuliers(menageCommun);
 		for (ForFiscalPrincipal f : principaux) {
@@ -722,18 +733,18 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, Fractionnements fractionnements, CasParticuliers casParticuliers,
+	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipalPP> principaux, Fractionnements<ForFiscalPrincipalPP> fractionnements, CasParticuliers casParticuliers,
 	                                                          @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final DataList domicile = new DataList();
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
+		final MovingWindow<ForFiscalPrincipalPP> iter = new MovingWindow<>(principaux);
 		while (iter.hasNext()) {
-			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
+			final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iter.next();
 
 			// on détermine les fors principaux qui précèdent et suivent immédiatement
-			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
+			final ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
 
 			// on détermine l'assujettissement pour le for principal courant
 			Data a = determine(forPrincipal, fractionnements, noOfsCommunesVaudoises);
@@ -767,7 +778,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param casParticuliers les cas particuliers à traiter
 	 * @return un assujettissement, éventuellement modifié; ou <b>null</b> si l'assujettissement a disparu suite au traitement.
 	 */
-	private static Data traiterCasParticuliers(Data data, Fractionnements fractions, CasParticuliers casParticuliers) {
+	private static Data traiterCasParticuliers(Data data, Fractionnements<ForFiscalPrincipalPP> fractions, CasParticuliers casParticuliers) {
 
 		if (casParticuliers.isEmpty()) {
 			return data;
@@ -855,7 +866,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @param fractions une liste de fractions
 		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
 		 */
-		public static Limites determine(DateRange range, Fractionnements fractions) {
+		public static Limites determine(DateRange range, Fractionnements<ForFiscalPrincipalPP> fractions) {
 			return determine(range.getDateDebut(), range.getDateFin(), fractions);
 		}
 
@@ -867,7 +878,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @param fractions une liste de fractions
 		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
 		 */
-		public static Limites determine(RegDate dateDebut, RegDate dateFin, Fractionnements fractions) {
+		public static Limites determine(RegDate dateDebut, RegDate dateFin, Fractionnements<ForFiscalPrincipalPP> fractions) {
 
 			if (fractions.isEmpty()) {
 				return null;
@@ -904,7 +915,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param fractions la liste des fractions
 	 * @return un assujettissement, fractionné si nécessaire.
 	 */
-	private static Data fractionner(Data a, ForFiscalPrincipal ffp, Fractionnements fractions) {
+	private static Data fractionner(Data a, ForFiscalPrincipalPP ffp, Fractionnements<ForFiscalPrincipalPP> fractions) {
 
 		if (fractions.isEmpty()) {
 			return a;
@@ -967,8 +978,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return date.month() == 12 && date.day() == 31;
 	}
 
-	protected static boolean roleSourcierPur(ForFiscalPrincipal forPrecedent) {
-		return forPrecedent.getModeImposition() == ModeImposition.SOURCE;
+	protected static boolean roleSourcierPur(ForFiscalPrincipalPP forFiscal) {
+		return forFiscal.getModeImposition() == ModeImposition.SOURCE;
 	}
 
 	/**
@@ -981,7 +992,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param right le for fiscal de droite (peut être nul)
 	 * @return <b>true</b> si un départ ou une arrivée hors-Suisse est détecté.
 	 */
-	protected static boolean isDepartOuArriveeHorsSuisse(ForFiscalPrincipal left, ForFiscalPrincipal right) {
+	protected static boolean isDepartOuArriveeHorsSuisse(ForFiscalPrincipalPP left, ForFiscalPrincipalPP right) {
 		if (left == null && right == null) {
 			throw new IllegalArgumentException();
 		}
@@ -1035,9 +1046,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param ctxt context à tester (depuis current vers le futur)
 	 * @return <b>vrai</b> si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse; <b>faux</b> autrement.
 	 */
-	protected static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipalContext ctxt) {
+	protected static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipalContext<ForFiscalPrincipalPP> ctxt) {
 
-		final ForFiscalPrincipal current = ctxt.getCurrent();
+		final ForFiscalPrincipalPP current = ctxt.getCurrent();
 		if (current == null) {
 			return false;
 		}
@@ -1056,7 +1067,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		if (ctxt.hasNext()) {
-			final List<ForFiscalPrincipal> thisYear = extractDebutDansPeriodeFiscale(fin.year(), ctxt.getAllNext());
+			final List<ForFiscalPrincipalPP> thisYear = extractDebutDansPeriodeFiscale(fin.year(), ctxt.getAllNext());
 			for (int i = 0 ; i < thisYear.size() ; ++ i) {
 				// [SIFISC-12325] on s'arrête au premier for HS de toute façon, et ce qui nous intéresse au final, c'est le type d'autorité fiscale du
 				// for juste avant le départ HS ou la fin d'assujettissement
@@ -1089,9 +1100,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param fors liste des fors à analyser
 	 * @return une nouvelle liste avec tous les fors de la source qui ont une date de début dans la période fiscale donnée (l'ordre est conservé)
 	 */
-	private static List<ForFiscalPrincipal> extractDebutDansPeriodeFiscale(int pf, List<ForFiscalPrincipal> fors) {
-		final List<ForFiscalPrincipal> extracted = new ArrayList<>(fors.size());
-		for (ForFiscalPrincipal candidate : fors) {
+	private static <F extends ForFiscalPrincipal> List<F> extractDebutDansPeriodeFiscale(int pf, List<F> fors) {
+		final List<F> extracted = new ArrayList<>(fors.size());
+		for (F candidate : fors) {
 			if (candidate.getDateDebut().year() == pf) {
 				extracted.add(candidate);
 			}
@@ -1121,11 +1132,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param fractionnements les fractionnements déterminés par avance
 	 * @return la date de début de l'assujettissement
 	 */
-	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
+	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, Fractionnements<ForFiscalPrincipalPP> fractionnements) {
 
 		final RegDate debut;
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
-		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 		final ModeImposition modeImposition = current.getModeImposition();
@@ -1157,9 +1168,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param fractionnements les fractionnements déterminés par avance
 	 * @return la date de fin de l'assujettissement
 	 */
-	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
+	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, Fractionnements<ForFiscalPrincipalPP> fractionnements) {
 
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 		final RegDate fin = current.getDateFin();
 
 		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
@@ -1193,10 +1204,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de début de non-assujettissement
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
 
-		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 
 		final RegDate debut = current.getDateDebut();
 
@@ -1236,10 +1247,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de fin de non-assujettissement
 	 * @return la date de fin de la période de non-assujettissement
 	 */
-	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
 
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
-		final ForFiscalPrincipal next = forPrincipal.getNext();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP next = forPrincipal.getNext();
 
 		final RegDate fin = current.getDateFin();
 
@@ -1293,7 +1304,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		// (msi 7.11.2011), c'est pas génial de remonter sur le tiers pour récupérer tous les fors fiscaux, c'est clair. Mais d'un
 		// autre côté, on le fait tellement peu souvent dans le cas réel que ça n'a pas d'impact négatif sur les performances.
-		final List<ForFiscalPrincipal> all = forPrincipal.getCurrent().getTiers().getForsFiscauxPrincipauxActifsSorted();
+		final List<? extends ForFiscalPrincipal> all = forPrincipal.getCurrent().getTiers().getForsFiscauxPrincipauxActifsSorted();
 
 		// si on ne trouve aucun for principal entre la date de fin du for spécifié et la fin de l'année, alors c'est que le for spécifié est le dernier dans l'année
 		final RegDate finAnnee = getProchain31Decembre(dateFin);
@@ -1532,10 +1543,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 *                               données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Data determine(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal, Fractionnements<ForFiscalPrincipalPP> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final Data data;
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 
 		if (!current.getModeImposition().isRole()) {
 			// seule la vue 'rôle' nous intéresse
@@ -1597,7 +1608,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return data;
 	}
 
-	private static Data determine(ForFiscalSecondaire ffs, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ForFiscalSecondaire ffs, Fractionnements<?> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final RegDate debut = ffs.getDateDebut();
 		final RegDate fin = ffs.getDateFin();
@@ -1700,7 +1711,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		Collections.sort(domicile, new DateRangeComparator<>());
 	}
 
-	private static List<Assujettissement> instanciate(Contribuable ctb, List<Data> all) {
+	private static List<Assujettissement> instanciate(ContribuableImpositionPersonnesPhysiques ctb, List<Data> all) {
 		final List<Assujettissement> assujettissements = new ArrayList<>(all.size());
 		for (Data a : all) {
 			final Assujettissement assujettissement;
@@ -1749,9 +1760,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS ? Type.HorsSuisse : Type.HorsCanton);
 	}
 
-	protected static boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipalContext ctxt) {
-		final ForFiscalPrincipal current = ctxt.getCurrent();
-		final ForFiscalPrincipal next = ctxt.getNext();
+	protected static <F extends ForFiscalPrincipal> boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipalContext<F> ctxt) {
+		final F current = ctxt.getCurrent();
+		final F next = ctxt.getNext();
 
 		// si au moins l'un des deux fors est vaudois, il n'y a pas photo, c'est OUI
 		if ((current != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)
@@ -1780,7 +1791,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return false;
 	}
 
-	private static boolean isArriveeVaudDepuisHorsCantonMemePeriodeApres(ForFiscalPrincipalContext ctxt, int pf) {
+	private static boolean isArriveeVaudDepuisHorsCantonMemePeriodeApres(ForFiscalPrincipalContext<?> ctxt, int pf) {
 		for (ForFiscalPrincipal ffp : ctxt.getAllNext()) {
 			if (ffp.getDateDebut().year() != pf || ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 				break;
@@ -1792,7 +1803,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return false;
 	}
 
-	private static boolean isDepartVaudVersHorsCantonMemePeriodeAvant(ForFiscalPrincipalContext ctxt, int pf) {
+	private static boolean isDepartVaudVersHorsCantonMemePeriodeAvant(ForFiscalPrincipalContext<?> ctxt, int pf) {
 		for (ForFiscalPrincipal ffp : ctxt.getAllPrevious()) {
 			if (ffp.getDateFin().year() != pf || ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 				break;

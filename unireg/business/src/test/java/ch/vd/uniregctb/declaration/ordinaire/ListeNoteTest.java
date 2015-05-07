@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
@@ -36,7 +36,7 @@ public class ListeNoteTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIsForSecondaireSeulNonRecouvert() {
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
 				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -54,7 +54,7 @@ public class ListeNoteTest extends BusinessTest {
 	public void testIsForSecondaireMultiplesNonRecouvert() {
 
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
 				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -78,7 +78,7 @@ public class ListeNoteTest extends BusinessTest {
 	public void testIsForSecondaireRecouvertSurUnJour() {
 
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
 				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -99,7 +99,7 @@ public class ListeNoteTest extends BusinessTest {
 	public void testIsForSecondaireRecouvert() {
 
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
 				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -120,7 +120,7 @@ public class ListeNoteTest extends BusinessTest {
 	public void testIsForSecondaireNonRecouvertJoursApres() {
 
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(2006, 4, 13), MotifFor.DEPART_HC, MockCommune.Geneve);
 		 ForFiscalSecondaire for1 = addForSecondaire(paul, date(2008, 7, 13), MotifFor.ACHAT_IMMOBILIER, date(2009, 3, 25),
 				MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);

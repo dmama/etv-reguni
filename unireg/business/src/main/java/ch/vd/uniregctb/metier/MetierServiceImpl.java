@@ -52,10 +52,12 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -867,7 +869,7 @@ public class MetierServiceImpl implements MetierService {
 		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null);
 	}
 
-	private boolean isValidSituationFamille(RegDate date, Contribuable contribuable) {
+	private boolean isValidSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques contribuable) {
 		/*
 		 * Vérifie que la situation de famille à la date donnée n'a pas été surchargée
 		 */
@@ -1055,7 +1057,7 @@ public class MetierServiceImpl implements MetierService {
 		final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menageChoisi).iterator().next();
 		final PersonnePhysique conjoint = tiersService.getPersonnesPhysiques(autreMenage).iterator().next();
 
-		final ForFiscalPrincipal forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipalPP forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
 		final ModeImposition impositionMenage = (forFPMenage == null ? null : forFPMenage.getModeImposition());
 
 		final RapportEntreTiers premierRapport = menageChoisi.getPremierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE, principal);
@@ -1295,7 +1297,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	private void reopenSituationFamille(RegDate date, Contribuable contribuable) {
+	private void reopenSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques contribuable) {
 
 		final SituationFamille situationFamille = contribuable.getSituationFamilleAt(date);
 		if (situationFamille != null) {
@@ -1538,7 +1540,7 @@ public class MetierServiceImpl implements MetierService {
 		final boolean separesFiscalement = isSeparesFiscalement(date, principal, conjoint);
 		if (!separesFiscalement) {
 			// Recupération du for principal du menage
-			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP forMenage = menage.getForFiscalPrincipalAt(null);
 			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date);
 
 			// Fermeture des fors du MenageCommun
@@ -1919,7 +1921,7 @@ public class MetierServiceImpl implements MetierService {
 	 *                           si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
 	 * @return le for créé.
 	 */
-	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
+	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipalPP forMenage, MotifFor motifOuverture,
 	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, boolean hadForSecondaire, Long numeroEvenement,
 	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
@@ -2463,7 +2465,7 @@ public class MetierServiceImpl implements MetierService {
 
 		if (menageComplet != null) {
 			final MenageCommun menage = menageComplet.getMenage();
-			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP forMenage = menage.getForFiscalPrincipalAt(null);
 			final boolean hadForSecondaire = hasForSecondaireOuvert(menage, date.getOneDayAfter());
 			//
 			// Sauvegarde des fors secondaires et autres éléments imposables du ménage

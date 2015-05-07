@@ -45,6 +45,8 @@
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
+		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques</value>
+		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
@@ -52,6 +54,8 @@
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipal</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipalPP</value>
+		<value>ch.vd.uniregctb.tiers.ForFiscalPrincipalPM</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalSecondaire</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</value>
 		<value>ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</value>

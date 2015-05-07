@@ -8,8 +8,8 @@ public class TaxResidenceBuilder {
 	public static TaxResidence newMainTaxResidence(ch.vd.uniregctb.tiers.ForFiscal forFiscal, boolean virtuel) {
 		final TaxResidence f = newOtherTaxResidence(forFiscal, virtuel);
 
-		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal) {
-			final ch.vd.uniregctb.tiers.ForFiscalPrincipal forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipal) forFiscal;
+		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipalPP) {
+			final ch.vd.uniregctb.tiers.ForFiscalPrincipalPP forPrincipal = (ch.vd.uniregctb.tiers.ForFiscalPrincipalPP) forFiscal;
 			f.setTaxationMethod(EnumHelper.coreToXMLv1(forPrincipal.getModeImposition()));
 		}
 		return f;

@@ -21,12 +21,7 @@ import ch.vd.uniregctb.type.FormeJuridique;
  */
 @Entity
 @DiscriminatorValue("AutreCommunaute")
-public class AutreCommunaute extends Contribuable {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 4939991198494166708L;
+public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 
 	/**
 	 * <!-- begin-user-doc -->

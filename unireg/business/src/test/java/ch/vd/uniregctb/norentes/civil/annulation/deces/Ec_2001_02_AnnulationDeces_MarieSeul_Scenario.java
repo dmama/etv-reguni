@@ -10,6 +10,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -70,18 +71,14 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 	public void step1() {
 		PersonnePhysique andre = addHabitant(noIndAndre);
 		noHabAndre = andre.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(andre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		f.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(andre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun) tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, andre, dateMariage, dateDeces);
-		f = addForFiscalPrincipal(menage, commune, dateMariage, dateDeces,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
-		f.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(menage, commune, dateMariage, dateDeces, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES, ModeImposition.SOURCE);
 	}
 
 	@Check(id=1, descr="Vérifie que les fors du ménage sont fermés car l'habitant est sensé être décédé")
@@ -113,7 +110,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 	public void check2() {
 		{
 			PersonnePhysique andre = (PersonnePhysique) tiersDAO.get(noHabAndre);
-			ForFiscalPrincipal ffp = andre.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = andre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'habitant " + andre.getNumero() + " null");
 			assertEquals(dateDebutSuisse, ffp.getDateDebut(), "Date de début for fausse");
 			assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin(), "Date de fin for fausse");

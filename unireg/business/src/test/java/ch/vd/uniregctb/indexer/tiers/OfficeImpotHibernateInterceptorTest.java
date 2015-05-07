@@ -12,6 +12,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -105,7 +106,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setDateFin(null);
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -161,7 +162,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setDateFin(date(2008, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -193,7 +194,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setDateFin(date(2008, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -249,7 +250,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 				Tiers nh = tiersDAO.get(id);
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setDateFin(date(2008, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -349,7 +350,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				final ForFiscalPrincipal f = new ForFiscalPrincipal();
+				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -383,12 +384,12 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				final PersonnePhysique ctb = hibernateTemplate.get(PersonnePhysique.class, ppId);
 				assertNotNull(ctb);
 
-				final ForFiscalPrincipal ffp0 = ctb.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipalPP ffp0 = ctb.getForFiscalPrincipalAt(null);
 				assertNotNull(ffp0);
 				ffp0.setDateFin(date(2009,5,1));
 				ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-				final ForFiscalPrincipal ffp1 = new ForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
 				ffp1.setDateDebut(date(2009, 5, 2));
 				ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -445,7 +446,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Dupres");
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(2000, 1, 1));
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -488,7 +489,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				ffp0.setDateFin(date(2009,5,1));
 				ffp0.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-				final ForFiscalPrincipal ffp1 = new ForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
 				ffp1.setDateDebut(date(2009, 5, 2));
 				ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				ffp1.setGenreImpot(GenreImpot.REVENU_FORTUNE);

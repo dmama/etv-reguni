@@ -11,6 +11,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -94,8 +95,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 			menage = (MenageCommun)tiersDAO.save(menage);
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, julie, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.DEPENSE);
+			addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, ModeImposition.DEPENSE);
 
 			menage.setBlocageRemboursementAutomatique(false);
 		}
@@ -146,7 +146,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 
 		{
 			final PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
-			final ForFiscalPrincipal ffp = julie.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = julie.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + julie.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + julie.getNumero() + " est fermé");
 			// julie doit passer au mode dépense

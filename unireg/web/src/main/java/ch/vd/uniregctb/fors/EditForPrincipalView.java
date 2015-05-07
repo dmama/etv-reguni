@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -39,7 +40,10 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = ffp.getNumeroOfsAutoriteFiscale();
-		this.modeImposition = ffp.getModeImposition();
+
+		if (ffp instanceof ForFiscalPrincipalPP) {
+			this.modeImposition = ((ForFiscalPrincipalPP) ffp).getModeImposition();
+		}
 	}
 
 	public void initReadOnlyData(ForFiscalPrincipal ffp) {
@@ -53,7 +57,10 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.motifDebut = ffp.getMotifOuverture();
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
-		this.modeImposition = ffp.getModeImposition();
+
+		if (ffp instanceof ForFiscalPrincipalPP) {
+			this.modeImposition = ((ForFiscalPrincipalPP) ffp).getModeImposition();
+		}
 	}
 
 	@Override

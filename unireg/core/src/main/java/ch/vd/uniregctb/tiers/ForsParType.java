@@ -12,7 +12,8 @@ import ch.vd.registre.base.date.DateRangeComparator;
  */
 public class ForsParType {
 
-	public List<ForFiscalPrincipal> principaux = Collections.emptyList();
+	public List<ForFiscalPrincipalPP> principauxPP = Collections.emptyList();
+	public List<ForFiscalPrincipalPM> principauxPM = Collections.emptyList();
 	public List<ForFiscalSecondaire> secondaires = Collections.emptyList();
 	public List<ForDebiteurPrestationImposable> dpis = Collections.emptyList();
 	public List<ForFiscalAutreElementImposable> autreElementImpot = Collections.emptyList();
@@ -20,7 +21,8 @@ public class ForsParType {
 
 	public ForsParType(Set<ForFiscal> forsFiscaux, boolean sort) {
 
-		principaux = Collections.emptyList();
+		principauxPP = Collections.emptyList();
+		principauxPM = Collections.emptyList();
 		secondaires = Collections.emptyList();
 		dpis = Collections.emptyList();
 		autreElementImpot = Collections.emptyList();
@@ -35,11 +37,17 @@ public class ForsParType {
 				continue;
 			}
 
-			if (ff instanceof ForFiscalPrincipal) {
-				if (principaux == Collections.EMPTY_LIST) {
-					principaux = new ArrayList<>();
+			if (ff instanceof ForFiscalPrincipalPP) {
+				if (principauxPP == Collections.EMPTY_LIST) {
+					principauxPP = new ArrayList<>();
 				}
-				principaux.add((ForFiscalPrincipal) ff);
+				principauxPP.add((ForFiscalPrincipalPP) ff);
+			}
+			else if (ff instanceof ForFiscalPrincipalPM) {
+				if (principauxPM == Collections.EMPTY_LIST) {
+					principauxPM = new ArrayList<>();
+				}
+				principauxPM.add((ForFiscalPrincipalPM) ff);
 			}
 			else if (ff instanceof ForFiscalSecondaire) {
 				if (secondaires == Collections.EMPTY_LIST) {
@@ -71,8 +79,11 @@ public class ForsParType {
 		}
 
 		if (sort) {
-			if (principaux != Collections.EMPTY_LIST) {
-				Collections.sort(principaux, new DateRangeComparator<ForFiscalPrincipal>());
+			if (principauxPP != Collections.EMPTY_LIST) {
+				Collections.sort(principauxPP, new DateRangeComparator<ForFiscalPrincipalPP>());
+			}
+			if (principauxPM != Collections.EMPTY_LIST) {
+				Collections.sort(principauxPM, new DateRangeComparator<ForFiscalPrincipalPM>());
 			}
 			if (secondaires != Collections.EMPTY_LIST) {
 				Collections.sort(secondaires, new DateRangeComparator<ForFiscalSecondaire>());
@@ -90,6 +101,6 @@ public class ForsParType {
 	}
 
 	public final boolean isEmpty() {
-		return principaux.isEmpty() && secondaires.isEmpty() && dpis.isEmpty() && autreElementImpot.isEmpty() && autresImpots.isEmpty();
+		return principauxPP.isEmpty() && principauxPM.isEmpty() && secondaires.isEmpty() && dpis.isEmpty() && autreElementImpot.isEmpty() && autresImpots.isEmpty();
 	}
 }

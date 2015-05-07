@@ -130,7 +130,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
-				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -194,7 +194,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
-				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -251,7 +251,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// On vérifie que les batchs ont bien été processés et committés
-				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {
@@ -330,7 +330,7 @@ public class BatchTransactionTemplateWithResultsTest extends BusinessTest {
 				 * <li>le troisième batch est committé complétement</li>
 				 * </ul>
 				 */
-				final List<Tiers> lines = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> lines = allTiersOfType(PersonnePhysique.class);
 				Collections.sort(lines, new Comparator<Tiers>() {
 					@Override
 					public int compare(Tiers o1, Tiers o2) {

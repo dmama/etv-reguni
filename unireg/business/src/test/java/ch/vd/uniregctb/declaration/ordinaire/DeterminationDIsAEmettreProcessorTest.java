@@ -32,6 +32,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
@@ -105,26 +106,24 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 */
 
 		// Un tiers avec un for ouvert à droite
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
 		// Un tiers avec un for actif durant l'interval donné
-		Contribuable incognito = addNonHabitant("Incog", "Nito", null, null);
+		PersonnePhysique incognito = addNonHabitant("Incog", "Nito", null, null);
 		addForPrincipal(incognito, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne);
 
 		// Un tiers avec un mode d'imposition sourcier-mixte
-		Contribuable arnold = addNonHabitant("Arnold", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
-		ForFiscalPrincipal fors = addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		fors.setModeImposition(ModeImposition.MIXTE_137_2);
+		PersonnePhysique arnold = addNonHabitant("Arnold", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 
 		// Un tiers avec un for principal hors canton, et avec un immeuble dans le canton
-		Contribuable geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(geo, date(1968, 11, 3), null, MockCommune.Neuchatel);
-		addForSecondaire(geo, date(2003, 3, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
-				MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(geo, date(2003, 3, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		// [UNIREG-465] Un tiers avec un for principal hors canton, et avec un immeuble dans le canton qui a été vendu en cours d'année
-		Contribuable johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(johnny, date(2005, 11, 3), null, MockCommune.Bern);
 		addForSecondaire(johnny, date(2005, 11, 3), MotifFor.ACHAT_IMMOBILIER, date(2007, 8, 30), MotifFor.VENTE_IMMOBILIER,
 				MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -155,35 +154,34 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 */
 
 		// Un tiers avec un for fermé avant 2007
-		Contribuable pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(pierre, date(1968, 11, 3), MotifFor.ARRIVEE_HC, date(1983, 7, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 
 		// Un tiers avec un seul for annulé
-		Contribuable jean = addNonHabitant("Jean", "Duchmol", date(1948, 11, 3), Sexe.MASCULIN);
-		fors = addForPrincipal(jean, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		PersonnePhysique jean = addNonHabitant("Jean", "Duchmol", date(1948, 11, 3), Sexe.MASCULIN);
+		ForFiscalPrincipal fors = addForPrincipal(jean, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		fors.setAnnulationDate(DateHelper.getDate(1967, 1, 1));
 
 		// Un tiers avec un seul for hors canton
-		Contribuable jeans = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique jeans = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jeans, date(1968, 11, 3), null, MockCommune.Neuchatel);
 
 		// Un tiers avec un mode d'imposition sourcier pure
-		Contribuable johan = addNonHabitant("Johan", "Smet", date(1965, 4, 13), Sexe.MASCULIN);
-		fors = addForPrincipal(johan, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		fors.setModeImposition(ModeImposition.SOURCE);
+		PersonnePhysique johan = addNonHabitant("Johan", "Smet", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(johan, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
 
 		// [UNIREG-1742] Un non-assujetti avec une déclaration d'impôt annulée
-		Contribuable borg = addNonHabitant("Borg", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+		PersonnePhysique borg = addNonHabitant("Borg", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 		DeclarationImpotOrdinaire di = addDeclarationImpot(borg, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		di.setAnnule(true);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt traitée
-		Contribuable tom = addNonHabitant("Tom", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique tom = addNonHabitant("Tom", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				tom, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance mais annulée
-		Contribuable tommy = addNonHabitant("Tommy", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique tommy = addNonHabitant("Tommy", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
 		tache.setAnnule(true);
@@ -221,7 +219,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 		// Un tiers avec un for ouvert sans déclaration envoyée pour 2007
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		{
 			addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			addDeclarationImpot(paul, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -229,7 +227,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		}
 
 		// Un tiers avec un for ouvert et avec une déclaration déja envoyée pour 2007
-		Contribuable pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique pierre = addNonHabitant("Pierre", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
 		{
 			addForPrincipal(pierre, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			addDeclarationImpot(pierre, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -239,7 +237,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		}
 
 		// Un contribuable hors-Suisse avec plusieurs achats et ventes d'immeuble dans l'année (= plusieurs périodes d'imposition) et autant de déclarations envoyées
-		final Contribuable armand;
+		final PersonnePhysique armand;
 		{
 			final Range activite1 = new Range(date(2007, 1, 18), date(2007, 3, 31));
 			final Range activite2 = new Range(date(2007, 8, 1), date(2007, 11, 15));
@@ -265,24 +263,23 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
 
 		// Un tiers sans aucun for
-		Contribuable frederic = addNonHabitant("Frédéric", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
+		PersonnePhysique frederic = addNonHabitant("Frédéric", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
 		assertZeroDeclaration(service.determineDetailsEnvoi(frederic, 2007, r), r);
 
 		// Un tiers sans for principal ou ni for secondaire mais avec un autre type de for
-		Contribuable samuel = addNonHabitant("Samuel", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
+		PersonnePhysique samuel = addNonHabitant("Samuel", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
 		addForAutreImpot(samuel, date(1968, 11, 3), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				GenreImpot.SUCCESSION);
 		assertZeroDeclaration(service.determineDetailsEnvoi(samuel, 2007, r), r);
 
 		// Un tiers avec un for principal hors canton
-		Contribuable jean = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique jean = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jean, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		assertZeroDeclaration(service.determineDetailsEnvoi(jean, 2007, r), r);
 
 		// Un tiers avec un mode d'imposition sourcier pure
-		Contribuable johan = addNonHabitant("Johan", "Smet", date(1965, 4, 13), Sexe.MASCULIN);
-		ForFiscalPrincipal fors = addForPrincipal(johan, date(1983, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		fors.setModeImposition(ModeImposition.SOURCE);
+		PersonnePhysique johan = addNonHabitant("Johan", "Smet", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(johan, date(1983, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 		assertZeroDeclaration(service.determineDetailsEnvoi(johan, 2007, r), r);
 
 		// Un tiers avec un for secondaire bidon
@@ -327,7 +324,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Un diplomate suisse en mission hors Suisse ne recoivent pas de DIs
 		{
-			Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
+			PersonnePhysique marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
 			addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 			assertZeroDeclaration(service.determineDetailsEnvoi(marc, 2007, r), r);
 		}
@@ -337,7 +334,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 * assimilés à des contribuables vaudois et recoivent une DI normale.
 		 */
 		{
-			Contribuable ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
+			PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 			addForPrincipal(ramon, date(1968, 11, 3), null, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
 			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
@@ -369,9 +366,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 */
 		Contribuable michel = addNonHabitant("Michel", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		{
-			ForFiscalPrincipal f = new ForFiscalPrincipal() {
+			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP() {
 
-				private static final long serialVersionUID = 2398344278141895238L;
 				private MotifRattachement motif;
 
 				// Hyper-hack pour permettre de setter un motif de rattachement interdit (c'est dègue, mais on peut imaginer que quelqu'un
@@ -419,14 +415,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax);
 
 		// Un tiers imposé à la dépense
-		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
-		ForFiscalPrincipal fors = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		fors.setModeImposition(ModeImposition.DEPENSE);
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.DEPENSE);
 		assertDetails(CategorieEnvoiDI.VAUDOIS_DEPENSE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(paul,
 				2007, r));
 
 		// Un tiers tout ce quil y a de plus ordinaire
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationComplete);
@@ -434,13 +429,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				2007, r));
 
 		// Un tiers ordinaire, mais sans déclaration d'impôt précédente
-		Contribuable olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(olrik,
 				2007, r));
 
 		// Un tiers ordinaire mais avec VaudTax
-		Contribuable guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(guillaume, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addDeclarationImpot(guillaume, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationVaudTax);
@@ -459,7 +454,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
 
 		// contribuable hors canton ayant une activité indépendante dans le canton
-		Contribuable jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jean, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -467,7 +462,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertDetails(CategorieEnvoiDI.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean, 2007, r));
 
 		// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for
-		Contribuable jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jacques, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -477,7 +472,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertDetails(CategorieEnvoiDI.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jacques, 2007, r));
 
 		// contribuable hors Suisse ayant une activité indépendante dans le canton
-		Contribuable mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.Danemark);
 		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -485,7 +480,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt, 2007, r));
 
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
-		Contribuable georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
@@ -494,7 +489,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				2007, r));
 
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse
-		Contribuable jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.Danemark);
 		addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
@@ -522,7 +517,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 
 		// Un tiers qui part hors canton le 31.12
-		Contribuable laurent = addNonHabitant("Laurent", "Maillard", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique laurent = addNonHabitant("Laurent", "Maillard", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(laurent, date(1983, 4, 13), MotifFor.MAJORITE,date(2006,12,31),MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addDeclarationImpot(laurent, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationComplete);
@@ -537,7 +532,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	public void testDetermineDetailsEnvoiPourTiersAvecForsSansMotifsOuvertureFermeture() throws Exception {
 
 		// Un tiers avec for ouvert pendant l'année mais sans motif
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal f = addForPrincipal(eric, date(2007, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		f.setMotifOuverture(null); // hack pour bypasser la validation
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
@@ -553,7 +548,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 * [UNIREG-465] Un tiers hors-canton qui a vendu son dernier immeuble en cours d'année : il ne reçoit pas automatiquement de DI
 		 * suite à la vente de son immeuble, et doit recevoir une DI au début de l'année suivante
 		 */
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1998, 4, 13), null, MockCommune.Bern);
 		addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER,
 				MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -572,7 +567,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		{
 			// [UNIREG-465] Contribuable hors-suisse depuis toujours avec immeuble dans le canton
-			Contribuable salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(salvatore, date(1998, 4, 13), null, MockPays.Albanie);
 			addForSecondaire(salvatore, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER,
 					MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -588,7 +583,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		{
 			// [UNIREG-465] Contribuable hors-suisse depuis 2007 avec immeuble dans le canton
-			Contribuable greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2007, 7, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(greg, date(2007, 7, 2), MotifFor.DEPART_HS, MockPays.Espagne);
 			addForSecondaire(greg, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -610,7 +605,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final RegDate dateFin = date(2007, 8, 30);
 
-		final Contribuable tyler = createHorsCantonAvecFinActiviteIndependante(dateFin);
+		final PersonnePhysique tyler = createHorsCantonAvecFinActiviteIndependante(dateFin);
 		{
 			final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 30), tiersService, adresseService);
 			assertZeroDeclaration(service.determineDetailsEnvoi(tyler, 2007, rapport), rapport); // déclaration remplacée par une note à l'administration fiscale
@@ -621,13 +616,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
 
-		final Contribuable ralf = createDepartHorsCanton(date(2007, 7, 1));
+		final PersonnePhysique ralf = createDepartHorsCanton(date(2007, 7, 1));
 		assertZeroDeclaration(service.determineDetailsEnvoi(ralf, 2007, r), r);  // pas de déclaration dans ce cas
 
-		final Contribuable armand = createHorsSuisseAvecFinActiviteIndependante(dateFin);
+		final PersonnePhysique armand = createHorsSuisseAvecFinActiviteIndependante(dateFin);
 		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(armand, 2007, r));
 
-		final Contribuable alfred = createHorsSuisseAvecVenteImmeuble(dateFin);
+		final PersonnePhysique alfred = createHorsSuisseAvecVenteImmeuble(dateFin);
 		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(alfred, 2007, r));
 	}
 
@@ -650,8 +645,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * @return contribuable hors-Suisse avec un immeuble dans le canton qui a été vendu en cours d'année
 	 */
-	private Contribuable createHorsSuisseAvecVenteImmeuble(RegDate dateVente) {
-		Contribuable alfred = addNonHabitant("Alfred", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
+	private PersonnePhysique createHorsSuisseAvecVenteImmeuble(RegDate dateVente) {
+		PersonnePhysique alfred = addNonHabitant("Alfred", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(alfred, date(2005, 11, 3), null, MockPays.France);
 		addForSecondaire(alfred, date(2005, 11, 3), MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return alfred;
@@ -660,8 +655,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable hors-Suisse avec une activité indépendente dans le canton qui a été stoppée en cours d'année
 	 */
-	private Contribuable createHorsSuisseAvecFinActiviteIndependante(RegDate dateFin) {
-		Contribuable armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
+	private PersonnePhysique createHorsSuisseAvecFinActiviteIndependante(RegDate dateFin) {
+		PersonnePhysique armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(armand, date(2005, 11, 3), null, MockPays.Danemark);
 		addForSecondaire(armand, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return armand;
@@ -670,8 +665,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable hors-Suisse avec plusieurs activités indépendentes dans le canton qui a été démarrées et stoppées
 	 */
-	private Contribuable createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(DateRange... ranges) {
-		Contribuable armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
+	private PersonnePhysique createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(DateRange... ranges) {
+		PersonnePhysique armand = addNonHabitant("Armand", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(armand, date(2005, 11, 3), null, MockPays.Danemark);
 		for (DateRange r : ranges) {
 			addForSecondaire(armand, r.getDateDebut(), MotifFor.DEBUT_EXPLOITATION, r.getDateFin(), MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
@@ -683,8 +678,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable avec un for fermé en 2007
 	 */
-	private Contribuable createDepartHorsCanton(RegDate dateDepart) {
-		Contribuable ralf = addNonHabitant("Ralf", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
+	private PersonnePhysique createDepartHorsCanton(RegDate dateDepart) {
+		PersonnePhysique ralf = addNonHabitant("Ralf", "Dubateau", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(ralf, date(1968, 11, 3), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		return ralf;
 	}
@@ -692,8 +687,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable hors-canton avec une activité indépendente dans le canton qui a été stoppé en cours d'année
 	 */
-	private Contribuable createHorsCantonAvecFinActiviteIndependante(RegDate dateFin) {
-		Contribuable tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
+	private PersonnePhysique createHorsCantonAvecFinActiviteIndependante(RegDate dateFin) {
+		PersonnePhysique tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
 		addForPrincipal(tyler, date(2005, 11, 3), null, MockCommune.Bern);
 		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return tyler;
@@ -712,7 +707,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable normal
 		{
-			Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
@@ -728,7 +723,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Un autre contribuable normal
 		{
-			Contribuable john = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+			PersonnePhysique john = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 			addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(john, 2007);
@@ -760,7 +755,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2009);
 
 		// Un contribuable normal
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2010, 1, 15), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -795,7 +790,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 		// Un contribuable normal avec une tâche d'envoi de DI pré-existante
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal ffp = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 15), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
@@ -841,7 +836,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois présent dans le canton depuis plusieurs années
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
@@ -852,7 +847,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 * un autre canton
 		 */
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 5), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2008, 1, 6), null, MockCommune.Neuchatel);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
@@ -861,7 +856,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois présent dans le canton depuis plusieurs années, mais sans motif d'ouverture connu
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			ForFiscalPrincipal f = addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			f.setMotifOuverture(null); // hack pour bypasser la validation
 			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
@@ -870,7 +865,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre canton
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
@@ -878,7 +873,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre pays
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007, r));
@@ -887,7 +882,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre pays mais possédant un immeuble depuis plusieurs
 		// années
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2005, 1, 1), null, date(2007, 2, 28), null, MockPays.Danemark);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			addForSecondaire(ctb, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -896,7 +891,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre pays et ayant changé de commune entre-deux
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
@@ -905,7 +900,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois arrivé dans le canton depuis un autre pays l'année précédente et ayant changé de commune en cours d'année
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2006, 3, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
@@ -913,14 +908,14 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois dont le conjoint est décéde en cours d'année
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 22), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 22), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
 		// Contribuable vaudois parti dans un autre canton en cours d'année
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 			assertNull(service.determineDetailsEnvoi(ctb, 2007, r));
@@ -929,7 +924,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Contribuable vaudois parti dans un autre canton en cours d'année, mais possédant un immeuble dans le canton depuis plusieurs
 		// années
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 			addForSecondaire(ctb, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -940,7 +935,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois parti dans un autre canton en cours d'année, mais ayant acquis un immeuble dans le canton en cours d'année
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 			addForSecondaire(ctb, date(2007, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -951,7 +946,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois parti dans un autre pays en cours d'année, sans for secondaire
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HS, MockPays.Danemark);
 			// [UNIREG-1742] rattrapage de la DI
@@ -960,7 +955,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois décédé en cours d'année
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 			// [UNIREG-1742] rattrapage de la DI
 			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb,	2007, r));
@@ -968,7 +963,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois marié en cours d'année (non testé ici : le ménage commun)
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1),
 					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 			assertNull(service.determineDetailsEnvoi(ctb, 2007, r));
@@ -976,7 +971,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois dont le for principal s'arrête en cours d'année pour une raison inconnu
 		{
-			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			ForFiscalPrincipal f = addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HS,
 					MockCommune.Lausanne);
 			f.setMotifFermeture(null); // hack pour bypasser la validation
@@ -985,7 +980,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable hors-canton avec un for secondaire immeuble dans le canton
 		{
-			Contribuable ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
@@ -995,7 +990,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable hors-canton avec un for secondaire activité indépendante dans le canton qui a été stoppée dans l'année
 		{
-			Contribuable ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
 					MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -1006,7 +1001,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable hors-Suisse avec un for secondaire activité indépendante dans le canton qui a été stoppée dans l'année
 		{
-			Contribuable ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), null, MockPays.Danemark);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
 					MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -1016,7 +1011,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// [UNIREG-465] Contribuable hors-canton avec un for secondaire immeuble dans le canton qui a été fermé dans l'année
 		{
-			Contribuable ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 3, 4), MotifFor.VENTE_IMMOBILIER,
 					MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -1122,32 +1117,32 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				ids.periodeId = periode2008.getId();
 
 				// cas #1: un tiers avec une DI libre "honorée" (cas simple)
-				Contribuable arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.arnoldId = arnold.getNumero();
 				addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addDeclarationImpot(arnold, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
 
 				// cas #2: un tiers avec une DI libre, parti après (cas d'erreur)
-				Contribuable malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+				PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 				ids.malkoId = malko.getNumero();
 				addForPrincipal(malko, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2008, 6, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addDeclarationImpot(malko, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
 
 				// cas #3: un tiers avec une DI libre, jamais parti (cas d'erreur)
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(eric, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
 
 				// cas #4: un tiers avec un DI libre, parti puis revenu (cas de traitement normal)
-				Contribuable salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique salvatore = addNonHabitant("Salvatore", "Adamo", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.salvatoreId = salvatore.getNumero();
 				addForPrincipal(salvatore, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(salvatore, dateDepart.addMonths(6), MotifFor.ARRIVEE_HS, MockCommune.Vevey);
 				addDeclarationImpot(salvatore, periode2008, date(2008, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2008);
 
 				// cas #5: un tiers avec une DI libre, parti avant la date annoncée, puis revenu (cas d'erreur)
-				Contribuable greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique greg = addNonHabitant("Grégoire", "Wriztjk", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.gregId = greg.getNumero();
 				addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2008, 4, 25), MotifFor.DEPART_HS, MockCommune.Lausanne); // date de départ effective != date de départ annoncée
 				addForPrincipal(greg, dateDepart.addMonths(5), MotifFor.ARRIVEE_HS, MockCommune.Renens);
@@ -1287,7 +1282,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable parti hors-Suisse en cours d'année avec une tâche (valide) pour sa période en Suisse, et une autre tâche (invalide) pour sa période hors-Suisse.
-		Contribuable arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				arnold, Qualification.AUTOMATIQUE, 0, colAdm);
@@ -1368,7 +1363,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable arrivé de hors-Suisse en cours d'année, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante sur toute l'année
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2007, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
@@ -1406,7 +1401,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
@@ -1442,7 +1437,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
-		final Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		di.setAnnule(true);
@@ -1471,10 +1466,9 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2008);
 
 		// Un contribuable indigent habitant à Lausanne
-		final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+		final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 		marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-		final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-		ffp.setModeImposition(ModeImposition.INDIGENT);
+		addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
 
 		final DeclarationImpotOrdinaire decl2008 = addDeclarationImpot(marc, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax);
 		addEtatDeclarationEmise(decl2008, date(2009, 1, 15));

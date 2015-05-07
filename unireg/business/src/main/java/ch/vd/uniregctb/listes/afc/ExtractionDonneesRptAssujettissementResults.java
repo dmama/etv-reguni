@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -104,9 +106,13 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 
 				final ForFiscalRevenuFortune forRevenuFortune = forGestion.getSousjacent();
 				motifRattachement = forRevenuFortune.getMotifRattachement();
-				if (forRevenuFortune instanceof ForFiscalPrincipal) {
+				if (forRevenuFortune instanceof ForFiscalPrincipalPP) {
 					autoriteFiscaleForPrincipal = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-					modeImposition = ((ForFiscalPrincipal) forRevenuFortune).getModeImposition();
+					modeImposition = ((ForFiscalPrincipalPP) forRevenuFortune).getModeImposition();
+				}
+				else if (forRevenuFortune.isPrincipal()) {
+					// TODO [SIPM] on n'a pas encore traité le cas des fors principaux de PM
+					throw new NotImplementedException("L'assujettissement des PM n'existe pas encore...");
 				}
 				else {
 					// les rattachements économiques sont au mode d'imposition ordinaire, enfin je crois...
@@ -163,7 +169,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	 */
 	private static ForFiscalPrincipal extraireDernierForSource(ForsList<ForFiscalPrincipal> principauxDansLaPeriode) {
 		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(principauxDansLaPeriode)) {
-			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
+			if (ffp instanceof ForFiscalPrincipalPP && ((ForFiscalPrincipalPP) ffp).getModeImposition() == ModeImposition.SOURCE) {
 				return ffp;
 			}
 		}

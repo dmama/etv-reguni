@@ -23,8 +23,10 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -426,7 +428,7 @@ public abstract class EvenementCivilInterne {
 	 * @param modeImposition           le mode d'imposition du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
+	protected ForFiscalPrincipalPP openForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
 	                                                    TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
 	                                                    MotifFor motifOuverture, ModeImposition modeImposition) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
@@ -446,10 +448,10 @@ public abstract class EvenementCivilInterne {
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, TypeAutoriteFiscale typeAutorite, int numeroOfsAutoriteFiscale,
+	protected ForFiscalPrincipal updateForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateChangement, TypeAutoriteFiscale typeAutorite, int numeroOfsAutoriteFiscale,
 	                                                      @Nullable MotifRattachement motifRattachement, MotifFor motifFermetureOuverture, @Nullable ModeImposition modeImposition) {
 
-		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipalPP forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
 		Assert.notNull(forFiscalPrincipal);
 		final Integer numeroOfsActuel = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
 
@@ -492,7 +494,7 @@ public abstract class EvenementCivilInterne {
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalDomicileVaudoisOrdinaire(Contribuable contribuable, final RegDate dateOuverture,
+	protected ForFiscalPrincipalPP openForFiscalPrincipalDomicileVaudoisOrdinaire(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
 	                                                                            int numeroOfsAutoriteFiscale, MotifFor motifOuverture) {
 		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, motifOuverture,
 				ModeImposition.ORDINAIRE);

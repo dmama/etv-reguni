@@ -25,7 +25,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -187,7 +187,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	public void testValidateForAdresseDebutApresDateFin() {
 
 		final PersonnePhysique hab = createHabitantWithFors();
-		final ForFiscalPrincipal ff = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP ff = new ForFiscalPrincipalPP();
 		ff.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		ff.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 		ff.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -207,7 +207,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 	public void testValidateMotifRattachement() {
 
 		PersonnePhysique hab = createHabitantWithFors();
-		ForFiscalPrincipal ff = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ff = new ForFiscalPrincipalPP();
 		// motif de rattachement = null
 		ff.setDateDebut(RegDate.get(2001, 5, 4));
 		ff.setDateFin(RegDate.get(2001, 5, 14));
@@ -234,7 +234,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		assertEquals(0, validate(hab).warningsCount());
 
 		// on ajoute un for invalide (dateDebut > dateFin)
-		ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 		forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 		forFiscal.setDateFin(RegDate.get(1995, 2, 28));
 		forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -260,7 +260,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		hab.setNumeroIndividu(1233L);
 		// 2005, 8, 12 - 2007, 2, 28
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 			forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -272,7 +272,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// 2007, 3, 1 -> 2007, 3, 1 (1 jour)
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
 			forFiscal.setDateFin(RegDate.get(2007, 3, 1));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -284,7 +284,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// 2007, 3, 2 -> Ouvert
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 2));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
@@ -296,7 +296,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		// Ajout d'un for qui chevauche
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 1, 22));
 			forFiscal.setDateFin(RegDate.get(2007, 4, 1));
 			forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -323,7 +323,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(1233L);
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 			forFiscal.setDateFin(RegDate.get(2005, 8, 12));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -336,7 +336,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 			forFiscal.setDateFin(RegDate.get(2007, 12, 31));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -367,7 +367,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		hab.setNumero(10010860L);
 		hab.setNumeroIndividu(435364L);
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2003, 12, 1));
 			forFiscal.setDateFin(RegDate.get(2004, 8, 11));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -380,7 +380,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2004, 8, 12));
 			forFiscal.setDateFin(RegDate.get(2006, 10, 1));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -393,7 +393,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 		{ // ce for intermédiaire est ouvert => il doit entrer en conflit avec le for suivant
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2006, 10, 2));
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -406,7 +406,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2006, 10, 3));
 			forFiscal.setDateFin(RegDate.get(2007, 3, 30));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -419,7 +419,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 			hab.addForFiscal(forFiscal);
 		}
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 31));
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -445,7 +445,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(1233L);
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
 			forFiscal.setDateFin(RegDate.get(2005, 12, 31));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -485,7 +485,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		final PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(1233L);
 
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
 		ffp.setDateDebut(RegDate.get(2000, 1, 1));
 		ffp.setDateFin(RegDate.get(2005, 12, 31));
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -515,7 +515,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 
 		// on deuxième fors principal pour couvrir le for secondaire dans certains cas ci-dessous
-		final ForFiscalPrincipal ffp2 = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP ffp2 = new ForFiscalPrincipalPP();
 		ffp2.setDateDebut(RegDate.get(2006, 1, 1));
 		ffp2.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp2.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -785,7 +785,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		// Principaux
 		// 2002, 1, 1 - 2005, 8, 11
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 			forFiscal.setDateFin(RegDate.get(2005, 8, 11));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -800,7 +800,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// Annule : 2004, 6, 6 - 2005, 9, 9
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setAnnule(true);
 			forFiscal.setDateDebut(RegDate.get(2004, 6, 6));
 			forFiscal.setDateFin(RegDate.get(2005, 9, 9));
@@ -813,7 +813,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// 2005, 8, 12 - 2007, 2, 28
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 			forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -826,7 +826,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// 2007, 3, 1 -> 2007, 3, 1 (1 jour)
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
 			forFiscal.setDateFin(RegDate.get(2007, 3, 1));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -838,7 +838,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 		}
 		// 2007, 3, 2 -> Ouvert
 		{
-			ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 			forFiscal.setDateDebut(RegDate.get(2007, 3, 2));
 			forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			forFiscal.setModeImposition(ModeImposition.ORDINAIRE);

@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -261,7 +261,7 @@ public class CoupleControllerTest extends WebTestSpring3 {
 				final MenageCommun menage = etc.getMenage();
 				assertNotNull(menage);
 
-				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipalPP ffp = menage.getForFiscalPrincipalAt(null);
 				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 				return null;
 			}

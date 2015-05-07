@@ -42,7 +42,7 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
@@ -219,7 +219,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(12348L);
 		hab.setNumeroIndividu(individu.getNoTechnique());
-		ForFiscalPrincipal ff = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ff = new ForFiscalPrincipalPP();
 		ff.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ff.setMotifRattachement(MotifRattachement.DOMICILE);
 		ff.setModeImposition(ModeImposition.SOURCE);
@@ -417,7 +417,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		RegDate dateOuverture = RegDate.get(2004, 2, 1);
 		// Principal 1 fermé
 		{
-			ForFiscalPrincipal forF = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forF = new ForFiscalPrincipalPP();
 			forF.setDateDebut(RegDate.get(1998, 3, 1));
 			forF.setDateFin(RegDate.get(2004, 1, 31));
 			forF.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -429,7 +429,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 		// Principal 2 ouvert
 		{
-			ForFiscalPrincipal forF = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forF = new ForFiscalPrincipalPP();
 			forF.setNumeroOfsAutoriteFiscale(8001);
 			forF.setDateDebut(dateOuverture);
 			forF.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -492,7 +492,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Principal 1 fermé
 		{
-			ForFiscalPrincipal forF = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP forF = new ForFiscalPrincipalPP();
 			forF.setDateDebut(dateOuverture);
 			forF.setDateFin(dateFermeture);
 			forF.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);

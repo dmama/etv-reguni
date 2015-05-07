@@ -22,6 +22,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
@@ -194,7 +195,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(MotifFor.DEPART_HC, ffpFerme.getMotifFermeture(), "Le for sur " + communeDepart.getNomOfficiel() + " n'est pas fermé à la bonne date");
 
 			// For ouvert sur Zurich
-			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal) list.get(list.size()-1);
+			final ForFiscalPrincipalPP ffpOuvert = (ForFiscalPrincipalPP) list.get(list.size()-1);
 			assertEquals(dateDepart.addDays(1), ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomOfficiel() + " n'est pas ouvert à la bonne date");
 			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomOfficiel());
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le motif de rattachement du for est faux");

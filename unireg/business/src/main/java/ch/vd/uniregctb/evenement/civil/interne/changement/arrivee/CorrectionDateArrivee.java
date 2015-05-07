@@ -15,11 +15,11 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -37,9 +37,9 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
 
-	private ForFiscalPrincipal getForFiscalPrincipalDeterminant(PersonnePhysique pp) {
+	private ForFiscalPrincipalPP getForFiscalPrincipalDeterminant(PersonnePhysique pp) {
 		final EnsembleTiersCouple ensemble = context.getTiersService().getEnsembleTiersCouple(pp, null);
-		final Contribuable ctbDeterminant;
+		final ContribuableImpositionPersonnesPhysiques ctbDeterminant;
 		if (ensemble != null && ensemble.getMenage() != null) {
 			ctbDeterminant = ensemble.getMenage();
 		}
@@ -112,19 +112,19 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 		// le dernier for principal doit voir sa date d'ouverture modifiée à la date de l'événement
 
 		final PersonnePhysique pp = getPrincipalPP();
-		final ForFiscalPrincipal ffp = getForFiscalPrincipalDeterminant(pp);
+		final ForFiscalPrincipalPP ffp = getForFiscalPrincipalDeterminant(pp);
 		if (ffp != null) {
-			final Tiers tiersDeterminant = ffp.getTiers();
+			final ContribuableImpositionPersonnesPhysiques tiersDeterminant = ffp.getTiers();
 			final RegDate ancienneDateOuverture = ffp.getDateDebut();
 			if (ancienneDateOuverture == getDate()) {
 				final String msg = String.format("La date d'ouverture du dernier for fiscal principal du contribuable %s est déjà au %s",
-												FormatNumeroHelper.numeroCTBToDisplay(tiersDeterminant.getNumero()), RegDateHelper.dateToDisplayString(ancienneDateOuverture));
+				                                 FormatNumeroHelper.numeroCTBToDisplay(tiersDeterminant.getNumero()), RegDateHelper.dateToDisplayString(ancienneDateOuverture));
 				Audit.info(getNumeroEvenement(), msg);
 			}
 			else {
 				context.getTiersService().annuleForFiscal(ffp);
-				context.getTiersService().addForPrincipal((Contribuable) tiersDeterminant, getDate(), ffp.getMotifOuverture(), ffp.getDateFin(), ffp.getMotifFermeture(), ffp.getMotifRattachement(),
-						ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale(), ffp.getModeImposition());
+				context.getTiersService().addForPrincipal(tiersDeterminant, getDate(), ffp.getMotifOuverture(), ffp.getDateFin(), ffp.getMotifFermeture(), ffp.getMotifRattachement(),
+				                                          ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale(), ffp.getModeImposition());
 			}
 		}
 		return HandleStatus.TRAITE;

@@ -16,6 +16,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -122,15 +123,15 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabAlain);
-			List<ForFiscalPrincipal> list = hab.getForsFiscauxPrincipauxActifsSorted();
+			List<ForFiscalPrincipalPP> list = hab.getForsFiscauxPrincipauxActifsSorted();
 
 			// For fermé sur Lausanne
-			ForFiscalPrincipal ffpFerme = list.get(list.size()-2);
+			ForFiscalPrincipalPP ffpFerme = list.get(list.size()-2);
 			assertEquals(dateDemenagement, ffpFerme.getDateFin(), "Le for sur Lausanne n'est pas fermé à la bonne date");
 			assertEquals(MockCommune.Lausanne.getNoOFS(), ffpFerme.getNumeroOfsAutoriteFiscale(), "le for précédent n'est pas sur Lausanne");
 
 			// For ouvert sur Bex
-			ForFiscalPrincipal ffpOuvert = list.get(list.size()-1);
+			ForFiscalPrincipalPP ffpOuvert = list.get(list.size()-1);
 			assertEquals(dateDemenagement.addDays(1) , ffpOuvert.getDateDebut(), "Le for sur Bex n'est pas ouvert à la bonne date");
 			assertEquals(MockCommune.Bex.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Bex");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");

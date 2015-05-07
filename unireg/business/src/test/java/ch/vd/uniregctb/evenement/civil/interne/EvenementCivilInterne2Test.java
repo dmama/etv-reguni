@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -136,7 +137,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = new PersonnePhysique(true);
 				habitant.setNumeroIndividu(NUMERO_INDIVIDU);
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(RegDate.get(2000,1,1));
 				f.setMotifOuverture(MotifFor.ARRIVEE_HC);
 				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -154,12 +155,12 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 				final List<ForFiscal> fors = habitant.getForsFiscauxSorted();
 				assertEquals(2, fors.size());
 
-				final ForFiscalPrincipal forCossonay = (ForFiscalPrincipal) fors.get(0);
+				final ForFiscalPrincipalPP forCossonay = (ForFiscalPrincipalPP) fors.get(0);
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forCossonay.getTypeAutoriteFiscale());
 				assertEquals(MotifRattachement.DOMICILE, forCossonay.getMotifRattachement());
 				assertEquals(ModeImposition.SOURCE, forCossonay.getModeImposition());
 
-				final ForFiscalPrincipal forLausanne = (ForFiscalPrincipal) fors.get(1);
+				final ForFiscalPrincipalPP forLausanne = (ForFiscalPrincipalPP) fors.get(1);
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forLausanne.getTypeAutoriteFiscale());
 				assertEquals(MotifRattachement.DOMICILE, forLausanne.getMotifRattachement());
 				assertEquals(ModeImposition.SOURCE, forLausanne.getModeImposition());

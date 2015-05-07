@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
@@ -31,10 +30,10 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -370,9 +369,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création de l'habitant et de sa situation avant l'arrivée
 				 */
-				final PersonnePhysique habitant = newHabitant(noIndividu);
-				addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				tiersDAO.save(habitant);
+				final PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			}
 		});
 
@@ -528,12 +526,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				PersonnePhysique pierre = newHabitant(noIndividuLAbbaye);
-				PersonnePhysique jacques = newHabitant(noIndividuLeChenit);
-				PersonnePhysique jean = newHabitant(noIndividuLeLieu);
-				tiersDAO.save(pierre);
-				tiersDAO.save(jacques);
-				tiersDAO.save(jean);
+				addHabitant(noIndividuLAbbaye);
+				addHabitant(noIndividuLeChenit);
+				addHabitant(noIndividuLeLieu);
 			}
 		});
 
@@ -732,9 +727,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 			}
 		});
 
@@ -750,9 +745,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				final PersonnePhysique habitant = newHabitant(noIndividu);
-				final ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				tiersDAO.save(habitant);
+				final PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 			}
 		});
 
@@ -799,9 +793,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null);
 			}
@@ -886,9 +880,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
@@ -907,9 +901,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				PersonnePhysique habitant = newHabitant(noIndividu);
-				addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+				PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 			}
 		});
@@ -1042,7 +1035,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Tests sur les fors fiscaux
 				 */
-				final ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipalPP ff = habitant.getForFiscalPrincipalAt(null);
 				assertNotNull(ff);
 				assertEquals(ModeImposition.SOURCE, ff.getModeImposition());
 			}
@@ -1074,9 +1067,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				// adresses après l'arrivée
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				           dateArrivee, null);
 
 				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
@@ -1096,8 +1089,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * L'événement d'arrivée
 				 */
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+				final Arrivee arrivee =
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Neuchatel, MockCommune.Cossonay,
+						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
 				 * Vérification que l'individu n'existe pas en base avant son arrivée
@@ -1131,7 +1125,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Tests sur les fors fiscaux
 				 */
-				final ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
+				final ForFiscalPrincipalPP ff = habitant.getForFiscalPrincipalAt(null);
 				assertNotNull(ff);
 				// [SIFISC-3680] Les réfugiés politiques reconnus sont dorénavant imposés à la source par défaut (et passé manuellement à l'ordinaire par l'ACI si besoin est).
 				assertEquals(ModeImposition.SOURCE, ff.getModeImposition());
@@ -1185,10 +1179,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = newHabitant(noIndividu);
-				final ForFiscalPrincipal f = addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				f.setModeImposition(ModeImposition.SOURCE);
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+				PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
 				assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 			}
 		});
@@ -1199,8 +1191,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final Arrivee arrivee = new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
-				                                              anciennesAdresses.principale, nouvellesAdresses.principale, context);
+				final Arrivee arrivee =
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Cossonay.getNoOFS(), MockCommune.Lausanne, MockCommune.Cossonay,
+						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 				arrivee.handle(buildMessageCollector());
 			}
 		});
@@ -1226,14 +1219,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * Tests sur les fors fiscaux
 				 */
 				final List<ForFiscal> list = habitant.getForsFiscauxSorted();
-				final ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
+				final ForFiscalPrincipalPP lausanne = (ForFiscalPrincipalPP) list.get(0);
 				assertNotNull(lausanne);
 				assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 				assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 				assertEquals(veilleArrivee, lausanne.getDateFin());
 				assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
-				final ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
+				final ForFiscalPrincipalPP cossonay = (ForFiscalPrincipalPP) list.get(1);
 				assertNotNull(cossonay);
 				assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 				assertEquals(dateArrivee, cossonay.getDateDebut());
@@ -1447,12 +1440,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal),
-						newHabitant(noIndividuConjoint), dateMariage, null);
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
+				                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, MotifFor.ARRIVEE_HC, null, null);
-				menage = (MenageCommun) tiersDAO.save(menage);
+				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				assertNotNull(menage);
 				return null;
 			}
@@ -1598,13 +1590,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création de l'habitant et de sa situation avant l'arrivée
 				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal),
-						newHabitant(noIndividuConjoint), dateMariage, null);
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal),
+				                                                                            addHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				f.setModeImposition(ModeImposition.SOURCE);
-				menage = (MenageCommun) tiersDAO.save(menage);
+				addForPrincipal(menage, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
 				assertNotNull(menage);
 				return null;
 			}
@@ -1660,14 +1650,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				assertNotNull(menage);
 
 				final List<ForFiscal> listMenage = menage.getForsFiscauxSorted();
-				final ForFiscalPrincipal lausanne = (ForFiscalPrincipal) listMenage.get(0);
+				final ForFiscalPrincipalPP lausanne = (ForFiscalPrincipalPP) listMenage.get(0);
 				assertNotNull(lausanne);
 				assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 				assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 				assertEquals(veilleArrivee, lausanne.getDateFin());
 				assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
-				final ForFiscalPrincipal cossonay = (ForFiscalPrincipal) listMenage.get(1);
+				final ForFiscalPrincipalPP cossonay = (ForFiscalPrincipalPP) listMenage.get(1);
 				assertNotNull(cossonay);
 				assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 				assertEquals(dateArrivee, cossonay.getDateDebut());
@@ -1724,21 +1714,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création de l'habitant et de sa situation avant l'arrivée
 				 */
-				PersonnePhysique habitant = newHabitant(noIndividu);
-				addForPrincipal(habitant, MockCommune.Lausanne, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, null, null);
-				{
-					AdresseSuisse adresse = new AdresseSuisse();
-					adresse.setDateDebut(RegDate.get(2000, 3, 20));
-					adresse.setDateFin(null);
-					adresse.setPermanente(true);
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-					habitant.addAdresseTiers(adresse);
-				}
-
-				habitant = (PersonnePhysique) tiersDAO.save(habitant);
+				PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, RegDate.get(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				final AdresseSuisse courrier = addAdresseSuisse(habitant, TypeAdresseTiers.COURRIER, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
+				courrier.setPermanente(true);
 				assertEquals(habitant, tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu));
 			}
 		});
@@ -1841,34 +1820,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal), newHabitant(noIndividuConjoint), dateMariage, null);
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(addHabitant(noIndividuPrincipal), addHabitant(noIndividuConjoint), dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 
-				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, MotifFor.ARRIVEE_HC, null, null);
-				{
-					AdresseSuisse adresse = new AdresseSuisse();
-					adresse.setDateDebut(RegDate.get(2000, 3, 20));
-					adresse.setDateFin(null);
-					adresse.setPermanente(true);
-					adresse.setUsage(TypeAdresseTiers.COURRIER);
-					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-					menage.addAdresseTiers(adresse);
-				}
-				{
-					AdresseSuisse adresse = new AdresseSuisse();
-					adresse.setDateDebut(RegDate.get(2000, 3, 20));
-					adresse.setDateFin(null);
-					adresse.setPermanente(false);
-					adresse.setUsage(TypeAdresseTiers.DOMICILE);
-					adresse.setNumeroMaison("3");
-					adresse.setNumeroRue(MockRue.Bex.CheminDeLaForet.getNoRue());
-					adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
-					menage.addAdresseTiers(adresse);
-				}
-
-				menage = (MenageCommun) tiersDAO.save(menage);
+				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				final AdresseSuisse courrier = addAdresseSuisse(menage, TypeAdresseTiers.COURRIER, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
+				courrier.setPermanente(true);
+				addAdresseSuisse(menage, TypeAdresseTiers.DOMICILE, RegDate.get(2000, 3, 20), null, MockRue.Bex.CheminDeLaForet);
 				assertNotNull(menage);
 				return null;
 			}
@@ -1999,20 +1957,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * Création du non-habitant
 				 */
 				final RegDate dateNaissanceBea = RegDate.get(1987, 5, 1);
-				
-				PersonnePhysique nonHabitant = newNonHabitant("Duval", "Béatrice", dateNaissanceBea, Sexe.FEMININ);
-				
-				// for principal
-				{
-					addForPrincipal(nonHabitant, MockCommune.Bern, dateArrivee.addYears(-1), MotifFor.INDETERMINE, null, null);
-				}
-				// for secondaire
-				{
-					final ForFiscalSecondaire f = addForSecondaire(nonHabitant, MockCommune.Lausanne, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, null, null);
-					f.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-				}
-				nonHabitant = (PersonnePhysique) tiersDAO.save(nonHabitant);
-				
+
+				PersonnePhysique nonHabitant = addNonHabitant("Béatrice", "Duval", dateNaissanceBea, Sexe.FEMININ);
+				addForPrincipal(nonHabitant, dateArrivee.addYears(-1), MotifFor.INDETERMINE, MockCommune.Bern);
+				addForSecondaire(nonHabitant, dateArrivee.addYears(-1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return nonHabitant.getNumero();
 			}
 
@@ -2028,7 +1976,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 */
 				Arrivee arrivee =
 						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, dateArrivee, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel, MockCommune.Lausanne,
-								anciennesAdresses.principale, nouvellesAdresses.principale, context);
+						                      anciennesAdresses.principale, nouvellesAdresses.principale, context);
 
 				/*
 				 * Vérification que l'individu n'existe pas en base avant son arrivée
@@ -2039,7 +1987,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				 * Arrivée
 				 */
 				arrivee.handle(buildMessageCollector());
-				
+
 				return null;
 			}
 		});
@@ -2156,9 +2104,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				/*
 				 * Création des non-habitants
 				 */
-				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.save(newNonHabitant("Dupont", "Pierre", dateNaissancePierre, Sexe.MASCULIN));
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.save(addNonHabitant("Pierre", "Dupont", dateNaissancePierre, Sexe.MASCULIN));
 				
-				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.save(newNonHabitant("Goux", "Julie", dateNaissanceJulie, Sexe.FEMININ));
+				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.save(addNonHabitant("Julie", "Goux", dateNaissanceJulie, Sexe.FEMININ));
 				
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
@@ -2166,10 +2114,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
-				final ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Vevey, dateArriveInitiale, MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC);
-				menage = (MenageCommun) tiersDAO.save(menage);
+				addForPrincipal(menage, dateArriveInitiale, MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Vevey);
+
 				assertNotNull(menage);
-				
 				return new Couple(principal.getNumero(), conjoint.getNumero());
 			}
 
@@ -2294,10 +2241,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.MIXTE_137_1);
 				return null;
 			}
 		});
@@ -2336,13 +2281,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 				assertEquals(3, fors.size());
 				assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipalPP) fors.get(0));
 				assertForPrincipal(date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				                   MockCommune.Bussigny.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
+				                   MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipalPP) fors.get(1));
 				assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE,
 				                   ModeImposition.MIXTE_137_1,
-				                   (ForFiscalPrincipal) fors.get(2));
+				                   (ForFiscalPrincipalPP) fors.get(2));
 			}
 		});
 	}
@@ -2371,10 +2316,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+				addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.MIXTE_137_1);
 				return null;
 			}
 		});
@@ -2435,10 +2378,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(habitant, MockCommune.Bern, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null);
-				ffp.setModeImposition(ModeImposition.ORDINAIRE);
-
-				addForSecondaire(habitant, MockCommune.Aubonne, dateAchat, MotifFor.ACHAT_IMMOBILIER, null, null);
+				addForPrincipal(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(habitant, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -2473,11 +2414,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 				assertEquals(3, fors.size());
 				assertForPrincipal(dateAchat, MotifFor.ACHAT_IMMOBILIER, dateArrivee.addDays(-1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 				assertForSecondaire(dateAchat, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE,
 				                    (ForFiscalSecondaire) fors.get(1));
 				assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE,
-				                   ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(2));
+				                   ModeImposition.MIXTE_137_1, (ForFiscalPrincipalPP) fors.get(2));
 			}
 		});
 	}
@@ -2638,17 +2579,16 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 
-		doInNewTransactionAndSessionWithoutValidation(new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique habitant = addHabitant(noTiers, noInd);
-				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
-				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-				return null;
-			}
-		});
+		doInNewTransactionAndSessionWithoutValidation(
+				new TxCallback<Object>() { // [SIFISC-57] désactivation de la validation pour pouvoir construire un cas invalide, mais qui existe des fois tel quel en base de données
+					@Override
+					public Object execute(TransactionStatus status) throws Exception {
+						PersonnePhysique habitant = addHabitant(noTiers, noInd);
+						addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+						addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie, ModeImposition.MIXTE_137_1);
+						return null;
+					}
+				});
 
 		final RegDate dateArrivee = date(2010, 3, 24);
 
@@ -2742,10 +2682,10 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 				assertEquals(2, fors.size());
 				assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                   MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				                   MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 				assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE,
 				                   ModeImposition.ORDINAIRE,
-				                   (ForFiscalPrincipal) fors.get(1));
+				                   (ForFiscalPrincipalPP) fors.get(1));
 			}
 		});
 	}
@@ -2810,9 +2750,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 				assertEquals(2, fors.size());
 				assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
-				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 				assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE,
-				                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+				                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 			}
 		});
 	}
@@ -2876,9 +2816,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 				assertEquals(2, fors.size());
 				assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC,
-				                   MockCommune.Zurich.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				                   MockCommune.Zurich.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 				assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
-				                   (ForFiscalPrincipal) fors.get(1));
+				                   (ForFiscalPrincipalPP) fors.get(1));
 			}
 		});
 	}
@@ -2951,33 +2891,5 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				}
 			}
 		});
-	}
-
-	private static PersonnePhysique newHabitant(long noIndividuPrincipal) {
-		PersonnePhysique habitant = new PersonnePhysique(true);
-		habitant.setNumeroIndividu(noIndividuPrincipal);
-		return habitant;
-	}
-
-	private static PersonnePhysique newNonHabitant(String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
-		PersonnePhysique nonHabitant = new PersonnePhysique(false);
-		nonHabitant.setPrenomUsuel(prenom);
-		nonHabitant.setNom(nom);
-		nonHabitant.setSexe(sexe);
-		nonHabitant.setDateNaissance(dateNaissance);
-		return nonHabitant;
-	}
-	
-	private static ForFiscalPrincipal addForPrincipal(Contribuable contribuable, Commune commune, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture) {
-		final TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal(ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		contribuable.addForFiscal(ffp);
-		return ffp;
-	}
-	
-	private static ForFiscalSecondaire addForSecondaire(Contribuable contribuable, Commune commune, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture) {
-		final ForFiscalSecondaire ffs = new ForFiscalSecondaire(ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
-		contribuable.addForFiscal(ffs);
-		return ffs;
 	}
 }

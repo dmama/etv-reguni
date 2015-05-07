@@ -10,6 +10,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -99,17 +100,15 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 		final PersonnePhysique momo = addHabitant(noIndMomo);
 		{
 			noHabMomo = momo.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars,
-					avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f.setModeImposition(ModeImposition.SOURCE);
+			addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars,
+			                      avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
 		}
 
 		// bea
 		final PersonnePhysique bea = addHabitant(noIndBea);
 		{
 			noHabBea = bea.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajorite, avantDateMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajorite, avantDateMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// ménage
@@ -119,8 +118,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
@@ -179,7 +177,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 
 		{
 			final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
-			final ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + momo.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + momo.getNumero() + " est fermé");
 			// momo doit passer au mode dépense
@@ -192,7 +190,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 
 		{
 			final PersonnePhysique bea = (PersonnePhysique) tiersDAO.get(noHabBea);
-			final ForFiscalPrincipal ffp = bea.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = bea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + bea.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + bea.getNumero() + " est fermé");
 			// bea doit passer au mode ordinaire

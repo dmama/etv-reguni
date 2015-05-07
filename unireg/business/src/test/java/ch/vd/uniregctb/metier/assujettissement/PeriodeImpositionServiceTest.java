@@ -546,7 +546,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = createSourcierPur();
+				final PersonnePhysique ctb = createSourcierPur();
 				// Fermeture du dernier for à la source source
 				ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(null);
 				ffp.setDateFin(dateChangement.getOneDayBefore());
@@ -661,7 +661,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final Contribuable ctb = createContribuableSansFor(null);
+				final PersonnePhysique ctb = createContribuableSansFor(null);
 				addForPrincipal(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
 				addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				assertNotNull(ctb);

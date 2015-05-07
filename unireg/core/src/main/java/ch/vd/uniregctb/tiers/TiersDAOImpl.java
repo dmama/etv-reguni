@@ -455,8 +455,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			final EntitySetSetter<SituationFamille> setter = new EntitySetSetter<SituationFamille>() {
 				@Override
 				public void setEntitySet(Tiers tiers, Set<SituationFamille> set) {
-					if (tiers instanceof Contribuable) {
-						((Contribuable) tiers).setSituationsFamille(set);
+					if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+						((ContribuableImpositionPersonnesPhysiques) tiers).setSituationsFamille(set);
 					}
 				}
 			};
@@ -1188,14 +1188,14 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(debiteur, periodicite, PERIODICITE_ACCESSOR);
 	}
 
-	private static final EntityAccessor<Contribuable, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<Contribuable, SituationFamille>() {
+	private static final EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille> SITUATION_FAMILLE_ACCESSOR = new EntityAccessor<ContribuableImpositionPersonnesPhysiques, SituationFamille>() {
 		@Override
-		public Collection<SituationFamille> getEntities(Contribuable ctb) {
+		public Collection<SituationFamille> getEntities(ContribuableImpositionPersonnesPhysiques ctb) {
 			return ctb.getSituationsFamille();
 		}
 
 		@Override
-		public void addEntity(Contribuable ctb, SituationFamille entity) {
+		public void addEntity(ContribuableImpositionPersonnesPhysiques ctb, SituationFamille entity) {
 			ctb.addSituationFamille(entity);
 		}
 
@@ -1210,7 +1210,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
 		return addAndSave(contribuable, situation, SITUATION_FAMILLE_ACCESSOR);
 	}
 

@@ -27,8 +27,9 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -90,9 +91,9 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @return la liste des fors fiscaux principaux non-annulés de ce contribuables, triés par date
 	 */
 	@NotNull
-	private static List<ForFiscalPrincipal> getForsPrincipaux(Contribuable ctb, boolean rw) {
-		final List<ForFiscalPrincipal> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
-		return ffps != null ? ffps : (rw ? new ArrayList<ForFiscalPrincipal>() : Collections.<ForFiscalPrincipal>emptyList());
+	private static List<ForFiscalPrincipalPP> getForsPrincipaux(ContribuableImpositionPersonnesPhysiques ctb, boolean rw) {
+		final List<ForFiscalPrincipalPP> ffps = ctb.getForsFiscauxPrincipauxActifsSorted();
+		return ffps != null ? ffps : (rw ? new ArrayList<ForFiscalPrincipalPP>() : Collections.<ForFiscalPrincipalPP>emptyList());
 	}
 
 	/**
@@ -115,7 +116,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		// 1. des rapports de travail de la personne
 		// 2. des fors de la personne et de ses ménages communs
 
-		final List<ForFiscalPrincipal> fors = getForsPrincipaux(pp, true);
+		final List<ForFiscalPrincipalPP> fors = getForsPrincipaux(pp, true);
 		final Set<Long> idsMenages = getIdsMenagesCommuns(pp);
 		for (Long idMenage : idsMenages) {
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage, true);
@@ -163,8 +164,8 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @return une paire {min, max} sur les périodes fiscales concernées (<code>null</code> si tout est vide...)
 	 */
 	@Nullable
-	private static Pair<Integer, Integer> getPeriodInterval(List<ForFiscalPrincipal> fors, List<RapportPrestationImposable> rpis) {
-		final Pair<ForFiscalPrincipal, ForFiscalPrincipal> universeFors = getFirstAndLast(fors);
+	private static Pair<Integer, Integer> getPeriodInterval(List<ForFiscalPrincipalPP> fors, List<RapportPrestationImposable> rpis) {
+		final Pair<ForFiscalPrincipalPP, ForFiscalPrincipalPP> universeFors = getFirstAndLast(fors);
 		final Pair<RapportPrestationImposable, RapportPrestationImposable> universeRpis = getFirstAndLast(rpis);
 		if (universeFors == null && universeRpis == null) {
 			return null;
@@ -256,7 +257,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * ou {@link ProtoPeriodeImpositionImpotSource.Type#MIXTE_COMMUE_EN_SOURCE MIXTE_COMMUE_EN_SOURCE}) qui sera utilisé pour au final connaître
 	 * le type réel de la période d'imposition IS à créer pour le for principal
 	 */
-	private ProtoPeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipal ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
+	private ProtoPeriodeImpositionImpotSource.Type determineTypePeriode(ForFiscalPrincipalPP ffp, @Nullable ForFiscalPrincipal forSuivant, int pf) {
 		final ProtoPeriodeImpositionImpotSource.Type type;
 		if (ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			if (ffp.getModeImposition() == ModeImposition.SOURCE) {
@@ -398,7 +399,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 	 * @param rpis les rapports de travail non-annulés de cette personne physique, triés par date
 	 * @return la liste des périodes d'imposition IS de la personne physique considérée
 	 */
-	private List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp, List<ForFiscalPrincipal> fors, List<RapportPrestationImposable> rpis) {
+	private List<PeriodeImpositionImpotSource> determine(PersonnePhysique pp, List<ForFiscalPrincipalPP> fors, List<RapportPrestationImposable> rpis) {
 
 		// cas trivial de la personne sans for ni RT (= mineur ?)
 		final Pair<Integer, Integer> interval = getPeriodInterval(fors, rpis);
@@ -411,7 +412,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 		final List<PeriodeImpositionImpotSource> piis = new ArrayList<>();
 		for (int pf = interval.getLeft() ; pf <= interval.getRight() ; ++ pf) {
 			final DateRange pfRange = new DateRangeHelper.Range(RegDate.get(pf, 1, 1), RegDate.get(pf, 12, 31));
-			final List<ForFiscalPrincipal> forsPf = extractIntersectionWithFiscalPeriod(pfRange, fors);
+			final List<ForFiscalPrincipalPP> forsPf = extractIntersectionWithFiscalPeriod(pfRange, fors);
 			final List<RapportPrestationImposable> rpisPf = extractIntersectionWithFiscalPeriod(pfRange, rpis);
 			if (forsPf.isEmpty() && rpisPf.isEmpty()) {
 				// rien ici... PF suivante !
@@ -427,7 +428,7 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			// s'il n'y a pas de rapports de travail, il faut qu'il y ait au moins un for "source/mixte" vaudois pour générer une période d'imposition IS
 			if (rpisPf.isEmpty()) {
 				boolean forAssimileSourceTrouve = false;
-				for (ForFiscalPrincipal ffp : forsPf) {
+				for (ForFiscalPrincipalPP ffp : forsPf) {
 					if (ffp.getModeImposition().isSource() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						forAssimileSourceTrouve = true;
 						break;
@@ -442,12 +443,12 @@ public class PeriodeImpositionImpotSourceServiceImpl implements PeriodeImpositio
 			// il y a des fors, nous voici donc dans le vif du sujet...
 			final List<ProtoPeriodeImpositionImpotSource> protos = new ArrayList<>(forsPf.size());
 			final FractionnementsPeriodesImpositionIS fracs = new FractionnementsPeriodesImpositionIS(forsPf, pf, infraService);
-			final MovingWindow<ForFiscalPrincipal> iterator = new MovingWindow<>(fors);
+			final MovingWindow<ForFiscalPrincipalPP> iterator = new MovingWindow<>(fors);
 			while (iterator.hasNext()) {
-				final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iterator.next();
-				final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(snapshot);
+				final MovingWindow.Snapshot<ForFiscalPrincipalPP> snapshot = iterator.next();
+				final ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal = new ForFiscalPrincipalContext<>(snapshot);
 
-				final ForFiscalPrincipal current = forPrincipal.getCurrent();
+				final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 				final ProtoPeriodeImpositionImpotSource.Type type = determineTypePeriode(current, forPrincipal.getNext(), pf);
 				final RegDate dateDebut = determineDateDebut(current, pf, fracs);
 				final Fraction fractionDebut = fracs.getAt(current.getDateDebut());

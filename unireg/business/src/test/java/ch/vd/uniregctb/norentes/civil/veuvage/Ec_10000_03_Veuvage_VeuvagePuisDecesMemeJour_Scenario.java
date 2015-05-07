@@ -14,6 +14,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -92,8 +93,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 		// Pierre
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		f.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
 		addSituationFamille(pierre, dateNaissance, dateMariage.getOneDayBefore(), EtatCivil.CELIBATAIRE, 0);
 
 		// ménage
@@ -101,8 +101,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, null);
-		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, pierre);
 
 		menage.setBlocageRemboursementAutomatique(false);
@@ -145,18 +144,17 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 
 		{
 			PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
-			ForFiscalPrincipal ffp = pierre.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = pierre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + pierre.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for principal de l'habitant est fermé");
-			ModeImposition expected = ModeImposition.ORDINAIRE;
-			assertEquals(expected, ffp.getModeImposition(), "L'habitant devrait être en mode " + expected.texte());
+			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "L'habitant devrait être en mode ordinaire");
 			assertNull(pierre.getSituationFamilleAt(dateVeuvage), "Pierre ne devrait pas avoir de situation de famille le jour du veuvage.");
 			assertNull(pierre.getSituationFamilleAt(lendemainVeuvage), "Pierre ne devrait pas avoir de nouvelle situation de famille au lendemain du veuvage car il est déjà marqué comme VEUF au civil");
 		}
 
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
-			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " ouvert");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertEquals(dateVeuvage, ffp.getDateFin(), "Date de fin du dernier for fausse");

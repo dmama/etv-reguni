@@ -65,9 +65,9 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				assertEquals("Kamel", nh.getNom());
 				assertEquals((Long) id, nh.getNumero());
 			}
@@ -99,9 +99,9 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				assertEquals(nom, nh.getNom());
 				assertEquals(dateN, nh.getDateNaissance());
 				assertEquals((Long) id, nh.getNumero());
@@ -137,7 +137,7 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				assertEquals(MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				assertEquals(0, allPP.size());
 			}
 		});
@@ -166,9 +166,9 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				assertEquals(dateN, nh.getDateNaissance());
 				assertEquals((Long) id, nh.getNumero());
 			}
@@ -198,9 +198,9 @@ public class TiersCreateControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				assertEquals((Long) id, nh.getNumero());
 				assertEquals("Petiot", nh.getNom());
 				assertEquals("Alain", nh.getPrenomUsuel());

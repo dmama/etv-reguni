@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -96,8 +96,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, MockCommune.Lausanne, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			ffp.setModeImposition(ModeImposition.SOURCE);
+			addForFiscalPrincipal(menage, MockCommune.Lausanne, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, ModeImposition.SOURCE);
 		}
 	}
 
@@ -115,7 +114,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 
 		final MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
 		assertEquals(1, mc.getForsFiscauxValidAt(null).size(), "Le ménage n'a pas de for principal");
-		ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipalPP ffp = mc.getForFiscalPrincipalAt(null);
 		assertNotNull(ffp, "Pas de for principal");
 		assertEquals(modeImpositionCouple, ffp.getModeImposition(), "Mauvais mode d'imposition");
 		assertEquals(dateOuvertureFor, ffp.getDateDebut(), "Date d'ouverture incorrecte");

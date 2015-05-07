@@ -13,7 +13,7 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.Arrivee;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -57,7 +57,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		});
 
 		final PersonnePhysique pp = addHabitant(noInd);
-		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(date(1990, 1, 1));
 		f.setMotifOuverture(MotifFor.MAJORITE);
 		f.setDateFin(null);
@@ -106,7 +106,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		});
 
 		final PersonnePhysique pp = addHabitant(noInd);
-		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(date(1990, 1, 1));
 		f.setMotifOuverture(MotifFor.MAJORITE);
 		f.setDateFin(null);
@@ -153,7 +153,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		});
 
 		final PersonnePhysique pp = addHabitant(noInd);
-		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(date(1990, 1, 1));
 		f.setMotifOuverture(MotifFor.MAJORITE);
 		f.setDateFin(null);

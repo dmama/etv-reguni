@@ -19,7 +19,6 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -76,13 +75,8 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-
-		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(18),
-				dateNaissanceOriginale.addYears(22), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
-
-		f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(22).addDays(1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(18), dateNaissanceOriginale.addYears(22), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(22).addDays(1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")

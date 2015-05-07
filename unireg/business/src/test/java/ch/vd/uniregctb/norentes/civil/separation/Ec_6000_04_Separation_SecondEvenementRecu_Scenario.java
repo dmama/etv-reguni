@@ -15,6 +15,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -126,8 +127,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.DEPENSE);
+			addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, ModeImposition.DEPENSE);
 
 			final ForFiscalSecondaire fs = addForFiscalSecondaire(menage, communeMariage.getNoOFS(), dateMariage, null);
 			fs.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
@@ -221,7 +221,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 
 		{
 			final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
-			final ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + momo.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + momo.getNumero() + " est fermé");
 			// momo doit passer au mode dépense
@@ -232,7 +232,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 
 		{
 			final PersonnePhysique bea = (PersonnePhysique) tiersDAO.get(noHabBea);
-			final ForFiscalPrincipal ffp = bea.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = bea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + bea.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + bea.getNumero() + " est fermé");
 			// bea doit passer au mode dépense

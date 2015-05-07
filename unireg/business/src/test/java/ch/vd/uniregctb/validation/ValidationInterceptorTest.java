@@ -21,7 +21,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -93,7 +92,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 				final PersonnePhysique jean = addNonHabitant("Jean", "Dupneu", date(2003, 2, 2), Sexe.MASCULIN);
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Aigle, MotifRattachement.DOMICILE);
 				AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors());
 				AbstractSpringTest.assertEmpty(validationService.validate(jean).getErrors());
 				return null;
@@ -120,7 +119,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 					Assert.assertEquals(1, results.errorsCount());
 					Assert.assertEquals("Le nom est un attribut obligatoire pour un non-habitant", results.getErrors().get(0));
 
-					final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+					final ForFiscalPrincipal ffp = addForPrincipal(jean, date(2004, 3, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE);
 					AbstractSpringTest.assertEmpty(validationService.validate(ffp).getErrors()); // la sous-entité elle-même est valide
 					return null;
 				}

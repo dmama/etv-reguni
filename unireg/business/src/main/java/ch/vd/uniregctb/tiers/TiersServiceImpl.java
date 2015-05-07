@@ -1527,7 +1527,7 @@ public class TiersServiceImpl implements TiersService {
      * @return le nouveau for fiscal principal
      */
     @Override
-    public ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
+    public ForFiscalPrincipalPP openForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
                                                      MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
                                                      ModeImposition modeImposition, MotifFor motifOuverture) {
 
@@ -1535,7 +1535,7 @@ public class TiersServiceImpl implements TiersService {
 
         // Ouvre un nouveau for à la date d'événement
 
-        ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
+	    ForFiscalPrincipalPP nouveauForFiscal = new ForFiscalPrincipalPP();
         nouveauForFiscal.setDateDebut(dateOuverture);
         nouveauForFiscal.setMotifRattachement(motifRattachement);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
@@ -1554,34 +1554,113 @@ public class TiersServiceImpl implements TiersService {
 
     }
 
+	/**
+	 * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
+	 * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesMorales, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
+	 * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale)}
+	 *
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param motifRattachement        le motif de rattachement du nouveau for
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @return le nouveau for fiscal principal
+	 */
+	@Override
+	public ForFiscalPrincipalPM openForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
+	                                                   TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture) {
+
+
+		Assert.isNull(contribuable.getForFiscalPrincipalAt(null), "Le contribuable possède déjà un for principal ouvert");
+
+		// Ouvre un nouveau for à la date d'événement
+
+		ForFiscalPrincipalPM nouveauForFiscal = new ForFiscalPrincipalPM();
+		nouveauForFiscal.setDateDebut(dateOuverture);
+		nouveauForFiscal.setMotifRattachement(motifRattachement);
+		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
+		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+		nouveauForFiscal.setMotifOuverture(motifOuverture);
+		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
+
+		if (validationService.validate(contribuable).errorsCount() == 0) {
+			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
+		}
+
+		Assert.notNull(nouveauForFiscal);
+
+		return nouveauForFiscal;
+	}
+
     /**
-     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
+     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques.
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
-     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param modeImposition           le mode d'imposition du for fiscal principal
      * @param motifOuverture           le motif d'ouverture
-     * @param dateFermeture            la date de fermeture du for	 *
+     * @param dateFermeture            la date de fermeture du for
      * @param motifFermeture           le motif de fermeture
      * @return le nouveau for fiscal principal
      */
     @Override
-    public ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
-                                                             MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                             ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
-
+    public ForFiscalPrincipalPP openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
+                                                               MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+                                                               ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 
         // Ouvre un nouveau for à la date d'événement
 
-        ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
+	    ForFiscalPrincipalPP nouveauForFiscal = new ForFiscalPrincipalPP();
+        nouveauForFiscal.setDateDebut(dateOuverture);
+	    nouveauForFiscal.setMotifRattachement(motifRattachement);
+        nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
+	    nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+	    nouveauForFiscal.setModeImposition(modeImposition);
+	    nouveauForFiscal.setMotifOuverture(motifOuverture);
+	    nouveauForFiscal.setDateFin(dateFermeture);
+	    nouveauForFiscal.setMotifFermeture(motifFermeture);
+
+        nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
+
+        if (validationService.validate(contribuable).errorsCount() == 0) {
+            afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
+        }
+
+        Assert.notNull(nouveauForFiscal);
+        nouveauForFiscal = closeForFiscalPrincipal(contribuable, nouveauForFiscal, dateFermeture, motifFermeture);
+        return nouveauForFiscal;
+    }
+
+    /**
+     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes morales.
+     *
+     * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+     * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+     * @param motifRattachement        le motif de rattachement du nouveau for
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
+     * @param typeAutoriteFiscale      le type d'autorité fiscale.
+     * @param motifOuverture           le motif d'ouverture
+     * @param dateFermeture            la date de fermeture du for
+     * @param motifFermeture           le motif de fermeture
+     * @return le nouveau for fiscal principal
+     */
+    @Override
+    public ForFiscalPrincipalPM openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, final RegDate dateOuverture,
+                                                               MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+                                                               MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+
+        // Ouvre un nouveau for à la date d'événement
+
+	    ForFiscalPrincipalPM nouveauForFiscal = new ForFiscalPrincipalPM();
         nouveauForFiscal.setDateDebut(dateOuverture);
         nouveauForFiscal.setMotifRattachement(motifRattachement);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
         nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-        nouveauForFiscal.setModeImposition(modeImposition);
         nouveauForFiscal.setMotifOuverture(motifOuverture);
         nouveauForFiscal.setDateFin(dateFermeture);
         nouveauForFiscal.setMotifFermeture(motifFermeture);
@@ -1594,10 +1673,7 @@ public class TiersServiceImpl implements TiersService {
 
         Assert.notNull(nouveauForFiscal);
         nouveauForFiscal = closeForFiscalPrincipal(contribuable, nouveauForFiscal, dateFermeture, motifFermeture);
-
-
         return nouveauForFiscal;
-
     }
 
 	@Override
@@ -2158,7 +2234,11 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-	private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
+	private void afterForFiscalPrincipalAdded(ContribuableImpositionPersonnesMorales contribuable, ForFiscalPrincipalPM forFiscalPrincipal) {
+	    // TODO [SIPM] contrôles, publication d'événements fiscaux ?
+	}
+
+	private void afterForFiscalPrincipalAdded(ContribuableImpositionPersonnesPhysiques contribuable, ForFiscalPrincipalPP forFiscalPrincipal) {
         final MotifFor motifOuverture = forFiscalPrincipal.getMotifOuverture();
         final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
         final RegDate dateOuverture = forFiscalPrincipal.getDateDebut();
@@ -2207,7 +2287,7 @@ public class TiersServiceImpl implements TiersService {
 
         final ModeImposition ancienModeImposition;
         if (motifOuverture == MotifFor.CHGT_MODE_IMPOSITION) {
-            final ForFiscalPrincipal ancienFfp = contribuable.getForFiscalPrincipalAt(forFiscalPrincipal.getDateDebut().getOneDayBefore());
+            final ForFiscalPrincipalPP ancienFfp = contribuable.getForFiscalPrincipalAt(forFiscalPrincipal.getDateDebut().getOneDayBefore());
             if (ancienFfp != null) {
                 ancienModeImposition = ancienFfp.getModeImposition();
             } else {
@@ -2237,7 +2317,7 @@ public class TiersServiceImpl implements TiersService {
 	@Override
     public Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite) {
 
-        final PersonnePhysique parent = getMere(contribuableEnfant, dateValidite);
+		final PersonnePhysique parent = getMere(contribuableEnfant, dateValidite);
         if (parent == null) {
             return null;
         }
@@ -2320,9 +2400,9 @@ public class TiersServiceImpl implements TiersService {
 
         // Ouvre un nouveau for à la date d'événement
         ForFiscalAutreImpot nouveauForFiscal = new ForFiscalAutreImpot();
-        nouveauForFiscal.setGenreImpot(genreImpot);
-        nouveauForFiscal.setDateDebut(dateImpot);
-        nouveauForFiscal.setDateFin(dateImpot);
+	    nouveauForFiscal.setGenreImpot(genreImpot);
+	    nouveauForFiscal.setDateDebut(dateImpot);
+	    nouveauForFiscal.setDateFin(dateImpot);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
         nouveauForFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
         nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
@@ -2352,7 +2432,7 @@ public class TiersServiceImpl implements TiersService {
         nouveauForFiscal = tiersDAO.addAndSave(debiteur, nouveauForFiscal);
 
         if (validationService.validate(debiteur).errorsCount() == 0) {
-            afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
+	        afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
         }
 
         Assert.notNull(nouveauForFiscal);
@@ -2376,7 +2456,7 @@ public class TiersServiceImpl implements TiersService {
                 nouveaux.add(hibernateTemplate.merge(rpi));
             }
         }
-        debiteur.getRapportsObjet().addAll(nouveaux);
+	    debiteur.getRapportsObjet().addAll(nouveaux);
     }
 
     /**
@@ -2446,7 +2526,7 @@ public class TiersServiceImpl implements TiersService {
         // assigner les nouveaux Fors au tiers
         // d'abord les fors principaux, puis les fors secondaires [UNIREG-1832]
         addAndSaveReopenedFors(tiers, openFors, true);
-        addAndSaveReopenedFors(tiers, openFors, false);
+	    addAndSaveReopenedFors(tiers, openFors, false);
     }
 
     /**
@@ -2482,8 +2562,10 @@ public class TiersServiceImpl implements TiersService {
     }
 
     private void afterForAdded(ForFiscal forFiscal) {
-        if (forFiscal instanceof ForFiscalPrincipal) {
-            afterForFiscalPrincipalAdded((Contribuable) forFiscal.getTiers(), (ForFiscalPrincipal) forFiscal);
+        if (forFiscal instanceof ForFiscalPrincipalPP) {
+	        afterForFiscalPrincipalAdded((ContribuableImpositionPersonnesPhysiques) forFiscal.getTiers(), (ForFiscalPrincipalPP) forFiscal);
+        } else if (forFiscal instanceof ForFiscalPrincipalPM) {
+	        // TODO il faut faire quelque chose ?
         } else if (forFiscal instanceof ForFiscalSecondaire) {
             afterForFiscalSecondaireAdded((Contribuable) forFiscal.getTiers(), (ForFiscalSecondaire) forFiscal);
         } else if (forFiscal instanceof ForDebiteurPrestationImposable) {
@@ -2519,7 +2601,7 @@ public class TiersServiceImpl implements TiersService {
      * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
      */
     @Override
-    public ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
+    public <F extends ForFiscalPrincipal> F closeForFiscalPrincipal(F forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
         if (forFiscalPrincipal != null) {
             forFiscalPrincipal = closeForFiscalPrincipal((Contribuable) forFiscalPrincipal.getTiers(), forFiscalPrincipal, dateFermeture, motifFermeture);
         }
@@ -2527,7 +2609,7 @@ public class TiersServiceImpl implements TiersService {
         return forFiscalPrincipal;
     }
 
-    protected ForFiscalPrincipal closeForFiscalPrincipal(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
+    protected <F extends ForFiscalPrincipal> F closeForFiscalPrincipal(Contribuable contribuable, F forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
         Assert.notNull(contribuable);
         Assert.notNull(forFiscalPrincipal);
         if (forFiscalPrincipal.getDateDebut().isAfter(dateFermeture)) {
@@ -2624,9 +2706,9 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition, ModeImposition modeImposition, MotifFor motifFor) {
+    public ForFiscalPrincipalPP changeModeImposition(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateChangementModeImposition, ModeImposition modeImposition, MotifFor motifFor) {
 
-        final ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
+        final ForFiscalPrincipalPP forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
         Assert.notNull(forFiscalPrincipal);
 
         //Fermeture du for principal précédent
@@ -2642,7 +2724,7 @@ public class TiersServiceImpl implements TiersService {
         tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
 
         //Ouverture d'un nouveau for principal
-        ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
+	    ForFiscalPrincipalPP nouveauForFiscal = new ForFiscalPrincipalPP();
         nouveauForFiscal.setDateDebut(dateChangementModeImposition);
         nouveauForFiscal.setMotifRattachement(forFiscalPrincipal.getMotifRattachement());
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(forFiscalPrincipal.getNumeroOfsAutoriteFiscale());
@@ -2669,7 +2751,7 @@ public class TiersServiceImpl implements TiersService {
         return nouveauForFiscal;
     }
 
-	private ForFiscalPrincipal corrigerForFiscalPrincipal(@NotNull ForFiscalPrincipal forFiscal, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+	private <F extends ForFiscalPrincipal> F corrigerForFiscalPrincipal(@NotNull F forFiscal, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
 		if (forFiscal.getMotifFermeture() == motifFermeture && forFiscal.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
 			// rien à faire
 			return null;
@@ -2679,7 +2761,8 @@ public class TiersServiceImpl implements TiersService {
 		Assert.notNull(tiers);
 
 		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-		ForFiscalPrincipal forCorrige = (ForFiscalPrincipal) forFiscal.duplicate();
+		//noinspection unchecked
+		F forCorrige = (F) forFiscal.duplicate();
 		forFiscal.setAnnule(true);
 		forCorrige.setMotifFermeture(motifFermeture);
 		forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
@@ -2765,7 +2848,7 @@ public class TiersServiceImpl implements TiersService {
 	    ForFiscalRevenuFortune forCorrige = (ForFiscalRevenuFortune) forFiscal.duplicate();
         forFiscal.setAnnule(true);
         forCorrige.setDateDebut(dateOuverture);
-        forCorrige.setMotifOuverture(motifOuverture);
+	    forCorrige.setMotifOuverture(motifOuverture);
         forCorrige.setDateFin(dateFermeture);
         forCorrige.setMotifFermeture(motifFermeture);
 	    forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
@@ -2785,19 +2868,20 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
-                                              int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition) {
-        final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+    public ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
+                                                int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition) {
+        final ForFiscalPrincipalPP dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
         if (dernierForPrincipal != null && dernierForPrincipal.getDateFin() == null) {
             if (dateFin == null || dateFin.isAfter(dernierForPrincipal.getDateDebut())) {
                 closeForFiscalPrincipal(contribuable, dateDebut.getOneDayBefore(), motifOuverture);
             }
         }
 
-        final ForFiscalPrincipal forRtr;
+        final ForFiscalPrincipalPP forRtr;
         if (dateFin == null) {
             forRtr = openForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture);
-        } else {
+        }
+        else {
             forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture);
         }
 
@@ -2807,6 +2891,29 @@ public class TiersServiceImpl implements TiersService {
             contribuable.scheduleReindexationOn(debutMoisProchain);
         }
 
+        return forRtr;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
+                                                int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale) {
+        final ForFiscalPrincipalPM dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+        if (dernierForPrincipal != null && dernierForPrincipal.getDateFin() == null) {
+            if (dateFin == null || dateFin.isAfter(dernierForPrincipal.getDateDebut())) {
+                closeForFiscalPrincipal(contribuable, dateDebut.getOneDayBefore(), motifOuverture);
+            }
+        }
+
+        final ForFiscalPrincipalPM forRtr;
+        if (dateFin == null) {
+            forRtr = openForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture);
+        }
+        else {
+            forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture, dateFin, motifFermeture);
+        }
         return forRtr;
     }
 
@@ -3190,8 +3297,8 @@ public class TiersServiceImpl implements TiersService {
                 ForFiscalAutreElementImposable forFiscalCible = copieForFiscalAutreElementImposable((ForFiscalAutreElementImposable) forFiscalSource);
                 forsCible.add(forFiscalCible);
             }
-            if (forFiscalSource instanceof ForFiscalPrincipal) {
-                ForFiscalPrincipal forFiscalCible = copieForFiscalPrincipal((ForFiscalPrincipal) forFiscalSource);
+            if (forFiscalSource instanceof ForFiscalPrincipalPP) {
+                ForFiscalPrincipalPP forFiscalCible = copieForFiscalPrincipal((ForFiscalPrincipalPP) forFiscalSource);
                 forsCible.add(forFiscalCible);
             }
 
@@ -3262,8 +3369,8 @@ public class TiersServiceImpl implements TiersService {
         return forFiscalCible;
     }
 
-    private ForFiscalPrincipal copieForFiscalPrincipal(ForFiscalPrincipal forFiscalSource) {
-        ForFiscalPrincipal forFiscalCible = new ForFiscalPrincipal();
+    private ForFiscalPrincipalPP copieForFiscalPrincipal(ForFiscalPrincipalPP forFiscalSource) {
+        final ForFiscalPrincipalPP forFiscalCible = new ForFiscalPrincipalPP();
         copieForFiscal(forFiscalSource, forFiscalCible);
         copieForFiscalRevenuFortune(forFiscalSource, forFiscalCible);
         forFiscalCible.setModeImposition(forFiscalSource.getModeImposition());
@@ -3471,6 +3578,11 @@ public class TiersServiceImpl implements TiersService {
             return oid;
         }
 
+	    // TODO [SIPM] pour les PM, l'office de gestion est l'OIPM, non ?
+	    if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+		    return ServiceInfrastructureService.noOIPM;
+	    }
+
         // Calcul de l'oid à la date demandée
         final ForGestion forGestion = getDernierForGestionConnu(tiers, date);
         if (forGestion != null) {
@@ -3571,7 +3683,7 @@ public class TiersServiceImpl implements TiersService {
 
         if (forFiscal instanceof ForFiscalPrincipal) {
             final ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal) forFiscal;
-            final List<ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
+            final List<? extends ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
 
             // [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
             // était vide... le seul scénario auquel je pense est si cette méthode est appelée deux fois
@@ -3758,10 +3870,10 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public ForGestion getForGestionActif(Tiers tiers, RegDate date) {
 
-        if (tiers instanceof DebiteurPrestationImposable) {
-            //un DPI n'a pas de for de gestion, il est géré par une OID spéciale
-            return null;
-        }
+	    if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+		    // seuls les "assimilés-PP" ont un for de gestion
+		    return null;
+	    }
 
         /*
 		 * Cette méthode implémente l'algorithme de détermination des fors spécifié dans le document SCU-TenirLeRegistreDesTiers.doc au
@@ -3780,21 +3892,21 @@ public class TiersServiceImpl implements TiersService {
             if (f.isPrincipal()) {
                 // Les fors principaux hors canton/Suisse ou avec un mode d'imposition Source ne peuvent pas être des fors de gestion
                 if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == f.getTypeAutoriteFiscale()) {
-                    ForFiscalPrincipal fp = (ForFiscalPrincipal) f;
-                    if (isConformePourForGestion(tiers,fp,date)) {
-
-                        forPrincipal = fp;
+	                final ForFiscalPrincipalPP fp = (ForFiscalPrincipalPP) f;
+	                if (isConformePourForGestion(tiers, fp, date)) {
+		                forPrincipal = fp;
                         break; // pas besoin de chercher plus loin
                     }
                 }
-            } else if (f instanceof ForFiscalRevenuFortune) {
-
+            }
+            else if (f instanceof ForFiscalRevenuFortune) {
                 final ForFiscalRevenuFortune frf = (ForFiscalRevenuFortune) f;
                 final MotifRattachement motifRattachement = frf.getMotifRattachement();
 
                 if (MotifRattachement.ACTIVITE_INDEPENDANTE == motifRattachement) {
                     forsActiviteIndependante.checkFor(frf);
-                } else if (MotifRattachement.IMMEUBLE_PRIVE == motifRattachement) {
+                }
+                else if (MotifRattachement.IMMEUBLE_PRIVE == motifRattachement) {
                     forsImmeuble.checkFor(frf);
                 }
             }
@@ -3876,7 +3988,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @param date de référence pour analyser le for de gestion, peut être nulle
 	 * @return vrai si le for est éligible pour etre for de gestion, false sinon
 	 */
-	private boolean isConformePourForGestion(Tiers tiers, ForFiscalPrincipal f, @Nullable RegDate date) {
+	private boolean isConformePourForGestion(Tiers tiers, ForFiscalPrincipalPP f, @Nullable RegDate date) {
 
 		//Découpage précis afin de faciliter la compréhension des différents cas
 		final Integer periodeReference = date!=null ?RegDateHelper.getYear(date):RegDateHelper.getYear(RegDate.get());
@@ -3902,12 +4014,12 @@ public class TiersServiceImpl implements TiersService {
 
 		//On récupère pour le for en cours d'analyse la liste des fors vaudois suivants accolés et ouverts dans la même période
 		//Si on en trouve un avec un départ hors canton, le for en cours d'analyse ne peut pas être for de gestion
-		List<ForFiscalPrincipal> principaux = tiers.getForsFiscauxPrincipauxOuvertsApres(f.getDateDebut());
+		final List<ForFiscalPrincipal> principaux = tiers.getForsFiscauxPrincipauxOuvertsApres(f.getDateDebut());
 		final MovingWindow<ForFiscalPrincipal> iter = new MovingWindow<>(principaux);
 		//Devrait être toujours vrai car on doit retrouver en début le for que l'on analyse
 		if (iter.hasNext()) {
 			final MovingWindow.Snapshot<ForFiscalPrincipal> snapshot = iter.next();
-			final ForFiscalPrincipalContext forPrincipalContext = new ForFiscalPrincipalContext(snapshot);
+			final ForFiscalPrincipalContext<ForFiscalPrincipal> forPrincipalContext = new ForFiscalPrincipalContext<>(snapshot);
 			//On retrouve le for principal dans la movingWindow, on peut l'analyser
 			final ForFiscalPrincipal current = forPrincipalContext.getCurrent();
 			if (forPrincipalContext.hasNext()) {
@@ -4206,14 +4318,14 @@ public class TiersServiceImpl implements TiersService {
         return debutValidite;
     }
 
-    private static boolean isForVaudoisSource(ForFiscalPrincipal ffp) {
+    private static boolean isForVaudoisSource(ForFiscalPrincipalPP ffp) {
         return ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() == ModeImposition.SOURCE;
     }
 
     private boolean isPersonnePhysiqueSourcierGris(PersonnePhysique pp, RegDate date) {
         final boolean gris;
         if (pp.getNumeroIndividu() == null) {
-            final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipalAvant(date);
+            final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipalAvant(date);
             if (ffp != null) {
                 // for spécifique sur la personne physique
                 gris = isForVaudoisSource(ffp);
@@ -4227,7 +4339,7 @@ public class TiersServiceImpl implements TiersService {
                     if (autreMembre != null && autreMembre.getNumeroIndividu() != null) {
                         gris = false;
                     } else {
-                        final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipalAvant(date);
+                        final ForFiscalPrincipalPP ffpMc = mc.getDernierForFiscalPrincipalAvant(date);
                         gris = ffpMc != null && isForVaudoisSource(ffpMc);
                     }
                 } else {
@@ -4250,7 +4362,7 @@ public class TiersServiceImpl implements TiersService {
         if (principal != null || conjoint != null) {
             final boolean tousInconnusAuCivil = (principal == null || principal.getNumeroIndividu() == null) && (conjoint == null || conjoint.getNumeroIndividu() == null);
             if (tousInconnusAuCivil) {
-                final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipalAvant(date);
+                final ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipalAvant(date);
                 gris = ffp != null && isForVaudoisSource(ffp);
             } else {
                 gris = false;

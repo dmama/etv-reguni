@@ -447,8 +447,8 @@ public interface TiersService {
     boolean isMemeSexe(PersonnePhysique pp1, PersonnePhysique pp2);
 
     /**
-     * Ouvre un nouveau for fiscal principal sur un contribuable.
-     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
+     * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
+     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
      * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
      *
      *
@@ -461,8 +461,25 @@ public interface TiersService {
      * @param motifOuverture           le motif d'ouverture du for fiscal principal
      * @return le nouveau for fiscal principal
      */
-    ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
+    ForFiscalPrincipalPP openForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
                                               TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture);
+
+    /**
+     * Ouvre un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques
+     * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(ContribuableImpositionPersonnesPhysiques, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
+     * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
+     *
+     *
+     * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+     * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+     * @param motifRattachement        le motif de rattachement du nouveau for
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+     * @param typeAutoriteFiscale      le type d'autorité fiscale.
+     * @param motifOuverture           le motif d'ouverture du for fiscal principal
+     * @return le nouveau for fiscal principal
+     */
+    ForFiscalPrincipalPM openForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
+                                              TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
 
     /**
      * Ouvre un nouveau for fiscal secondaire sur un contribuable.
@@ -564,7 +581,7 @@ public interface TiersService {
      * @param motifFermeture     le motif de fermeture
      * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
      */
-    ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
+    <F extends ForFiscalPrincipal> F closeForFiscalPrincipal(F forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
 	 * Ferme la décision d'un contribuable
@@ -638,11 +655,11 @@ public interface TiersService {
      * @param motifFor                     le motif de changement du mode d'imposition
      * @return le nouveau for principal créé
      */
-    ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition,
-                                            ModeImposition modeImposition, MotifFor motifFor);
+    ForFiscalPrincipalPP changeModeImposition(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateChangementModeImposition,
+                                              ModeImposition modeImposition, MotifFor motifFor);
 
 	/**
-     * Ajoute un for fiscal principal sur un contribuable. Le for fiscal principal courant est fermé si nécessaire.
+     * Ajoute un for fiscal principal sur un contribuable soumis au régime des personnes physiques. Le for fiscal principal courant est fermé si nécessaire.
      *
      * @param contribuable        un contribuable
      * @param dateDebut           la date d'ouverture du for à créer
@@ -655,9 +672,25 @@ public interface TiersService {
      * @param modeImposition      le mode d'imposition du for à créer
      * @return le nouveau for fiscal principal.
      */
-    ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
-                                       MotifRattachement motifRattachement,
-                                       int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
+    ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
+                                         MotifRattachement motifRattachement,
+                                         int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
+
+	/**
+     * Ajoute un for fiscal principal sur un contribuable soumis au régime des personnes morales. Le for fiscal principal courant est fermé si nécessaire.
+     *
+     * @param contribuable        un contribuable
+     * @param dateDebut           la date d'ouverture du for à créer
+     * @param motifOuverture      le motif d'ouverture du for à créer
+     * @param dateFin             la date de fermeture du for à créer (peut être nulle)
+     * @param motifFermeture      le motif de fermeture du for à créer (peut être nul)
+     * @param motifRattachement   le motif de rattachement du for à créer
+     * @param autoriteFiscale     le numéro de l'autorité fiscale du for à créer
+     * @param typeAutoriteFiscale le type de l'autorité fiscale du for à créer
+     * @return le nouveau for fiscal principal.
+     */
+    ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, MotifFor motifOuverture, @Nullable RegDate dateFin, @Nullable MotifFor motifFermeture,
+                                         MotifRattachement motifRattachement, int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale);
 
 	@Nullable
 	ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale);
@@ -1003,23 +1036,40 @@ public interface TiersService {
     ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s);
 
     /**
-     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
+     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes physiques.
      *
      *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
-     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param modeImposition           le mode d'imposition du for fiscal principal
      * @param motifOuverture           le motif d'ouverture
-     * @param dateFermeture            la date de fermeture du for	 *
+     * @param dateFermeture            la date de fermeture du for
      * @param motifFermeture           le motif de fermeture
      * @return le nouveau for fiscal principal
      */
-    ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
-                                                      MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                      ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+    ForFiscalPrincipalPP openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture,
+                                                        MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+                                                        ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+
+    /**
+     * Ouvre et ferme un nouveau for fiscal principal sur un contribuable soumis au régime des personnes morales.
+     *
+     * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+     * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+     * @param motifRattachement        le motif de rattachement du nouveau for
+     * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau for.
+     * @param typeAutoriteFiscale      le type d'autorité fiscale.
+     * @param motifOuverture           le motif d'ouverture
+     * @param dateFermeture            la date de fermeture du for
+     * @param motifFermeture           le motif de fermeture
+     * @return le nouveau for fiscal principal
+     */
+    ForFiscalPrincipalPM openAndCloseForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, final RegDate dateOuverture,
+                                                        MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+                                                        MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
 
     /**
      * Ouvre et ferme un for debiteur préstation imposable sur un débiteur

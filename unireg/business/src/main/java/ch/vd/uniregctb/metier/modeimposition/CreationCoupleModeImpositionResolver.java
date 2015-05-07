@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -23,6 +23,6 @@ public abstract class CreationCoupleModeImpositionResolver extends ModeImpositio
 	 *
 	 * @throws ModeImpositionResolverException en cas de problème
 	 */
-	public abstract Imposition resolve(Contribuable contribuable, RegDate date) throws ModeImpositionResolverException;
+	public abstract Imposition resolve(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) throws ModeImpositionResolverException;
 
 }

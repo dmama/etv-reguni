@@ -11,10 +11,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.tiers.DecisionAci;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
@@ -178,7 +174,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(2008, 7, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockPays.France.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final DecisionAci d = new DecisionAci(null,date(2008,7,1),null,  MockPays.France.getNoOFS(),TypeAutoriteFiscale.PAYS_HS,null);
 			final ValidationResults vr = validate(d);
 			Assert.assertNotNull(vr);
@@ -193,7 +188,6 @@ public class DecisionValidatorTest extends AbstractValidatorTest<DecisionAci> {
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate demain = aujourdhui.addDays(1);
 		{
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(aujourdhui, MotifFor.ARRIVEE_HS, null, null, MockCommune.Cossonay.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 			final DecisionAci d = new DecisionAci(null,aujourdhui,null,  MockCommune.Cossonay.getNoOFS(),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,null);
 			final ValidationResults vr = validate(d);
 			Assert.assertNotNull(vr);

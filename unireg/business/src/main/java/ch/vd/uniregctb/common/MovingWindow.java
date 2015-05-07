@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class MovingWindow<E> implements Iterator<MovingWindow.Snapshot<E>> {
 
-	private final Iterator<E> iterator;
+	private final Iterator<? extends E> iterator;
 	private final List<E> nextes;
 	private final List<E> previouses;
 
@@ -93,7 +93,7 @@ public class MovingWindow<E> implements Iterator<MovingWindow.Snapshot<E>> {
 		}
 	}
 
-	public MovingWindow(List<E> source) {
+	public MovingWindow(List<? extends E> source) {
 		this.iterator = source.iterator();
 		this.nextes = source.size() < 2 ? Collections.<E>emptyList() : new LinkedList<>(source.subList(1, source.size()));
 		this.previouses = source.isEmpty() ? Collections.<E>emptyList() : new LinkedList<E>();

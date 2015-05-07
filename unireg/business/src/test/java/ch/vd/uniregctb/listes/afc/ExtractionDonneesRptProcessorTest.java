@@ -18,7 +18,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -44,7 +43,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 
 		processor = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, serviceInfra, assujettissementService,
-				periodeImpositionService, adresseService);
+		                                              periodeImpositionService, adresseService);
 	}
 
 	@Test
@@ -94,17 +93,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
 				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				final ForFiscalPrincipal ffpMixte1 = addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne);
-				ffpMixte1.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
 				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				final ForFiscalPrincipal ffpMixte2 = addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne);
-				ffpMixte2.setModeImposition(ModeImposition.MIXTE_137_2);
+				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
 				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				final ForFiscalPrincipal ffpIndigent = addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				ffpIndigent.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
 				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				final ForFiscalPrincipal ffpDepense = addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens);
-				ffpDepense.setModeImposition(ModeImposition.DEPENSE);
+				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
 
 				ids.idOrdinaire = ppOrd.getNumero();
 				ids.idMixte1 = ppMixte1.getNumero();
@@ -257,17 +252,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
 				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				final ForFiscalPrincipal ffpMixte1 = addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne);
-				ffpMixte1.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
 				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				final ForFiscalPrincipal ffpMixte2 = addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne);
-				ffpMixte2.setModeImposition(ModeImposition.MIXTE_137_2);
+				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
 				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				final ForFiscalPrincipal ffpIndigent = addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				ffpIndigent.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
 				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				final ForFiscalPrincipal ffpDepense = addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens);
-				ffpDepense.setModeImposition(ModeImposition.DEPENSE);
+				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
 				return null;
 			}
 		});
@@ -328,17 +319,13 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique ppOrd = addHabitant(noIndOrdinaire);
 				addForPrincipal(ppOrd, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
 				final PersonnePhysique ppMixte1 = addHabitant(noIndMixte1);
-				final ForFiscalPrincipal ffpMixte1 = addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne);
-				ffpMixte1.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(ppMixte1, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aubonne, ModeImposition.MIXTE_137_1);
 				final PersonnePhysique ppMixte2 = addHabitant(noIndMixte2);
-				final ForFiscalPrincipal ffpMixte2 = addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne);
-				ffpMixte2.setModeImposition(ModeImposition.MIXTE_137_2);
+				addForPrincipal(ppMixte2, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.CheseauxSurLausanne, ModeImposition.MIXTE_137_2);
 				final PersonnePhysique ppIndigent = addHabitant(noIndIndigent);
-				final ForFiscalPrincipal ffpIndigent = addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
-				ffpIndigent.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(ppIndigent, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay, ModeImposition.INDIGENT);
 				final PersonnePhysique ppDepense = addHabitant(noIndDepense);
-				final ForFiscalPrincipal ffpDepense = addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens);
-				ffpDepense.setModeImposition(ModeImposition.DEPENSE);
+				addForPrincipal(ppDepense, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Echallens, ModeImposition.DEPENSE);
 
 				ids.idOrdinaire = ppOrd.getNumero();
 				ids.idMixte1 = ppMixte1.getNumero();
@@ -476,8 +463,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -681,8 +667,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -713,8 +698,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Bussigny, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -1787,8 +1771,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
 				return pp.getNumero();
 			}
@@ -1839,8 +1822,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
 				return pp.getNumero();
 			}
@@ -1891,8 +1873,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
 				return pp.getNumero();
 			}
@@ -1944,10 +1925,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
-				final ForFiscalPrincipal ffpHc = addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern);
-				ffpHc.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -1978,10 +1957,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
-				final ForFiscalPrincipal ffpHc = addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern);
-				ffpHc.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -2050,10 +2027,8 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle);
-				ffpSource.setModeImposition(ModeImposition.SOURCE);
-				final ForFiscalPrincipal ffpHc = addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern);
-				ffpHc.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
+				addForPrincipal(pp, date(2008, 4, 13), MotifFor.DEPART_HC, MockCommune.Bern, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});

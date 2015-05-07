@@ -14,8 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -77,6 +75,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -86,7 +85,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Parente;
@@ -458,7 +457,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, TypeAutoriteFiscale type, int noOfs,
-			MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
+	                                         MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
 		assertNotNull(forPrincipal);
 		assertEquals(debut, forPrincipal.getDateDebut());
 		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -471,7 +470,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, @Nullable RegDate fin, @Nullable MotifFor motifFermeture,
-			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
+	                                         TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipalPP forPrincipal) {
 		assertNotNull(forPrincipal);
 		assertEquals(debut, forPrincipal.getDateDebut());
 		assertEquals(motifOuverture, forPrincipal.getMotifOuverture());
@@ -484,7 +483,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForSecondaire(RegDate debut, MotifFor motifOuverture, TypeAutoriteFiscale type, int noOfs,
-			MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
+	                                          MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
 		assertNotNull(forSecondaire);
 		assertEquals(debut, forSecondaire.getDateDebut());
 		assertEquals(motifOuverture, forSecondaire.getMotifOuverture());
@@ -496,7 +495,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected static void assertForSecondaire(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture,
-			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
+	                                          TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ForFiscalSecondaire forSecondaire) {
 		assertNotNull(forSecondaire);
 		assertEquals(debut, forSecondaire.getDateDebut());
 		assertEquals(motifOuverture, forSecondaire.getMotifOuverture());
@@ -1058,9 +1057,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute un for principal sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
-			@Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif) {
-		ForFiscalPrincipal f = new ForFiscalPrincipal();
+	protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
+	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, ModeImposition modeImposition, MotifRattachement motif) {
+		ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
 		f.setDateFin(fermeture);
@@ -1069,7 +1068,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setTypeAutoriteFiscale(type);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
+		f.setModeImposition(modeImposition);
 		f = tiersDAO.addAndSave(contribuable, f);
 		return f;
 	}
@@ -1078,9 +1077,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		/**
 	 * Ajoute un for principal Source sur le contribuable spécifié.
 	 */
-	protected ForFiscalPrincipal addForPrincipalSource(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+	protected ForFiscalPrincipalPP addForPrincipalSource(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
 			MotifFor motifFermeture, Integer noOFS) {
-		ForFiscalPrincipal f = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(ouverture);
 		f.setMotifOuverture(motifOuverture);
 		f.setDateFin(fermeture);
@@ -1203,22 +1202,19 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @return la liste de tous les tiers de la base qui sont des instances des classes données
 	 */
 	@SafeVarargs
-	protected final List<Tiers> allTiersOfType(final Class<? extends Tiers>... classes) {
+	protected final <T extends Tiers> List<T> allTiersOfType(final Class<? extends T>... classes) {
 		if (classes == null) {
 			return Collections.emptyList();
 		}
 		final List<Tiers> all = tiersDAO.getAll();
-		CollectionUtils.filter(all, new Predicate<Tiers>() {
-			@Override
-			public boolean evaluate(Tiers object) {
-				for (Class<? extends Tiers> clazz : classes) {
-					if (clazz.isAssignableFrom(object.getClass())) {
-						return true;
-					}
+		final List<T> filtered = new ArrayList<>(all.size());
+		for (Tiers t : all) {
+			for (Class<? extends T> clazz : classes) {
+				if (clazz.isAssignableFrom(t.getClass())) {
+					filtered.add((T) t);
 				}
-				return false;
 			}
-		});
-		return all;
+		}
+		return filtered;
 	}
 }

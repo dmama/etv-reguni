@@ -58,7 +58,9 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -761,8 +763,11 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @return <b>vrai</b> si le contribuable est considéré comme indigent à la date spécifiée; <b>faux</b> autrement.
 	 */
 	protected static boolean estIndigent(Contribuable contribuable, final RegDate date) {
-		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(date);
-		return (forPrincipal != null && forPrincipal.getModeImposition() == ModeImposition.INDIGENT);
+		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+			final ForFiscalPrincipalPP forPrincipal = ((ContribuableImpositionPersonnesPhysiques) contribuable).getForFiscalPrincipalAt(date);
+			return (forPrincipal != null && forPrincipal.getModeImposition() == ModeImposition.INDIGENT);
+		}
+		return false;
 	}
 
 	/**

@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -45,7 +46,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testUnForDejaOuvert() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2005, 1, 1), null);
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2005, 1, 1), null);
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -56,7 +57,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testUnForDejaFerme() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2005, 1, 1), date(2005, 12, 31));
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2005, 1, 1), date(2005, 12, 31));
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -67,7 +68,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testUnForOuvertDansLAnnee() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2007, 1, 1), null);
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2007, 1, 1), null);
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -90,7 +91,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testUnForOuvertEtFermeDansLAnnee() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2007, 1, 1), date(2007, 8, 14));
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2007, 1, 1), date(2007, 8, 14));
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -123,7 +124,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testUnForOuvertDansLAnneeEtFermeApres() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2007, 1, 1), date(2008, 2, 25));
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2007, 1, 1), date(2008, 2, 25));
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -146,7 +147,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testFermetureFor31Decembre() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2003, 1, 1), date(2007, 12, 31));
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2003, 1, 1), date(2007, 12, 31));
 		pp.addForFiscal(ffp);
 
 		final EvenementForsIterator iter = new EvenementForsIterator(new DecompositionForsAnneeComplete(pp, 2007));
@@ -169,10 +170,10 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testPlusieursOuvertureEtFermetureForsPrincipauxDansLAnnee() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp0 = addForPrincipal(date(2007, 1, 1), date(2007, 2, 25));
-		final ForFiscalPrincipal ffp1 = addForPrincipal(date(2007, 2, 26), date(2007, 5, 10));
-		final ForFiscalPrincipal ffp2 = addForPrincipal(date(2007, 5, 11), date(2007, 10, 28));
-		final ForFiscalPrincipal ffp3 = addForPrincipal(date(2007, 10, 29), null);
+		final ForFiscalPrincipal ffp0 = addForPrincipalPP(date(2007, 1, 1), date(2007, 2, 25));
+		final ForFiscalPrincipal ffp1 = addForPrincipalPP(date(2007, 2, 26), date(2007, 5, 10));
+		final ForFiscalPrincipal ffp2 = addForPrincipalPP(date(2007, 5, 11), date(2007, 10, 28));
+		final ForFiscalPrincipal ffp3 = addForPrincipalPP(date(2007, 10, 29), null);
 		pp.addForFiscal(ffp0);
 		pp.addForFiscal(ffp1);
 		pp.addForFiscal(ffp2);
@@ -258,7 +259,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testOuvertureEtFermetureDeForsPrincipauxEtSecondairesDansLAnnee() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2007, 1, 1), null);
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2007, 1, 1), null);
 		pp.addForFiscal(ffp);
 		final ForFiscalSecondaire ffs0 = addForSecondaire(date(2007, 1, 1), date(2007, 9, 20));
 		final ForFiscalSecondaire ffs1 = addForSecondaire(date(2007, 3, 15), date(2007, 12, 1));
@@ -315,7 +316,7 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 	public void testOuvertureEtFermetureDeForsSecondairesEnMemeTemps() {
 
 		PersonnePhysique pp = new PersonnePhysique(false);
-		final ForFiscalPrincipal ffp = addForPrincipal(date(2003, 1, 1), null);
+		final ForFiscalPrincipal ffp = addForPrincipalPP(date(2003, 1, 1), null);
 		pp.addForFiscal(ffp);
 		final ForFiscalSecondaire ffs0 = addForSecondaire(date(2007, 1, 1), date(2007, 9, 20));
 		final ForFiscalSecondaire ffs1 = addForSecondaire(date(2007, 1, 1), date(2007, 4, 30));
@@ -389,8 +390,8 @@ public class EvenementForsIteratorTest extends WithoutSpringTest {
 		return new ForFiscalSecondaire(dateOuverture, MotifFor.ACHAT_IMMOBILIER, dateFermeture, dateFermeture == null ? null : MotifFor.VENTE_IMMOBILIER, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 	}
 
-	private static ForFiscalPrincipal addForPrincipal(RegDate dateOuverture, @Nullable RegDate dateFermeture) {
-		return new ForFiscalPrincipal(dateOuverture, MotifFor.ARRIVEE_HS, dateFermeture, dateFermeture == null ? null : MotifFor.DEPART_HS, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+	private static ForFiscalPrincipalPP addForPrincipalPP(RegDate dateOuverture, @Nullable RegDate dateFermeture) {
+		return new ForFiscalPrincipalPP(dateOuverture, MotifFor.ARRIVEE_HS, dateFermeture, dateFermeture == null ? null : MotifFor.DEPART_HS, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 	}
 
 	private static void assertForsAt(ForsAt expected, ForsAt actual) {

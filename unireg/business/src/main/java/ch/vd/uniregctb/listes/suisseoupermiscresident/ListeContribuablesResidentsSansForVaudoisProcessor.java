@@ -82,8 +82,8 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 		// on recherche tous les candidats potentiels : tous les contribuables couple ou personnes physiques qui ne sont pas en couple
 		// et qui n'ont pas de for vaudois ouvert
 
-		final String hql = "select ctb.id from Contribuable as ctb where ctb.class in (MenageCommun, PersonnePhysique)"
-				+ " and not exists (select ff.id from ForFiscalPrincipal as ff where ff.tiers = ctb and ff.annulationDate is null and ff.dateFin is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
+		final String hql = "select ctb.id from ContribuableImpositionPersonnesPhysiques as ctb"
+				+ " where not exists (select ff.id from ForFiscalPrincipalPP as ff where ff.tiers = ctb and ff.annulationDate is null and ff.dateFin is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
 				+ " and not exists (select r.id from AppartenanceMenage as r where r.sujetId = ctb.id and r.annulationDate is null and r.dateFin is null)"
 				+ " and ctb.annulationDate is null"
 				+ " order by ctb.id asc";

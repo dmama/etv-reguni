@@ -39,7 +39,8 @@ import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -80,7 +81,8 @@ public class FusionDeCommunesProcessor {
 		this.validationInterceptor = validationInterceptor;
 		this.adresseService = adresseService;
 
-		this.strategies.put(ForFiscalPrincipal.class, new ForPrincipalStrategy());
+		this.strategies.put(ForFiscalPrincipalPP.class, new ForPrincipalPPStrategy());
+		this.strategies.put(ForFiscalPrincipalPM.class, new ForPrincipalPMStrategy());
 		this.strategies.put(ForFiscalSecondaire.class, new ForSecondaireStrategy());
 		this.strategies.put(ForFiscalAutreElementImposable.class, new ForAutreElementImposableStrategy());
 		this.strategies.put(ForDebiteurPrestationImposable.class, new ForDebiteurStrategy());
@@ -351,17 +353,30 @@ public class FusionDeCommunesProcessor {
 		abstract void traite(F forFiscal, int nouveauNoOfs, RegDate dateFusion);
 	}
 
-	private class ForPrincipalStrategy extends Strategy<ForFiscalPrincipal> {
+	private class ForPrincipalPPStrategy extends Strategy<ForFiscalPrincipalPP> {
 		@Override
-		void traite(ForFiscalPrincipal principal, int nouveauNoOfs, RegDate dateFusion) {
+		void traite(ForFiscalPrincipalPP principal, int nouveauNoOfs, RegDate dateFusion) {
 			if (principal.getDateDebut().isAfterOrEqual(dateFusion)) {
 				// le for débute après la fusion -> on met simplement à jour le numéro Ofs
 				principal.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
 			}
 			else {
 				tiersService.closeForFiscalPrincipal(principal, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
-				tiersService.openForFiscalPrincipal((Contribuable) principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs,
-						principal.getTypeAutoriteFiscale(), principal.getModeImposition(), MotifFor.FUSION_COMMUNES);
+				tiersService.openForFiscalPrincipal(principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs, principal.getTypeAutoriteFiscale(), principal.getModeImposition(), MotifFor.FUSION_COMMUNES);
+			}
+		}
+	}
+
+	private class ForPrincipalPMStrategy extends Strategy<ForFiscalPrincipalPM> {
+		@Override
+		void traite(ForFiscalPrincipalPM principal, int nouveauNoOfs, RegDate dateFusion) {
+			if (principal.getDateDebut().isAfterOrEqual(dateFusion)) {
+				// le for débute après la fusion -> on met simplement à jour le numéro Ofs
+				principal.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
+			}
+			else {
+				tiersService.closeForFiscalPrincipal(principal, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
+				tiersService.openForFiscalPrincipal(principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs, principal.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -86,7 +88,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				addForPrincipal(bruno, date(1984, 8, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				// un second for principal qui chevauche le premier -> invalide
-				final ForFiscalPrincipal f = new ForFiscalPrincipal();
+				final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 				f.setDateDebut(date(1997, 10, 29));
 				f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				f.setDateFin(null);
@@ -124,14 +126,14 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principaux.size());
+				assertEquals(2, fors.principauxPP.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(date(1997, 10, 29), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
 				return null;
@@ -176,10 +178,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principaux.size());
+				assertEquals(1, fors.principauxPP.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1984, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 				return null;
@@ -206,7 +208,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Villette.getNoOFS()));
+		final Set<Integer> anciennesCommunes = new HashSet<>(Collections.singletonList(MockCommune.Villette.getNoOFS()));
 		final FusionDeCommunesResults rapport = processor.run(anciennesCommunes, MockCommune.BourgEnLavaux.getNoOFS(), dateFusion, dateTraitement, null);
 		assertNotNull(rapport);
 
@@ -224,14 +226,14 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 				final PersonnePhysique bruno = (PersonnePhysique) tiersDAO.get(ppId);
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principaux.size());
+				assertEquals(2, fors.principauxPP.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(dateDebut, MotifFor.INDETERMINE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp1);
 				return null;
@@ -306,10 +308,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principaux.size());
+				assertEquals(1, fors.principauxPP.size());
 				assertEquals(1, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
@@ -357,15 +359,15 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principaux.size());
+				assertEquals(2, fors.principauxPP.size());
 				assertEquals(1, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, date(1990, 4, 22), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(date(1990, 4, 23), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
@@ -414,10 +416,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principaux.size());
+				assertEquals(1, fors.principauxPP.size());
 				assertEquals(2, fors.secondaires.size());
 
-				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Renens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
@@ -468,15 +470,15 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principaux.size());
+				assertEquals(2, fors.principauxPP.size());
 				assertEmpty(fors.secondaires);
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Croy.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
@@ -521,7 +523,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principaux.size());
+				assertEquals(1, fors.principauxPP.size());
 				assertEmpty(fors.secondaires);
 				assertEquals(1, fors.autresImpots.size()); // les fors autres impôts représentent des impositions ponctuelles valable une seule journée
 				assertEquals(2, fors.autreElementImpot.size());
@@ -584,17 +586,17 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(2, fors.principaux.size());
+				assertEquals(2, fors.principauxPP.size());
 				assertEquals(1, fors.secondaires.size());
 				assertEquals(1, fors.autresImpots.size());
 				assertEquals(1, fors.autreElementImpot.size());
 
-				final ForFiscalPrincipal ffp0 = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp0 = fors.principauxPP.get(0);
 				assertNotNull(ffp0);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, veilleDateFutur, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 
-				final ForFiscalPrincipal ffp1 = fors.principaux.get(1);
+				final ForFiscalPrincipalPP ffp1 = fors.principauxPP.get(1);
 				assertNotNull(ffp1);
 				assertForPrincipal(dateFutur, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				                   ffp1);
@@ -650,9 +652,9 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 				final ForsParType fors = bruno.getForsParType(true);
 				assertNotNull(fors);
-				assertEquals(1, fors.principaux.size());
+				assertEquals(1, fors.principauxPP.size());
 
-				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				final ForFiscalPrincipalPP ffp = fors.principauxPP.get(0);
 				assertNotNull(ffp);
 				assertForPrincipal(date(1964, 8, 1), MotifFor.MAJORITE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 
@@ -796,7 +798,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Set<Integer> anciennesCommunes = new HashSet<>(Arrays.asList(MockCommune.Cully.getNoOFS()));
+				final Set<Integer> anciennesCommunes = new HashSet<>(Collections.singletonList(MockCommune.Cully.getNoOFS()));
 				final int nouvelleCommune = MockCommune.BourgEnLavaux.getNoOFS();
 				final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2011, 1, 1), RegDate.get(), null);
 				assertNotNull(results);

@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -208,7 +209,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipalPP forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
 		assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE.getOneDayAfter(), forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
@@ -282,7 +283,7 @@ public class ObtentionNationalite2Test extends AbstractEvenementCivilInterneTest
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipalPP forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
 		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas au lendemain de la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE.getOneDayAfter(), forCommun.getDateDebut());
 		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());

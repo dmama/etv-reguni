@@ -34,7 +34,9 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -261,7 +263,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 			}
 		}
 		else {
-			final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+			final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 			if (fors != null && !fors.isEmpty()) {
 				// récupération des zones continues de fors principaux
 				final List<CollatableDateRange> ranges = new ArrayList<>(fors.size());
@@ -430,7 +432,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	}
 
 	@Override
-	public SituationFamille addSituationFamille(SituationFamille situationFamille, Contribuable contribuable) {
+	public SituationFamille addSituationFamille(SituationFamille situationFamille, ContribuableImpositionPersonnesPhysiques contribuable) {
 		final RegDate dateDebut = situationFamille.getDateDebut();
 		contribuable.closeSituationFamilleActive(dateDebut.getOneDayBefore());
 
@@ -445,7 +447,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		SituationFamille situationFamille = situationFamilleDAO.get(idSituationFamille);
 		Assert.notNull(situationFamille);
 
-		final Contribuable contribuable = situationFamille.getContribuable();
+		final ContribuableImpositionPersonnesPhysiques contribuable = situationFamille.getContribuable();
 		Assert.notNull(contribuable);
 
 		// Annulation de la situation de famille
@@ -505,7 +507,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	}
 
 	@Override
-	public void closeSituationFamille(Contribuable contribuable, RegDate date) {
+	public void closeSituationFamille(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) {
 		Assert.notNull(contribuable);
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = contribuable.getSituationFamilleActive();

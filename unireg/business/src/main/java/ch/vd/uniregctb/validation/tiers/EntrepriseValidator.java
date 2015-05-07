@@ -8,7 +8,7 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.tiers.Entreprise;
 
-public class EntrepriseValidator extends ContribuableValidator<Entreprise> {
+public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
 
 	@Override
 	protected ValidationResults validateTypeAdresses(Entreprise entreprise) {

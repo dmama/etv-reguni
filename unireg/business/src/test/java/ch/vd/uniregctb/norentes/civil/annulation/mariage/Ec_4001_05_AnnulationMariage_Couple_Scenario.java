@@ -12,6 +12,7 @@ import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -98,8 +99,7 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		// Alexandre
 		PersonnePhysique alexandre = addHabitant(noIndAlexandre);
 		noHabAlexandre = alexandre.getNumero();
-		ForFiscalPrincipal ffpAlexandre = addForFiscalPrincipal(alexandre, commune, dateDebutAlexandre, RegDate.get(2009, 7, 7), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		ffpAlexandre.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(alexandre, commune, dateDebutAlexandre, RegDate.get(2009, 7, 7), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// Sylvie
 		PersonnePhysique sylvie = addHabitant(noIndSylvie);
@@ -113,20 +113,12 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		 * Revenu fortune  Domicile  Ordinaire  Morges  		01.01.2009  Arrivée hors canton  					31.03.2009  Mariage / Partenariat / Réconcil
 		 */
 		// premier for de Sylvie
-		{
-			ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, MockCommune.Vevey, dateDebutAlexandre, RegDate.get(2009, 3, 31), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			ffpSylvie.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(sylvie, MockCommune.Vevey, dateDebutAlexandre, RegDate.get(2009, 3, 31), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+
 		// second for de Sylvie
-		{
-			ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, MockCommune.Vevey, RegDate.get(2009, 7, 1), RegDate.get(2009, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			ffpSylvie.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(sylvie, MockCommune.Vevey, RegDate.get(2009, 7, 1), RegDate.get(2009, 7, 1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		// troisieme for de Sylvie
-		{
-			ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, commune, dateDernierForSilvie, RegDate.get(2009, 7, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-			ffpSylvie.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(sylvie, commune, dateDernierForSilvie, RegDate.get(2009, 7, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		/*
 		 * Situations famille Sylvie
@@ -157,22 +149,21 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		tiersService.addTiersToCouple(menage, alexandre, dateMariage, null);
 		tiersService.addTiersToCouple(menage, sylvie, dateMariage, null);
 
-		ForFiscalPrincipal ffpMenage = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-		ffpMenage.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 	}
 
 	@Check(id=1, descr="Vérifie que les habitants ont chacun un For ouvert et le For du ménage est fermé")
 	public void check1() {
 		{
 			PersonnePhysique alexandre = (PersonnePhysique) tiersDAO.get(noHabAlexandre);
-			ForFiscalPrincipal ffp = alexandre.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = alexandre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + alexandre.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 		}
 		{
 			PersonnePhysique sylvie = (PersonnePhysique) tiersDAO.get(noHabSylvie);
-			ForFiscalPrincipal ffp = sylvie.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = sylvie.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + sylvie.getNumero() + " null");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
@@ -180,7 +171,7 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage a plus d'un for principal");
-			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");

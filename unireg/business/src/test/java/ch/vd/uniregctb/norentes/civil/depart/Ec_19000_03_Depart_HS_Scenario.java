@@ -21,6 +21,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -257,7 +258,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(dateDepartBex, ffpFerme.getDateFin(), "Le for sur Bex n'est pas fermé à la bonne date");
 
 			// For ouvert sur Danemark
-			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal) list.get(list.size()-1);
+			final ForFiscalPrincipalPP ffpOuvert = (ForFiscalPrincipalPP) list.get(list.size()-1);
 			assertEquals(dateDepartBex.addDays(1), ffpOuvert.getDateDebut(), "Le for sur Danemark n'est pas ouvert à la bonne date");
 			assertEquals(numOfsPaysDepart, ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur Zurich");
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");

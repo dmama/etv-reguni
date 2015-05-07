@@ -95,7 +95,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 				v.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 				v.setMotifRattachement(MotifRattachement.DOMICILE);
 				v.setTypeEtNumeroForFiscal(EntrepriseHelper.getTypeAutoriteFiscaleForPM(ffp, serviceInfra), ffp.getNoOfsAutoriteFiscale());
-				v.setNatureForFiscal("ForFiscalPrincipal");
+				v.setNatureForFiscal("ForFiscalPrincipalPM");
 				list.add(v);
 			}
 		}

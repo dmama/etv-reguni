@@ -10,6 +10,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -82,35 +83,27 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		// Andrea
 		PersonnePhysique andrea = addHabitant(noIndAndrea);
 		noHabAndrea = andrea.getNumero();
-		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(andrea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
-			ffp.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(andrea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		// Liliana
 		PersonnePhysique liliana = addHabitant(noIndLiliana);
 		noHabLiliana = liliana.getNumero();
-		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(liliana, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
-			ffp.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(liliana, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		// Ménage commun
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, andrea, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, liliana, dateMariage, dateSeparation.getOneDayBefore());
-		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			ffp.setModeImposition(ModeImposition.ORDINAIRE);
-		}
+		addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+		                      MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 	}
 
 	@Check(id=1, descr="Vérifie que les contribuables ont leur For principal ouvert et celui du ménage est fermé")
 	public void check1() {
 		{
 			PersonnePhysique andrea = (PersonnePhysique) tiersDAO.get(noHabAndrea);
-			ForFiscalPrincipal ffp = andrea.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = andrea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + andrea.getNumero() + " n'a pas pu être trouvé");
 			assertEquals(dateSeparation, ffp.getDateDebut(), "Le dernier for n'est pas le bon");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
@@ -119,7 +112,7 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		}
 		{
 			PersonnePhysique liliana = (PersonnePhysique) tiersDAO.get(noHabLiliana);
-			ForFiscalPrincipal ffp = liliana.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = liliana.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + liliana.getNumero() + " n'a pas pu être trouvé");
 			assertEquals(dateSeparation, ffp.getDateDebut(), "Le dernier for n'est pas le bon");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
@@ -129,7 +122,7 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage doit avoir un for fiscal");
-			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " n'a pas pu être trouvé");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Le dernier for n'est pas le bon");
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin(), "Date de fin du dernier for fausse");

@@ -276,8 +276,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-				ffp.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne, ModeImposition.INDIGENT);
 
 				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);

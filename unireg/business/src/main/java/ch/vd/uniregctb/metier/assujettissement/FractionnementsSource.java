@@ -5,19 +5,19 @@ import java.util.List;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.FractionSimple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.MotifFor;
 
 public class FractionnementsSource extends FractionnementsAssujettissement {
 
-	public FractionnementsSource(List<ForFiscalPrincipal> principaux) {
+	public FractionnementsSource(List<ForFiscalPrincipalPP> principaux) {
 		super(principaux);
 	}
 
 	@Override
-	protected Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal previous = forPrincipal.getPrevious();
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
+	protected Fraction isFractionOuverture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+		final ForFiscalPrincipalPP previous = forPrincipal.getPrevious();
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 
@@ -37,9 +37,9 @@ public class FractionnementsSource extends FractionnementsAssujettissement {
 	}
 
 	@Override
-	protected Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal) {
-		final ForFiscalPrincipal current = forPrincipal.getCurrent();
-		final ForFiscalPrincipal next = forPrincipal.getNext();
+	protected Fraction isFractionFermeture(ForFiscalPrincipalContext<ForFiscalPrincipalPP> forPrincipal) {
+		final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
+		final ForFiscalPrincipalPP next = forPrincipal.getNext();
 
 		if (current.getDateFin() == null) {
 			return null;

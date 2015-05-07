@@ -107,7 +107,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 	@SuppressWarnings("unchecked")
 	private List<Long> retrieveIdFors() {
 		
-		final String queryStr= "select ffp.id from ForFiscalPrincipal as ffp"
+		final String queryStr= "select ffp.id from ForFiscalPrincipalPP as ffp"
 			+ " where ffp.typeAutoriteFiscale!='COMMUNE_OU_FRACTION_VD'"
 			+ " and ffp.dateFin is null and ffp.annulationDate is null"
 			+ " and ffp.tiers.class=MenageCommun";

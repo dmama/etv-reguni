@@ -30,9 +30,11 @@ import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -122,7 +124,7 @@ public abstract class Depart extends Mouvement {
 	 * @return la date de fermeture effectivement prise en compte pour le for
 	 * @throws EvenementCivilException en cas de problème
 	 */
-	protected abstract RegDate doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
+	protected abstract RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException;
 
 	@NotNull
 	@Override
@@ -141,7 +143,7 @@ public abstract class Depart extends Mouvement {
 
 		final MotifFor motifFermeture = findMotifFermetureFor();
 		final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
-		final Contribuable contribuable = findContribuable(dateFermeture, pp);
+		final ContribuableImpositionPersonnesPhysiques contribuable = findContribuable(dateFermeture, pp);
 
 		final RegDate dateFermetureEffective = doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
 
@@ -161,7 +163,7 @@ public abstract class Depart extends Mouvement {
 	 * @param pp             une personne physique
 	 * @return le contribuable concerné par le déménagement
 	 */
-	private Contribuable findContribuable(RegDate date, PersonnePhysique pp) {
+	private ContribuableImpositionPersonnesPhysiques findContribuable(RegDate date, PersonnePhysique pp) {
 		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(pp, date);
 		if (couple != null) {
 			final MenageCommun menage = couple.getMenage();
@@ -352,10 +354,8 @@ public abstract class Depart extends Mouvement {
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
-	                                                      MotifFor motifOuverture) {
-		return getService()
-				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture);
+	protected ForFiscalPrincipal openForFiscalPrincipalHC(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture) {
+		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture);
 	}
 
 	/**
@@ -368,13 +368,11 @@ public abstract class Depart extends Mouvement {
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalHS(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
-	                                                      MotifFor motifOuverture) {
-		return getService()
-				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture);
+	protected ForFiscalPrincipal openForFiscalPrincipalHS(ContribuableImpositionPersonnesPhysiques contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture) {
+		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture);
 	}
 
-	protected static ModeImposition determineModeImpositionDepartHCHS(Contribuable contribuable, RegDate dateFermeture, ForFiscalPrincipal ffp, TiersService tiersService) throws EvenementCivilException {
+	protected static ModeImposition determineModeImpositionDepartHCHS(ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, ForFiscalPrincipalPP ffp, TiersService tiersService) throws EvenementCivilException {
 
 		Assert.notNull(ffp);
 

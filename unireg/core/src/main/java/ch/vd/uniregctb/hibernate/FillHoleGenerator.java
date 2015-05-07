@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
 public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentifierGenerator, Configurable {
 
@@ -204,10 +204,10 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 		jdbcTemplate.setFetchSize(1000);
 		jdbcTemplate.setMaxRows(1000);
 		
-		int indexDebut = Contribuable.CTB_GEN_FIRST_ID + 1;
+		int indexDebut = ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID + 1;
 		int noTiers = indexDebut;
 		
-		while ( noTiers < Contribuable.CTB_GEN_LAST_ID ) {
+		while ( noTiers < ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID ) {
 		
 			List res = jdbcTemplate.queryForList(
 					" select numero n" +

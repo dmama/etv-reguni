@@ -29,13 +29,13 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -396,7 +396,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 				final Set<ForFiscal> fors = tiers.getForsFiscaux();
 				assertEquals(1, fors.size());
 
-				final ForFiscalPrincipal ffp0 = (ForFiscalPrincipal) fors.iterator().next();
+				final ForFiscalPrincipalPP ffp0 = (ForFiscalPrincipalPP) fors.iterator().next();
 				assertForPrincipal(date(2007, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 1), MotifFor.FUSION_COMMUNES, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp0);
 			}
 		});
@@ -1032,7 +1032,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec un for principal et un for secondaire
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getId();
 
 				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
@@ -1086,7 +1086,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getId();
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
@@ -1148,7 +1148,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux non-adjacents
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getId();
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
@@ -1237,8 +1237,8 @@ public class ForsControllerTest extends WebTestSpring3 {
 				final Tiers tiers = tiersDAO.get(ids.tiers);
 				assertNotNull(tiers);
 				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.principaux.size());
-				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				assertEquals(1, fors.principauxPP.size());
+				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
 				assertNotNull(ffp);
 				assertEquals(date(2005, 10, 31), ffp.getDateFin());
 				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
@@ -1293,8 +1293,8 @@ public class ForsControllerTest extends WebTestSpring3 {
 				final Tiers tiers = tiersDAO.get(ids.tiers);
 				assertNotNull(tiers);
 				final ForsParType fors = tiers.getForsParType(false);
-				assertEquals(1, fors.principaux.size());
-				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				assertEquals(1, fors.principauxPP.size());
+				final ForFiscalPrincipal ffp = fors.principauxPP.get(0);
 				assertNotNull(ffp);
 				assertEquals(date(2005, 10, 31), ffp.getDateFin());
 				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());

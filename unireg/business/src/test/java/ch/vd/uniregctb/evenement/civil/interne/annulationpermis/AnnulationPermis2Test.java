@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -244,7 +245,7 @@ public class AnnulationPermis2Test extends AbstractEvenementCivilInterneTest {
 		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		// Vérification du for principal du tiers MenageCommun
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipalPP forCommun = menageCommun.getForFiscalPrincipalAt(null);
 		assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",
 				forCommun);
 		assertNull("Le for fiscal principal précédent devrait être rouvert (date null)",

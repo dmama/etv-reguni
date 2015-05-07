@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -24,18 +24,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFiscalPrincipal> {
+public class ForFiscalPrincipalPPValidatorTest extends AbstractValidatorTest<ForFiscalPrincipalPP> {
 
 	@Override
 	protected String getValidatorBeanName() {
-		return "forFiscalPrincipalValidator";
+		return "forFiscalPrincipalPPValidator";
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForAnnule() {
 
-		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 
 		// For invalide (mode d'imposition incorrect) mais annulé => pas d'erreur
 		{
@@ -60,7 +60,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateForDiplomateSuisse() {
 
-		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 		forFiscal.setMotifRattachement(MotifRattachement.DIPLOMATE_SUISSE);
 		forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		forFiscal.setNumeroOfsAutoriteFiscale(5586);
@@ -113,7 +113,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateDateDebut() {
 
-		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 		forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFS());
 		forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -126,8 +126,8 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 			Assert.assertTrue(results.hasErrors());
 			final List<String> errors = results.getErrors();
 			assertEquals(2, errors.size());
-			assertEquals("Le for ForFiscalPrincipal (? - ?) possède une date de début nulle", errors.get(0));
-			assertEquals("Le motif d'ouverture est obligatoire sur le for fiscal [ForFiscalPrincipal (? - ?)] car il est rattaché à une commune vaudoise.", errors.get(1));
+			assertEquals("Le for ForFiscalPrincipalPP (? - ?) possède une date de début nulle", errors.get(0));
+			assertEquals("Le motif d'ouverture est obligatoire sur le for fiscal [ForFiscalPrincipalPP (? - ?)] car il est rattaché à une commune vaudoise.", errors.get(1));
 		}
 
 		// Date de début renseignée
@@ -150,7 +150,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	@Transactional(rollbackFor = Throwable.class)
 	public void testValidateModeImposition() {
 
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
 		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp.setDateDebut(RegDate.get(2000, 1, 1));
@@ -234,7 +234,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 	@Test
 	public void testPresenceDateFermetureSiMotifFermeturePresent() throws Exception {
 
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
 		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp.setDateDebut(RegDate.get(2000, 1, 1));

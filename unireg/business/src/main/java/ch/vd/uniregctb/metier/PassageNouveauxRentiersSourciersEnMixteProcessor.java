@@ -34,8 +34,9 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -210,7 +211,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		// On determine si on poursuit avec le contribuable PersonnePhysique ou son eventuel MenageCommun
 		final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(sourcier, dateReference);
-		final Contribuable contribuable;
+		final ContribuableImpositionPersonnesPhysiques contribuable;
 		final PersonnePhysique conjoint;
 		if (etc != null) {
 			data.setMenage(true);
@@ -236,7 +237,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		final RegDate dateRentier = data.getDateRentier();
 
 		// Vérification de cohérence sur le for principal
-		final ForFiscalPrincipal dernierForFiscalPrincipal = contribuable.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipalPP dernierForFiscalPrincipal = contribuable.getDernierForFiscalPrincipal();
 		if (dernierForFiscalPrincipal == null || dernierForFiscalPrincipal.getDateFin() != null || dernierForFiscalPrincipal.getModeImposition() != ModeImposition.SOURCE) {
 			if (data.isMenage()) {
 				final String message = String.format(
@@ -353,7 +354,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					+ "        SELECT                                                                     "
 					+ "            fors.id                                                                "
 					+ "        FROM                                                                       "
-					+ "            ForFiscalPrincipal AS fors                                             "
+					+ "            ForFiscalPrincipalPP AS fors                                             "
 					+ "        WHERE                                                                      "
 					+ "            fors.annulationDate IS null                                            "
 					+ "            AND fors.tiers.id = pp.id                                              "
@@ -375,7 +376,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					+ "                 SELECT                                                            "
 					+ "                     fors2.id                                                      "
 					+ "                 FROM                                                              "
-					+ "                     ForFiscalPrincipal AS fors2                                   "
+					+ "                     ForFiscalPrincipalPP AS fors2                                   "
 					+ "                 WHERE                                                             "
 					+ "                     fors2.annulationDate IS null                                  "
 					+ "                     AND fors2.tiers.id = rap.objetId                              "

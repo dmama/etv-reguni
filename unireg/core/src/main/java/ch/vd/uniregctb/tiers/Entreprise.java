@@ -10,9 +10,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @DiscriminatorValue("Entreprise")
-public class Entreprise extends Contribuable {
-
-	private static final long serialVersionUID = -5726364867046771919L;
+public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	// Numéros migrés depuis SIMPA-PM
 	public static final int FIRST_ID = 1;
@@ -29,12 +27,6 @@ public class Entreprise extends Contribuable {
 
 	public Entreprise(long numero) {
 		super(numero);
-	}
-
-	@Transient
-	@Override
-	public String getRoleLigne1() {
-		return "Contribuable PM";
 	}
 
 	@Transient

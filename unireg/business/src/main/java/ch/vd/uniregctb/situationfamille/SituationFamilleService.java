@@ -5,6 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -17,7 +18,7 @@ public interface SituationFamilleService {
 	 *
 	 * @return la nouvelle situation de famille ajoutée (celle incluse dans la session Hibernate).
 	 */
-	SituationFamille addSituationFamille(SituationFamille situationFamille, Contribuable contribuable);
+	SituationFamille addSituationFamille(SituationFamille situationFamille, ContribuableImpositionPersonnesPhysiques contribuable);
 
 	/**
 	 * Assemble les données du registre civil et celles du registre fiscal pour construire une vue cohérente de la situation de famille d'un
@@ -46,24 +47,24 @@ public interface SituationFamilleService {
 	 * @param takeCivilAsDefault <code>true</code> si on doit prendre en compte le registre civil, <code>false</code> si on ne s'intéresse qu'aux données purement fiscales
 	 * @return l'état civil à la date spécifié d'une personne physique.
 	 */
-	public EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault);
+	EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault);
 
 	/**
 	 * Annule une situation de famille en réouvrant la précédente si elle existe
 	 */
-	public void annulerSituationFamille(long idSituationFamille);
+	void annulerSituationFamille(long idSituationFamille);
 
 	/**
 	 * Annule une situation de famille
 	 *
 	 * @param idSituationFamille
 	 */
-	public void annulerSituationFamilleSansRouvrirPrecedente(long idSituationFamille);
+	void annulerSituationFamilleSansRouvrirPrecedente(long idSituationFamille);
 
 	/**
 	 * Ferme la situation de famille d'un contribuable
 	 */
-	public void closeSituationFamille(Contribuable contribuable, RegDate date);
+	void closeSituationFamille(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date);
 
 	/**
 	 * Cette méthode réinitialise à la valeur NORMAL les barèmes double-gains sur les situations de famille actives des ménages-communs

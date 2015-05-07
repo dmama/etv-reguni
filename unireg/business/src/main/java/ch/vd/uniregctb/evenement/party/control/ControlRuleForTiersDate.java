@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -45,8 +46,8 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	public Set<ModeImposition> getSourceAssujettissement(@NotNull Tiers tiers) {
 		final Set<ModeImposition> modeImpositions = EnumSet.noneOf(ModeImposition.class);
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
-		if (forFiscalPrincipal != null) {
-			modeImpositions.add(forFiscalPrincipal.getModeImposition());
+		if (forFiscalPrincipal instanceof ForFiscalPrincipalPP) {
+			modeImpositions.add(((ForFiscalPrincipalPP) forFiscalPrincipal).getModeImposition());
 		}
 		return modeImpositions;
 	}

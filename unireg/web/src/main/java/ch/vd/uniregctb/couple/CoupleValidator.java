@@ -15,7 +15,7 @@ import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -174,7 +174,7 @@ public class CoupleValidator implements Validator {
 		if (ppId == null) {
 			errors.rejectValue(field, "error.tiers.obligatoire");
 		}
-		else if (ppId > Contribuable.CTB_GEN_LAST_ID) {
+		else if (ppId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
 			errors.rejectValue(field, "error.numero.tiers.trop.grand");
 		}
 		else {
@@ -196,7 +196,7 @@ public class CoupleValidator implements Validator {
 		if (futurMcId == null) {
 			errors.rejectValue("mcId", "error.tiers.obligatoire");
 		}
-		else if (futurMcId > Contribuable.CTB_GEN_LAST_ID) {
+		else if (futurMcId > ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID) {
 			errors.rejectValue("mcId", "error.numero.tiers.trop.grand");
 		}
 		else {

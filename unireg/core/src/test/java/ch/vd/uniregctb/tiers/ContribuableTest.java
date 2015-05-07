@@ -88,7 +88,7 @@ public class ContribuableTest extends WithoutSpringTest {
 		assertNull(pp.getDateDesactivation());
 
 		// un for ouvert
-		final ForFiscalPrincipal ffp = new ForFiscalPrincipal(date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipalPP(date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		pp.addForFiscal(ffp);
 		assertNull(pp.getDateDesactivation());
 
@@ -100,7 +100,7 @@ public class ContribuableTest extends WithoutSpringTest {
 
 		// ouverture d'un autre for plus tard
 		final RegDate dateReactivation = dateDesactivation.addYears(1);
-		final ForFiscalPrincipal nouveauFfp = new ForFiscalPrincipal(dateReactivation, MotifFor.REACTIVATION, null, null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		final ForFiscalPrincipal nouveauFfp = new ForFiscalPrincipalPP(dateReactivation, MotifFor.REACTIVATION, null, null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		pp.addForFiscal(nouveauFfp);
 		assertNull(pp.getDateDesactivation());
 
@@ -112,7 +112,7 @@ public class ContribuableTest extends WithoutSpringTest {
 
 		// ré-ouverture
 		final RegDate dateDeuxiemeReactivation = dateReDesactivation.addYears(1);
-		final ForFiscalPrincipal dernierFfp = new ForFiscalPrincipal(dateDeuxiemeReactivation, MotifFor.REACTIVATION, null, null, 1245, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		final ForFiscalPrincipal dernierFfp = new ForFiscalPrincipalPP(dateDeuxiemeReactivation, MotifFor.REACTIVATION, null, null, 1245, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		pp.addForFiscal(dernierFfp);
 		assertNull(pp.getDateDesactivation());
 

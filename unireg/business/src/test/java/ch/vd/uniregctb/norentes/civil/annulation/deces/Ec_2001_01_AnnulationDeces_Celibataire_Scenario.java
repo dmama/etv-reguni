@@ -8,6 +8,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -57,11 +58,8 @@ public class Ec_2001_01_AnnulationDeces_Celibataire_Scenario extends EvenementCi
 	public void step1() {
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
-		f.setModeImposition(ModeImposition.SOURCE);
-
-		f = addForFiscalPrincipal(julie, commune, dateObtentionPermis, dateDeces, MotifFor.PERMIS_C_SUISSE, MotifFor.VEUVAGE_DECES);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE, ModeImposition.SOURCE);
+		addForFiscalPrincipal(julie, commune, dateObtentionPermis, dateDeces, MotifFor.PERMIS_C_SUISSE, MotifFor.VEUVAGE_DECES);
 	}
 
 	@Check(id=1, descr="Vérifie que les fors de l'habitant sont fermés car il est sensé être décédé")
@@ -83,7 +81,7 @@ public class Ec_2001_01_AnnulationDeces_Celibataire_Scenario extends EvenementCi
 	@Check(id=2, descr="Vérification des fors fiscaux")
 	public void check2() {
 		PersonnePhysique julie = (PersonnePhysique) tiersDAO.get(noHabJulie);
-		ForFiscalPrincipal ffp = julie.getDernierForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp = julie.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'habitant " + julie.getNumero() + " null");
 		assertEquals(dateObtentionPermis, ffp.getDateDebut(), "Date de début for fausse");
 		assertNull(ffp.getDateFin(), "Le for de l'habitant " + julie.getNumero() + " est fermé");

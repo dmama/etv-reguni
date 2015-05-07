@@ -275,7 +275,7 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
 		throw new NotImplementedException();
 	}
 

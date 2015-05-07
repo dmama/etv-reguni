@@ -15,10 +15,8 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -78,11 +76,8 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 		final PersonnePhysique momo = tiersService.createNonHabitantFromIndividu(noIndMomo);
 		noHabMomo = momo.getNumero();
 
-		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissance.addYears(18), dateNaissance.addYears(22), MotifFor.MAJORITE, MotifFor.DEPART_HC);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
-
-		final ForFiscalPrincipal fhc = addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateNaissance.addYears(22).getOneDayAfter(), null, MotifFor.DEPART_HC, null);
-		fhc.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissance.addYears(18), dateNaissance.addYears(22), MotifFor.MAJORITE, MotifFor.DEPART_HC);
+		addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateNaissance.addYears(22).getOneDayAfter(), null, MotifFor.DEPART_HC, null);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")

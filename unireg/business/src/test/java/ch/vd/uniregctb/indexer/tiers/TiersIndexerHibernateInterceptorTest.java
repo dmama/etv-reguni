@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -68,7 +69,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 	private ForFiscalPrincipal createForPrincipal(int ofs, RegDate date) {
 
-		ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp = new ForFiscalPrincipalPP();
 		ffp.setDateDebut(date);
 		ffp.setNumeroOfsAutoriteFiscale(ofs); // Lausanne
 		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
@@ -587,7 +588,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		assertEmpty(searcher.getAllIds());
 	}
 
-	private List<Tiers> getAllPersonnesPhysiques() {
+	private List<PersonnePhysique> getAllPersonnesPhysiques() {
 		return allTiersOfType(PersonnePhysique.class);
 	}
 }

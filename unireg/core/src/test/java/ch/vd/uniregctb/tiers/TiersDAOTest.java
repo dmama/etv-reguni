@@ -196,11 +196,11 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(12L);
-		insertAndTestNumeroTiers(hab, Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(hab, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom("bla");
-		insertAndTestNumeroTiers(nh, Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
-		insertAndTestNumeroTiers(new MenageCommun(), Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(nh, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
+		insertAndTestNumeroTiers(new MenageCommun(), ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
 	}
 
 	/**
@@ -401,7 +401,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
 				return null;
 			}
 		});
@@ -421,8 +421,8 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
-				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifRattachement.DOMICILE);
 				return null;
 			}
 		});
@@ -638,7 +638,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			{
-				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 				forFiscal.setDateDebut(RegDate.get(2005, 8, 12));
 				forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -649,7 +649,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			}
 
 			{
-				ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+				ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 				forFiscal.setDateDebut(RegDate.get(2007, 3, 1));
 				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
@@ -745,7 +745,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 						// For fermé
 						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 						forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
 						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -771,7 +771,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 						// For fermé
 						HashSet<ForFiscal> fors = new HashSet<>();
-						ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+						ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 						forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 						forFiscal.setDateFin(RegDate.get(2006, 11, 30));
 						forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -818,7 +818,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For ouvert sur le ménage (on ne peut l'ajouter qu'après avoir définit les rapport-entre-tiers, autrement le
 					// ménage-commun ne valide pas)
-					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 					forFiscal.setDateDebut(RegDate.get(2006, 12, 1));
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 					forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
@@ -895,7 +895,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For fermé
 					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 					forFiscal.setDateDebut(RegDate.get(2002, 1, 1));
 					forFiscal.setDateFin(null);
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -918,7 +918,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 					// For fermé
 					HashSet<ForFiscal> fors = new HashSet<>();
-					ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP forFiscal = new ForFiscalPrincipalPP();
 					forFiscal.setDateDebut(RegDate.get(2004, 1, 1));
 					forFiscal.setDateFin(null);
 					forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -1325,7 +1325,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique paul = new PersonnePhysique(false);
 				paul.setNom("Paul");
 				{
-					ForFiscalPrincipal f = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 					f.setDateDebut(date(1974, 3, 31));
 					f.setMotifOuverture(MotifFor.MAJORITE);
 					f.setDateFin(veilleMariage);
@@ -1342,7 +1342,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				PersonnePhysique janine = new PersonnePhysique(false);
 				janine.setNom("Janine");
 				{
-					ForFiscalPrincipal f = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 					f.setDateDebut(date(1974, 3, 31));
 					f.setMotifOuverture(MotifFor.MAJORITE);
 					f.setDateFin(veilleMariage);
@@ -1376,7 +1376,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					menage.addRapportObjet(rapport);
 					janine.addRapportSujet(rapport);
 
-					ForFiscalPrincipal f = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 					f.setDateDebut(dateMariage);
 					f.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);

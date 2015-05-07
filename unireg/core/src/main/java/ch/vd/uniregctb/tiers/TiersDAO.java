@@ -322,7 +322,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param situation    la nouvelle situation de famille
 	 * @return une nouvelle instance de la situation de famille avec son id renseigné.
 	 */
-	SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation);
+	SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation);
 
 	/**
 	 * Ajoute une nouvelle adresse à un tiers.

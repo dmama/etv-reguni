@@ -30,10 +30,10 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -146,7 +146,7 @@ public class DepartPrincipal extends Depart {
 	}
 
 	@Override
-	protected RegDate doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	protected RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		// [UNIREG-2701] si l'ancienne adresse est inconnue, et que le tiers n'a aucun for non-annulé -> on laisse passer
 		if (ancienneCommune == null) {
 
@@ -332,12 +332,12 @@ public class DepartPrincipal extends Depart {
 	 * Traite un depart d'une residence principale
 	 *
 	 */
-	private void handleDepartResidencePrincipale(Depart depart, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale) throws EvenementCivilException {
+	private void handleDepartResidencePrincipale(Depart depart, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale) throws EvenementCivilException {
 
 		Audit.info(depart.getNumeroEvenement(), String.format("Fermeture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture));
 
 		// [SIFISC-11521] si le for était déjà fermé à la même date pour le même motif, rien à faire...
-		final ForFiscalPrincipal precedent = contribuable.getForFiscalPrincipalAt(dateFermeture);
+		final ForFiscalPrincipalPP precedent = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		if (precedent != null && precedent.getDateFin() == dateFermeture && precedent.getMotifFermeture() == motifFermeture) {
 			Audit.info(depart.getNumeroEvenement(),
 			           String.format("Le for principal du contribuable est déjà fermé au %s pour le motif '%s', pas de traitement supplémentaire à prévoir sur les fors",
@@ -345,7 +345,7 @@ public class DepartPrincipal extends Depart {
 			return;
 		}
 
-		final ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
+		final ForFiscalPrincipalPP ffp = (ForFiscalPrincipalPP) getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 		if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			throw new RuntimeException("Le for du contribuable est déjà hors du canton");
 		}

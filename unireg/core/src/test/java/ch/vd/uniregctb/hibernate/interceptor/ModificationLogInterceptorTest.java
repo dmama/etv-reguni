@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -153,7 +153,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 					nhab.setLogModifUser(oldUser);
 					nhab.setLogModifMillis(modifInitalDate.getTime());
 
-					ForFiscalPrincipal f = new ForFiscalPrincipal();
+					ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 					f.setDateDebut(RegDate.get(1990, 1, 1));
 					f.setDateFin(null);
 					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -176,11 +176,11 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-					ForFiscalPrincipal f = nhab.getDernierForFiscalPrincipal();
+					ForFiscalPrincipalPP f = nhab.getDernierForFiscalPrincipal();
 					f.setDateFin(RegDate.get(2008, 10, 10));
 					f.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-					f = new ForFiscalPrincipal();
+					f = new ForFiscalPrincipalPP();
 					f.setDateDebut(RegDate.get(2008, 10, 11));
 					f.setDateFin(null);
 					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);

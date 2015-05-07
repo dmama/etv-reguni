@@ -34,6 +34,7 @@ import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrate
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -1570,7 +1571,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
@@ -1641,7 +1642,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
@@ -1712,7 +1713,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(pp);
 				Assert.assertFalse(pp.isHabitantVD());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());

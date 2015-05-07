@@ -17,7 +17,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.EtatCivil;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -123,8 +122,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 			tiersService.addTiersToCouple(menage, patrick, dateMariage, null);
 			tiersService.addTiersToCouple(menage, sylvie, dateMariage, RegDate.get(2008, 12, 31)).setAnnule(true);
 			tiersService.addTiersToCouple(menage, sylvie, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.INDETERMINE, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.INDETERMINE, null);
 
 			SituationFamilleMenageCommun sf = new SituationFamilleMenageCommun();
 			sf.setDateDebut(RegDate.get(2009, 1, 1));

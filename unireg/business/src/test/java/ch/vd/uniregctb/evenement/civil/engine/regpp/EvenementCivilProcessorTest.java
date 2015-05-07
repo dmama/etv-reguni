@@ -34,6 +34,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -717,7 +718,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	private ForFiscalPrincipal addForPrincipal(Tiers tiers, RegDate ouverture, RegDate fermeture, Integer noOFS) {
-		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(ouverture);
 		f.setDateFin(fermeture);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -773,8 +774,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				// les fors
 				final RegDate dateArrivee = date(2009, 1, 1);
 				final RegDate dateDepart = date(2009, 8, 31);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.RoyaumeUni);
 
 				return pp.getNumero();

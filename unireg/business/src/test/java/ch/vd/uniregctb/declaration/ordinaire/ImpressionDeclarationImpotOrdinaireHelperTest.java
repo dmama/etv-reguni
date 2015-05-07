@@ -53,7 +53,7 @@ import ch.vd.uniregctb.editique.ZoneAffranchissementEditique;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -611,7 +611,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		// Crée une personne physique (ctb ordinaire vaudois) à la dépense
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+		final ForFiscalPrincipalPP ffp = addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
 		ffp.setModeImposition(ModeImposition.DEPENSE);
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);

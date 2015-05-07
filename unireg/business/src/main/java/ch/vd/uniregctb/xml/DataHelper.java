@@ -744,7 +744,7 @@ public abstract class DataHelper {
 			final Map<String, Long> params = new HashMap<>(1);
 			params.put("menageId", a.getObjetId());
 
-			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, null);
+			final List<ForFiscalPrincipal> forsMenage = hibernateTemplate.find("from ForFiscalPrincipalPP f where f.annulationDate is null and f.tiers.id = :menageId order by f.dateDebut asc", params, null);
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {
 						@Override

@@ -13,7 +13,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @DiscriminatorValue("MenageCommun")
-public class MenageCommun extends Contribuable {
+public class MenageCommun extends ContribuableImpositionPersonnesPhysiques {
 
     @Transient
     @Override
@@ -26,11 +26,4 @@ public class MenageCommun extends Contribuable {
 	public TypeTiers getType() {
 		return TypeTiers.MENAGE_COMMUN;
 	}
-
-    @Transient
-    @Override
-    public String getRoleLigne1() {
-        return "Contribuable PP";
-	}
-
 }

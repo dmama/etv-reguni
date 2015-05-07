@@ -14,7 +14,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -143,9 +142,7 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 			tiersService.addTiersToCouple(menage, jeanMarc, dateMariageAvecAmelie, dateSeparationAvecAmelie);
 			tiersService.addTiersToCouple(menage, amelie, dateMariageAvecAmelie,dateSeparationAvecAmelie);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageAvecAmelie, dateSeparationAvecAmelie, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-					MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, commune, dateMariageAvecAmelie, dateSeparationAvecAmelie, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		}
 	}
 

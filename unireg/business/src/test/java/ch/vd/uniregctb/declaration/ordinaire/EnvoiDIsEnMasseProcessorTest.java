@@ -155,26 +155,23 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void testEstIndigent() {
 
 		// Contribuable sans for fiscal
-		Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
 		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(erich, null));
 
 		// Contribuable avec for fiscal et mode d'imposition normal
-		Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Orbe);
 		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(maxwell, null));
 
 		// Contribuable avec for fiscal et mode d'imposition indigent
-		Contribuable job = addNonHabitant("Job", "Berger", date(1955, 1, 1), Sexe.MASCULIN);
-		ForFiscalPrincipal f = addForPrincipal(job, date(1980, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.LesClees);
-		f.setModeImposition(ModeImposition.INDIGENT);
+		PersonnePhysique job = addNonHabitant("Job", "Berger", date(1955, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(job, date(1980, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.LesClees, ModeImposition.INDIGENT);
 		assertTrue(EnvoiDIsEnMasseProcessor.estIndigent(job, null));
 
 		// Contribuable avec plusieurs fors fiscaux, indigents ou non
-		Contribuable girou = addNonHabitant("Girou", "Ette", date(1955, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique girou = addNonHabitant("Girou", "Ette", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(girou, date(1973, 1, 1), MotifFor.MAJORITE, date(1979, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees);
-		f = addForPrincipal(girou, date(1980, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, date(1982, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
-				MockCommune.LesClees);
-		f.setModeImposition(ModeImposition.INDIGENT);
+		addForPrincipal(girou, date(1980, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, date(1982, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees, ModeImposition.INDIGENT);
 		addForPrincipal(girou, date(1983, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees);
 		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(girou, date(1975, 1, 1)));
 		assertTrue(EnvoiDIsEnMasseProcessor.estIndigent(girou, date(1981, 1, 1)));
@@ -187,21 +184,21 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void testEstAssujettiDansLeCanton() {
 
 		// Contribuable sans for fiscal
-		Contribuable erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
 		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(erich, null));
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
-		Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
 		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(maxwell, null));
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne
-		Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		assertTrue(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(felicien, null));
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
-		Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		assertTrue(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(bernard, date(1985, 1, 1)));
 		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(bernard, null));
@@ -419,7 +416,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// for fiscal ouvert à Lausanne -> assujetti
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1961, 3, 12), Sexe.MASCULIN);
 				addForPrincipal(marc, date(1980, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 3, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(marc, date(annee, 7, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
@@ -598,7 +595,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable habitant à Lausanne
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
 				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
@@ -714,7 +711,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable habitant à Lausanne décédé courant 2008
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
 				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
@@ -801,7 +798,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable habitant à Lausanne décédé courant 2008
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
 				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
@@ -859,7 +856,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable habitant à Lausanne
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
 				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
@@ -1117,10 +1114,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
 				ids.marcId = marc.getNumero();
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
@@ -1179,10 +1175,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.ORDINAIRE);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
@@ -1240,10 +1235,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne, décédé en 2008
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.ORDINAIRE);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
@@ -1299,10 +1293,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un contribuable indigent habitant à Lausanne
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
 				ids.marcId = marc.getNumero();
 
 				// simulation du traitement du batch de détermination des DIs

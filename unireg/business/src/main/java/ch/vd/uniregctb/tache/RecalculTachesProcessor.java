@@ -191,7 +191,7 @@ public class RecalculTachesProcessor {
 			hql = "select distinct t.contribuable.id from Tache as t where etat = '" + TypeEtatTache.EN_INSTANCE.name() + "' and t.annulationDate is null order by t.contribuable.id";
 		}
 		else {
-			hql = "select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in (ForFiscalPrincipal, ForFiscalSecondaire) and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ctb.id";
+			hql = "select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in (ForFiscalPrincipalPP, ForFiscalSecondaire) and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ctb.id";
 		}
 
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {

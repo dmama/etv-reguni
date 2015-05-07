@@ -50,7 +50,6 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
@@ -191,12 +190,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 				// Un contribuable quelconque
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				// Un autre contribuable quelconque
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
@@ -325,12 +324,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 				// Un contribuable habitant dans le canton
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				// Un contribuable possédant un immeuble dans le canton
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Neuchatel);
 				addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -402,7 +401,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -534,30 +533,29 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Déclaration HC", "200", declarationHC2007);
 
 				// Un tiers imposé à la dépense
-				Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.paulId = paul.getNumero();
-				ForFiscalPrincipal fors = addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				fors.setModeImposition(ModeImposition.DEPENSE);
+				addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.DEPENSE);
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete2006);
 
 				// Un tiers ordinaire, mais sans déclaration d'impôt précédente
-				Contribuable olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.olrikId = olrik.getNumero();
 				addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 				// Un tiers ordinaire mais avec VaudTax
-				Contribuable guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique guillaume = addNonHabitant("Guillaume", "Portes", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.guillaumeId = guillaume.getNumero();
 				addForPrincipal(guillaume, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(guillaume, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationVaudTax2006);
 
 				// contribuable hors canton ayant une activité indépendante dans le canton
-				Contribuable jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();
 				addForPrincipal(jean, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
 				addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -565,7 +563,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 
 				// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for et une déclaration VaudTax pour 2006
-				Contribuable jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.jacquesId = jacques.getNumero();
 				addForPrincipal(jacques, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Neuchatel);
 				addForSecondaire(jacques, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -574,35 +572,35 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addDeclarationImpot(jacques, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.HORS_CANTON, declarationVaudTax2006);
 
 				// contribuable hors Suisse ayant une activité indépendante dans le canton
-				Contribuable mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.mittId = mitt.getNumero();
 				addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 				addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
-				Contribuable georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.georgesId = georges.getNumero();
 				addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Zurich);
 				addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addAdresseSuisse(georges, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
 
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis toujours
-				Contribuable jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.jackyId = jacky.getNumero();
 				addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
 
 				// [UNIREG-1349] contribuable propriétaire d'un immeubles depuis 2007 et domiciliée hors Suisse depuis toujours
-				Contribuable lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.lionelId = lionel.getNumero();
 				addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(lionel, date(2007, 4, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addAdresseEtrangere(lionel, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
 
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis mi-2007
-				Contribuable bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.brunoId = bruno.getNumero();
 				addForPrincipal(bruno, date(1968, 11, 3), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Fraction.LeBrassus);
 				addForPrincipal(bruno, date(2007, 7, 1), null, MockPays.France);
@@ -610,12 +608,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.France);
 
 				// Un diplomate suisse en mission hors suisse
-				Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.marcId = marc.getNumero();
 				addForPrincipal(marc, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 
 				// Un diplomate étranger en mission en Suisse et possédant un immeuble dans le Canton
-				Contribuable ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.ramonId = ramon.getNumero();
 				addForPrincipal(ramon, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
 				addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -915,14 +913,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
 
 				// Un contribuable quelconque
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 
 				// Un autre contribuable quelconque
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
@@ -977,14 +975,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
 
 				// Un contribuable quelconque
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 
 				// Un autre contribuable quelconque
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
@@ -1040,14 +1038,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
 
 				// Un contribuable quelconque
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 
 				// Un autre contribuable quelconque
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
@@ -1113,7 +1111,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 						addPeriodeFiscale(2007)));
 
 				// Un contribuable hors-canton possédant deux immeubles dans le canton
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), null, MockCommune.Neuchatel);
 				addForSecondaire(eric, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -1124,7 +1122,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, eric, null, null, colAdm);
 
 				// Un autre contribuable hors-canton possédant deux immeubles dans le canton
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), null, MockCommune.Neuchatel);
 				// addForSecondaire(john, date(1983, 4, 13), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -1196,19 +1194,19 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
-				Contribuable jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();
 				addForPrincipal(jean, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, null, colAdm);
 
-				Contribuable jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jacquesId = jacques.getNumero();
 				addForPrincipal(jacques, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques, null, null, colAdm);
 
-				Contribuable pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.pierreId = pierre.getNumero();
 				addForPrincipal(pierre, date(2006, 2, 5), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(10), date(2007, 1, 1), date(2007, 12, 31),
@@ -1304,31 +1302,29 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", modele);
 
 				// Un contribuable normal
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 
 				// Un contribuable indigent
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
-				ForFiscalPrincipal f = addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				f.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, john, null, null, colAdm);
 
 				// [UNIREG-1852] Un contribuable indigent décédé dans l'année
-				Contribuable ours = addNonHabitant("Ours", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique ours = addNonHabitant("Ours", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.oursId = ours.getNumero();
-				f = addForPrincipal(ours, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				f.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(ours, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 5, 23),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ours, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 
 				// Un contribuable normal avec une DI pré-existente sur toute l'année
-				Contribuable ramon = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique ramon = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ramonId = ramon.getNumero();
 				addForPrincipal(ramon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
@@ -1336,7 +1332,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addDeclarationImpot(ramon, periode, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
 				// Un contribuable normal avec une DI pré-existente sur une portion de l'année (= cas erroné)
-				Contribuable totor = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique totor = addNonHabitant("Ramon", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.totorId = totor.getNumero();
 				addForPrincipal(totor, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
@@ -1465,7 +1461,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 1-1", "310", declarationComplete2009);
 
 				// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé fin 2006 au Danemark.
-				Contribuable jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique jacky = addNonHabitant("Jacky", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.jackyId = jacky.getNumero();
 				addForPrincipal(jacky, date(1968, 11, 3), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(jacky, date(2007, 1, 1), null, MockPays.Danemark);
@@ -1475,7 +1471,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				                    declarationComplete2006);
 
 				// Contribuable propriétaire d'un immeubles à Lausanne et ayant déménagé mi 2007 au Danemark.
-				Contribuable thierry = addNonHabitant("Thierry", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique thierry = addNonHabitant("Thierry", "Galager", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.thierryId = thierry.getNumero();
 				addForPrincipal(thierry, date(1968, 11, 3), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 				addForPrincipal(thierry, date(2007, 7, 1), null, MockPays.Danemark);
@@ -1485,7 +1481,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				                    declarationComplete2006);
 
 				// Contribuable propriétaire d'un immeuble depuis mi-2007 à Lausanne et hors-Suisse depuis toujours
-				Contribuable lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
+				PersonnePhysique lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.lionelId = lionel.getNumero();
 				addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.Danemark);
 				addForSecondaire(lionel, date(2007, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
@@ -1539,26 +1535,23 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un tiers indigent depuis toujours
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
-				ForFiscalPrincipal fors = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-				fors.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.INDIGENT);
 
 				// Un tiers indigent depuis 2007
-				Contribuable john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique john = addNonHabitant("John", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.johnId = john.getNumero();
 				addForPrincipal(john, date(1983, 4, 13), MotifFor.MAJORITE, date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION,
 						MockCommune.Lausanne);
-				fors = addForPrincipal(john, date(2007, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
-				fors.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(john, date(2007, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.INDIGENT);
 				addDeclarationImpot(john, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						declarationComplete);
 
 				// Un tiers indigent décédé en 2007
-				Contribuable paul = addNonHabitant("Paul", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique paul = addNonHabitant("Paul", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.paulId = paul.getNumero();
-				fors = addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				fors.setModeImposition(ModeImposition.INDIGENT);
+				addForPrincipal(paul, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
 
 				return null;
 			}
@@ -2033,7 +2026,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -2164,7 +2157,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
 
 				// Un tiers tout ce quil y a de plus ordinaire
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.ericId = eric.getNumero();
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,

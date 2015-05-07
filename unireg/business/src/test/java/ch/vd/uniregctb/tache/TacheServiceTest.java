@@ -56,6 +56,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -191,8 +192,8 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipalPP forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
+				                                                                         TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipal);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
@@ -218,8 +219,8 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				final ForFiscalPrincipalPP forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HS, null, null, 5652,
+				                                                                         TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 				hab.addForFiscal(forFiscalPrincipal);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
@@ -241,8 +242,8 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HC, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipalPP forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.ARRIVEE_HC, null, null, 5652,
+				                                                                         TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipal);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
 				return null;
@@ -275,12 +276,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeCourante, 1, 2), MotifFor.DEMENAGEMENT_VD, 5586,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipalPP forFiscalPrincipalDepart = new ForFiscalPrincipalPP(RegDate.get(2008, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeCourante, 1, 2), MotifFor.DEMENAGEMENT_VD, 5586,
+				                                                                               TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipalDepart);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 1, 3), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipalPP forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(periodeCourante, 1, 3), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
+				                                                                         TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab.addForFiscal(forFiscalPrincipal);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
@@ -300,12 +301,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab2.setNumeroIndividu(333904L);
 				hab2 = hibernateTemplate.merge(hab2);
 
-				final ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeEchue, 6, 11), MotifFor.DEMENAGEMENT_VD, 5586,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipalPP(RegDate.get(2007, 6, 12), MotifFor.ARRIVEE_HC, RegDate.get(periodeEchue, 6, 11), MotifFor.DEMENAGEMENT_VD, 5586,
+				                                                                              TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab2.addForFiscal(forFiscalPrincipalDepart2);
 
-				final ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(periodeEchue, 6, 12), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipalPP(RegDate.get(periodeEchue, 6, 12), MotifFor.DEMENAGEMENT_VD, null, null, 5652,
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab2.addForFiscal(forFiscalPrincipal2);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, forFiscalPrincipal2, null);
@@ -332,8 +333,8 @@ public class TacheServiceTest extends BusinessTest {
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
 				final MenageCommun menage = ensemble.getMenage();
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
+				                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				menage.addForFiscal(forFiscalPrincipal);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(menage, forFiscalPrincipal, null);
@@ -384,8 +385,8 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
 				// Etat après veuvage
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.VEUVAGE_DECES, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.VEUVAGE_DECES, null, null, 5652,
+				                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab1.addForFiscal(forFiscalPrincipal);
 
 				MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
@@ -553,8 +554,8 @@ public class TacheServiceTest extends BusinessTest {
 				MenageCommun menage = ensemble.getMenage();
 				assertNotNull(menage);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, 5652,
+				                                                                       TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				menage.addForFiscal(forFiscalPrincipal);
 
 				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
@@ -584,12 +585,12 @@ public class TacheServiceTest extends BusinessTest {
 				hab1.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 				hab2.getRapportsSujet().iterator().next().setDateFin(forFiscalPrincipal.getDateFin());
 
-				ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				ForFiscalPrincipal ffp1 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
+				                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab1.addForFiscal(ffp1);
 
-				ForFiscalPrincipal ffp2 = new ForFiscalPrincipal(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				ForFiscalPrincipal ffp2 = new ForFiscalPrincipalPP(forFiscalPrincipal.getDateFin().getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, null, 5652,
+				                                                   TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				hab2.addForFiscal(ffp2);
 
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab1, ffp1, null);
@@ -616,10 +617,10 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu((long) 333908);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.DEBUT_EXPLOITATION, null, null, 8201,
-						TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.DEBUT_EXPLOITATION, null, null, 8201,
+				                                                                       TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				final ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), MotifFor.DEBUT_EXPLOITATION, null, null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				hab.addForFiscal(forFiscalPrincipal);
 				forFiscalSecondaire.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
@@ -646,10 +647,10 @@ public class TacheServiceTest extends BusinessTest {
 		hab.setNumeroIndividu((long) 333908);
 		hab = hibernateTemplate.merge(hab);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), MotifFor.ACHAT_IMMOBILIER, null, null, 8201,
-				TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2006, 6, 12), MotifFor.ACHAT_IMMOBILIER, null, null, 8201,
+		                                                                 TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), MotifFor.ACHAT_IMMOBILIER, null, null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+		                                                                  TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 
 		hab.addForFiscal(forFiscalPrincipal);
 		forFiscalSecondaire.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
@@ -758,7 +759,7 @@ public class TacheServiceTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 1-1", "310", modele2009);
 
 				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
@@ -769,7 +770,7 @@ public class TacheServiceTest extends BusinessTest {
 				addDeclarationImpot(raoul, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
 				// Un autre contribuable vaudois depuis 1998 avec des DIs jusqu'en 2009
-				Contribuable jeanDaniel = addNonHabitant("Jean-Daniel", "Lavanchy", date(1962, 10, 4), Sexe.MASCULIN);
+				PersonnePhysique jeanDaniel = addNonHabitant("Jean-Daniel", "Lavanchy", date(1962, 10, 4), Sexe.MASCULIN);
 				ids.jeanDanielId = jeanDaniel.getNumero();
 				addForPrincipal(jeanDaniel, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
@@ -923,7 +924,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
-				final Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
 
@@ -940,12 +941,11 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+				final PersonnePhysique raoul = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
 				assertNotNull(raoul);
 
 				tiersService.closeForFiscalPrincipal(raoul, date(2008, 5, 23), MotifFor.DEPART_HC);
-				tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
-						MotifFor.DEPART_HC);
+				tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.DEPART_HC);
 
 				return null;
 			}
@@ -993,8 +993,8 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
 
-				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), MotifFor.INDETERMINE, RegDate.get(2007, 12, 31), MotifFor.DEPART_HC,
-						5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipalPP(RegDate.get(2007, 6, 12), MotifFor.INDETERMINE, RegDate.get(2007, 12, 31), MotifFor.DEPART_HC,
+				                                                                       5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 
 				tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
 				return null;
@@ -1106,7 +1106,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				return null;
@@ -1146,7 +1146,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Contribuable vaudois parti en France dès 1999
-				Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				ids.raoulId = raoul.getNumero();
 
 				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, date(1999, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1186,7 +1186,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2004);
 
 				// Contribuable français
-				Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				PersonnePhysique raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockPays.France);
 				ids.raoulId = raoul.getNumero();
 
@@ -1901,7 +1901,7 @@ public class TacheServiceTest extends BusinessTest {
 				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCEDI);
 				ids.oidCedi = cedi.getId();
 
-				final Contribuable simon = addHabitant(100000);
+				final PersonnePhysique simon = addHabitant(100000);
 				ids.simonId = simon.getNumero();
 				addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
 				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -1972,7 +1972,7 @@ public class TacheServiceTest extends BusinessTest {
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
-				Contribuable raoul = addHabitant(100000);
+				PersonnePhysique raoul = addHabitant(100000);
 				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				ids.raoulId = raoul.getNumero();
 				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
@@ -2016,7 +2016,7 @@ public class TacheServiceTest extends BusinessTest {
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
-				Contribuable raoul = addHabitant(100000);
+				PersonnePhysique raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				for (int i = 2003; i <= 2008; i++) {
@@ -2067,7 +2067,7 @@ public class TacheServiceTest extends BusinessTest {
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null);
 					}
 				});
-				Contribuable raoul = addHabitant(100000);
+				PersonnePhysique raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				return null;
@@ -2116,7 +2116,7 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Contribuable raoul = addHabitant(100000);
+				PersonnePhysique raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
@@ -2166,7 +2166,7 @@ public class TacheServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
 				assertNotNull(colAdm);
 
-				Contribuable raoul = addHabitant(100000);
+				PersonnePhysique raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
@@ -2239,7 +2239,7 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu((long) 333908);
 				hab = hibernateTemplate.merge(hab);
 
-				final ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, motifOuverture, null, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, modeImposition);
+				final ForFiscalPrincipal f = new ForFiscalPrincipalPP(dateOuverture, motifOuverture, null, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, modeImposition);
 				hab.addForFiscal(f);
 				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, f, null);
 				return null;
@@ -2466,14 +2466,13 @@ public class TacheServiceTest extends BusinessTest {
 	public void testAddForPrincipalDateReindexationFutur1() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon, ModeImposition.SOURCE);
 
 		// état initial : pas de réindexation prévue dans le futur
 		assertNull(pp.getReindexOn());
 
 		tiersService.addForPrincipal(pp, date(2010, 11, 23), MotifFor.PERMIS_C_SUISSE, null, null, MotifRattachement.DOMICILE, MockCommune.Chamblon.getNoOFS(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+		                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
 
 		// après changement du mode d'imposition : réindexation prévue pour le 1er du mois suivant
 		assertEquals(date(2010, 12, 1), pp.getReindexOn());
@@ -2487,8 +2486,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testAddForPrincipalDateReindexationFutur2() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon, ModeImposition.SOURCE);
 
 		// état initial : pas de réindexation prévue dans le futur
 		assertNull(pp.getReindexOn());
@@ -2508,8 +2506,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testChangeModeImpositionDateReindexationFutur() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Philippe", "Macaron", date(1970, 1, 1), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Chamblon, ModeImposition.SOURCE);
 
 		// état initial : pas de réindexation prévue dans le futur
 		assertNull(pp.getReindexOn());
@@ -2531,9 +2528,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Marcelin", "Emile", date(1946, 1, 5), Sexe.MASCULIN);
 				final RegDate dateArrivee = date(2008, 4, 1);
 				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, dateArrivee, null, MockRue.Bex.CheminDeLaForet);
-
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex, ModeImposition.SOURCE);
 				return pp.getNumero();
 			}
 		});
@@ -2546,7 +2541,7 @@ public class TacheServiceTest extends BusinessTest {
 				final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(pp, null);
 				assertNull(oid);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 				tiersService.annuleForFiscal(ffp);
@@ -2761,8 +2756,7 @@ public class TacheServiceTest extends BusinessTest {
 				final MenageCommun menage = ensemble.getMenage();
 				ids.menage = menage.getNumero();
 
-				final ForFiscalPrincipal ffp = addForPrincipal(menage, date(2008, 8, 22), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(menage, date(2008, 8, 22), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return null;
 			}
 		});
@@ -3672,8 +3666,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Bashkim", "Muji", date(1983, 3, 24), Sexe.MASCULIN);
 
-				final ForFiscalPrincipal ffp1 = addForPrincipal(pp, date(2004, 3, 1), MotifFor.INDETERMINE, date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
-				ffp1.setModeImposition(ModeImposition.INDIGENT);
+				final ForFiscalPrincipal ffp1 = addForPrincipal(pp, date(2004, 3, 1), MotifFor.INDETERMINE, date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle, ModeImposition.INDIGENT);
 				final ForFiscalPrincipal ffp2 = addForPrincipal(pp, date(2009, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
 
 				for (int annee = 2004; annee < anneeCourante; ++annee) {
@@ -4108,8 +4101,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Léo", "Bidule", date(1960, 1, 1), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ancienMode);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ancienMode);
 
 				if (ancienMode != ModeImposition.SOURCE) {
 					final int anneeCourante = RegDate.get().year();
@@ -4123,7 +4115,7 @@ public class TacheServiceTest extends BusinessTest {
 				}
 
 				final RegDate dateChangement = date(2006, 1, 1);
-				final ForFiscalPrincipal nffp = tiersService.changeModeImposition(pp, dateChangement, nouveauMode, MotifFor.CHGT_MODE_IMPOSITION);
+				final ForFiscalPrincipalPP nffp = tiersService.changeModeImposition(pp, dateChangement, nouveauMode, MotifFor.CHGT_MODE_IMPOSITION);
 				assertNotNull(nffp);
 				assertEquals(nouveauMode, nffp.getModeImposition());
 				assertEquals(dateChangement, nffp.getDateDebut());
@@ -4229,7 +4221,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 				assertNotNull(fors);
 				assertEquals(2, fors.size());
 
@@ -4378,7 +4370,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				final List<? extends ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 				assertNotNull(fors);
 				assertEquals(1, fors.size());
 
@@ -4425,8 +4417,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testDecesSourcierPur() throws Exception {
 
 		final PersonnePhysique marcel = addNonHabitant("Marcel", "Longuesmanches", date(1923, 4, 22), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(marcel, date(1956, 6, 17), MotifFor.ARRIVEE_HS, date(1977, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(marcel, date(1956, 6, 17), MotifFor.ARRIVEE_HS, date(1977, 4, 12), MotifFor.DEPART_HC, MockCommune.Aigle, ModeImposition.SOURCE);
 		addForPrincipal(marcel, date(1977, 4, 13), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 
 		tiersService.closeForFiscalPrincipal(marcel, date(2000, 3, 22), MotifFor.VEUVAGE_DECES);
@@ -5387,8 +5378,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable avec un for fiscal vaudois source -> le for principal (même source) est pris en compte à défaut d'autres fors
 		{
 			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
-			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne);
-			ffp.setModeImposition(ModeImposition.SOURCE);
+			addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
 			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
 			assertNotNull(officeImpot);
 			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
@@ -5397,8 +5387,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable avec un for fiscal vaudois ordinaire annulé -> le for principal source (même annulé) est pris en compte à défaut d'autres fors
 		{
 			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
-			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-			ffp.setModeImposition(ModeImposition.SOURCE);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne, ModeImposition.SOURCE);
 			ffp.setAnnule(true);
 			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
 			assertNotNull(officeImpot);
@@ -5410,8 +5399,7 @@ public class TacheServiceTest extends BusinessTest {
 			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948,1,1), Sexe.MASCULIN);
 			final ForFiscalPrincipal ffp0 = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Lausanne);
 			ffp0.setAnnule(true);
-			final ForFiscalPrincipal ffp1 = addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Morges);
-			ffp1.setModeImposition(ModeImposition.SOURCE);
+			addForPrincipal(pp, date(1968,1,1), MotifFor.MAJORITE, MockCommune.Morges, ModeImposition.SOURCE);
 			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);
 			assertNotNull(officeImpot);
 			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
@@ -5420,8 +5408,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable avec un for fiscal vaudois principal source et un for secondaire annulé -> le for secondaire (même annulé) prime sur le for principal source
 		{
 			final PersonnePhysique pp = addNonHabitant("Paul", "Effe", date(1948, 1, 1), Sexe.MASCULIN);
-			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Morges);
-			ffp.setModeImposition(ModeImposition.SOURCE);
+			addForPrincipal(pp, date(1968, 1, 1), MotifFor.MAJORITE, MockCommune.Morges, ModeImposition.SOURCE);
 			final ForFiscalSecondaire ffs = addForSecondaire(pp, date(1990, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 			ffs.setAnnule(true);
 			final CollectiviteAdministrative officeImpot = service.getOfficeImpot(pp);

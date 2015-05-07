@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -26,9 +26,9 @@ public class FusionMenagesResolver extends MariageModeImpositionResolver {
 	}
 
 	@Override
-	public Imposition resolve(Contribuable contribuable, RegDate date) throws ModeImpositionResolverException {
-		final ForFiscalPrincipal forFPPrincipal = premierMenage.getForFiscalPrincipalAt(null);
-		final ForFiscalPrincipal forFPConjoint = secondMenage.getForFiscalPrincipalAt(null);
+	public Imposition resolve(ContribuableImpositionPersonnesPhysiques contribuable, RegDate date) throws ModeImpositionResolverException {
+		final ForFiscalPrincipalPP forFPPrincipal = premierMenage.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipalPP forFPConjoint = secondMenage.getForFiscalPrincipalAt(null);
 		
 		if (forFPPrincipal != null || forFPConjoint != null) {
 

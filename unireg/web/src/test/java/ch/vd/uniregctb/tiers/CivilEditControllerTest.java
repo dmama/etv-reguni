@@ -106,9 +106,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				Assert.assertEquals("Kamel", nh.getNom());
 				return null;
 			}
@@ -145,9 +145,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				Assert.assertEquals(nom, nh.getNom());
 				Assert.assertEquals(dateN, nh.getDateNaissance());
 				return null;
@@ -181,9 +181,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				Assert.assertNull(nh.getDateNaissance());
 				return null;
 			}
@@ -215,9 +215,9 @@ public class CivilEditControllerTest extends WebTestSpring3 {
 				final List<Tiers> all = tiersDAO.getAll();
 				Assert.assertEquals(1 + MockCollectiviteAdministrative.getAll().size(), all.size());
 
-				final List<Tiers> allPP = allTiersOfType(PersonnePhysique.class);
+				final List<PersonnePhysique> allPP = allTiersOfType(PersonnePhysique.class);
 				Assert.assertEquals(1, allPP.size());
-				final PersonnePhysique nh = (PersonnePhysique) allPP.get(0);
+				final PersonnePhysique nh = allPP.get(0);
 				Assert.assertEquals(dateN, nh.getDateNaissance());
 				return null;
 			}

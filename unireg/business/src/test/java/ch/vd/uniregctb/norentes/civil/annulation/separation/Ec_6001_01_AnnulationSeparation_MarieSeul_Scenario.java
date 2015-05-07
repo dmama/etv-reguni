@@ -6,6 +6,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -48,11 +49,8 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		final PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		ffp.setModeImposition(ModeImposition.SOURCE);
-
-		ffp = addForFiscalPrincipal(pierre, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ModeImposition.SOURCE);
+		addForFiscalPrincipal(pierre, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, ModeImposition.SOURCE);
 
 		pierre.setBlocageRemboursementAutomatique(false);
 
@@ -61,8 +59,8 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, dateSeparation.getOneDayBefore());
 
-		ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+		                      MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ModeImposition.SOURCE);
 	}
 
 	private void assertBlocageRemboursementAuto(boolean flagPierre, boolean flagMenage) {
@@ -74,7 +72,7 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 	public void check1() {
 		{
 			PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
-			ForFiscalPrincipal ffp = pierre.getForFiscalPrincipalAt(null);
+			ForFiscalPrincipalPP ffp = pierre.getForFiscalPrincipalAt(null);
 			assertNotNull(ffp, "For principal de l'Habitant " + pierre.getNumero() + " inexistant");
 			assertEquals(dateSeparation, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
@@ -83,7 +81,7 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		}
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);
-			ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(null);
+			ForFiscalPrincipalPP ffp = mc.getForFiscalPrincipalAt(null);
 			assertNull(ffp, "Le ménage devrait avoir son for fermé");
 			ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "Dernier For principal du ménage " + mc.getNumero() + " inexistant");

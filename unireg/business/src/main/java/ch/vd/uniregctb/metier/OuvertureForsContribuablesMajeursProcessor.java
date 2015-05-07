@@ -473,7 +473,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			+ "        SELECT                                                      "
 			+ "            fors.id                                                 "
 			+ "        FROM                                                        "
-			+ "            ForFiscalPrincipal AS fors                              "
+			+ "            ForFiscalPrincipalPP AS fors                              "
 			+ "        WHERE                                                       "
 			+ "            fors.annulationDate IS null                             "
 			+ "            AND fors.tiers.id = hab.id                              "

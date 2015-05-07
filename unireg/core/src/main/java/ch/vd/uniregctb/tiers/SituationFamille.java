@@ -14,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -52,7 +52,7 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	/**
 	 * Le contribuable associé
 	 */
-	private Contribuable contribuable;
+	private ContribuableImpositionPersonnesPhysiques contribuable;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -112,11 +112,11 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	})
 	@JoinColumn(name = "CTB_ID", insertable = false, updatable = false, nullable = false)
 	@Index(name = "IDX_SIT_FAM_CTB_ID", columnNames = "CTB_ID")
-	public Contribuable getContribuable() {
+	public ContribuableImpositionPersonnesPhysiques getContribuable() {
 		return contribuable;
 	}
 
-	public void setContribuable(Contribuable contribuable) {
+	public void setContribuable(ContribuableImpositionPersonnesPhysiques contribuable) {
 		this.contribuable = contribuable;
 	}
 
@@ -220,6 +220,6 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return contribuable == null ? null : Arrays.asList(contribuable);
+		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 }

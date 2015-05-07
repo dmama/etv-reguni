@@ -19,11 +19,9 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -106,8 +104,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 			tiersService.addTiersToCouple(menage, antoine, dateMariage, null);
 			tiersService.addTiersToCouple(menage, cleo, dateMariage, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, MockCommune.Bex, date(1990, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, MockCommune.Bex, date(1990, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		}
 
 		// surcharge d'adresse sur un des membres du couple

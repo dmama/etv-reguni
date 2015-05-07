@@ -15,7 +15,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -87,7 +87,7 @@ public class ChangementNationaliteEtrangereEchProcessorTest extends AbstractEven
 				Assert.assertNotNull(pp);
 				Assert.assertEquals((Long) ppId, pp.getNumero());
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
 				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());

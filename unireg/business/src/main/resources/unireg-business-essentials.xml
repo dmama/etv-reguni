@@ -239,12 +239,14 @@
 
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator" />
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
-	<bean id="autreCommunauteValidator" class="ch.vd.uniregctb.validation.tiers.AutreCommunauteValidator" parent="contribuableValidator" />
 	<bean id="collectiviteAdministrativeValidator" class="ch.vd.uniregctb.validation.tiers.CollectiviteAdministrativeValidator" parent="contribuableValidator" />
-	<bean id="entrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EntrepriseValidator" parent="contribuableValidator" />
 	<bean id="etablissementValidator" class="ch.vd.uniregctb.validation.tiers.EtablissementValidator" parent="contribuableValidator" />
-	<bean id="menageCommunValidator" class="ch.vd.uniregctb.validation.tiers.MenageCommunValidator" parent="contribuableValidator" />
-	<bean id="personnePhysiqueValidator" class="ch.vd.uniregctb.validation.tiers.PersonnePhysiqueValidator" parent="contribuableValidator" />
+	<bean id="contribuableImpositionPersonnesMoralesValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableImpositionPersonnesMoralesValidator" abstract="true" parent="contribuableValidator"/>
+	<bean id="entrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EntrepriseValidator" parent="contribuableImpositionPersonnesMoralesValidator" />
+	<bean id="autreCommunauteValidator" class="ch.vd.uniregctb.validation.tiers.AutreCommunauteValidator" parent="contribuableImpositionPersonnesMoralesValidator" />
+	<bean id="contribuableImpositionPersonnesPhysiquesValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableImpositionPersonnesPhysiquesValidator" abstract="true" parent="contribuableValidator"/>
+	<bean id="menageCommunValidator" class="ch.vd.uniregctb.validation.tiers.MenageCommunValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
+	<bean id="personnePhysiqueValidator" class="ch.vd.uniregctb.validation.tiers.PersonnePhysiqueValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
 
 	<bean id="forFiscalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalValidator" abstract="true" parent="entityValidator">
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
@@ -252,7 +254,9 @@
 	<bean id="forFiscalRevenuFortuneValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalRevenuFortuneValidator" abstract="true" parent="forFiscalValidator" />
 	<bean id="forFiscalAutreImpotValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalAutreImpotValidator" parent="forFiscalValidator" />
 	<bean id="forDebiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.fors.ForDebiteurPrestationImposableValidator" parent="forFiscalValidator" />
-	<bean id="forFiscalPrincipalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalValidator" parent="forFiscalRevenuFortuneValidator" />
+	<bean id="forFiscalPrincipalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalValidator" abstract="true" parent="forFiscalRevenuFortuneValidator" />
+	<bean id="forFiscalPrincipalPPValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPPValidator" parent="forFiscalPrincipalValidator" />
+	<bean id="forFiscalPrincipalPMValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPMValidator" parent="forFiscalPrincipalValidator" />
 	<bean id="forFiscalSecondaireValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalSecondaireValidator" parent="forFiscalRevenuFortuneValidator" />
 	<bean id="forFiscalAutreElementImposableValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalAutreElementImposableValidator" parent="forFiscalRevenuFortuneValidator" />
 

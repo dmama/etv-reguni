@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -37,7 +37,7 @@ public class DecompositionForsTest extends MetierTest {
 		final RegDate dateAchat = date(1998, 10, 17);
 		final RegDate dateArrivee = date(2003, 1, 1);
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		final ForFiscalPrincipal ffp2002 = addForPrincipal(ctb, dateAchat, MotifFor.INDETERMINE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockPays.PaysInconnu);
 		final ForFiscalPrincipal ffp2003 = addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Leysin);
 		final ForFiscalSecondaire ffs = addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
@@ -124,7 +124,7 @@ public class DecompositionForsTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDecompositionForsAvecForAutreImpot() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final PersonnePhysique ctb = createContribuableSansFor();
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2010, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aigle);
 		addForAutreImpot(ctb, date(2011, 4, 1), date(2011, 4, 1), MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
 

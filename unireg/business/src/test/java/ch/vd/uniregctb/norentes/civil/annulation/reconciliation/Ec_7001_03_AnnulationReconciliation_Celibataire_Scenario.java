@@ -6,7 +6,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -45,15 +45,14 @@ public class Ec_7001_03_AnnulationReconciliation_Celibataire_Scenario extends Ab
 		// Julie
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		ForFiscalPrincipal ffp = addForFiscalPrincipal(julie, commune, dateDebut, null, MotifFor.ARRIVEE_HC, null);
-		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForFiscalPrincipal(julie, commune, dateDebut, null, MotifFor.ARRIVEE_HC, null, ModeImposition.SOURCE);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Julie a bien un for ouvert")
 	public void check1() {
 		{
 			PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabJulie);
-			ForFiscalPrincipal ffp = pierre.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = pierre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + pierre.getNumero() + " inexistant");
 			assertEquals(dateDebut, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");

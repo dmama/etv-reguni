@@ -29,7 +29,7 @@ import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -1145,7 +1145,6 @@ public class TestData {
 		Entreprise e0 = new Entreprise();
 		e0.setNumero(127001L);
 		e0.setMouvementsDossier(new HashSet());
-		e0.setSituationsFamille(new HashSet());
 		e0.setDebiteurInactif(false);
 		e0.setLogCreationDate(new Timestamp(1199142000000L));
 		e0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1232,7 +1231,6 @@ public class TestData {
 		ac0.setFormeJuridique(FormeJuridique.ASS);
 		ac0.setNom("Communaute XYZ");
 		ac0.setMouvementsDossier(new HashSet());
-		ac0.setSituationsFamille(new HashSet());
 		ac0.setDebiteurInactif(false);
 		ac0.setLogCreationDate(new Timestamp(1199142000000L));
 		ac0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1250,7 +1248,6 @@ public class TestData {
 			CollectiviteAdministrative ca0 = new CollectiviteAdministrative();
 			ca0.setNumero(2100001L);
 			ca0.setMouvementsDossier(new HashSet());
-			ca0.setSituationsFamille(new HashSet());
 			ca0.setDebiteurInactif(false);
 			ca0.setLogCreationDate(new Timestamp(1199142000000L));
 			ca0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1265,7 +1262,6 @@ public class TestData {
 			CollectiviteAdministrative ca1 = new CollectiviteAdministrative();
 			ca1.setNumero(2100002L);
 			ca1.setMouvementsDossier(new HashSet());
-			ca1.setSituationsFamille(new HashSet());
 			ca1.setDebiteurInactif(false);
 			ca1.setLogCreationDate(new Timestamp(1199142000000L));
 			ca1.setLogModifDate(new Timestamp(1199142000000L));
@@ -1687,7 +1683,7 @@ public class TestData {
 		pp3.addRapportSujet(cis0);
 		dpi0.addRapportObjet(cis0);
 
-		ForFiscalPrincipal ffp0 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp0 = new ForFiscalPrincipalPP();
 		ffp0.setId(7L);
 		ffp0.setDateDebut(RegDate.get(2002, 2, 12));
 		ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1726,7 +1722,7 @@ public class TestData {
 		pp6.addForFiscal(ffs1);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipal ffp1 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp1 = new ForFiscalPrincipalPP();
 		ffp1.setId(107L);
 		ffp1.setDateFin(RegDate.get(2002, 2, 11));
 		ffp1.setDateDebut(RegDate.get(2001, 2, 12));
@@ -1740,7 +1736,7 @@ public class TestData {
 		pp6.addForFiscal(ffp1);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipal ffp2 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp2 = new ForFiscalPrincipalPP();
 		ffp2.setId(108L);
 		ffp2.setDateFin(RegDate.get(2001, 2, 11));
 		ffp2.setDateDebut(RegDate.get(2000, 2, 12));
@@ -1755,7 +1751,7 @@ public class TestData {
 		pp6.addForFiscal(ffp2);
 		pp6 = hibernateTemplate.merge(pp6);
 
-		ForFiscalPrincipal ffp3 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp3 = new ForFiscalPrincipalPP();
 		ffp3.setId(1L);
 		ffp3.setDateDebut(RegDate.get(2008, 1, 29));
 		ffp3.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1768,7 +1764,7 @@ public class TestData {
 		pp2.addForFiscal(ffp3);
 		pp2 = hibernateTemplate.merge(pp2);
 
-		ForFiscalPrincipal ffp4 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp4 = new ForFiscalPrincipalPP();
 		ffp4.setId(2L);
 		ffp4.setDateFin(RegDate.get(1985, 2, 14));
 		ffp4.setDateDebut(RegDate.get(1979, 2, 9));
@@ -1783,7 +1779,7 @@ public class TestData {
 		pp9.addForFiscal(ffp4);
 		pp9 = hibernateTemplate.merge(pp9);
 
-		ForFiscalPrincipal ffp5 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp5 = new ForFiscalPrincipalPP();
 		ffp5.setId(6L);
 		ffp5.setDateFin(RegDate.get(1985, 2, 14));
 		ffp5.setDateDebut(RegDate.get(1978, 10, 20));
@@ -1798,7 +1794,7 @@ public class TestData {
 		pp10.addForFiscal(ffp5);
 		pp10 = hibernateTemplate.merge(pp10);
 
-		ForFiscalPrincipal ffp6 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp6 = new ForFiscalPrincipalPP();
 		ffp6.setId(5L);
 		ffp6.setDateDebut(RegDate.get(1985, 2, 15));
 		ffp6.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1811,7 +1807,7 @@ public class TestData {
 		mc1.addForFiscal(ffp6);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		ForFiscalPrincipal ffp7 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp7 = new ForFiscalPrincipalPP();
 		ffp7.setId(4L);
 		ffp7.setDateDebut(RegDate.get(1997, 6, 24));
 		ffp7.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1824,7 +1820,7 @@ public class TestData {
 		pp8.addForFiscal(ffp7);
 		pp8 = hibernateTemplate.merge(pp8);
 
-		ForFiscalPrincipal ffp8 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp8 = new ForFiscalPrincipalPP();
 		ffp8.setId(9L);
 		ffp8.setDateDebut(RegDate.get(2008, 1, 29));
 		ffp8.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1837,7 +1833,7 @@ public class TestData {
 		mc0.addForFiscal(ffp8);
 		mc0 = hibernateTemplate.merge(mc0);
 
-		ForFiscalPrincipal ffp9 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp9 = new ForFiscalPrincipalPP();
 		ffp9.setId(10L);
 		ffp9.setDateDebut(RegDate.get(2008, 4, 15));
 		ffp9.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1851,7 +1847,7 @@ public class TestData {
 		pp13 = hibernateTemplate.merge(pp13);
 
 
-		ForFiscalPrincipal ffp10 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp10 = new ForFiscalPrincipalPP();
 		ffp10.setId(13L);
 		ffp10.setDateDebut(RegDate.get(2006, 6, 5));
 		ffp10.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1876,7 +1872,7 @@ public class TestData {
 		pp1.addForFiscal(ffs2);
 		pp1 = hibernateTemplate.merge(pp1);
 
-		ForFiscalPrincipal ffp11 = new ForFiscalPrincipal();
+		ForFiscalPrincipalPP ffp11 = new ForFiscalPrincipalPP();
 		ffp11.setId(15L);
 		ffp11.setDateFin(RegDate.get(1990, 7, 2));
 		ffp11.setDateDebut(RegDate.get(1971, 12, 18));

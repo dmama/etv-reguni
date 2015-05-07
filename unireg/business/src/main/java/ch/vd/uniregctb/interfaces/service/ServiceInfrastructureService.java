@@ -29,6 +29,7 @@ public interface ServiceInfrastructureService {
 
 	static final String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
 
+	final static int noOIPM = ServiceInfrastructureRaw.noOIPM;
 	final static int noACI = ServiceInfrastructureRaw.noACI;
 	final static int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
 	final static int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;

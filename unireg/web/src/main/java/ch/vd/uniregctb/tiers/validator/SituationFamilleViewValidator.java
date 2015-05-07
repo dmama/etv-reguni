@@ -5,7 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
@@ -38,7 +38,7 @@ public class SituationFamilleViewValidator implements Validator {
 			errors.rejectValue("nombreEnfants", "error.nombre.enfants.vide");
 		}
 
-		Contribuable ctb = (Contribuable) tiersDAO.get(situationFamilleView.getNumeroCtb());
+		ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(situationFamilleView.getNumeroCtb());
 		SituationFamille situationFamille = ctb.getSituationFamilleActive();
 		if ((situationFamille != null) && (situationFamilleView.getDateDebut() != null)) {
 			if (situationFamilleView.getDateDebut().before(RegDate.asJavaDate(situationFamille.getDateDebut()))) {

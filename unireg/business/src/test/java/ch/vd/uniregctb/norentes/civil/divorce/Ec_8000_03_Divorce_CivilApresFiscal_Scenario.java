@@ -12,6 +12,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -123,8 +124,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 			tiersService.addTiersToCouple(menage, pierre, dateDemenagement, null);
 			tiersService.addTiersToCouple(menage, karina, dateDemenagement, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
+			addForFiscalPrincipal(menage, commune, dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null);
 
 			menage.setBlocageRemboursementAutomatique(false);
 		}
@@ -213,7 +213,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 		{
 			final PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
-			final ForFiscalPrincipal ffp = pierre.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = pierre.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + pierre.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + pierre.getNumero() + " est fermé");
 			// pierre doit passer au mode dépense
@@ -224,7 +224,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 		{
 			final PersonnePhysique karina = (PersonnePhysique) tiersDAO.get(noHabKarina);
-			final ForFiscalPrincipal ffp = karina.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = karina.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + karina.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + karina.getNumero() + " est fermé");
 			// karina doit passer au mode ordinaire

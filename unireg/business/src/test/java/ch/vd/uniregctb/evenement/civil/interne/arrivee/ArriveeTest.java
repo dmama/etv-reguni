@@ -44,6 +44,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -604,9 +605,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 					assertNotNull(fors);
 					assertEquals(2, fors.size());
 					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 				}
 			});
 		}
@@ -677,9 +678,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 					assertNotNull(fors);
 					assertEquals(2, fors.size());
 					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 				}
 			});
 		}
@@ -748,7 +749,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			// -> le for est tentativement créé sur la commune de Riex (et non plus sur la commune de Bourg-en-Lavaux)
 
 			final ValidationMessage erreur = e.getErrors().get(0);
-			assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
+			assertEquals("La période de validité du for fiscal ForFiscalPrincipalPP (01.09.2010 - ?) dépasse " +
 					             "la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 31.12.2010)", erreur.getMessage());
 		}
 	}
@@ -810,9 +811,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				assertNotNull(fors);
 				assertEquals(2, fors.size());
 				assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				                   MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 				assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
-				                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+				                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 			}
 		});
 	}
@@ -879,9 +880,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 					assertNotNull(fors);
 					assertEquals(2, fors.size());
 					assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					                   MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+					                   MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(0));
 					assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
-					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
+					                   ModeImposition.ORDINAIRE, (ForFiscalPrincipalPP) fors.get(1));
 
 					assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point de vue fiscal.", externe.getCommentaireTraitement());
 				}

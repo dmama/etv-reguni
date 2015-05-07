@@ -30,6 +30,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceServiceException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -164,9 +165,9 @@ public class ForsTimelineController {
 		final List<Assujettissement> assujettissementsRole = new ArrayList<>();
 		final List<Assujettissement> assujettissements = new ArrayList<>();
 
-		if (tiers instanceof Contribuable) {
+		if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
+			final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiers;
 			if (bean.isShowAssujettissementsSource()) {
-				final Contribuable contribuable = (Contribuable) tiers;
 				final RegDate debutActivite = contribuable.getDateDebutActivite();
 				if (debutActivite != null) {
 					try {
@@ -181,7 +182,6 @@ public class ForsTimelineController {
 				}
 			}
 			if (bean.isShowAssujettissementsRole()) {
-				final Contribuable contribuable = (Contribuable) tiers;
 				final RegDate debutActivite = contribuable.getDateDebutActivite();
 				if (debutActivite != null) {
 					try {
@@ -195,6 +195,8 @@ public class ForsTimelineController {
 					}
 				}
 			}
+		}
+		if (tiers instanceof Contribuable) {
 			if (bean.isShowAssujettissements()) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				final RegDate debutActivite = contribuable.getDateDebutActivite();
@@ -211,6 +213,7 @@ public class ForsTimelineController {
 				}
 			}
 		}
+
 		// Extraction des périodes d'imposition
 		final List<PeriodeImposition> periodesImposition = new ArrayList<>();
 		final List<PeriodeImpositionImpotSource> periodesImpositionIS = new ArrayList<>();

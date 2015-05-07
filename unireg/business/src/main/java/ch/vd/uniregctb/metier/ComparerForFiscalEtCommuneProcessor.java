@@ -144,7 +144,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 						+ "WHERE                                                                         "
 						+ "    cont.annulationDate IS null                                               "
 						+ "    AND fors.annulationDate IS null                                           "
-						+ "    AND fors.class = ForFiscalPrincipal                                       "
+						+ "    AND fors.class = ForFiscalPrincipalPP                                       "
 						+ "    AND fors.dateFin IS null                                                  "
 						+ "ORDER BY cont.id ASC                                                          ";
 

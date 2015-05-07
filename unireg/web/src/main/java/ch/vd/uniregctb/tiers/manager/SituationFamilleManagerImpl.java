@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -111,7 +112,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(SituationFamilleView situationFamilleView) {
 
-		final Contribuable contribuable = (Contribuable) tiersService.getTiers(situationFamilleView.getNumeroCtb());
+		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiersService.getTiers(situationFamilleView.getNumeroCtb());
 
 		final SituationFamille situationFamille;
 		if (situationFamilleView.getNatureSituationFamille().equals(SITUATION_FAMILLE_MENAGE_COMMUN)) {

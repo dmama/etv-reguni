@@ -11,6 +11,7 @@ import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -115,8 +116,7 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
-			f.setModeImposition(ModeImposition.DEPENSE);
+			addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, ModeImposition.DEPENSE);
 
 			menage.setBlocageRemboursementAutomatique(false);
 		}
@@ -171,12 +171,11 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 
 		{
 			final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noHabMomo);
-			final ForFiscalPrincipal ffp = momo.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = momo.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + momo.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + momo.getNumero() + " est fermé");
 			// momo doit passer au mode dépense
-			final ModeImposition expected = ModeImposition.DEPENSE;
-			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
+			assertEquals(ModeImposition.DEPENSE, ffp.getModeImposition(), "Le mode d'imposition n'est pas dépense");
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 			assertEquals(MockCommune.Chamblon.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
@@ -184,12 +183,11 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 
 		{
 			final PersonnePhysique bea = (PersonnePhysique) tiersDAO.get(noHabBea);
-			final ForFiscalPrincipal ffp = bea.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipalPP ffp = bea.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + bea.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + bea.getNumero() + " est fermé");
 			// bea doit passer au mode dépense
-			final ModeImposition expected = ModeImposition.DEPENSE;
-			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
+			assertEquals(ModeImposition.DEPENSE, ffp.getModeImposition(), "Le mode d'imposition n'est pas dépense");
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 			assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");

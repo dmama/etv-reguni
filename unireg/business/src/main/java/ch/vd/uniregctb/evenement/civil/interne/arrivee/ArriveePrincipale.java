@@ -34,6 +34,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -381,7 +382,7 @@ public class ArriveePrincipale extends Arrivee {
 
 			MotifFor motifOuverture = getMotifOuvertureFor();
 			final int numeroOfsNouveau = nouvelleCommune.getNoOFS();
-			final ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP forFiscal = habitant.getForFiscalPrincipalAt(null);
 
 			// détermination du mode d'imposition
 			final ModeImposition modeImposition;
@@ -502,9 +503,9 @@ public class ArriveePrincipale extends Arrivee {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			final PersonnePhysique conjoint = ensemble.getConjoint();
-			final ForFiscalPrincipal ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
-			final ForFiscalPrincipal ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
-			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
+			final ForFiscalPrincipalPP ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
 			final int numeroOfsNouveau = commune.getNoOFS();
 
 			// pour un couple, le for principal est toujours sur le ménage commun

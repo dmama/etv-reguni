@@ -174,11 +174,11 @@ public class TiersServiceTest2 extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				final List<ForFiscalPrincipalPP> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 				assertNotNull(fors);
 				assertEquals(1, fors.size());
 
-				final ForFiscalPrincipal f0 = fors.get(0);
+				final ForFiscalPrincipalPP f0 = fors.get(0);
 				assertForPrincipal(date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, f0);
 				return null;
 			}

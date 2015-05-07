@@ -54,7 +54,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		dpiGenerator = createSequence(type, params, dialect, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
 		pmGenerator = createSequence(type, params, dialect, Entreprise.PM_GEN_FIRST_ID, PM_SEQ_NAME);
 
-		ctbGenerator = new FillHoleGenerator("TIERS", CTB_SEQ_NAME, Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
+		ctbGenerator = new FillHoleGenerator("TIERS", CTB_SEQ_NAME, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
 		ctbGenerator.configure(type, params, dialect);
 	}
 
@@ -96,8 +96,8 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 				assertIdBetween(Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID, numeroTiers, object);
 			}
 			// De 10'000'000 à 99'999'999
-			else if (object instanceof PersonnePhysique || object instanceof MenageCommun) {
-				assertIdBetween(Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID, numeroTiers, object);
+			else if (object instanceof ContribuableImpositionPersonnesPhysiques) {
+				assertIdBetween(ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID, numeroTiers, object);
 			}
 			else {
 				Assert.fail("Classe " + object.getClass().getSimpleName() + " inconnue");

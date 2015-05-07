@@ -16,8 +16,9 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -100,7 +101,7 @@ public class DepartSecondaire extends Depart {
 
 
 	@Override
-	protected RegDate doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	protected RegDate doHandleFermetureFors(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		Audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
 		handleDepartResidenceSecondaire(pp, ctb, dateFermeture, motifFermeture);
 		return dateFermeture;
@@ -109,7 +110,7 @@ public class DepartSecondaire extends Depart {
 	/**
 	 * Traite un depart d'une residence secondaire
 	 */
-	private void handleDepartResidenceSecondaire(PersonnePhysique pp, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
+	private void handleDepartResidenceSecondaire(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 
 		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		// For principal est sur la commune de départ d'une résidence secondaire
@@ -121,7 +122,7 @@ public class DepartSecondaire extends Depart {
 		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
 
 			final Commune commune = (estEnSuisse() ? getNouvelleCommune() : null);
-			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipalPP ffp = contribuable.getForFiscalPrincipalAt(null);
 
 			// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
 			if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFS() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {

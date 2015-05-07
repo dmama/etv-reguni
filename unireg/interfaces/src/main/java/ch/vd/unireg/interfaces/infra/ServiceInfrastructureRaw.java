@@ -26,6 +26,7 @@ public interface ServiceInfrastructureRaw {
 
 	static final String SERVICE_NAME = "ServiceInfra";
 
+	final static int noOIPM = 21;
 	final static int noACI = 22;
 	final static int noACIImpotSource = 47;
 	final static int noACISuccessions = 1344;

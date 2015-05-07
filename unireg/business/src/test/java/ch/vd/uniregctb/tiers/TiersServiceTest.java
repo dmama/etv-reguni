@@ -168,7 +168,7 @@ public class TiersServiceTest extends BusinessTest {
 			tiers.setNumeroIndividu(noIndividu);
 			tiers = (PersonnePhysique) tiersDAO.save(tiers);
 
-			ForFiscalPrincipal premierForFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP premierForFiscal = new ForFiscalPrincipalPP();
 			premierForFiscal.setAnnule(false);
 			premierForFiscal.setDateFin(null);
 			premierForFiscal.setDateDebut(RegDate.get(2008, 1, 1));
@@ -187,7 +187,7 @@ public class TiersServiceTest extends BusinessTest {
 			forFiscalPrincipal.setDateFin(RegDate.get().getOneDayBefore());
 			forFiscalPrincipal.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-			ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
+			ForFiscalPrincipalPP nouveauForFiscal = new ForFiscalPrincipalPP();
 			nouveauForFiscal.setAnnule(false);
 			nouveauForFiscal.setDateFin(null);
 			nouveauForFiscal.setDateDebut(RegDate.get());
@@ -624,10 +624,10 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(0, habitant.getForsFiscaux().size());
 
 		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFS(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC);
+		                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC);
 		assertEquals(1, habitant.getForsFiscaux().size());
 
-		ForFiscalPrincipal ff = (ForFiscalPrincipal) habitant.getForsFiscaux().toArray()[0];
+		ForFiscalPrincipalPP ff = (ForFiscalPrincipalPP) habitant.getForsFiscaux().toArray()[0];
 		assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
@@ -1303,7 +1303,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
 						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -1357,14 +1357,14 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux non-adjacents
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				forPrincipal.setTiers(eric);
 
 				ForFiscalSecondaire forFiscalSecondaire =
 						addForSecondaire(eric, date(1990, 4, 13), MotifFor.ACHAT_IMMOBILIER, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne.getNoOFS(),
-								MotifRattachement.IMMEUBLE_PRIVE);
+						                 MotifRattachement.IMMEUBLE_PRIVE);
 				id.forSecondaire = forFiscalSecondaire.getId();
 				forFiscalSecondaire.setTiers(eric);
 				return null;
@@ -1399,7 +1399,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable décédé
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				id.idEric = eric.getId();
 				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				forPrincipal.setTiers(eric);
@@ -1440,10 +1440,10 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux non-adjacents
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
-						MotifFor.DEPART_HC, MockCommune.Lausanne);
+				                                                         MotifFor.DEPART_HC, MockCommune.Lausanne);
 				ids.premierForPrincipalId = premierForPrincipal.getId();
 				premierForPrincipal.setTiers(eric);
 
@@ -1493,7 +1493,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Un contribuable avec deux fors principaux adjacent
-				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 
 				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
 						MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
@@ -2860,8 +2860,6 @@ debut PF                                                                        
 		return for0;
 	}
 
-
-
 	private static void assertForGestion(RegDate debut, @Nullable RegDate fin, int noOfsCommune, ForGestion f) {
 		assertNotNull(f);
 		assertEquals(debut, f.getDateDebut());
@@ -3207,15 +3205,13 @@ debut PF                                                                        
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique achille = addHabitant(noIndAchille);
-				final ForFiscalPrincipal ffpAchille = addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffpAchille.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				idCtbHabitant.setValue(achille.getNumero());
 
 
 				final PersonnePhysique huguette = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
 				huguette.setNumeroIndividu(noIndHuguette);
-				final ForFiscalPrincipal ffpHuguette = addForPrincipal(huguette, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffpHuguette.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(huguette, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				idCtbNonHabitantAvecNumeroInd.setValue(huguette.getNumero());
 				return null;
 			}
@@ -3236,8 +3232,7 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3254,8 +3249,7 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel, ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3272,8 +3266,7 @@ debut PF                                                                        
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, MockPays.Espagne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, MockPays.Espagne, ModeImposition.SOURCE);
 				return nh.getNumero();
 			}
 		});
@@ -3294,13 +3287,11 @@ debut PF                                                                        
 			public Long execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique nh1 = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp1 = addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp1.setModeImposition(ModeImposition.MIXTE_137_1);
+				addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
 				idCtbMixte1.setValue(nh1.getNumero());
 
 				final PersonnePhysique nh2 = addNonHabitant("Achille", "Talon-Deux", date(1950, 3, 24), Sexe.MASCULIN);
-				final ForFiscalPrincipal ffp2 = addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				ffp2.setModeImposition(ModeImposition.MIXTE_137_2);
+				addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
 				idCtbMixte2.setValue(nh2.getNumero());
 
 				return null;
@@ -3336,9 +3327,7 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
-
+				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return null;
 			}
 		});
@@ -3371,9 +3360,7 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
-
+				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return null;
 			}
 		});
@@ -3417,9 +3404,7 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
-
+				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return null;
 			}
 		});
@@ -3462,9 +3447,7 @@ debut PF                                                                        
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
-				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-				ffp.setModeImposition(ModeImposition.SOURCE);
-
+				addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
 				return null;
 			}
 		});
@@ -4683,7 +4666,7 @@ debut PF                                                                        
 	@Test
 	public void testAddAndSaveForSurCommuneFaitiereFractions() throws Exception {
 
-		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipalPP f = new ForFiscalPrincipalPP();
 		f.setDateDebut(date(1998, 10, 4));
 		f.setMotifOuverture(MotifFor.ARRIVEE_HS);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -6451,7 +6434,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipalPP ffp = pp.getDernierForFiscalPrincipal();
 				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				assertNull(ffp.getDateFin());

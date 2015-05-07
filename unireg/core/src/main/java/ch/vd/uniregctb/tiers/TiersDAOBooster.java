@@ -307,7 +307,7 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public SituationFamille addAndSave(Contribuable contribuable, SituationFamille situation) {
+	public SituationFamille addAndSave(ContribuableImpositionPersonnesPhysiques contribuable, SituationFamille situation) {
 		return target.addAndSave(contribuable, situation);
 	}
 

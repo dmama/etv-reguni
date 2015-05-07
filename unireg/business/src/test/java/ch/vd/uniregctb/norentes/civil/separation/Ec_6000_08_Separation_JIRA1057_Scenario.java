@@ -114,7 +114,8 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		{
 			final MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
 			ForsParType forsParType = mc.getForsParType(false);
-			assertEquals(1, forsParType.principaux.size(), "Le ménage a plus d'un for principal");
+			assertEquals(1, forsParType.principauxPP.size(), "Le ménage a plus d'un for principal");
+			assertEquals(0, forsParType.principauxPM.size(), "Le ménage a des fors principaux PM ???");
 			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");

@@ -9,6 +9,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -80,11 +81,8 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, julie, dateMariage, null);
-		ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
-		f.setModeImposition(ModeImposition.DEPENSE);
-
-		f = addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
-		f.setModeImposition(ModeImposition.ORDINAIRE);
+		addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE, ModeImposition.DEPENSE);
+		addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Julie n'a pas de For ouvert et le For du ménage existe")
@@ -125,7 +123,7 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 	public void check2() {
 		{
 			MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
-			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			ForFiscalPrincipalPP ffp = mc.getDernierForFiscalPrincipal();
 			assertEquals(dateMariage, ffp.getDateDebut(),
 					"Le for sur " + communeMariage.getNomOfficiel() + " n'est pas ouvert à la bonne date");
 			assertNull(ffp.getDateFin(), "Le for sur " + communeMariage.getNomOfficiel() + " est fermé");

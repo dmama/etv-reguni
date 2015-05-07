@@ -33,7 +33,7 @@ import ch.vd.uniregctb.type.Sexe;
  */
 @Entity
 @DiscriminatorValue("PersonnePhysique")
-public class PersonnePhysique extends Contribuable {
+public class PersonnePhysique extends ContribuableImpositionPersonnesPhysiques {
 
 	public PersonnePhysique(){
 		super();
@@ -172,11 +172,8 @@ public class PersonnePhysique extends Contribuable {
 	@Transient
 	@Override
 	public String getRoleLigne1() {
-		if (habitant)
-			return "Contribuable PP";
-		//si non habitant
-		if (!getForsFiscauxNonAnnules(false).isEmpty()) {
-			return "Contribuable PP";
+		if (habitant || !getForsFiscauxNonAnnules(false).isEmpty()) {
+			return super.getRoleLigne1();
 		}
 		return "Autre tiers";
 	}

@@ -15,7 +15,7 @@
 		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
 	<display:column style="width:16px;">
-		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP' || forFiscal.natureForFiscal == 'ForFiscalPrincipalPM'}">
 			<div id="ffid-${forFiscal.id}" class="forPrincipalIconSmall" title="For fiscal principal"/>
 		</c:if>
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire'}">
@@ -37,7 +37,7 @@
 		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.mode.imposition">
-		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
 				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
 		</c:if>
 	</display:column>
@@ -88,7 +88,7 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal' && autorisations.forsPrincipaux}">
+				<c:if test="${(forFiscal.natureForFiscal == 'ForFiscalPrincipalPP' || forFiscal.natureForFiscal == 'ForFiscalPrincipalPM') && autorisations.forsPrincipaux}">
 					<unireg:linkTo name="" action="/fors/principal/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
 						<unireg:linkTo name="" action="/fors/principal/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"

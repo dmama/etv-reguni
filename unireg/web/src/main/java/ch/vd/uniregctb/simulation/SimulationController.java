@@ -21,10 +21,12 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -93,14 +95,14 @@ public class SimulationController {
 				status.setRollbackOnly();
 
 				final ForFiscal ff = forFiscalDAO.get(idFor);
-				if (!(ff instanceof ForFiscalPrincipal)) {
+				if (!(ff instanceof ForFiscalPrincipalPP)) {
 					return null;
 				}
 				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof Contribuable)) {
+				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
 					return null;
 				}
-				final Contribuable ctb = (Contribuable) tiers;
+				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
 				SimulationResults table;
 				try {

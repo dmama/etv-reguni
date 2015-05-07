@@ -15,7 +15,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -117,9 +116,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 			tiersService.addTiersToCouple(menage, jeanBruno, dateMariage, null);
 			tiersService.addTiersToCouple(menage, christelle, dateMariage, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.DEMENAGEMENT_VD, null);
-			f.setModeImposition(ModeImposition.ORDINAIRE);
-
+			addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.DEMENAGEMENT_VD, null);
 			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}

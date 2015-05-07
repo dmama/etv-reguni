@@ -650,7 +650,7 @@ public class DeterminationDIsAEmettreProcessor {
 			+ "    cont.annulationDate IS null                                               "
 			+ "    AND fors.annulationDate IS null                                           "
 			+ "    AND fors.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'                   "
-			+ "    AND (fors.class = ForFiscalPrincipal OR fors.class = ForFiscalSecondaire) "
+			+ "    AND (fors.class = ForFiscalPrincipalPP OR fors.class = ForFiscalSecondaire) "
 			+ "    AND (fors.modeImposition IS null OR fors.modeImposition != 'SOURCE')      "
 			+ "    AND (fors.dateDebut IS null OR fors.dateDebut <= :finAnnee)               "
 			+ "    AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)                 " // [UNIREG-1742] for actif n'importe quand dans l'année
