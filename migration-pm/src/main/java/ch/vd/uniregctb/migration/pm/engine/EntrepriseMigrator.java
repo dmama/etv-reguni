@@ -60,6 +60,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -506,10 +507,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		// TODO sont-ce vraiment des fors de classe ForFiscalPrincipal qu'il faut instancier ? (problème avec le mode d'imposition qui n'a rien à faire là pour les PM...)
-
-		final Function<RegpmForPrincipal, Optional<ForFiscalPrincipal>> mapper = f -> {
-			final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+		final Function<RegpmForPrincipal, Optional<ForFiscalPrincipalPM>> mapper = f -> {
+			final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 			copyCreationMutation(f, ffp);
 			ffp.setDateDebut(f.getDateValidite());
 			ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
@@ -535,7 +534,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return Optional.of(ffp);
 		};
 
-		final List<ForFiscalPrincipal> liste = regpm.getForsPrincipaux().stream()
+		final List<ForFiscalPrincipalPM> liste = regpm.getForsPrincipaux().stream()
 				.map(mapper)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
@@ -544,15 +543,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// assignation des dates de fin
 		RegDate dateFinCourante = regpm.getDateFinFiscale();
-		for (ForFiscalPrincipal ffp : CollectionsUtils.revertedOrder(liste)) {
+		for (ForFiscalPrincipalPM ffp : CollectionsUtils.revertedOrder(liste)) {
 			ffp.setDateFin(dateFinCourante);
 			dateFinCourante = ffp.getDateDebut().getOneDayBefore();
 		}
 
 		// assignation des motifs
-		final MovingWindow<ForFiscalPrincipal> wnd = new MovingWindow<>(liste);
+		final MovingWindow<ForFiscalPrincipalPM> wnd = new MovingWindow<>(liste);
 		while (wnd.hasNext()) {
-			final MovingWindow.Snapshot<ForFiscalPrincipal> snap = wnd.next();
+			final MovingWindow.Snapshot<ForFiscalPrincipalPM> snap = wnd.next();
 			final ForFiscalPrincipal current = snap.getCurrent();
 			final ForFiscalPrincipal previous = snap.getPrevious();
 			final ForFiscalPrincipal next = snap.getNext();
