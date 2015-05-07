@@ -112,6 +112,11 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		return !(data1 == null || data2 == null) && equalator.test(data1, data2);
 	}
 
+	/**
+	 * Extraction du numéro d'individu "RCPers" de la liste des identifiants d'une personne renvoyée par RCPers
+	 * @param ids liste des identifiants
+	 * @return le numéro d'individu, au sens "unireg"
+	 */
 	private static long getRcPersId(List<NamedPersonId> ids) {
 		return ids.stream()
 				.filter(id -> "CT.VD.RCPERS".equals(id.getPersonIdCategory()))
@@ -152,6 +157,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				pp.setNumeroIndividu(trouveRCPersId.getLeft());
 				pp.setHabitant(trouveRCPersId.getRight());
 				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, "Individu trouvé dans RCPers sans équivalent dans Unireg...");
+
+				// TODO dans le cas d'un non-habitant (= ancien habitant, donc...), ne faut-il pas recopier certaines données dans Unireg ?
 			}
 			else {
 				pp.setNom(regpm.getNom());
@@ -214,8 +221,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			}
 			else if (idsPP.size() > 1) {
 				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, String.format("Plusieurs non-habitants trouvés dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s) : %s.",
-				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(), Arrays
-						                                                                                 .toString(idsPP.toArray(new Long[idsPP.size()]))));
+				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(),
+				                                                                                 Arrays.toString(idsPP.toArray(new Long[idsPP.size()]))));
 				ppExistant = null;
 			}
 			else {

@@ -70,7 +70,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		if (domicileDebut == null) {
 			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
 			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
-			                                                                                                                             DateRangeHelper.toDisplayString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
+			                                                                                                                      DateRangeHelper.toDisplayString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
 		}
 		else {
 			domicileDebutEffectif = domicileDebut;
@@ -168,6 +168,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	@Override
 	protected void doMigrate(RegpmEtablissement regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
+
+		// TODO attention, il y a des cas où on ne doit pas aveuglément créer un établissement (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts...)
 
 		// on crée forcément un nouvel établissement
 		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));

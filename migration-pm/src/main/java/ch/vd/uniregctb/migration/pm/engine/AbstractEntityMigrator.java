@@ -55,12 +55,13 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected StreetDataMigrator streetDataMigrator;
 	protected TiersDAO tiersDAO;
 
-	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER = (l1, l2) -> {
-		final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
-				.sorted(new DateRangeComparator<>())
-				.collect(Collectors.toList());
-		return DateRangeHelper.merge(liste);
-	};
+	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
+			(l1, l2) -> {
+				final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
+						.sorted(new DateRangeComparator<>())
+						.collect(Collectors.toList());
+				return DateRangeHelper.merge(liste);
+			};
 
 	protected static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
 			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
@@ -222,9 +223,9 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 */
 	@Nullable
 	protected KeyedSupplier<? extends Contribuable> getPolymorphicSupplier(IdMapper idMapper,
-	                                                                @Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
-	                                                                @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
-	                                                                @Nullable Supplier<RegpmIndividu> individuSupplier) {
+	                                                                       @Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
+	                                                                       @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
+	                                                                       @Nullable Supplier<RegpmIndividu> individuSupplier) {
 
 		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
 		if (entreprise != null) {

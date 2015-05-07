@@ -39,6 +39,7 @@ import ch.vd.uniregctb.migration.pm.MigrationMode;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.Worker;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -320,15 +321,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		mr.consolidatePreTransactionCommitRegistrations();
 	}
 
-	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
-	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
-	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResult mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
 	}
 
