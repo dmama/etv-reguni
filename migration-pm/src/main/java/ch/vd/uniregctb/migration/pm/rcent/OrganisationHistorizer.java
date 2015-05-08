@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0021.v1.Country;
 import ch.vd.evd0022.v1.Identifier;
+import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationLocation;
@@ -143,7 +144,7 @@ public class OrganisationHistorizer {
 	@Nullable
 	private static EtablissementPrincipal extractEtablissementPrincipal(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> "1".equals(ol.getKindOfLocation()))
+				.filter(ol -> KindOfLocation.ETABLISSEMENT_PRINCIPAL == ol.getKindOfLocation())
 				.findAny()
 				.map(EtablissementPrincipal::new)
 				.orElse(null);
@@ -152,7 +153,7 @@ public class OrganisationHistorizer {
 	@Nullable
 	private static Stream<EtablissementSecondaire> extractEtablissementsSecondaires(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> "2".equals(ol.getKindOfLocation()))
+				.filter(ol -> KindOfLocation.ETABLISSEMENT_SECONDAIRE == ol.getKindOfLocation())
 				.map(EtablissementSecondaire::new);
 	}
 
