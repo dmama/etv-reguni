@@ -42,7 +42,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -172,7 +172,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
 	@Override
-	public final void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	public final void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		final MigrationResultProduction localMr = mr.withMessagePrefix(getMessagePrefix(entity));
 		doMigrate(entity, localMr, linkCollector, idMapper);
 	}
@@ -190,7 +190,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	@NotNull
-	protected final Supplier<Entreprise> getEntrepriseByRegpmIdSupplier(IdMapper idMapper, long id) {
+	protected final Supplier<Entreprise> getEntrepriseByRegpmIdSupplier(IdMapping idMapper, long id) {
 		return () -> getEntityFromDb(Entreprise.class, idMapper.getIdUniregEntreprise(id));
 	}
 
@@ -200,12 +200,12 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	@NotNull
-	protected final Supplier<Etablissement> getEtablissementByRegpmIdSupplier(IdMapper idMapper, long id) {
+	protected final Supplier<Etablissement> getEtablissementByRegpmIdSupplier(IdMapping idMapper, long id) {
 		return () -> getEntityFromDb(Etablissement.class, idMapper.getIdUniregEtablissement(id));
 	}
 
 	@NotNull
-	protected final Supplier<PersonnePhysique> getIndividuByRegpmIdSupplier(IdMapper idMapper, long id) {
+	protected final Supplier<PersonnePhysique> getIndividuByRegpmIdSupplier(IdMapping idMapper, long id) {
 		return () -> getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
 	}
 
@@ -222,7 +222,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * fourni une entité.
 	 */
 	@Nullable
-	protected KeyedSupplier<? extends Contribuable> getPolymorphicSupplier(IdMapper idMapper,
+	protected KeyedSupplier<? extends Contribuable> getPolymorphicSupplier(IdMapping idMapper,
 	                                                                       @Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
 	                                                                       @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
 	                                                                       @Nullable Supplier<RegpmIndividu> individuSupplier) {
@@ -279,7 +279,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected final <E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria) {
 		final Criteria c = uniregSessionFactory.getCurrentSession().createCriteria(clazz);
 		if (criteria != null) {
-			criteria.entrySet().stream().forEach(entry -> c.add(Restrictions.eq(entry.getKey(), entry.getValue())));
+			criteria.forEach((key, value) -> c.add(Restrictions.eq(key, value)));
 		}
 		//noinspection unchecked
 		return c.list();
@@ -302,7 +302,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	protected abstract void doMigrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper);
+	protected abstract void doMigrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper);
 
 	/**
 	 * Renvoie l'éventuel préfixe à utiliser pour tous les messages enregistrés dans les MigrationResults

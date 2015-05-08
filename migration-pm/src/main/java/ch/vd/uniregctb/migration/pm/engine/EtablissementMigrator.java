@@ -35,7 +35,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -166,10 +166,17 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	@Override
-	protected void doMigrate(RegpmEtablissement regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	protected void doMigrate(RegpmEtablissement regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
-		// TODO attention, il y a des cas où on ne doit pas aveuglément créer un établissement (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts...)
+		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement
+		// (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts, par exemple...)
+		if (idMapper.hasMappingForEtablissement(regpm.getId())) {
+			// l'établissement a déjà été migré dans ce run de migration (= dans un autre graphe), rien à faire...
+			return;
+		}
+
+		// TODO Pour les cas de relance du job de migration après un crash, il faut également vérifier si l'entreprise parente existe en base et est déjà migrée
 
 		// on crée forcément un nouvel établissement
 		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));

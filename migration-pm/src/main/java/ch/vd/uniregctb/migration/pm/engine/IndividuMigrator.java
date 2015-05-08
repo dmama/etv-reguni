@@ -28,7 +28,7 @@ import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.Equalator;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -127,7 +127,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	@Override
-	protected void doMigrate(RegpmIndividu regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	protected void doMigrate(RegpmIndividu regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		// individu migré à l'époque dans RCPers avec le numéro
 		final Person migreRCPers = getFromRCPersWithId(mr, regpm.getId());

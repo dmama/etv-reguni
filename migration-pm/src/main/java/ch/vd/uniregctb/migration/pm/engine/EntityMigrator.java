@@ -4,7 +4,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 
 /**
  * Interface principal des migrateurs d'entité
@@ -25,5 +25,5 @@ public interface EntityMigrator<T extends RegpmEntity> {
 	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper);
+	void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper);
 }

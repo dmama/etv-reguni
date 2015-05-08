@@ -47,6 +47,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 import ch.vd.uniregctb.migration.pm.utils.IdMapper;
+import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -58,6 +59,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private static final String VISA_MIGRATION = "[MigrationPM]";
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
+	private final IdMapper idMapper = new IdMapper();
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
 	private GatheringThread gatheringThread;
@@ -267,6 +269,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private MigrationResultMessageProvider migrate(Graphe graphe) throws MigrationException {
 		final MigrationResult mr = new MigrationResult();
 
+		// on crée un mapper d'ID dont la référence est le mapper global, en prenant soin de transvaser les nouveaux mappings dans le mapper global après la fin de la transaction
+		final IdMapper localIdMapper = idMapper.withReference();
+		mr.addPostTransactionCallback(localIdMapper::pushToReference);
+
 		// initialisation des structures de resultats
 		entrepriseMigrator.initMigrationResult(mr);
 		etablissementMigrator.initMigrationResult(mr);
@@ -278,7 +284,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.execute(status -> {
-				doMigrate(graphe, mr);
+				doMigrate(graphe, mr, localIdMapper);
+				localIdMapper.checkCompatibilityWithReference();        // ca va pêter si des incompatibilités apparaissent
 				return null;
 			});
 
@@ -303,17 +310,18 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	 * Appelé dans un contexte transactionnel
 	 * @param graphe le graphe d'objets à migrer
 	 * @param mr le collecteur de résultats/remarques de migration
+	 * @param idMapper mapper des identifiants des entités migrées
 	 */
-	private void doMigrate(Graphe graphe, MigrationResult mr) {
+	private void doMigrate(Graphe graphe, MigrationResult mr, IdMapping idMapper) {
 
-		// on commence par les entreprises, puis les établissements, puis les individus TODO ne faudrait-il pas traiter les individus d'abord ?
+		// on commence par les établissement, puis les entreprises, puis les individus
+		// (établissements d'abord afin que, quand on migre un établissement, si l'entité juridique est déjà migrée en base, c'est que l'établissement l'a déjà été dans un run précédent)
 		// on collecte les liens entre ces entités au fur et à mesure
 		// à la fin, on ajoute les liens
 
-		final IdMapper idMapper = new IdMapper();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
+		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
 		addLinks(linkCollector.getCollectedLinks());
 
@@ -321,15 +329,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		mr.consolidatePreTransactionCommitRegistrations();
 	}
 
-	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
-	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
-	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
 	}
 
