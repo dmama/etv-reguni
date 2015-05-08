@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0021.v1.Country;
 import ch.vd.evd0022.v1.Identifier;
+import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationLocation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
@@ -102,7 +103,7 @@ public class OrganisationHistorizer {
 				                          OrganisationSnapshot::getOrganisation));
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
-		final LinearDataCollector<Organisation, String> legalFromCollector = new SimpleDataCollector<>(Organisation::getLegalForm, Equalator.DEFAULT);
+		final LinearDataCollector<Organisation, LegalForm> legalFromCollector = new SimpleDataCollector<>(Organisation::getLegalForm, Equalator.DEFAULT);
 		final LinearDataCollector<Organisation, EtablissementPrincipal> etablissementPrincipalCollector = new SimpleDataCollector<>(OrganisationHistorizer::extractEtablissementPrincipal, ETABLISSEMENT_EQUALATOR);
 		final LinearDataCollector<Organisation, EtablissementSecondaire> etablissementsSecondairesCollector = new FlattenDataCollector<>(OrganisationHistorizer::extractEtablissementsSecondaires, ETABLISSEMENT_EQUALATOR, EtablissementSecondaire::getId);
 		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(OrganisationHistorizer::extractAdressesLegalesRC, ADDRESS_EQUALATOR, Keyed::getKey);
@@ -118,7 +119,7 @@ public class OrganisationHistorizer {
 		                                                    adressesIdeCasePostaleEtablissementsCollector));
 
 		// récupération des plages de valeurs
-		final List<DateRanged<String>> formesJuridiques = legalFromCollector.getCollectedData();
+		final List<DateRanged<LegalForm>> formesJuridiques = legalFromCollector.getCollectedData();
 		final List<DateRanged<EtablissementPrincipal>> prnEtablissements = etablissementPrincipalCollector.getCollectedData();
 		final List<DateRanged<EtablissementSecondaire>> secEtablissements = etablissementsSecondairesCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<Address>>> adressesRc = adressesRcEtablissementsCollector.getCollectedData();
