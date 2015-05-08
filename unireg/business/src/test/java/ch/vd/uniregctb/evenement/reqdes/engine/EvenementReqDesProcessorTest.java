@@ -6161,12 +6161,24 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
-				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable décédé, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
 				Assert.assertEquals("Pierre-Alain", pp.getPrenomUsuel());       // on a traité la modification de prénom
 				Assert.assertEquals(dateDeces, pp.getDateDeces());              // on a assigné la date de décès
+
+				checkNoAdresse(pp);
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				Assert.assertTrue(remarques.get(0).getTexte(), remarques.get(0).getTexte().endsWith("\n- Adresse transmise non enregistrée : Nizzaallee 7 / 52064 Aachen / Allemagne"));
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -6246,13 +6258,25 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
-				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable décédé, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
 				{
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 					Assert.assertNotNull(pp);
 					Assert.assertEquals("Pierre-Alain", pp.getPrenomUsuel());       // on a traité la modification de prénom
 					Assert.assertEquals(dateDeces, pp.getDateDeces());              // on a assigné la date de décès
+
+					checkNoAdresse(pp);
+
+					final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+					Assert.assertNotNull(remarques);
+					Assert.assertEquals(1, remarques.size());
+					Assert.assertTrue(remarques.get(0).getTexte(), remarques.get(0).getTexte().endsWith("\n- Adresse transmise non enregistrée : Nizzaallee 7 / 52064 Aachen / Allemagne"));
 
 					final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 					Assert.assertNull(ffp);
@@ -6358,6 +6382,9 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals("Alain", pp.getPrenomUsuel());      // on n'a pas traité la modification de prénom
 				Assert.assertNull(pp.getDateDeces());                   // on n'a pas assigné la date de décès
 
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				Assert.assertEquals(0, adresses.size());                // on n'a pas fait de surcharge d'adresse non plus
+
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(date(2000, 5, 13), ffp.getDateDebut());
@@ -6428,6 +6455,22 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				Assert.assertEquals("Lezigotto", pp.getNom());
 				Assert.assertEquals(dateDeces, pp.getDateDeces());
 
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				Assert.assertEquals(1, adresses.size());                // on a fait une surcharge d'adresse car il s'agit d'une création de contribuable, même décédé
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+
+				final StringBuilder b = new StringBuilder();
+				b.append("Contribuable créé le ").append(RegDateHelper.dateToDisplayString(RegDate.get()));
+				b.append(" par l'acte notarial du ").append(RegDateHelper.dateToDisplayString(dateActe));
+				b.append(" par le notaire Oli Taboumata (tabou) et enregistré par lui-même.");
+				Assert.assertEquals(b.toString(), remarque.getTexte());
+
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNull(ffp);
 			}
@@ -6492,12 +6535,24 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 				final UniteTraitement ut = uniteTraitementDAO.get(ids.utId);
 				Assert.assertNotNull(ut);
 				Assert.assertEquals(EtatTraitement.TRAITE, ut.getEtat());
-				Assert.assertEquals(0, ut.getErreurs().size());
+				Assert.assertEquals(1, ut.getErreurs().size());
+
+				final ErreurTraitement erreur = ut.getErreurs().iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(ErreurTraitement.TypeErreur.WARNING, erreur.getType());
+				Assert.assertEquals("Adresse non modifiée sur un contribuable décédé, uniquement reprise dans les remarques du tiers.", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ppId);
 				Assert.assertNotNull(pp);
 				Assert.assertEquals("Pierre-Alain", pp.getPrenomUsuel());       // on a traité la modification de prénom
 				Assert.assertEquals(dateDeces, pp.getDateDeces());              // la date de décès n'a pas bougé
+
+				checkNoAdresse(pp);
+
+				final List<Remarque> remarques = remarqueDAO.getRemarques(pp.getNumero());
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(1, remarques.size());
+				Assert.assertTrue(remarques.get(0).getTexte(), remarques.get(0).getTexte().endsWith("\n- Adresse transmise non enregistrée : Nizzaallee 7 / 52064 Aachen / Allemagne"));
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);

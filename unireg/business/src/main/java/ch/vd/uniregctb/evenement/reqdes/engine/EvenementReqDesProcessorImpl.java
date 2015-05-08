@@ -370,7 +370,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 							infos.addAll(errorCollector.getCollectedMessages());
 							infos.addAll(warningCollector.getCollectedMessages());
 
-							final StringBuilder b = new StringBuilder("Erreur(s) rencontrée(s) lors du contrôle de cohérence de l'unité de traitement ").append(ut.getId()).append(" :");
+							final StringBuilder b = new StringBuilder("Message(s) signalé(s) lors du traitement de l'unité de traitement ").append(ut.getId()).append(" :");
 
 							// recopie des erreurs collectées dans l'unité de traitement
 							for (ErrorInfo info : infos) {
@@ -378,7 +378,12 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 								erreurs.add(new ErreurTraitement(info.typeErreur, info.message));
 							}
 
-	                        LOGGER.error(b.toString());
+							if (errorCollector.hasCollectedMessages()) {
+								LOGGER.error(b.toString());
+							}
+							else {
+								LOGGER.warn(b.toString());
+							}
 						}
 
 						final EtatTraitement nouvelEtat = errorCollector.hasCollectedMessages() ? EtatTraitement.EN_ERREUR : EtatTraitement.TRAITE;
@@ -563,7 +568,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 			}
 			if (hasSourceCivile && (hasSourceFiscale || hasSourceCreation)) {
-				errorCollector.addNewMessage(String.format("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile."));
+				errorCollector.addNewMessage("Parties prenantes en couple avec divergence des sources de données, dont l'une est civile.");
 			}
 		}
 
@@ -1192,7 +1197,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		return map;
 	}
 
-	private static enum ModeTraitementCouple {
+	private enum ModeTraitementCouple {
 		/**
 		 * les deux conjoints connus viennent d'être créés
 		 */
@@ -1333,10 +1338,10 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 				}
 
 				// pour signaler la non-prise en compte de l'adresse
-				warningCollector.addNewMessage(String.format("Adresse non modifiée sur un contribuable assujetti, uniquement reprise dans les remarques du tiers."));
+				warningCollector.addNewMessage(String.format("Adresse non modifiée sur un contribuable %s, uniquement reprise dans les remarques du tiers.", pp.isDecede() ? "décédé" : "assujetti"));
 
 				// ce texte sera inclu dans la remarque
-				return Arrays.asList(b.toString());
+				return Collections.singletonList(b.toString());
 			}
 
 			// pas d'adresse significative -> rien de spécial
@@ -1349,7 +1354,8 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 	private List<String> updateAdresse(PartiePrenante ppSrc, PersonnePhysique ppDest, RegDate dateDebut, MessageCollector warningCollector) throws EvenementReqDesException {
 		// le contribuable (ou son éventuel ménage) est-il assujetti au rôle ordinaire à la date de référence ?
-		if (isAssujettisRoleOrdinaire(ppDest, dateDebut)) {
+		// [SIFISC-15326] si le contribuable est décédé, on ne change pas l'adresse (pour ne pas effacer une adresse éventuellement déjà mise en place par les successions)
+		if (isAssujettisRoleOrdinaire(ppDest, dateDebut) || ppDest.isDecede()) {
 			final AdresseSupplementaire nvelle = buildAdresseCourrier(ppSrc, dateDebut);
 			final AdresseSupplementaireAdapter adapter = new AdresseSupplementaireAdapter(nvelle, ppDest, false, infraService);
 			return buildRemarqueAdresseTransmiseNonEnregistree(ppDest, adapter, dateDebut, warningCollector);
