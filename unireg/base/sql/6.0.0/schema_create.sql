@@ -272,6 +272,23 @@ COMMENT ON COLUMN BOUCLEMENT.PERIODE_MOIS IS 'Périodicité de bouclement (en mo
 ALTER TABLE BOUCLEMENT ADD CONSTRAINT FK_BOUCLEMENT_ENTR_ID FOREIGN KEY (ENTREPRISE_ID) REFERENCES TIERS;
 CREATE INDEX IDX_BOUCLEMENT_ENTR_ID ON BOUCLEMENT(ENTREPRISE_ID ASC);
 
+-- Table de la migration PM (inutile à l'application Unireg elle-même, mais utilisée par
+-- le programme de migration des PM pour sa reprise en cas de crash)
+CREATE TABLE MIGRATION_PM_MAPPING (
+	ID NUMBER(19, 0) NOT NULL,
+	LOG_DATE TIMESTAMP DEFAULT SYSDATE,
+	TYPE_ENTITE NVARCHAR2(20) NOT NULL,
+	ID_REGPM NUMBER(19, 0) NOT NULL,
+	ID_UNIREG NUMBER(19, 0) NOT NULL,
+	PRIMARY KEY (ID)
+);
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.TYPE_ENTITE IS 'Type de l''entité migrée (entreprise, établissement ou individu).';
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.ID_REGPM IS 'Identifiant de l''entité dans Reg-PM (= avant migration).';
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.ID_UNIREG IS 'Identifiant de l''entité dans Unireg (= après migration).';
+CREATE UNIQUE INDEX IDX_MIGRATION_PM_ENTITE ON MIGRATION_PM_MAPPING(TYPE_ENTITE ASC, ID_REGPM ASC);
+CREATE SEQUENCE S_MIGR_PM;
+
+
 create sequence S_PM start with 2000000 increment by 1;
 
 create sequence S_DPI start with 1500000 increment by 1;

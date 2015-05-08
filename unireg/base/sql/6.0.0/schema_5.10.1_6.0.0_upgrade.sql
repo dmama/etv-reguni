@@ -1,6 +1,22 @@
 -- Version
 INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('6.0.0', '5.10.1_6.0.0_upgrade');
 
+-- Table de la migration PM (inutile à l'application Unireg elle-même, mais utilisée par
+-- le programme de migration des PM pour sa reprise en cas de crash)
+CREATE TABLE MIGRATION_PM_MAPPING (
+	ID NUMBER(19, 0) NOT NULL,
+	LOG_DATE TIMESTAMP DEFAULT SYSDATE,
+	TYPE_ENTITE NVARCHAR2(20) NOT NULL,
+	ID_REGPM NUMBER(19, 0) NOT NULL,
+	ID_UNIREG NUMBER(19, 0) NOT NULL,
+	PRIMARY KEY (ID)
+);
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.TYPE_ENTITE IS 'Type de l''entité migrée (entreprise, établissement ou individu).';
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.ID_REGPM IS 'Identifiant de l''entité dans Reg-PM (= avant migration).';
+COMMENT ON COLUMN MIGRATION_PM_MAPPING.ID_UNIREG IS 'Identifiant de l''entité dans Unireg (= après migration).';
+CREATE UNIQUE INDEX IDX_MIGRATION_PM_ENTITE ON MIGRATION_PM_MAPPING(TYPE_ENTITE ASC, ID_REGPM ASC);
+CREATE SEQUENCE S_MIGR_PM;
+
 -- Nouvelles tables autour des PM
 CREATE TABLE BOUCLEMENT (
 	ID NUMBER(19, 0) NOT NULL,
