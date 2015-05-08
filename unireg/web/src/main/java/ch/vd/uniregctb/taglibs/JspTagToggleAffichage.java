@@ -23,6 +23,8 @@ public class JspTagToggleAffichage extends BodyTagSupport implements MessageSour
 
 	private int nombreLignes;
 
+	private boolean modeImpression;
+
 
 	private static MessageSource messageSource;
 
@@ -51,6 +53,14 @@ public class JspTagToggleAffichage extends BodyTagSupport implements MessageSour
 		this.nombreLignes = nombreLignes;
 	}
 
+	public boolean isModeImpression() {
+		return modeImpression;
+	}
+
+	public void setModeImpression(boolean modeImpression) {
+		this.modeImpression = modeImpression;
+	}
+
 	private static String getMessage(String key) {
 		return messageSource.getMessage(key, null, WebContextUtils.getDefaultLocale());
 	}
@@ -72,7 +82,7 @@ public class JspTagToggleAffichage extends BodyTagSupport implements MessageSour
 
 			final JspWriter out = pageContext.getOut();
 			//Si le nombre de lignes du tableau est supérieur à 3,on affiche le lien
-			if (nombreLignes > 3) {
+			if (nombreLignes > 3 && !modeImpression) {
 				out.print(buildHtml(displayAll, onClickAll, tooltipAll, idAll));
 				out.print(buildHtml(displayReduce, onClickReduce, tooltipReduce, idReduce));
 			}

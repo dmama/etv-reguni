@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <%@ taglib uri="http://www.unireg.com/uniregTagLib" prefix="unireg" %>
+<c:set var="printparam" value='<%= request.getParameter("printview") %>' />
+<c:set var="printview" value="${(empty printparam)? false :printparam }" />
 
 <c:set var="layout" value="${param.layout}" />
 <c:if test="${layout != null && layout == 'dialog'}">
@@ -349,8 +351,8 @@
 
 	<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
-				Histo.toggleAffichageRows('forFiscal',false, 6);
-                Histo.toggleAffichageRows('decisionAci',false,2);
+				Histo.toggleAffichageRows('forFiscal',${printview}, 6);
+                Histo.toggleAffichageRows('decisionAci',${printview},2);
 				Histo.toggleRowsIsHisto('situationFamille','isSFHisto', 5);
 				Histo.toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
 				Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
@@ -361,7 +363,7 @@
 	<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
 			Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
-			Histo.toggleAffichageRows('forFiscal',false, 2);
+			Histo.toggleAffichageRows('forFiscal',${printview}, 2);
 			Histo.toggleRowsIsHistoFromClass('periodicite', 'isPeriodiciteHisto', 'histo-only');
 		</script>
 	</c:if>

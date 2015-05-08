@@ -1192,6 +1192,12 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<description>Boolean permettant de savoir si on est en mode impression ou écran</description>
+			<name>modeImpression</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
 		<description>Permet d'afficher une call-stack (cachée par défaut)</description>
