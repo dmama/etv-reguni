@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -247,8 +246,8 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
-//		for (long id : ids) {
-		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
+		for (long id : ids) {
+//		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
 			if (!idsDejaTrouvees.contains(id) && !shutdownInProgress) {
 				final Graphe graphe = loadGraphe(id);
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
