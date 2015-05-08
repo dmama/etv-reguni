@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory sessionFactory;
+	private Set<Long> idsEntreprisesDejaMigrees;
 	private volatile boolean shutdownInProgress = false;
 
 	private static void forceLoad(RegpmImmeuble immeuble, Graphe graphe) {
@@ -224,6 +226,10 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		this.sessionFactory = sessionFactory;
 	}
 
+	public void setIdsEntreprisesDejaMigrees(Set<Long> idsEntreprisesDejaMigrees) {
+		this.idsEntreprisesDejaMigrees = idsEntreprisesDejaMigrees;
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		this.shutdownInProgress = true;
@@ -238,10 +244,11 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 		// container des identifiants des entreprises déjà présentes dans un graphe
 		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
+		idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
-		for (long id : ids) {
-//		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
+//		for (long id : ids) {
+		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
 			if (!idsDejaTrouvees.contains(id) && !shutdownInProgress) {
 				final Graphe graphe = loadGraphe(id);
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());

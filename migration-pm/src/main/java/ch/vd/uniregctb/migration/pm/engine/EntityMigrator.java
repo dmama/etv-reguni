@@ -2,9 +2,9 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 
 /**
  * Interface principal des migrateurs d'entité

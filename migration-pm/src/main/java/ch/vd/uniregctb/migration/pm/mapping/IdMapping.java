@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils;
+package ch.vd.uniregctb.migration.pm.mapping;
 
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;

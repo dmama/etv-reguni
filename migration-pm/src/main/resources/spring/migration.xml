@@ -11,9 +11,15 @@
 		<property name="enabled" value="${migrator.enabled}"/>
 	</bean>
 
+	<bean id="alreadyMigratedEntrepriseIds" class="ch.vd.uniregctb.migration.pm.mapping.AlreadyMigratedEntrepriseListFactory">
+		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
+		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+	</bean>
+
 	<bean id="fromDbFeeder" class="ch.vd.uniregctb.migration.pm.FromDbFeeder">
 		<property name="regpmTransactionManager" ref="regpmTransactionManager"/>
 		<property name="sessionFactory" ref="regpmSessionFactory"/>
+		<property name="idsEntreprisesDejaMigrees" ref="alreadyMigratedEntrepriseIds"/>
 	</bean>
 
 	<bean id="serializationIntermediary" class="ch.vd.uniregctb.migration.pm.SerializationIntermediary">

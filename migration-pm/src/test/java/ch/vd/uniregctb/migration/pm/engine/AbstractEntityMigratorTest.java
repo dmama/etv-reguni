@@ -19,11 +19,11 @@ import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {

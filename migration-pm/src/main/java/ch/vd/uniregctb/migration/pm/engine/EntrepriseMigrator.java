@@ -41,6 +41,7 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
@@ -54,7 +55,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -252,7 +252,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
-		// TODO migrer l'entreprise (ou la retrouver déjà migrée en base)
+		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
+			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ?
+			return;
+		}
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = getEntityFromDb(Entreprise.class, regpm.getId());

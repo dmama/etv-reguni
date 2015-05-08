@@ -1,17 +1,21 @@
-package ch.vd.uniregctb.migration.pm.utils;
+package ch.vd.uniregctb.migration.pm.mapping;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
+import ch.vd.uniregctb.migration.pm.utils.LockHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -30,9 +34,9 @@ public class IdMapper implements IdMapping {
 
 	private final LockHelper lock = new LockHelper(true);
 	private final IdMapper reference;
-	private final Map<Long, Long> entreprises = new HashMap<>();
-	private final Map<Long, Long> etablissements = new HashMap<>();
-	private final Map<Long, Long> individus = new HashMap<>();
+	private final Map<Long, Long> entreprises;
+	private final Map<Long, Long> etablissements;
+	private final Map<Long, Long> individus;
 
 	public IdMapper() {
 		this(null);
@@ -40,6 +44,16 @@ public class IdMapper implements IdMapping {
 
 	private IdMapper(IdMapper reference) {
 		this.reference = reference;
+		this.entreprises = new HashMap<>();
+		this.etablissements = new HashMap<>();
+		this.individus = new HashMap<>();
+	}
+
+	private IdMapper(Map<Long, Long> entreprises, Map<Long, Long> etablissements, Map<Long, Long> individus) {
+		this.reference = null;
+		this.entreprises = entreprises;
+		this.etablissements = etablissements;
+		this.individus = individus;
 	}
 
 	/**
@@ -50,24 +64,85 @@ public class IdMapper implements IdMapping {
 		return new IdMapper(this);
 	}
 
-	private void addEntity(Map<Long, Long> map, Long regpmId, Long uniregId, String categorieEntite, Function<Long, String> chgtMappingErrorText) {
-		// tout ajout doit se faire avec un verrou exclusif
-		lock.doInWriteLock(() -> {
+	/**
+	 * @param sessionFactory session factory hibernate vers la base Unireg
+	 * @return une instance de mapper sans référence et pré-rempli avec les données en base
+	 */
+	public static IdMapper fromDatabase(SessionFactory sessionFactory) {
 
-			if (regpmId == null || uniregId == null) {
-				throw new NullPointerException(String.format("%s sans identifiant", categorieEntite));
-			}
+		final Map<Long, Long> entreprises = new HashMap<>();
+		final Map<Long, Long> etablissements = new HashMap<>();
+		final Map<Long, Long> individus = new HashMap<>();
 
-			final Long oldValue = map.put(regpmId, uniregId);
-			if (oldValue != null && !oldValue.equals(uniregId)) {
-				// changement de valeur ?
-				throw new IllegalArgumentException(chgtMappingErrorText.apply(oldValue));
+		//
+		// Chargement de toutes les entités en base pour remplissage du mapper
+		//
+
+		//noinspection JpaQlInspection
+		final Query query = sessionFactory.getCurrentSession().createQuery("select m from MigrationPmMapping m");
+
+		//noinspection unchecked
+		final Iterator<MigrationPmMapping> iterator = query.iterate();
+		while (iterator.hasNext()) {
+			final MigrationPmMapping mapping = iterator.next();
+			switch (mapping.getTypeEntite()) {
+			case ENTREPRISE:
+				addEntityToMap(entreprises, mapping.getIdRegpm(), mapping.getIdUnireg(), ENTREPRISE,
+				               oldValue -> buildPersistedMappingErrorText(ENTREPRISE, mapping.getIdRegpm(), mapping.getIdUnireg(), oldValue));
+				break;
+			case ETABLISSEMENT:
+				addEntityToMap(etablissements, mapping.getIdRegpm(), mapping.getIdUnireg(), ETABLISSEMENT,
+				               oldValue -> buildPersistedMappingErrorText(ETABLISSEMENT, mapping.getIdRegpm(), mapping.getIdUnireg(), oldValue));
+				break;
+			case INDIVIDU:
+				addEntityToMap(individus, mapping.getIdRegpm(), mapping.getIdUnireg(), INDIVIDU,
+				               oldValue -> buildPersistedMappingErrorText(INDIVIDU, mapping.getIdRegpm(), mapping.getIdUnireg(), oldValue));
+				break;
+			default:
+				throw new IllegalArgumentException("Valeur non supportée : " + mapping.getTypeEntite());
 			}
-		});
+		}
+
+		return new IdMapper(entreprises, etablissements, individus);
+	}
+
+	/**
+	 * Gérère et persiste les entités {@link MigrationPmMapping} correspondant aux mappings locaux (dans la transaction courante)
+	 * @param sessionFactory session factory hibernate vers la base Unireg
+	 */
+	public void pushLocalPartToDatabase(SessionFactory sessionFactory) {
+		entreprises.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.ENTREPRISE, idRegpm, idUnireg));
+		etablissements.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.ETABLISSEMENT, idRegpm, idUnireg));
+		individus.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.INDIVIDU, idRegpm, idUnireg));
+	}
+
+	private static MigrationPmMapping persistNewMapping(SessionFactory sessionFactory, MigrationPmMapping.TypeEntite type, long idRegpm, long idUnireg) {
+		final Session currentSession = sessionFactory.getCurrentSession();
+		final MigrationPmMapping mapping = new MigrationPmMapping(type, idRegpm, idUnireg);
+		return (MigrationPmMapping) currentSession.merge(mapping);
+
+		// TODO est-on certain qu'il n'est pas possible de créer deux mappings identiques ici (si c'est possible, il faut blinder le cas...) ?
 	}
 
 	private void addEntity(Map<Long, Long> map, WithLongId regpm, Contribuable unireg, String categorieEntite, Function<Long, String> chgtMappingErrorText) {
 		addEntity(map, regpm.getId(), unireg.getNumero(), categorieEntite, chgtMappingErrorText);
+	}
+
+	private void addEntity(Map<Long, Long> map, Long regpmId, Long uniregId, String categorieEntite, Function<Long, String> chgtMappingErrorText) {
+		// tout ajout doit se faire avec un verrou exclusif
+		lock.doInWriteLock(() -> addEntityToMap(map, regpmId, uniregId, categorieEntite, chgtMappingErrorText));
+	}
+
+	private static void addEntityToMap(Map<Long, Long> map, Long regpmId, Long uniregId, String categorieEntite, Function<Long, String> chgtMappingErrorText) {
+		if (regpmId == null || uniregId == null) {
+			throw new NullPointerException(String.format("%s sans identifiant", categorieEntite));
+		}
+
+		final Long oldValue = map.put(regpmId, uniregId);
+		if (oldValue != null && !oldValue.equals(uniregId)) {
+			// changement de valeur ?
+			throw new IllegalArgumentException(chgtMappingErrorText.apply(oldValue));
+		}
 	}
 
 	@FunctionalInterface
@@ -139,6 +214,10 @@ public class IdMapper implements IdMapping {
 		return hasMapping(individus, idRegpm, reference != null ? reference::hasMappingForIndividu : null);
 	}
 
+	private static String buildPersistedMappingErrorText(String categorieEntite, long regpmId, long oldUniregId, long newUniregId) {
+		return String.format("Incohérence de chargement (%s) : regpm=%d, unireg=%d, autre unireg=%d", INDIVIDU, regpmId, oldUniregId, newUniregId);
+	}
+
 	private static String buildMappingChangeErrorText(String categorieEntite, long regpmId, long oldUniregId, long newUniregId) {
 		return String.format("Entité '%s' RegPM %d précédemment enregistrée avec l'ID Unireg %d aurait maintenant l'ID Unireg %d ??",
 		                     categorieEntite, regpmId, oldUniregId, newUniregId);
@@ -161,36 +240,6 @@ public class IdMapper implements IdMapping {
 				individus.forEach((regpmId, uniregId) -> reference.addEntity(reference.individus, regpmId, uniregId, INDIVIDU,
 				                                                             oldValue -> buildMappingChangeErrorText(INDIVIDU, regpmId, oldValue, uniregId)));
 			});
-		}
-	}
-
-	/**
-	 * Doit être lancé dans un environnement où le lock du mapper local <b>et de sa référence</b> sont verrouillés en lecture au moins
-	 * @param localMap mapping local
-	 * @param referenceMap mapping équivalent côté référence
-	 * @param categorieEntite catégorie des entités mappées
-	 * @throws IllegalArgumentException en cas d'incompatibilité
-	 */
-	private static void checkCompatibility(Map<Long, Long> localMap, Map<Long, Long> referenceMap, String categorieEntite) {
-		localMap.entrySet().stream()
-				.map(entry -> Pair.of(entry, referenceMap.get(entry.getKey())))
-				.filter(pair -> pair.getRight() != null)
-				.filter(pair -> !pair.getRight().equals(pair.getLeft().getValue()))
-				.findAny()
-				.map(pair -> buildMappingChangeErrorText(categorieEntite, pair.getLeft().getKey(), pair.getRight(), pair.getLeft().getValue()))
-				.ifPresent(s -> { throw new IllegalArgumentException(s); });
-	}
-
-	/**
-	 * Valide le fait que les données ne sont pas en conflit entre ce mapper et sa référence
-	 */
-	public void checkCompatibilityWithReference() {
-		if (reference != null) {
-			lock.doInReadLock(() -> reference.lock.doInReadLock(() -> {
-				checkCompatibility(entreprises, reference.entreprises, ENTREPRISE);
-				checkCompatibility(etablissements, reference.etablissements, ETABLISSEMENT);
-				checkCompatibility(individus, reference.individus, INDIVIDU);
-			}));
 		}
 	}
 }

@@ -28,6 +28,7 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
@@ -35,7 +36,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -170,13 +170,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement
-		// (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts, par exemple...)
+		// (quand l'établissement apparaît comme mandataire de deux entreprises présentes dans deux graphes distincts, par exemple,
+		// ou suite à une reprise sur incident...)
 		if (idMapper.hasMappingForEtablissement(regpm.getId())) {
-			// l'établissement a déjà été migré dans ce run de migration (= dans un autre graphe), rien à faire...
+			// l'établissement a déjà été migré rien à faire...
 			return;
 		}
-
-		// TODO Pour les cas de relance du job de migration après un crash, il faut également vérifier si l'entreprise parente existe en base et est déjà migrée
 
 		// on crée forcément un nouvel établissement
 		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));

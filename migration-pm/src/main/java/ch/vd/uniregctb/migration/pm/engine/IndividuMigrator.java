@@ -25,10 +25,10 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.Equalator;
-import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -128,6 +128,11 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	@Override
 	protected void doMigrate(RegpmIndividu regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+
+		if (idMapper.hasMappingForIndividu(regpm.getId())) {
+			// l'individu a déjà été migré, pas la peine d'aller plus loin
+			return;
+		}
 
 		// individu migré à l'époque dans RCPers avec le numéro
 		final Person migreRCPers = getFromRCPersWithId(mr, regpm.getId());

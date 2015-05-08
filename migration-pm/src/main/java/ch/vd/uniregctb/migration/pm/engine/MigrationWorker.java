@@ -41,13 +41,13 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.Worker;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
-import ch.vd.uniregctb.migration.pm.utils.IdMapper;
-import ch.vd.uniregctb.migration.pm.utils.IdMapping;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -59,7 +59,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private static final String VISA_MIGRATION = "[MigrationPM]";
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
-	private final IdMapper idMapper = new IdMapper();
+	private IdMapper idMapper;
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
 	private GatheringThread gatheringThread;
@@ -175,6 +175,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		if (this.mode == MigrationMode.FROM_DUMP || this.mode == MigrationMode.DIRECT) {
 			this.gatheringThread.start();
 		}
+
+		// chargement du mapper d'identifiants, non-vide lors d'une reprise sur incident
+		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
+		template.setReadOnly(true);
+		this.idMapper = template.execute(status -> IdMapper.fromDatabase(uniregSessionFactory));
 	}
 
 	@Override
@@ -285,7 +290,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.execute(status -> {
 				doMigrate(graphe, mr, localIdMapper);
-				localIdMapper.checkCompatibilityWithReference();        // ca va pêter si des incompatibilités apparaissent
+				localIdMapper.pushLocalPartToDatabase(uniregSessionFactory);
 				return null;
 			});
 
