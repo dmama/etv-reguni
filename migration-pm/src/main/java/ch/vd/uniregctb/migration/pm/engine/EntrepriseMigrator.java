@@ -269,7 +269,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
 
 		// TODO générer l'établissement principal (= siège...)
-		// TODO ajouter un flag sur l'entreprise pour vérifier si elle est déjà migrée ou pas... (problématique de reprise sur incident pendant la migration)
 		// TODO migrer les coordonnées financières, les bouclements, les adresses, les déclarations/documents...
 
 		migrateExercicesCommerciaux(regpm, unireg, mr);

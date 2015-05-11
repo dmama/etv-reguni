@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,8 +320,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	 */
 	private void doMigrate(Graphe graphe, MigrationResult mr, IdMapping idMapper) {
 
-		// on commence par les établissement, puis les entreprises, puis les individus
-		// (établissements d'abord afin que, quand on migre un établissement, si l'entité juridique est déjà migrée en base, c'est que l'établissement l'a déjà été dans un run précédent)
+		// on commence par les établissement, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
 		// on collecte les liens entre ces entités au fur et à mesure
 		// à la fin, on ajoute les liens
 
@@ -348,9 +348,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
 		if (links != null && !links.isEmpty()) {
+			final Session session = uniregSessionFactory.getCurrentSession();
 			links.stream()
 					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
-					.forEach(ret -> uniregSessionFactory.getCurrentSession().merge(ret));
+					.forEach(session::merge);
 		}
 	}
 

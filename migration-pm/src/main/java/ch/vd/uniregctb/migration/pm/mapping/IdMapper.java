@@ -111,15 +111,15 @@ public class IdMapper implements IdMapping {
 	 * @param sessionFactory session factory hibernate vers la base Unireg
 	 */
 	public void pushLocalPartToDatabase(SessionFactory sessionFactory) {
-		entreprises.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.ENTREPRISE, idRegpm, idUnireg));
-		etablissements.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.ETABLISSEMENT, idRegpm, idUnireg));
-		individus.forEach((idRegpm, idUnireg) -> persistNewMapping(sessionFactory, MigrationPmMapping.TypeEntite.INDIVIDU, idRegpm, idUnireg));
+		final Session session = sessionFactory.getCurrentSession();
+		entreprises.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.ENTREPRISE, idRegpm, idUnireg));
+		etablissements.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.ETABLISSEMENT, idRegpm, idUnireg));
+		individus.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.INDIVIDU, idRegpm, idUnireg));
 	}
 
-	private static MigrationPmMapping persistNewMapping(SessionFactory sessionFactory, MigrationPmMapping.TypeEntite type, long idRegpm, long idUnireg) {
-		final Session currentSession = sessionFactory.getCurrentSession();
+	private static MigrationPmMapping persistNewMapping(Session session, MigrationPmMapping.TypeEntite type, long idRegpm, long idUnireg) {
 		final MigrationPmMapping mapping = new MigrationPmMapping(type, idRegpm, idUnireg);
-		return (MigrationPmMapping) currentSession.merge(mapping);
+		return (MigrationPmMapping) session.merge(mapping);
 
 		// TODO est-on certain qu'il n'est pas possible de créer deux mappings identiques ici (si c'est possible, il faut blinder le cas...) ?
 	}
@@ -215,7 +215,7 @@ public class IdMapper implements IdMapping {
 	}
 
 	private static String buildPersistedMappingErrorText(String categorieEntite, long regpmId, long oldUniregId, long newUniregId) {
-		return String.format("Incohérence de chargement (%s) : regpm=%d, unireg=%d, autre unireg=%d", INDIVIDU, regpmId, oldUniregId, newUniregId);
+		return String.format("Incohérence de chargement (%s) : regpm=%d, unireg=%d, autre unireg=%d", categorieEntite, regpmId, oldUniregId, newUniregId);
 	}
 
 	private static String buildMappingChangeErrorText(String categorieEntite, long regpmId, long oldUniregId, long newUniregId) {
