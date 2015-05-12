@@ -12,8 +12,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
-import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,15 +23,17 @@ import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
@@ -51,7 +51,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				getBean(UniregStore.class, "uniregStore"),
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RCEntService.class, "rcEntService"),
-				getBean(AdresseHelper.class, "adresseMigration"));
+				getBean(AdresseHelper.class, "adresseHelper"));
 	}
 
 	private static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

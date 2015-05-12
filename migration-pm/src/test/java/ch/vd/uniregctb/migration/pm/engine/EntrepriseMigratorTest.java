@@ -8,8 +8,6 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,6 +20,7 @@ import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -52,7 +52,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(RCEntService.class, "rcEntService"),
-				getBean(AdresseHelper.class, "adresseMigration"));
+				getBean(AdresseHelper.class, "adresseHelper"));
 	}
 
 	/**
