@@ -79,10 +79,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
-	private PeriodeFiscaleDAO periodeFiscaleDAO;
-	private BouclementService bouclementService;
-	private RCEntService rcEntService;
-	private AdresseHelper adresseHelper;
+	private final PeriodeFiscaleDAO periodeFiscaleDAO;
+	private final BouclementService bouclementService;
+	private final RCEntService rcEntService;
+	private final AdresseHelper adresseHelper;
 
 	public EntrepriseMigrator(UniregStore uniregStore, TiersDAO tiersDAO, PeriodeFiscaleDAO periodeFiscaleDAO, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper) {
 		super(uniregStore, tiersDAO);

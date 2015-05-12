@@ -38,8 +38,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	private static final MigrationResultMessage.CategorieListe CATEGORIE_LISTE = MigrationResultMessage.CategorieListe.INDIVIDUS_PM;
 
-	private RcPersClient rcpersClient;
-	private NonHabitantIndex nonHabitantIndex;
+	private final RcPersClient rcpersClient;
+	private final NonHabitantIndex nonHabitantIndex;
 
 	public IndividuMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
 		super(uniregStore, tiersDAO);

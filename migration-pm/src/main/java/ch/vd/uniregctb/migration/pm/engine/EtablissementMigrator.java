@@ -51,8 +51,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
 
-	private RCEntService rcEntService;
-	private AdresseHelper adresseHelper;
+	private final RCEntService rcEntService;
+	private final AdresseHelper adresseHelper;
 
 	public EtablissementMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RCEntService rcEntService, AdresseHelper adresseHelper) {
 		super(uniregStore, tiersDAO);

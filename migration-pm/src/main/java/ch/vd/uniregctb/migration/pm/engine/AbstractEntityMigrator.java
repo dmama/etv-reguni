@@ -46,8 +46,8 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
-	protected UniregStore uniregStore;
-	protected TiersDAO tiersDAO;
+	protected final UniregStore uniregStore;
+	protected final TiersDAO tiersDAO;
 
 	public AbstractEntityMigrator(UniregStore uniregStore, TiersDAO tiersDAO) {
 		this.uniregStore = uniregStore;
