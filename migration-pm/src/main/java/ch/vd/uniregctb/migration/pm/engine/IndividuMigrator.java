@@ -8,8 +8,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ech.ech0044.v2.NamedPersonId;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +27,11 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.Equalator;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
