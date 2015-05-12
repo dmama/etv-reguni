@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
@@ -132,6 +134,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
@@ -177,6 +180,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -231,6 +235,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -285,6 +290,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -363,6 +369,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -443,6 +450,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -527,6 +535,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
 
@@ -605,6 +614,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			return ids.get(0);
 		});
 
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
 
@@ -614,6 +624,253 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
 			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
 			Assert.assertNull(etab.getTitulaireCompteBancaire());     // le jour où on saura quoi mettre là-dedans, ça pêtera ici...
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertNull(etab.getEnseigne());
+			Assert.assertNull(etab.getTypeAutoriteFiscale());
+			Assert.assertNull(etab.getNumeroOfs());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testEnseigne() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setEnseigne("La rouge musaraigne");
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// vérification des messages collectés
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+		mr.getMessages().values().stream()
+				.flatMap(Collection::stream)
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.findAny()
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
+
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertNull(etab.getNumeroCompteBancaire());
+			Assert.assertNull(etab.getAdresseBicSwift());
+			Assert.assertNull(etab.getTitulaireCompteBancaire());
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("La rouge musaraigne", etab.getEnseigne());
+			Assert.assertNull(etab.getTypeAutoriteFiscale());
+			Assert.assertNull(etab.getNumeroOfs());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testCommuneUniqueVaudoise() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setEnseigne("La verte mangouste");
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// vérification des messages collectés
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+		mr.getMessages().values().stream()
+				.flatMap(Collection::stream)
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.findAny()
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
+
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertNull(etab.getNumeroCompteBancaire());
+			Assert.assertNull(etab.getAdresseBicSwift());
+			Assert.assertNull(etab.getTitulaireCompteBancaire());
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("La verte mangouste", etab.getEnseigne());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, etab.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), etab.getNumeroOfs());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testCommuneUniqueHorsCanton() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setEnseigne("Le jaune éléphant");
+		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), BALE, false);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// vérification des messages collectés
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+		mr.getMessages().values().stream()
+				.flatMap(Collection::stream)
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.findAny()
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
+
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertNull(etab.getNumeroCompteBancaire());
+			Assert.assertNull(etab.getAdresseBicSwift());
+			Assert.assertNull(etab.getTitulaireCompteBancaire());
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("Le jaune éléphant", etab.getEnseigne());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, etab.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), etab.getNumeroOfs());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testCommunesMultiples() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setEnseigne("L'orange pie");
+		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, false);
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// vérification des messages collectés
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+		mr.getMessages().values().stream()
+				.flatMap(Collection::stream)
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.findAny()
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
+
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement avec plusieurs domiciles ; seul le dernier est conservé\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertNull(etab.getNumeroCompteBancaire());
+			Assert.assertNull(etab.getAdresseBicSwift());
+			Assert.assertNull(etab.getTitulaireCompteBancaire());
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("L'orange pie", etab.getEnseigne());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, etab.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), etab.getNumeroOfs());
+
 			return null;
 		});
 	}

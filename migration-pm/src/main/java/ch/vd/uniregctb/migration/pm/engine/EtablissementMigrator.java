@@ -246,7 +246,29 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// coordonnées financières
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
 
-		// TODO migrer l'enseigne...
+		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
+		unireg.setEnseigne(regpm.getEnseigne());
+		unireg.setPrincipal(false);
+		unireg.setNumeroEtablissement(null);        // TODO à voir avec RCEnt
+
+		// commune de l'établissement (dans la base du mainframe au 12.05.2015, aucun établissement n'a plus d'un domicile non-rectifié)
+		// -> en fait, il n'y a toujours qu'au plus une seule commune...
+		final List<RegpmCommune> communes = regpm.getDomicilesEtablissements().stream()
+				.filter(domicile -> !domicile.isRectifiee())
+				.map(RegpmDomicileEtablissement::getCommune)
+				.collect(Collectors.toList());
+		if (communes.isEmpty()) {
+			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans domicile.");
+		}
+		else {
+			if (communes.size() > 1) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, "Etablissement avec plusieurs domiciles ; seul le dernier est conservé.");
+			}
+
+			final RegpmCommune commune = communes.get(communes.size() - 1);
+			unireg.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+			unireg.setNumeroOfs(commune.getNoOfs());
+		}
 	}
 
 	private void enregistrerDemandesForsSecondaires(KeyedSupplier<? extends Tiers> entiteJuridique,
