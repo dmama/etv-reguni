@@ -21,6 +21,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @DiscriminatorValue("Etablissement")
 public class Etablissement extends Contribuable {
 
+	// TODO [SIPM] La gestion de la commune, notamment en cas de fusion, n'est pas très claire...
+
 	// Numéros (de tiers) générés pour les établissements
 	public static final int ETB_GEN_FIRST_ID = 3000000;
 	public static final int ETB_GEN_LAST_ID = 3999999;

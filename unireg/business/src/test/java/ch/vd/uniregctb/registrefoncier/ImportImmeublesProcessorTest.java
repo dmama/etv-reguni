@@ -353,7 +353,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addEtablissement(2000123L);
+				addEtablissement(3000123L);
 				return null;
 			}
 		});
@@ -371,7 +371,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 			assertNotNull(erreur0);
 			assertEquals("132/3129", erreur0.getNoImmeuble());
 			assertEquals("Le type de contribuable est incorrect", erreur0.getDescriptionRaison());
-			assertEquals("Le contribuable n°2000123 est de type [Etablissement].", erreur0.getDetails());
+			assertEquals("Le contribuable n°3000123 est de type [Etablissement].", erreur0.getDetails());
 		}
 	}
 
