@@ -5,61 +5,40 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
  * Installation matérielle au moyen de laquelle s'exerce une part de l'activité d'une entreprise (succursale, agence, dépôt), connu du registre des personnes morales de l'ACI.
  * Une raison individuelle est l'établissement d'une personne physqiue.
  * L'établissement en lui-même n'est pas contribuable, mais peut être constitutif d'un for fiscal (établissement stable).
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8clx9Edygsbnw9h5bVw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8clx9Edygsbnw9h5bVw"
  */
 @Entity
 @DiscriminatorValue("Etablissement")
 public class Etablissement extends Contribuable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 8778344268317960760L;
+
+	// Numéros (de tiers) générés pour les établissements
+	public static final int ETB_GEN_FIRST_ID = 3000000;
+	public static final int ETB_GEN_LAST_ID = 3999999;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * Référence unique de l'établissement dans le registre des personnes morales (établissement d'une entreprise contribuable)
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8dVx9Edygsbnw9h5bVw"
+	 * Identifiant cantonal (= dans RCEnt)
 	 */
 	private Long numeroEtablissement;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the numeroEtablissement
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8dVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NUMERO_ETABLISSEMENT")
+	@Index(name = "IDX_TIERS_NO_ETABLISSEMENT")
 	public Long getNumeroEtablissement() {
-		// begin-user-code
 		return numeroEtablissement;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theNumeroEtablissement the numeroEtablissement to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8dVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroEtablissement(Long theNumeroEtablissement) {
-		// begin-user-code
 		numeroEtablissement = theNumeroEtablissement;
-		// end-user-code
 	}
 
 	@Transient
 	@Override
 	public String getRoleLigne1() {
-		return "Contribuable PM";
+		return "Etablissement";
 	}
 
 	@Transient
@@ -74,9 +53,6 @@ public class Etablissement extends Contribuable {
 		return TypeTiers.ETABLISSEMENT;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
 		if (this == obj)

@@ -91,5 +91,7 @@ drop sequence S_DPI;
 
 drop sequence S_CTB;
 
+drop sequence S_ETB;
+
 drop sequence hibernate_sequence;
 

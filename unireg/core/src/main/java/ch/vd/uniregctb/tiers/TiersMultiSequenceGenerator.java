@@ -32,10 +32,12 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	private static final String CTB_SEQ_NAME = "S_CTB";
 	private static final String DPI_SEQ_NAME = "S_DPI";
 	private static final String PM_SEQ_NAME = "S_PM";
+	private static final String ETB_SEQ_NAME = "S_ETB";
 
 	private FillHoleGenerator ctbGenerator;
 	private PersistentIdentifierGenerator dpiGenerator;
 	private PersistentIdentifierGenerator pmGenerator;
+	private PersistentIdentifierGenerator etbGenerator;
 
 	public TiersMultiSequenceGenerator() {
 		super();
@@ -53,6 +55,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 		dpiGenerator = createSequence(type, params, dialect, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
 		pmGenerator = createSequence(type, params, dialect, Entreprise.PM_GEN_FIRST_ID, PM_SEQ_NAME);
+		etbGenerator = createSequence(type, params, dialect, Etablissement.ETB_GEN_FIRST_ID, ETB_SEQ_NAME);
 
 		ctbGenerator = new FillHoleGenerator("TIERS", CTB_SEQ_NAME, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
 		ctbGenerator.configure(type, params, dialect);
@@ -92,8 +95,12 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 				assertIdBetween(DebiteurPrestationImposable.FIRST_MIGRATION_ID, DebiteurPrestationImposable.LAST_ID, numeroTiers, object);
 			}
 			// De 2'000'000 à 2'999'999
-			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute || object instanceof Etablissement) {
+			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute) {
 				assertIdBetween(Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID, numeroTiers, object);
+			}
+			// De 3'000'000 à 3'999'999
+			else if (object instanceof Etablissement) {
+				assertIdBetween(Etablissement.ETB_GEN_FIRST_ID, Etablissement.ETB_GEN_LAST_ID, numeroTiers, object);
 			}
 			// De 10'000'000 à 99'999'999
 			else if (object instanceof ContribuableImpositionPersonnesPhysiques) {
@@ -119,8 +126,12 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 				sequenceNumber = dpiGenerator.generate(session, object);
 			}
 			// De 2'000'000 à 2'999'999
-			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute || object instanceof Etablissement) {
+			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute) {
 				sequenceNumber = pmGenerator.generate(session, object);
+			}
+			// De 3'000'000 à 3'999'999
+			else if (object instanceof Etablissement) {
+				sequenceNumber = etbGenerator.generate(session, object);
 			}
 			// De 10'000'000 à 99'999'999
 			else if (object instanceof PersonnePhysique || object instanceof MenageCommun) {
@@ -154,10 +165,11 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	@Override
 	public String[] sqlDropStrings(Dialect dialect) throws HibernateException {
 
-		List<String> sqlDropStrings = new ArrayList<>();
+		final List<String> sqlDropStrings = new ArrayList<>();
 		sqlDropStrings.addAll(Arrays.asList(pmGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(dpiGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(ctbGenerator.sqlDropStrings(dialect)));
+		sqlDropStrings.addAll(Arrays.asList(etbGenerator.sqlDropStrings(dialect)));
 
 		return sqlDropStrings.toArray(new String[sqlDropStrings.size()]);
 	}
@@ -176,6 +188,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		sqlCreateStrings.addAll(Arrays.asList(pmGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(dpiGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(ctbGenerator.sqlCreateStrings(dialect)));
+		sqlCreateStrings.addAll(Arrays.asList(etbGenerator.sqlCreateStrings(dialect)));
 
 		return sqlCreateStrings.toArray(new String[sqlCreateStrings.size()]);
 	}
