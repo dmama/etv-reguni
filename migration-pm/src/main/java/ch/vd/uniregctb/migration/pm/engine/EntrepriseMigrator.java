@@ -57,7 +57,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
-import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;

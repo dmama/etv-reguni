@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer.collector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'une liste à une seule dimension

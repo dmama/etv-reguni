@@ -47,7 +47,7 @@ import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 

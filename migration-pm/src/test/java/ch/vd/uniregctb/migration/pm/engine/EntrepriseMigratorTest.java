@@ -29,7 +29,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils;
+package ch.vd.uniregctb.migration.pm.historizer.extractor;
 
 import org.junit.Assert;
 import org.junit.Test;

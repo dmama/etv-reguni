@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils;
+package ch.vd.uniregctb.migration.pm.historizer.equalator;
 
 import java.util.function.BiPredicate;
 

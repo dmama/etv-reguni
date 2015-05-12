@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer.collector;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'une liste à une seule dimension
@@ -59,7 +60,7 @@ public class FlattenDataCollector<S, D, K> extends LinearDataCollector<S, D> {
 	 * @param source données du snapshot
 	 */
 	@Override
-	protected void collect(RegDate date, S source) {
+	public void collect(RegDate date, S source) {
 		final Stream<? extends D> stream = source == null ? Stream.empty() : dataExtractor.apply(source);
 
 		// on fait d'abord le boulot pour les données présentes en collectant les clés passées en revue

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +15,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
+import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.rcent.component.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 public class HistorizerTest {
 

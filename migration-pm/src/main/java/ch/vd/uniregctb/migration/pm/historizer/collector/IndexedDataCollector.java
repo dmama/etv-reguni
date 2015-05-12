@@ -1,10 +1,12 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer.collector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'un ensemble de listes indexées par une clé de regroupement

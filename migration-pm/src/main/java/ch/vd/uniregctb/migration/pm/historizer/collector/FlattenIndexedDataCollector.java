@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer.collector;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,9 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.rcent.component.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'un ensemble de listes indexées par une clé de regroupement
@@ -72,7 +74,7 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 	}
 
 	@Override
-	protected void collect(RegDate date, S snapshot) {
+	public void collect(RegDate date, S snapshot) {
 		final Stream<Keyed<KS, D>> stream = snapshot == null ? Stream.empty() : dataExtractor.apply(snapshot);
 
 		final Set<KS> usedKeys = new HashSet<>();

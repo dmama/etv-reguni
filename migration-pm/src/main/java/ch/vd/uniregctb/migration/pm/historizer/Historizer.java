@@ -1,10 +1,11 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.migration.pm.historizer.collector.DataCollector;
 
 /**
  * Utility class which is able to extract historized data (= with time validity dates)

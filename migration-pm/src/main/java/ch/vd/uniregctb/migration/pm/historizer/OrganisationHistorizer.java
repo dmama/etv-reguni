@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent;
+package ch.vd.uniregctb.migration.pm.historizer;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -22,15 +22,14 @@ import ch.vd.evd0022.v1.OrganisationSnapshot;
 import ch.vd.evd0022.v1.SwissMunicipality;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
-import ch.vd.uniregctb.migration.pm.utils.histo.DateRanged;
-import ch.vd.uniregctb.migration.pm.utils.histo.FlattenDataCollector;
-import ch.vd.uniregctb.migration.pm.utils.histo.FlattenIndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.utils.histo.Historizer;
-import ch.vd.uniregctb.migration.pm.utils.histo.IndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.utils.histo.Keyed;
-import ch.vd.uniregctb.migration.pm.utils.histo.LinearDataCollector;
-import ch.vd.uniregctb.migration.pm.utils.histo.SimpleDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.rcent.component.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
 
 public class OrganisationHistorizer {
 

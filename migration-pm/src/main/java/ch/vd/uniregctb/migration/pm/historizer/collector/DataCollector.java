@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.historizer.collector;
 
 import java.util.NavigableMap;
 import java.util.stream.Stream;
@@ -6,7 +6,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.utils.Equalator;
+import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
  * Classe de base des collecteurs de données
@@ -19,7 +20,7 @@ public abstract class DataCollector<S> {
 	 * @param date date du snapshot
 	 * @param snapshot données du snapshot
 	 */
-	protected abstract void collect(RegDate date, S snapshot);
+	public abstract void collect(RegDate date, S snapshot);
 
 	/**
 	 * Méthode de calcul de données avec plage de validité

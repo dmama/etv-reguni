@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.utils.histo;
+package ch.vd.uniregctb.migration.pm.rcent.component;
 
 import org.jetbrains.annotations.NotNull;
 
