@@ -23,10 +23,23 @@ public abstract class Historizer {
 			return;
 		}
 
-		// il est important de passer les snapshots dans l'ordre croissant...
+		/*
+			Double boucle de génération d'historique.
+		 */
+
 		source.entrySet().stream()
-				.sorted(Comparator.comparing(Map.Entry::getKey))
-				.forEach(entry -> collectors.stream().forEach(dataCollector -> dataCollector.collect(entry.getKey(), entry.getValue())));
+				.sorted(Comparator.comparing(Map.Entry::getKey))  // -----------------------------------------------------> Il est crucial d'assurer l'ordre chronologique (voir ci-dessous)
+				.forEach( //----------------------------------------------------------------------------------------------> Pour chaque Snapshot RegDate <-> Graphe d'objets
+				          entry -> collectors.stream()
+						          .forEach( // ---------------------------------------------------------------------------> Pour chaque Collector donné en entrée
+						                    dataCollector -> dataCollector.collect(entry.getKey(), entry.getValue()) // --> Le Collector est applique au snapshot.
+						                    /*
+						                     * Chaque Collector traite d'un type de donnée et génère une Collection de plages de temps (Time Periods) représentant l'évolution de cette donnée.
+				                             * Chaque Collector conserve cette liste.
+				                             * A chaque tour, il se sert de la dernière entrée, la comparant avec celle en cours de revue pour déterminer le résultat.
+				                             */
+				          )
+				);
 	}
 
 }
