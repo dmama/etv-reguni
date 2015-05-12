@@ -226,25 +226,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final RegpmCommune commune = communeData.getKey();
 			if (commune.getCanton() != RegpmCanton.VD) {
 				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("For(s) secondaire(s) 'immeuble' sur la commune de %s (%d) sise dans le canton %s.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+				              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
 			}
+			else {
+				for (DateRange dates : communeData.getValue()) {
+					final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+					ffs.setDateDebut(dates.getDateDebut());
+					ffs.setDateFin(dates.getDateFin());
+					ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+					ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+					ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+					ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+					ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+					ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
+					ffs.setTiers(entiteJuridique);
+					entiteJuridique.addForFiscal(ffs);
 
-			for (DateRange dates : communeData.getValue()) {
-				final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-				ffs.setDateDebut(dates.getDateDebut());
-				ffs.setDateFin(dates.getDateFin());
-				ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-				ffs.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-				ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
-				ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-				ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
-				ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
-				ffs.setTiers(entiteJuridique);
-				entiteJuridique.addForFiscal(ffs);
-
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
-				                                                                                                            DateRangeHelper.toDisplayString(dates),
-				                                                                                                            commune.getNoOfs()));
+					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
+					                                                                                                            DateRangeHelper.toDisplayString(dates),
+					                                                                                                            commune.getNoOfs()));
+				}
 			}
 		}
 	}
