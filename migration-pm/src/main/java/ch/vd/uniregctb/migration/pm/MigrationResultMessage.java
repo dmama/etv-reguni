@@ -57,7 +57,12 @@ public class MigrationResultMessage {
 		/**
 		 * Erreurs/messages liés à la migration des déclarations
 		 */
-		DECLARATIONS
+		DECLARATIONS,
+
+		/**
+		 * Erreurs/messages liés à la migration des coordonnées financières
+		 */
+		COORDONNEES_FINANCIERES
 	}
 
 	public enum Niveau {

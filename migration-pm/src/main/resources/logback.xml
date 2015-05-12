@@ -85,6 +85,17 @@
 		<appender-ref ref="DECLARATIONS"/>
 	</logger>
 
+	<appender name="COORDONNEES_FINANCIERES" class="ch.qos.logback.core.FileAppender">
+		<file>log/coordonnees-financieres.log</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.COORDONNEES_FINANCIERES" additivity="false">
+		<appender-ref ref="COORDONNEES_FINANCIERES"/>
+	</logger>
+
 	<!-- tous les messages envoyés par la migration dans les MigrationResults seront loggués ici s'ils ne sont pas explicitement pris en compte par un autre logger -->
 	<appender name="OTHERS" class="ch.qos.logback.core.FileAppender">
 		<file>log/suivi-global.log</file>

@@ -236,7 +236,10 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			unireg.addAdresseTiers(adresse);
 		}
 
-		// TODO migrer l'enseigne, les coordonnées financières...
+		// coordonnées financières
+		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
+
+		// TODO migrer l'enseigne...
 	}
 
 	private void enregistrerDemandesForsSecondaires(KeyedSupplier<? extends Tiers> entiteJuridique,

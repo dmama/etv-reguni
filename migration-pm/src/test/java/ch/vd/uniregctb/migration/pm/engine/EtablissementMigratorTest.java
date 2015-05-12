@@ -30,6 +30,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
@@ -578,5 +579,40 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutSecondDomicile, dateFinEtablissementStable)), echallens);
 			}
 		}
+	}
+
+	@Test
+	public void testCoordonneesFinancieres() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
+			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
+			Assert.assertNull(etab.getTitulaireCompteBancaire());     // le jour où on saura quoi mettre là-dedans, ça pêtera ici...
+			return null;
+		});
 	}
 }

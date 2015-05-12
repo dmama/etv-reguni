@@ -28,6 +28,7 @@ import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetData;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -43,10 +45,12 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.utils.IbanExtractor;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
@@ -407,5 +411,27 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		a.setRue(source.getNomRue());
 		a.setTexteCasePostale(null);
 		return a;
+	}
+
+	/**
+	 * Méthode utilitaire de migration des coordonnées financières pour une entité
+	 * @param getter l'accesseur à la structure des coordonnées financières
+	 * @param unireg la destination des données
+	 * @param mr le collecteur de messages de suivi
+	 */
+	protected static void migrateCoordonneesFinancieres(Supplier<RegpmCoordonneesFinancieres> getter, Tiers unireg, MigrationResultProduction mr) {
+		final RegpmCoordonneesFinancieres cf = getter.get();
+		if (cf != null) {
+			try {
+				unireg.setNumeroCompteBancaire(IbanExtractor.extractIban(cf));
+				unireg.setAdresseBicSwift(cf.getBicSwift());
+
+				// TODO le titulaire du compte ??
+				// TODO faut-il également introduire le POFICHBEXXX (= BIC de postfinance) ?
+			}
+			catch (IbanExtractor.IbanExtratorException e) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.COORDONNEES_FINANCIERES, MigrationResultMessage.Niveau.ERROR, e.getMessage());
+			}
+		}
 	}
 }

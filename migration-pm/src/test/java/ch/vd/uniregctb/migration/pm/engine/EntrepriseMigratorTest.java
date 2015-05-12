@@ -289,5 +289,38 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		});
 	}
 
+	@Test
+	public void testCoordonneesFinancieres() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		e.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "POFICHBEXXX", null, "17-331-7", "Postfinance", null));
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getUniregSessionFactory().getCurrentSession().get(Entreprise.class, idEntreprise);
+			Assert.assertEquals("CH7009000000170003317", entreprise.getNumeroCompteBancaire());
+			Assert.assertEquals("POFICHBEXXX", entreprise.getAdresseBicSwift());
+			Assert.assertNull(entreprise.getTitulaireCompteBancaire());     // le jour où on saura quoi mettre là-dedans, ça pêtera ici...
+			return null;
+		});
+	}
+
 	// TODO il reste encore plein de tests à faire...
 }

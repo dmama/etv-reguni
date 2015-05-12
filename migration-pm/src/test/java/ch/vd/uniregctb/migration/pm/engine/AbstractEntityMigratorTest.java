@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -22,7 +23,9 @@ import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
@@ -144,5 +147,22 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 	protected static void assignMutationVisa(RegpmEntity entity, String visa, Timestamp ts) {
 		entity.setLastMutationOperator(visa);
 		entity.setLastMutationTimestamp(ts);
+	}
+
+	protected static RegpmCoordonneesFinancieres createCoordonneesFinancieres(String iban, String bicSwift, String noCompteBancaire, String noCcp, String nomInstitutionFinanciere, String clearing) {
+		final RegpmCoordonneesFinancieres cf = new RegpmCoordonneesFinancieres();
+		cf.setIban(iban);
+		cf.setBicSwift(bicSwift);
+		cf.setNoCompteBancaire(noCompteBancaire);
+		cf.setNoCCP(noCcp);
+		cf.setNomInstitutionFinanciere(nomInstitutionFinanciere);
+
+		if (StringUtils.isNotBlank(clearing)) {
+			final RegpmInstitutionFinanciere inst = new RegpmInstitutionFinanciere();
+			inst.setNoClearing(clearing);
+			inst.setNom(nomInstitutionFinanciere);
+			cf.setInstitutionFinanciere(inst);
+		}
+		return cf;
 	}
 }
