@@ -62,6 +62,7 @@ public class StreetDataMigratorTest extends AbstractSpringTest {
 	}
 
 	@Test
+	@Ignore
 	public void testAdressesEntreprise() throws Exception {
 
 		final List<RegpmAdresseEntreprise> adresses;
