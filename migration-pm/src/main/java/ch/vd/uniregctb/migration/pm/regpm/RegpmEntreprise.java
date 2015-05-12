@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.regpm;
 
+import javax.persistence.AssociationOverride;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
@@ -63,11 +64,7 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private String noIpmro;
 	private String noTelephone;
 	private String noFax;
-	private String noCCP;
-	private String noCompteBancaire;
-	private String iban;
-	private String bicSwift;
-	private String nomInstitutionFinanciere;
+	private RegpmCoordonneesFinancieres coordonneesFinancieres;
 	private ContactEntreprise contact1;
 	private ContactEntreprise contact2;
 	private RegDate dateConstitution;
@@ -90,7 +87,6 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private NumeroIDE numeroIDE;
 	private Long numeroCantonal;
 	private RegpmCommune commune;
-	private RegpmInstitutionFinanciere institutionFinanciere;
 	private SortedSet<RaisonSociale> raisonsSociales;
 	private SortedSet<InscriptionRC> inscriptionsRC;
 	private SortedSet<RadiationRC> radiationsRC;
@@ -276,54 +272,21 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 		this.noFax = noFax;
 	}
 
-	@Column(name = "NO_CCP")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "15"))
-	public String getNoCCP() {
-		return noCCP;
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "noCCP", column = @Column(name = "NO_CCP")),
+			@AttributeOverride(name = "noCompteBancaire", column = @Column(name = "NO_COMPTE_BANCAIRE")),
+			@AttributeOverride(name = "iban", column = @Column(name = "IBAN")),
+			@AttributeOverride(name = "bicSwift", column = @Column(name = "BIC_SWIFT")),
+			@AttributeOverride(name = "nomInstitutionFinanciere", column = @Column(name = "NOM_INSTIT_FIN"))
+	})
+	@AssociationOverride(name = "institutionFinanciere", joinColumns = @JoinColumn(name = "FK_INSTIT_FINNO"))
+	public RegpmCoordonneesFinancieres getCoordonneesFinancieres() {
+		return coordonneesFinancieres;
 	}
 
-	public void setNoCCP(String noCCP) {
-		this.noCCP = noCCP;
-	}
-
-	@Column(name = "NO_COMPTE_BANCAIRE")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "20"))
-	public String getNoCompteBancaire() {
-		return noCompteBancaire;
-	}
-
-	public void setNoCompteBancaire(String noCompteBancaire) {
-		this.noCompteBancaire = noCompteBancaire;
-	}
-
-	@Column(name = "IBAN")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "40"))
-	public String getIban() {
-		return iban;
-	}
-
-	public void setIban(String iban) {
-		this.iban = iban;
-	}
-
-	@Column(name = "BIC_SWIFT")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "12"))
-	public String getBicSwift() {
-		return bicSwift;
-	}
-
-	public void setBicSwift(String bicSwift) {
-		this.bicSwift = bicSwift;
-	}
-
-	@Column(name = "NOM_INSTIT_FIN")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "50"))
-	public String getNomInstitutionFinanciere() {
-		return nomInstitutionFinanciere;
-	}
-
-	public void setNomInstitutionFinanciere(String nomInstitutionFinanciere) {
-		this.nomInstitutionFinanciere = nomInstitutionFinanciere;
+	public void setCoordonneesFinancieres(RegpmCoordonneesFinancieres coordonneesFinancieres) {
+		this.coordonneesFinancieres = coordonneesFinancieres;
 	}
 
 	@Embedded
@@ -553,16 +516,6 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setCommune(RegpmCommune commune) {
 		this.commune = commune;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "FK_INSTIT_FINNO")
-	public RegpmInstitutionFinanciere getInstitutionFinanciere() {
-		return institutionFinanciere;
-	}
-
-	public void setInstitutionFinanciere(RegpmInstitutionFinanciere institutionFinanciere) {
-		this.institutionFinanciere = institutionFinanciere;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

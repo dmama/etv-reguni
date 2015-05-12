@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.migration.pm.regpm;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -52,11 +55,7 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private String chez;
 	private String nomRue;
 	private String noPolice;
-	private String noCCP;
-	private String noCompteBancaire;
-	private String iban;
-	private String bicSwift;
-	private String nomInstitutionFinanciere;
+	private RegpmCoordonneesFinancieres coordonneesFinancieres;
 	private NumeroIDE numeroIDE;
 	private Long numeroCantonal;
 	private SortedSet<InscriptionRC> inscriptionsRC;
@@ -270,54 +269,21 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 		this.noPolice = noPolice;
 	}
 
-	@Column(name = "NO_CCP")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "15"))
-	public String getNoCCP() {
-		return noCCP;
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "noCCP", column = @Column(name = "NO_CCP")),
+			@AttributeOverride(name = "noCompteBancaire", column = @Column(name = "NO_CPTE_BANCAIRE")),
+			@AttributeOverride(name = "iban", column = @Column(name = "IBAN")),
+			@AttributeOverride(name = "bicSwift", column = @Column(name = "BIC_SWIFT")),
+			@AttributeOverride(name = "nomInstitutionFinanciere", column = @Column(name = "NOM_INSTIT_FIN"))
+	})
+	@AssociationOverride(name = "institutionFinanciere", joinColumns = @JoinColumn(name = "FK_INSNO"))
+	public RegpmCoordonneesFinancieres getCoordonneesFinancieres() {
+		return coordonneesFinancieres;
 	}
 
-	public void setNoCCP(String noCCP) {
-		this.noCCP = noCCP;
-	}
-
-	@Column(name = "NO_CPTE_BANCAIRE")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "20"))
-	public String getNoCompteBancaire() {
-		return noCompteBancaire;
-	}
-
-	public void setNoCompteBancaire(String noCompteBancaire) {
-		this.noCompteBancaire = noCompteBancaire;
-	}
-
-	@Column(name = "IBAN")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "40"))
-	public String getIban() {
-		return iban;
-	}
-
-	public void setIban(String iban) {
-		this.iban = iban;
-	}
-
-	@Column(name = "BIC_SWIFT")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "12"))
-	public String getBicSwift() {
-		return bicSwift;
-	}
-
-	public void setBicSwift(String bicSwift) {
-		this.bicSwift = bicSwift;
-	}
-
-	@Column(name = "NOM_INSTIT_FIN")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "50"))
-	public String getNomInstitutionFinanciere() {
-		return nomInstitutionFinanciere;
-	}
-
-	public void setNomInstitutionFinanciere(String nomInstitutionFinanciere) {
-		this.nomInstitutionFinanciere = nomInstitutionFinanciere;
+	public void setCoordonneesFinancieres(RegpmCoordonneesFinancieres coordonneesFinancieres) {
+		this.coordonneesFinancieres = coordonneesFinancieres;
 	}
 
 	@Embedded
