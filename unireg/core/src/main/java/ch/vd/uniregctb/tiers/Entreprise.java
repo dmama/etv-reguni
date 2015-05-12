@@ -57,11 +57,21 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return TypeTiers.ENTREPRISE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
-		return this == obj || super.equalsTo(obj) && getClass() == obj.getClass();
+		if (this == obj)
+			return true;
+		if (!super.equalsTo(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entreprise other = (Entreprise) obj;
+		if (numeroEntreprise == null) {
+			if (other.numeroEntreprise != null)
+				return false;
+		}
+		else if (!numeroEntreprise.equals(other.numeroEntreprise))
+			return false;
+		return true;
 	}
 }

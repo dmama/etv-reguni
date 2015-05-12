@@ -6,10 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
+
+import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Installation matérielle au moyen de laquelle s'exerce une part de l'activité d'une entreprise (succursale, agence, dépôt), connu du registre des personnes morales de l'ACI.
- * Une raison individuelle est l'établissement d'une personne physqiue.
+ * Une raison individuelle est l'établissement d'une personne physique.
  * L'établissement en lui-même n'est pas contribuable, mais peut être constitutif d'un for fiscal (établissement stable).
  */
 @Entity
@@ -25,6 +29,12 @@ public class Etablissement extends Contribuable {
 	 */
 	private Long numeroEtablissement;
 
+	private TypeAutoriteFiscale typeAutoriteFiscale;
+	private Integer numeroOfs;
+
+	private String enseigne;
+	private boolean principal;
+
 	@Column(name = "NUMERO_ETABLISSEMENT")
 	@Index(name = "IDX_TIERS_NO_ETABLISSEMENT")
 	public Long getNumeroEtablissement() {
@@ -33,6 +43,43 @@ public class Etablissement extends Contribuable {
 
 	public void setNumeroEtablissement(Long theNumeroEtablissement) {
 		numeroEtablissement = theNumeroEtablissement;
+	}
+
+	@Column(name = "ETB_TYPE_AUT_FISC", length = LengthConstants.ETB_AUTORITEFISCALE)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeAutoriteFiscaleUserType")
+	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+		return typeAutoriteFiscale;
+	}
+
+	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
+		this.typeAutoriteFiscale = typeAutoriteFiscale;
+	}
+
+	@Column(name = "ETB_NUMERO_OFS_AUT_FISC")
+	public Integer getNumeroOfs() {
+		return numeroOfs;
+	}
+
+	public void setNumeroOfs(Integer numeroOfs) {
+		this.numeroOfs = numeroOfs;
+	}
+
+	@Column(name = "ETB_ENSEIGNE", length = LengthConstants.ETB_ENSEIGNE)
+	public String getEnseigne() {
+		return enseigne;
+	}
+
+	public void setEnseigne(String enseigne) {
+		this.enseigne = enseigne;
+	}
+
+	@Column(name = "ETB_PRINCIPAL")
+	public boolean isPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(boolean principal) {
+		this.principal = principal;
 	}
 
 	@Transient
@@ -61,6 +108,7 @@ public class Etablissement extends Contribuable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		Etablissement other = (Etablissement) obj;
 		if (numeroEtablissement == null) {
 			if (other.numeroEtablissement != null)
@@ -68,6 +116,24 @@ public class Etablissement extends Contribuable {
 		}
 		else if (!numeroEtablissement.equals(other.numeroEtablissement))
 			return false;
-		return true;
+		if (typeAutoriteFiscale == null) {
+			if (other.typeAutoriteFiscale != null)
+				return false;
+		}
+		else if (!typeAutoriteFiscale.equals(other.typeAutoriteFiscale))
+			return false;
+		if (numeroOfs == null) {
+			if (other.numeroOfs != null)
+				return false;
+		}
+		else if (!numeroOfs.equals(other.numeroOfs))
+			return false;
+		if (enseigne == null) {
+			if (other.enseigne != null)
+				return false;
+		}
+		else if (!enseigne.equals(other.enseigne))
+			return false;
+		return principal == other.principal;
 	}
 }

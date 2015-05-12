@@ -43,7 +43,6 @@ public abstract class LengthConstants {
 	public final static int SITUATIONFAMILLE_TARIF = 11;
 	public final static int SITUATIONFAMILLE_ETATCIVIL = 34;
 
-
 	public final static int DPI_NOM1 = 250;
 	public final static int DPI_NOM2 = 250;
 	public final static int DPI_CATEGORIEIS = 32;
@@ -111,6 +110,9 @@ public abstract class LengthConstants {
 	public static final int REQDES_MODE_INSCRIPTION = 12;
 	public static final int REQDES_TYPE_INSCRIPTION = 15;
 	public static final int REQDES_LIBELLE_ORIGINE = 50;
+
+	public static final int ETB_ENSEIGNE = 250;
+	public static final int ETB_AUTORITEFISCALE = FOR_AUTORITEFISCALE;
 
 	public final static int MAXLEN = 2000;
 
