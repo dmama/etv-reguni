@@ -13,27 +13,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.adresse.AdresseEtrangere;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseSupplementaire;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.adresse.StreetData;
-import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
-import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
@@ -43,6 +33,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.utils.IbanExtractor;
@@ -55,9 +46,13 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
-	protected SessionFactory uniregSessionFactory;
-	protected StreetDataMigrator streetDataMigrator;
+	protected UniregStore uniregStore;
 	protected TiersDAO tiersDAO;
+
+	public AbstractEntityMigrator(UniregStore uniregStore, TiersDAO tiersDAO) {
+		this.uniregStore = uniregStore;
+		this.tiersDAO = tiersDAO;
+	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
 			(l1, l2) -> {
@@ -111,8 +106,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				.map(couvertureIndividuelle)
 				.flatMap(Function.identity())
 				.collect(Collectors.toMap(Pair::getKey,
-				                          pair -> Collections.singletonList(pair.getValue()),
-				                          DATE_RANGE_LIST_MERGER));
+						pair -> Collections.singletonList(pair.getValue()),
+						DATE_RANGE_LIST_MERGER));
 	}
 
 	/**
@@ -157,18 +152,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		return couverture(appartenances, AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire);
 	}
 
-	public void setUniregSessionFactory(SessionFactory uniregSessionFactory) {
-		this.uniregSessionFactory = uniregSessionFactory;
-	}
-
-	public void setStreetDataMigrator(StreetDataMigrator streetDataMigrator) {
-		this.streetDataMigrator = streetDataMigrator;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
 	/**
 	 * @param entity entité à migrer
 	 * @param mr récipiendaire de messages à logguer
@@ -190,27 +173,27 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 	@NotNull
 	protected final Supplier<Entreprise> getEntrepriseByUniregIdSupplier(long id) {
-		return () -> getEntityFromDb(Entreprise.class, id);
+		return () -> uniregStore.getEntityFromDb(Entreprise.class, id);
 	}
 
 	@NotNull
 	protected final Supplier<Entreprise> getEntrepriseByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> getEntityFromDb(Entreprise.class, idMapper.getIdUniregEntreprise(id));
+		return () -> uniregStore.getEntityFromDb(Entreprise.class, idMapper.getIdUniregEntreprise(id));
 	}
 
 	@NotNull
 	protected final Supplier<Etablissement> getEtablissementByUniregIdSupplier(long id) {
-		return () -> getEntityFromDb(Etablissement.class, id);
+		return () -> uniregStore.getEntityFromDb(Etablissement.class, id);
 	}
 
 	@NotNull
 	protected final Supplier<Etablissement> getEtablissementByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> getEntityFromDb(Etablissement.class, idMapper.getIdUniregEtablissement(id));
+		return () -> uniregStore.getEntityFromDb(Etablissement.class, idMapper.getIdUniregEtablissement(id));
 	}
 
 	@NotNull
 	protected final Supplier<PersonnePhysique> getIndividuByRegpmIdSupplier(IdMapping idMapper, long id) {
-		return () -> getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
+		return () -> uniregStore.getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
 	}
 
 	/**
@@ -261,43 +244,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		dest.setLogModifDate(src.getLastMutationTimestamp());
 	}
 
-	/**
-	 * @param clazz la classe de l'entité à récupérer depuis la base de données Unireg
-	 * @param id identifiant de l'entité à récupérer
-	 * @param <E> type de l'entité récupérée
-	 * @return l'entité avec l'identifiant donné
-	 */
-	@Nullable
-	protected final <E extends HibernateEntity> E getEntityFromDb(Class<E> clazz, long id) {
-		//noinspection unchecked
-		return (E) uniregSessionFactory.getCurrentSession().get(clazz, id);
-	}
 
-	/**
-	 * Méthode qui permet d'aller chercher des entités dans la base de données Unireg sans forcément connaître leur identifiant
-	 * @param clazz classe des entités visées
-	 * @param criteria critères (attribut / valeur)
-	 * @param <E> type des entitées visées
-	 * @return la liste des entités trouvées
-	 */
-	protected final <E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria) {
-		final Criteria c = uniregSessionFactory.getCurrentSession().createCriteria(clazz);
-		if (criteria != null) {
-			criteria.forEach((key, value) -> c.add(Restrictions.eq(key, value)));
-		}
-		//noinspection unchecked
-		return c.list();
-	}
 
-	/**
-	 * @param entity l'entité à sauvegarder en base de données Unireg
-	 * @param <E> type de l'entité
-	 * @return l'entité après sauvegarde
-	 */
-	protected final <E extends HibernateEntity> E saveEntityToDb(E entity) {
-		//noinspection unchecked
-		return (E) uniregSessionFactory.getCurrentSession().merge(entity);
-	}
 
 	/**
 	 * Réel job de migration
@@ -354,64 +302,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 	}
 
-	/**
-	 * Construit une adresse tiers (= surcharge d'adresse civile) à partir des données fournie.<br/>
-	 * Les champs {@link AdresseTiers#usage}, {@link AdresseTiers#tiers} et {@link AdresseTiers#id} ne sont pas remplis.<br/>
-	 * L'entité retournée n'est rattachée à aucune session Hibernate.
-	 * @param source source des données de l'adresse
-	 * @param mr collecteurs de messages de suivi
-	 * @param complement supplier pour la valeur du "complément"
-	 * @param permanente <code>true</code> si l'adresse doit être flaggée comme "permanente"
-	 * @return une adresse presque prête à persister
-	 */
-	protected AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultProduction mr, @Nullable Supplier<String> complement, boolean permanente) {
-		final StreetData streetData = streetDataMigrator.migrate(source, mr);
-		final AdresseSupplementaire dest;
-		if (streetData != null) {
-			// on ne migre pas une adresse qui ne contient ni rue ni localité postale...
-			if (streetData instanceof StreetData.AucuneNomenclatureTrouvee) {
-				return null;
-			}
-
-			// adresse suisse
-			dest = buildAdresseSuisse(streetData);
-		}
-		else {
-			// adresse étrangère
-			dest = buildAdresseEtrangere(source);
-		}
-		dest.setDateDebut(source.getDateDebut());
-		dest.setDateFin(source.getDateFin());
-		dest.setPermanente(permanente);
-		dest.setComplement(complement != null ? complement.get() : null);
-		return dest;
-	}
-
-	private static AdresseSuisse buildAdresseSuisse(StreetData streetData) {
-		final AdresseSuisse a = new AdresseSuisse();
-		a.setNpaCasePostale(null);
-		a.setNumeroAppartement(null);
-		a.setNumeroCasePostale(null);
-		a.setNumeroMaison(streetData.getNoPolice());
-		a.setNumeroOrdrePoste(streetData.getNoOrdreP());
-		a.setNumeroRue(streetData.getEstrid());
-		a.setRue(streetData.getNomRue());
-		a.setTexteCasePostale(null);
-		return a;
-	}
-
-	private static AdresseEtrangere buildAdresseEtrangere(AdresseAvecRue source) {
-		final AdresseEtrangere a = new AdresseEtrangere();
-		a.setComplementLocalite(null);
-		a.setNumeroAppartement(null);
-		a.setNumeroCasePostale(null);
-		a.setNumeroMaison(source.getNoPolice());
-		a.setNumeroOfsPays(source.getOfsPays());
-		a.setNumeroPostalLocalite(source.getLieu());
-		a.setRue(source.getNomRue());
-		a.setTexteCasePostale(null);
-		return a;
-	}
 
 	/**
 	 * Méthode utilitaire de migration des coordonnées financières pour une entité

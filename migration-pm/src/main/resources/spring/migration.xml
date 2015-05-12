@@ -36,24 +36,29 @@
 	</bean>
 
 	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
-		<property name="streetDataMigrator" ref="streetDataMigrator"/>
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+        <constructor-arg name="uniregStore" ref="uniregStore"/>
+        <constructor-arg name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
-		<property name="rcentClient" ref="rcentClient"/>
-		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
-		<property name="bouclementService" ref="bouclementService"/>
+        <constructor-arg name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+        <constructor-arg name="bouclementService" ref="bouclementService"/>
+        <constructor-arg name="rcEntService" ref="rcEntService"/>
+        <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
-		<property name="rcentClient" ref="rcentClient"/>
+        <constructor-arg name="rcEntService" ref="rcEntService"/>
+        <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>
 
-	<bean id="individuMigrator" class="ch.vd.uniregctb.migration.pm.engine.IndividuMigrator" parent="entityMigrator">
-		<property name="rcpersClient" ref="rcpersClient"/>
-		<property name="nonHabitantIndex" ref="nonHabitantIndex"/>
+    <bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">
+        <constructor-arg name="streetDataMigrator" ref="streetDataMigrator"/>
+    </bean>
+
+    <bean id="individuMigrator" class="ch.vd.uniregctb.migration.pm.engine.IndividuMigrator" parent="entityMigrator">
+		<constructor-arg name="rcpersClient" ref="rcpersClient"/>
+		<constructor-arg name="nonHabitantIndex" ref="nonHabitantIndex"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">

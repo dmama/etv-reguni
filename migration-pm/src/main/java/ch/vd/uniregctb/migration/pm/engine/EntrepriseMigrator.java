@@ -16,13 +16,17 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.rcent.model.RCEntEntreprise;
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.*;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -75,20 +79,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
-	private RcEntClient rcentClient;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private BouclementService bouclementService;
+	private RCEntService rcEntService;
+	private AdresseHelper adresseHelper;
 
-	public void setRcentClient(RcEntClient rcentClient) {
-		this.rcentClient = rcentClient;
-	}
-
-	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
+	public EntrepriseMigrator(UniregStore uniregStore, TiersDAO tiersDAO, PeriodeFiscaleDAO periodeFiscaleDAO, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper) {
+		super(uniregStore, tiersDAO);
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
-	}
-
-	public void setBouclementService(BouclementService bouclementService) {
 		this.bouclementService = bouclementService;
+		this.rcEntService = rcEntService;
+		this.adresseHelper = adresseHelper;
 	}
 
 	@Nullable
@@ -250,18 +251,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	@Override
 	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
 			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ?
 			return;
 		}
 
+		// Accès à RCEnt au moyen du numéro cantonal. Le résultat sera null si n'existe pas dans RCEnt.
+		RCEntEntreprise rcent = rcEntService.getEntreprise(regpm.getNumeroCantonal()); // TODO: check no cantonal null
+
 		// Les entreprises conservent leur numéro comme numéro de contribuable
-		Entreprise unireg = getEntityFromDb(Entreprise.class, regpm.getId());
+		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
 			mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
-			unireg = saveEntityToDb(createEntreprise(regpm));
+			unireg = uniregStore.saveEntityToDb(createEntreprise(regpm));
 		}
 		idMapper.addEntreprise(regpm, unireg);
 

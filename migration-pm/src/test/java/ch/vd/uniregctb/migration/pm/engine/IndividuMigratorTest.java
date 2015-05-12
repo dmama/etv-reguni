@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,16 +33,15 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
-		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
 		nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		nonHabitantIndex.overwriteIndex();
 
-		migrator = new IndividuMigrator();
-		migrator.setNonHabitantIndex(nonHabitantIndex);
-		migrator.setRcpersClient(rcpersClient);
-		migrator.setStreetDataMigrator(getStreetDataMigrator());
-		migrator.setTiersDAO(getTiersDAO());
-		migrator.setUniregSessionFactory(getUniregSessionFactory());
+		migrator = new IndividuMigrator(
+				getBean(UniregStore.class, "uniregStore"),
+				getBean(TiersDAO.class, "tiersDAO"),
+				getBean(RcPersClient.class, "rcpersClient"),
+				nonHabitantIndex);
+
 	}
 
 	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {

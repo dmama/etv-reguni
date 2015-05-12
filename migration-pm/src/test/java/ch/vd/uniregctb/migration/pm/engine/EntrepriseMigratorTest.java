@@ -8,17 +8,19 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -29,6 +31,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -42,17 +45,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
-		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
-		final PeriodeFiscaleDAO periodeFiscaleDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
 
-		migrator = new EntrepriseMigrator();
-		migrator.setPeriodeFiscaleDAO(periodeFiscaleDAO);
-		migrator.setRcentClient(rcentClient);
-		migrator.setStreetDataMigrator(getStreetDataMigrator());
-		migrator.setTiersDAO(getTiersDAO());
-		migrator.setUniregSessionFactory(getUniregSessionFactory());
-		migrator.setBouclementService(bouclementService);
+		migrator = new EntrepriseMigrator(
+				getBean(UniregStore.class, "uniregStore"),
+				getBean(TiersDAO.class, "tiersDAO"),
+				getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"),
+				getBean(BouclementService.class, "bouclementService"),
+				getBean(RCEntService.class, "rcEntService"),
+				getBean(AdresseHelper.class, "adresseMigration"));
 	}
 
 	/**

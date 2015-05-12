@@ -8,6 +8,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ch.ech.ech0044.v2.NamedPersonId;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -39,11 +41,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	private RcPersClient rcpersClient;
 	private NonHabitantIndex nonHabitantIndex;
 
-	public void setRcpersClient(RcPersClient rcpersClient) {
+	public IndividuMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
+		super(uniregStore, tiersDAO);
 		this.rcpersClient = rcpersClient;
-	}
-
-	public void setNonHabitantIndex(NonHabitantIndex nonHabitantIndex) {
 		this.nonHabitantIndex = nonHabitantIndex;
 	}
 
@@ -177,7 +177,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			// TODO il y a sûrement d'autres choses à migrer (adresses...)
 			// TODO si l'individu est indiqué comme marié dans regpm/rcpers, ne faudrait-il pas créer un ménage commun aussi ?
 
-			final PersonnePhysique saved = saveEntityToDb(pp);
+			final PersonnePhysique saved = uniregStore.saveEntityToDb(pp);
 			idMapper.addIndividu(regpm, saved);
 			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO,
 			              String.format("Création de la personne physique %s pour correspondre à l'individu RegPM.", FormatNumeroHelper.numeroCTBToDisplay(saved.getId())));

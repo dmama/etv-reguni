@@ -13,6 +13,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +26,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
@@ -48,10 +51,13 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
 
-	private RcEntClient rcentClient;
+	private RCEntService rcEntService;
+	private AdresseHelper adresseHelper;
 
-	public void setRcentClient(RcEntClient rcentClient) {
-		this.rcentClient = rcentClient;
+	public EtablissementMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RCEntService rcEntService, AdresseHelper adresseHelper) {
+		super(uniregStore, tiersDAO);
+		this.rcEntService = rcEntService;
+		this.adresseHelper = adresseHelper;
 	}
 
 	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {
@@ -101,7 +107,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			return String.format("Etablissement %d de l'entreprise %d", entity.getId(), entity.getEntreprise().getId());
 		}
 		if (entity.getIndividu() != null) {
-			return String.format("Etablissement %d de l'individu %d", entity.getId(), entity.getIndividu().getId());
+			return String.format("Etablissement %d de l'entreprise %d", entity.getId(), entity.getIndividu().getId());
 		}
 		return String.format("Etablissement %d", entity.getId());
 	}
@@ -178,7 +184,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// on crée forcément un nouvel établissement
-		final Etablissement unireg = saveEntityToDb(createEtablissement(regpm));
+		final Etablissement unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
 		idMapper.addEtablissement(regpm, unireg);
 
 		// les liens vers les individus (= activités indépendantes) doivent bien être pris en compte pour les mandataires, par exemple.
@@ -188,7 +194,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
 		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
 		if (entiteJuridique == null) {
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
+			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une migration ou un individu.");
 		}
 		else {
 			final Supplier<Etablissement> moi = getEtablissementByRegpmIdSupplier(idMapper, regpm.getId());
@@ -230,7 +236,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
 		// TODO adresse permanente ou pas ?
 		// TODO enseigne dans le complément d'adresse ?
-		final AdresseTiers adresse = buildAdresse(regpm.getAdresse(), mr, regpm::getEnseigne, false);
+		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(), mr, regpm::getEnseigne, false);
 		if (adresse != null) {
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			unireg.addAdresseTiers(adresse);

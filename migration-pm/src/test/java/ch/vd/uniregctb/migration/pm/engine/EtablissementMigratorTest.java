@@ -12,6 +12,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +21,9 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
@@ -30,6 +32,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityLinkCollector;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TypeTiers;
 
@@ -43,13 +46,12 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
-		final RcEntClient rcentClient = getBean(RcEntClient.class, "rcentClient");
 
-		migrator = new EtablissementMigrator();
-		migrator.setRcentClient(rcentClient);
-		migrator.setStreetDataMigrator(getStreetDataMigrator());
-		migrator.setTiersDAO(getTiersDAO());
-		migrator.setUniregSessionFactory(getUniregSessionFactory());
+		migrator = new EtablissementMigrator(
+				getBean(UniregStore.class, "uniregStore"),
+				getBean(TiersDAO.class, "tiersDAO"),
+				getBean(RCEntService.class, "rcEntService"),
+				getBean(AdresseHelper.class, "adresseMigration"));
 	}
 
 	private static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {

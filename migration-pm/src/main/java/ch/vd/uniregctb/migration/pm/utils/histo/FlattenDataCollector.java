@@ -14,7 +14,7 @@ import ch.vd.uniregctb.migration.pm.utils.Equalator;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'une liste à une seule dimension
- * et dont la donnée à historisée est présente plusieurs fois par snapshot
+ * et dont la donnée à historiser est présente plusieurs fois par snapshot
  * @param <S> type du snapshot
  * @param <D> type de la donnée à historiser
  */
