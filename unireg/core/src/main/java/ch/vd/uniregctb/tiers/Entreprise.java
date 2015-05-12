@@ -7,6 +7,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
+import ch.vd.uniregctb.common.ComparisonHelper;
+
 /**
  * Entreprise ou l'etablissement connue du registre des personnes morales de
  * l'ACI
@@ -65,13 +67,8 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Entreprise other = (Entreprise) obj;
-		if (numeroEntreprise == null) {
-			if (other.numeroEntreprise != null)
-				return false;
-		}
-		else if (!numeroEntreprise.equals(other.numeroEntreprise))
-			return false;
-		return true;
+
+		final Entreprise other = (Entreprise) obj;
+		return ComparisonHelper.areEqual(numeroEntreprise, other.numeroEntreprise);
 	}
 }

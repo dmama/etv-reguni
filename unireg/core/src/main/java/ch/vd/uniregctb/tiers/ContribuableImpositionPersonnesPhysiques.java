@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ComparisonHelper;
 
 @Entity
 public abstract class ContribuableImpositionPersonnesPhysiques extends Contribuable {
@@ -128,14 +129,9 @@ public abstract class ContribuableImpositionPersonnesPhysiques extends Contribua
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		final ContribuableImpositionPersonnesPhysiques other = (ContribuableImpositionPersonnesPhysiques) obj;
-		if (situationsFamille == null) {
-			if (other.situationsFamille != null)
-				return false;
-		}
-		else if (!situationsFamille.equals(other.situationsFamille))
-			return false;
-		return true;
+		return ComparisonHelper.areEqual(situationsFamille, other.situationsFamille);
 	}
 
 	@Override

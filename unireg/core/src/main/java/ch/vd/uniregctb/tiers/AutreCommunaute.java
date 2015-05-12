@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.FormeJuridique;
 
@@ -121,19 +122,9 @@ public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AutreCommunaute other = (AutreCommunaute) obj;
-		if (formeJuridique == null) {
-			if (other.formeJuridique != null)
-				return false;
-		}
-		else if (formeJuridique != other.formeJuridique)
-			return false;
-		if (nom == null) {
-			if (other.nom != null)
-				return false;
-		}
-		else if (!nom.equals(other.nom))
-			return false;
-		return true;
+
+		final AutreCommunaute other = (AutreCommunaute) obj;
+		return ComparisonHelper.areEqual(formeJuridique, other.formeJuridique)
+				&& ComparisonHelper.areEqual(nom, other.nom);
 	}
 }

@@ -12,6 +12,6 @@ public interface BusinessComparable<T> {
 	 *
 	 * Cette méthode ne doit pas être renommée en equals, cela provoquerait des conflits avec Hibernate.
 	 */
-	public boolean equalsTo(T obj);
+	boolean equalsTo(T obj);
 
 }

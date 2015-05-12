@@ -8,6 +8,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -109,31 +110,11 @@ public class Etablissement extends Contribuable {
 		if (getClass() != obj.getClass())
 			return false;
 
-		Etablissement other = (Etablissement) obj;
-		if (numeroEtablissement == null) {
-			if (other.numeroEtablissement != null)
-				return false;
-		}
-		else if (!numeroEtablissement.equals(other.numeroEtablissement))
-			return false;
-		if (typeAutoriteFiscale == null) {
-			if (other.typeAutoriteFiscale != null)
-				return false;
-		}
-		else if (!typeAutoriteFiscale.equals(other.typeAutoriteFiscale))
-			return false;
-		if (numeroOfs == null) {
-			if (other.numeroOfs != null)
-				return false;
-		}
-		else if (!numeroOfs.equals(other.numeroOfs))
-			return false;
-		if (enseigne == null) {
-			if (other.enseigne != null)
-				return false;
-		}
-		else if (!enseigne.equals(other.enseigne))
-			return false;
-		return principal == other.principal;
+		final Etablissement other = (Etablissement) obj;
+		return ComparisonHelper.areEqual(numeroEtablissement, other.numeroEtablissement)
+				&& ComparisonHelper.areEqual(typeAutoriteFiscale, other.typeAutoriteFiscale)
+				&& ComparisonHelper.areEqual(numeroOfs, other.numeroOfs)
+				&& ComparisonHelper.areEqual(enseigne, other.enseigne)
+				&& ComparisonHelper.areEqual(principal, other.principal);
 	}
 }

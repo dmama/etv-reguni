@@ -39,6 +39,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -432,8 +433,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
 			if (!rapportSujet.isAnnule() && type == rapportSujet.getType()) {
 				if (dernierRapport == null
-						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(),
-						NullDateBehavior.EARLIEST)) {
+						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					dernierRapport = rapportSujet;
 				}
 			}
@@ -1375,116 +1375,30 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Override
 	public boolean equalsTo(Tiers obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (getClass() != obj.getClass())
-			return false;
-        if (adresseBicSwift == null) {
-			if (obj.adresseBicSwift != null)
-				return false;
 		}
-		else if (!adresseBicSwift.equals(obj.adresseBicSwift))
+		if (getClass() != obj.getClass()) {
 			return false;
-		if (adresseCourrierElectronique == null) {
-			if (obj.adresseCourrierElectronique != null)
-				return false;
 		}
-		else if (!adresseCourrierElectronique.equals(obj.adresseCourrierElectronique))
-			return false;
-		if (adressesTiers == null) {
-			if (obj.adressesTiers != null)
-				return false;
-		}
-		else if (!adressesTiers.equals(obj.adressesTiers))
-			return false;
-		if (blocageRemboursementAutomatique == null) {
-			if (obj.blocageRemboursementAutomatique != null)
-				return false;
-		}
-		else if (!blocageRemboursementAutomatique.equals(obj.blocageRemboursementAutomatique))
-			return false;
-		if (complementNom == null) {
-			if (obj.complementNom != null)
-				return false;
-		}
-		else if (!complementNom.equals(obj.complementNom))
-			return false;
-		if (debiteurInactif != obj.debiteurInactif)
-			return false;
-		if (declarations == null) {
-			if (obj.declarations != null)
-				return false;
-		}
-		else if (!declarations.equals(obj.declarations))
-			return false;
-		if (forsFiscaux == null) {
-			if (obj.forsFiscaux != null)
-				return false;
-		}
-		else if (!forsFiscaux.equals(obj.forsFiscaux))
-			return false;
-		if (numero == null) {
-			if (obj.numero != null)
-				return false;
-		}
-		else if (!numero.equals(obj.numero))
-			return false;
-		if (numeroCompteBancaire == null) {
-			if (obj.numeroCompteBancaire != null)
-				return false;
-		}
-		else if (!numeroCompteBancaire.equals(obj.numeroCompteBancaire))
-			return false;
-		if (numeroTelecopie == null) {
-			if (obj.numeroTelecopie != null)
-				return false;
-		}
-		else if (!numeroTelecopie.equals(obj.numeroTelecopie))
-			return false;
-		if (numeroTelephonePortable == null) {
-			if (obj.numeroTelephonePortable != null)
-				return false;
-		}
-		else if (!numeroTelephonePortable.equals(obj.numeroTelephonePortable))
-			return false;
-		if (numeroTelephonePrive == null) {
-			if (obj.numeroTelephonePrive != null)
-				return false;
-		}
-		else if (!numeroTelephonePrive.equals(obj.numeroTelephonePrive))
-			return false;
-		if (numeroTelephoneProfessionnel == null) {
-			if (obj.numeroTelephoneProfessionnel != null)
-				return false;
-		}
-		else if (!numeroTelephoneProfessionnel.equals(obj.numeroTelephoneProfessionnel))
-			return false;
-		if (personneContact == null) {
-			if (obj.personneContact != null)
-				return false;
-		}
-		else if (!personneContact.equals(obj.personneContact))
-			return false;
-		if (rapportsObjet == null) {
-			if (obj.rapportsObjet != null)
-				return false;
-		}
-		else if (!rapportsObjet.equals(obj.rapportsObjet))
-			return false;
-		if (rapportsSujet == null) {
-			if (obj.rapportsSujet != null)
-				return false;
-		}
-		else if (!rapportsSujet.equals(obj.rapportsSujet))
-			return false;
-		if (titulaireCompteBancaire == null) {
-			if (obj.titulaireCompteBancaire != null)
-				return false;
-		}
-		else if (!titulaireCompteBancaire.equals(obj.titulaireCompteBancaire))
-			return false;
-		return true;
+
+		return ComparisonHelper.areEqual(adresseBicSwift, obj.adresseBicSwift)
+				&& ComparisonHelper.areEqual(adresseCourrierElectronique, obj.adresseCourrierElectronique)
+				&& ComparisonHelper.areEqual(adressesTiers, obj.adressesTiers)
+				&& ComparisonHelper.areEqual(blocageRemboursementAutomatique, obj.blocageRemboursementAutomatique)
+				&& ComparisonHelper.areEqual(complementNom, obj.complementNom)
+				&& ComparisonHelper.areEqual(debiteurInactif, obj.debiteurInactif)
+				&& ComparisonHelper.areEqual(declarations, obj.declarations)
+				&& ComparisonHelper.areEqual(forsFiscaux, obj.forsFiscaux)
+				&& ComparisonHelper.areEqual(numero, obj.numero)
+				&& ComparisonHelper.areEqual(numeroCompteBancaire, obj.numeroCompteBancaire)
+				&& ComparisonHelper.areEqual(numeroTelecopie, obj.numeroTelecopie)
+				&& ComparisonHelper.areEqual(numeroTelephonePortable, obj.numeroTelephonePortable)
+				&& ComparisonHelper.areEqual(numeroTelephonePrive, obj.numeroTelephonePrive)
+				&& ComparisonHelper.areEqual(numeroTelephoneProfessionnel, obj.numeroTelephoneProfessionnel)
+				&& ComparisonHelper.areEqual(personneContact, obj.personneContact)
+				&& ComparisonHelper.areEqual(rapportsObjet, obj.rapportsObjet)
+				&& ComparisonHelper.areEqual(rapportsSujet, obj.rapportsSujet)
+				&& ComparisonHelper.areEqual(titulaireCompteBancaire, obj.titulaireCompteBancaire);
 	}
-
-
 }

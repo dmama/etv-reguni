@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
@@ -187,14 +188,9 @@ public abstract class Contribuable extends Tiers {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Contribuable other = (Contribuable) obj;
-		if (identificationsEntreprise == null) {
-			if (other.identificationsEntreprise != null)
-				return false;
-		}
-		else if (!identificationsEntreprise.equals(other.identificationsEntreprise))
-			return false;
-		return true;
+
+		final Contribuable other = (Contribuable) obj;
+		return ComparisonHelper.areEqual(identificationsEntreprise, other.identificationsEntreprise);
 	}
 
 	@Override
