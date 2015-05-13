@@ -101,6 +101,9 @@ public class TiersView {
 
 	private boolean decisionRecente;
 
+	//10 éléments à afficher par défaut
+	private int nombreElementsTable = 10;
+
 	public ComplementView getComplement() {
 		return complement;
 	}
@@ -463,5 +466,13 @@ public class TiersView {
 
 	public void setCtbAssocieHisto(boolean ctbAssocieHisto) {
 		this.ctbAssocieHisto = ctbAssocieHisto;
+	}
+
+	public int getNombreElementsTable() {
+		return nombreElementsTable;
+	}
+
+	public void setNombreElementsTable(int nombreElementsTable) {
+		this.nombreElementsTable = nombreElementsTable;
 	}
 }
