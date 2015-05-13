@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**

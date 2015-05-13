@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**

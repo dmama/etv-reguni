@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent.component;
+package ch.vd.uniregctb.migration.pm.historizer.container;
 
 import org.jetbrains.annotations.NotNull;
 

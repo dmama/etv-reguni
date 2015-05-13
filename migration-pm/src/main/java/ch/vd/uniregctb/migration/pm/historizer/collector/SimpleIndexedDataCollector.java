@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
-import ch.vd.uniregctb.migration.pm.rcent.component.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**

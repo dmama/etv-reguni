@@ -26,8 +26,8 @@ import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
-import ch.vd.uniregctb.migration.pm.rcent.component.DateRanged;
-import ch.vd.uniregctb.migration.pm.rcent.component.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
 
