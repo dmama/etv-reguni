@@ -703,6 +703,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setEnseigne("La verte mangouste");
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -719,10 +720,18 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
+		{
+			final EntityLinkCollector.EntityLink collectedLink = linkCollector.getCollectedLinks().get(0);
+			Assert.assertNotNull(collectedLink);
+			Assert.assertEquals(RegDate.get(2000, 1, 1), collectedLink.getDateDebut());
+			Assert.assertNull(collectedLink.getDateFin());
+			Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, collectedLink.getType());
+		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ADRESSES);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -733,7 +742,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
@@ -771,6 +779,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setEnseigne("Le jaune éléphant");
 		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), BALE, false);
+		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -787,10 +796,18 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
+		{
+			final EntityLinkCollector.EntityLink collectedLink = linkCollector.getCollectedLinks().get(0);
+			Assert.assertNotNull(collectedLink);
+			Assert.assertEquals(RegDate.get(2000, 1, 1), collectedLink.getDateDebut());
+			Assert.assertNull(collectedLink.getDateFin());
+			Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, collectedLink.getType());
+		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ADRESSES);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -801,7 +818,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
@@ -839,6 +855,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setEnseigne("L'orange pie");
 		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, false);
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+		addEtablissementStable(etablissement, RegDate.get(1995, 1, 1), RegDate.get(2005, 12, 31));
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -855,7 +872,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
+		{
+			final EntityLinkCollector.EntityLink collectedLink = linkCollector.getCollectedLinks().get(0);
+			Assert.assertNotNull(collectedLink);
+			Assert.assertEquals(RegDate.get(1995, 1, 1), collectedLink.getDateDebut());
+			Assert.assertEquals(RegDate.get(2005, 12, 31), collectedLink.getDateFin());
+			Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, collectedLink.getType());
+		}
 
 		// vérification des messages collectés
 		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
@@ -869,7 +894,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS,
+		                              "\\bL'établissement stable \\[01\\.01\\.1995 ; 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
@@ -897,7 +923,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(RegDate.get(2000, 1, 1), domicile.getDateDebut());
-				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(RegDate.get(2005, 12, 31), domicile.getDateFin());
 			}
 
 			return null;

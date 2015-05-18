@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -67,7 +68,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebut = domicilesValides.floorEntry(range.getDateDebut());
 		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileFin = range.getDateFin() != null ? domicilesValides.floorEntry(range.getDateFin()) : domicilesValides.lastEntry();
 
-		// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domicile...
+		// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domiciles...
 		if (domicileFin == null) {
 			// fin == null -> il n'y a absolument rien qui couvre le range demandé
 			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", DateRangeHelper.toDisplayString(range)));
@@ -286,20 +287,38 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.sorted(Comparator.comparing(DomicileEtablissement::getDateDebut))
 				.collect(Collectors.toList());
 
-		// TODO retrouver la date de fin de l'établissement (à partir des établissements stables ?) à mettre à la place du "null" ci-dessous
-		// assignation des dates de fin
+		// assignation des dates de fin (la dernière date de fin est par défaut à null, et sera mise à autre chose éventuellement lors de l'intersection
+		// avec les dates des établissements stables plus bas)
 		RegDate dateFinCourante = null;
 		for (DomicileEtablissement domicile : CollectionsUtils.revertedOrder(domiciles)) {
 			domicile.setDateFin(dateFinCourante);
 			dateFinCourante = domicile.getDateDebut().getOneDayBefore();
 		}
 
+		// maintenant, on a des domiciles à mettre en regard des établissements stables
+		// (en partie pour ajouter une date de fin au dernier domicile le cas échéant)
+		final List<DateRange> etablissementsStables = DateRangeHelper.merge(regpm.getEtablissementsStables().stream()
+				                                                                           .sorted(DateRangeComparator::compareRanges)
+				                                                                           .map(DateRangeHelper.Range::new)
+				                                                                           .collect(Collectors.toList()));
+		final List<DomicileEtablissement> domicilesStables = domiciles.stream()
+				.map(domicile -> Pair.of(domicile, DateRangeHelper.intersections(domicile, etablissementsStables)))     // intersection avec les établissements stables
+				.filter(pair -> pair.getValue() != null && !pair.getValue().isEmpty())                      // filtrage des domiciles qui n'ont pas d'intersection avec les établissements stables
+				.map(pair -> pair.getValue().stream().map(range -> Pair.of(pair.getKey(), range)))          // duplication en cas d'intersections disjointes
+				.flatMap(Function.identity())
+				.map(pair -> new DomicileEtablissement(pair.getValue().getDateDebut(),                      // ajustement des dates selon les dates d'intersection
+				                                       pair.getValue().getDateFin(),
+				                                       pair.getKey().getTypeAutoriteFiscale(),
+				                                       pair.getKey().getNumeroOfsAutoriteFiscale(),
+				                                       null))
+				.collect(Collectors.toList());
+
 		// log ou ajout des domiciles dans l'établissement...
-		if (domiciles.isEmpty()) {
+		if (domicilesStables.isEmpty()) {
 			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans domicile.");
 		}
 		else {
-			domiciles.forEach(unireg::addDomicile);
+			domicilesStables.forEach(unireg::addDomicile);
 		}
 	}
 
