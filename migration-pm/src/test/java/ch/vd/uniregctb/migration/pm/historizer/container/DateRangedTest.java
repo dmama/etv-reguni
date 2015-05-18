@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.historizer.container;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -11,31 +10,34 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DateRangedTest {
-	String payload = "My payload.";
+	final String payload = "My payload.";
 
-	int year = 2015;
-	int month = 5;
-	int beforeDay = 1;
-	int beginDay = 10;
-	int insideDay = 15;
-	int endDay = 20;
-	int newEndDay = 21;
-	int afterDay = 30;
+	final int year = 2015;
+	final int month = 5;
 
-	DateRanged<String> dateranged = new DateRanged<>(RegDateHelper.get(year, month, beginDay), RegDateHelper.get(year, month, endDay), payload);
-	DateRanged<String> newDateranged;
+	final int beforeDay = 1;
+	final RegDate dateBefore = RegDateHelper.get(year, month, beforeDay);
 
-	RegDate dateBefore = RegDateHelper.get(year, month, beforeDay);
-	RegDate dateBegin = RegDateHelper.get(year, month, beginDay);
-	RegDate dateInside = RegDateHelper.get(year, month, insideDay);
-	RegDate dateEnd = RegDateHelper.get(year, month, endDay);
-	RegDate newDateEnd = RegDateHelper.get(year, month, newEndDay);
-	RegDate dateAfter = RegDateHelper.get(year, month, afterDay);
+	final int beginDay = 10;
+	final RegDate dateBegin = RegDateHelper.get(year, month, beginDay);
 
-	@Before
-	public void setUp() {
-		newDateranged = dateranged.withDateFin(newDateEnd);
-	}
+	final int insideDay = 15;
+	final RegDate dateInside = RegDateHelper.get(year, month, insideDay);
+
+	final int endDay = 20;
+	final RegDate dateEnd = RegDateHelper.get(year, month, endDay);
+
+	final int afterDay = 30;
+	final RegDate dateAfter = RegDateHelper.get(year, month, afterDay);
+
+	// For separate testing of derived range.
+	final int newEndDay = 21;
+	final RegDate newDateEnd = RegDateHelper.get(year, month, newEndDay);
+
+	final DateRanged<String> dateranged = new DateRanged<>(RegDateHelper.get(year, month, beginDay), RegDateHelper.get(year, month, endDay), payload);
+	// Derived range to test as strictly as newly created range.
+	final DateRanged<String> newDateranged = dateranged.withDateFin(newDateEnd);
+
 
 	@Test
 	public void testIsValidAt() {
@@ -45,6 +47,9 @@ public class DateRangedTest {
 		assertTrue(dateranged.isValidAt(dateEnd));
 		assertFalse(dateranged.isValidAt(dateAfter));
 
+		/*
+			Testing derived range
+		 */
 		assertFalse(newDateranged.isValidAt(dateBefore));
 		assertTrue(newDateranged.isValidAt(dateBegin));
 		assertTrue(newDateranged.isValidAt(dateInside));
@@ -55,6 +60,10 @@ public class DateRangedTest {
 	@Test
 	public void didNotLosePayload() {
 		assertEquals(payload, dateranged.getPayload());
+
+		/*
+			Testing derived range
+		 */
 		assertEquals(payload, newDateranged.getPayload());
 	}
 }

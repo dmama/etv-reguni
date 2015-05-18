@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.migration.pm.historizer.container;
 
-import java.text.Format;
-
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
