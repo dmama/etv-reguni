@@ -8,7 +8,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -16,13 +15,19 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesResults> {
 
+	public enum ResultatTraitement {
+		TRAITE,
+		DEJA_BONNE_COMMUNE,
+		RIEN_A_FAIRE
+	}
+
 	public enum ErreurType {
 		UNKNOWN_EXCEPTION("Une exception a été levée."),
 		VALIDATION("Le contribuable ne valide pas.");
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -32,12 +37,11 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	}
 
 	public enum IgnoreType {
-		FORS_DEJA_SUR_COMMUNE_RESULTANTE("Les fors du contribuable sont déjà sur la commune résultante."),
-		DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE("Les décisions ACI du contribuable sont déjà sur la commune résultante.");
+		DEJA_SUR_COMMUNE_RESULTANTE("Déjà sur la commune résultante.");
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 
@@ -46,17 +50,24 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		}
 	}
 
-	public enum PhaseTraitement{
-		PHASE_FOR,
-		PHASE_DECISION
+	public static abstract class Info {
+		public final long noTiers;
+
+		public Info(long noTiers) {
+			this.noTiers = noTiers;
+		}
+
+		public abstract String getDescriptionRaison();
 	}
 
 	public static class Erreur extends Info {
 		public final ErreurType raison;
+		public final String details;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
-			super(noCtb, officeImpotID, details, nomCtb);
+		public Erreur(long noCtb, ErreurType raison, String details) {
+			super(noCtb);
 			this.raison = raison;
+			this.details = details;
 		}
 
 		@Override
@@ -68,8 +79,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
-			super(noCtb, officeImpotID, details, nomCtb);
+		public Ignore(long noCtb, IgnoreType raison) {
+			super(noCtb);
 			this.raison = raison;
 		}
 
@@ -85,18 +96,20 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public final Set<Integer> anciensNoOfs;
 	public final int nouveauNoOfs;
 
-
 	// résultats
-	public final List<Long> tiersTraites = new LinkedList<>();
-	public final List<Ignore> tiersIgnores = new LinkedList<>();
-	public final List<Erreur> tiersEnErrors = new LinkedList<>();
+	public final List<Erreur> tiersEnErreur = new LinkedList<>();
 
-	public final List<Long> tiersAvecDecisionTraites = new LinkedList<>();
-	public final List<Ignore> tiersAvecDecisonIgnores = new LinkedList<>();
-	public final List<Erreur> tiersAvecDecisionEnErrors = new LinkedList<>();
+	public final List<Long> tiersTraitesPourFors = new LinkedList<>();
+	public final List<Ignore> tiersIgnoresPourFors = new LinkedList<>();
 
-	public boolean interrompu;
-	public PhaseTraitement phaseTraitement;
+	public final List<Long> tiersTraitesPourDecisions = new LinkedList<>();
+	public final List<Ignore> tiersIgnoresPourDecisions = new LinkedList<>();
+
+	public final List<Long> tiersTraitesPourDomicilesEtablissement = new LinkedList<>();
+	public final List<Ignore> tiersIgnoresPourDomicilesEtablissement = new LinkedList<>();
+
+	public int nbTiersExamines = 0;
+	public boolean interrompu = false;
 
 	public FusionDeCommunesResults(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
@@ -106,72 +119,53 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		this.dateTraitement = dateTraitement;
 	}
 
-	public int getNbTiersTotal() {
-		return tiersTraites.size() + tiersIgnores.size() + tiersEnErrors.size();
+	public int getNbTiersInspectesPourFors() {
+		return tiersTraitesPourFors.size() + tiersIgnoresPourFors.size();
 	}
 
+	public int getNbTiersInspectesPourDecisions() {
+		return tiersTraitesPourDecisions.size() + tiersIgnoresPourDecisions.size();
+	}
 
-	public int getNbTiersAvecDecisionTotal() {
-		return tiersAvecDecisionTraites.size() + tiersAvecDecisonIgnores.size() + tiersAvecDecisionEnErrors.size();
+	public int getNbTiersInspectesPourDomicilesEtablissement() {
+		return tiersTraitesPourDomicilesEtablissement.size() + tiersIgnoresPourDomicilesEtablissement.size();
 	}
 
 	@Override
 	public void addAll(FusionDeCommunesResults right) {
-		this.tiersTraites.addAll(right.tiersTraites);
-		this.tiersIgnores.addAll(right.tiersIgnores);
-		this.tiersEnErrors.addAll(right.tiersEnErrors);
+		this.tiersEnErreur.addAll(right.tiersEnErreur);
 
-		this.tiersAvecDecisionTraites.addAll(right.tiersAvecDecisionTraites);
-		this.tiersAvecDecisonIgnores.addAll(right.tiersAvecDecisonIgnores);
-		this.tiersAvecDecisionEnErrors.addAll(right.tiersAvecDecisionEnErrors);
+		this.tiersTraitesPourFors.addAll(right.tiersTraitesPourFors);
+		this.tiersIgnoresPourFors.addAll(right.tiersIgnoresPourFors);
+
+		this.tiersTraitesPourDecisions.addAll(right.tiersTraitesPourDecisions);
+		this.tiersIgnoresPourDecisions.addAll(right.tiersIgnoresPourDecisions);
+
+		this.tiersTraitesPourDomicilesEtablissement.addAll(right.tiersTraitesPourDomicilesEtablissement);
+		this.tiersIgnoresPourDomicilesEtablissement.addAll(right.tiersIgnoresPourDomicilesEtablissement);
+
+		nbTiersExamines += right.nbTiersExamines;
 	}
 
-	public void addOnCommitException(Long habitantId, Exception e) {
-		tiersEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
+	private static void addResultat(Long tiersId, List<Long> traites, List<Ignore> ignores, ResultatTraitement resultat) {
+		if (resultat == ResultatTraitement.TRAITE) {
+			traites.add(tiersId);
+		}
+		else if (resultat == ResultatTraitement.DEJA_BONNE_COMMUNE) {
+			ignores.add(new Ignore(tiersId, IgnoreType.DEJA_SUR_COMMUNE_RESULTANTE));
+		}
 	}
 
-	public void addTiersInvalide(Long tiersId, ValidationException e) {
-		tiersEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage(), getNom(tiersId)));
-	}
-
-	public void addTiersIgnoreDejaSurCommuneResultante(Tiers tiers) {
-		tiersIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.FORS_DEJA_SUR_COMMUNE_RESULTANTE, null, getNom(tiers.getNumero())));
-	}
-
-	public void addOnCommitPourDecisionException(Long habitantId, Exception e) {
-		tiersAvecDecisionEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
-	}
-
-	public void addTiersAvecDecisionInvalide(Long tiersId, ValidationException e) {
-		tiersAvecDecisionEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage(), getNom(tiersId)));
-	}
-
-	public void addTiersAvecDecisionIgnoreeDejaSurCommuneResultante(Tiers tiers) {
-		tiersAvecDecisonIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.DECISIONS_DEJA_SUR_COMMUNE_RESULTANTE, null, getNom(tiers.getNumero())));
+	public void addResultat(Long tiersId, ResultatTraitement fors, ResultatTraitement decisions, ResultatTraitement domicilesEtablissement) {
+		++ nbTiersExamines;
+		addResultat(tiersId, tiersTraitesPourFors, tiersIgnoresPourFors, fors);
+		addResultat(tiersId, tiersTraitesPourDecisions, tiersIgnoresPourDecisions, decisions);
+		addResultat(tiersId, tiersTraitesPourDomicilesEtablissement, tiersIgnoresPourDomicilesEtablissement, domicilesEtablissement);
 	}
 
 	@Override
-	public void addErrorException(Long element, Exception e) {
-		switch (phaseTraitement){
-		 case PHASE_FOR:
-			 if (e instanceof ValidationException) {
-				 addTiersInvalide(element, (ValidationException) e);
-			 }
-			 else {
-				 addOnCommitException(element, e);
-			 }
-			 break;
-		 case PHASE_DECISION:
-			 if (e instanceof ValidationException) {
-				 addTiersAvecDecisionInvalide(element, (ValidationException) e);
-			 }
-			 else {
-				 addOnCommitPourDecisionException(element, e);
-			 }
-			 break;
-		 default:
-			 break;
-		}
-
+	public void addErrorException(Long tiersId, Exception e) {
+		++ nbTiersExamines;
+		tiersEnErreur.add(new Erreur(tiersId, e instanceof ValidationException ? ErreurType.VALIDATION : ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
 	}
 }

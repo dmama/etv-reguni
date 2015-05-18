@@ -295,6 +295,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		throw new NotImplementedException();
 	}

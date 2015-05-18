@@ -4993,11 +4993,11 @@ public class TiersServiceImpl implements TiersService {
 
 		return false;
 	}
+
 	private void construireListeTiersLies(Contribuable ctb, Set<Contribuable> tiersLies, int ageMaximum) {
 		if (tiersLies == null) {
 			tiersLies = new HashSet<>();
 		}
-
 
 		tiersLies.add(ctb);
 		if (ctb instanceof PersonnePhysique) {
@@ -5030,6 +5030,7 @@ public class TiersServiceImpl implements TiersService {
 		final boolean remarqueSupprimee = d.getRemarque()!=null && remarque ==null;
 		return datefinModifiee||datefinSupprimee|| autoriteModifiee||remarqueModifie||remarqueSupprimee;
 	}
+
 	@Override
 	public StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun) {
 
@@ -5082,4 +5083,20 @@ public class TiersServiceImpl implements TiersService {
 		return StatutMenageCommun.TERMINE_SUITE_SEPARATION;
 	}
 
+	@Override
+	public DomicileEtablissement addDomicileEtablissement(Etablissement etb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoriteFiscale, RegDate dateDebut, RegDate dateFin) {
+		return tiersDAO.addAndSave(etb, new DomicileEtablissement(dateDebut, dateFin, typeAutoriteFiscale, numeroAutoriteFiscale, etb));
+	}
+
+	@Override
+	public void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin) {
+		Assert.notNull(domicile);
+		if (domicile.getDateDebut().isAfter(dateFin)) {
+			throw new ValidationException(domicile, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFin) + ") est avant la date de début (" +
+					RegDateHelper.dateToDisplayString(domicile.getDateDebut())
+					+ ") de la décision");
+		}
+
+		domicile.setDateFin(dateFin);
+	}
 }

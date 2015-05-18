@@ -1401,8 +1401,7 @@ public interface TiersService {
 	 * @param Remarque
 	 * @return la décision créée
 	 */
-DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale,
-                           int numeroAutoritéFiscale,RegDate dateDebut,RegDate dateFin, String Remarque);
+    DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoriteFiscale, RegDate dateDebut, RegDate dateFin, String Remarque);
 
 	/**
 	 * Permet de mettre à jour un edécision ACI ou de l'annuler et la recréer en fonction des données modifiéss
@@ -1436,12 +1435,30 @@ DecisionAci addDecisionAci(Contribuable ctb, TypeAutoriteFiscale typeAutoriteFis
 	 */
 	List<MenageCommun> getAllMenagesCommuns(PersonnePhysique pp);
 
-    /**!ATTENTION! méthode non utilisée pour le moment mais qui le sera en 15R* afin de répondre à SIFISC-14452
+    /**
      * Determine si un ctb est sous l'influence d'une décision ACI: soit directement soit par une de ses relations directe
      * Couple ou membre du couple
-      * @param ctb
+     * @param ctb
      * @return vrai si une influence de décision a été détectée false sinon
      */
-boolean isSousInfluenceDecisions(Contribuable ctb);
+    boolean isSousInfluenceDecisions(Contribuable ctb);
+
+	/**
+	 * Crée un domicile sur l'établissement passé en paramètre, avec les informations fournies
+	 * @param etb l'établissement destinataire
+	 * @param typeAutoriteFiscale le type d'autorité fiscale du domicile
+	 * @param numeroAutoriteFiscale le numéro d'autorité fiscale du domicile
+	 * @param dateDebut la date de début
+	 * @param dateFin la date de fin (en générale optionnelle)
+	 * @return le domicile nouvellement créé
+	 */
+	DomicileEtablissement addDomicileEtablissement(Etablissement etb, TypeAutoriteFiscale typeAutoriteFiscale, int numeroAutoriteFiscale, RegDate dateDebut, RegDate dateFin);
+
+	/**
+	 * Ferme le domicile à la date indiquée
+	 * @param domicile le domicile d'établissement à fermer
+	 * @param dateFin la date de fin à utiliser
+	 */
+	void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin);
 }
 

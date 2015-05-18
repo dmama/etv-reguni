@@ -288,14 +288,13 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	Immeuble addAndSave(Contribuable tiers, Immeuble immeuble);
 
-
 	/**
 	 * Ajoute une nouvelle decision Aci sur un tiers
 	 * @param tiers
 	 * @param decisionAci
 	 * @return la nouvelle décision avec un numéro
 	 */
-	DecisionAci addAndSave(Contribuable tiers,DecisionAci decisionAci);
+	DecisionAci addAndSave(Contribuable tiers, DecisionAci decisionAci);
 
 	/**
 	 * Ajoute une nouvelle déclaration à un tiers
@@ -349,6 +348,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return une nouvelle instance de l'identifiant avec son ID renseigné
 	 */
 	IdentificationEntreprise addAndSave(Contribuable ctb, IdentificationEntreprise ident);
+
+	/**
+	 * Ajoute un nouveau domicile à l'établissement fourni
+	 * @param etb l'établissement
+	 * @param domicile le domicile à ajouter
+	 * @return une nouvelle instance de l'établissement avec son ID renseigné
+	 */
+	DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.

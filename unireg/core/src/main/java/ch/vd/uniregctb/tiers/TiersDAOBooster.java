@@ -327,6 +327,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
+		return target.addAndSave(etb, domicile);
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}

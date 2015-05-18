@@ -1285,6 +1285,31 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(ctb, ident, IDENTIFICATION_ENTREPRISE_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Etablissement, DomicileEtablissement> DOMICILE_ETABLISSEMENT_ACCESSOR = new EntityAccessor<Etablissement, DomicileEtablissement>() {
+		@Override
+		public Collection<DomicileEtablissement> getEntities(Etablissement tiers) {
+			return tiers.getDomiciles();
+		}
+
+		@Override
+		public void addEntity(Etablissement etablissement, DomicileEtablissement domicile) {
+			etablissement.addDomicile(domicile);
+		}
+
+		@Override
+		public void assertSame(DomicileEtablissement entity1, DomicileEtablissement entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			Assert.isSame(entity1.getTypeAutoriteFiscale(), entity2.getTypeAutoriteFiscale());
+			Assert.isSame(entity1.getNumeroOfsAutoriteFiscale(), entity2.getNumeroOfsAutoriteFiscale());
+		}
+	};
+
+	@Override
+	public DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile) {
+		return addAndSave(etb, domicile, DOMICILE_ETABLISSEMENT_ACCESSOR);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {

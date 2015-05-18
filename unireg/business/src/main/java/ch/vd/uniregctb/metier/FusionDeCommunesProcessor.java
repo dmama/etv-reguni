@@ -1,14 +1,18 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +39,15 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -69,7 +75,17 @@ public class FusionDeCommunesProcessor {
 	private final ValidationInterceptor validationInterceptor;
 	private final AdresseService adresseService;
 
-	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<>();
+	private final Map<Class<? extends LocalisationDatee>, Strategy<? extends LocalisationDatee>> strategies = new HashMap<>();
+
+	/**
+	 * Externalisé dans une méthode à part pour une problématique de typage fort -> comme ça, on ne peut pas se tromper et mettre n'importe quoi dans la map...
+	 * @param clazz la classe de l'élément sur lequel porte la stratégie
+	 * @param strategy la stratégie de traitement de la fusion
+	 * @param <T> le type de l'élément analysé
+	 */
+	private <T extends LocalisationDatee> void addStrategyMapping(Class<T> clazz, Strategy<T> strategy) {
+		strategies.put(clazz, strategy);
+	}
 
 	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra,
 	                                 ValidationService validationService, ValidationInterceptor validationInterceptor, AdresseService adresseService) {
@@ -81,12 +97,44 @@ public class FusionDeCommunesProcessor {
 		this.validationInterceptor = validationInterceptor;
 		this.adresseService = adresseService;
 
-		this.strategies.put(ForFiscalPrincipalPP.class, new ForPrincipalPPStrategy());
-		this.strategies.put(ForFiscalPrincipalPM.class, new ForPrincipalPMStrategy());
-		this.strategies.put(ForFiscalSecondaire.class, new ForSecondaireStrategy());
-		this.strategies.put(ForFiscalAutreElementImposable.class, new ForAutreElementImposableStrategy());
-		this.strategies.put(ForDebiteurPrestationImposable.class, new ForDebiteurStrategy());
-		this.strategies.put(ForFiscalAutreImpot.class, new ForAutreImpotStrategy());
+		addStrategyMapping(ForFiscalPrincipalPP.class, new ForPrincipalPPStrategy());
+		addStrategyMapping(ForFiscalPrincipalPM.class, new ForPrincipalPMStrategy());
+		addStrategyMapping(ForFiscalSecondaire.class, new ForSecondaireStrategy());
+		addStrategyMapping(ForFiscalAutreElementImposable.class, new ForAutreElementImposableStrategy());
+		addStrategyMapping(ForDebiteurPrestationImposable.class, new ForDebiteurStrategy());
+		addStrategyMapping(ForFiscalAutreImpot.class, new ForAutreImpotStrategy());
+		addStrategyMapping(DecisionAci.class, new DecisionAciStrategy());
+		addStrategyMapping(DomicileEtablissement.class, new DomicileEtablissementStrategy());
+	}
+
+	protected static final class TiersATraiter {
+		final long idTiers;
+		boolean concerneParFors;
+		boolean concerneParDecisions;
+		boolean concerneParDomicilesEtablissement;
+
+		public TiersATraiter(long idTiers, boolean concerneParFors, boolean concerneParDecisions, boolean concerneParDomicilesEtablissement) {
+			this.idTiers = idTiers;
+			this.concerneParFors = concerneParFors;
+			this.concerneParDecisions = concerneParDecisions;
+			this.concerneParDomicilesEtablissement = concerneParDomicilesEtablissement;
+		}
+	}
+
+	private static void composeTiersATraiter(Map<Long, TiersATraiter> destination, Set<Long> idsTiers, boolean fors, boolean decisions, boolean domicilesEtablissement) {
+		if (idsTiers != null && !idsTiers.isEmpty()) {
+			for (Long idTiers : idsTiers) {
+				final TiersATraiter found = destination.get(idTiers);
+				if (found != null) {
+					found.concerneParFors |= fors;
+					found.concerneParDecisions |= decisions;
+					found.concerneParDomicilesEtablissement |= domicilesEtablissement;
+				}
+				else {
+					destination.put(idTiers, new TiersATraiter(idTiers, fors, decisions, domicilesEtablissement));
+				}
+			}
+		}
 	}
 
 	/**
@@ -110,13 +158,18 @@ public class FusionDeCommunesProcessor {
 		checkNoOfs(anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		final FusionDeCommunesResults rapportFinal = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-		rapportFinal.phaseTraitement = FusionDeCommunesResults.PhaseTraitement.PHASE_FOR;
 
-		final List<Long> list = getListTiersTouchesParFusion(anciensNoOfs, dateFusion);
+		final Set<Long> tiersPourFors = new HashSet<>(getListTiersAvecForToucheParFusion(anciensNoOfs, dateFusion));
+		final Set<Long> tiersPourDecisions = new HashSet<>(getListTiersAvecDecisionToucheParFusion(anciensNoOfs, dateFusion));
+		final Set<Long> tiersPourDomicilesEtablissement = new HashSet<>(getListTiersAvecDomicileEtablissementToucheParFusion(anciensNoOfs, dateFusion));
+		final Map<Long, TiersATraiter> tousTiersConcernes = new TreeMap<>();
+		composeTiersATraiter(tousTiersConcernes, tiersPourFors, true, false, false);
+		composeTiersATraiter(tousTiersConcernes, tiersPourDecisions, false, true, false);
+		composeTiersATraiter(tousTiersConcernes, tiersPourDomicilesEtablissement, false, false, true);
 
 		// boucle principale sur les contribuables à traiter
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, FusionDeCommunesResults> template = new BatchTransactionTemplateWithResults<>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
+		final BatchTransactionTemplateWithResults<Long, FusionDeCommunesResults> template = new BatchTransactionTemplateWithResults<>(tousTiersConcernes.keySet(), BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
 		template.execute(rapportFinal, new BatchWithResultsCallback<Long, FusionDeCommunesResults>() {
 
 			@Override
@@ -127,133 +180,65 @@ public class FusionDeCommunesProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, FusionDeCommunesResults r) throws Exception {
 				s.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
-				traiteBatch(batch, anciensNoOfs, nouveauNoOfs, dateFusion, s, r);
+
+				// on mappe les ID de tiers sur des données plus structurées avant de les envoyer plus loin
+				final List<TiersATraiter> batchData = new ArrayList<>(batch.size());
+				for (Long id : batch) {
+					batchData.add(tousTiersConcernes.get(id));
+				}
+				traiteBatch(batchData, anciensNoOfs, nouveauNoOfs, dateFusion, s, r);
+
 				return !s.interrupted();
 			}
 		}, progressMonitor);
 
 		if (status.interrupted()) {
 			status.setMessage("Le traitement de la fusion des communes a été interrompu."
-					+ " Nombre de contribuables traités au moment de l'interruption = " + rapportFinal.tiersTraites.size());
+					+ " Nombre de contribuables traités au moment de l'interruption = " + rapportFinal.tiersTraitesPourFors.size());
 			rapportFinal.interrompu = true;
 		}
 		else {
 			status.setMessage("Le traitement de la fusion des communes est terminé." + " Nombre de contribuables traités = "
-					+ rapportFinal.tiersTraites.size() + ". Nombre d'erreurs = " + rapportFinal.tiersEnErrors.size());
+					+ rapportFinal.tiersTraitesPourFors.size() + ". Nombre d'erreurs = " + rapportFinal.tiersEnErreur.size());
 		}
-
-
-		rapportFinal.phaseTraitement = FusionDeCommunesResults.PhaseTraitement.PHASE_DECISION;
-		final List<Long> listAvecDecisions = getListTiersAvecDecisionTouchesParFusion(anciensNoOfs, dateFusion);
-
-		// boucle principale sur les contribuables à traiter
-		final SimpleProgressMonitor progressMonitorForDecision = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, FusionDeCommunesResults> templateForDecision = new BatchTransactionTemplateWithResults<>(listAvecDecisions, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s);
-		templateForDecision.execute(rapportFinal, new BatchWithResultsCallback<Long, FusionDeCommunesResults>() {
-
-			@Override
-			public FusionDeCommunesResults createSubRapport() {
-				return new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-			}
-
-			@Override
-			public boolean doInTransaction(List<Long> batch, FusionDeCommunesResults r) throws Exception {
-				s.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitorForDecision.getProgressInPercent());
-				traiteBatchPourDecision(batch, anciensNoOfs, nouveauNoOfs, dateFusion, s, r);
-				return !s.interrupted();
-			}
-		}, progressMonitorForDecision);
-
-		if (status.interrupted()) {
-			status.setMessage("Le traitement de la fusion des communes a été interrompu dans la phase décisions ACI."
-					+ " Nombre de contribuables traités au moment de l'interruption = " + rapportFinal.tiersAvecDecisionTraites.size());
-			rapportFinal.interrompu = true;
-		}
-		else {
-			status.setMessage("Le traitement de la fusion des communes est terminé." + " Nombre de contribuables avec décision ACI traités = "
-					+ rapportFinal.tiersAvecDecisionTraites.size() + ". Nombre d'erreurs = " + rapportFinal.tiersAvecDecisionEnErrors.size());
-		}
-
 
 		rapportFinal.end();
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s, FusionDeCommunesResults r) {
-		for (Long id : batch) {
-			traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion, r);
-			if (s.interrupted()) {
-				break;
-			}
-		}
-	}
-	private void traiteBatchPourDecision(List<Long> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s, FusionDeCommunesResults r) {
-		for (Long id : batch) {
-			traiteTiersAvecDecision(id, anciensNoOfs, nouveauNoOfs, dateFusion, r);
+	private void traiteBatch(List<TiersATraiter> batch, final Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, StatusManager s, FusionDeCommunesResults r) {
+		for (TiersATraiter data : batch) {
+			traiteTiers(data, anciensNoOfs, nouveauNoOfs, dateFusion, r);
 			if (s.interrupted()) {
 				break;
 			}
 		}
 	}
 
-	protected void traiteTiers(Long id, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, FusionDeCommunesResults r) {
+	protected void traiteTiers(TiersATraiter data, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, FusionDeCommunesResults r) {
 
-		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, data.idTiers);
 		Assert.notNull(tiers);
-		boolean wasValidationInterceptorEnabled = validationInterceptor.isEnabled();
+
+		// Désactivation de validation automatique par l'intercepteur
+		final boolean wasValidationInterceptorEnabled = validationInterceptor.isEnabled();
+		validationInterceptor.setEnabled(false);
 		try {
-			// Desactivation de validation automatique par l'intercepteur
-			validationInterceptor.setEnabled(false);
+			final FusionDeCommunesResults.ResultatTraitement fors = data.concerneParFors ? traiteLocalisationsDatees(tiers.getForsFiscauxSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement decisions = data.concerneParDecisions ? traiteLocalisationsDatees(((Contribuable) tiers).getDecisionsSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement domiciles = data.concerneParDomicilesEtablissement ? traiteLocalisationsDatees(((Etablissement) tiers).getSortedDomiciles(false), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
 
-			boolean forIgnore = false;
-			boolean forTraite = false;
-
-			final List<ForFiscal> fors = tiers.getForsFiscauxSorted();
-			for (ForFiscal f : fors) {
-
-				if (f.isAnnule()) {
-					continue;
-				}
-
-				// On ne traite que les fors fiscaux correspondant aux communes fusionnées
-				if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || !anciensNoOfs.contains(f.getNumeroOfsAutoriteFiscale())) {
-					continue;
-				}
-
-				// On ne traite que les fors fiscaux valides après la date de la fusion
-				if (f.getDateFin() != null && f.getDateFin().isBefore(dateFusion)) {
-					continue;
-				}
-
-				// On ignore les fors qui sont déjà sur la commune résultant de la fusion
-				if (f.getNumeroOfsAutoriteFiscale() == nouveauNoOfs) {
-					forIgnore = true;
-					continue;
-				}
-
-				final Strategy strat = strategies.get(f.getClass());
-				if (strat == null) {
-					throw new IllegalArgumentException("Type de for fiscal inconnu : " + f.getClass().getSimpleName());
-				}
-
-				//noinspection unchecked
-				strat.traite(f, nouveauNoOfs, dateFusion);
-				forTraite = true;
-			}
-
-			// Validation manuelle après le traitement de tous les fors
+			// Validation manuelle après le traitement de tous les éléments
 			final ValidationResults validationResults = validationService.validate(tiers);
 			if (validationResults.hasErrors()) {
 				throw new ValidationException(tiers, validationResults);
 			}
 
-			if (forTraite) {
-				r.tiersTraites.add(id);
-			}
-			else if (forIgnore) {
-				r.addTiersIgnoreDejaSurCommuneResultante(tiers);
-			}
-
+			r.addResultat(data.idTiers, fors, decisions, domiciles);
+		}
+		catch (ValidationException e) {
+			// on ne va pas contrôler plus loin si le tiers valide ou pas, on sait déjà qu'il ne valide pas...
+			throw e;
 		}
 		catch (RuntimeException e) {
 			// on essaie de détecter les erreurs qui pourraient être dues à un tiers qui ne valide pas
@@ -271,86 +256,60 @@ public class FusionDeCommunesProcessor {
 		}
 	}
 
-	protected void traiteTiersAvecDecision(Long id, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, FusionDeCommunesResults r) {
+	/**
+	 * Traite une collection d'éléments potentiellement concernés par la fusion de communes
+	 * @param elements les éléments à regarder
+	 * @param anciensNoOfs les numéros OFS des communes qui fusionnent
+	 * @param nouveauNoOfs le numéro OFS de la commune après fusion
+	 * @param dateFusion la date de fusion
+	 * @return un couple de booléens (au moins un élément traité ; au moins un élément déjà sur la bonne commune)
+	 */
+	@NotNull
+	private <T extends LocalisationDatee> FusionDeCommunesResults.ResultatTraitement traiteLocalisationsDatees(Collection<T> elements, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
+		boolean dejaBonneCommune = false;
+		boolean traite = false;
 
-		final Contribuable contribuable = hibernateTemplate.get(Contribuable.class, id);
-		Assert.notNull(contribuable);
-		boolean wasValidationInterceptorEnabled = validationInterceptor.isEnabled();
-		try {
-			// Desactivation de validation automatique par l'intercepteur
-			validationInterceptor.setEnabled(false);
-
-			boolean decisionIgnore = false;
-			boolean decisionTraite = false;
-
-			Set<DecisionAci> decisionAciSet = contribuable.getDecisionsAci();
-			final List<DecisionAci> decisions = new ArrayList<>();
-			decisions.addAll(decisionAciSet);
-
-			for (DecisionAci d : decisions) {
-
-				if (d.isAnnule()) {
-					continue;
-				}
-
-				// On ne traite que les décisions correspondantes aux communes fusionnées
-				if (d.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || !anciensNoOfs.contains(d.getNumeroOfsAutoriteFiscale())) {
-					continue;
-				}
-
-				// On ne traite que les décisions valides après la date de la fusion
-				if (d.getDateFin() != null && d.getDateFin().isBefore(dateFusion)) {
-					continue;
-				}
-
-				// On ignore les décisions qui sont déjà sur la commune résultant de la fusion
-				if (d.getNumeroOfsAutoriteFiscale() == nouveauNoOfs) {
-					decisionIgnore = true;
-					continue;
-				}
-
-				traiteDecisionAci(d,nouveauNoOfs,dateFusion);
-				decisionTraite = true;
+		for (T elt : elements) {
+			if (elt.isAnnule()) {
+				continue;
 			}
 
-			// Validation manuelle après le traitement de tous les decisions
-			final ValidationResults validationResults = validationService.validate(contribuable);
-			if (validationResults.hasErrors()) {
-				throw new ValidationException(contribuable, validationResults);
+			// On ne traite que les éléments correspondant aux communes fusionnées
+			if (elt.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || !anciensNoOfs.contains(elt.getNumeroOfsAutoriteFiscale())) {
+				continue;
 			}
 
-			if (decisionTraite) {
-				r.tiersAvecDecisionTraites.add(id);
-			}
-			else if (decisionIgnore) {
-				r.addTiersAvecDecisionIgnoreeDejaSurCommuneResultante(contribuable);
+			// On ne traite que les éléments valides après la date de la fusion
+			if (elt.getDateFin() != null && elt.getDateFin().isBefore(dateFusion)) {
+				continue;
 			}
 
+			// On ignore les fors qui sont déjà sur la commune résultant de la fusion
+			if (elt.getNumeroOfsAutoriteFiscale() == nouveauNoOfs) {
+				dejaBonneCommune = true;
+				continue;
+			}
+
+			// le cast ici est sans danger, car par construction, la stratégie associée à la classe est du bon type (voir méthode addStrategyMapping plus haut...)
+			//noinspection unchecked
+			final Strategy<T> strat = (Strategy<T>) strategies.get(elt.getClass());
+			if (strat == null) {
+				throw new IllegalArgumentException("Type d'élément non-supporté : " + elt.getClass().getSimpleName());
+			}
+
+			strat.traite(elt, nouveauNoOfs, dateFusion);
+			traite = true;
 		}
-		catch (RuntimeException e) {
-			// on essaie de détecter les erreurs qui pourraient être dues à un tiers qui ne valide pas
-			final ValidationResults validationResults = validationService.validate(contribuable);
-			if (validationResults.hasErrors()) {
-				LOGGER.error(String.format("Exception lancée pendant le traitement du contribuable %d, qui ne valide pas", contribuable.getNumero()), e);
-				throw new ValidationException(contribuable, validationResults);
-			}
-			else {
-				throw e;
-			}
-		}
-		finally {
-			validationInterceptor.setEnabled(wasValidationInterceptorEnabled);
-		}
+
+		return traite ? FusionDeCommunesResults.ResultatTraitement.TRAITE : (dejaBonneCommune ? FusionDeCommunesResults.ResultatTraitement.DEJA_BONNE_COMMUNE : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE);
 	}
 
-
 	/**
-	 * Stratégie de traitement d'un for fiscal dans le cas d'une fusion de communes.
-	 *
-	 * @param <F> le type concret de for fiscal.
+	 * Stratégie de traitement d'un élément dans le cas d'une fusion de communes.
+	 * @param <F> le type concret d'élément.
 	 */
-	private abstract class Strategy<F extends ForFiscal> {
-		abstract void traite(F forFiscal, int nouveauNoOfs, RegDate dateFusion);
+	private abstract class Strategy<F extends LocalisationDatee> {
+		abstract void traite(F localisation, int nouveauNoOfs, RegDate dateFusion);
 	}
 
 	private class ForPrincipalPPStrategy extends Strategy<ForFiscalPrincipalPP> {
@@ -394,7 +353,7 @@ public class FusionDeCommunesProcessor {
 				final MotifFor motifFermetureExistant = secondaire.getMotifFermeture();
 				tiersService.closeForFiscalSecondaire(contribuable, secondaire, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
 				tiersService.addForSecondaire(contribuable, dateFusion, dateFinExistante, secondaire.getMotifRattachement(),
-						nouveauNoOfs, secondaire.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, motifFermetureExistant);
+				                              nouveauNoOfs, secondaire.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, motifFermetureExistant);
 			}
 		}
 	}
@@ -409,8 +368,7 @@ public class FusionDeCommunesProcessor {
 			else {
 				final Contribuable contribuable = (Contribuable) autre.getTiers();
 				tiersService.closeForFiscalAutreElementImposable(contribuable, autre, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
-				tiersService.openForFiscalAutreElementImposable(contribuable, autre.getGenreImpot(), dateFusion, autre.getMotifRattachement(), nouveauNoOfs,
-				                                                MotifFor.FUSION_COMMUNES);
+				tiersService.openForFiscalAutreElementImposable(contribuable, autre.getGenreImpot(), dateFusion, autre.getMotifRattachement(), nouveauNoOfs, MotifFor.FUSION_COMMUNES);
 			}
 		}
 	}
@@ -443,21 +401,39 @@ public class FusionDeCommunesProcessor {
 		}
 	}
 
-	protected static class MauvaiseCommuneException extends RuntimeException {
-		public MauvaiseCommuneException(String message) {
-			super(message);
+	private class DecisionAciStrategy extends Strategy<DecisionAci> {
+		@Override
+		void traite(DecisionAci decision, int nouveauNoOfs, RegDate dateFusion) {
+			if (decision.getDateDebut().isAfterOrEqual(dateFusion)) {
+				// la décision débute après la fusion -> on met simplement à jour le numéro Ofs
+				decision.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
+			}
+			else {
+				Contribuable ctb = decision.getContribuable();
+				tiersService.closeDecisionAci(decision, dateFusion.getOneDayBefore());
+				tiersService.addDecisionAci(ctb, decision.getTypeAutoriteFiscale(), nouveauNoOfs, dateFusion, null, decision.getRemarque());
+			}
 		}
 	}
 
-	void traiteDecisionAci(DecisionAci decision, int nouveauNoOfs, RegDate dateFusion) {
-		if (decision.getDateDebut().isAfterOrEqual(dateFusion)) {
-			// la décision débute après la fusion -> on met simplement à jour le numéro Ofs
-			decision.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
+	private class DomicileEtablissementStrategy extends Strategy<DomicileEtablissement> {
+		@Override
+		void traite(DomicileEtablissement domicile, int nouveauNoOfs, RegDate dateFusion) {
+			if (domicile.getDateDebut().isAfterOrEqual(dateFusion)) {
+				// la décision débute après la fusion -> on met simplement à jour le numéro Ofs
+				domicile.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
+			}
+			else {
+				final Etablissement etb = domicile.getEtablissement();
+				tiersService.closeDomicileEtablissement(domicile, dateFusion.getOneDayBefore());
+				tiersService.addDomicileEtablissement(etb, domicile.getTypeAutoriteFiscale(), nouveauNoOfs, dateFusion, null);
+			}
 		}
-		else {
-			Contribuable ctb = decision.getContribuable();
-			tiersService.closeDecisionAci(decision, dateFusion.getOneDayBefore());
-			tiersService.addDecisionAci(ctb, decision.getTypeAutoriteFiscale(), nouveauNoOfs, dateFusion, null, decision.getRemarque());
+	}
+
+	protected static class MauvaiseCommuneException extends RuntimeException {
+		public MauvaiseCommuneException(String message) {
+			super(message);
 		}
 	}
 
@@ -497,8 +473,8 @@ public class FusionDeCommunesProcessor {
 		}
 	}
 
-	final private static String queryTiers = // --------------------------------
-			"SELECT f.tiers.id                                                  "
+	private static final String queryTiersAvecFors = // --------------------------------
+			"SELECT DISTINCT f.tiers.id                                         "
 					+ "FROM                                                     "
 					+ "    ForFiscal AS f                                       "
 					+ "WHERE                                                    "
@@ -508,8 +484,8 @@ public class FusionDeCommunesProcessor {
 					+ "	   AND f.numeroOfsAutoriteFiscale IN (:nosOfs)          "
 					+ "ORDER BY f.tiers.id ASC";
 
-	final private static String queryTiersAvecDecision = // --------------------------------
-			"SELECT d.contribuable.id                                           "
+	private static final String queryTiersAvecDecision = // --------------------------------
+			"SELECT DISTINCT d.contribuable.id                                  "
 					+ "FROM                                                     "
 					+ "    DecisionAci AS d                                     "
 					+ "WHERE                                                    "
@@ -519,50 +495,47 @@ public class FusionDeCommunesProcessor {
 					+ "	   AND d.numeroOfsAutoriteFiscale IN (:nosOfs)          "
 					+ "ORDER BY d.contribuable.id ASC";
 
-	private List<Long> getListTiersTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion) {
+	private static final String queryTiersAvecDomicileEtablissement = //---------------------
+			"SELECT DISTINCT d.etablissement.id                                 "
+					+ "FROM                                                     "
+					+ "    DomicileEtablissement AS d                           "
+					+ "WHERE                                                    "
+					+ "    d.annulationDate IS NULL                             "
+					+ "    AND (d.dateFin IS NULL OR d.dateFin >= :dateFusion)  "
+					+ "	   AND d.typeAutoriteFiscale != 'PAYS_HS'               "
+					+ "    AND d.numeroOfsAutoriteFiscale IN (:nosOfs)          "
+					+ "ORDER BY d.etablissement.id ASC";
 
+	private List<Long> getListTiersTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion, final String hqlQuery) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> list = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
+				return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryTiers);
+						final Query queryObject = session.createQuery(hqlQuery);
 						queryObject.setParameter("dateFusion", dateFusion);
 						queryObject.setParameterList("nosOfs", anciensNoOfs);
 						//noinspection unchecked
 						return queryObject.list();
 					}
 				});
-
-				return list;
 			}
 		});
 	}
 
-	private List<Long> getListTiersAvecDecisionTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion) {
+	private List<Long> getListTiersAvecForToucheParFusion(Set<Integer> anciensNoOfs, RegDate dateFusion) {
+		return getListTiersTouchesParFusion(anciensNoOfs, dateFusion, queryTiersAvecFors);
+	}
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
+	private List<Long> getListTiersAvecDecisionToucheParFusion(Set<Integer> anciensNoOfs, RegDate dateFusion) {
+		return getListTiersTouchesParFusion(anciensNoOfs, dateFusion, queryTiersAvecDecision);
+	}
 
-		return template.execute(new TransactionCallback<List<Long>>() {
-			@Override
-			public List<Long> doInTransaction(TransactionStatus status) {
-				final List<Long> list = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
-					@Override
-					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final Query queryObject = session.createQuery(queryTiersAvecDecision);
-						queryObject.setParameter("dateFusion", dateFusion);
-						queryObject.setParameterList("nosOfs", anciensNoOfs);
-						return queryObject.list();
-					}
-				});
-
-				return list;
-			}
-		});
+	private List<Long> getListTiersAvecDomicileEtablissementToucheParFusion(Set<Integer> anciensNoOfs, RegDate dateFusion) {
+		return getListTiersTouchesParFusion(anciensNoOfs, dateFusion, queryTiersAvecDomicileEtablissement);
 	}
 }
