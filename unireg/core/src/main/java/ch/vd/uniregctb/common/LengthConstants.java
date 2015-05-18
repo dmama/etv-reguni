@@ -112,7 +112,6 @@ public abstract class LengthConstants {
 	public static final int REQDES_LIBELLE_ORIGINE = 50;
 
 	public static final int ETB_ENSEIGNE = 250;
-	public static final int ETB_AUTORITEFISCALE = FOR_AUTORITEFISCALE;
 
 	public final static int MAXLEN = 2000;
 

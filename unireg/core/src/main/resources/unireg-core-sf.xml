@@ -165,6 +165,8 @@
 		<value>ch.vd.uniregctb.tiers.DecisionAci</value>
 		<value>ch.vd.uniregctb.tiers.AssujettissementParSubstitution</value>
 		<value>ch.vd.uniregctb.tiers.Bouclement</value>
+		<value>ch.vd.uniregctb.tiers.LocalisationDatee</value>
+		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
 	</util:list>
 
 	<!-- La session factory -->

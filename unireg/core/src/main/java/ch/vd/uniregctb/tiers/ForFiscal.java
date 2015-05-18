@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -22,13 +24,10 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -62,26 +61,18 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @Table(name = "FOR_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "FOR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, Duplicable<ForFiscal>, BusinessComparable<ForFiscal>, LinkedEntity {
+@AttributeOverrides({
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_OUVERTURE", nullable = false)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FERMETURE")),
+		@AttributeOverride(name = "numeroOfsAutoriteFiscale", column = @Column(name = "NUMERO_OFS", nullable = false)),
+		@AttributeOverride(name = "typeAutoriteFiscale", column = @Column(name = "TYPE_AUT_FISC", nullable = false, length = LengthConstants.FOR_AUTORITEFISCALE))
+})
+public abstract class ForFiscal extends LocalisationDatee implements Comparable<ForFiscal>, Duplicable<ForFiscal>, BusinessComparable<ForFiscal>, LinkedEntity {
 
 	/**
 	 * The ID
 	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> Date de début du rattachement personnel ou économique
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8x1x9Edygsbnw9h5bVw"
-	 */
-	private RegDate dateDebut;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> Date de la fermeture du for pour un impôt donné.
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw"
-	 */
-	private RegDate dateFin;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> Indique l'impôt auquel un contribuable est soumis : - ICC/IFD (dit aussi impôt
@@ -91,36 +82,19 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 */
 	private GenreImpot genreImpot;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_iGQgMJRQEdyIw97l1zxC4Q"
-	 */
-	private TypeAutoriteFiscale typeAutoriteFiscale;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pP7yIJNfEdygKK6Oe0tVlw"
-	 */
-	private Integer numeroOfsAutoriteFiscale;
-
 	private Tiers tiers;
 
 	public ForFiscal() {
 	}
 
-	public ForFiscal(RegDate ouverture, RegDate fermeture, GenreImpot genreImpot, Integer numeroOfsAutoriteFiscale,
-			TypeAutoriteFiscale typeAutoriteFiscale) {
-		this.dateDebut = ouverture;
-		this.dateFin = fermeture;
+	public ForFiscal(RegDate ouverture, RegDate fermeture, GenreImpot genreImpot, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale) {
+		super(ouverture, fermeture, typeAutoriteFiscale, numeroOfsAutoriteFiscale);
 		this.genreImpot = genreImpot;
-		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
-		this.typeAutoriteFiscale = typeAutoriteFiscale;
 	}
 
 	public ForFiscal(ForFiscal ff) {
-		this(ff.getDateDebut(), ff.getDateFin(), ff.getGenreImpot(), ff.getNumeroOfsAutoriteFiscale(), ff.getTypeAutoriteFiscale());
+		super(ff);
+		this.genreImpot = ff.genreImpot;
 	}
 
 	@Transient
@@ -144,64 +118,6 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 */
 	public void setId(Long theId) {
 		this.id = theId;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * La date d'ouverture du for fiscal.
-	 * <!-- end-user-doc -->
-	 * @return the dateOuverture
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8x1x9Edygsbnw9h5bVw?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_OUVERTURE", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		// begin-user-code
-		return dateDebut;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * La date d'ouverture du for fiscal.
-	 * <!-- end-user-doc -->
-	 * @param date the dateOuverture to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8x1x9Edygsbnw9h5bVw?SETTER"
-	 */
-	public void setDateDebut(RegDate date) {
-		// begin-user-code
-		dateDebut = date;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * La date de fermeture du for fiscal.
-	 * <!-- end-user-doc -->
-	 * @return the dateFermeture
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_FERMETURE")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		// begin-user-code
-		return dateFin;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * La date de fermeture du for fiscal.
-	 * <!-- end-user-doc -->
-	 * @param date the dateFermeture to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8yVx9Edygsbnw9h5bVw?SETTER"
-	 */
-	public void setDateFin(@Nullable RegDate date) {
-		// begin-user-code
-		dateFin = date;
-		// end-user-code
 	}
 
 	/**
@@ -229,53 +145,6 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the numeroOfsAutoriteFiscale
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pP7yIJNfEdygKK6Oe0tVlw?GETTER"
-	 */
-	@Column(name = "NUMERO_OFS", nullable = false)
-	public Integer getNumeroOfsAutoriteFiscale() {
-		// begin-user-code
-		return numeroOfsAutoriteFiscale;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNumeroOfsAutoriteFiscale the numeroOfsAutoriteFiscale to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pP7yIJNfEdygKK6Oe0tVlw?SETTER"
-	 */
-	public void setNumeroOfsAutoriteFiscale(Integer theNumeroOfsAutoriteFiscale) {
-		// begin-user-code
-		numeroOfsAutoriteFiscale = theNumeroOfsAutoriteFiscale;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the typeAutoriteFiscaleFiscale
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_iGQgMJRQEdyIw97l1zxC4Q?GETTER"
-	 */
-	@Column(name = "TYPE_AUT_FISC", nullable = false, length = LengthConstants.FOR_AUTORITEFISCALE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAutoriteFiscaleUserType")
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		// begin-user-code
-		return typeAutoriteFiscale;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theTypeAutoriteFiscaleFiscale the typeAutoriteFiscaleFiscale to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_iGQgMJRQEdyIw97l1zxC4Q?SETTER"
-	 */
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale theTypeAutoriteFiscaleFiscale) {
-		// begin-user-code
-		typeAutoriteFiscale = theTypeAutoriteFiscaleFiscale;
-		// end-user-code
-	}
-
-	/**
 	 * Compare d'apres la date dur for
 	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
@@ -294,13 +163,6 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	@Transient
 	public boolean isDebiteur() {
 		return false;
-	}
-
-	@Override
-	public String toString() {
-		final String dateDebutStr = dateDebut != null ? RegDateHelper.dateToDisplayString(dateDebut) : "?";
-		final String dateFinStr = dateFin != null ? RegDateHelper.dateToDisplayString(dateFin) : "?";
-		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
 	}
 
 	@ManyToOne(cascade = {
@@ -322,7 +184,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 */
 	@Override
 	public boolean isValidAt(@Nullable RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date == null ? RegDate.get() : date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		return super.isValidAt(date == null ? RegDate.get() : date);
 	}
 
 	protected void dumpForDebug(int nbTabs) {
@@ -330,7 +192,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		ddump(nbTabs, "Début: "+getDateDebut());
 		ddump(nbTabs, "Fin: "+getDateFin());
 		ddump(nbTabs, "Principal: "+isPrincipal());
-		ddump(nbTabs, "Type: "+typeAutoriteFiscale+" / OFS: "+numeroOfsAutoriteFiscale);
+		ddump(nbTabs, "Type: "+getTypeAutoriteFiscale()+" / OFS: "+getNumeroOfsAutoriteFiscale());
 	}
 
 	/**
@@ -346,11 +208,11 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		if (getClass() != obj.getClass())
 			return false;
 
-		return ComparisonHelper.areEqual(dateDebut, obj.dateDebut)
-				&& ComparisonHelper.areEqual(dateFin, obj.dateFin)
+		return ComparisonHelper.areEqual(getDateDebut(), obj.getDateDebut())
+				&& ComparisonHelper.areEqual(getDateFin(), obj.getDateFin())
 				&& ComparisonHelper.areEqual(genreImpot, obj.genreImpot)
-				&& ComparisonHelper.areEqual(numeroOfsAutoriteFiscale, obj.numeroOfsAutoriteFiscale)
-				&& ComparisonHelper.areEqual(typeAutoriteFiscale, obj.typeAutoriteFiscale)
+				&& ComparisonHelper.areEqual(getNumeroOfsAutoriteFiscale(), obj.getNumeroOfsAutoriteFiscale())
+				&& ComparisonHelper.areEqual(getTypeAutoriteFiscale(), obj.getTypeAutoriteFiscale())
 				&& ComparisonHelper.areEqual(isAnnule(), obj.isAnnule());
 	}
 

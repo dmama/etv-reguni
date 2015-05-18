@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,45 +16,41 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @Entity
 @Table(name = "DECISION_ACI")
-public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRange, Duplicable<DecisionAci>, BusinessComparable<DecisionAci> {
+@AttributeOverrides({
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN")),
+		@AttributeOverride(name = "numeroOfsAutoriteFiscale", column = @Column(name = "NUMERO_OFS", nullable = false)),
+		@AttributeOverride(name = "typeAutoriteFiscale", column = @Column(name = "TYPE_AUT_FISC", nullable = false, length = LengthConstants.FOR_AUTORITEFISCALE))
+})
+public class DecisionAci extends LocalisationDatee implements LinkedEntity, Duplicable<DecisionAci>, BusinessComparable<DecisionAci> {
 
 	private Long id;
 	private Contribuable contribuable;
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private Integer numeroOfsAutoriteFiscale;
-	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private String remarque;
 
 	public DecisionAci() {
 	}
 
 	public DecisionAci(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, String remarque) {
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
-		this.typeAutoriteFiscale = typeAutoriteFiscale;
+		super(dateDebut, dateFin, typeAutoriteFiscale, numeroOfsAutoriteFiscale);
 		this.remarque = remarque;
 		this.contribuable = contribuable;
 	}
 
 	public DecisionAci(DecisionAci da) {
-		this(da.getContribuable(), da.getDateDebut(), da.getDateFin(), da.getNumeroOfsAutoriteFiscale(), da.getTypeAutoriteFiscale(), da.getRemarque());
+		super(da);
+		this.remarque = da.remarque;
+		this.contribuable = da.contribuable;
 	}
 
 	@Override
@@ -86,46 +84,7 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRa
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return  !isAnnule() && RegDateHelper.isBetween(date == null ? RegDate.get() : date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	@Column(name = "DATE_DEBUT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		return dateDebut;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	@Column(name = "DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
-	}
-
-	@Column(name = "NUMERO_OFS", nullable = false)
-	public Integer getNumeroOfsAutoriteFiscale() {
-		return numeroOfsAutoriteFiscale;
-	}
-
-	public void setNumeroOfsAutoriteFiscale(Integer numeroOfsAutoriteFiscale) {
-		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
-	}
-
-	@Column(name = "TYPE_AUT_FISC", nullable = false, length = LengthConstants.FOR_AUTORITEFISCALE)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeAutoriteFiscaleUserType")
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		return typeAutoriteFiscale;
-	}
-
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
-		this.typeAutoriteFiscale = typeAutoriteFiscale;
+		return super.isValidAt(date == null ? RegDate.get() : date);
 	}
 
 	@Column(name = "REMARQUE", length = LengthConstants.TIERS_REMARQUE)
@@ -145,7 +104,6 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRa
 
 	/**
 	 * Retourne true si la decision contient les mêmes informations que celle passée en paramètre.
-	 *
 	 */
 	public boolean equalsTo(DecisionAci obj) {
 		if (this == obj)
@@ -155,11 +113,11 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRa
 		if (getClass() != obj.getClass())
 			return false;
 
-		return ComparisonHelper.areEqual(dateDebut, obj.dateDebut)
-				&& ComparisonHelper.areEqual(dateFin, obj.dateFin)
-				&& ComparisonHelper.areEqual(numeroOfsAutoriteFiscale, obj.numeroOfsAutoriteFiscale)
-				&& ComparisonHelper.areEqual(typeAutoriteFiscale, obj.typeAutoriteFiscale)
+		return ComparisonHelper.areEqual(getDateDebut(), obj.getDateDebut())
+				&& ComparisonHelper.areEqual(getDateFin(), obj.getDateFin())
 				&& ComparisonHelper.areEqual(remarque, obj.remarque)
+				&& ComparisonHelper.areEqual(getNumeroOfsAutoriteFiscale(), obj.getNumeroOfsAutoriteFiscale())
+				&& ComparisonHelper.areEqual(getTypeAutoriteFiscale(), obj.getTypeAutoriteFiscale())
 				&& ComparisonHelper.areEqual(isAnnule(), obj.isAnnule());
 	}
 
@@ -167,14 +125,4 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRa
 	public DecisionAci duplicate() {
 		return new DecisionAci(this);
 	}
-
-
-	@Override
-	public String toString() {
-		final String dateDebutStr = dateDebut != null ? RegDateHelper.dateToDisplayString(dateDebut) : "?";
-		final String dateFinStr = dateFin != null ? RegDateHelper.dateToDisplayString(dateFin) : "?";
-		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
-	}
-
-
 }

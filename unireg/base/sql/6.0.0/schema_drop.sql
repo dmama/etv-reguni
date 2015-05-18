@@ -78,6 +78,8 @@ drop table DECISION_ACI cascade constraints;
 
 drop table BOUCLEMENT cascade constraints;
 
+drop table DOMICILE_ETABLISSEMENT cascade constraints;
+
 drop table TIERS cascade constraints;
 
 drop table MIGRATION_PM_MAPPING cascade constraints;
