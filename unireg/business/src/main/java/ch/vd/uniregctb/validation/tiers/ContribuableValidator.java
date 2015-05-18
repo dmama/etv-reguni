@@ -34,7 +34,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 	}
 
 	@NotNull
-	private static <T> List<T> neverNull(List<T> list) {
+	protected static <T> List<T> neverNull(List<T> list) {
 		return list == null ? Collections.<T>emptyList() : list;
 	}
 

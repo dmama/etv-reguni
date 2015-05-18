@@ -4687,7 +4687,7 @@ debut PF                                                                        
 		}
 		catch (ValidationException e) {
 			final String message =
-					String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
+					String.format("[E] Le for fiscal %s ne peut pas être sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
 							f, MockCommune.LeLieu.getNomOfficiel(), MockCommune.LeLieu.getNoOFS());
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}

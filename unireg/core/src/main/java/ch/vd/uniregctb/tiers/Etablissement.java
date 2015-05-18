@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.common.ComparisonHelper;
@@ -84,10 +85,14 @@ public class Etablissement extends Contribuable {
 	 * @return une liste triée chronologiquement des domiciles (si les annulés sont présents, ils sont de toute façon à la fin)
 	 */
 	@Transient
+	@NotNull
 	public List<DomicileEtablissement> getSortedDomiciles(boolean aussiAnnules) {
 		// collecte...
 		final List<DomicileEtablissement> liste;
-		if (aussiAnnules) {
+		if (domiciles == null || domiciles.isEmpty()) {
+			liste = Collections.emptyList();
+		}
+		else if (aussiAnnules) {
 			liste = new ArrayList<>(domiciles);
 		}
 		else {

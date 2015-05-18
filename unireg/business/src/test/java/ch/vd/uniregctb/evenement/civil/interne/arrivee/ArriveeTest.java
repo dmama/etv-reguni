@@ -749,8 +749,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			// -> le for est tentativement créé sur la commune de Riex (et non plus sur la commune de Bourg-en-Lavaux)
 
 			final ValidationMessage erreur = e.getErrors().get(0);
-			assertEquals("La période de validité du for fiscal ForFiscalPrincipalPP (01.09.2010 - ?) dépasse " +
-					             "la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 31.12.2010)", erreur.getMessage());
+			assertEquals("Le for fiscal ForFiscalPrincipalPP (01.09.2010 - ?) a une période de validité qui dépasse " +
+					             "la période de validité de sa commune Riex (5608) (? - 31.12.2010)", erreur.getMessage());
 		}
 	}
 

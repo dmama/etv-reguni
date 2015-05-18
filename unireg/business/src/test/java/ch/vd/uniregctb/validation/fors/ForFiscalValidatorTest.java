@@ -39,7 +39,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas", ff, commune.getNomOfficiel(), commune.getNoOFS());
+			final String expectedMsg = String.format("Le for fiscal %s ne peut pas être sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas", ff, commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -57,7 +57,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
+			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
 										ffp, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
@@ -105,7 +105,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 
 			final String debutValiditeCommune = commune.getDateDebutValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateDebutValidite());
 			final String finValiditeCommune = commune.getDateFinValidite() == null ? "?" : RegDateHelper.dateToDisplayString(commune.getDateFinValidite());
-			final String expectedMsg = String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
+			final String expectedMsg = String.format("Le for fiscal %s a une période de validité qui dépasse la période de validité de sa commune %s (%d) (%s - %s)",
 										ffp, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
@@ -129,7 +129,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS(), ffp);
+			final String expectedMsg = String.format("Le for fiscal %s montre une incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d)", ffp, ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -140,7 +140,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS(), ffp);
+			final String expectedMsg = String.format("Le for fiscal %s montre une incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d)", ffp, ffp.getTypeAutoriteFiscale(), commune.getNomOfficiel(), commune.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -156,7 +156,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le pays du for fiscal %s (%d) est inconnu dans l'infrastructure à la date de début du for", ffp, ffp.getNumeroOfsAutoriteFiscale());
+			final String expectedMsg = String.format("Le for fiscal %s est sur un pays (%d) inconnu dans l'infrastructure à sa date d'entrée en vigueur", ffp, ffp.getNumeroOfsAutoriteFiscale());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -166,7 +166,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le for %s devrait être vaudois ou hors-canton", ffp);
+			final String expectedMsg = String.format("Le for fiscal %s devrait être sur un canton (VD ou autre) suisse", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -176,7 +176,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomCourt(), MockPays.Gibraltar.getNoOFS());
+			final String expectedMsg = String.format("Le for fiscal %s est sur un pays (%s, %d) qui n'est pas un état souverain, mais un territoire", ffp, MockPays.Gibraltar.getNomCourt(), MockPays.Gibraltar.getNoOFS());
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 		{
@@ -207,7 +207,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("La date de début du for %s est dans le futur", ffp);
+			final String expectedMsg = String.format("Le for fiscal %s possède une date de début dans le futur", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}
@@ -232,7 +232,7 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(1, vr.errorsCount());
 			Assert.assertEquals(0, vr.warningsCount());
 
-			final String expectedMsg = String.format("La date de fin du for %s est dans le futur", ffp);
+			final String expectedMsg = String.format("Le for fiscal %s possède une date de fin dans le futur", ffp);
 			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
 		}
 	}

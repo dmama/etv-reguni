@@ -126,7 +126,7 @@ public class ForFiscalPrincipalPPValidatorTest extends AbstractValidatorTest<For
 			Assert.assertTrue(results.hasErrors());
 			final List<String> errors = results.getErrors();
 			assertEquals(2, errors.size());
-			assertEquals("Le for ForFiscalPrincipalPP (? - ?) possède une date de début nulle", errors.get(0));
+			assertEquals("Le for fiscal ForFiscalPrincipalPP (? - ?) possède une date de début nulle", errors.get(0));
 			assertEquals("Le motif d'ouverture est obligatoire sur le for fiscal [ForFiscalPrincipalPP (? - ?)] car il est rattaché à une commune vaudoise.", errors.get(1));
 		}
 
