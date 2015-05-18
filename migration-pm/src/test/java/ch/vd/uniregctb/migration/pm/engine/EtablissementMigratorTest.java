@@ -23,6 +23,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -32,7 +33,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
@@ -628,8 +629,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertNull(etab.getEnseigne());
-			Assert.assertNull(etab.getTypeAutoriteFiscale());
-			Assert.assertNull(etab.getNumeroOfs());
+			Assert.assertEquals(0, etab.getDomiciles().size());
 
 			return null;
 		});
@@ -687,8 +687,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("La rouge musaraigne", etab.getEnseigne());
-			Assert.assertNull(etab.getTypeAutoriteFiscale());
-			Assert.assertNull(etab.getNumeroOfs());
+			Assert.assertEquals(0, etab.getDomiciles().size());
 
 			return null;
 		});
@@ -747,8 +746,16 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("La verte mangouste", etab.getEnseigne());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, etab.getTypeAutoriteFiscale());
-			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), etab.getNumeroOfs());
+
+			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);
+			Assert.assertEquals(1, domiciles.size());
+			{
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+			}
 
 			return null;
 		});
@@ -807,8 +814,16 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("Le jaune éléphant", etab.getEnseigne());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, etab.getTypeAutoriteFiscale());
-			Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), etab.getNumeroOfs());
+
+			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);
+			Assert.assertEquals(1, domiciles.size());
+			{
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+			}
 
 			return null;
 		});
@@ -855,7 +870,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement avec plusieurs domiciles ; seul le dernier est conservé\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
@@ -868,8 +882,23 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("L'orange pie", etab.getEnseigne());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, etab.getTypeAutoriteFiscale());
-			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), etab.getNumeroOfs());
+
+			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);
+			Assert.assertEquals(2, domiciles.size());
+			{
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(RegDate.get(1998, 1, 1), domicile.getDateDebut());
+				Assert.assertEquals(RegDate.get(1999, 12, 31), domicile.getDateFin());
+			}
+			{
+				final DomicileEtablissement domicile = domiciles.get(1);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+			}
 
 			return null;
 		});

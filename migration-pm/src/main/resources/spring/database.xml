@@ -38,6 +38,7 @@
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales</value>
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
+		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
