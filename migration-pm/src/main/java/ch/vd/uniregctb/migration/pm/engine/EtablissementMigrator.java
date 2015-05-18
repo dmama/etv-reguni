@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,13 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -37,8 +40,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -251,23 +254,52 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		unireg.setPrincipal(false);
 		unireg.setNumeroEtablissement(null);        // TODO à voir avec RCEnt
 
-		// commune de l'établissement (dans la base du mainframe au 12.05.2015, aucun établissement n'a plus d'un domicile non-rectifié)
+		// domiciles de l'établissement
+		migrateDomiciles(regpm, unireg, mr);
+	}
+
+	/**
+	 * Migration des domiciles de l'établissement
+	 * @param regpm établissement RegPM
+	 * @param unireg établissement Unireg
+	 * @param mr collecteur de messages de suivi
+	 */
+	private void migrateDomiciles(RegpmEtablissement regpm, Etablissement unireg, MigrationResultProduction mr) {
+		// communes de l'établissement (dans la base du mainframe au 12.05.2015, aucun établissement n'a plus d'un domicile non-rectifié)
 		// -> en fait, il n'y a toujours qu'au plus une seule commune...
-		final List<RegpmCommune> communes = regpm.getDomicilesEtablissements().stream()
+
+		// création d'un domicile Unireg depuis un domicile RegPM
+		final Function<RegpmDomicileEtablissement, DomicileEtablissement> mapper = d -> {
+			final DomicileEtablissement domicile = new DomicileEtablissement();
+			domicile.setDateDebut(d.getDateValidite());
+
+			final RegpmCommune commune = d.getCommune();
+			domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+			domicile.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+			return domicile;
+		};
+
+		// liste des domiciles Unireg (sans dates de fin pour le moment, elles seront assignées juste après)
+		final List<DomicileEtablissement> domiciles = regpm.getDomicilesEtablissements().stream()
 				.filter(domicile -> !domicile.isRectifiee())
-				.map(RegpmDomicileEtablissement::getCommune)
+				.map(mapper)
+				.sorted(Comparator.comparing(DomicileEtablissement::getDateDebut))
 				.collect(Collectors.toList());
-		if (communes.isEmpty()) {
+
+		// TODO retrouver la date de fin de l'établissement (à partir des établissements stables ?) à mettre à la place du "null" ci-dessous
+		// assignation des dates de fin
+		RegDate dateFinCourante = null;
+		for (DomicileEtablissement domicile : CollectionsUtils.revertedOrder(domiciles)) {
+			domicile.setDateFin(dateFinCourante);
+			dateFinCourante = domicile.getDateDebut().getOneDayBefore();
+		}
+
+		// log ou ajout des domiciles dans l'établissement...
+		if (domiciles.isEmpty()) {
 			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans domicile.");
 		}
 		else {
-			if (communes.size() > 1) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, "Etablissement avec plusieurs domiciles ; seul le dernier est conservé.");
-			}
-
-			final RegpmCommune commune = communes.get(communes.size() - 1);
-			unireg.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-			unireg.setNumeroOfs(commune.getNoOfs());
+			domiciles.forEach(unireg::addDomicile);
 		}
 	}
 
