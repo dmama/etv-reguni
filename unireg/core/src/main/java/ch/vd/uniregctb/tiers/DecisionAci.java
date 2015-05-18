@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -20,6 +20,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.BusinessComparable;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -27,7 +29,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @Entity
 @Table(name = "DECISION_ACI")
-public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRange, Duplicable<DecisionAci> {
+public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRange, Duplicable<DecisionAci>, BusinessComparable<DecisionAci> {
 
 	private Long id;
 	private Contribuable contribuable;
@@ -138,48 +140,27 @@ public class DecisionAci extends HibernateEntity implements LinkedEntity, DateRa
 	@Transient
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return contribuable == null ? null : Arrays.asList(contribuable);
+		return contribuable == null ? null : Collections.singletonList(contribuable);
 	}
 
 	/**
 	 * Retourne true si la decision contient les mêmes informations que celle passée en paramètre.
 	 *
 	 */
-	public boolean equalsTo(Object obj) {
+	public boolean equalsTo(DecisionAci obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final DecisionAci other = (DecisionAci) obj;
-		if (dateDebut == null) {
-			if (other.dateDebut != null)
-				return false;
-		} else if (!dateDebut.equals(other.dateDebut))
-			return false;
-		if (dateFin == null) {
-			if (other.dateFin != null)
-				return false;
-		} else if (!dateFin.equals(other.dateFin))
-			return false;
-		if (numeroOfsAutoriteFiscale == null) {
-			if (other.numeroOfsAutoriteFiscale != null)
-				return false;
-		} else if (!numeroOfsAutoriteFiscale
-				.equals(other.numeroOfsAutoriteFiscale))
-			return false;
-		if (typeAutoriteFiscale == null) {
-			if (other.typeAutoriteFiscale != null)
-				return false;
-		} else if (typeAutoriteFiscale != other.typeAutoriteFiscale)
-			return false;
-		if (remarque == null) {
-			if (other.remarque != null)
-				return false;
-		} else if (!remarque.equals(other.remarque))
-			return false;
-		return isAnnule() == other.isAnnule();
+
+		return ComparisonHelper.areEqual(dateDebut, obj.dateDebut)
+				&& ComparisonHelper.areEqual(dateFin, obj.dateFin)
+				&& ComparisonHelper.areEqual(numeroOfsAutoriteFiscale, obj.numeroOfsAutoriteFiscale)
+				&& ComparisonHelper.areEqual(typeAutoriteFiscale, obj.typeAutoriteFiscale)
+				&& ComparisonHelper.areEqual(remarque, obj.remarque)
+				&& ComparisonHelper.areEqual(isAnnule(), obj.isAnnule());
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -41,7 +42,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity {
+public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity, BusinessComparable<RapportEntreTiers> {
 
 	/**
 	 * The ID
@@ -115,7 +116,7 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	}
 
 	/**
-	 * @param id
+	 * @param theId
 	 *            the id to set
 	 */
 	public void setId(Long theId) {

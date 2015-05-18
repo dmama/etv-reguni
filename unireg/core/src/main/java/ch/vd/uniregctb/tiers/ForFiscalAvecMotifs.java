@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -62,20 +63,19 @@ public abstract class ForFiscalAvecMotifs extends ForFiscal {
 	}
 
 	@Override
-	public boolean equalsTo(Object obj) {
-		if (!super.equalsTo(obj)) {
-			return false;
-		}
+	public boolean equalsTo(ForFiscal obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equalsTo(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
+
 		final ForFiscalAvecMotifs other = (ForFiscalAvecMotifs) obj;
-		return motifFermeture == other.motifFermeture && motifOuverture == other.motifOuverture;
+		return ComparisonHelper.areEqual(motifFermeture, other.motifFermeture)
+				&& ComparisonHelper.areEqual(motifOuverture, other.motifOuverture);
 	}
 }

@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -83,21 +84,15 @@ public abstract class ForFiscalRevenuFortune extends ForFiscalAvecMotifs {
 	 * @see ch.vd.uniregctb.tiers.ForFiscal#equalsTo(java.lang.Object)
 	 */
 	@Override
-	public boolean equalsTo(Object obj) {
-		if (!super.equalsTo(obj))
-			return false;
+	public boolean equalsTo(ForFiscal obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equalsTo(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		final ForFiscalRevenuFortune other = (ForFiscalRevenuFortune) obj;
-		if (motifRattachement == null) {
-			if (other.motifRattachement != null)
-				return false;
-		} else if (motifRattachement != other.motifRattachement)
-			return false;
-		return true;
+		return ComparisonHelper.areEqual(motifRattachement, other.motifRattachement);
 	}
 }

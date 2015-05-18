@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -65,22 +66,16 @@ public class ForFiscalPrincipalPP extends ForFiscalPrincipal {
 		 * @see ch.vd.uniregctb.tiers.ForFiscalRevenuFortune#equalsTo(java.lang.Object)
 		 */
 	@Override
-	public boolean equalsTo(Object obj) {
-		if (!super.equalsTo(obj))
-			return false;
+	public boolean equalsTo(ForFiscal obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equalsTo(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
+
 		final ForFiscalPrincipalPP other = (ForFiscalPrincipalPP) obj;
-		if (modeImposition == null) {
-			if (other.modeImposition != null)
-				return false;
-		} else if (modeImposition != other.modeImposition)
-			return false;
-		return true;
+		return ComparisonHelper.areEqual(modeImposition, other.modeImposition);
 	}
 
 	/* (non-Javadoc)
