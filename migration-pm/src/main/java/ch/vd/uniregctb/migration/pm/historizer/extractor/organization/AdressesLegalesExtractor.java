@@ -13,7 +13,6 @@ import ch.vd.uniregctb.migration.pm.historizer.extractor.Extractor;
 
 public class AdressesLegalesExtractor implements Extractor<Organisation, Stream<Keyed<BigInteger, Address>>> {
 
-	@Nullable
 	@Override
 	public Stream<Keyed<BigInteger, Address>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()

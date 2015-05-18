@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.RegDateHelper;
 
 public class SingleValueDateRanges<T> {
 	private List<DateRanged<T>> values;
 
 	public SingleValueDateRanges(List<DateRanged<T>> values) {
-		this.values = new ArrayList<DateRanged<T>>(values.stream().sorted(DateRangeComparator::compareRanges).collect(Collectors.toList()));
+		this.values = new ArrayList<>(values.stream().sorted(DateRangeComparator::compareRanges).collect(Collectors.toList()));
 		ensureConsecutive();
 	}
 
@@ -20,7 +21,12 @@ public class SingleValueDateRanges<T> {
 		consecutive = true;
 		if (!consecutive) {
 			StringBuilder errorMessage = new StringBuilder("Ranges overlap in given list of date ranges:\n");
-			values.stream().map(val -> String.format("%s -> %s", val.getDateDebut().toString(), val.getDateFin())).forEach(errorMessage::append);
+			values.stream().map(
+					val -> String.format("%s -> %s",
+					                     RegDateHelper.dateToDisplayString(val.getDateDebut()),
+					                     RegDateHelper.dateToDisplayString(val.getDateFin())))
+					.forEach(errorMessage::append);
+
 			throw new RuntimeException(errorMessage.toString());
 		}
 	}
