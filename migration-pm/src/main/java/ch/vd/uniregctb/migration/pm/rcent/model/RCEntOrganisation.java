@@ -1,13 +1,8 @@
 package ch.vd.uniregctb.migration.pm.rcent.model;
 
-import java.util.List;
-
-import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
-import ch.vd.uniregctb.migration.pm.historizer.container.MultipleValuesDateRanges;
+import ch.vd.uniregctb.migration.pm.historizer.container.ValuesDateRanges;
 import ch.vd.uniregctb.migration.pm.historizer.container.SingleValueDateRanges;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.Etablissement;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementPrincipal;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementSecondaire;
 
 public class RCEntOrganisation {
 
@@ -30,7 +25,7 @@ public class RCEntOrganisation {
     /**
      * Etablissements secondaires
      */
-    private MultipleValuesDateRanges<Etablissement> etab;
+    private ValuesDateRanges<Etablissement> etab;
 
 
 

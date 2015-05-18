@@ -7,27 +7,52 @@ import java.util.stream.Collectors;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDateHelper;
 
-public class SingleValueDateRanges<T> {
-	private List<DateRanged<T>> values;
+/**
+ * Repésente une valeur simple journalisée au moyen d'une liste de période de temps.
+ *
+ * Les périodes de temps ne se chevauchent pas et une seule valeur existe à un temps t.
+ *
+ * @param <T> La liste de période de temps et les valeurs associées.
+ */
+public class SingleValueDateRanges<T> extends ValuesDateRanges<T> {
+	private List<DateRanged<T>> values = new ArrayList<>();
 
 	public SingleValueDateRanges(List<DateRanged<T>> values) {
-		this.values = new ArrayList<>(values.stream().sorted(DateRangeComparator::compareRanges).collect(Collectors.toList()));
-		ensureConsecutive();
+		super(values);
+		values.stream().sorted(DateRangeComparator::compareRanges).collect(Collectors.toList()).forEach(this::addNext);
 	}
 
-	private void ensureConsecutive() {
-		boolean consecutive = false;
-		// Todo: implement check
-		consecutive = true;
-		if (!consecutive) {
-			StringBuilder errorMessage = new StringBuilder("Ranges overlap in given list of date ranges:\n");
-			values.stream().map(
-					val -> String.format("%s -> %s",
-					                     RegDateHelper.dateToDisplayString(val.getDateDebut()),
-					                     RegDateHelper.dateToDisplayString(val.getDateFin())))
-					.forEach(errorMessage::append);
+	private void addNext(DateRanged<T> value) {
+		checkOverlap(value);
+		values.add(value);
+	}
 
-			throw new RuntimeException(errorMessage.toString());
+	private void checkOverlap(DateRanged<T> value) {
+		if (values.size() > 0) {
+			DateRanged<T> previous = values.get(values.size() - 1);
+			if (previous.getDateFin() != null) {
+				if (previous.getDateFin().compareTo(value.getDateDebut()) >= 0) {
+					errorOverlap(value, previous);
+				}
+			} else {
+				errorOverlap(value, previous);
+			}
 		}
+	}
+
+	private void errorOverlap(DateRanged<T> newValue, DateRanged<T> previousValue) {
+		StringBuilder errorMessage =
+				new StringBuilder("-----------------------------------------------------\nEssai d'ajouter une période chevauchant la précédente:\n");
+		errorMessage.append(String.format("<<           %s -> %s :\n%s\n",
+		                                  RegDateHelper.dateToDisplayString(previousValue.getDateDebut()),
+		                                  RegDateHelper.dateToDisplayString(previousValue.getDateFin()),
+		                                  previousValue.getPayload()));
+		errorMessage.append("-----------------------------------------------------\n");
+		errorMessage.append(String.format(">>  CONFLIT: %s -> %s :\n%s\n",
+		                                  RegDateHelper.dateToDisplayString(newValue.getDateDebut()),
+		                                  RegDateHelper.dateToDisplayString(newValue.getDateFin()),
+		                                  newValue.getPayload()));
+		errorMessage.append("-----------------------------------------------------\n");
+		throw new RuntimeException(errorMessage.toString());
 	}
 }

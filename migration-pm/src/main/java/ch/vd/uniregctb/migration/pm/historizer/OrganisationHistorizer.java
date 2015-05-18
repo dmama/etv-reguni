@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,14 +17,13 @@ import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.equalator.AdresseEqualator;
-import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
-import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
-import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.AdresseEqualator;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.EtablissementEqualator;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.Extractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesLegalesExtractor;
@@ -38,11 +38,11 @@ public class OrganisationHistorizer {
 	private static final Equalator<Etablissement> ETABLISSEMENT_EQUALATOR = new EtablissementEqualator();
 	private static final Equalator<Address> ADDRESS_EQUALATOR = new AdresseEqualator();
 
-	private static final Extractor<Organisation, EtablissementPrincipal> ETABLISSEMENT_PRINCIPAL_EXTRACTOR = new EtablissementPrincipalExtractor();
-	private static final Extractor<Organisation, Stream<? extends EtablissementSecondaire>> ETABLISSEMENTS_SECONDAIRES_EXTRACTOR = new EtablissementsSecondairesExtractor();
-	private static final Extractor<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_LEGALES_EXTRACTOR = new AdressesLegalesExtractor();
-	private static final Extractor<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_EFFECTIVES_EXTRACTOR = new AdressesEffectivesIdeExtractor();
-	private static final Extractor<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_CASE_POSTALE_IDE_EXTRACTOR = new AdressesCasePostaleIdeExtractor();
+	private static final Function<Organisation, EtablissementPrincipal> ETABLISSEMENT_PRINCIPAL_EXTRACTOR = new EtablissementPrincipalExtractor();
+	private static final Function<Organisation, Stream<? extends EtablissementSecondaire>> ETABLISSEMENTS_SECONDAIRES_EXTRACTOR = new EtablissementsSecondairesExtractor();
+	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_LEGALES_EXTRACTOR = new AdressesLegalesExtractor();
+	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_EFFECTIVES_EXTRACTOR = new AdressesEffectivesIdeExtractor();
+	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_CASE_POSTALE_IDE_EXTRACTOR = new AdressesCasePostaleIdeExtractor();
 
 	public Object mapOrganisation(List<OrganisationSnapshot> snapshots) {
 

@@ -7,7 +7,7 @@ import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.SwissMunicipality;
 import ch.vd.evd0022.v1.UidRegisterData;
 import ch.vd.evd0022.v1.VatRegisterData;
-import ch.vd.uniregctb.migration.pm.historizer.container.MultipleValuesDateRanges;
+import ch.vd.uniregctb.migration.pm.historizer.container.ValuesDateRanges;
 import ch.vd.uniregctb.migration.pm.historizer.container.SingleValueDateRanges;
 
 public class RCEntLocation {
@@ -16,9 +16,9 @@ public class RCEntLocation {
      * Identifiant cantonal - "Clé primaire"
      */
     private Long cantonalId;
-    private MultipleValuesDateRanges<Identifier> identifier;
+    private ValuesDateRanges<Identifier> identifier;
     private SingleValueDateRanges<String> name;
-    private MultipleValuesDateRanges<String> otherName;
+    private ValuesDateRanges<String> otherName;
     private SingleValueDateRanges<KindOfLocation> kindOfLocation;
     private SingleValueDateRanges<SwissMunicipality> headoffice;
     private RCEntCommercialRegisterData commercialRegisterData;
