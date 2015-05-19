@@ -151,7 +151,8 @@ public class JspTagInteroperabilite extends BodyTagSupport implements MessageSou
 			apps.add(ApplicationFiscale.TAO_BA);
 		}
 		if (showTAOIS) {
-			apps.add(ApplicationFiscale.TAO_IS);
+			ApplicationFiscale lienTAOIS = natureTiers == NatureTiers.DebiteurPrestationImposable? ApplicationFiscale.TAO_IS_DEBITEUR:ApplicationFiscale.TAO_IS;
+			apps.add(lienTAOIS);
 		}
 		if (showSIPF) {
 			apps.add(ApplicationFiscale.SIPF);

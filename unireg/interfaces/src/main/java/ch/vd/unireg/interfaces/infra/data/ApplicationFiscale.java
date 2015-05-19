@@ -7,6 +7,7 @@ public enum ApplicationFiscale {
 	TAO_PP("label.TAOPP"),
 	TAO_BA("label.TAOBA"),
 	TAO_IS("label.TAOIS"),
+	TAO_IS_DEBITEUR("label.TAOIS"),
 	SIPF("label.SIPF"),
 	DPERM("label.DPERM");
 
