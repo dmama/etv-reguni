@@ -55,7 +55,7 @@ public class SingleValueDateRangeTest {
 		assertThat(svdr, notNullValue());
 	}
 
-	@Test()
+	@Test
 	public void testCreateWithMisplacedOpenEndedRange() {
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("Essai d'ajouter une période chevauchant la précédente");

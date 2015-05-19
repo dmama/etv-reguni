@@ -9,12 +9,12 @@ import java.util.List;
  *
  * @param <T>
  */
-public class MultipleValuesDateRangesImpl<T> extends ValuesDateRanges<T> {
+public class MultipleValuesDateRanges<T> extends ValuesDateRanges<T> {
 
 	/**
 	 * @param values La liste de période de temps et les valeurs associées.
 	 */
-	public MultipleValuesDateRangesImpl(List<DateRanged<T>> values) {
+	public MultipleValuesDateRanges(List<DateRanged<T>> values) {
 		super(values);
 	}
 }

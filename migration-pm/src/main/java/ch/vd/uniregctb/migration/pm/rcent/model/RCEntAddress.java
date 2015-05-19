@@ -3,7 +3,7 @@ package ch.vd.uniregctb.migration.pm.rcent.model;
 import ch.vd.evd0021.v1.Address;
 import ch.vd.registre.base.date.RegDate;
 
-public class RCEntAddress extends RCEntAbstractHistoryElement {
+public class RCEntAddress extends RCEntHistoryElement {
 
 	private Address address;
 

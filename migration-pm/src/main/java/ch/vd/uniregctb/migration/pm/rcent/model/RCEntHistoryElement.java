@@ -5,11 +5,11 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
-public class RCEntAbstractHistoryElement implements DateRange {
+public abstract class RCEntHistoryElement implements DateRange {
 	final private RegDate beginDate;
 	final private RegDate endDateDate;
 
-	public RCEntAbstractHistoryElement(RegDate beginDate, RegDate endDateDate) {
+	public RCEntHistoryElement(RegDate beginDate, RegDate endDateDate) {
 		this.beginDate = beginDate;
 		this.endDateDate = endDateDate;
 	}
