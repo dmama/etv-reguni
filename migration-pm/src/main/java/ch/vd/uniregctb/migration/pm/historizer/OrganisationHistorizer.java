@@ -13,7 +13,6 @@ import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
@@ -48,7 +47,7 @@ public class OrganisationHistorizer {
 
 		// d'abord, on transforme cette liste en map de snapshots indexés par date
 		final Map<RegDate, Organisation> organisationMap = snapshots.stream()
-				.collect(Collectors.toMap(os -> XmlUtils.xmlcal2regdate(os.getBeginValidityDate()),
+				.collect(Collectors.toMap(os -> os.getBeginValidityDate(),
 				                          OrganisationSnapshot::getOrganisation));
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
