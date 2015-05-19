@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,7 +32,7 @@ public class SingleValueDateRangeTest {
 		assertThat(svdr, notNullValue());
 	}
 
-	@Test()
+	@Test
 	public void testCreateWithOpenEndedLastRange() {
 		List<DateRanged<String>> values = new ArrayList<>(Arrays.asList(
 				new DateRanged<>(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 2), payload),
@@ -44,7 +43,7 @@ public class SingleValueDateRangeTest {
 		assertThat(svdr, notNullValue());
 	}
 
-	@Test()
+	@Test
 	public void testCreateWithOverlappingValues() {
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("Essai d'ajouter une période chevauchant la précédente");
@@ -53,7 +52,7 @@ public class SingleValueDateRangeTest {
 				new DateRanged<>(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 4), payload)
 		));
 		SingleValueDateRanges<String> svdr = new SingleValueDateRanges<>(values);
-		assertThat(svdr, notNullValue());;
+		assertThat(svdr, notNullValue());
 	}
 
 	@Test()

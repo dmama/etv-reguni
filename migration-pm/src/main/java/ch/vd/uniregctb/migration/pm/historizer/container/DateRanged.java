@@ -5,9 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-
-import static ch.vd.registre.base.date.RegDateHelper.dateToDisplayString;
-import static ch.vd.registre.base.date.RegDateHelper.isBetween;
+import ch.vd.registre.base.date.RegDateHelper;
 
 /**
  * Container de données historisées, i.e. avec des plages de validité
@@ -27,16 +25,12 @@ public class DateRanged<T> implements DateRange {
 	}
 
 	private void ensureValidRange(RegDate dateDebut, RegDate dateFin) {
-		if (dateFin != null && dateDebut.isAfterOrEqual(dateFin)) {
-			errorInvalid(dateDebut, dateFin);
+		if (dateFin != null && dateDebut.isAfter(dateFin)) {
+			throw new IllegalArgumentException (
+					String.format("Tentative de créer une période dont le début [%s] commence après ou en même temps que la fin [%s].",
+					              RegDateHelper.dateToDisplayString(dateDebut),
+					              RegDateHelper.dateToDisplayString(dateFin)));
 		}
-	}
-
-	private void errorInvalid(RegDate dateDebut, RegDate dateFin) {
-		throw new RuntimeException(
-				String.format("Tentative de créer une période dont le début [%s] commence après ou en même temps que la fin [%s].",
-				              dateToDisplayString(dateDebut),
-				              dateToDisplayString(dateFin)));
 	}
 
 	@NotNull
@@ -56,7 +50,7 @@ public class DateRanged<T> implements DateRange {
 
 	@Override
 	public boolean isValidAt(RegDate date) {
-		return isBetween(date, this.dateDebut, this.dateFin, NullDateBehavior.LATEST);
+		return RegDateHelper.isBetween(date, this.dateDebut, this.dateFin, NullDateBehavior.LATEST);
 	}
 
 	/**

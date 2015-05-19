@@ -9,10 +9,14 @@ import java.util.List;
  *
  * @param <T>
  */
-public class ValuesDateRanges<T> {
-	private List<DateRanged<T>> values;
+public abstract class ValuesDateRanges<T> {
+	final private List<DateRanged<T>> values;
 
 	public ValuesDateRanges(List<DateRanged<T>> values) {
 		this.values = values;
+	}
+
+	protected List<DateRanged<T>> getValues() {
+		return this.values;
 	}
 }

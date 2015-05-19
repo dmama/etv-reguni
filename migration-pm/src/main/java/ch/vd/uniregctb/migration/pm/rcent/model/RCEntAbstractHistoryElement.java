@@ -21,11 +21,11 @@ public class RCEntAbstractHistoryElement implements DateRange {
 
 	@Override
 	public RegDate getDateDebut() {
-		return null;
+		return beginDate;
 	}
 
 	@Override
 	public RegDate getDateFin() {
-		return null;
+		return endDateDate;
 	}
 }

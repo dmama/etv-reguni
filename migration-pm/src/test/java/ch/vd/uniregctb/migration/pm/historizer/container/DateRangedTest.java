@@ -47,20 +47,20 @@ public class DateRangedTest {
 
 	@Test
 	public void isValidAt() {
-		assertThat(dateranged.isValidAt(dateBefore), notNullValue());
-		assertThat(dateranged.isValidAt(dateBegin), notNullValue());
-		assertThat(dateranged.isValidAt(dateInside), notNullValue());
-		assertThat(dateranged.isValidAt(dateEnd), notNullValue());
-		assertThat(dateranged.isValidAt(dateAfter), notNullValue());
+		assertThat(dateranged.isValidAt(dateBefore), is(false));
+		assertThat(dateranged.isValidAt(dateBegin), is(true));
+		assertThat(dateranged.isValidAt(dateInside), is(true));
+		assertThat(dateranged.isValidAt(dateEnd), is(true));
+		assertThat(dateranged.isValidAt(dateAfter), is(false));
 
 		/*
 			Testing derived range
 		 */
-		assertThat(newDateranged.isValidAt(dateBefore), notNullValue());
-		assertThat(newDateranged.isValidAt(dateBegin), notNullValue());
-		assertThat(newDateranged.isValidAt(dateInside), notNullValue());
-		assertThat(newDateranged.isValidAt(newDateEnd), notNullValue());
-		assertThat(newDateranged.isValidAt(dateAfter), notNullValue());
+		assertThat(newDateranged.isValidAt(dateBefore), is(false));
+		assertThat(newDateranged.isValidAt(dateBegin), is(true));
+		assertThat(newDateranged.isValidAt(dateInside), is(true));
+		assertThat(newDateranged.isValidAt(newDateEnd), is(true));
+		assertThat(newDateranged.isValidAt(dateAfter), is(false));
 	}
 
 	@Test
@@ -87,5 +87,14 @@ public class DateRangedTest {
 		DateRanged<String> range = new DateRanged<>(RegDateHelper.get(2015, 5, 20), null, payload);
 		assertThat(range, notNullValue());
 		assertThat(range.isValidAt(RegDateHelper.get(2044, 6, 6)), is(true));
+	}
+
+	@Test
+	public void canCreateSingleDayRange() {
+		DateRanged<String> range = new DateRanged<>(RegDateHelper.get(2015, 5, 20), RegDateHelper.get(2015, 5, 20), payload);
+		assertThat(range, notNullValue());
+		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 19)), is(false));
+		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 20)), is(true));
+		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 21)), is(false));
 	}
 }

@@ -2,14 +2,11 @@ package ch.vd.uniregctb.migration.pm.historizer.extractor.organization;
 
 import java.util.function.Function;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.Organisation;
 
 public class EtablissementPrincipalExtractor implements Function<Organisation, EtablissementPrincipal> {
 
-	@Nullable
 	@Override
 	public EtablissementPrincipal apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
