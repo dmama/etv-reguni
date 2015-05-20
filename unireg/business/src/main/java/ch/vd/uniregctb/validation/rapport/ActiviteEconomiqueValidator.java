@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.validation.rapport;
 
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 

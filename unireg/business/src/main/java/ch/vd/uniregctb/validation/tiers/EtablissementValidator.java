@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -11,6 +14,8 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class EtablissementValidator extends ContribuableValidator<Etablissement> {
 
@@ -19,6 +24,7 @@ public class EtablissementValidator extends ContribuableValidator<Etablissement>
 		final ValidationResults vr = super.validate(etb);
 		if (!etb.isAnnule()) {
 			vr.merge(validateDomiciles(etb));
+			vr.merge(validateLiensActiviteEconomique(etb));
 		}
 		return vr;
 	}
@@ -60,6 +66,49 @@ public class EtablissementValidator extends ContribuableValidator<Etablissement>
 			final DomicileEtablissement next = snapshot.getNext();
 			if (current != null && next != null && DateRangeHelper.intersect(current, next)) {
 				results.addError(String.format("Le domicile qui commence le %s chevauche le précédent", RegDateHelper.dateToDisplayString(next.getDateDebut())));
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Valide que, à tout moment, il n'y a au plus qu'une seule entité parente (au travers des liens d'activité économique)
+	 * @param etb établissement à tester
+	 * @return les résultats de la validation
+	 */
+	protected ValidationResults validateLiensActiviteEconomique(Etablissement etb) {
+		final ValidationResults results = new ValidationResults();
+
+		// collecte des rapports, calcul des intersections à la fin
+		final Set<RapportEntreTiers> rapports = etb.getRapportsObjet();
+		if (rapports != null && !rapports.isEmpty()) {
+			final List<RapportEntreTiers> activitesEconomiques = new ArrayList<>(rapports.size());
+
+			// collecte des liens d'activité économique non-annulés
+			for (RapportEntreTiers ret : rapports) {
+				if (ret.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && !ret.isAnnule()) {
+					activitesEconomiques.add(ret);
+				}
+			}
+
+			// pas la peine de s'embêter plus loin s'il y a moins de deux rapports d'activité économique non-annulés
+			if (activitesEconomiques.size() > 1) {
+				// tri
+				Collections.sort(activitesEconomiques, new DateRangeComparator<RapportEntreTiers>());
+
+				// calcul des intersections (deux à deux suffit, puisque la collection est triée)
+				final MovingWindow<RapportEntreTiers> wnd = new MovingWindow<>(activitesEconomiques);
+				while (wnd.hasNext()) {
+					final MovingWindow.Snapshot<RapportEntreTiers> snap = wnd.next();
+					final RapportEntreTiers current = snap.getCurrent();
+					final RapportEntreTiers next = snap.getNext();
+					if (current != null && next != null && DateRangeHelper.intersect(current, next)) {
+						results.addError(String.format("Le lien d'activité économique qui commence le %s chevauche le précédent (%s)",
+						                               RegDateHelper.dateToDisplayString(next.getDateDebut()),
+						                               DateRangeHelper.toDisplayString(current)));
+					}
+				}
 			}
 		}
 

@@ -69,6 +69,7 @@ import ch.vd.uniregctb.rf.PartPropriete;
 import ch.vd.uniregctb.rf.Proprietaire;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -940,6 +941,22 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport = merge(rapport);
 		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
+		return rapport;
+	}
+
+	protected ActiviteEconomique addActiviteEconomique(PersonnePhysique pp, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin) {
+		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, pp, etb);
+		rapport = merge(rapport);
+		pp.addRapportSujet(rapport);
+		etb.addRapportObjet(rapport);
+		return rapport;
+	}
+
+	protected ActiviteEconomique addActiviteEconomique(Entreprise entreprise, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin) {
+		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, entreprise, etb);
+		rapport = merge(rapport);
+		entreprise.addRapportSujet(rapport);
+		etb.addRapportObjet(rapport);
 		return rapport;
 	}
 
