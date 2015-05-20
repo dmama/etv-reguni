@@ -1,56 +1,37 @@
 package ch.vd.uniregctb.migration.pm.regpm;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-
-import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
-
-@Entity
-@Table(name = "TY_REGIME_FISCAL")
-@TypeDefs({
-		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class)
-})
-public class RegpmTypeRegimeFiscal extends RegpmEntity {
-
-	private String code;
-	private String libelleLong;
-	private String libelleCourt;
-
-	@Id
-	@Column(name = "CODE")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "5"))
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	@Column(name = "LIBELLE")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "50"))
-	public String getLibelleLong() {
-		return libelleLong;
-	}
-
-	public void setLibelleLong(String libelleLong) {
-		this.libelleLong = libelleLong;
-	}
-
-	@Column(name = "LIB_ABREGE")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "15"))
-	public String getLibelleCourt() {
-		return libelleCourt;
-	}
-
-	public void setLibelleCourt(String libelleCourt) {
-		this.libelleCourt = libelleCourt;
-	}
+public enum RegpmTypeRegimeFiscal {
+	_01_ORDINAIRE,
+	_109_PM_AVEC_EXONERATION_ART_90G,
+	_11_PARTICIPATIONS_HOLDING,
+	_12_PARTICIPATIONS_PART_IMPOSABLE,
+	_190_PM_AVEC_EXONERATION_ART_90CEFH,
+	_20_SOCIETE_DE_SERVICES,
+	_31_SOCIETE_ORDINAIRE,
+	_32_SOCIETE_ORDINAIRE_SUBVENTION,
+	_33_SOCIETE_ORDINAIRE_CARACTERE_SOCIAL,
+	_35_SOCIETE_ORDINAIRE_SIAL,
+	_40_SOCIETE_DE_BASE,
+	_41_ORDINAIRE_ICC_BASE_MIXTE,
+	_41C_SOCIETE_DE_BASE_MIXTE,
+	_42_ORDINAIRE_ICC_BASE_DOMICILE,
+	_42C_SOCIETE_DE_DOMICILE,
+	_50_PLACEMENT_COLLECTIF_IMMEUBLE,
+	_60_TRANSPORTS_CONCESSIONNES,
+	_609_TRANSPORTS_CONCESSIONNES_EXONERES,
+	_70_ORDINAIRE_ASSOCIATION_FONDATION,
+	_701_APM_IMPORTANTES,
+	_7020_SERVICES_ASSOCIATION_FONDATION,
+	_7032_APM_SI_SUBVENTIONNEE,
+	_709_PURE_UTILITE_PUBLIQUE,
+	_71_FONDATION_ECCLESIASTIQUE,
+	_715_FONDATION_ECCLESIASTIQUE_ART_90D,
+	_719_BUTS_CULTUELS_ART_90H,
+	_72_FONDATION_PREVOYANCE,
+	_729_INSTITUTIONS_DE_PREVOYANCE_ART_90I,
+	_739_CAISSES_ASSURANCES_SOCIALES_ART_90F,
+	_749_CONFEDERATION_ETAT_ETRANGER_ART_90AI,
+	_759_CANTON_ETABLISSEMENT_ART_90B,
+	_769_COMMUNE_ETABLISSEMENT_ART_90C,
+	_779_PLACEMENT_COLLECTIF_EXONERE_ART_90J
 }

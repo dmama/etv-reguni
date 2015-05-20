@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 
@@ -17,11 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeRegimeFiscalUserType;
 
 @Entity
 @Table(name = "REGIME_FISCAL_VD")
 @TypeDefs({
-		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class)
+		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
+		@TypeDef(name = "TypeRegimeFiscal", typeClass = TypeRegimeFiscalUserType.class)
 })
 public class RegpmRegimeFiscalVD extends RegpmEntity implements Comparable<RegpmRegimeFiscalVD> {
 
@@ -129,8 +129,8 @@ public class RegpmRegimeFiscalVD extends RegpmEntity implements Comparable<Regpm
 		this.dateAnnulation = dateAnnulation;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "FK_TYREGFISCO")
+	@Column(name = "FK_TYREGFISCO")
+	@Type(type = "TypeRegimeFiscal")
 	public RegpmTypeRegimeFiscal getType() {
 		return type;
 	}
