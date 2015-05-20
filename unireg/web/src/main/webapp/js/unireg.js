@@ -2738,7 +2738,8 @@ var Search = {
 						}
 						if ((!e.debiteurInactif || isPP) && e.tiersType != 'entreprise') {
 							table += '<option value="' + App.curl('/redirect/TAO_BA.do?id=' + e.numero) + '">TAO-BA</option>';
-							table += '<option value="' + App.curl('/redirect/TAO_IS.do?id=' + e.numero) + '">TAO-IS</option>';
+							var urlTaoIs = e.tiersType==='debiteurprestationimposable' ? '/redirect/TAO_IS_DEBITEUR.do?id=':'/redirect/TAO_IS.do?id=';
+							table += '<option value="' + App.curl(urlTaoIs + e.numero) + '">TAO-IS</option>';
 						}
 						table += '<option value="' + App.curl('/redirect/SIPF.do?id=' + e.numero) + '">SIPF</option>';
 						if (isPP) {
