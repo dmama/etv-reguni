@@ -111,7 +111,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			return String.format("Etablissement %d de l'entreprise %d", entity.getId(), entity.getEntreprise().getId());
 		}
 		if (entity.getIndividu() != null) {
-			return String.format("Etablissement %d de l'entreprise %d", entity.getId(), entity.getIndividu().getId());
+			return String.format("Etablissement %d de l'individu %d", entity.getId(), entity.getIndividu().getId());
 		}
 		return String.format("Etablissement %d", entity.getId());
 	}
