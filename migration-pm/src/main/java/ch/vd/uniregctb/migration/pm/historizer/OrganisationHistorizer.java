@@ -46,20 +46,36 @@ public class OrganisationHistorizer {
 	public Object mapOrganisation(List<OrganisationSnapshot> snapshots) {
 
 		// d'abord, on transforme cette liste en map de snapshots indexés par date
-		final Map<RegDate, Organisation> organisationMap = snapshots.stream()
-				.collect(Collectors.toMap(os -> os.getBeginValidityDate(),
-				                          OrganisationSnapshot::getOrganisation));
+		final Map<RegDate, Organisation> organisationMap = snapshots.stream().collect(Collectors.toMap(OrganisationSnapshot::getBeginValidityDate,
+		                                                                                               OrganisationSnapshot::getOrganisation)
+		);
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
-		final LinearDataCollector<Organisation, LegalForm> legalFromCollector = new SimpleDataCollector<>(Organisation::getLegalForm, Equalator.DEFAULT);
-		final LinearDataCollector<Organisation, EtablissementPrincipal> etablissementPrincipalCollector = new SimpleDataCollector<>(ETABLISSEMENT_PRINCIPAL_EXTRACTOR, ETABLISSEMENT_EQUALATOR);
-		final LinearDataCollector<Organisation, EtablissementSecondaire> etablissementsSecondairesCollector = new FlattenDataCollector<>(ETABLISSEMENTS_SECONDAIRES_EXTRACTOR, ETABLISSEMENT_EQUALATOR, EtablissementSecondaire::getId);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_LEGALES_EXTRACTOR, ADDRESS_EQUALATOR, Keyed::getKey);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_EFFECTIVES_EXTRACTOR, ADDRESS_EQUALATOR, Keyed::getKey);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_CASE_POSTALE_IDE_EXTRACTOR, ADDRESS_EQUALATOR, Keyed::getKey);
+		final LinearDataCollector<Organisation, LegalForm> legalFormCollector = new SimpleDataCollector<>(Organisation::getLegalForm,
+		                                                                                                  Equalator.DEFAULT
+		);
+		final LinearDataCollector<Organisation, EtablissementPrincipal> etablissementPrincipalCollector = new SimpleDataCollector<>(ETABLISSEMENT_PRINCIPAL_EXTRACTOR,
+		                                                                                                                            ETABLISSEMENT_EQUALATOR
+		);
+		final LinearDataCollector<Organisation, EtablissementSecondaire> etablissementsSecondairesCollector = new FlattenDataCollector<>(ETABLISSEMENTS_SECONDAIRES_EXTRACTOR,
+		                                                                                                                                 ETABLISSEMENT_EQUALATOR,
+		                                                                                                                                 EtablissementSecondaire::getId
+		);
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_LEGALES_EXTRACTOR,
+		                                                                                                                                    ADDRESS_EQUALATOR,
+		                                                                                                                                    Keyed::getKey
+		);
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_EFFECTIVES_EXTRACTOR,
+		                                                                                                                                     ADDRESS_EQUALATOR,
+		                                                                                                                                     Keyed::getKey
+		);
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_CASE_POSTALE_IDE_EXTRACTOR,
+		                                                                                                                                                ADDRESS_EQUALATOR,
+		                                                                                                                                                Keyed::getKey
+		);
 
 		// on collecte les plages de dates dans les collectors
-		Historizer.historize(organisationMap, Arrays.asList(legalFromCollector,
+	Historizer.historize(organisationMap, Arrays.asList(legalFormCollector,
 		                                                    etablissementPrincipalCollector,
 		                                                    etablissementsSecondairesCollector,
 		                                                    adressesRcEtablissementsCollector,
@@ -67,7 +83,7 @@ public class OrganisationHistorizer {
 		                                                    adressesIdeCasePostaleEtablissementsCollector));
 
 		// récupération des plages de valeurs
-		final List<DateRanged<LegalForm>> formesJuridiques = legalFromCollector.getCollectedData();
+		final List<DateRanged<LegalForm>> formesJuridiques = legalFormCollector.getCollectedData();
 		final List<DateRanged<EtablissementPrincipal>> prnEtablissements = etablissementPrincipalCollector.getCollectedData();
 		final List<DateRanged<EtablissementSecondaire>> secEtablissements = etablissementsSecondairesCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<Address>>> adressesRc = adressesRcEtablissementsCollector.getCollectedData();
@@ -76,6 +92,7 @@ public class OrganisationHistorizer {
 
 		// et finalement on construit un objet à renvoyer à l'appelant
 		// TODO construire l'objet à renvoyer
+
 		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent.model;
+package ch.vd.uniregctb.migration.pm.rcent.model.history;
 
 import java.util.Collection;
 import java.util.Iterator;

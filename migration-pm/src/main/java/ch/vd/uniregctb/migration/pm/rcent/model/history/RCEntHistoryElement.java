@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent.model;
+package ch.vd.uniregctb.migration.pm.rcent.model.history;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;

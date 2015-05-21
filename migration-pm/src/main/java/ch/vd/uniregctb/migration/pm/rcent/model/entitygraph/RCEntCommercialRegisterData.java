@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent.model;
+package ch.vd.uniregctb.migration.pm.rcent.model.entitygraph;
 
 import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Capital;
@@ -8,6 +8,7 @@ import ch.vd.evd0022.v1.CommercialRegisterNameTranslation;
 import ch.vd.evd0022.v1.CommercialRegisterStatus;
 import ch.vd.evd0022.v1.Topic;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.migration.pm.rcent.model.history.RCEntHistoryElement;
 
 public class RCEntCommercialRegisterData extends RCEntHistoryElement {
 

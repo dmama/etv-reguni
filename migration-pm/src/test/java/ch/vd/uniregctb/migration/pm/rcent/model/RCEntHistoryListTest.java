@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.migration.pm.rcent.model.history.RCEntHistoryElement;
+import ch.vd.uniregctb.migration.pm.rcent.model.history.RCEntHistoryList;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;

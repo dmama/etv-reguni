@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.migration.pm.rcent.service;
 
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
-import ch.vd.uniregctb.migration.pm.rcent.model.RCEntOrganisation;
-import ch.vd.uniregctb.migration.pm.rcent.model.RCEntLocation;
+import ch.vd.uniregctb.migration.pm.rcent.model.entitygraph.RCEntOrganisation;
+import ch.vd.uniregctb.migration.pm.rcent.model.entitygraph.RCEntOrganisationLocation;
 
 /**
  * Adapteur / abstraction de service pour RC-ENT. Expose les requêtes dont nous avons besoin.
@@ -21,7 +21,7 @@ public class RCEntService {
         return null;
     }
 
-    public RCEntLocation getEtablissement(Long id) {
+    public RCEntOrganisationLocation getEtablissement(Long id) {
         return null;
     }
 }
