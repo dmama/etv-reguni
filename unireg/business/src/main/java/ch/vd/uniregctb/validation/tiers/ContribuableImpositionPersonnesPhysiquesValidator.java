@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -66,6 +67,10 @@ public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extend
 			}
 		}
 
+		// Les fors principaux PM ne sont pas autorisés
+		for (ForFiscalPrincipalPM forPM : fors.principauxPM) {
+			vr.addError("Le for " + forPM + " n'est pas un type de for autorisé sur un contribuable de type PP.");
+		}
 		return vr;
 	}
 }
