@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -17,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -25,14 +26,10 @@ import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Type;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -50,42 +47,16 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @Table(name = "DECLARATION")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Declaration extends HibernateEntity implements DateRange, LinkedEntity {
-
-	private static final long serialVersionUID = 5952424159981114355L;
+@AttributeOverrides({
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = false)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = false))
+})
+public abstract class Declaration extends HibernateDateRangeEntity implements LinkedEntity {
 
 	/**
 	 * The ID
 	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * Date de début d'imposition pour la déclaration.
-	 * <p>
-	 * Dans la majeure partie des cas, cette date est égale au 1er janvier de la période fiscale considérée. Elle peut être différente dans
-	 * le cas d'une arrivée en cours d'année (et à ce moment-là elle est égale à la date d'arrivée).
-	 * <p>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ"
-	 */
-	private RegDate dateDebut;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * Date de fin d'imposition pour la déclaration.
-	 * <p>
-	 * Dans la majeure partie des cas, cette date est égale au 31 décembre de la période fiscale considérée. elle peut être différente dans
-	 * le cas d'un départ en cours d'année (et à ce moment-là elle est égale à la date de départ).
-	 * <p>
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ"
-	 */
-	private RegDate dateFin;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -290,60 +261,6 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the dateDebut
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_DEBUT", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		// begin-user-code
-		return dateDebut;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theDateDebut the dateDebut to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_XJ1FcOqgEdySTq6PFlf9jQ?SETTER"
-	 */
-	public void setDateDebut(RegDate theDateDebut) {
-		// begin-user-code
-		dateDebut = theDateDebut;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the dateFin
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_FIN", nullable = false)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		// begin-user-code
-		return dateFin;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theDateFin the dateFin to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ajGHUOqgEdySTq6PFlf9jQ?SETTER"
-	 */
-	public void setDateFin(RegDate theDateFin) {
-		// begin-user-code
-		dateFin = theDateFin;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the modeleDocument
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pEXLgS4DEd2H4bonmeBdag?GETTER"
 	 */
@@ -542,17 +459,9 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		delais.add(delai);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
 	@Override
 	@Transient
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
-		return tiers == null ? null : Arrays.asList(tiers);
+		return tiers == null ? null : Collections.singletonList(tiers);
 	}
 }

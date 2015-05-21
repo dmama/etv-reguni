@@ -7,6 +7,8 @@
 							http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<util:list id="hibernateAnnotatedClasses">
+		<value>ch.vd.uniregctb.common.HibernateEntity</value>
+		<value>ch.vd.uniregctb.common.HibernateDateRangeEntity</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.adresse.AdresseAutreTiers</value>
 		<value>ch.vd.uniregctb.adresse.AdresseCivile</value>

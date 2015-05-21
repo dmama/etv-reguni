@@ -18,11 +18,8 @@ import java.util.List;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -33,13 +30,15 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 @SuppressWarnings({"UnusedDeclaration"})
 @Entity
 @Table(name = "IMMEUBLE")
-public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity {
+@AttributeOverrides({
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
+})
+public class Immeuble extends HibernateDateRangeEntity implements LinkedEntity {
 
 	private Long id;
 	private String idRF;
 	private RegDate dateValidRF;
-	private RegDate dateDebut;
-	private RegDate dateFin;
 	private RegDate dateDerniereMutation;
 	private TypeMutation derniereMutation;
 	private String numero;
@@ -90,34 +89,6 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 
 	public void setDateValidRF(RegDate date) {
 		this.dateValidRF = date;
-	}
-
-	/**
-	 * @return la date de début de validité de l'inscription au registre foncier.
-	 */
-	@Override
-	@Column(name = "DATE_DEBUT", nullable = true)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		return dateDebut;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	/**
-	 * @return la date de fin de validité de l'inscription au registre foncier; ou <b>null</b> si l'inscription est toujours valide.
-	 */
-	@Override
-	@Column(name = "DATE_FIN", nullable = true)
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	/**
@@ -289,11 +260,6 @@ public class Immeuble extends HibernateEntity implements DateRange, LinkedEntity
 	@Override
 	public Object getKey() {
 		return id;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

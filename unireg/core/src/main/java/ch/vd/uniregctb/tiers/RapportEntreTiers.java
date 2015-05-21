@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -17,17 +19,12 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Type;
-import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -42,26 +39,16 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity, BusinessComparable<RapportEntreTiers> {
+@AttributeOverrides({
+		@AttributeOverride(name = "dateDebut", column = @Column(name = "DATE_DEBUT", nullable = true)),
+		@AttributeOverride(name = "dateFin", column = @Column(name = "DATE_FIN", nullable = true))
+})
+public abstract class RapportEntreTiers extends HibernateDateRangeEntity implements Duplicable<RapportEntreTiers>, LinkedEntity, BusinessComparable<RapportEntreTiers> {
 
 	/**
 	 * The ID
 	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uEJMMJNYEdygKK6Oe0tVlw"
-	 */
-	private RegDate dateDebut;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xEySsJNYEdygKK6Oe0tVlw"
-	 */
-	private RegDate dateFin;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -83,21 +70,21 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	}
 
 	public RapportEntreTiers(RegDate dateDebut, RegDate dateFin, Tiers sujet, Tiers objet) {
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
+		super(dateDebut, dateFin);
 		this.sujetId = (sujet == null ? null : sujet.getId());
 		this.objetId = (objet == null ? null : objet.getId());
 	}
 
 	protected RapportEntreTiers(RegDate dateDebut, RegDate dateFin, Long sujetId, Long objetId) {
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
+		super(dateDebut, dateFin);
 		this.sujetId = sujetId;
 		this.objetId = objetId;
 	}
 
 	public RapportEntreTiers(RapportEntreTiers rapport) {
-		this(rapport.getDateDebut(), rapport.getDateFin(), rapport.getSujetId(), rapport.getObjetId());
+		super(rapport);
+		this.sujetId = rapport.sujetId;
+		this.objetId = rapport.objetId;
 	}
 
 	@Transient
@@ -121,56 +108,6 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 */
 	public void setId(Long theId) {
 		this.id = theId;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the dateDebut
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uEJMMJNYEdygKK6Oe0tVlw?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_DEBUT")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		// begin-user-code
-		return dateDebut;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theDateDebut the dateDebut to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uEJMMJNYEdygKK6Oe0tVlw?SETTER"
-	 */
-	public void setDateDebut(RegDate theDateDebut) {
-		// begin-user-code
-		dateDebut = theDateDebut;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the dateFin
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xEySsJNYEdygKK6Oe0tVlw?GETTER"
-	 */
-	@Override
-	@Column(name = "DATE_FIN")
-	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		// begin-user-code
-		return dateFin;
-		// end-user-code
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theDateFin the dateFin to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xEySsJNYEdygKK6Oe0tVlw?SETTER"
-	 */
-	public void setDateFin(@Nullable RegDate theDateFin) {
-		// begin-user-code
-		dateFin = theDateFin;
-		// end-user-code
 	}
 
 	/**
@@ -231,13 +168,6 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		// end-user-code
 	}
 
-	@Override
-	public String toString() {
-		final String dateDebutStr = dateDebut != null ? RegDateHelper.dateToDisplayString(dateDebut) : "?";
-		final String dateFinStr = dateFin != null ? RegDateHelper.dateToDisplayString(dateFin) : "?";
-		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
-	}
-
 	/**
 	 * Retourne une chaîne de caractères qui décrit le rôle <i>objet</i> de ce rapport entre tiers
 	 * @return "ménage commun", "personne physique", "contribuable", "employeur"...
@@ -273,14 +203,6 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		}
 
 		return list;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isValidAt(@Nullable RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	public boolean equalsTo(RapportEntreTiers rapportEntreTiers) {

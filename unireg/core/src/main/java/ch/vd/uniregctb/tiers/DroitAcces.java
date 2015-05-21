@@ -13,12 +13,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Duplicable;
-import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 
@@ -47,11 +44,9 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
  */
 @Entity
 @Table(name = "DROIT_ACCES")
-public class DroitAcces extends HibernateEntity implements DateRange, Duplicable<DroitAcces> {
+public class DroitAcces extends HibernateDateRangeEntity implements Duplicable<DroitAcces> {
 
 	private Long id;
-	private RegDate dateDebut;
-	private RegDate dateFin;
 	private long noIndividuOperateur;
 	private TypeDroitAcces type;
 	private Niveau niveau;
@@ -62,8 +57,7 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 	}
 
 	private DroitAcces(DroitAcces right) {
-		this.dateDebut = right.dateDebut;
-		this.dateFin = right.dateFin;
+		super(right);
 		this.noIndividuOperateur = right.noIndividuOperateur;
 		this.type = right.type;
 		this.niveau = right.niveau;
@@ -84,28 +78,6 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	@Override
-	@Column(name = "DATE_DEBUT", nullable = false)
-	@org.hibernate.annotations.Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateDebut() {
-		return dateDebut;
-	}
-
-	public void setDateDebut(RegDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	@Override
-	@Column(name = "DATE_FIN", nullable = true)
-	@org.hibernate.annotations.Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(RegDate dateFin) {
-		this.dateFin = dateFin;
 	}
 
 	@Column(name = "NUMERO_IND_OPER", nullable = false)
@@ -154,18 +126,13 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 	public String toString() {
 		return "DroitAcces{" +
 				"id=" + id +
-				", dateDebut=" + RegDateHelper.dateToDisplayString(dateDebut) +
-				", dateFin=" + RegDateHelper.dateToDisplayString(dateFin) +
+				", dateDebut=" + RegDateHelper.dateToDisplayString(getDateDebut()) +
+				", dateFin=" + RegDateHelper.dateToDisplayString(getDateFin()) +
 				", noIndividuOperateur=" + noIndividuOperateur +
 				", type=" + type +
 				", niveau=" + niveau +
 				", tiers=" + tiers +
 				'}';
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override
