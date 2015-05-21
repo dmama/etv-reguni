@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class RCEntRangeListTest {
+public class RCEntHistoryListTest {
 
 	private static class TestHistoryElement extends RCEntHistoryElement {
 		private final String dummyField;
@@ -28,7 +28,7 @@ public class RCEntRangeListTest {
 
 	@Test
 	public void testGetValuesFor() throws Exception {
-		RCEntRangeList<TestHistoryElement> rangeList = new RCEntRangeList<>(Arrays.asList(
+		RCEntHistoryList<TestHistoryElement> rangeList = new RCEntHistoryList<>(Arrays.asList(
 				new TestHistoryElement(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 2), "12"),
 				new TestHistoryElement(RegDateHelper.get(2015, 5, 3), RegDateHelper.get(2015, 5, 4), "34"),
 				new TestHistoryElement(RegDateHelper.get(2016, 8, 10), RegDateHelper.get(2016, 8, 20), "56"),
@@ -37,7 +37,6 @@ public class RCEntRangeListTest {
 
 		List<TestHistoryElement> result = rangeList.getValuesFor(RegDateHelper.get(2016, 8, 14));
 		assertThat(result.size(), equalTo(1));
-		assertThat(result.get(0).getDummyField(), equalTo("56"));
-
+		assertThat("Element payload", result.get(0).getDummyField(), equalTo("56"));
 	}
 }

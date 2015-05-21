@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class RCEntRangeList<E extends RCEntHistoryElement> implements List<E> {
+public class RCEntHistoryList<E extends RCEntHistoryElement> implements List<E> {
 
 	private List<E> elements;
 
-	public RCEntRangeList(List<E> elements) {
+	public RCEntHistoryList(List<E> elements) {
 		this.elements = elements;
 	}
 
