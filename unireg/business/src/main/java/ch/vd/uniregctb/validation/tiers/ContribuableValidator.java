@@ -10,6 +10,10 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -17,12 +21,20 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
  * Validateur qui se préoccupe de la partie Contribuable d'un tiers contribuable
  */
 public abstract class ContribuableValidator<T extends Contribuable> extends TiersValidator<T> {
+
+	private PeriodeImpositionService periodeImpositionService;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
+	}
 
 	@Override
 	public ValidationResults validate(T ctb) {
@@ -102,5 +114,57 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		}
 
 		return results;
+	}
+
+	@Override
+	protected ValidationResults validateDeclarations(T ctb) {
+		final ValidationResults results = super.validateDeclarations(ctb);
+
+		final List<Declaration> decls = ctb.getDeclarationsSorted();
+		if (decls != null) {
+
+			// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
+			try {
+				final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb, null);
+				for (Declaration d : decls) {
+					if (d.isAnnule()) {
+						continue;
+					}
+					if (d instanceof DeclarationImpotOrdinaire) {
+						validateDI((DeclarationImpotOrdinaire) d, periodes, results);
+					}
+				}
+			}
+			catch (Exception e) {
+				results.addWarning("Impossible de calculer les périodes d'imposition", e);
+			}
+		}
+
+		return results;
+	}
+
+	private static void validateDI(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
+		boolean intersect = false;
+		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+		if (periodes != null) {
+			for (PeriodeImposition p : periodes) {
+				if (DateRangeHelper.equals(di, p)) {
+					intersect = true;
+					break;
+				}
+				else if (DateRangeHelper.intersect(di, p)) {
+					intersect = true;
+					final String message = String.format("La %s qui va du %s au %s ne correspond pas à la période d'imposition théorique qui va du %s au %s",
+					                                     typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()),
+					                                     RegDateHelper.dateToDisplayString(p.getDateDebut()), RegDateHelper.dateToDisplayString(p.getDateFin()));
+					results.addWarning(message);
+				}
+			}
+		}
+		if (!intersect) {
+			final String message = String.format("La %s qui va du %s au %s ne correspond à aucune période d'imposition théorique",
+			                                     typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
+			results.addWarning(message);
+		}
 	}
 }

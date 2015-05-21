@@ -233,11 +233,12 @@
 		<property name="validationService" ref="validationService" />
 	</bean>
 
-	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator">
+	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator"/>
+
+	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
 
-	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator" />
 	<bean id="debiteurPrestationImposableValidator" class="ch.vd.uniregctb.validation.tiers.DebiteurPrestationImposableValidator" parent="tiersValidator" />
 	<bean id="collectiviteAdministrativeValidator" class="ch.vd.uniregctb.validation.tiers.CollectiviteAdministrativeValidator" parent="contribuableValidator" />
 	<bean id="etablissementValidator" class="ch.vd.uniregctb.validation.tiers.EtablissementValidator" parent="contribuableValidator" />
