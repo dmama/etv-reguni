@@ -62,6 +62,11 @@ public abstract class HibernateDateRangeEntity extends HibernateEntity implement
 	public String toString() {
 		final String dateDebutStr = StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(dateDebut), "?");
 		final String dateFinStr = StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(dateFin), "?");
-		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
+		return String.format("%s (%s - %s)", getBusinessName(), dateDebutStr, dateFinStr);
+	}
+
+	@Transient
+	protected String getBusinessName() {
+		return getClass().getSimpleName();
 	}
 }

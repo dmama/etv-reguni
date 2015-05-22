@@ -1,19 +1,34 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
 
 	@Override
+	public ValidationResults validate(Entreprise entreprise) {
+		final ValidationResults vr = super.validate(entreprise);
+		if (!entreprise.isAnnule()) {
+			vr.merge(validateRegimesFiscaux(entreprise));
+		}
+		return vr;
+	}
+
+	@Override
 	protected ValidationResults validateTypeAdresses(Entreprise entreprise) {
 		final ValidationResults results = new ValidationResults();
-
 		final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
 		if (adresses != null) {
 			for (AdresseTiers a : adresses) {
@@ -28,6 +43,43 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		}
 
 		return results;
+	}
+
+	protected ValidationResults validateRegimesFiscaux(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+
+		// il ne doit y avoir, à tout moment, au plus qu'un seul régime fiscal actif d'une portée donnée
+		final List<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscauxNonAnnulesTries();
+		final int size = regimesFiscaux.size();
+		if (size > 1) {
+
+			// 1. on sépare les régimes fiscaux selon leur portée (les listes résultantes restent triées puisque la liste en entrée l'est)
+			final Map<RegimeFiscal.Portee, List<RegimeFiscal>> parPortee = new EnumMap<>(RegimeFiscal.Portee.class);
+			for (RegimeFiscal regimeFiscal : regimesFiscaux) {
+				final RegimeFiscal.Portee portee = regimeFiscal.getPortee();
+				final List<RegimeFiscal> liste;
+				if (parPortee.containsKey(portee)) {
+					liste = parPortee.get(portee);
+				}
+				else {
+					liste = new ArrayList<>(size);
+					parPortee.put(portee, liste);
+				}
+				liste.add(regimeFiscal);
+			}
+
+			// 2. pour chacune des portées, on valide qu'il n'y a pas de chevauchements
+			for (Map.Entry<RegimeFiscal.Portee, List<RegimeFiscal>> entry : parPortee.entrySet()) {
+				final List<DateRange> overlaps = DateRangeHelper.overlaps(entry.getValue());
+				if (overlaps != null && !overlaps.isEmpty()) {
+					for (DateRange overlap : overlaps) {
+						vr.addError(String.format("La période %s est couverte par plusieurs régimes fiscaux %s", DateRangeHelper.toDisplayString(overlap), entry.getKey()));
+					}
+				}
+			}
+		}
+
+		return vr;
 	}
 
 	@Override

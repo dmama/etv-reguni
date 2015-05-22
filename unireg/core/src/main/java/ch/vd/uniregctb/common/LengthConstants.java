@@ -113,6 +113,9 @@ public abstract class LengthConstants {
 
 	public static final int ETB_ENSEIGNE = 250;
 
+	public static final int REGIME_FISCAL_PORTEE = 2;
+	public static final int REGIME_FISCAL_TYPE = 20;
+
 	public final static int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");

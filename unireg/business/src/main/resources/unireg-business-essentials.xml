@@ -320,4 +320,6 @@
 
 	<bean id="domicileEtablissementValidator" class="ch.vd.uniregctb.validation.tiers.DomicileEtablissementValidator" parent="localisationDateeValidator"/>
 
+	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="entityValidator"/>
+
 </beans>

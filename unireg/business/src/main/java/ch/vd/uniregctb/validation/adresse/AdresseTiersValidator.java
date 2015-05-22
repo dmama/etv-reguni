@@ -1,37 +1,35 @@
 package ch.vd.uniregctb.validation.adresse;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
-public abstract class AdresseTiersValidator<T extends AdresseTiers> extends EntityValidatorImpl<T> {
+public abstract class AdresseTiersValidator<T extends AdresseTiers> extends DateRangeEntityValidator<T> {
 
 	@Override
 	public ValidationResults validate(T adr) {
-		final ValidationResults vr = new ValidationResults();
+		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
-
 			// L'usage doit être renseigné
 			if (adr.getUsage() == null) {
-				vr.addError(String.format("L'adresse %s possède un usage nul", adr));
-			}
-
-			// La date de début doit être renseignée
-			if (adr.getDateDebut() == null) {
-				vr.addError(String.format("L'adresse %s possède une date de début nulle", adr));
-			}
-
-			// Date de début doit être avant ou égale à la date de fin
-			final RegDate dateDebut = adr.getDateDebut();
-			final RegDate dateFin = adr.getDateFin();
-			if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
-				vr.addError(String.format("L'adresse %s possède une date de début qui est après la date de fin: début = %s fin = %s",
-						adr, RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin)));
+				vr.addError(String.format("%s %s possède un usage nul", getEntityCategoryName(), getEntityDisplayString(adr)));
 			}
 		}
-
 		return vr;
+	}
+
+	@Override
+	protected boolean isDateOuvertureFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFermetureFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected String getEntityCategoryName() {
+		return "L'adresse";
 	}
 }

@@ -3,10 +3,19 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.Index;
+import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.ComparisonHelper;
 
 /**
@@ -30,6 +39,8 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	 */
 	private Long numeroEntreprise;
 
+	private Set<RegimeFiscal> regimesFiscaux;
+
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
 	public Long getNumeroEntreprise() {
@@ -38,6 +49,45 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	public void setNumeroEntreprise(Long numeroEntreprise) {
 		this.numeroEntreprise = numeroEntreprise;
+	}
+
+	@OneToMany
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<RegimeFiscal> getRegimesFiscaux() {
+		return regimesFiscaux;
+	}
+
+	public void setRegimesFiscaux(Set<RegimeFiscal> regimesFiscaux) {
+		this.regimesFiscaux = regimesFiscaux;
+	}
+
+	public void addRegimeFiscal(RegimeFiscal regimeFiscal) {
+		if (regimeFiscal.getEntreprise() != null && regimeFiscal.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ce régime fiscal a déjà été associé à une autre entreprise");
+		}
+
+		if (this.regimesFiscaux == null) {
+			this.regimesFiscaux = new HashSet<>();
+		}
+		this.regimesFiscaux.add(regimeFiscal);
+		regimeFiscal.setEntreprise(this);
+	}
+
+	@Transient
+	@NotNull
+	public List<RegimeFiscal> getRegimesFiscauxNonAnnulesTries() {
+		final List<RegimeFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(regimesFiscaux);
+		Collections.sort(nonAnnules, new DateRangeComparator<RegimeFiscal>() {
+			@Override
+			public int compare(RegimeFiscal o1, RegimeFiscal o2) {
+				int comparison = super.compare(o1, o2);
+				if (comparison == 0) {
+					comparison = o1.getPortee().compareTo(o2.getPortee());
+				}
+				return comparison;
+			}
+		});
+		return nonAnnules;
 	}
 
 	public Entreprise() {

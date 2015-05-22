@@ -19,15 +19,15 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 
 			final MotifRattachement motifRattachement = ff.getMotifRattachement();
 			if (!isRattachementCoherent(motifRattachement)){
-				vr.addError(String.format("Le for %s avec motif de rattachement = %s est invalide", ff, motifRattachement));
+				vr.addError(String.format("Le for %s avec motif de rattachement = %s est invalide", getEntityDisplayString(ff), motifRattachement));
 			}
 
 			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				if (ff.getMotifOuverture() == null) {
-					vr.addError(String.format("Le motif d'ouverture est obligatoire sur le for fiscal [%s] car il est rattaché à une commune vaudoise.", ff));
+					vr.addError(String.format("Le motif d'ouverture est obligatoire sur le for fiscal [%s] car il est rattaché à une commune vaudoise.", getEntityDisplayString(ff)));
 				}
 				if (ff.getMotifFermeture() == null && ff.getDateFin() != null) {
-					vr.addError(String.format("Le motif de fermeture est obligatoire sur le for fiscal [%s] car il est rattaché à une commune vaudoise.", ff));
+					vr.addError(String.format("Le motif de fermeture est obligatoire sur le for fiscal [%s] car il est rattaché à une commune vaudoise.", getEntityDisplayString(ff)));
 				}
 			}
 		}

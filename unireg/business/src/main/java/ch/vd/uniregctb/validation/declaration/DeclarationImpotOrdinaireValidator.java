@@ -36,4 +36,9 @@ public class DeclarationImpotOrdinaireValidator extends DeclarationValidator<Dec
 
 		return vr;
 	}
+
+	@Override
+	protected String getEntityCategoryName() {
+		return "La DI";
+	}
 }

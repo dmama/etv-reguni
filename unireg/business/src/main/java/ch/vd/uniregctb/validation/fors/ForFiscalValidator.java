@@ -9,7 +9,7 @@ import ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator;
 public abstract class ForFiscalValidator<T extends ForFiscal> extends LocalisationDateeValidator<T> {
 
 	@Override
-	protected String getEntityDisplayName() {
+	protected String getEntityCategoryName() {
 		return "Le for fiscal";
 	}
 }

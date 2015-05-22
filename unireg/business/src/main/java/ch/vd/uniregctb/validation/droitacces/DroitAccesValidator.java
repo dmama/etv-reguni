@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.validation.droitacces;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
-public class DroitAccesValidator extends EntityValidatorImpl<DroitAcces> {
+public class DroitAccesValidator extends DateRangeEntityValidator<DroitAcces> {
 
 	@Override
 	protected Class<DroitAcces> getValidatedClass() {
@@ -14,25 +11,17 @@ public class DroitAccesValidator extends EntityValidatorImpl<DroitAcces> {
 	}
 
 	@Override
-	public ValidationResults validate(DroitAcces da) {
-		final  ValidationResults vr = new ValidationResults();
+	protected String getEntityCategoryName() {
+		return "Le droit d'accès";
+	}
 
-		if (!da.isAnnule()) {
+	@Override
+	protected boolean isDateOuvertureFutureAllowed() {
+		return true;
+	}
 
-			final RegDate dateDebut = da.getDateDebut();
-			final RegDate dateFin = da.getDateFin();
-
-			// La date de début doit être renseignée
-			if (dateDebut == null) {
-				vr.addError(String.format("Le droit d'accès %s possède une date de début nulle", da));
-			}
-
-			// Date de début doit être avant ou égale à la date de fin
-			if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
-				vr.addError(String.format("Le droit d'accès %s possède une date de début qui est après la date de fin: début = %s fin = %s",
-						da, RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin)));
-			}
-		}
-		return vr;
+	@Override
+	protected boolean isDateFermetureFutureAllowed() {
+		return true;
 	}
 }

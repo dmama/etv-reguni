@@ -5,7 +5,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 public class DomicileEtablissementValidator extends LocalisationDateeValidator<DomicileEtablissement> {
 
 	@Override
-	protected String getEntityDisplayName() {
+	protected String getEntityCategoryName() {
 		return "Le domicile d'établissement";
 	}
 

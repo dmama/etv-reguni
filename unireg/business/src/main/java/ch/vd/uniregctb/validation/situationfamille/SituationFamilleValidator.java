@@ -1,14 +1,12 @@
 package ch.vd.uniregctb.validation.situationfamille;
 
-import ch.vd.registre.base.validation.ValidationHelper;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.SituationFamille;
-import ch.vd.uniregctb.validation.EntityValidatorImpl;
+import ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator;
 
 /**
  * Validateur des situations de famille
  */
-public class SituationFamilleValidator extends EntityValidatorImpl<SituationFamille> {
+public class SituationFamilleValidator extends DateRangeEntityValidator<SituationFamille> {
 
 	@Override
 	protected Class<SituationFamille> getValidatedClass() {
@@ -16,11 +14,7 @@ public class SituationFamilleValidator extends EntityValidatorImpl<SituationFami
 	}
 
 	@Override
-	public ValidationResults validate(SituationFamille sf) {
-		final ValidationResults results = new ValidationResults();
-		if (!sf.isAnnule()) {
-			ValidationHelper.validate(sf, false, true, results);
-		}
-		return results;
+	protected String getEntityCategoryName() {
+		return "La situation de famille";
 	}
 }

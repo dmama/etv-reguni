@@ -15,7 +15,7 @@ public class AdressePMValidator extends AdresseTiersValidator<AdressePM> {
 		final ValidationResults vr = super.validate(adr);
 		if (!adr.isAnnule()) {
 			if (adr.getType() == null) {
-				vr.addError(String.format("Le type d'adresse doit être renseigné sur une adresse PM [%s]", adr));
+				vr.addError(String.format("Le type d'adresse doit être renseigné sur une adresse PM [%s]", getEntityDisplayString(adr)));
 			}
 		}
 		return vr;

@@ -14,7 +14,7 @@ public class DecisionValidator extends LocalisationDateeValidator<DecisionAci> {
 	}
 
 	@Override
-	protected String getEntityDisplayName() {
+	protected String getEntityCategoryName() {
 		return "La décision ACI";
 	}
 }
