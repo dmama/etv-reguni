@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.uniregctb.migration.pm.rcent.model.base.RCEntListOfRanges;
 import ch.vd.uniregctb.migration.pm.rcent.model.base.RCEntRangedValue;
-import ch.vd.uniregctb.migration.pm.rcent.model.wrappers.RCEntIdentification;
+import ch.vd.uniregctb.migration.pm.rcent.model.wrappers.RCEntIdentifier;
 import ch.vd.uniregctb.migration.pm.rcent.model.wrappers.RCEntSwissMunicipality;
 
 public class RCEntOrganisation {
@@ -17,11 +17,8 @@ public class RCEntOrganisation {
 	 */
 	private final long cantonalId;
 
-	/**
-	 * Identifiant de l'entreprise
-	 */
 	@NotNull
-	private final RCEntListOfRanges<RCEntIdentification> organisationIdentifier;
+	private final RCEntListOfRanges<RCEntIdentifier> organisationIdentifiers;
 
 	@NotNull
 	private final RCEntListOfRanges<RCEntRangedValue<String>> organisationName;
@@ -31,32 +28,39 @@ public class RCEntOrganisation {
 	/**
 	 * Commune de siège légal
 	 */
-	private final RCEntListOfRanges<RCEntSwissMunicipality> seat;
+	private final RCEntListOfRanges<RCEntRangedValue<Long>> seat;
+	/**
+	 * Information détaillée sur les communes de siège. En effet, des changements peuvent survenir
+	 * sans pour autant changer le lieu du siège. Il faut donc capturer cette information séparément,
+	 * car elle connait potentiellement un plus grand nombre de période.
+	 */
+	private final RCEntListOfRanges<RCEntSwissMunicipality> seatMunicipalityInfo;
 
 	private final List<RCEntOrganisationLocation> locations;
 
-	private final RCEntListOfRanges<RCEntIdentification> transferTo;
-	private final RCEntListOfRanges<RCEntIdentification> transferFrom;
-	private final RCEntListOfRanges<RCEntIdentification> replacedBy;
-	private final RCEntListOfRanges<RCEntIdentification> inPreplacementOf;
-
+	private final RCEntListOfRanges<RCEntRangedValue<Long>> transferTo;
+	private final RCEntListOfRanges<RCEntRangedValue<Long>> transferFrom;
+	private final RCEntListOfRanges<RCEntRangedValue<Long>> replacedBy;
+	private final RCEntListOfRanges<RCEntRangedValue<Long>> inPreplacementOf;
 
 	public RCEntOrganisation(long cantonalId,
-	                         @NotNull RCEntListOfRanges<RCEntIdentification> organisationIdentifier,
+	                         @NotNull RCEntListOfRanges<RCEntIdentifier> organisationIdentifiers,
 	                         @NotNull RCEntListOfRanges<RCEntRangedValue<String>> organisationName,
 	                         RCEntListOfRanges<RCEntRangedValue<String>> organisationAdditionalName,
 	                         RCEntListOfRanges<RCEntRangedValue<LegalForm>> legalForm,
-	                         RCEntListOfRanges<RCEntSwissMunicipality> seat, List<RCEntOrganisationLocation> locations,
-	                         RCEntListOfRanges<RCEntIdentification> transferTo,
-	                         RCEntListOfRanges<RCEntIdentification> transferFrom,
-	                         RCEntListOfRanges<RCEntIdentification> replacedBy,
-	                         RCEntListOfRanges<RCEntIdentification> inPreplacementOf) {
+	                         RCEntListOfRanges<RCEntRangedValue<Long>> seat,
+	                         RCEntListOfRanges<RCEntSwissMunicipality> seatMunicipalityInfo, List<RCEntOrganisationLocation> locations,
+	                         RCEntListOfRanges<RCEntRangedValue<Long>> transferTo,
+	                         RCEntListOfRanges<RCEntRangedValue<Long>> transferFrom,
+	                         RCEntListOfRanges<RCEntRangedValue<Long>> replacedBy,
+	                         RCEntListOfRanges<RCEntRangedValue<Long>> inPreplacementOf) {
 		this.cantonalId = cantonalId;
-		this.organisationIdentifier = organisationIdentifier;
+		this.organisationIdentifiers = organisationIdentifiers;
 		this.organisationName = organisationName;
 		this.organisationAdditionalName = organisationAdditionalName;
 		this.legalForm = legalForm;
 		this.seat = seat;
+		this.seatMunicipalityInfo = seatMunicipalityInfo;
 		this.locations = locations;
 		this.transferTo = transferTo;
 		this.transferFrom = transferFrom;
@@ -68,7 +72,7 @@ public class RCEntOrganisation {
 		return cantonalId;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getInPreplacementOf() {
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getInPreplacementOf() {
 		return inPreplacementOf;
 	}
 
@@ -85,8 +89,8 @@ public class RCEntOrganisation {
 	}
 
 	@NotNull
-	public RCEntListOfRanges<RCEntIdentification> getOrganisationIdentifier() {
-		return organisationIdentifier;
+	public RCEntListOfRanges<RCEntIdentifier> getOrganisationIdentifiers() {
+		return organisationIdentifiers;
 	}
 
 	@NotNull
@@ -94,19 +98,23 @@ public class RCEntOrganisation {
 		return organisationName;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getReplacedBy() {
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getReplacedBy() {
 		return replacedBy;
 	}
 
-	public RCEntListOfRanges<RCEntSwissMunicipality> getSeat() {
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getSeat() {
 		return seat;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getTransferFrom() {
+	public RCEntListOfRanges<RCEntSwissMunicipality> getSeatMunicipalityInfo() {
+		return seatMunicipalityInfo;
+	}
+
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getTransferFrom() {
 		return transferFrom;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getTransferTo() {
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getTransferTo() {
 		return transferTo;
 	}
 }

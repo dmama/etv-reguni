@@ -12,6 +12,7 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
+import ch.vd.evd0022.v1.SwissMunicipality;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
@@ -23,6 +24,8 @@ import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.EtablissementEqualator;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.SeatEqualator;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.SwissMunicipalityEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesLegalesExtractor;
@@ -31,17 +34,24 @@ import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.Etablissem
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementPrincipalExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementSecondaire;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementsSecondairesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.SeatExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.SwissMunicipalityExtractor;
 
 public class OrganisationHistorizer {
 
 	private static final Equalator<Etablissement> ETABLISSEMENT_EQUALATOR = new EtablissementEqualator();
 	private static final Equalator<Address> ADDRESS_EQUALATOR = new AdresseEqualator();
+	private static final Equalator<SwissMunicipality> SEAT_EQUALATOR = new SeatEqualator();
+	private static final Equalator<SwissMunicipality> SWISS_MUNICIPALITY_EQUALATOR = new SwissMunicipalityEqualator();
 
 	private static final Function<Organisation, EtablissementPrincipal> ETABLISSEMENT_PRINCIPAL_EXTRACTOR = new EtablissementPrincipalExtractor();
 	private static final Function<Organisation, Stream<? extends EtablissementSecondaire>> ETABLISSEMENTS_SECONDAIRES_EXTRACTOR = new EtablissementsSecondairesExtractor();
 	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_LEGALES_EXTRACTOR = new AdressesLegalesExtractor();
 	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_EFFECTIVES_EXTRACTOR = new AdressesEffectivesIdeExtractor();
 	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_CASE_POSTALE_IDE_EXTRACTOR = new AdressesCasePostaleIdeExtractor();
+	private static final Function<Organisation, Stream<Keyed<BigInteger, SwissMunicipality>>> SEAT_EXTRACTOR = new SeatExtractor();
+	private static final Function<Organisation, Stream<Keyed<BigInteger, SwissMunicipality>>> SWISS_MUNICIPALITY_EXTRACTOR = new SwissMunicipalityExtractor();
+
 
 	public Object mapOrganisation(List<OrganisationSnapshot> snapshots) {
 
@@ -73,14 +83,25 @@ public class OrganisationHistorizer {
 		                                                                                                                                                ADDRESS_EQUALATOR,
 		                                                                                                                                                Keyed::getKey
 		);
+		final IndexedDataCollector<Organisation, SwissMunicipality, BigInteger> seatCollector = new FlattenIndexedDataCollector<>(SEAT_EXTRACTOR,
+		                                                                                                   SEAT_EQUALATOR,
+		                                                                                                   Keyed::getKey
+		);
+		final IndexedDataCollector<Organisation, SwissMunicipality, BigInteger> swissMunicipalityCollector = new FlattenIndexedDataCollector<>(SWISS_MUNICIPALITY_EXTRACTOR,
+		                                                                                                                                       SWISS_MUNICIPALITY_EQUALATOR,
+		                                                                                                                                       Keyed::getKey
+		);
 
 		// on collecte les plages de dates dans les collectors
-	Historizer.historize(organisationMap, Arrays.asList(legalFormCollector,
+		Historizer.historize(organisationMap, Arrays.asList(legalFormCollector,
 		                                                    etablissementPrincipalCollector,
 		                                                    etablissementsSecondairesCollector,
 		                                                    adressesRcEtablissementsCollector,
 		                                                    adressesIdeEtablissementsCollector,
-		                                                    adressesIdeCasePostaleEtablissementsCollector));
+		                                                    adressesIdeCasePostaleEtablissementsCollector,
+		                                                    seatCollector,
+		                                                    swissMunicipalityCollector
+		));
 
 		// récupération des plages de valeurs
 		final List<DateRanged<LegalForm>> formesJuridiques = legalFormCollector.getCollectedData();

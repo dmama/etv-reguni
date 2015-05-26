@@ -30,14 +30,19 @@ public class RCEntOrganisationLocation {
 	public final RCEntListOfRanges<RCEntSwissMunicipality> seat;
 	public final RCEntListOfRanges<RCEntFunction> function;
 	public final RCEntListOfRanges<RCEntRangedValue<String>> nogaCode;
-	public final RCEntListOfRanges<RCEntIdentification> replacedBy;
-	public final RCEntListOfRanges<RCEntIdentification> inPreplacementOf;
+	public final RCEntListOfRanges<RCEntRangedValue<Long>> replacedBy;
+	public final RCEntListOfRanges<RCEntRangedValue<Long>> inReplacementOf;
 
 	public RCEntOrganisationLocation(long cantonalId,
-	                                 @NotNull RCEntListOfRanges<RCEntRangedValue<String>> name, RCEntListOfRanges<RCEntCapitalRC> capitalRC, RCEntRCData rc, RCEntUIDData uid, RCEntVATData vat,
-	                                 RCEntListOfRanges<RCEntIdentifier> identifier, RCEntListOfRanges<RCEntRangedValue<String>> otherNames,
-	                                 RCEntListOfRanges<RCEntRangedValue<KindOfLocation>> kindOfLocation, RCEntListOfRanges<RCEntSwissMunicipality> seat, RCEntListOfRanges<RCEntFunction> function,
-	                                 RCEntListOfRanges<RCEntRangedValue<String>> nogaCode, RCEntListOfRanges<RCEntIdentification> replacedBy, RCEntListOfRanges<RCEntIdentification> inPreplacementOf) {
+	                                 @NotNull RCEntListOfRanges<RCEntRangedValue<String>> name, RCEntRCData rc, RCEntUIDData uid, RCEntVATData vat,
+	                                 RCEntListOfRanges<RCEntIdentifier> identifier,
+	                                 RCEntListOfRanges<RCEntRangedValue<String>> otherNames,
+	                                 RCEntListOfRanges<RCEntRangedValue<KindOfLocation>> kindOfLocation,
+	                                 RCEntListOfRanges<RCEntSwissMunicipality> seat,
+	                                 RCEntListOfRanges<RCEntFunction> function,
+	                                 RCEntListOfRanges<RCEntRangedValue<String>> nogaCode,
+	                                 RCEntListOfRanges<RCEntRangedValue<Long>> replacedBy,
+	                                 RCEntListOfRanges<RCEntRangedValue<Long>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
@@ -50,7 +55,7 @@ public class RCEntOrganisationLocation {
 		this.function = function;
 		this.nogaCode = nogaCode;
 		this.replacedBy = replacedBy;
-		this.inPreplacementOf = inPreplacementOf;
+		this.inReplacementOf = inReplacementOf;
 	}
 
 	public long getCantonalId() {
@@ -65,8 +70,8 @@ public class RCEntOrganisationLocation {
 		return identifier;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getInPreplacementOf() {
-		return inPreplacementOf;
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getInReplacementOf() {
+		return inReplacementOf;
 	}
 
 	public RCEntListOfRanges<RCEntRangedValue<KindOfLocation>> getKindOfLocation() {
@@ -90,7 +95,7 @@ public class RCEntOrganisationLocation {
 		return rc;
 	}
 
-	public RCEntListOfRanges<RCEntIdentification> getReplacedBy() {
+	public RCEntListOfRanges<RCEntRangedValue<Long>> getReplacedBy() {
 		return replacedBy;
 	}
 
