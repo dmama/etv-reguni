@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import ch.vd.uniregctb.migration.pm.regpm.usertype.CodeCollectiviteUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.CodeContributionUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.GenreContributionUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.ObjectImpotUserType;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.ObjectImpotUserType;
 @Table(name = "TY_CONTRIBUTION")
 @TypeDefs({
 		          @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
+		          @TypeDef(name = "CodeContribution", typeClass = CodeContributionUserType.class),
 		          @TypeDef(name = "CodeCollectivite", typeClass = CodeCollectiviteUserType.class),
 		          @TypeDef(name = "GenreContribution", typeClass = GenreContributionUserType.class),
 		          @TypeDef(name = "ObjectImpot", typeClass = ObjectImpotUserType.class)
@@ -26,7 +28,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.ObjectImpotUserType;
 public class RegpmTypeContribution extends RegpmEntity implements WithLongId {
 
 	private Long id;
-	private String codeContribution;
+	private RegpmCodeContribution codeContribution;
 	private RegpmCodeCollectivite codeCollectivite;
 	private String designationAbregee;
 	private String designationLongue1;
@@ -45,12 +47,12 @@ public class RegpmTypeContribution extends RegpmEntity implements WithLongId {
 	}
 
 	@Column(name = "CO_CONTRIBUTION")
-	@Type(type = "FixedChar", parameters = @Parameter(name = "length", value = "5"))
-	public String getCodeContribution() {
+	@Type(type = "CodeContribution")
+	public RegpmCodeContribution getCodeContribution() {
 		return codeContribution;
 	}
 
-	public void setCodeContribution(String codeContribution) {
+	public void setCodeContribution(RegpmCodeContribution codeContribution) {
 		this.codeContribution = codeContribution;
 	}
 
