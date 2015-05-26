@@ -7,15 +7,15 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.migration.pm.rcent.model.history.RCEntHistoryElement;
-import ch.vd.uniregctb.migration.pm.rcent.model.history.RCEntHistoryList;
+import ch.vd.uniregctb.migration.pm.rcent.model.base.RCEntRangedElement;
+import ch.vd.uniregctb.migration.pm.rcent.model.base.RCEntListOfRanges;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class RCEntHistoryListTest {
+public class RCEntListOfRangesTest {
 
-	private static class TestHistoryElement extends RCEntHistoryElement {
+	private static class TestHistoryElement extends RCEntRangedElement {
 		private final String dummyField;
 
 		public TestHistoryElement(RegDate beginDate, RegDate endDateDate, String dummyField) {
@@ -30,7 +30,7 @@ public class RCEntHistoryListTest {
 
 	@Test
 	public void testGetValuesFor() throws Exception {
-		RCEntHistoryList<TestHistoryElement> rangeList = new RCEntHistoryList<>(Arrays.asList(
+		RCEntListOfRanges<TestHistoryElement> rangeList = new RCEntListOfRanges<>(Arrays.asList(
 				new TestHistoryElement(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 2), "12"),
 				new TestHistoryElement(RegDateHelper.get(2015, 5, 3), RegDateHelper.get(2015, 5, 4), "34"),
 				new TestHistoryElement(RegDateHelper.get(2016, 8, 10), RegDateHelper.get(2016, 8, 20), "56"),

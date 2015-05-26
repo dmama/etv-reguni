@@ -1,15 +1,19 @@
-package ch.vd.uniregctb.migration.pm.rcent.model.history;
+package ch.vd.uniregctb.migration.pm.rcent.model.base;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
-public abstract class RCEntHistoryElement implements DateRange {
+/**
+ * Représente une information valide pour la période comprise de
+ * la date de début à la date de fin.
+ */
+public abstract class RCEntRangedElement implements DateRange {
 	final private RegDate beginDate;
 	final private RegDate endDateDate;
 
-	public RCEntHistoryElement(RegDate beginDate, RegDate endDateDate) {
+	public RCEntRangedElement(RegDate beginDate, RegDate endDateDate) {
 		this.beginDate = beginDate;
 		this.endDateDate = endDateDate;
 	}

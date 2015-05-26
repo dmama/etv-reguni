@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.rcent.model.history;
+package ch.vd.uniregctb.migration.pm.rcent.model.base;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class RCEntHistoryList<E extends RCEntHistoryElement> implements List<E> {
+public class RCEntListOfRanges<E extends RCEntRangedElement> implements List<E> {
 
 	private List<E> elements;
 
-	public RCEntHistoryList(List<E> elements) {
+	public RCEntListOfRanges(List<E> elements) {
 		this.elements = elements;
 	}
 
