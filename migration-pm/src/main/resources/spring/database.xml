@@ -39,6 +39,7 @@
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques</value>
 		<value>ch.vd.uniregctb.tiers.DebiteurPrestationImposable</value>
 		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
+		<value>ch.vd.uniregctb.tiers.DonneesRegistreCommerce</value>
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
@@ -67,6 +68,7 @@
 		<value>ch.vd.uniregctb.tiers.ConseilLegal</value>
 		<value>ch.vd.uniregctb.tiers.ContactImpotSource</value>
 		<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
+		<value>ch.vd.uniregctb.tiers.RegimeFiscal</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
