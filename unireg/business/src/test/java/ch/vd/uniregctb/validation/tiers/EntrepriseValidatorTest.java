@@ -6,8 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
@@ -50,4 +52,65 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs régimes fiscaux VD", errors.get(1));
 		}
 	}
+
+	@Test
+	public void testRegimeFiscalInvalide() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2010, 1, 1), date(2005, 12, 31), RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));     // les dates sont à l'envers !
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le régime fiscal RegimeFiscal VD (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+	}
+
+	@Test
+	public void testChevauchementDonneesRegistreCommerce() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", 50000L, FormeJuridique.SARL));
+
+		// aucun chevauchement (= 1 seule donnée, de toute façon...)
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.toString(), vr.hasErrors());
+		}
+
+		// ajoutons une donnée qui ne chevauche pas -> pas de souci
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", 60000L, FormeJuridique.SARL));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertFalse(vr.toString(), vr.hasErrors());
+		}
+
+		// ajoutons une donnée qui chevauche -> rien ne va plus
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", 55000L, FormeJuridique.SARL));
+		{
+			final ValidationResults vr = validate(entreprise);
+			Assert.assertTrue(vr.hasErrors());
+			Assert.assertEquals(2, vr.errorsCount());
+
+			final List<String> errors = vr.getErrors();
+			Assert.assertEquals("La période [01.01.2005 ; 31.12.2005] est couverte par plusieurs ensembles de données RC", errors.get(0));
+			Assert.assertEquals("La période [01.01.2007 ; 31.12.2007] est couverte par plusieurs ensembles de données RC", errors.get(1));
+		}
+	}
+
+	@Test
+	public void testDonneesRegistreCommerceInvalides() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", 1000000L, FormeJuridique.SA));     // les dates sont à l'envers !
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("L'ensemble de données du registre du commerce DonneesRegistreCommerce (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
+	}
+
 }

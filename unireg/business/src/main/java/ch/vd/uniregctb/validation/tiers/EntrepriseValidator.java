@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
@@ -22,6 +23,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		final ValidationResults vr = super.validate(entreprise);
 		if (!entreprise.isAnnule()) {
 			vr.merge(validateRegimesFiscaux(entreprise));
+			vr.merge(validateDonneesRegistreCommerce(entreprise));
 		}
 		return vr;
 	}
@@ -45,11 +47,41 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		return results;
 	}
 
+	protected ValidationResults validateDonneesRegistreCommerce(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+
+		final List<DonneesRegistreCommerce> donnees = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+
+		// on valide d'abord les données pour elles-mêmes
+		for (DonneesRegistreCommerce d : donnees) {
+			vr.merge(getValidationService().validate(d));
+		}
+
+		// ... puis entre elles (il ne doit y avoir, à tout moment, au plus qu'une seule instance active)
+		final int size = donnees.size();
+		if (size > 1) {
+			final List<DateRange> overlaps = DateRangeHelper.overlaps(donnees);
+			if (overlaps != null && !overlaps.isEmpty()) {
+				for (DateRange overlap : overlaps) {
+					vr.addError(String.format("La période %s est couverte par plusieurs ensembles de données RC", DateRangeHelper.toDisplayString(overlap)));
+				}
+			}
+		}
+
+		return vr;
+	}
+
 	protected ValidationResults validateRegimesFiscaux(Entreprise entreprise) {
 		final ValidationResults vr = new ValidationResults();
 
-		// il ne doit y avoir, à tout moment, au plus qu'un seul régime fiscal actif d'une portée donnée
 		final List<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscauxNonAnnulesTries();
+
+		// on valide les régimes fiscaux pour eux-mêmes...
+		for (RegimeFiscal rf : regimesFiscaux) {
+			vr.merge(getValidationService().validate(rf));
+		}
+
+		// ... puis entre eux (il ne doit y avoir, à tout moment, au plus qu'un seul régime fiscal actif d'une portée donnée)
 		final int size = regimesFiscaux.size();
 		if (size > 1) {
 

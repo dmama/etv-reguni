@@ -40,6 +40,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Long numeroEntreprise;
 
 	private Set<RegimeFiscal> regimesFiscaux;
+	private Set<DonneesRegistreCommerce> donneesRC;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -88,6 +89,36 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 			}
 		});
 		return nonAnnules;
+	}
+
+	@OneToMany
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<DonneesRegistreCommerce> getDonneesRC() {
+		return donneesRC;
+	}
+
+	public void setDonneesRC(Set<DonneesRegistreCommerce> donneesRC) {
+		this.donneesRC = donneesRC;
+	}
+
+	public void addDonneesRC(DonneesRegistreCommerce donneesRC) {
+		if (donneesRC.getEntreprise() != null && donneesRC.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ces données ont déjà été associées à une autre enteprise");
+		}
+
+		if (this.donneesRC == null) {
+			this.donneesRC = new HashSet<>();
+		}
+		this.donneesRC.add(donneesRC);
+		donneesRC.setEntreprise(this);
+	}
+
+	@Transient
+	@NotNull
+	public List<DonneesRegistreCommerce> getDonneesRegistreCommerceNonAnnuleesTriees() {
+		final List<DonneesRegistreCommerce> nonAnnulees = AnnulableHelper.sansElementsAnnules(donneesRC);
+		Collections.sort(nonAnnulees, new DateRangeComparator<DonneesRegistreCommerce>());
+		return nonAnnulees;
 	}
 
 	public Entreprise() {

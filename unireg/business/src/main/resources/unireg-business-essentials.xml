@@ -233,6 +233,8 @@
 		<property name="validationService" ref="validationService" />
 	</bean>
 
+	<bean id="dateRangeEntityValidator" class="ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator" abstract="true" parent="entityValidator"/>
+
 	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator"/>
 
 	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
@@ -249,7 +251,7 @@
 	<bean id="menageCommunValidator" class="ch.vd.uniregctb.validation.tiers.MenageCommunValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
 	<bean id="personnePhysiqueValidator" class="ch.vd.uniregctb.validation.tiers.PersonnePhysiqueValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
 
-	<bean id="localisationDateeValidator" abstract="true" class="ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator" parent="entityValidator">
+	<bean id="localisationDateeValidator" abstract="true" class="ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator" parent="dateRangeEntityValidator">
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>
 
@@ -263,10 +265,10 @@
 	<bean id="forFiscalSecondaireValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalSecondaireValidator" parent="forFiscalRevenuFortuneValidator" />
 	<bean id="forFiscalAutreElementImposableValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalAutreElementImposableValidator" parent="forFiscalRevenuFortuneValidator" />
 
-	<bean id="situationFamilleValidator" class="ch.vd.uniregctb.validation.situationfamille.SituationFamilleValidator" parent="entityValidator" />
+	<bean id="situationFamilleValidator" class="ch.vd.uniregctb.validation.situationfamille.SituationFamilleValidator" parent="dateRangeEntityValidator" />
 	<bean id="periodiciteValidator" class="ch.vd.uniregctb.validation.periodicite.PeriodiciteValidator" parent="entityValidator" />
 
-	<bean id="declarationValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationValidator" abstract="true" parent="entityValidator" />
+	<bean id="declarationValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationValidator" abstract="true" parent="dateRangeEntityValidator" />
 	<bean id="declarationImpotOrdinaireValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinaireValidator" parent="declarationValidator" />
 	<bean id="declarationImpotSourceValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotSourceValidator" parent="declarationValidator" />
 
@@ -274,7 +276,7 @@
 
 	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="localisationDateeValidator"/>
 
-	<bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" abstract="true" parent="entityValidator">
+	<bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" abstract="true" parent="dateRangeEntityValidator">
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
@@ -304,7 +306,7 @@
 	<bean id="tacheAnnulationDeclarationImpotValidator" class="ch.vd.uniregctb.validation.tache.TacheAnnulationDeclarationImpotValidator" parent="tacheValidator" />
 	<bean id="tacheEnvoiDeclarationImpotValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotValidator" parent="tacheValidator" />
 
-	<bean id="adresseTiersValidator" class="ch.vd.uniregctb.validation.adresse.AdresseTiersValidator" abstract="true" parent="entityValidator" />
+	<bean id="adresseTiersValidator" class="ch.vd.uniregctb.validation.adresse.AdresseTiersValidator" abstract="true" parent="dateRangeEntityValidator" />
 	<bean id="adresseCivileValidator" class="ch.vd.uniregctb.validation.adresse.AdresseCivileValidator" parent="adresseTiersValidator" />
 	<bean id="adressePMValidator" class="ch.vd.uniregctb.validation.adresse.AdressePMValidator" parent="adresseTiersValidator" />
 	<bean id="adresseAutreTiersValidator" class="ch.vd.uniregctb.validation.adresse.AdresseAutreTiersValidator" parent="adresseTiersValidator" />
@@ -312,7 +314,7 @@
 	<bean id="adresseSuisseValidator" class="ch.vd.uniregctb.validation.adresse.AdresseSuisseValidator" parent="adresseSupplementaireValidator" />
 	<bean id="adresseEtrangereValidator" class="ch.vd.uniregctb.validation.adresse.AdresseEtrangereValidator" parent="adresseSupplementaireValidator" />
 
-	<bean id="droitAccesValidator" class="ch.vd.uniregctb.validation.droitacces.DroitAccesValidator" parent="entityValidator" />
+	<bean id="droitAccesValidator" class="ch.vd.uniregctb.validation.droitacces.DroitAccesValidator" parent="dateRangeEntityValidator" />
 
 	<bean id="etatDeclarationValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationValidator" abstract="true" parent="entityValidator" />
 	<bean id="etatDeclarationSommeeValidator" class="ch.vd.uniregctb.validation.declaration.EtatDeclarationsommeeValidator" parent="etatDeclarationValidator" />
@@ -320,6 +322,8 @@
 
 	<bean id="domicileEtablissementValidator" class="ch.vd.uniregctb.validation.tiers.DomicileEtablissementValidator" parent="localisationDateeValidator"/>
 
-	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="entityValidator"/>
+	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="dateRangeEntityValidator"/>
+
+	<bean id="donneesRegistreCommerceValidator" class="ch.vd.uniregctb.validation.tiers.DonneesRegistreCommerceValidator" parent="dateRangeEntityValidator"/>
 
 </beans>

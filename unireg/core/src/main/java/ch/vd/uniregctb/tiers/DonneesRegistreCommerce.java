@@ -17,29 +17,28 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
+import ch.vd.uniregctb.type.FormeJuridique;
 
 @Entity
-@Table(name = "REGIME_FISCAL")
-public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEntity {
-
-	public enum Portee {
-		VD,
-		CH
-	}
+@Table(name = "DONNEES_RC")
+public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements LinkedEntity {
 
 	private Long id;
 	private Entreprise entreprise;
-	private Portee portee;
-	private TypeRegimeFiscal type;
+	private String raisonSociale;
+	private Long capital;
+	private FormeJuridique formeJuridique;
 
-	public RegimeFiscal() {
+	// TODO : code noga, ... ?
+
+	public DonneesRegistreCommerce() {
 	}
 
-	public RegimeFiscal(RegDate dateDebut, RegDate dateFin, Portee portee, TypeRegimeFiscal type) {
+	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, Long capital, FormeJuridique formeJuridique) {
 		super(dateDebut, dateFin);
-		this.portee = portee;
-		this.type = type;
+		this.raisonSociale = raisonSociale;
+		this.capital = capital;
+		this.formeJuridique = formeJuridique;
 	}
 
 	@Transient
@@ -60,7 +59,7 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "ENTREPRISE_ID", nullable = false, updatable = false)
+	@JoinColumn(name = "ENTREPRISE_ID", nullable = false)
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}
@@ -69,33 +68,34 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 		this.entreprise = entreprise;
 	}
 
-	@Column(name = "PORTEE", length = LengthConstants.REGIME_FISCAL_PORTEE, nullable = false, updatable = false)
+	@Column(name = "RAISON_SOCIALE", length = LengthConstants.TIERS_NOM)
+	public String getRaisonSociale() {
+		return raisonSociale;
+	}
+
+	public void setRaisonSociale(String raisonSociale) {
+		this.raisonSociale = raisonSociale;
+	}
+
+	@Column(name = "CAPITAL")
+	public Long getCapital() {
+		return capital;
+	}
+
+	public void setCapital(Long capital) {
+		this.capital = capital;
+	}
+
+	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.AC_FORME)
 	@Enumerated(EnumType.STRING)
-	public Portee getPortee() {
-		return portee;
+	public FormeJuridique getFormeJuridique() {
+		return formeJuridique;
 	}
 
-	public void setPortee(Portee portee) {
-		this.portee = portee;
+	public void setFormeJuridique(FormeJuridique formeJuridique) {
+		this.formeJuridique = formeJuridique;
 	}
 
-	@Column(name = "TYPE", length = LengthConstants.REGIME_FISCAL_TYPE, nullable = false, updatable = false)
-	@Enumerated(EnumType.STRING)
-	public TypeRegimeFiscal getType() {
-		return type;
-	}
-
-	public void setType(TypeRegimeFiscal type) {
-		this.type = type;
-	}
-
-	@Transient
-	@Override
-	protected String getBusinessName() {
-		return String.format("%s %s", super.getBusinessName(), portee);
-	}
-
-	@Transient
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
