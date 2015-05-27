@@ -48,7 +48,7 @@ public class EntityLinkCollector {
 		FUSION_ENTREPRISES
 	}
 
-	public static abstract class EntityLink<S extends Tiers, D extends Tiers, R extends RapportEntreTiers> implements DateRange {
+	public abstract static class EntityLink<S extends Tiers, D extends Tiers, R extends RapportEntreTiers> implements DateRange {
 
 		private final LinkType type;
 		private final Supplier<S> source;

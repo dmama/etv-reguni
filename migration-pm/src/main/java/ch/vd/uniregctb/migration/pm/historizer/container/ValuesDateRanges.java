@@ -10,7 +10,7 @@ import java.util.List;
  * @param <T>
  */
 public abstract class ValuesDateRanges<T> {
-	final private List<DateRanged<T>> values;
+	private final List<DateRanged<T>> values;
 
 	public ValuesDateRanges(List<DateRanged<T>> values) {
 		this.values = values;

@@ -81,7 +81,7 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 		}
 	}
 
-	private static interface CachedElement {
+	private interface CachedElement {
 		Object getPayload();
 	}
 

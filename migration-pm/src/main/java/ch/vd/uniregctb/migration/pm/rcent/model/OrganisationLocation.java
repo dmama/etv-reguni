@@ -15,9 +15,6 @@ import ch.vd.evd0022.v1.UidRegisterLiquidationReason;
 import ch.vd.evd0022.v1.UidRegisterPublicStatus;
 import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
-import ch.vd.evd0022.v1.VatRegisterEntryStatus;
-import ch.vd.evd0022.v1.VatRegisterStatus;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 
 public class OrganisationLocation {
@@ -25,20 +22,22 @@ public class OrganisationLocation {
     /**
      * Identifiant cantonal - "Clé primaire"
      */
-    final private long cantonalId;
+    private final long cantonalId;
     @NotNull
-    final private List<DateRanged<String>> name;
+    private final List<DateRanged<String>> name;
 
+	// CHECKSTYLE:OFF
 	public final RCEntRCData rc;
+	// CHECKSTYLE:OFF
 	public final RCEntUIDData uid;
 
-	public final List<DateRanged<Identifier>> identifier;
-	public final List<DateRanged<String>> otherNames;
-	public final List<DateRanged<KindOfLocation>> kindOfLocation;
-	public final List<DateRanged<Integer>> seat;
-	public final List<DateRanged<Function>> function;
-	public final List<DateRanged<Long>> replacedBy;
-	public final List<DateRanged<Long>> inReplacementOf;
+	private final List<DateRanged<Identifier>> identifier;
+	private final List<DateRanged<String>> otherNames;
+	private final List<DateRanged<KindOfLocation>> kindOfLocation;
+	private final List<DateRanged<Integer>> seat;
+	private final List<DateRanged<Function>> function;
+	private final List<DateRanged<Long>> replacedBy;
+	private final List<DateRanged<Long>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRanged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            List<DateRanged<Identifier>> identifier, List<DateRanged<String>> otherNames,

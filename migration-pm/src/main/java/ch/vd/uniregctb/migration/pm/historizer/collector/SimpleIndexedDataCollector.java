@@ -59,7 +59,7 @@ public class SimpleIndexedDataCollector<S, D, K> extends IndexedDataCollector<S,
 	 */
 	@Override
 	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		final Stream<DateRanged<Keyed<K, D>>> keyedStream = targetCollector.getCollectedDataStream();;
+		final Stream<DateRanged<Keyed<K, D>>> keyedStream = targetCollector.getCollectedDataStream();
 		final Function<DateRanged<Keyed<K, D>>, K> subKeyExtractor = d -> d.getPayload().getKey();
 		final Function<DateRanged<Keyed<K, D>>, DateRanged<D>> subDataExtractor = d -> new DateRanged<>(d.getDateDebut(), d.getDateFin(), d.getPayload().getValue());
 		return keyedStream.collect(Collectors.groupingBy(subKeyExtractor, mapFactory, Collectors.mapping(subDataExtractor, Collectors.toCollection(listFactory))));
