@@ -23,6 +23,8 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -35,9 +37,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -313,8 +314,11 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		final RegpmCoordonneesFinancieres cf = getter.get();
 		if (cf != null) {
 			try {
-				unireg.setNumeroCompteBancaire(IbanExtractor.extractIban(cf));
-				unireg.setAdresseBicSwift(cf.getBicSwift());
+				final String iban = IbanExtractor.extractIban(cf);
+				final String bicSwift = cf.getBicSwift();
+				if (iban != null || bicSwift != null) {
+					unireg.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+				}
 
 				// TODO le titulaire du compte ??
 				// TODO faut-il également introduire le POFICHBEXXX (= BIC de postfinance) ?
