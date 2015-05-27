@@ -3345,8 +3345,12 @@ public class TiersServiceImpl implements TiersService {
         tiersCible.setNumeroTelephonePrive(tiersSource.getNumeroTelephonePrive());
         tiersCible.setNumeroTelephoneProfessionnel(tiersSource.getNumeroTelephoneProfessionnel());
         tiersCible.setBlocageRemboursementAutomatique(tiersSource.getBlocageRemboursementAutomatique());
-        tiersCible.setTitulaireCompteBancaire(tiersSource.getTitulaireCompteBancaire());
-        tiersCible.setAdresseBicSwift(tiersSource.getAdresseBicSwift());
+	    if (tiersSource.getCoordonneesFinancieres() != null) {
+		    tiersCible.setCoordonneesFinancieres(new CoordonneesFinancieres(tiersSource.getCoordonneesFinancieres()));
+	    }
+	    else {
+		    tiersCible.setCoordonneesFinancieres(null);
+	    }
     }
 
     private ForFiscalAutreImpot copieForFiscalAutreImpot(ForFiscalAutreImpot forFiscalSource) {

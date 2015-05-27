@@ -8356,7 +8356,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
 				pp.setBlocageRemboursementAutomatique(true);        // pour partir d'une situation bloquée
 				return pp.getNumero();
 			}
@@ -8407,7 +8407,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setNumeroCompteBancaire("CH810900000017744845123");      // trop long!
+				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH810900000017744845123", null));      // trop long!
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8457,7 +8457,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), date(2011, 12, 31), false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.SOURCE);
-				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8507,7 +8507,7 @@ debut PF                                                                        
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albert", "Dayatsu", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8557,7 +8557,7 @@ debut PF                                                                        
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.MENSUEL, date(2009, 1, 1));
 				addRapportPrestationImposable(dpi, pp, date(2009, 1, 1), null, false);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 12, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
-				pp.setNumeroCompteBancaire("CH8109000000177448451");
+				pp.setCoordonneesFinancieres(new CoordonneesFinancieres("CH8109000000177448451", null));
 				pp.setBlocageRemboursementAutomatique(false);        // pour partir d'une situation débloquée
 				return pp.getNumero();
 			}
@@ -8609,8 +8609,8 @@ debut PF                                                                        
 				final PersonnePhysique mme = addNonHabitant("Philomène", "Dubourg", null, Sexe.FEMININ);
 
 				// il faut un IBAN pour débloquer la situation...
-				m.setNumeroCompteBancaire("CH6100767000K51392545");
-				mme.setNumeroCompteBancaire("CH250025525510075340X");
+				m.setCoordonneesFinancieres(new CoordonneesFinancieres("CH6100767000K51392545", null));
+				mme.setCoordonneesFinancieres(new CoordonneesFinancieres("CH250025525510075340X", null));
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
 				final MenageCommun menage = couple.getMenage();

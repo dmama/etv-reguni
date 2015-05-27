@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -851,10 +852,10 @@ public class TestData {
 
 		PersonnePhysique pp2 = new PersonnePhysique();
 		pp2.setNumero(12600001L);
-		pp2.setAdresseBicSwift("CCBPFRPPBDX");
 		pp2.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp2.setBlocageRemboursementAutomatique(false);
 		pp2.setComplementNom("Chopard");
+		pp2.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp2.setMouvementsDossier(new HashSet());
 		pp2.setSituationsFamille(new HashSet());
 		pp2.setDebiteurInactif(false);
@@ -867,7 +868,6 @@ public class TestData {
 		pp2.setPrenomUsuel("Isidor (sourcier gris)");
 		pp2.setSexe(Sexe.MASCULIN);
 		pp2.setIdentificationsPersonnes(new HashSet());
-		pp2.setNumeroCompteBancaire("CH9308440717427290198");
 		pp2.setNumeroTelecopie("0219663629");
 		pp2.setNumeroTelephonePortable("0219663999");
 		pp2.setNumeroTelephonePrive("0219663623");
@@ -989,6 +989,7 @@ public class TestData {
 		PersonnePhysique pp6 = new PersonnePhysique();
 		pp6.setNumero(12900001L);
 		pp6.setBlocageRemboursementAutomatique(false);
+		pp6.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 		pp6.setMouvementsDossier(new HashSet());
 		pp6.setSituationsFamille(new HashSet());
 		pp6.setDebiteurInactif(false);
@@ -1001,7 +1002,6 @@ public class TestData {
 		pp6.setPrenomUsuel("Michel");
 		pp6.setSexe(Sexe.MASCULIN);
 		pp6.setIdentificationsPersonnes(new HashSet());
-		pp6.setNumeroCompteBancaire("CH9308440717427290198");
 		pp6.setNumeroTelephonePortable("0764537812");
 		pp6.setNumeroTelephonePrive("032'897'45'32");
 		pp6.setOfficeImpotId(10);
@@ -1039,13 +1039,13 @@ public class TestData {
 		pp8.setNumero(34807810L);
 		pp8.setAdresseCourrierElectronique("pascaline@descloux.ch");
 		pp8.setBlocageRemboursementAutomatique(false);
+		pp8.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 		pp8.setMouvementsDossier(new HashSet());
 		pp8.setSituationsFamille(new HashSet());
 		pp8.setDebiteurInactif(false);
 		pp8.setLogCreationDate(new Timestamp(1199142000000L));
 		pp8.setLogModifDate(new Timestamp(1199142000000L));
 		pp8.setIdentificationsPersonnes(new HashSet());
-		pp8.setNumeroCompteBancaire("CH9308440717427290198");
 		pp8.setNumeroIndividu(674417L);
 		pp8.setNumeroTelephonePortable("0792348732");
 		pp8.setNumeroTelephonePrive("0213135489");
@@ -1119,15 +1119,14 @@ public class TestData {
 
 		MenageCommun mc1 = new MenageCommun();
 		mc1.setNumero(86006202L);
-		mc1.setAdresseBicSwift("CCBPFRPPBDX");
 		mc1.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		mc1.setBlocageRemboursementAutomatique(false);
+		mc1.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		mc1.setMouvementsDossier(new HashSet());
 		mc1.setSituationsFamille(new HashSet());
 		mc1.setDebiteurInactif(false);
 		mc1.setLogCreationDate(new Timestamp(1199142000000L));
 		mc1.setLogModifDate(new Timestamp(1199142000000L));
-		mc1.setNumeroCompteBancaire("CH9308440717427290198");
 		mc1.setNumeroTelecopie("0219663629");
 		mc1.setNumeroTelephonePortable("0219663999");
 		mc1.setNumeroTelephonePrive("0219663623");
@@ -1158,10 +1157,10 @@ public class TestData {
 
 		PersonnePhysique pp12 = new PersonnePhysique();
 		pp12.setNumero(12600008L);
-		pp12.setAdresseBicSwift("CCBPFRPPBDX");
 		pp12.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp12.setBlocageRemboursementAutomatique(false);
 		pp12.setComplementNom("Chopard");
+		pp12.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp12.setMouvementsDossier(new HashSet());
 		pp12.setSituationsFamille(new HashSet());
 		pp12.setDebiteurInactif(true);
@@ -1174,7 +1173,6 @@ public class TestData {
 		pp12.setPrenomUsuel("De la mort");
 		pp12.setSexe(Sexe.MASCULIN);
 		pp12.setIdentificationsPersonnes(new HashSet());
-		pp12.setNumeroCompteBancaire("CH9308440717427290198");
 		pp12.setNumeroTelecopie("0219663629");
 		pp12.setNumeroTelephonePortable("0219663999");
 		pp12.setNumeroTelephonePrive("0219663623");
@@ -1193,10 +1191,10 @@ public class TestData {
 
 		PersonnePhysique pp13 = new PersonnePhysique();
 		pp13.setNumero(12600002L);
-		pp13.setAdresseBicSwift("CCBPFRPPBDX");
 		pp13.setAdresseCourrierElectronique("dupont@etat-vaud.ch");
 		pp13.setBlocageRemboursementAutomatique(false);
 		pp13.setComplementNom("Chopard");
+		pp13.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", "CCBPFRPPBDX"));
 		pp13.setMouvementsDossier(new HashSet());
 		pp13.setSituationsFamille(new HashSet());
 		pp13.setDebiteurInactif(false);
@@ -1209,7 +1207,6 @@ public class TestData {
 		pp13.setPrenomUsuel("Conchita");
 		pp13.setSexe(Sexe.FEMININ);
 		pp13.setIdentificationsPersonnes(new HashSet());
-		pp13.setNumeroCompteBancaire("CH9308440717427290198");
 		pp13.setNumeroTelecopie("0219663629");
 		pp13.setNumeroTelephonePortable("0219663999");
 		pp13.setNumeroTelephonePrive("0219663623");

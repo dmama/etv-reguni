@@ -40,7 +40,6 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 				{
 					Entreprise ent = new Entreprise();
 					ent.setNumero(1234L);
-					ent.setAdresseBicSwift("Bla");
 					dao.save(ent);
 				}
 				return null;
@@ -95,7 +94,6 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 				{
 					Entreprise ent = new Entreprise();
 					ent.setNumero(1235L);
-					ent.setAdresseBicSwift("Bla");
 					ent = (Entreprise) dao.save(ent);
 
 					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
@@ -140,7 +138,6 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 				{
 					AutreCommunaute ac = new AutreCommunaute();
 					ac.setNom("Bla bli");
-					ac.setAdresseBicSwift("Bla");
 					ac = (AutreCommunaute) dao.save(ac);
 
 					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();

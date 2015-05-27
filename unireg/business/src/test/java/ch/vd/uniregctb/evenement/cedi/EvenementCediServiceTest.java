@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.cedi;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.jms.BamMessageSender;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.MotifFor;
@@ -250,7 +252,9 @@ public class EvenementCediServiceTest extends BusinessTest {
 				                    declarationComplete2008);
 
 				// le numéro présent en base avant réception du nouveau
-				eric.setNumeroCompteBancaire(ibanInitial);
+				if (StringUtils.isNotBlank(ibanInitial)) {
+					eric.setCoordonneesFinancieres(new CoordonneesFinancieres(ibanInitial, null));
+				}
 
 				return eric.getNumero();
 			}

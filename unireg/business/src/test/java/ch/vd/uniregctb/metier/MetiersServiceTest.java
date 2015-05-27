@@ -31,6 +31,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -4031,8 +4032,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 
-				lui.setNumeroCompteBancaire("CH9308440717427290198");
-				elle.setNumeroCompteBancaire("CH9308440717427290198");
+				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();
@@ -4128,8 +4129,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				lui.setNumeroCompteBancaire("CH9308440717427290198");
-				elle.setNumeroCompteBancaire("CH9308440717427290198");
+				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();
@@ -4226,8 +4227,8 @@ public class MetiersServiceTest extends BusinessTest {
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aigle, ModeImposition.SOURCE);
 
-				lui.setNumeroCompteBancaire("CH9308440717427290198");
-				elle.setNumeroCompteBancaire("CH9308440717427290198");
+				lui.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
+				elle.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				final Ids ids = new Ids();
 				ids.lui = lui.getNumero();

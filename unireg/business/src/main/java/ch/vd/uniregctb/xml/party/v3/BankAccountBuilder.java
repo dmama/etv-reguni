@@ -6,6 +6,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.xml.party.v3.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v3.BankAccount;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.xml.Context;
 
 public class BankAccountBuilder {
@@ -14,10 +15,14 @@ public class BankAccountBuilder {
 
 		c.setOwnerPartyNumber(tiers.getNumero().intValue());
 		c.setOwnerName(tiers.getTitulaireCompteBancaire());
-		c.setAccountNumber(tiers.getNumeroCompteBancaire());
+
+		final CoordonneesFinancieres cf = tiers.getCoordonneesFinancieres();
+		if (cf != null) {
+			c.setAccountNumber(cf.getIban());
+			c.setClearing(context.ibanValidator.getClearing(cf.getIban()));
+			c.setBicAddress(cf.getBicSwift());
+		}
 		c.setFormat(AccountNumberFormat.IBAN); // par définition, on ne stocke que le format IBAN dans Unireg
-		c.setClearing(context.ibanValidator.getClearing(tiers.getNumeroCompteBancaire()));
-		c.setBicAddress(tiers.getAdresseBicSwift());
 
 		try {
 			final List<InstitutionFinanciere> list = context.infraService.getInstitutionsFinancieres(c.getClearing());

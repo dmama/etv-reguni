@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -84,14 +87,13 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	/**
 	 * Numero de compte bancaire ou du compte postal au format international IBAN (longueur maximum 21 pour les comptes suisses)
 	 */
-	private String numeroCompteBancaire;
+	private CoordonneesFinancieres coordonneesFinancieres;
 
 	/**
 	 * Titulaire du compte bancaire ou du compte postal
 	 */
 	private String titulaireCompteBancaire;
 
-	private String adresseBicSwift;
 	private boolean debiteurInactif = false;
 	private Boolean indexDirty;
 
@@ -219,13 +221,27 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		adresseCourrierElectronique = theAdresseCourrierElectronique;
 	}
 
-	@Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)
-	public String getNumeroCompteBancaire() {
-		return numeroCompteBancaire;
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "iban", column = @Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)),
+			@AttributeOverride(name = "bicSwift", column = @Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT))
+	})
+	public CoordonneesFinancieres getCoordonneesFinancieres() {
+		return coordonneesFinancieres;
 	}
 
-	public void setNumeroCompteBancaire(String theNumeroCompteBancaire) {
-		numeroCompteBancaire = theNumeroCompteBancaire;
+	public void setCoordonneesFinancieres(CoordonneesFinancieres coordonneesFinancieres) {
+		this.coordonneesFinancieres = coordonneesFinancieres;
+	}
+
+	@Transient
+	public String getNumeroCompteBancaire() {
+		return coordonneesFinancieres != null ? coordonneesFinancieres.getIban() : null;
+	}
+
+	@Transient
+	public String getAdresseBicSwift() {
+		return coordonneesFinancieres != null ? coordonneesFinancieres.getBicSwift() : null;
 	}
 
 	@Column(name = "TITULAIRE_COMPTE_BANCAIRE", length = LengthConstants.TIERS_PERSONNE)
@@ -338,15 +354,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	public void setBlocageRemboursementAutomatique(Boolean theBlocageRemboursementAutomatique) {
 		blocageRemboursementAutomatique = theBlocageRemboursementAutomatique;
-	}
-
-	@Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT)
-	public String getAdresseBicSwift() {
-		return adresseBicSwift;
-	}
-
-	public void setAdresseBicSwift(String theAdresseBicSwift) {
-		adresseBicSwift = theAdresseBicSwift;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)
@@ -1382,7 +1389,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			return false;
 		}
 
-		return ComparisonHelper.areEqual(adresseBicSwift, obj.adresseBicSwift)
+		return ComparisonHelper.areEqual(coordonneesFinancieres, obj.coordonneesFinancieres)
 				&& ComparisonHelper.areEqual(adresseCourrierElectronique, obj.adresseCourrierElectronique)
 				&& ComparisonHelper.areEqual(adressesTiers, obj.adressesTiers)
 				&& ComparisonHelper.areEqual(blocageRemboursementAutomatique, obj.blocageRemboursementAutomatique)
@@ -1391,7 +1398,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				&& ComparisonHelper.areEqual(declarations, obj.declarations)
 				&& ComparisonHelper.areEqual(forsFiscaux, obj.forsFiscaux)
 				&& ComparisonHelper.areEqual(numero, obj.numero)
-				&& ComparisonHelper.areEqual(numeroCompteBancaire, obj.numeroCompteBancaire)
 				&& ComparisonHelper.areEqual(numeroTelecopie, obj.numeroTelecopie)
 				&& ComparisonHelper.areEqual(numeroTelephonePortable, obj.numeroTelephonePortable)
 				&& ComparisonHelper.areEqual(numeroTelephonePrive, obj.numeroTelephonePrive)

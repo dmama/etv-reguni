@@ -53,6 +53,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -817,23 +818,17 @@ public class MetierServiceImpl implements MetierService {
 		else if (conjoint != null && conjoint.getAdresseCourrierElectronique() != null) {
 			menageCommun.setAdresseCourrierElectronique(conjoint.getAdresseCourrierElectronique());
 		}
-		if (principal.getNumeroCompteBancaire() != null) {
-			menageCommun.setNumeroCompteBancaire(principal.getNumeroCompteBancaire());
+		if (principal.getCoordonneesFinancieres() != null) {
+			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(principal.getCoordonneesFinancieres()));
 		}
-		else if (conjoint != null && conjoint.getNumeroCompteBancaire() != null) {
-			menageCommun.setNumeroCompteBancaire(conjoint.getNumeroCompteBancaire());
+		else if (conjoint != null && conjoint.getCoordonneesFinancieres() != null) {
+			menageCommun.setCoordonneesFinancieres(new CoordonneesFinancieres(conjoint.getCoordonneesFinancieres()));
 		}
 		if (principal.getTitulaireCompteBancaire() != null) {
 			menageCommun.setTitulaireCompteBancaire(principal.getTitulaireCompteBancaire());
 		}
 		else if (conjoint != null && conjoint.getTitulaireCompteBancaire() != null) {
 			menageCommun.setTitulaireCompteBancaire(conjoint.getTitulaireCompteBancaire());
-		}
-		if (principal.getAdresseBicSwift() != null) {
-			menageCommun.setAdresseBicSwift(principal.getAdresseBicSwift());
-		}
-		else if (conjoint != null && conjoint.getAdresseBicSwift() != null) {
-			menageCommun.setAdresseBicSwift(conjoint.getAdresseBicSwift());
 		}
 	}
 

@@ -65,6 +65,7 @@ import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -160,7 +161,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				addAdresseSuisse(eric, TypeAdresseTiers.COURRIER, date(1983, 4, 13), null, MockRue.Lausanne.AvenueDeBeaulieu);
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-				eric.setNumeroCompteBancaire("CH9308440717427290198");
+				eric.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				final PersonnePhysique pupille = addNonHabitant("Slobodan", "Pupille", date(1987, 7, 23), Sexe.MASCULIN);
 				addTutelle(pupille, eric, null, date(2005, 7, 1), null);
@@ -211,7 +212,7 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
 				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
 				ch.vd.uniregctb.tiers.MenageCommun mc = ensemble.getMenage();
-				mc.setNumeroCompteBancaire("CH9308440717427290198");
+				mc.setCoordonneesFinancieres(new CoordonneesFinancieres("CH9308440717427290198", null));
 
 				SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
 				situation.setDateDebut(date(1989, 5, 1));

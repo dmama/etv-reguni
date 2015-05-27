@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
@@ -167,9 +169,15 @@ public class ComplementsController {
 		}
 
 		// On met-à-jour les données.
-		tiers.setNumeroCompteBancaire(IbanHelper.normalize(view.getIban()));
+		final String iban = IbanHelper.normalize(view.getIban());
+		final String bicSwift = StringUtils.trimToNull(FormatNumeroHelper.removeSpaceAndDash(view.getAdresseBicSwift()));
+		if (iban != null || bicSwift != null) {
+			tiers.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+		}
+		else {
+			tiers.setCoordonneesFinancieres(null);
+		}
 		tiers.setTitulaireCompteBancaire(StringUtils.trimToNull(view.getTitulaireCompteBancaire()));
-		tiers.setAdresseBicSwift(StringUtils.trimToNull(view.getAdresseBicSwift()));
 
 		return "redirect:/tiers/visu.do?id=" + id;
 	}

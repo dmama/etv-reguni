@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +169,7 @@ public abstract class PartyStrategy<T extends Party> {
 
 	private static void initBankAccounts(Party left, Context context, Tiers tiers) {
 		final String numero = tiers.getNumeroCompteBancaire();
-		if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
+		if (StringUtils.isNotBlank(numero) && context.ibanValidator.isValidIban(numero)) {
 			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
 		}
 	}
