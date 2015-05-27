@@ -155,12 +155,8 @@
 
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
-        <module name="ModifierOrder">
-	        <property name="severity" value="warning"/>
-        </module>
-        <module name="RedundantModifier">
-	        <property name="severity" value="warning"/>
-        </module>
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
 
 
         <!-- Checks for blocks. You know, those {}'s         -->
@@ -177,9 +173,7 @@
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
         <!--<module name="AvoidInlineConditionals"/>-->
-        <module name="EmptyStatement">
-	        <property name="severity" value="warning"/>
-        </module>
+        <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <!--<module name="HiddenField"/>-->
         <module name="IllegalInstantiation"/>
