@@ -190,7 +190,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param list une liste de ranges
 	 * @return une représentation String de cette liste
 	 */
-	private static String toDisplayString(List<DateRange> list) {
+	private static String toDisplayString(List<? extends DateRange> list) {
 		return list.stream().map(DateRangeHelper::toDisplayString).collect(Collectors.joining(", "));
 	}
 

@@ -58,7 +58,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
 			(l1, l2) -> {
 				final List<DateRange> liste = Stream.concat(l1.stream(), l2.stream())
-						.sorted(new DateRangeComparator<>())
+						.sorted(DateRangeComparator::compareRanges)
 						.collect(Collectors.toList());
 				return DateRangeHelper.merge(liste);
 			};
@@ -107,8 +107,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				.map(couvertureIndividuelle)
 				.flatMap(Function.identity())
 				.collect(Collectors.toMap(Pair::getKey,
-						pair -> Collections.singletonList(pair.getValue()),
-						DATE_RANGE_LIST_MERGER));
+				                          pair -> Collections.singletonList(pair.getValue()),
+				                          DATE_RANGE_LIST_MERGER));
 	}
 
 	/**
@@ -245,9 +245,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		dest.setLogModifDate(src.getLastMutationTimestamp());
 	}
 
-
-
-
 	/**
 	 * Réel job de migration
 	 * @param entity entité à migrer
@@ -302,7 +299,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			return key.hashCode();
 		}
 	}
-
 
 	/**
 	 * Méthode utilitaire de migration des coordonnées financières pour une entité
