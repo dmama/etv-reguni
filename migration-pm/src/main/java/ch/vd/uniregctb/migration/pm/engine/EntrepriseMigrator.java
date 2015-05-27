@@ -43,7 +43,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
-import ch.vd.uniregctb.migration.pm.rcent.model.main.RCEntOrganisation;
+import ch.vd.uniregctb.migration.pm.rcent.model.Organisation;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -259,7 +259,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// Accès à RCEnt au moyen du numéro cantonal. Le résultat sera null si n'existe pas dans RCEnt.
-		RCEntOrganisation rcent = rcEntService.getEntreprise(regpm.getNumeroCantonal()); // TODO: check no cantonal null
+		Organisation rcent = rcEntService.getEntreprise(regpm.getNumeroCantonal()); // TODO: check no cantonal null
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());
