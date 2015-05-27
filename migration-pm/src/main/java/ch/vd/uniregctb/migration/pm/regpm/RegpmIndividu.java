@@ -39,6 +39,7 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 	private String prenom;
 	private Sexe sexe;
 	private RegDate dateNaissance;
+	private RegDate dateDeces;
 	private SortedSet<RegpmCaracteristiquesIndividu> caracteristiques;
 	private Set<RegpmAdresseIndividu> adresses;
 
@@ -109,6 +110,16 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
 	public void setDateNaissance(RegDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
+	}
+
+	@Column(name = "DATE_DECES")
+	@Type(type = "RegDate")
+	public RegDate getDateDeces() {
+		return dateDeces;
+	}
+
+	public void setDateDeces(RegDate dateDeces) {
+		this.dateDeces = dateDeces;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY)

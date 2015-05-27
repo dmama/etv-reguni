@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,11 +12,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -202,7 +202,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
+		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu 33153 trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
 	}
 

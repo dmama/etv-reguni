@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v5.FoundPerson;
+import ch.vd.evd0001.v5.Identity;
 import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.evd0001.v5.Person;
@@ -22,14 +23,15 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
@@ -161,9 +163,36 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			if (trouveRCPersId != null) {
 				pp.setNumeroIndividu(trouveRCPersId.getLeft());
 				pp.setHabitant(trouveRCPersId.getRight());
-				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, "Individu trouvé dans RCPers sans équivalent dans Unireg...");
+				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, String.format("Individu %d trouvé dans RCPers sans équivalent dans Unireg...", trouveRCPersId.getLeft()));
 
-				// TODO dans le cas d'un non-habitant (= ancien habitant, donc...), ne faut-il pas recopier certaines données dans Unireg ?
+				// Dans le cas d'un non-habitant (= ancien habitant, donc...), il faut recopier certaines données dans Unireg
+				if (!pp.isHabitantVD()) {
+					final Person rcpers = getFromRCPersWithId(mr, trouveRCPersId.getLeft());
+					if (rcpers == null) {
+						// bizarre, RCPers ne nous renvoie rien... on prend les données de RegPM...
+						pp.setNom(regpm.getNom());
+						pp.setTousPrenoms(regpm.getPrenom());
+						pp.setPrenomUsuel(extractPrenomUsuel(regpm.getPrenom()));
+						pp.setSexe(regpm.getSexe());
+						pp.setDateNaissance(regpm.getDateNaissance());
+						pp.setDateDeces(regpm.getDateDeces());
+					}
+					else {
+						// on recopie les données (minimales) de RCPers
+						final Identity identity = rcpers.getIdentity();
+						pp.setNom(identity.getOfficialName());
+						pp.setTousPrenoms(identity.getFirstNames());
+						if (StringUtils.isNotBlank(identity.getCallName())) {
+							pp.setPrenomUsuel(identity.getCallName());
+						}
+						else {
+							pp.setPrenomUsuel(extractPrenomUsuel(identity.getFirstNames()));
+						}
+						pp.setSexe(EchHelper.sexeFromEch44(identity.getSex()));
+						pp.setDateNaissance(EchHelper.partialDateFromEch44(identity.getDateOfBirth()));
+						pp.setDateDeces(XmlUtils.xmlcal2regdate(rcpers.getDateOfDeath()));
+					}
+				}
 			}
 			else {
 				pp.setNom(regpm.getNom());
@@ -171,6 +200,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				pp.setPrenomUsuel(extractPrenomUsuel(regpm.getPrenom()));
 				pp.setSexe(regpm.getSexe());
 				pp.setDateNaissance(regpm.getDateNaissance());
+				pp.setDateDeces(regpm.getDateDeces());
 				pp.setHabitant(Boolean.FALSE);
 			}
 
