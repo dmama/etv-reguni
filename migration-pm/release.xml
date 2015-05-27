@@ -9,22 +9,22 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>unireg-migration-pm-${pom.version}/lib</outputDirectory>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/lib</outputDirectory>
 			<scope>runtime</scope>
 		</dependencySet>
 	</dependencySets>
 	<files>
 		<file>
 			<source>src/main/scripts/migration-pm.sh</source>
-			<outputDirectory>unireg-migration-pm-${pom.version}/bin</outputDirectory>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/bin</outputDirectory>
 		</file>
 		<file>
 			<source>src/main/resources/example.properties</source>
-			<outputDirectory>unireg-migration-pm-${pom.version}/conf</outputDirectory>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 		<file>
 			<source>src/main/resources/données-disparues-refinf-avec-candidats.csv</source>
-			<outputDirectory>unireg-migration-pm-${pom.version}/conf</outputDirectory>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 	</files>
 </assembly>
