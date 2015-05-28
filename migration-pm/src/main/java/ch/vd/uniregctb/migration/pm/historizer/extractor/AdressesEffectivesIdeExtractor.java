@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.historizer.extractor.organization;
+package ch.vd.uniregctb.migration.pm.historizer.extractor;
 
 import java.math.BigInteger;
 import java.util.function.Function;

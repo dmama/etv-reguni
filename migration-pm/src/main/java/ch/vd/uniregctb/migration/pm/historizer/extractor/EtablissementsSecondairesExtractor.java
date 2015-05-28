@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.historizer.extractor.organization;
+package ch.vd.uniregctb.migration.pm.historizer.extractor;
 
 import java.math.BigInteger;
 import java.util.function.Function;
@@ -15,5 +15,5 @@ public class EtablissementsSecondairesExtractor implements Function<Organisation
 		return org.getOrganisationLocation().stream()
 				.filter(ol -> KindOfLocation.ETABLISSEMENT_SECONDAIRE == ol.getKindOfLocation())
 				.map(OrganisationLocation::getCantonalId);
+	}
 }
- }
