@@ -4,13 +4,13 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import ch.vd.evd0021.v1.Address;
+import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
+import ch.vd.evd0022.v1.OrganisationLocation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
 import ch.vd.evd0022.v1.SwissMunicipality;
 import ch.vd.registre.base.date.RegDate;
@@ -23,31 +23,20 @@ import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
-import ch.vd.uniregctb.migration.pm.historizer.equalator.EtablissementEqualator;
+import ch.vd.uniregctb.migration.pm.historizer.equalator.OrganisationLocationEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.SeatEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.AdressesLegalesExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.Etablissement;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementPrincipal;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementPrincipalExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementSecondaire;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.EtablissementsSecondairesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.KindOfLocationExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.OrganisationLocationExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.organization.SeatExtractor;
 
 public class OrganisationHistorizer {
 
-	private static final Equalator<Etablissement> ETABLISSEMENT_EQUALATOR = new EtablissementEqualator();
 	private static final Equalator<Address> ADDRESS_EQUALATOR = new AdresseEqualator();
-	private static final Equalator<SwissMunicipality> SEAT_EQUALATOR = new SeatEqualator();
-
-	private static final Function<Organisation, EtablissementPrincipal> ETABLISSEMENT_PRINCIPAL_EXTRACTOR = new EtablissementPrincipalExtractor();
-	private static final Function<Organisation, Stream<? extends EtablissementSecondaire>> ETABLISSEMENTS_SECONDAIRES_EXTRACTOR = new EtablissementsSecondairesExtractor();
-	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_LEGALES_EXTRACTOR = new AdressesLegalesExtractor();
-	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_EFFECTIVES_EXTRACTOR = new AdressesEffectivesIdeExtractor();
-	private static final Function<Organisation, Stream<Keyed<BigInteger, Address>>> ADRESSES_CASE_POSTALE_IDE_EXTRACTOR = new AdressesCasePostaleIdeExtractor();
-	private static final Function<Organisation, Stream<Keyed<BigInteger, SwissMunicipality>>> SEAT_EXTRACTOR = new SeatExtractor();
-
 
 	public Object mapOrganisation(List<OrganisationSnapshot> snapshots) {
 
@@ -60,28 +49,32 @@ public class OrganisationHistorizer {
 		final LinearDataCollector<Organisation, LegalForm> legalFormCollector = new SimpleDataCollector<>(Organisation::getLegalForm,
 		                                                                                                  Equalator.DEFAULT
 		);
-		final LinearDataCollector<Organisation, EtablissementPrincipal> etablissementPrincipalCollector = new SimpleDataCollector<>(ETABLISSEMENT_PRINCIPAL_EXTRACTOR,
-		                                                                                                                            ETABLISSEMENT_EQUALATOR
+		final LinearDataCollector<Organisation, BigInteger> etablissementPrincipalCollector = new SimpleDataCollector<>(new EtablissementPrincipalExtractor(),
+		                                                                                                                Equalator.DEFAULT
 		);
-		final LinearDataCollector<Organisation, EtablissementSecondaire> etablissementsSecondairesCollector = new FlattenDataCollector<>(ETABLISSEMENTS_SECONDAIRES_EXTRACTOR,
-		                                                                                                                                 ETABLISSEMENT_EQUALATOR,
-		                                                                                                                                 EtablissementSecondaire::getId
+		final LinearDataCollector<Organisation, BigInteger> etablissementsSecondairesCollector = new FlattenDataCollector<>(new EtablissementsSecondairesExtractor(),
+		                                                                                                                    Equalator.DEFAULT,
+		                                                                                                                    s -> s
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_LEGALES_EXTRACTOR,
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                    ADDRESS_EQUALATOR,
 		                                                                                                                                    Keyed::getKey
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_EFFECTIVES_EXTRACTOR,
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
 		                                                                                                                                     ADDRESS_EQUALATOR,
 		                                                                                                                                     Keyed::getKey
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new FlattenIndexedDataCollector<>(ADRESSES_CASE_POSTALE_IDE_EXTRACTOR,
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
 		                                                                                                                                                ADDRESS_EQUALATOR,
 		                                                                                                                                                Keyed::getKey
 		);
-		final IndexedDataCollector<Organisation, SwissMunicipality, BigInteger> seatCollector = new FlattenIndexedDataCollector<>(SEAT_EXTRACTOR,
-		                                                                                                   SEAT_EQUALATOR,
-		                                                                                                   Keyed::getKey
+		final IndexedDataCollector<Organisation, SwissMunicipality, BigInteger> seatCollector = new FlattenIndexedDataCollector<>(new SeatExtractor(),
+		                                                                                                                          new SeatEqualator(),
+		                                                                                                                          Keyed::getKey
+		);
+		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> kindOfLocationCollector = new FlattenIndexedDataCollector<>(new KindOfLocationExtractor(),
+		                                                                                                                                    Equalator.DEFAULT,
+		                                                                                                                                    Keyed::getKey
 		);
 
 		// on collecte les plages de dates dans les collectors
@@ -91,20 +84,26 @@ public class OrganisationHistorizer {
 		                                                    adressesRcEtablissementsCollector,
 		                                                    adressesIdeEtablissementsCollector,
 		                                                    adressesIdeCasePostaleEtablissementsCollector,
-		                                                    seatCollector
+		                                                    seatCollector,
+		                                                    kindOfLocationCollector
 		));
 
 		// récupération des plages de valeurs
 		final List<DateRanged<LegalForm>> formesJuridiques = legalFormCollector.getCollectedData();
-		final List<DateRanged<EtablissementPrincipal>> prnEtablissements = etablissementPrincipalCollector.getCollectedData();
-		final List<DateRanged<EtablissementSecondaire>> secEtablissements = etablissementsSecondairesCollector.getCollectedData();
+		final List<DateRanged<BigInteger>> prnEtablissements = etablissementPrincipalCollector.getCollectedData();
+		final List<DateRanged<BigInteger>> secEtablissements = etablissementsSecondairesCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<Address>>> adressesRc = adressesRcEtablissementsCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<Address>>> adressesIdeEffectives = adressesIdeEtablissementsCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<Address>>> adressesIdeCasePostale = adressesIdeCasePostaleEtablissementsCollector.getCollectedData();
 		final Map<BigInteger, List<DateRanged<SwissMunicipality>>> seatMunicipalities = seatCollector.getCollectedData();
+		final Map<BigInteger, List<DateRanged<KindOfLocation>>> genreDEtablissements = kindOfLocationCollector.getCollectedData();
 
 		// et finalement on construit un objet à renvoyer à l'appelant
-		// TODO construire l'objet à renvoyer
+
+		List<ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation> etablissements = EtablissementsBuilder.build();
+
+		//ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation.RCEntRCData rc = new ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation.RCEntRCData()
+		//ch.vd.uniregctb.migration.pm.rcent.model.Organisation organisation = new ch.vd.uniregctb.migration.pm.rcent.model.Organisation();
 
 		return null;
 	}
