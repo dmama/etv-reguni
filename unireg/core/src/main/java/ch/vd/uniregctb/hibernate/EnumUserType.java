@@ -22,7 +22,7 @@ public class EnumUserType<E extends Enum<E>> extends GenericUserType implements 
     /**
      * Constructeur.
      */
-    protected EnumUserType(Class<E> c) {
+    public EnumUserType(Class<E> c) {
         this.clazz = c;
     }
 

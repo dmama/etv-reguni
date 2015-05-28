@@ -7,6 +7,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +23,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -301,6 +302,21 @@ public class MetaEntity {
 				// une propriété emdeddée : on l'expose à plat.
 				return determineEmbeddedProps(descriptor);
 			}
+			else if (a instanceof Enumerated) {
+				final Enumerated enumerated = (Enumerated) a;
+				if (readMethod.getReturnType().isEnum()) {
+					if (enumerated.value() == EnumType.STRING) {
+						//noinspection unchecked
+						userType = new EnumUserType(readMethod.getReturnType());
+					}
+					else {
+						throw new NotImplementedException("Seule la stratégie STRING est supportée dans l'annotation @Enumerated de la propriété " + descriptor.getName() + " de la classe " + clazz.getName());
+					}
+				}
+				else {
+					throw new NotImplementedException("L'annotation @Enumerated n'est actuellement supportée que pour les types énumérés (champ " + descriptor.getName() + " de la classe " + clazz.getName() + ")");
+				}
+			}
 		}
 
 		if (sequenceName != null) {
@@ -353,7 +369,7 @@ public class MetaEntity {
 			Assert.notNull(propertyType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 		}
 
-		return Arrays.asList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
+		return Collections.singletonList(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
 	}
 
 	/**

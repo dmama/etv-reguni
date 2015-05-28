@@ -21,7 +21,10 @@ public enum EntityType {
 	Immeuble(ch.vd.uniregctb.rf.Immeuble.class, "immeuble", "l'immeuble", "de l'immeuble"),
 	Remarque(ch.vd.uniregctb.tiers.Remarque.class, "remarque", "la remarque", "de la remarque"),
 	MouvementDossier(ch.vd.uniregctb.mouvement.MouvementDossier.class, "mouvement de dossier", "le mouvement de dossier", "du mouvement de dossier"),
-	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI");
+	DecisionAci(ch.vd.uniregctb.tiers.DecisionAci.class,"décision ACI", "la décision ACI","de la décision ACI"),
+	DomicileEtablissement(ch.vd.uniregctb.tiers.DomicileEtablissement.class, "domicile", "le domicile", "du domicile"),
+	RegimeFiscal(ch.vd.uniregctb.tiers.RegimeFiscal.class, "régime fiscal", "le régime fiscal", "du régime fiscal"),
+	DonneesRegistreCommerce(ch.vd.uniregctb.tiers.DonneesRegistreCommerce.class, "donnée du registre du commerce", "la donnée du registre du commerce", "de la donnée du registre du commerce");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"
