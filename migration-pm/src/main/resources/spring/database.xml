@@ -31,6 +31,7 @@
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
 		<value>ch.vd.uniregctb.tiers.ActiviteEconomique</value>
+		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.Bouclement</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
