@@ -19,8 +19,7 @@ public class OrganisationBuilder {
 	private final List<DateRanged<LegalForm>> formesJuridiques;
 	//
 //		private private final List<DateRanged<OrganisationLocation>> locations;
-	private final List<DateRanged<BigInteger>> prnEtablissements;
-	private final List<DateRanged<BigInteger>> secEtablissements;
+	private final List<DateRanged<BigInteger>> etablissements;
 	//
 //		private private final List<DateRanged<Long>> transferTo;
 	private final List<DateRanged<BigInteger>> transfereA;
@@ -35,8 +34,8 @@ public class OrganisationBuilder {
 
 	public OrganisationBuilder(List<DateRanged<String>> nomsEntreprise,
 	                           List<DateRanged<String>> nomsAdditionnelsEntreprise,
-	                           List<DateRanged<LegalForm>> formesJuridiques, List<DateRanged<BigInteger>> prnEtablissements,
-	                           List<DateRanged<BigInteger>> secEtablissements, List<DateRanged<BigInteger>> transfereA,
+	                           List<DateRanged<LegalForm>> formesJuridiques,
+	                           List<DateRanged<BigInteger>> etablissements, List<DateRanged<BigInteger>> transfereA,
 	                           List<DateRanged<BigInteger>> transfereDe, List<DateRanged<BigInteger>> remplacePar,
 	                           List<DateRanged<BigInteger>> enRemplacementDe,
 	                           List<OrganisationLocation> locations) {
@@ -44,8 +43,7 @@ public class OrganisationBuilder {
 		this.nomsEntreprise = nomsEntreprise;
 		this.nomsAdditionnelsEntreprise = nomsAdditionnelsEntreprise;
 		this.formesJuridiques = formesJuridiques;
-		this.prnEtablissements = prnEtablissements;
-		this.secEtablissements = secEtablissements;
+		this.etablissements = etablissements;
 		this.transfereA = transfereA;
 		this.transfereDe = transfereDe;
 		this.remplacePar = remplacePar;

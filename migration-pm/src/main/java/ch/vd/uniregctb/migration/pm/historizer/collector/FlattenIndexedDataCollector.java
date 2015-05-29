@@ -30,21 +30,21 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 
 	private final Function<S, Stream<Keyed<KS, D>>> dataExtractor;
 	private final Equalator<? super D> dataEqualator;
-	private final Function<Keyed<KS, D>, KI> keyExtractor;
+	private final Function<Keyed<KS, D>, KI> groupingKeyExtractor;
 	private final Map<KS, FlattenDataCollector<S, Keyed<KS, D>, KI>> groupings = new HashMap<>();
 
 	/**
 	 * @param dataExtractor extracteur des données du snapshot
 	 * @param dataEqualator prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
-	 * @param keyExtractor extracteur de la clé (externe) de regroupement (ce seront les clés dans la map de résultats finaux)
+	 * @param groupingKeyExtractor extracteur de la clé (interne) de regroupement (ce seront pas les clés dans la map de résultats finaux)
 	 */
 	public FlattenIndexedDataCollector(Function<S, Stream<Keyed<KS, D>>> dataExtractor,
 	                                   Equalator<? super D> dataEqualator,
-	                                   Function<Keyed<KS, D>, KI> keyExtractor) {
+	                                   Function<Keyed<KS, D>, KI> groupingKeyExtractor) {
 
 		this.dataExtractor = dataExtractor;
 		this.dataEqualator = dataEqualator;
-		this.keyExtractor = keyExtractor;
+		this.groupingKeyExtractor = groupingKeyExtractor;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 
 		final FlattenDataCollector<S, Keyed<KS, D>, KI> newCollector = new FlattenDataCollector<>(buildLocalDataExtractor(key, dataExtractor),
 		                                                                                          buildKeyedDataEqualator(dataEqualator),
-		                                                                                          keyExtractor);
+		                                                                                          groupingKeyExtractor);
 		groupings.put(key, newCollector);
 		return newCollector;
 	}

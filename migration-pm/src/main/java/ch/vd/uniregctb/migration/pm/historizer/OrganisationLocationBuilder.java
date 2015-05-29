@@ -8,17 +8,16 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
-import ch.vd.uniregctb.migration.pm.historizer.container.DualKey;
 import ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation;
 
 public class OrganisationLocationBuilder {
 
 	//  	private final List<DateRanged<Identifier>> identifier;
-	final Map<DualKey<BigInteger, String>, List<DateRanged<Identifier>>> identifiers;
+	final Map<BigInteger, List<DateRanged<Identifier>>> identifiers;
 	//		private final List<DateRanged<String>> name;
 	final Map<BigInteger, List<DateRanged<String>>> nomsEtablissements;
 	//		private final List<DateRanged<String>> otherNames;
-	final Map<DualKey<BigInteger, String>, List<DateRanged<String>>> autresNomsEtablissements;
+	final Map<BigInteger, List<DateRanged<String>>> autresNomsEtablissements;
 	//		private final List<DateRanged<KindOfLocation>> kindOfLocation;
 	final Map<BigInteger, List<DateRanged<KindOfLocation>>> genreEtablissements;
 	//		private final List<DateRanged<Integer>> seat;
@@ -51,9 +50,9 @@ public class OrganisationLocationBuilder {
 //		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
 
 
-	public OrganisationLocationBuilder(Map<DualKey<BigInteger, String>, List<DateRanged<Identifier>>> identifiers,
+	public OrganisationLocationBuilder(Map<BigInteger, List<DateRanged<Identifier>>> identifiers,
 	                                   Map<BigInteger, List<DateRanged<String>>> nomsEtablissements,
-	                                   Map<DualKey<BigInteger, String>, List<DateRanged<String>>> autresNomsEtablissements,
+	                                   Map<BigInteger, List<DateRanged<String>>> autresNomsEtablissements,
 	                                   Map<BigInteger, List<DateRanged<KindOfLocation>>> genreEtablissements,
 	                                   Map<BigInteger, List<DateRanged<Integer>>> sieges,
 	                                   Map<BigInteger, List<DateRanged<Address>>> adressesRc,
