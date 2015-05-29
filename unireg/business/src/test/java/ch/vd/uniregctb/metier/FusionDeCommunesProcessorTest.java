@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.metier;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,14 +13,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -260,7 +265,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -298,7 +303,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -349,7 +354,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -406,7 +411,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -460,7 +465,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -514,7 +519,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -578,7 +583,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -645,7 +650,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -689,7 +694,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, true, false, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -847,7 +852,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -896,7 +901,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, true, false, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -991,7 +996,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			@Override
 			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
 				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
-				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, true), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, true, false), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
 				return rapport;
 			}
 		});
@@ -1029,6 +1034,82 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
 					assertFalse(domicile.isAnnule());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testAllegementFiscal() throws Exception {
+
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) getCurrentSession().merge(new Entreprise(12L));
+				entreprise.addAllegementFiscal(new AllegementFiscal(date(1995, 1, 1), null, BigDecimal.TEN, AllegementFiscal.TypeImpot.CAPITAL, AllegementFiscal.TypeCollectivite.CONFEDERATION, null));
+				entreprise.addAllegementFiscal(new AllegementFiscal(date(1997, 1, 1), null, BigDecimal.ONE, AllegementFiscal.TypeImpot.BENEFICE, AllegementFiscal.TypeCollectivite.COMMUNE, MockCommune.Croy.getNoOFS()));
+				return entreprise.getNumero();
+			}
+		});
+
+		final FusionDeCommunesResults rapport = doInNewTransactionAndSession(new TxCallback<FusionDeCommunesResults>() {
+			@Override
+			public FusionDeCommunesResults execute(TransactionStatus status) throws Exception {
+				final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
+				processor.traiteTiers(new FusionDeCommunesProcessor.TiersATraiter(id, false, false, false, true), anciensNoOfs, nouveauNoOfs, dateFusion, rapport);
+				return rapport;
+			}
+		});
+
+		assertEquals(1, rapport.nbTiersExamines);
+		assertEquals(1, rapport.tiersTraitesPourAllegementsFiscaux.size());
+		assertEquals(0, rapport.tiersIgnoresPourAllegementsFiscaux.size());
+		assertEmpty(rapport.tiersEnErreur);
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// l'un des allègements fiscaux de l'entreprise (celui qui est posé sur la commune) doit avoir été mis à jour
+				final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);
+				assertNotNull(entreprise);
+
+				final List<AllegementFiscal> allegements = new ArrayList<>(entreprise.getAllegementsFiscaux());
+				assertNotNull(allegements);
+				assertEquals(3, allegements.size());        // les deux pré-existants + le nouveau
+
+				Collections.sort(allegements, new DateRangeComparator<AllegementFiscal>());
+				{
+					final AllegementFiscal af = allegements.get(0);
+					assertNotNull(af);
+					assertEquals(date(1995, 1, 1), af.getDateDebut());
+					assertNull(af.getDateFin());
+					assertEquals(0, BigDecimal.TEN.compareTo(af.getPourcentageAllegement()));
+					assertEquals(AllegementFiscal.TypeImpot.CAPITAL, af.getTypeImpot());
+					assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, af.getTypeCollectivite());
+					assertNull(af.getNoOfsCommune());
+					assertFalse(af.isAnnule());
+				}
+				{
+					final AllegementFiscal af = allegements.get(1);
+					assertNotNull(af);
+					assertEquals(date(1997, 1, 1), af.getDateDebut());
+					assertEquals(dateFusion.getOneDayBefore(), af.getDateFin());
+					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
+					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
+					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
+					assertEquals((Integer) MockCommune.Croy.getNoOFS(), af.getNoOfsCommune());
+					assertFalse(af.isAnnule());
+				}
+				{
+					final AllegementFiscal af = allegements.get(2);
+					assertNotNull(af);
+					assertEquals(dateFusion, af.getDateDebut());
+					assertNull(af.getDateFin());
+					assertEquals(0, BigDecimal.ONE.compareTo(af.getPourcentageAllegement()));
+					assertEquals(AllegementFiscal.TypeImpot.BENEFICE, af.getTypeImpot());
+					assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, af.getTypeCollectivite());
+					assertEquals((Integer) MockCommune.RomainmotierEnvy.getNoOFS(), af.getNoOfsCommune());
+					assertFalse(af.isAnnule());
 				}
 			}
 		});

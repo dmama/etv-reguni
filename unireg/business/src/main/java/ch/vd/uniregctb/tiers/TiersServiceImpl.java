@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5102,5 +5103,22 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		domicile.setDateFin(dateFin);
+	}
+
+	@Override
+	public AllegementFiscal addAllegementFiscal(Entreprise e, BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
+	                                            Integer noOfsCommune, RegDate dateDebut, RegDate dateFin) {
+		return tiersDAO.addAndSave(e, new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, typeCollectivite, noOfsCommune));
+	}
+
+	@Override
+	public void closeAllegementFiscal(AllegementFiscal af, RegDate dateFin) {
+		Assert.notNull(af);
+		if (af.getDateDebut().isAfter(dateFin)) {
+			throw new ValidationException(af, String.format("La date de fermeture (%s) est avant la date de début (%s) de l'allègement fiscal.",
+			                                                RegDateHelper.dateToDisplayString(dateFin), RegDateHelper.dateToDisplayString(af.getDateDebut())));
+		}
+
+		af.setDateFin(dateFin);
 	}
 }

@@ -300,6 +300,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		throw new NotImplementedException();
 	}

@@ -332,6 +332,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+		return target.addAndSave(entreprise, allegement);
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}

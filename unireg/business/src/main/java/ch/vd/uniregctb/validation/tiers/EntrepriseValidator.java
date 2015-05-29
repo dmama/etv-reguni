@@ -2,6 +2,7 @@ package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -24,6 +27,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		if (!entreprise.isAnnule()) {
 			vr.merge(validateRegimesFiscaux(entreprise));
 			vr.merge(validateDonneesRegistreCommerce(entreprise));
+			vr.merge(validateAllegementsFiscaux(entreprise));
 		}
 		return vr;
 	}
@@ -106,6 +110,108 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 				if (overlaps != null && !overlaps.isEmpty()) {
 					for (DateRange overlap : overlaps) {
 						vr.addError(String.format("La période %s est couverte par plusieurs régimes fiscaux %s", DateRangeHelper.toDisplayString(overlap), entry.getKey()));
+					}
+				}
+			}
+		}
+
+		return vr;
+	}
+
+	/**
+	 * Classe interne utilisée pour déterminer si des allègements fiscaux similaires ne se chevauchent pas...
+	 */
+	private static final class AllegementFiscalKey {
+
+		private final AllegementFiscal.TypeImpot typeImpot;
+		private final AllegementFiscal.TypeCollectivite typeCollectivite;
+		private final Integer noOfsCommune;
+
+		public AllegementFiscalKey(AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, Integer noOfsCommune) {
+			this.typeImpot = typeImpot;
+			this.typeCollectivite = typeCollectivite;
+			this.noOfsCommune = (typeCollectivite == AllegementFiscal.TypeCollectivite.COMMUNE ? noOfsCommune : null);
+		}
+
+		public AllegementFiscalKey(AllegementFiscal allegementFiscal) {
+			this(allegementFiscal.getTypeImpot(), allegementFiscal.getTypeCollectivite(), allegementFiscal.getNoOfsCommune());
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final AllegementFiscalKey that = (AllegementFiscalKey) o;
+
+			if (typeImpot != that.typeImpot) return false;
+			if (typeCollectivite != that.typeCollectivite) return false;
+			return !(noOfsCommune != null ? !noOfsCommune.equals(that.noOfsCommune) : that.noOfsCommune != null);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = typeImpot != null ? typeImpot.hashCode() : 0;
+			result = 31 * result + (typeCollectivite != null ? typeCollectivite.hashCode() : 0);
+			result = 31 * result + (noOfsCommune != null ? noOfsCommune.hashCode() : 0);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			if (typeImpot == null && typeCollectivite == null) {
+				return "allègement universel";
+			}
+
+			final StringBuilder b = new StringBuilder("allègement");
+			if (typeImpot != null) {
+				b.append(" ").append(typeImpot);
+			}
+			if (typeCollectivite != null) {
+				b.append(" ").append(typeCollectivite);
+				if (noOfsCommune != null) {
+					b.append(" (").append(noOfsCommune).append(")");
+				}
+			}
+			return b.toString();
+		}
+	}
+
+	protected ValidationResults validateAllegementsFiscaux(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+
+		final List<AllegementFiscal> allegementsFiscaux = AnnulableHelper.sansElementsAnnules(entreprise.getAllegementsFiscaux());
+
+		// on valide les allègements fiscaux pour eux-mêmes...
+		for (AllegementFiscal af : allegementsFiscaux) {
+			vr.merge(getValidationService().validate(af));
+		}
+
+		// puis on valide que deux allègements fiscaux sur le même sujet ne se chevauchent pas...
+		if (!allegementsFiscaux.isEmpty()) {
+			// "même sujet" est défini par la clé AllegementFiscalKey
+			final Map<AllegementFiscalKey, List<DateRange>> map = new HashMap<>(allegementsFiscaux.size());
+			for (AllegementFiscal af : allegementsFiscaux) {
+				final AllegementFiscalKey key = new AllegementFiscalKey(af);
+				List<DateRange> liste = map.get(key);
+				if (liste == null) {
+					liste = new ArrayList<>();
+					map.put(key, liste);
+				}
+				liste.add(af);
+			}
+
+			// vérification des chevauchements
+			for (Map.Entry<AllegementFiscalKey, List<DateRange>> entry : map.entrySet()) {
+				final List<DateRange> liste = entry.getValue();
+				if (liste.size() > 1) {
+					final List<DateRange> overlaps = DateRangeHelper.overlaps(liste);
+					if (overlaps != null && !overlaps.isEmpty()) {
+						for (DateRange overlap : overlaps) {
+							vr.addError(String.format("La période %s est couverte par plusieurs allègements fiscaux de type '%s'.",
+							                          DateRangeHelper.toDisplayString(overlap),
+							                          entry.getKey()));
+						}
 					}
 				}
 			}

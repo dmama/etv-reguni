@@ -108,6 +108,9 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public final List<Long> tiersTraitesPourDomicilesEtablissement = new LinkedList<>();
 	public final List<Ignore> tiersIgnoresPourDomicilesEtablissement = new LinkedList<>();
 
+	public final List<Long> tiersTraitesPourAllegementsFiscaux = new LinkedList<>();
+	public final List<Ignore> tiersIgnoresPourAllegementsFiscaux = new LinkedList<>();
+
 	public int nbTiersExamines = 0;
 	public boolean interrompu = false;
 
@@ -144,6 +147,9 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		this.tiersTraitesPourDomicilesEtablissement.addAll(right.tiersTraitesPourDomicilesEtablissement);
 		this.tiersIgnoresPourDomicilesEtablissement.addAll(right.tiersIgnoresPourDomicilesEtablissement);
 
+		this.tiersTraitesPourAllegementsFiscaux.addAll(right.tiersTraitesPourAllegementsFiscaux);
+		this.tiersIgnoresPourAllegementsFiscaux.addAll(right.tiersIgnoresPourAllegementsFiscaux);
+
 		nbTiersExamines += right.nbTiersExamines;
 	}
 
@@ -156,11 +162,12 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		}
 	}
 
-	public void addResultat(Long tiersId, ResultatTraitement fors, ResultatTraitement decisions, ResultatTraitement domicilesEtablissement) {
+	public void addResultat(Long tiersId, ResultatTraitement fors, ResultatTraitement decisions, ResultatTraitement domicilesEtablissement, ResultatTraitement allegements) {
 		++ nbTiersExamines;
 		addResultat(tiersId, tiersTraitesPourFors, tiersIgnoresPourFors, fors);
 		addResultat(tiersId, tiersTraitesPourDecisions, tiersIgnoresPourDecisions, decisions);
 		addResultat(tiersId, tiersTraitesPourDomicilesEtablissement, tiersIgnoresPourDomicilesEtablissement, domicilesEtablissement);
+		addResultat(tiersId, tiersTraitesPourAllegementsFiscaux, tiersIgnoresPourAllegementsFiscaux, allegements);
 	}
 
 	@Override

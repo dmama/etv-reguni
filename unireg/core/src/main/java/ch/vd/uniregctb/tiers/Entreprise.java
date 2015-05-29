@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	private Set<RegimeFiscal> regimesFiscaux;
 	private Set<DonneesRegistreCommerce> donneesRC;
+	private Set<AllegementFiscal> allegementsFiscaux;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -52,7 +54,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		this.numeroEntreprise = numeroEntreprise;
 	}
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENTREPRISE_ID")
 	public Set<RegimeFiscal> getRegimesFiscaux() {
 		return regimesFiscaux;
@@ -91,7 +93,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		return nonAnnules;
 	}
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENTREPRISE_ID")
 	public Set<DonneesRegistreCommerce> getDonneesRC() {
 		return donneesRC;
@@ -119,6 +121,28 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final List<DonneesRegistreCommerce> nonAnnulees = AnnulableHelper.sansElementsAnnules(donneesRC);
 		Collections.sort(nonAnnulees, new DateRangeComparator<DonneesRegistreCommerce>());
 		return nonAnnulees;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<AllegementFiscal> getAllegementsFiscaux() {
+		return allegementsFiscaux;
+	}
+
+	public void setAllegementsFiscaux(Set<AllegementFiscal> allegementsFiscaux) {
+		this.allegementsFiscaux = allegementsFiscaux;
+	}
+
+	public void addAllegementFiscal(AllegementFiscal af) {
+		if (af.getEntreprise() != null && af.getEntreprise() != this) {
+			throw new IllegalArgumentException("Cet allègement fiscal est déjà associé à une autre entreprise");
+		}
+
+		if (this.allegementsFiscaux == null) {
+			this.allegementsFiscaux = new HashSet<>();
+		}
+		this.allegementsFiscaux.add(af);
+		af.setEntreprise(this);
 	}
 
 	public Entreprise() {

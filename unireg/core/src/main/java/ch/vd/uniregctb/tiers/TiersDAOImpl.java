@@ -1310,6 +1310,32 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(etb, domicile, DOMICILE_ETABLISSEMENT_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Entreprise, AllegementFiscal> ALLEGEMENT_FISCAL_ACCESSOR = new EntityAccessor<Entreprise, AllegementFiscal>() {
+		@Override
+		public Collection<AllegementFiscal> getEntities(Entreprise tiers) {
+			return tiers.getAllegementsFiscaux();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, AllegementFiscal entity) {
+			tiers.addAllegementFiscal(entity);
+		}
+
+		@Override
+		public void assertSame(AllegementFiscal entity1, AllegementFiscal entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			Assert.isSame(entity1.getNoOfsCommune(), entity2.getNoOfsCommune());
+			Assert.isSame(entity1.getTypeCollectivite(), entity2.getTypeCollectivite());
+			Assert.isSame(entity1.getTypeImpot(), entity2.getTypeImpot());
+		}
+	};
+
+	@Override
+	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+		return addAndSave(entreprise, allegement, ALLEGEMENT_FISCAL_ACCESSOR);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {
@@ -1400,6 +1426,8 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Date de debut: %s ; Date de fin: %s ; Nombre de ctb modifiés: %d", dateDebutRech, dateFinRech, listeCtbModifies.size()));
 		}
+
+		// TODO les allègements fiscaux des PM doivent-ils être pris en compte ?
 
 		return listeCtbModifies;
 	}

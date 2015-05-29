@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1460,5 +1461,27 @@ public interface TiersService {
 	 * @param dateFin la date de fin à utiliser
 	 */
 	void closeDomicileEtablissement(DomicileEtablissement domicile, RegDate dateFin);
+
+	/**
+	 * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+	 * @param e l'entreprise destinataire
+	 * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+	 * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
+	 * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+	 * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
+	 * @param dateDebut la date de début de la validité de l'allègement fiscal
+	 * @param dateFin la date de fin de la validité de l'allègement fiscal
+	 * @return l'allègement nouvellement créé
+	 */
+    AllegementFiscal addAllegementFiscal(Entreprise e,
+                                         BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
+                                         Integer noOfsCommune, RegDate dateDebut, RegDate dateFin);
+
+	/**
+	 * Ferme l'allègement fiscal à la date indiquée
+	 * @param af l'allègement fiscal à fermer
+	 * @param dateFin la date de fin à utiliser
+	 */
+	void closeAllegementFiscal(AllegementFiscal af, RegDate dateFin);
 }
 

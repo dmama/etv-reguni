@@ -82,6 +82,9 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 					table.addLigne("Nombre de tiers traités pour un domicile d'établissement:", String.valueOf(results.tiersTraitesPourDomicilesEtablissement.size()));
 					table.addLigne("Nombre de tiers ignorés pour les domiciles d'établissement:", String.valueOf(results.tiersIgnoresPourDomicilesEtablissement.size()));
 
+					table.addLigne("Nombre de tiers traités pour un allègement fiscal:", String.valueOf(results.tiersTraitesPourAllegementsFiscaux.size()));
+					table.addLigne("Nombre de tiers ignorés pour les allègements fiscaux:", String.valueOf(results.tiersIgnoresPourAllegementsFiscaux.size()));
+
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -148,12 +151,32 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			}
 		}
 
-		// Tiers ignorés dans leurs décisions ACI (déjà au bon endroit...)
+		// Etablissements ignorés dans leurs domiciles (déjà au bon endroit...)
 		{
 			final String filename = "etablissements_ignores_domiciles.csv";
 			final String titre = "Liste des établissements ignorés dans leurs domiciles";
 			final String listVide = "(aucun)";
 			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourDomicilesEtablissement, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
+
+		// Entreprises traitées pour leurs allègements fiscaux
+		{
+			final String filename = "entreprises_traitees_allegements.csv";
+			final String titre = "Liste des entreprises traitées pour leurs allègements fiscaux";
+			final String listVide = "(aucun)";
+			try (TemporaryFile contenu = ctbIdsAsCsvFile(results.tiersTraitesPourAllegementsFiscaux, filename, status)) {
+				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
+			}
+		}
+
+		// Entreprises ignorées dans leurs allègements fiscaux (déjà au bon endroit...)
+		{
+			final String filename = "entreprises_ignorees_allegements.csv";
+			final String titre = "Liste des entreprises ignorées dans leurs allègements fiscaux";
+			final String listVide = "(aucun)";
+			try (TemporaryFile contenu = asCsvFileIgnores(results.tiersIgnoresPourAllegementsFiscaux, filename, status)) {
 				document.addListeDetaillee(writer, titre, listVide, filename, contenu);
 			}
 		}

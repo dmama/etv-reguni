@@ -19,6 +19,7 @@ public abstract class PropertyType {
 	public static final DatePropertyType datePropType = new DatePropertyType();
 	public static final BooleanPropertyType booleanPropType = new BooleanPropertyType();
 	public static final TimestampPropertyType timestampPropType = new TimestampPropertyType();
+	public static final BigDecimalPropertyType bigDecimalPropertyType = new BigDecimalPropertyType();
 
 	public static final Map<Class<?>, PropertyType> byJavaType = new HashMap<>();
 
@@ -32,6 +33,7 @@ public abstract class PropertyType {
 		byJavaType.put(booleanPropType.getJavaType(), booleanPropType);
 		byJavaType.put(Boolean.TYPE, booleanPropType);
 		byJavaType.put(timestampPropType.getJavaType(), timestampPropType);
+		byJavaType.put(bigDecimalPropertyType.getJavaType(), bigDecimalPropertyType);
 	}
 
 	protected final Class<?> javaType;

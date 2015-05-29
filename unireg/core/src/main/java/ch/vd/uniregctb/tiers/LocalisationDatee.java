@@ -11,7 +11,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 @MappedSuperclass
-public abstract class LocalisationDatee extends HibernateDateRangeEntity {
+public abstract class LocalisationDatee extends HibernateDateRangeEntity implements LocalizedDateRange {
 
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer numeroOfsAutoriteFiscale;

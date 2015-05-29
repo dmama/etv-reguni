@@ -31,15 +31,18 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -47,7 +50,7 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -75,7 +78,7 @@ public class FusionDeCommunesProcessor {
 	private final ValidationInterceptor validationInterceptor;
 	private final AdresseService adresseService;
 
-	private final Map<Class<? extends LocalisationDatee>, Strategy<? extends LocalisationDatee>> strategies = new HashMap<>();
+	private final Map<Class<? extends LocalizedDateRange>, Strategy<? extends LocalizedDateRange>> strategies = new HashMap<>();
 
 	/**
 	 * Externalisé dans une méthode à part pour une problématique de typage fort -> comme ça, on ne peut pas se tromper et mettre n'importe quoi dans la map...
@@ -83,7 +86,7 @@ public class FusionDeCommunesProcessor {
 	 * @param strategy la stratégie de traitement de la fusion
 	 * @param <T> le type de l'élément analysé
 	 */
-	private <T extends LocalisationDatee> void addStrategyMapping(Class<T> clazz, Strategy<T> strategy) {
+	private <T extends LocalizedDateRange> void addStrategyMapping(Class<T> clazz, Strategy<T> strategy) {
 		strategies.put(clazz, strategy);
 	}
 
@@ -105,6 +108,7 @@ public class FusionDeCommunesProcessor {
 		addStrategyMapping(ForFiscalAutreImpot.class, new ForAutreImpotStrategy());
 		addStrategyMapping(DecisionAci.class, new DecisionAciStrategy());
 		addStrategyMapping(DomicileEtablissement.class, new DomicileEtablissementStrategy());
+		addStrategyMapping(AllegementFiscalWrapper.class, new AllegementFiscalStrategy());
 	}
 
 	protected static final class TiersATraiter {
@@ -112,16 +116,18 @@ public class FusionDeCommunesProcessor {
 		boolean concerneParFors;
 		boolean concerneParDecisions;
 		boolean concerneParDomicilesEtablissement;
+		boolean concerneParAllegementsFiscaux;
 
-		public TiersATraiter(long idTiers, boolean concerneParFors, boolean concerneParDecisions, boolean concerneParDomicilesEtablissement) {
+		public TiersATraiter(long idTiers, boolean concerneParFors, boolean concerneParDecisions, boolean concerneParDomicilesEtablissement, boolean concerneParAllegementsFiscaux) {
 			this.idTiers = idTiers;
 			this.concerneParFors = concerneParFors;
 			this.concerneParDecisions = concerneParDecisions;
 			this.concerneParDomicilesEtablissement = concerneParDomicilesEtablissement;
+			this.concerneParAllegementsFiscaux = concerneParAllegementsFiscaux;
 		}
 	}
 
-	private static void composeTiersATraiter(Map<Long, TiersATraiter> destination, Set<Long> idsTiers, boolean fors, boolean decisions, boolean domicilesEtablissement) {
+	private static void composeTiersATraiter(Map<Long, TiersATraiter> destination, Set<Long> idsTiers, boolean fors, boolean decisions, boolean domicilesEtablissement, boolean allegementsFiscaux) {
 		if (idsTiers != null && !idsTiers.isEmpty()) {
 			for (Long idTiers : idsTiers) {
 				final TiersATraiter found = destination.get(idTiers);
@@ -129,9 +135,10 @@ public class FusionDeCommunesProcessor {
 					found.concerneParFors |= fors;
 					found.concerneParDecisions |= decisions;
 					found.concerneParDomicilesEtablissement |= domicilesEtablissement;
+					found.concerneParAllegementsFiscaux |= allegementsFiscaux;
 				}
 				else {
-					destination.put(idTiers, new TiersATraiter(idTiers, fors, decisions, domicilesEtablissement));
+					destination.put(idTiers, new TiersATraiter(idTiers, fors, decisions, domicilesEtablissement, allegementsFiscaux));
 				}
 			}
 		}
@@ -162,10 +169,12 @@ public class FusionDeCommunesProcessor {
 		final Set<Long> tiersPourFors = new HashSet<>(getListTiersAvecForToucheParFusion(anciensNoOfs, dateFusion));
 		final Set<Long> tiersPourDecisions = new HashSet<>(getListTiersAvecDecisionToucheParFusion(anciensNoOfs, dateFusion));
 		final Set<Long> tiersPourDomicilesEtablissement = new HashSet<>(getListTiersAvecDomicileEtablissementToucheParFusion(anciensNoOfs, dateFusion));
+		final Set<Long> tiersPourAllegementsFiscaux = new HashSet<>(getListTiersAvecAllegementsFiscauxTouchesParFusion(anciensNoOfs, dateFusion));
 		final Map<Long, TiersATraiter> tousTiersConcernes = new TreeMap<>();
-		composeTiersATraiter(tousTiersConcernes, tiersPourFors, true, false, false);
-		composeTiersATraiter(tousTiersConcernes, tiersPourDecisions, false, true, false);
-		composeTiersATraiter(tousTiersConcernes, tiersPourDomicilesEtablissement, false, false, true);
+		composeTiersATraiter(tousTiersConcernes, tiersPourFors, true, false, false, false);
+		composeTiersATraiter(tousTiersConcernes, tiersPourDecisions, false, true, false, false);
+		composeTiersATraiter(tousTiersConcernes, tiersPourDomicilesEtablissement, false, false, true, false);
+		composeTiersATraiter(tousTiersConcernes, tiersPourAllegementsFiscaux, false, false, false, true);
 
 		// boucle principale sur les contribuables à traiter
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
@@ -227,6 +236,7 @@ public class FusionDeCommunesProcessor {
 			final FusionDeCommunesResults.ResultatTraitement fors = data.concerneParFors ? traiteLocalisationsDatees(tiers.getForsFiscauxSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
 			final FusionDeCommunesResults.ResultatTraitement decisions = data.concerneParDecisions ? traiteLocalisationsDatees(((Contribuable) tiers).getDecisionsSorted(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
 			final FusionDeCommunesResults.ResultatTraitement domiciles = data.concerneParDomicilesEtablissement ? traiteLocalisationsDatees(((Etablissement) tiers).getSortedDomiciles(false), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
+			final FusionDeCommunesResults.ResultatTraitement allegements = data.concerneParAllegementsFiscaux ? traiteAllegementsFiscaux(((Entreprise) tiers).getAllegementsFiscaux(), anciensNoOfs, nouveauNoOfs, dateFusion) : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE;
 
 			// Validation manuelle après le traitement de tous les éléments
 			final ValidationResults validationResults = validationService.validate(tiers);
@@ -234,7 +244,7 @@ public class FusionDeCommunesProcessor {
 				throw new ValidationException(tiers, validationResults);
 			}
 
-			r.addResultat(data.idTiers, fors, decisions, domiciles);
+			r.addResultat(data.idTiers, fors, decisions, domiciles, allegements);
 		}
 		catch (ValidationException e) {
 			// on ne va pas contrôler plus loin si le tiers valide ou pas, on sait déjà qu'il ne valide pas...
@@ -265,7 +275,7 @@ public class FusionDeCommunesProcessor {
 	 * @return un couple de booléens (au moins un élément traité ; au moins un élément déjà sur la bonne commune)
 	 */
 	@NotNull
-	private <T extends LocalisationDatee> FusionDeCommunesResults.ResultatTraitement traiteLocalisationsDatees(Collection<T> elements, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
+	private <T extends LocalizedDateRange & Annulable> FusionDeCommunesResults.ResultatTraitement traiteLocalisationsDatees(Collection<T> elements, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
 		boolean dejaBonneCommune = false;
 		boolean traite = false;
 
@@ -304,11 +314,23 @@ public class FusionDeCommunesProcessor {
 		return traite ? FusionDeCommunesResults.ResultatTraitement.TRAITE : (dejaBonneCommune ? FusionDeCommunesResults.ResultatTraitement.DEJA_BONNE_COMMUNE : FusionDeCommunesResults.ResultatTraitement.RIEN_A_FAIRE);
 	}
 
+	@NotNull
+	private FusionDeCommunesResults.ResultatTraitement traiteAllegementsFiscaux(Collection<AllegementFiscal> elements, Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
+		final List<AllegementFiscalWrapper> wrappers = new ArrayList<>(elements.size());
+		for (AllegementFiscal af : elements) {
+			// on ne met dans la collection que les cas où le numéro OFS de commune est renseigné
+			if (af.getNoOfsCommune() != null) {
+				wrappers.add(new AllegementFiscalWrapper(af));
+			}
+		}
+		return traiteLocalisationsDatees(wrappers, anciensNoOfs, nouveauNoOfs, dateFusion);
+	}
+
 	/**
 	 * Stratégie de traitement d'un élément dans le cas d'une fusion de communes.
 	 * @param <F> le type concret d'élément.
 	 */
-	private abstract class Strategy<F extends LocalisationDatee> {
+	private abstract class Strategy<F extends LocalizedDateRange> {
 		abstract void traite(F localisation, int nouveauNoOfs, RegDate dateFusion);
 	}
 
@@ -396,7 +418,7 @@ public class FusionDeCommunesProcessor {
 				autre.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
 			}
 			else {
-				// dans tous les autres cas, les fors autres impôt ont une validité maximal de 1 jour (= impôt ponctuel) => rien à faire
+				// dans tous les autres cas, les fors autres impôt ont une validité maximale de 1 jour (= impôt ponctuel) => rien à faire
 			}
 		}
 	}
@@ -427,6 +449,65 @@ public class FusionDeCommunesProcessor {
 				final Etablissement etb = domicile.getEtablissement();
 				tiersService.closeDomicileEtablissement(domicile, dateFusion.getOneDayBefore());
 				tiersService.addDomicileEtablissement(etb, domicile.getTypeAutoriteFiscale(), nouveauNoOfs, dateFusion, null);
+			}
+		}
+	}
+
+	/**
+	 * Wrapper autour d'un allègement fiscal en implémentant explicitement l'interface {@link LocalizedDateRange}, ce que
+	 * l'allègement fiscal lui-même ne peut pas faire (il n'a pas de champ "type d'autorité fiscale")
+	 */
+	private static final class AllegementFiscalWrapper implements LocalizedDateRange, Annulable {
+
+		private final AllegementFiscal target;
+
+		public AllegementFiscalWrapper(AllegementFiscal target) {
+			this.target = target;
+		}
+
+		@Override
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		}
+
+		@Override
+		public Integer getNumeroOfsAutoriteFiscale() {
+			return target.getNoOfsCommune();
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return target.isValidAt(date);
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return target.getDateDebut();
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return target.getDateFin();
+		}
+
+		@Override
+		public boolean isAnnule() {
+			return target.isAnnule();
+		}
+	}
+
+	private class AllegementFiscalStrategy extends Strategy<AllegementFiscalWrapper> {
+		@Override
+		void traite(AllegementFiscalWrapper wrapper, int nouveauNoOfs, RegDate dateFusion) {
+			final AllegementFiscal allegement = wrapper.target;
+			if (allegement.getDateDebut().isAfterOrEqual(dateFusion)) {
+				// l'allègement débute après la fusion -> on met simplement à jour le numéro Ofs
+				allegement.setNoOfsCommune(nouveauNoOfs);
+			}
+			else {
+				final Entreprise e = allegement.getEntreprise();
+				tiersService.closeAllegementFiscal(allegement, dateFusion.getOneDayBefore());
+				tiersService.addAllegementFiscal(e, allegement.getPourcentageAllegement(), allegement.getTypeCollectivite(), allegement.getTypeImpot(), nouveauNoOfs, dateFusion, null);
 			}
 		}
 	}
@@ -506,6 +587,16 @@ public class FusionDeCommunesProcessor {
 					+ "    AND d.numeroOfsAutoriteFiscale IN (:nosOfs)          "
 					+ "ORDER BY d.etablissement.id ASC";
 
+	private static final String queryTiersAvecAllegementFiscal = //---------------------
+			"SELECT DISTINCT d.entreprise.id                                    "
+					+ "FROM                                                     "
+					+ "    AllegementFiscal AS d                                "
+					+ "WHERE                                                    "
+					+ "    d.annulationDate IS NULL                             "
+					+ "    AND (d.dateFin IS NULL OR d.dateFin >= :dateFusion)  "
+					+ "    AND d.noOfsCommune IN (:nosOfs)                      "
+					+ "ORDER BY d.entreprise.id ASC";
+
 	private List<Long> getListTiersTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion, final String hqlQuery) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -537,5 +628,9 @@ public class FusionDeCommunesProcessor {
 
 	private List<Long> getListTiersAvecDomicileEtablissementToucheParFusion(Set<Integer> anciensNoOfs, RegDate dateFusion) {
 		return getListTiersTouchesParFusion(anciensNoOfs, dateFusion, queryTiersAvecDomicileEtablissement);
+	}
+
+	private List<Long> getListTiersAvecAllegementsFiscauxTouchesParFusion(Set<Integer> anciensNoOfs, RegDate dateFusion) {
+		return getListTiersTouchesParFusion(anciensNoOfs, dateFusion, queryTiersAvecAllegementFiscal);
 	}
 }

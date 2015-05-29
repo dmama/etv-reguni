@@ -353,9 +353,17 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * Ajoute un nouveau domicile à l'établissement fourni
 	 * @param etb l'établissement
 	 * @param domicile le domicile à ajouter
-	 * @return une nouvelle instance de l'établissement avec son ID renseigné
+	 * @return une nouvelle instance du domicile avec son ID renseigné
 	 */
 	DomicileEtablissement addAndSave(Etablissement etb, DomicileEtablissement domicile);
+
+	/**
+	 * Ajoute un nouvel allègement fiscal à l'entreprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param allegement l'allègement fiscal à ajouter
+	 * @return une nouvelle instance de l'allègement fiscal avec son ID renseigné
+	 */
+	AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement);
 
 	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
