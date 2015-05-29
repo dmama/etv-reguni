@@ -22,7 +22,7 @@ public class OrganisationLocationBuilder {
 	//		private final List<DateRanged<KindOfLocation>> kindOfLocation;
 	final Map<BigInteger, List<DateRanged<KindOfLocation>>> genreEtablissements;
 	//		private final List<DateRanged<Integer>> seat;
-	final Map<BigInteger, List<DateRanged<Integer>>> sièges;
+	final Map<BigInteger, List<DateRanged<Integer>>> sieges;
 //		private final List<DateRanged<Function>> function;
 //		private final List<DateRanged<Long>> replacedBy;
 //		private final List<DateRanged<Long>> inReplacementOf;
@@ -55,7 +55,7 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRanged<String>>> nomsEtablissements,
 	                                   Map<DualKey<BigInteger, String>, List<DateRanged<String>>> autresNomsEtablissements,
 	                                   Map<BigInteger, List<DateRanged<KindOfLocation>>> genreEtablissements,
-	                                   Map<BigInteger, List<DateRanged<Integer>>> sièges,
+	                                   Map<BigInteger, List<DateRanged<Integer>>> sieges,
 	                                   Map<BigInteger, List<DateRanged<Address>>> adressesRc,
 	                                   Map<BigInteger, List<DateRanged<Address>>> adressesIdeEffectives,
 	                                   Map<BigInteger, List<DateRanged<Address>>> adressesIdeCasePostale) {
@@ -64,7 +64,7 @@ public class OrganisationLocationBuilder {
 		this.nomsEtablissements = nomsEtablissements;
 		this.autresNomsEtablissements = autresNomsEtablissements;
 		this.genreEtablissements = genreEtablissements;
-		this.sièges = sièges;
+		this.sieges = sieges;
 		this.adressesRc = adressesRc;
 		this.adressesIdeEffectives = adressesIdeEffectives;
 	}
