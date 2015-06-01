@@ -41,6 +41,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.rcent.model.Organisation;
@@ -56,6 +57,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Bouclement;
@@ -71,6 +73,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
@@ -325,9 +328,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				return;
 			}
 
+			// TODO ne faut-il vraiment migrer que les mandats généraux ?
+
+			// on ne migre que les mandats généraux pour le moment
+			if (mandat.getType() != RegpmTypeMandat.GENERAL) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
+				return;
+			}
+
+			final TypeMandat typeMandat = TypeMandat.GENERAL;
+			final String bicSwift = mandat.getBicSwift();
+			String iban;
+			try {
+				iban = IbanExtractor.extractIban(mandat);
+			}
+			catch (IbanExtractor.IbanExtratorException e) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+				iban = null;
+			}
+
 			// ajout du lien entre l'entreprise et son mandataire
-			// TODO et les autres informations du mandat ?
-			linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), mandat.getDateResiliation()));
+			linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), mandat.getDateResiliation(), typeMandat, iban, bicSwift));
 		});
 	}
 

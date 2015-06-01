@@ -26,17 +26,25 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeMandatUserType;
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "TypeMandat", typeClass = TypeMandatUserType.class)
 })
-public class RegpmMandat extends RegpmEntity {
+public class RegpmMandat extends RegpmEntity implements CoordonneesFinancieresContainer {
 
-	private static final long serialVersionUID = -5567446787120562544L;
+	private static final long serialVersionUID = 3512380742865743830L;
 
 	@Embeddable
-	private static class PK implements Serializable {
+	public static class PK implements Serializable {
 
-		private static final long serialVersionUID = -2762881677178709397L;
+		private static final long serialVersionUID = -4823508368297700667L;
 
 		private Integer noSequence;
 		private Long idEntreprise;
+
+		public PK() {
+		}
+
+		public PK(Integer noSequence, Long idEntreprise) {
+			this.noSequence = noSequence;
+			this.idEntreprise = idEntreprise;
+		}
 
 		@Column(name = "NO_SEQUENCE")
 		public Integer getNoSequence() {

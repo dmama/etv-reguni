@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,18 +21,25 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Mandat;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -133,6 +142,30 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		ex.setDossierFiscal(dossierFiscal);
 		entreprise.getExercicesCommerciaux().add(ex);
 		return ex;
+	}
+
+	static RegpmMandat addMandat(RegpmEntreprise mandant, RegpmEntity mandataire, RegpmTypeMandat type, String noCCP, RegDate dateDebut, RegDate dateFin) {
+		final RegpmMandat mandat = new RegpmMandat();
+		mandat.setId(new RegpmMandat.PK(computeNewSeqNo(mandant.getMandataires(), x -> x.getId().getNoSequence()), mandant.getId()));
+		mandat.setNoCCP(noCCP);
+		mandat.setType(type);
+		mandat.setDateAttribution(dateDebut);
+		mandat.setDateResiliation(dateFin);
+		if (mandataire instanceof RegpmIndividu) {
+			mandat.setMandataireIndividu((RegpmIndividu) mandataire);
+		}
+		else if (mandataire instanceof RegpmEtablissement) {
+			mandat.setMandataireEtablissement((RegpmEtablissement) mandataire);
+		}
+		else if (mandataire instanceof RegpmEntreprise) {
+			mandat.setMandataireEntreprise((RegpmEntreprise) mandataire);
+		}
+		else if (mandataire != null) {
+			throw new IllegalArgumentException("Le mandataire doit être soit un individu, soit un établissement, soit une entreprise... (trouvé " + mandataire.getClass().getSimpleName() + ")");
+		}
+
+		mandant.getMandataires().add(mandat);
+		return mandat;
 	}
 
 	@Test
@@ -320,6 +353,47 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(entreprise.getTitulaireCompteBancaire());     // le jour où on saura quoi mettre là-dedans, ça pêtera ici...
 			return null;
 		});
+	}
+
+	@Test
+	public void testMandataire() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), null);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de l'instantiation du lien
+		final RapportEntreTiers ret = doInUniregTransaction(true, status -> {
+			final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+			Assert.assertEquals(1, collectedLinks.size());
+			final EntityLinkCollector.EntityLink link = collectedLinks.get(0);
+			Assert.assertNotNull(link);
+			return link.toRapportEntreTiers();
+		});
+		Assert.assertEquals(Mandat.class, ret.getClass());
+		Assert.assertEquals(RegDate.get(2001, 5, 1), ret.getDateDebut());
+		Assert.assertNull(ret.getDateFin());
+		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
+		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
+		Assert.assertEquals("CH7009000000170003317", ((Mandat) ret).getCoordonneesFinancieres().getIban());
 	}
 
 	// TODO il reste encore plein de tests à faire...

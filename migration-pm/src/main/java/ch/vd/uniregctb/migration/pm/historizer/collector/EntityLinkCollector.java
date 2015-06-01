@@ -10,12 +10,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.FusionEntreprises;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntityLinkCollector {
 
@@ -127,9 +129,15 @@ public class EntityLinkCollector {
 
 	public static final class MandantMandataireLink<S extends Contribuable, D extends Contribuable> extends EntityLink<S, D, RapportEntreTiers> {
 
-		// TODO rajouter un type de mandat ?
-		public MandantMandataireLink(Supplier<S> mandant, Supplier<D> mandataire, RegDate dateDebut, RegDate dateFin) {
+		private final TypeMandat typeMandat;
+		private final String iban;
+		private final String bicSwift;
+
+		public MandantMandataireLink(Supplier<S> mandant, Supplier<D> mandataire, RegDate dateDebut, RegDate dateFin, TypeMandat typeMandat, String iban, String bicSwift) {
 			super(LinkType.MANDANT_MANDATAIRE, mandant, mandataire, dateDebut, dateFin);
+			this.typeMandat = typeMandat;
+			this.iban = iban;
+			this.bicSwift = bicSwift;
 		}
 
 		public S resolveMandant() {
@@ -142,7 +150,10 @@ public class EntityLinkCollector {
 
 		@Override
 		public RapportEntreTiers toRapportEntreTiers() {
-			return new Mandat(getDateDebut(), getDateFin(), resolveMandant(), resolveMandataire());
+			final CoordonneesFinancieres cf = iban != null || bicSwift != null ? new CoordonneesFinancieres(iban, bicSwift) : null;
+			final Mandat mandat = new Mandat(getDateDebut(), getDateFin(), resolveMandant(), resolveMandataire(), typeMandat);
+			mandat.setCoordonneesFinancieres(cf);
+			return mandat;
 		}
 	}
 

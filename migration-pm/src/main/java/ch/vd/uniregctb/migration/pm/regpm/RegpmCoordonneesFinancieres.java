@@ -14,7 +14,9 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
 
 @Embeddable
 @TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class)
-public class RegpmCoordonneesFinancieres implements Serializable {
+public class RegpmCoordonneesFinancieres implements Serializable, CoordonneesFinancieresContainer {
+
+	private static final long serialVersionUID = -2786403878613197653L;
 
 	private String noCCP;
 	private String noCompteBancaire;

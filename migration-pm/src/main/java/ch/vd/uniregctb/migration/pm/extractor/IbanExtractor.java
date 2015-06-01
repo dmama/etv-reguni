@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
+import ch.vd.uniregctb.migration.pm.regpm.CoordonneesFinancieresContainer;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
 
 public abstract class IbanExtractor {
@@ -35,7 +35,7 @@ public abstract class IbanExtractor {
 	 * @throws IllegalArgumentException en cas d'incohérence, ou de problème en général
 	 */
 	@Nullable
-	public static String extractIban(@Nullable RegpmCoordonneesFinancieres coordonneesFinancieres) throws IbanExtratorException {
+	public static String extractIban(@Nullable CoordonneesFinancieresContainer coordonneesFinancieres) throws IbanExtratorException {
 		if (coordonneesFinancieres == null) {
 			return null;
 		}
