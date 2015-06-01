@@ -119,6 +119,8 @@ public abstract class LengthConstants {
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;
 
+	public static final int MANDAT_TYPE = 15;
+
 	public final static int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");

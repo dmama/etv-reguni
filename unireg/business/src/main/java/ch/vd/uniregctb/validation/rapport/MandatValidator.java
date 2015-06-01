@@ -9,6 +9,20 @@ import ch.vd.uniregctb.tiers.Tiers;
 public class MandatValidator extends RapportEntreTiersValidator<Mandat> {
 
 	@Override
+	public ValidationResults validate(Mandat mandat) {
+		final ValidationResults vr = super.validate(mandat);
+		if (!mandat.isAnnule()) {
+
+			// le type de mandat est obligatoire
+			if (mandat.getTypeMandat() == null) {
+				vr.addError(String.format("%s %s n'a pas de type de mandat assigné", getEntityCategoryName(), getEntityDisplayString(mandat)));
+			}
+
+		}
+		return vr;
+	}
+
+	@Override
 	protected void verificationClasseObjet(ValidationResults vr, Tiers objet) {
 		super.verificationClasseObjet(vr, objet);
 		if (objet == null) {
