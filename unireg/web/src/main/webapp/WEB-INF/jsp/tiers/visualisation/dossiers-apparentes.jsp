@@ -196,7 +196,7 @@
                 html += '<td><a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'RapportEntreTiers\', ' + rapport.id + ');">&nbsp;</a></td>';
                 html += '</tr>\n';
             }
-
+            html +='</table>\n';
             return html;
         },
 
