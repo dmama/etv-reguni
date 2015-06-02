@@ -26,21 +26,22 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
  * @param <KS> type de la clé de regroupement à la sortie
  * @param <KI> type de la clé de regroupement interne
  */
-public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollector<S, D, KS> {
+public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollector<S, D, KS> {
 
 	private final Function<S, Stream<Keyed<KS, D>>> dataExtractor;
 	private final Equalator<? super D> dataEqualator;
 	private final Function<Keyed<KS, D>, KI> groupingKeyExtractor;
-	private final Map<KS, FlattenDataCollector<S, Keyed<KS, D>, KI>> groupings = new HashMap<>();
+	private final Map<KS, MultiValueDataCollector<S, Keyed<KS, D>, KI>> groupings = new HashMap<>();
 
 	/**
 	 * @param dataExtractor extracteur des données du snapshot
 	 * @param dataEqualator prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
 	 * @param groupingKeyExtractor extracteur de la clé (interne) de regroupement (ce seront pas les clés dans la map de résultats finaux)
+	 *                             NOTE: L'objet retourné pour servir de clé doit impérativement implémenter equals() et hashcode()
 	 */
-	public FlattenIndexedDataCollector(Function<S, Stream<Keyed<KS, D>>> dataExtractor,
-	                                   Equalator<? super D> dataEqualator,
-	                                   Function<Keyed<KS, D>, KI> groupingKeyExtractor) {
+	public MultiValueIndexedDataCollector(Function<S, Stream<Keyed<KS, D>>> dataExtractor,
+	                                      Equalator<? super D> dataEqualator,
+	                                      Function<Keyed<KS, D>, KI> groupingKeyExtractor) {
 
 		this.dataExtractor = dataExtractor;
 		this.dataEqualator = dataEqualator;
@@ -62,7 +63,7 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 
 	@Override
 	public Map<KS, List<DateRanged<D>>> getCollectedData(Supplier<Map<KS, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		final Function<Map.Entry<KS, FlattenDataCollector<S, Keyed<KS, D>, KI>>, List<DateRanged<D>>> mapper =
+		final Function<Map.Entry<KS, MultiValueDataCollector<S, Keyed<KS, D>, KI>>, List<DateRanged<D>>> mapper =
 				entry -> entry.getValue().getCollectedDataStream()
 						.map(d -> new DateRanged<>(d.getDateDebut(), d.getDateFin(), d.getPayload().getValue()))
 						.collect(Collectors.toCollection(listFactory));
@@ -92,13 +93,13 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 	}
 
 	@NotNull
-	private FlattenDataCollector<S, Keyed<KS, D>, KI> getOrCreateSpecificCollector(KS key) {
-		final FlattenDataCollector<S, Keyed<KS, D>, KI> existing = groupings.get(key);
+	private MultiValueDataCollector<S, Keyed<KS, D>, KI> getOrCreateSpecificCollector(KS key) {
+		final MultiValueDataCollector<S, Keyed<KS, D>, KI> existing = groupings.get(key);
 		if (existing != null) {
 			return existing;
 		}
 
-		final FlattenDataCollector<S, Keyed<KS, D>, KI> newCollector = new FlattenDataCollector<>(buildLocalDataExtractor(key, dataExtractor),
+		final MultiValueDataCollector<S, Keyed<KS, D>, KI> newCollector = new MultiValueDataCollector<>(buildLocalDataExtractor(key, dataExtractor),
 		                                                                                          buildKeyedDataEqualator(dataEqualator),
 		                                                                                          groupingKeyExtractor);
 		groupings.put(key, newCollector);

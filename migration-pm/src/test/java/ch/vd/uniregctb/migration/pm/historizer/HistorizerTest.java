@@ -15,13 +15,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.ListDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueIndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SingleValueDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
-import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 public class HistorizerTest {
@@ -39,9 +39,9 @@ public class HistorizerTest {
 			}
 		}
 
-		final LinearDataCollector<SnapshotData, Integer> iCollector = new SimpleDataCollector<>(d -> d.i, Equalator.DEFAULT);
-		final LinearDataCollector<SnapshotData, String> strCollector = new SimpleDataCollector<>(d -> d.str, String::equalsIgnoreCase);
-		final LinearDataCollector<SnapshotData, Object> nullCollector = new SimpleDataCollector<>(d -> null, (d1, d2) -> false);
+		final ListDataCollector<SnapshotData, Integer> iCollector = new SingleValueDataCollector<>(d -> d.i, Equalator.DEFAULT);
+		final ListDataCollector<SnapshotData, String> strCollector = new SingleValueDataCollector<>(d -> d.str, String::equalsIgnoreCase);
+		final ListDataCollector<SnapshotData, Object> nullCollector = new SingleValueDataCollector<>(d -> null, (d1, d2) -> false);
 
 		final Map<RegDate, SnapshotData> input = new HashMap<>();
 		input.put(RegDate.get(2000, 3, 27), new SnapshotData(1, "1020 VD"));
@@ -140,7 +140,7 @@ public class HistorizerTest {
 			}
 		}
 
-		final LinearDataCollector<SnapshotData, Data> dataCollector = new FlattenDataCollector<>(s -> s.data.stream(), Equalator.DEFAULT, d -> d.id);
+		final ListDataCollector<SnapshotData, Data> dataCollector = new MultiValueDataCollector<>(s -> s.data.stream(), Equalator.DEFAULT, d -> d.id);
 
 		final Map<RegDate, SnapshotData> input = new HashMap<>();
 		input.put(RegDate.get(2000, 1, 4), new SnapshotData(Arrays.asList(new Data(1, "One"), new Data(2, "Two"))));
@@ -253,7 +253,7 @@ public class HistorizerTest {
 						.map(sub -> sub.adresses.stream().map(a -> new Keyed<>(sub.idSub, a)))
 						.flatMap(Function.identity());
 		final Function<? super Adresse, String> keyExtractor = a -> a.type;
-		final IndexedDataCollector<SnapshotData, Adresse, Long> collector = new FlattenIndexedDataCollector<>(dataExtractor, Equalator.DEFAULT, FlattenIndexedDataCollector.enkey(keyExtractor));
+		final IndexedDataCollector<SnapshotData, Adresse, Long> collector = new MultiValueIndexedDataCollector<>(dataExtractor, Equalator.DEFAULT, MultiValueIndexedDataCollector.enkey(keyExtractor));
 
 		final Map<RegDate, SnapshotData> input = new HashMap<>();
 		input.put(RegDate.get(2000, 1, 1), new SnapshotData(Collections.singletonList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac"), new Adresse("D", "Rue du Lac"))))));

@@ -19,7 +19,7 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
  * @param <S> type du snapshot
  * @param <D> type de la donnée à historiser
  */
-public class FlattenDataCollector<S, D, K> extends LinearDataCollector<S, D> {
+public class MultiValueDataCollector<S, D, K> extends ListDataCollector<S, D> {
 
 	/**
 	 * Extracteur des données historisées depuis le snapshot
@@ -40,8 +40,9 @@ public class FlattenDataCollector<S, D, K> extends LinearDataCollector<S, D> {
 	 * @param dataExtractor extracteur des données historisées depuis le snapshot
 	 * @param dataEqualator prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
 	 * @param groupingKeyExtractor extracteur de la clé de regroupement depuis la donnée extraite (deux clés différentes seront historisées séparément)
+	 *                             NOTE: L'objet retourné pour servir de clé doit impérativement implémenter equals() et hashcode()
 	 */
-	public FlattenDataCollector(Function<S, Stream<? extends D>> dataExtractor, Equalator<? super D> dataEqualator, Function<? super D, K> groupingKeyExtractor) {
+	public MultiValueDataCollector(Function<S, Stream<? extends D>> dataExtractor, Equalator<? super D> dataEqualator, Function<? super D, K> groupingKeyExtractor) {
 		super(dataEqualator);
 		this.dataExtractor = dataExtractor;
 		this.groupingKeyExtractor = groupingKeyExtractor;

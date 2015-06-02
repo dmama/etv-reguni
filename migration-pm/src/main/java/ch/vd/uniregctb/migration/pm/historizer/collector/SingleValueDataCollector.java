@@ -15,7 +15,7 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
  * @param <S> type du snapshot
  * @param <D> type de la donnée à historiser
  */
-public class SimpleDataCollector<S, D> extends LinearDataCollector<S, D> {
+public class SingleValueDataCollector<S, D> extends ListDataCollector<S, D> {
 
 	/**
 	 * Extracteur de la donnée du snapshot
@@ -31,7 +31,7 @@ public class SimpleDataCollector<S, D> extends LinearDataCollector<S, D> {
 	 * @param dataExtractor extracteur de la donnée du snapshot
 	 * @param dataEqualator prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
 	 */
-	public SimpleDataCollector(Function<S, ? extends D> dataExtractor, Equalator<? super D> dataEqualator) {
+	public SingleValueDataCollector(Function<S, ? extends D> dataExtractor, Equalator<? super D> dataEqualator) {
 		super(dataEqualator);
 		this.dataExtractor = dataExtractor;
 	}

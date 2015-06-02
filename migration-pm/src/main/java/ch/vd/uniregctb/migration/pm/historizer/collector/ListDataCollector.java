@@ -14,7 +14,7 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
  * @param <S> type du snapshot
  * @param <D> type de la donnée à historiser
  */
-public abstract class LinearDataCollector<S, D> extends DataCollector<S> {
+public abstract class ListDataCollector<S, D> extends DataCollector<S> {
 
 	/**
 	 * Prédicat qui permet de dire si une donnée extraite est restée idendique ou pas
@@ -24,7 +24,7 @@ public abstract class LinearDataCollector<S, D> extends DataCollector<S> {
 	/**
 	 * @param dataEqualator Predicat qui permet de dire si deux structures de données non-nulles sont identiques
 	 */
-	protected LinearDataCollector(Equalator<? super D> dataEqualator) {
+	protected ListDataCollector(Equalator<? super D> dataEqualator) {
 		this.dataEqualator = dataEqualator;
 	}
 

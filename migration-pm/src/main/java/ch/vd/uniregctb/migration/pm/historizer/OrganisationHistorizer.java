@@ -4,10 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
-
-import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Identifier;
@@ -16,12 +13,12 @@ import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.FlattenIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.LinearDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.collector.SimpleDataCollector;
-import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.collector.ListDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueIndexedDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SingleValueDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
@@ -52,75 +49,69 @@ public class OrganisationHistorizer {
 		);
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
-		final LinearDataCollector<Organisation, String> nomsEntrepriseCollector = new SimpleDataCollector<>(Organisation::getOrganisationName,
-		                                                                                                    Equalator.DEFAULT
+		final ListDataCollector<Organisation, String> nomsEntrepriseCollector = new SingleValueDataCollector<>(Organisation::getOrganisationName,
+		                                                                                                       Equalator.DEFAULT
 		);
-		final LinearDataCollector<Organisation, String> nomsAdditionnelsEntrepriseCollector = new SimpleDataCollector<>(Organisation::getOrganisationAdditionalName,
-		                                                                                                                Equalator.DEFAULT
+		final ListDataCollector<Organisation, String> nomsAdditionnelsEntrepriseCollector = new SingleValueDataCollector<>(Organisation::getOrganisationAdditionalName,
+		                                                                                                                   Equalator.DEFAULT
 		);
-		final LinearDataCollector<Organisation, LegalForm> formesLegalesCollector = new SimpleDataCollector<>(Organisation::getLegalForm,
-		                                                                                                      Equalator.DEFAULT
+		final ListDataCollector<Organisation, LegalForm> formesLegalesCollector = new SingleValueDataCollector<>(Organisation::getLegalForm,
+		                                                                                                         Equalator.DEFAULT
 		);
-		final LinearDataCollector<Organisation, BigInteger> etablissementsCollector = new FlattenDataCollector<>(new EtablissementsExtractor(),
-		                                                                                                         Equalator.DEFAULT,
-		                                                                                                         s -> s
+		final ListDataCollector<Organisation, BigInteger> etablissementsCollector = new MultiValueDataCollector<>(new EtablissementsExtractor(),
+		                                                                                                          Equalator.DEFAULT,
+		                                                                                                          locationId -> locationId
 		);
-		final LinearDataCollector<Organisation, BigInteger> transfereACollector = new FlattenDataCollector<>(new TransferToExtractor(),
-		                                                                                                     Equalator.DEFAULT,
-		                                                                                                     s -> s
-		);
-		final LinearDataCollector<Organisation, BigInteger> transfereDeCollector = new FlattenDataCollector<>(new TransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transfereACollector = new MultiValueDataCollector<>(new TransferToExtractor(),
 		                                                                                                      Equalator.DEFAULT,
-		                                                                                                      s -> s
+		                                                                                                      locationId -> locationId
 		);
-		final LinearDataCollector<Organisation, BigInteger> remplaceParCollector = new SimpleDataCollector<>(o -> o.getReplacedBy().getCantonalId(),
-		                                                                                                     Equalator.DEFAULT
+		final ListDataCollector<Organisation, BigInteger> transfereDeCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		                                                                                                       Equalator.DEFAULT,
+		                                                                                                       locationId -> locationId
 		);
-		final LinearDataCollector<Organisation, BigInteger> enRemplacementDeCollector = new FlattenDataCollector<>(new TransferFromExtractor(),
-		                                                                                                           Equalator.DEFAULT,
-		                                                                                                           s -> s
+		final ListDataCollector<Organisation, BigInteger> remplaceParCollector = new SingleValueDataCollector<>(o -> o.getReplacedBy().getCantonalId(),
+		                                                                                                        Equalator.DEFAULT
+		);
+		final ListDataCollector<Organisation, BigInteger> enRemplacementDeCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		                                                                                                            Equalator.DEFAULT,
+		                                                                                                            locationId -> locationId
 		);
 
 
 		// Etablissements
 
-		final IndexedDataCollector<Organisation, Identifier, BigInteger> identifiantsEtablissementsCollector = new FlattenIndexedDataCollector<>(new OrganisationLocationIdentifiersExtractor(),
-		                                                                                                                                         new IdentifierEqualator(),
-		                                                                                                                                         keyed -> keyed.getValue().getIdentifierCategory()
+		final IndexedDataCollector<Organisation, Identifier, BigInteger> identifiantsEtablissementsCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationIdentifiersExtractor(),
+		                                                                                                                                            new IdentifierEqualator(),
+		                                                                                                                                            keyed -> keyed.getValue().getIdentifierCategory()
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> nomsEtablissementsCollector = new FlattenIndexedDataCollector<>(new OrganisationLocationNamesExtractor(),
-		                                                                                                                             Equalator.DEFAULT,
-		                                                                                                                             Keyed::getKey
+		final IndexedDataCollector<Organisation, String, BigInteger> nomsEtablissementsCollector = new SingleValueIndexedDataCollector<>(new OrganisationLocationNamesExtractor(),
+		                                                                                                                                 Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> autresNomsEtablissementsCollector = new FlattenIndexedDataCollector<>(new OrganisationLocationOtherNamesExtractor(),
-		                                                                                                                                   Equalator.DEFAULT,
-		                                                                                                                                   Keyed::getValue
-		);
-		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> genresEtablissementCollector = new FlattenIndexedDataCollector<>(new KindOfLocationExtractor(),
+		final IndexedDataCollector<Organisation, String, BigInteger> autresNomsEtablissementsCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationOtherNamesExtractor(),
 		                                                                                                                                      Equalator.DEFAULT,
 		                                                                                                                                      Keyed::getValue
 		);
-		final IndexedDataCollector<Organisation, Integer, BigInteger> siegesCollector = new FlattenIndexedDataCollector<>(new SeatExtractor(),
-		                                                                                                                  Equalator.DEFAULT,
-		                                                                                                                  Keyed::getValue
+		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> genresEtablissementCollector = new SingleValueIndexedDataCollector<>(new KindOfLocationExtractor(),
+		                                                                                                                                          Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, Integer, BigInteger> siegesCollector = new SingleValueIndexedDataCollector<>(new SeatExtractor(),
+		                                                                                                                      Equalator.DEFAULT
 		);
 
 		// RC
 
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesLegalesExtractor(),
-		                                                                                                                                    ADDRESS_EQUALATOR,
-		                                                                                                                                    Keyed::getKey
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
+		                                                                                                                                        ADDRESS_EQUALATOR
 		);
 
 		// IDE
 
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
-		                                                                                                                                     ADDRESS_EQUALATOR,
-		                                                                                                                                     Keyed::getKey
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
+		                                                                                                                                         ADDRESS_EQUALATOR
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new FlattenIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
-		                                                                                                                                                ADDRESS_EQUALATOR,
-		                                                                                                                                                Keyed::getKey
+		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
+		                                                                                                                                                    ADDRESS_EQUALATOR
 		);
 
 
@@ -217,13 +208,4 @@ public class OrganisationHistorizer {
 
 		return orgaBuilder.build();
 	}
-
-	@NotNull
-	private BinaryOperator<List<DateRanged<Identifier>>> getListBinaryOperator() {
-		return (dateRangeds, dateRangeds2) -> {
-			dateRangeds.addAll(dateRangeds2);
-			return dateRangeds;
-		};
-	}
-
 }
