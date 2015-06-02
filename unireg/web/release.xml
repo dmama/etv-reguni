@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<!-- Documentation -->
+		<fileSet>
+			<directory>../base/doc</directory>
+			<outputDirectory>unireg-web-${pom.version}/doc</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>INSTALL.doc</include>
+				<include>jmx.doc</include>
+			</includes>
+		</fileSet>
+		<!-- Fichier properties et ehcache.xml -->
+		<fileSet>
+			<directory>config/integration</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/integration</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>config/integration-po</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/integration-po</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>config/integration-te</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/integration-te</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>config/validation</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/validation</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<!-- Fichier unireg-log4j.xml -->
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>unireg-web-${pom.version}/config/integration</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>unireg-web-${pom.version}/config/integration-po</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>unireg-web-${pom.version}/config/integration-te</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>unireg-web-${pom.version}/config/validation</outputDirectory>
+		</fileSet>
+		<!-- Fichiers SQL -->
+		<fileSet>
+			<directory>../base/sql</directory>
+			<outputDirectory>unireg-web-${pom.version}/sql</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+	</fileSets>
+	<files>
+		<file>
+			<source>target/uniregctb-web-${pom.version}.war</source>
+			<outputDirectory>unireg-web-${pom.version}/deployment</outputDirectory>
+			<destName>unireg-web.war</destName>
+		</file>
+	</files>
+</assembly>

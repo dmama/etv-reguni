@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="dossierEditRestrictionManager" class="ch.vd.uniregctb.acces.parDossier.manager.DossierEditRestrictionManagerImpl" >
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+		<property name="droitAccesService" ref="droitAccesService" />
+	</bean>
+	
+	<bean id="utilisateurEditRestrictionManager" class="ch.vd.uniregctb.acces.parUtilisateur.manager.UtilisateurEditRestrictionManagerImpl" >
+		<property name="utilisateurManager" ref="utilisateurManager" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="droitAccesService" ref="droitAccesService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService"  ref="tiersService" />
+		<property name="extractionService"  ref="extractionService" />
+	</bean>
+
+	<bean id="copieDroitAccesManager" class="ch.vd.uniregctb.acces.copie.manager.CopieDroitAccesManagerImpl" >
+		<property name="utilisateurManager" ref="utilisateurManager" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="droitAccesService" ref="droitAccesService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="droitAccesValidator" class="ch.vd.uniregctb.acces.DroitAccesValidator"/>
+
+	<bean id="droitAccesController" class="ch.vd.uniregctb.acces.DroitAccesController">
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="validator" ref="droitAccesValidator"/>
+		<property name="dossierEditManager" ref="dossierEditRestrictionManager"/>
+		<property name="utilisateurEditManager" ref="utilisateurEditRestrictionManager"/>
+		<property name="utilisateurManager" ref="utilisateurManager"/>
+		<property name="copieManager" ref="copieDroitAccesManager"/>
+		<property name="servletService" ref="servletService"/>
+	</bean>
+
+</beans>
