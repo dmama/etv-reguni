@@ -77,14 +77,12 @@ public class FlattenIndexedDataCollector<S, D, KS, KI> extends IndexedDataCollec
 	public void collect(RegDate date, S snapshot) {
 		final Stream<Keyed<KS, D>> stream = snapshot == null ? Stream.empty() : dataExtractor.apply(snapshot);
 
+		// on consigne toutes les clés vues (pour identifier plus loin celles que l'on n'a pas vues) et on collecte leurs données
 		final Set<KS> usedKeys = new HashSet<>();
-		stream.forEach(keyed -> {
-			final KS key = keyed.getKey();
-			usedKeys.add(key);
-
-			final FlattenDataCollector<S, Keyed<KS, D>, KI> keySpecificCollector = getOrCreateSpecificCollector(key);
-			keySpecificCollector.collect(date, snapshot);
-		});
+		stream.map(Keyed::getKey)
+				.peek(usedKeys::add)
+				.map(this::getOrCreateSpecificCollector)
+				.forEach(specificCollector -> specificCollector.collect(date, snapshot));
 
 		// pour toutes les clés pour lesquelles il n'y a rien eu, c'est que quelque chose a disparu
 		groupings.entrySet().stream()
