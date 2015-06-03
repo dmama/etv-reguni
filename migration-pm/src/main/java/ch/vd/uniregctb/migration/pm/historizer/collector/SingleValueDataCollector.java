@@ -8,9 +8,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
-import ch.vd.uniregctb.migration.pm.historizer.container.SequentialDateRangesChecker;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
@@ -48,7 +48,7 @@ public class SingleValueDataCollector<S, D> extends ListDataCollector<S, D> {
 	@Override
 	public final List<DateRanged<D>> getCollectedData(Supplier<List<DateRanged<D>>> listFactory) {
 		List<DateRanged<D>> collectedData = getCollectedDataStream().collect(Collectors.toCollection(listFactory));
-		SequentialDateRangesChecker.ensureSequential(collectedData);
+		DateRangeHelper.overlaps(collectedData);
 		return collectedData;
 	}
 
