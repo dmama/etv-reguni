@@ -20,7 +20,10 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
  */
 public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollector<S, D, K> {
 
-	private static Object SINGLE_KEY = new Object();
+	/**
+	 * Clé unique interne afin que toutes les données extraites soient considérées ensemble (= single value)
+	 */
+	private static final Object SINGLE_KEY = new Object();
 
 	private final IndexedDataCollector<S, D, K> targetCollector;
 
@@ -42,7 +45,7 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	@Override
 	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		return targetCollector.getCollectedData();
+		return targetCollector.getCollectedData(mapFactory, listFactory);
 	}
 
 	@Override
