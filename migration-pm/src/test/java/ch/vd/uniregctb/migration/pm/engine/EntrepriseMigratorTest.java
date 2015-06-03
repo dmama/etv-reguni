@@ -33,16 +33,21 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
@@ -147,6 +152,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	static RegpmMandat addMandat(RegpmEntreprise mandant, RegpmEntity mandataire, RegpmTypeMandat type, String noCCP, RegDate dateDebut, RegDate dateFin) {
 		final RegpmMandat mandat = new RegpmMandat();
 		mandat.setId(new RegpmMandat.PK(computeNewSeqNo(mandant.getMandataires(), x -> x.getId().getNoSequence()), mandant.getId()));
+		assignMutationVisa(mandat, REGPM_VISA, REGPM_MODIF);
 		mandat.setNoCCP(noCCP);
 		mandat.setType(type);
 		mandat.setDateAttribution(dateDebut);
@@ -166,6 +172,28 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		mandant.getMandataires().add(mandat);
 		return mandat;
+	}
+
+	static RegpmRegimeFiscalCH addRegimeFiscalCH(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateAnnulation, RegpmTypeRegimeFiscal type) {
+		final RegpmRegimeFiscalCH rf = new RegpmRegimeFiscalCH();
+		rf.setId(new RegpmRegimeFiscalCH.PK(computeNewSeqNo(entreprise.getRegimesFiscauxCH(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(rf, REGPM_VISA, REGPM_MODIF);
+		rf.setDateDebut(dateDebut);
+		rf.setDateAnnulation(dateAnnulation);
+		rf.setType(type);
+		entreprise.getRegimesFiscauxCH().add(rf);
+		return rf;
+	}
+
+	static RegpmRegimeFiscalVD addRegimeFiscalVD(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateAnnulation, RegpmTypeRegimeFiscal type) {
+		final RegpmRegimeFiscalVD rf = new RegpmRegimeFiscalVD();
+		rf.setId(new RegpmRegimeFiscalVD.PK(computeNewSeqNo(entreprise.getRegimesFiscauxVD(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(rf, REGPM_VISA, REGPM_MODIF);
+		rf.setDateDebut(dateDebut);
+		rf.setDateAnnulation(dateAnnulation);
+		rf.setType(type);
+		entreprise.getRegimesFiscauxVD().add(rf);
+		return rf;
 	}
 
 	@Test
@@ -394,6 +422,76 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
 		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
 		Assert.assertEquals("CH7009000000170003317", ((Mandat) ret).getCoordonneesFinancieres().getIban());
+	}
+
+	@Test
+	public void testRegimesFiscaux() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalCH(e, RegDate.get(2000, 1, 3), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalCH(e, RegDate.get(2005, 1, 1), RegDate.get(2006, 4, 12), RegpmTypeRegimeFiscal._109_PM_AVEC_EXONERATION_ART_90G);
+		addRegimeFiscalCH(e, RegDate.get(2006, 1, 1), null, RegpmTypeRegimeFiscal._109_PM_AVEC_EXONERATION_ART_90G);
+		addRegimeFiscalVD(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		// vérification des régimes fiscaux migrés
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getUniregSessionFactory().getCurrentSession().get(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<RegimeFiscal> regimesFiscauxBruts = entreprise.getRegimesFiscaux();
+			Assert.assertNotNull(regimesFiscauxBruts);
+			Assert.assertEquals(3, regimesFiscauxBruts.size());     // 1 VD + 2 CH (l'annulé n'est pas migré)
+
+			final List<RegimeFiscal> regimesFiscauxTries = entreprise.getRegimesFiscauxNonAnnulesTries();
+			Assert.assertNotNull(regimesFiscauxTries);
+			Assert.assertEquals(3, regimesFiscauxTries.size());
+
+			{
+				final RegimeFiscal rf = regimesFiscauxTries.get(0);
+				Assert.assertNotNull(rf);
+				Assert.assertEquals(RegimeFiscal.Portee.VD, rf.getPortee());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertNull(rf.getAnnulationDate());
+				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+			}
+			{
+				final RegimeFiscal rf = regimesFiscauxTries.get(1);
+				Assert.assertNotNull(rf);
+				Assert.assertEquals(RegimeFiscal.Portee.CH, rf.getPortee());
+				Assert.assertEquals(RegDate.get(2000, 1, 3), rf.getDateDebut());
+				Assert.assertEquals(RegDate.get(2005, 12, 31), rf.getDateFin());
+				Assert.assertNull(rf.getAnnulationDate());
+				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+			}
+			{
+				final RegimeFiscal rf = regimesFiscauxTries.get(2);
+				Assert.assertNotNull(rf);
+				Assert.assertEquals(RegimeFiscal.Portee.CH, rf.getPortee());
+				Assert.assertEquals(RegDate.get(2006, 1, 1), rf.getDateDebut());
+				Assert.assertNull(rf.getDateFin());
+				Assert.assertNull(rf.getAnnulationDate());
+				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+			}
+			return null;
+		});
 	}
 
 	// TODO il reste encore plein de tests à faire...

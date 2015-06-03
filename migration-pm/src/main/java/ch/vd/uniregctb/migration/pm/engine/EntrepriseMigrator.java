@@ -24,6 +24,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -54,10 +55,12 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Bouclement;
@@ -67,6 +70,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -74,6 +78,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeMandat;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
@@ -276,10 +281,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
 
 		// TODO générer l'établissement principal (= siège...)
-		// TODO migrer les bouclements, les adresses, les déclarations/documents...
+		// TODO migrer les bouclements, les adresses, les documents...
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
 
+		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarations(regpm, unireg, mr);
 		migrateForsPrincipaux(regpm, unireg, mr);
@@ -570,12 +576,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
 				.collect(Collectors.toList());
 
+		// TODO la date de fin du dernier for est-elle la date de fin fiscale ?
 		// assignation des dates de fin
-		RegDate dateFinCourante = regpm.getDateFinFiscale();
-		for (ForFiscalPrincipalPM ffp : CollectionsUtils.revertedOrder(liste)) {
-			ffp.setDateFin(dateFinCourante);
-			dateFinCourante = ffp.getDateDebut().getOneDayBefore();
-		}
+		assigneDatesFin(regpm.getDateFinFiscale(), liste);
 
 		// assignation des motifs
 		final MovingWindow<ForFiscalPrincipalPM> wnd = new MovingWindow<>(liste);
@@ -643,5 +646,63 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		if (!mapViaGroupe.isEmpty()) {
 			mr.addPreTransactionCommitData(new ForsSecondairesData.Immeuble(moi, mapViaGroupe));
 		}
+	}
+
+	/**
+	 * Attribution des dates de fin en suivant les principes que
+	 * <ul>
+	 *     <li>la liste des éléments est triée dans l'ordre chronologique des dates de début</li>
+	 *     <li>les éléments ne se chevauchent pas</li>
+	 * </ul>
+	 * @param derniereDateFin date de fin à appliquer au dernier éléments de la liste
+	 * @param listeTriee liste dont les éléments doivent se voir assigner une date de fin
+	 * @param <T> type des éléments de la liste
+	 */
+	private static <T extends HibernateDateRangeEntity> void assigneDatesFin(@Nullable RegDate derniereDateFin, List<T> listeTriee) {
+		RegDate dateFinCourante = derniereDateFin;
+		for (T ffp : CollectionsUtils.revertedOrder(listeTriee)) {
+			ffp.setDateFin(dateFinCourante);
+			dateFinCourante = ffp.getDateDebut().getOneDayBefore();
+		}
+	}
+
+	private static TypeRegimeFiscal mapTypeRegimeFiscal(RegpmTypeRegimeFiscal type) {
+		// TODO il va falloir trouver un mapping un peu plus touffu...
+		return TypeRegimeFiscal.ORDINAIRE;
+	}
+
+	private static RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf) {
+		final RegimeFiscal unireg = new RegimeFiscal();
+		unireg.setDateDebut(rf.getDateDebut());
+		unireg.setDateFin(null);
+		unireg.setPortee(portee);
+		unireg.setType(mapTypeRegimeFiscal(rf.getType()));
+		return unireg;
+	}
+
+	private static <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee, SortedSet<T> regimesRegpm, @Nullable RegDate dateFinRegimes) {
+		// collecte des régimes fiscaux CH sans date de fin d'abord...
+		final List<RegimeFiscal> liste = regimesRegpm.stream()
+				.filter(r -> r.getDateAnnulation() == null)         // on ne migre pas les régimes fiscaux annulés
+				.map(r -> mapRegimeFiscal(portee, r))
+				.collect(Collectors.toList());
+
+		// ... puis attribution des dates de fin
+		assigneDatesFin(dateFinRegimes, liste);
+		return liste;
+	}
+
+	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// TODO la date de fin du dernier régime fiscal CH est-elle la date de fin fiscale ?
+		// collecte des régimes fiscaux CH...
+		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH, regpm.getRegimesFiscauxCH(), regpm.getDateFinFiscale());
+
+		// TODO la date de fin du dernier régime fiscal VD est-elle la date de fin fiscale ?
+		// ... puis des règimes fiscaux VD
+		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD, regpm.getRegimesFiscauxVD(), regpm.getDateFinFiscale());
+
+		// et finalement on ajoute tout ça dans l'entreprise
+		Stream.concat(listeCH.stream(), listeVD.stream()).forEach(unireg::addRegimeFiscal);
 	}
 }

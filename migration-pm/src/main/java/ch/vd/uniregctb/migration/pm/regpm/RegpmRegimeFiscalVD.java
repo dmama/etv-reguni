@@ -23,7 +23,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeRegimeFiscalUserType;
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "TypeRegimeFiscal", typeClass = TypeRegimeFiscalUserType.class)
 })
-public class RegpmRegimeFiscalVD extends RegpmEntity implements Comparable<RegpmRegimeFiscalVD> {
+public class RegpmRegimeFiscalVD extends RegpmEntity implements Comparable<RegpmRegimeFiscalVD>, RegpmRegimeFiscal {
 
 	/**
 	 * Ils ont fait une clé primaire avec le numéro de l'entreprise et un numéro de séquence
