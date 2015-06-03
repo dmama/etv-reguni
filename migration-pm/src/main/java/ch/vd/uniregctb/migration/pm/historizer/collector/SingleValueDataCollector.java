@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.migration.pm.historizer.collector;
 
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.container.SequentialDateRangesChecker;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
@@ -40,6 +44,14 @@ public class SingleValueDataCollector<S, D> extends ListDataCollector<S, D> {
 	protected Stream<DateRanged<D>> getCollectedDataStream() {
 		return getCollected(collected);
 	}
+
+	@Override
+	public final List<DateRanged<D>> getCollectedData(Supplier<List<DateRanged<D>>> listFactory) {
+		List<DateRanged<D>> collectedData = getCollectedDataStream().collect(Collectors.toCollection(listFactory));
+		SequentialDateRangesChecker.ensureSequential(collectedData);
+		return collectedData;
+	}
+
 
 	@Override
 	public void collect(RegDate date, S snapshot) {

@@ -39,7 +39,7 @@ public abstract class ListDataCollector<S, D> extends DataCollector<S> {
 	 * @param listFactory constructeur de liste spécifique
 	 * @return la liste des données historisées disponible après analyse
 	 */
-	public final List<DateRanged<D>> getCollectedData(Supplier<List<DateRanged<D>>> listFactory) {
+	public List<DateRanged<D>> getCollectedData(Supplier<List<DateRanged<D>>> listFactory) {
 		return getCollectedDataStream().collect(Collectors.toCollection(listFactory));
 	}
 

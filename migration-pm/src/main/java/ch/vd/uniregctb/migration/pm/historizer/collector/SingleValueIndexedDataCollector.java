@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
+import ch.vd.uniregctb.migration.pm.historizer.container.SequentialDateRangesChecker;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 /**
@@ -52,7 +53,9 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	@Override
 	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		return delegateCollector.getCollectedData(mapFactory, listFactory);
+		Map<K, List<DateRanged<D>>> collectedData = delegateCollector.getCollectedData(mapFactory, listFactory);
+		collectedData.values().forEach(SequentialDateRangesChecker::ensureSequential);
+		return collectedData;
 	}
 
 	@Override
