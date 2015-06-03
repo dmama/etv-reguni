@@ -25,7 +25,11 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	private static final Object SINGLE_KEY = new Object();
 
-	private final IndexedDataCollector<S, D, K> targetCollector;
+	/**
+	 * On délègue à un collecteur multi-valeurs pour éviter de dupliquer la logique assez complexe qui
+	 * entoure la gestion des index.
+	 */
+	private final IndexedDataCollector<S, D, K> delegateCollector;
 
 	/**
 	 * @param dataExtractor extracteur de la donnée du snapshot
@@ -33,9 +37,12 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	public SingleValueIndexedDataCollector(Function<S, Stream<Keyed<K, D>>> dataExtractor,
 	                                       Equalator<? super D> dataEqualator) {
-		this.targetCollector = new MultiValueIndexedDataCollector<>(dataExtractor,
+		this.delegateCollector = new MultiValueIndexedDataCollector<>(dataExtractor,
 		                                                            dataEqualator,
-		                                                            d -> SINGLE_KEY); // On n'a qu'une seule valeur, donc la clé de groupement doit être une valeur immuable.
+		                                                            d -> SINGLE_KEY);
+		                                                            // On n'a qu'une seule valeur,
+		                                                            // la clé de groupement doit être
+		                                                            // une valeur unique immuable.
 	}
 
 	/**
@@ -45,11 +52,11 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	@Override
 	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		return targetCollector.getCollectedData(mapFactory, listFactory);
+		return delegateCollector.getCollectedData(mapFactory, listFactory);
 	}
 
 	@Override
 	public void collect(RegDate date, S snapshot) {
-		targetCollector.collect(date, snapshot);
+		delegateCollector.collect(date, snapshot);
 	}
 }

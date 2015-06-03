@@ -28,7 +28,7 @@ public class SingleValueDateRangeTest {
 				new DateRanged<>(RegDateHelper.get(2016, 8, 10), RegDateHelper.get(2016, 8, 20), payload),
 				new DateRanged<>(RegDateHelper.get(2025, 5, 25), RegDateHelper.get(2025, 5, 28), payload)
 		));
-		SingleValueDateRanges<String> svdr = new SingleValueDateRanges<>(values);
+		SequentialDateRangesList<String> svdr = new SequentialDateRangesList<>(values);
 		assertThat(svdr, notNullValue());
 	}
 
@@ -39,7 +39,7 @@ public class SingleValueDateRangeTest {
 				new DateRanged<>(RegDateHelper.get(2015, 5, 3), RegDateHelper.get(2015, 5, 4), payload),
 				new DateRanged<>(RegDateHelper.get(2015, 5, 10), null, payload)
 		));
-		SingleValueDateRanges<String> svdr = new SingleValueDateRanges<>(values);
+		SequentialDateRangesList<String> svdr = new SequentialDateRangesList<>(values);
 		assertThat(svdr, notNullValue());
 	}
 
@@ -51,7 +51,7 @@ public class SingleValueDateRangeTest {
 				new DateRanged<>(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 2), payload),
 				new DateRanged<>(RegDateHelper.get(2015, 5, 1), RegDateHelper.get(2015, 5, 4), payload)
 		));
-		SingleValueDateRanges<String> svdr = new SingleValueDateRanges<>(values);
+		SequentialDateRangesList<String> svdr = new SequentialDateRangesList<>(values);
 		assertThat(svdr, notNullValue());
 	}
 
@@ -64,7 +64,7 @@ public class SingleValueDateRangeTest {
 				new DateRanged<>(RegDateHelper.get(2015, 5, 3), null, payload),
 				new DateRanged<>(RegDateHelper.get(2015, 5, 10), RegDateHelper.get(2015, 5, 20), payload)
 		));
-		SingleValueDateRanges<String> svdr = new SingleValueDateRanges<>(values);
+		SequentialDateRangesList<String> svdr = new SequentialDateRangesList<>(values);
 		assertThat(svdr, notNullValue());
 	}
 }
