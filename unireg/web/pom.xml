@@ -72,6 +72,11 @@
 			<version>2.12.0</version>
 			<exclusions>
 				<exclusion>
+					<!-- repris dans ch.vd.shared / shared-base ensuite -->
+					<groupId>ch.vd.registre</groupId>
+					<artifactId>shared-base</artifactId>
+				</exclusion>
+				<exclusion>
 					<!-- repris dans ch.vd.shared / shared-date ensuite -->
 					<groupId>ch.vd.registre</groupId>
 					<artifactId>shared-date</artifactId>

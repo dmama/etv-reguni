@@ -56,6 +56,13 @@
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-jmx-common</artifactId>
 			<version>4.0.0</version>
+			<exclusions>
+				<exclusion>
+					<!-- repris dans ch.vd.shared / shared-base ensuite -->
+					<groupId>ch.vd.registre</groupId>
+					<artifactId>shared-base</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

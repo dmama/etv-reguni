@@ -139,16 +139,9 @@
 			<version>2.1.0</version>
 		</dependency>
 		<dependency>
-            <groupId>ch.vd.registre</groupId>
+            <groupId>ch.vd.shared</groupId>
             <artifactId>shared-base</artifactId>
 			<version>${shared-base.version}</version>
-			<exclusions>
-				<exclusion>
-					<!-- repris dans ch.vd.shared / shared-date ensuite -->
-					<groupId>ch.vd.registre</groupId>
-					<artifactId>shared-date</artifactId>
-				</exclusion>
-			</exclusions>
         </dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
@@ -592,7 +585,7 @@
 		<!-- Framework dependency versions -->
 		<tomcat.version>8.0.17</tomcat.version>
 		<embedded-tomcat.version>4.0.0</embedded-tomcat.version>
-		<shared-base.version>4.12.0</shared-base.version>
+		<shared-base.version>5.5.2</shared-base.version>
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
