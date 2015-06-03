@@ -3,37 +3,63 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-       <bean id="validationInterceptor" class="ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor">
-              <property name="chainingInterceptor" ref="uniregEntityInterceptor"/>
-              <property name="sessionFactory" ref="uniregSessionFactory"/>
-              <property name="validationService" ref="validationService"/>
-       </bean>
+	<bean id="validationInterceptor" class="ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor">
+		<property name="chainingInterceptor" ref="uniregEntityInterceptor"/>
+		<property name="sessionFactory" ref="uniregSessionFactory"/>
+		<property name="validationService" ref="validationService"/>
+	</bean>
 
-       <bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl"/>
+	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl"/>
 
-       <bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
-              <property name="validationService" ref="validationService" />
-       </bean>
+	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
+		<property name="validationService" ref="validationService" />
+	</bean>
 
-       <!-- -->
-       <!-- Validateurs de rapports entre tiers -->
+	<bean id="dateRangeEntityValidator" class="ch.vd.uniregctb.validation.tiers.DateRangeEntityValidator" abstract="true" parent="entityValidator"/>
 
-       <bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" abstract="true" parent="entityValidator">
-              <property name="tiersDAO" ref="tiersDAO" />
-       </bean>
-       <bean id="appartenanceMenageValidator" class="ch.vd.uniregctb.validation.rapport.AppartenanceMenageValidator" parent="rapportEntreTiersValidator"/>
-       <bean id="parenteValidator" class="ch.vd.uniregctb.validation.rapport.ParenteValidator" parent="rapportEntreTiersValidator"/>
-       <bean id="rapportPrestationImposableValidator" class="ch.vd.uniregctb.validation.rapport.RapportPrestationImposableValidator" parent="rapportEntreTiersValidator"/>
-       <bean id="defaultRapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.DefaultRapportEntreTiersValidator" parent="rapportEntreTiersValidator" />
-       <bean id="representationLegaleValidator" class="ch.vd.uniregctb.validation.rapport.RepresentationLegaleValidator" abstract="true" parent="rapportEntreTiersValidator"/>
-       <bean id="tutelleValidator" class="ch.vd.uniregctb.validation.rapport.TutelleValidator" parent="representationLegaleValidator" />
-       <bean id="curatelleValidator" class="ch.vd.uniregctb.validation.rapport.CuratelleValidator" parent="representationLegaleValidator" />
-       <bean id="conseilLegalValidator" class="ch.vd.uniregctb.validation.rapport.ConseilLegalValidator" parent="representationLegaleValidator" />
-       <bean id="assujettissementParSubstitutionValidator" class="ch.vd.uniregctb.validation.rapport.AssujettissementParSubstitutionValidator" parent="rapportEntreTiersValidator" />
-       <bean id="activiteEconomiqueValidator" class="ch.vd.uniregctb.validation.rapport.ActiviteEconomiqueValidator" parent="rapportEntreTiersValidator"/>
-       <bean id="mandatValidator" class="ch.vd.uniregctb.validation.rapport.MandatValidator" parent="rapportEntreTiersValidator"/>
-       <bean id="fusionEntreprisesValidator" class="ch.vd.uniregctb.validation.rapport.FusionEntreprisesValidator" parent="rapportEntreTiersValidator"/>
+	<!-- -->
+	<!-- Validateurs de rapports entre tiers -->
 
-       <!-- TODO mettre en place les validateurs nécessaires... -->
+	<bean id="rapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.RapportEntreTiersValidator" abstract="true" parent="dateRangeEntityValidator">
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+	<bean id="appartenanceMenageValidator" class="ch.vd.uniregctb.validation.rapport.AppartenanceMenageValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="parenteValidator" class="ch.vd.uniregctb.validation.rapport.ParenteValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="rapportPrestationImposableValidator" class="ch.vd.uniregctb.validation.rapport.RapportPrestationImposableValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="defaultRapportEntreTiersValidator" class="ch.vd.uniregctb.validation.rapport.DefaultRapportEntreTiersValidator" parent="rapportEntreTiersValidator" />
+	<bean id="representationLegaleValidator" class="ch.vd.uniregctb.validation.rapport.RepresentationLegaleValidator" abstract="true" parent="rapportEntreTiersValidator"/>
+	<bean id="tutelleValidator" class="ch.vd.uniregctb.validation.rapport.TutelleValidator" parent="representationLegaleValidator" />
+	<bean id="curatelleValidator" class="ch.vd.uniregctb.validation.rapport.CuratelleValidator" parent="representationLegaleValidator" />
+	<bean id="conseilLegalValidator" class="ch.vd.uniregctb.validation.rapport.ConseilLegalValidator" parent="representationLegaleValidator" />
+	<bean id="assujettissementParSubstitutionValidator" class="ch.vd.uniregctb.validation.rapport.AssujettissementParSubstitutionValidator" parent="rapportEntreTiersValidator" />
+	<bean id="activiteEconomiqueValidator" class="ch.vd.uniregctb.validation.rapport.ActiviteEconomiqueValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="mandatValidator" class="ch.vd.uniregctb.validation.rapport.MandatValidator" parent="rapportEntreTiersValidator"/>
+	<bean id="fusionEntreprisesValidator" class="ch.vd.uniregctb.validation.rapport.FusionEntreprisesValidator" parent="rapportEntreTiersValidator"/>
+
+	<!-- -->
+	<!-- Validateurs de tiers -->
+
+	<bean id="tiersValidator" class="ch.vd.uniregctb.validation.tiers.TiersValidator" abstract="true" parent="entityValidator"/>
+
+	<bean id="contribuableValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableValidator" abstract="true" parent="tiersValidator">
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<bean id="etablissementValidator" class="ch.vd.uniregctb.validation.tiers.EtablissementValidator" parent="contribuableValidator" />
+	<bean id="contribuableImpositionPersonnesMoralesValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableImpositionPersonnesMoralesValidator" abstract="true" parent="contribuableValidator"/>
+	<bean id="entrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EntrepriseValidator" parent="contribuableImpositionPersonnesMoralesValidator" />
+	<bean id="autreCommunauteValidator" class="ch.vd.uniregctb.validation.tiers.AutreCommunauteValidator" parent="contribuableImpositionPersonnesMoralesValidator" />
+	<bean id="contribuableImpositionPersonnesPhysiquesValidator" class="ch.vd.uniregctb.validation.tiers.ContribuableImpositionPersonnesPhysiquesValidator" abstract="true" parent="contribuableValidator"/>
+	<bean id="menageCommunValidator" class="ch.vd.uniregctb.validation.tiers.MenageCommunValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
+	<bean id="personnePhysiqueValidator" class="ch.vd.uniregctb.validation.tiers.PersonnePhysiqueValidator" parent="contribuableImpositionPersonnesPhysiquesValidator" />
+
+	<!-- -->
+	<!-- Validateurs des localisations datées (fors, domiciles établissements...) -->
+
+	<bean id="localisationDateeValidator" abstract="true" class="ch.vd.uniregctb.validation.tiers.LocalisationDateeValidator" parent="dateRangeEntityValidator">
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+	</bean>
+
+	<!-- TODO mettre en place les validateurs nécessaires... -->
 
 </beans>

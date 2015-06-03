@@ -271,7 +271,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		// création du non-habitant avec les mêmes données en base (il sera indexé et retrouvé lors de la migration)
 		final long ppId = doInUniregTransaction(status -> {
-			final PersonnePhysique pp = new PersonnePhysique();
+			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
 			pp.setNom("Dantès");
 			pp.setPrenomUsuel("Edmond");
 			pp.setTousPrenoms("Edmond Alexandre Hervé");

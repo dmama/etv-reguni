@@ -3,11 +3,30 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
+	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
+		<property name="validationService" ref="validationService"/>
+	</bean>
+
 	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
+
+	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
+		<property name="assujettissementService" ref="assujettissementService"/>
+	</bean>
 
 	<bean id="rcEntService" class="ch.vd.uniregctb.migration.pm.rcent.service.RCEntService">
 		<constructor-arg name="rcentClient" ref="rcentClient"/>
 	</bean>
 
+	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient"/>
+		<property name="uniregCacheManager" ref="uniregCacheManager"/>
+	</bean>
+
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="rawService" ref="serviceInfrastructureFidor"/>
+	</bean>
+
+	<bean id="uniregCacheManager" class="ch.vd.uniregctb.migration.pm.utils.MockCacheManager"/>
 
 </beans>
