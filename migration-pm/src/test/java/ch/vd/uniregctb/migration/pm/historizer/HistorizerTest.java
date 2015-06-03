@@ -209,7 +209,7 @@ public class HistorizerTest {
 	 * Pour montrer qu'il est possible de récupérer, par exemple, les adresses "par établissement"...
 	 */
 	@Test
-	public void testAutomatedComposition() throws Exception {
+	public void testMultiValueIndexed() throws Exception {
 
 		final class Adresse {
 			final String type;
@@ -369,10 +369,7 @@ public class HistorizerTest {
 	 * Que se passe-t-il quand on utilise un collector indexé single value avec des données multiples?
 	 */
 	@Test
-	public void testAutomatedCompositionWithWrongCollector() throws Exception {
-
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("A date identical to or greater than the starting date of the previous period has been encountered.");
+	public void testMultiValueIndexedWithWrongCollector() throws Exception {
 
 		final class Adresse {
 			final String type;
@@ -433,7 +430,172 @@ public class HistorizerTest {
 		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac, Case postale"), new Adresse("D", "Rue du Lac"))),
 		                                                                   new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
 
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage("A date identical to or greater than the starting date of the previous period has been encountered.");
+
 		Historizer.historize(input, Collections.singletonList(collector));
 
+	}
+
+	/**
+	 * Pour montrer qu'il est possible de récupérer, par exemple, les adresses "par établissement"...
+	 */
+	@Test
+	public void testSingleValueIndexedWithHole() throws Exception {
+
+		final class Adresse {
+			final String type;
+			final String adresse;
+
+			public Adresse(String type, String adresse) {
+				this.type = type;
+				this.adresse = adresse;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if (this == o) return true;
+				if (o == null || getClass() != o.getClass()) return false;
+
+				final Adresse adresse1 = (Adresse) o;
+				return !(type != null ? !type.equals(adresse1.type) : adresse1.type != null) && !(adresse != null ? !adresse.equals(adresse1.adresse) : adresse1.adresse != null);
+			}
+
+			@Override
+			public int hashCode() {
+				int result = type != null ? type.hashCode() : 0;
+				result = 31 * result + (adresse != null ? adresse.hashCode() : 0);
+				return result;
+			}
+		}
+
+		final class SubsnapshotData {
+			final Long idSub;
+			final List<Adresse> adresses;
+
+			public SubsnapshotData(Long idSub, List<Adresse> adresses) {
+				this.idSub = idSub;
+				this.adresses = adresses;
+			}
+		}
+
+		final class SnapshotData {
+			final List<SubsnapshotData> subs;
+
+			public SnapshotData(List<SubsnapshotData> subs) {
+				this.subs = subs;
+			}
+		}
+
+		final Function<SnapshotData, Stream<Keyed<Long, Adresse>>> dataExtractor = s ->
+				s.subs.stream()
+						.map(sub -> sub.adresses.stream().map(a -> new Keyed<>(sub.idSub, a)))
+						.flatMap(Function.identity());
+
+		final IndexedDataCollector<SnapshotData, Adresse, Long> collector = new SingleValueIndexedDataCollector<>(dataExtractor, Equalator.DEFAULT);
+
+		final Map<RegDate, SnapshotData> input = new HashMap<>();
+		input.put(RegDate.get(2000, 1, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac"))),
+		                                                                  new SubsnapshotData(4L, Collections.singletonList(new Adresse("C", "Sur le toit"))))));
+		input.put(RegDate.get(2001, 6, 3), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac"))),
+		                                                                  new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois"))),
+		                                                                  new SubsnapshotData(4L, Collections.emptyList()),
+		                                                                  new SubsnapshotData(3L, Collections.singletonList(new Adresse("C", "Bahnhofstrasse 12"))))));
+		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac, Case postale"))),
+		                                                                   new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
+		                                                                   new SubsnapshotData(4L, Collections.singletonList(new Adresse("C", "Dans le fossé"))))));
+
+		Historizer.historize(input, Collections.singletonList(collector));
+
+		final Map<Long, List<DateRanged<Adresse>>> collected = collector.getCollectedData();
+		Assert.assertEquals(4, collected.size());
+		{
+			final List<DateRanged<Adresse>> adresses = collected.get(1L);
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(2, adresses.size());
+
+			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
+			{
+				final DateRanged<Adresse> a = adresses.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Rue du Lac", a.getPayload().adresse);
+			}
+			{
+				final DateRanged<Adresse> a = adresses.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Rue du Lac, Case postale", a.getPayload().adresse);
+			}
+		}
+		{
+			final List<DateRanged<Adresse>> adresses = collected.get(2L);
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(2, adresses.size());
+
+			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
+			{
+				final DateRanged<Adresse> a = adresses.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Dans les bois", a.getPayload().adresse);
+			}
+			{
+				final DateRanged<Adresse> a = adresses.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Dans les bois, Case postale", a.getPayload().adresse);
+			}
+		}
+		{
+			final List<DateRanged<Adresse>> adresses = collected.get(3L);
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
+			{
+				final DateRanged<Adresse> a = adresses.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Bahnhofstrasse 12", a.getPayload().adresse);
+			}
+		}
+		{
+			final List<DateRanged<Adresse>> adresses = collected.get(4L);
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(2, adresses.size());
+
+			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
+			{
+				final DateRanged<Adresse> a = adresses.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2001, 6, 2), a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Sur le toit", a.getPayload().adresse);
+			}
+			{
+				final DateRanged<Adresse> a = adresses.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("C", a.getPayload().type);
+				Assert.assertEquals("Dans le fossé", a.getPayload().adresse);
+			}
+		}
 	}
 }
