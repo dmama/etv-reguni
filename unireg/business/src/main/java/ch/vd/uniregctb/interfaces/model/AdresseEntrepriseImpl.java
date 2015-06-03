@@ -70,7 +70,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 			try {
 				final Rue rue = serviceInfrastructure.getRueByNumero(target.getNumeroTechniqueRue());
 				this.rue = rue.getDesignationCourrier();
-				this.numeroOrdrePostal = getNoOrdrePoste(rue.getNoLocalite());
+				this.numeroOrdrePostal = rue.getNoLocalite();
 			}
 			catch (RemoteException | InfrastructureException e) {
 				throw new RuntimeException("Impossible de récupérer le libellé de la rue " + target.getNumeroTechniqueRue() + " dans le mainframe...", e);
@@ -78,17 +78,9 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		}
 		else {
 			this.rue = target.getRue();
-			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : getNoOrdrePoste(target.getNumeroOrdrePostal());
+			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
 		}
 		this.numeroTechniqueRue = null;     // on ne veut plus de ces numéros de rue qui viennent du host!
-	}
-
-	private static int getNoOrdrePoste(int noOrdrePosteMainframe) {
-
-		// Dans le mainframe, il y avait des localités dont le numéro d'ordre postal a disparu avec RefInf (exemple : 339 / Genève)
-		// -> il faut donc mettre en place un mapping des anciens vers les nouveaux (configuration externe, mapping en dur ???)
-
-		return noOrdrePosteMainframe;
 	}
 
 	private static TypeAdressePM initTypeAdresse(EnumTypeAdresseEntreprise type) {

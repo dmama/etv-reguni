@@ -100,8 +100,8 @@ public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCol
 		}
 
 		final MultiValueDataCollector<S, Keyed<KS, D>, KI> newCollector = new MultiValueDataCollector<>(buildLocalDataExtractor(key, dataExtractor),
-		                                                                                                buildKeyedDataEqualator(dataEqualator),
-		                                                                                                groupingKeyExtractor);
+		                                                                                          buildKeyedDataEqualator(dataEqualator),
+		                                                                                          groupingKeyExtractor);
 		groupings.put(key, newCollector);
 		return newCollector;
 	}
