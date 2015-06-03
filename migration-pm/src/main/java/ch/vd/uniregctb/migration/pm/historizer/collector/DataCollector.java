@@ -38,9 +38,20 @@ public abstract class DataCollector<S> {
 			}
 		}
 		else if (newValue == null || !dataEqualator.test(lastValue, newValue)) {
+			if (lastRangedValue.getDateDebut().isAfterOrEqual(date)) {
+				panic();
+			}
 			collected.put(lastRangedValue.getDateDebut(), lastRangedValue.withDateFin(date.getOneDayBefore()));
 			collected.put(date, new DateRanged<>(date, null, newValue));
 		}
+	}
+
+	private static void panic() {
+		throw new IllegalArgumentException("A date identical to or greater than the starting date of the previous period has been encountered.\n" +
+				                                   "  This can mean a few things, such as:\n" +
+				                                   "  - There more than one snapshot per day. Only one is allowed in the incoming snapshot stream.\n" +
+				                                   "  - The wrong DataCollector is being used. Multiple values are obviously collected per snapshot, where a single one is expected.\n" +
+				                                   "  - Snapshots are processed out of orders. Cannot happen. [Historizer bug]\n");
 	}
 
 	/**

@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
@@ -53,9 +52,7 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 */
 	@Override
 	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		Map<K, List<DateRanged<D>>> collectedData = delegateCollector.getCollectedData(mapFactory, listFactory);
-		collectedData.values().forEach(DateRangeHelper::overlaps);
-		return collectedData;
+		return delegateCollector.getCollectedData(mapFactory, listFactory);
 	}
 
 	@Override

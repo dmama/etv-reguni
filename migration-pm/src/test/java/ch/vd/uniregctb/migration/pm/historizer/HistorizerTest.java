@@ -12,7 +12,9 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
@@ -20,14 +22,19 @@ import ch.vd.uniregctb.migration.pm.historizer.collector.ListDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.SingleValueDataCollector;
+import ch.vd.uniregctb.migration.pm.historizer.collector.SingleValueIndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 
 public class HistorizerTest {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+
 	@Test
-	public void testSimpleCollector() throws Exception {
+	public void testSingleValueCollector() throws Exception {
 
 		final class SnapshotData {
 			final int i;
@@ -104,7 +111,7 @@ public class HistorizerTest {
 	}
 
 	@Test
-	public void testCollectionFlattenCollector() throws Exception {
+	public void testMultiValueCollector() throws Exception {
 
 		final class Data {
 			final int id;
@@ -261,7 +268,8 @@ public class HistorizerTest {
 		                                                                  new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois"), new Adresse("D", "Dans les bois"))),
 		                                                                  new SubsnapshotData(3L, Arrays.asList(new Adresse("C", "Bahnhofstrasse 12"), new Adresse("D", "Torstrasse 1"))))));
 		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac, Case postale"), new Adresse("D", "Rue du Lac"))),
-		                                                                   new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
+		                                                                   new SubsnapshotData(2L,
+		                                                                                       Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
@@ -355,5 +363,77 @@ public class HistorizerTest {
 				Assert.assertEquals("Torstrasse 1", a.getPayload().adresse);
 			}
 		}
+	}
+
+	/**
+	 * Que se passe-t-il quand on utilise un collector indexé single value avec des données multiples?
+	 */
+	@Test
+	public void testAutomatedCompositionWithWrongCollector() throws Exception {
+
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage("A date identical to or greater than the starting date of the previous period has been encountered.");
+
+		final class Adresse {
+			final String type;
+			final String adresse;
+
+			public Adresse(String type, String adresse) {
+				this.type = type;
+				this.adresse = adresse;
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if (this == o) return true;
+				if (o == null || getClass() != o.getClass()) return false;
+
+				final Adresse adresse1 = (Adresse) o;
+				return !(type != null ? !type.equals(adresse1.type) : adresse1.type != null) && !(adresse != null ? !adresse.equals(adresse1.adresse) : adresse1.adresse != null);
+			}
+
+			@Override
+			public int hashCode() {
+				int result = type != null ? type.hashCode() : 0;
+				result = 31 * result + (adresse != null ? adresse.hashCode() : 0);
+				return result;
+			}
+		}
+
+		final class SubsnapshotData {
+			final Long idSub;
+			final List<Adresse> adresses;
+
+			public SubsnapshotData(Long idSub, List<Adresse> adresses) {
+				this.idSub = idSub;
+				this.adresses = adresses;
+			}
+		}
+
+		final class SnapshotData {
+			final List<SubsnapshotData> subs;
+
+			public SnapshotData(List<SubsnapshotData> subs) {
+				this.subs = subs;
+			}
+		}
+
+		final Function<SnapshotData, Stream<Keyed<Long, Adresse>>> dataExtractor = s ->
+				s.subs.stream()
+						.map(sub -> sub.adresses.stream().map(a -> new Keyed<>(sub.idSub, a)))
+						.flatMap(Function.identity());
+
+		final IndexedDataCollector<SnapshotData, Adresse, Long> collector = new SingleValueIndexedDataCollector<>(dataExtractor, Equalator.DEFAULT);
+
+		final Map<RegDate, SnapshotData> input = new HashMap<>();
+		input.put(RegDate.get(2000, 1, 1), new SnapshotData(Collections.singletonList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac"), new Adresse("D", "Rue du Lac"))))));
+		input.put(RegDate.get(2001, 6, 3), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac"), new Adresse("D", "Rue du Lac"))),
+		                                                                  new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois"), new Adresse("D", "Dans les bois"))),
+		                                                                  new SubsnapshotData(3L, Arrays.asList(new Adresse("C", "Bahnhofstrasse 12"), new Adresse("D", "Torstrasse 1"))))));
+		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac, Case postale"), new Adresse("D", "Rue du Lac"))),
+		                                                                   new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
+
+		Historizer.historize(input, Collections.singletonList(collector));
+
 	}
 }
