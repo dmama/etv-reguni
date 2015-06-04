@@ -9,7 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -81,10 +83,6 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 		}
 	}
 
-	private interface CachedElement {
-		Object getPayload();
-	}
-
 	private class Handler implements InvocationHandler {
 
 		private final T target;
@@ -98,7 +96,7 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			final Key key = new Key(method, args);
-			final CachedElement inCache = findInCache(key);
+			final Supplier<Object> inCache = findInCache(key);
 			if (inCache == null) {
 				try {
 					final Object value = method.invoke(target, args);
@@ -110,22 +108,18 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 				}
 			}
 			else {
-				return inCache.getPayload();
+				return inCache.get();
 			}
 		}
 
-		private CachedElement findInCache(Key key) {
+		@Nullable
+		private Supplier<Object> findInCache(Key key) {
 			final Lock lock = rwLock.readLock();
 			lock.lock();
 			try {
 				if (cache.containsKey(key)) {
 					final Object value = cache.get(key);
-					return new CachedElement() {
-						@Override
-						public Object getPayload() {
-							return value;
-						}
-					};
+					return () -> value;
 				}
 				else {
 					return null;
