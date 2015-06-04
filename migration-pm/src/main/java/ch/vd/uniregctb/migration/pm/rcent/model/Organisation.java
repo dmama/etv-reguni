@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.LegalForm;
-import ch.vd.evd0022.v1.OrganisationLocation;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 
 public class Organisation {
@@ -17,23 +16,24 @@ public class Organisation {
 	private final long cantonalId;
 
 	@NotNull
-	private final List<Identifier> organisationIdentifiers;
+	private final List<DateRanged<Identifier>> organisationIdentifiers;
 
 	@NotNull
 	private final List<DateRanged<String>> organisationName;
 	private final List<DateRanged<String>> organisationAdditionalName;
 	private final List<DateRanged<LegalForm>> legalForm;
 
-	private final List<DateRanged<OrganisationLocation>> locations;
+	private final List<DateRanged<Long>> locations;
+	private final List<OrganisationLocation> locationData;
 
 	private final List<DateRanged<Long>> transferTo;
 	private final List<DateRanged<Long>> transferFrom;
 	private final List<DateRanged<Long>> replacedBy;
 	private final List<DateRanged<Long>> inPreplacementOf;
 
-	public Organisation(long cantonalId, @NotNull List<Identifier> organisationIdentifiers,
+	public Organisation(long cantonalId, @NotNull List<DateRanged<Identifier>> organisationIdentifiers,
 	                    @NotNull List<DateRanged<String>> organisationName, List<DateRanged<String>> organisationAdditionalName,
-	                    List<DateRanged<LegalForm>> legalForm, List<DateRanged<OrganisationLocation>> locations,
+	                    List<DateRanged<LegalForm>> legalForm, List<DateRanged<Long>> locations, List<OrganisationLocation> locationData,
 	                    List<DateRanged<Long>> transferTo, List<DateRanged<Long>> transferFrom, List<DateRanged<Long>> replacedBy,
 	                    List<DateRanged<Long>> inPreplacementOf) {
 		this.cantonalId = cantonalId;
@@ -42,6 +42,7 @@ public class Organisation {
 		this.organisationAdditionalName = organisationAdditionalName;
 		this.legalForm = legalForm;
 		this.locations = locations;
+		this.locationData = locationData;
 		this.transferTo = transferTo;
 		this.transferFrom = transferFrom;
 		this.replacedBy = replacedBy;
@@ -60,7 +61,11 @@ public class Organisation {
 		return legalForm;
 	}
 
-	public List<DateRanged<OrganisationLocation>> getLocations() {
+	public List<OrganisationLocation> getLocationData() {
+		return locationData;
+	}
+
+	public List<DateRanged<Long>> getLocations() {
 		return locations;
 	}
 
@@ -69,7 +74,7 @@ public class Organisation {
 	}
 
 	@NotNull
-	public List<Identifier> getOrganisationIdentifiers() {
+	public List<DateRanged<Identifier>> getOrganisationIdentifiers() {
 		return organisationIdentifiers;
 	}
 
