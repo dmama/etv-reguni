@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.historizer;
+package ch.vd.uniregctb.migration.pm.historizer.builders;
 
 import java.math.BigInteger;
 import java.util.List;

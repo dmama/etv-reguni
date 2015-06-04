@@ -15,6 +15,8 @@ import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.migration.pm.historizer.builders.OrganisationBuilder;
+import ch.vd.uniregctb.migration.pm.historizer.builders.OrganisationLocationBuilder;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.ListDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.MultiValueDataCollector;
@@ -197,7 +199,7 @@ public class OrganisationHistorizer {
 		OrganisationBuilder orgaBuilder = new OrganisationBuilder(
 //		private final List<Identifier> organisationIdentifiers;
 
-				organisationMap.get(0).getCantonalId(),
+				organisationMap.entrySet().stream().findFirst().get().getValue().getCantonalId(),
 				organisationIdentifiersCollector.getCollectedData(),
 				organisationNameCollector.getCollectedData(),
 				organisationAdditionalNameCollector.getCollectedData(),
