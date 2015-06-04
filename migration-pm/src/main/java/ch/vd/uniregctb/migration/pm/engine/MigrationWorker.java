@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -42,12 +40,13 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.Worker;
+import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -67,7 +66,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private MigrationMode mode;
 
 	private PlatformTransactionManager uniregTransactionManager;
-	private SessionFactory uniregSessionFactory;
+	private UniregStore uniregStore;
 
 	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
 	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
@@ -144,8 +143,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.uniregTransactionManager = uniregTransactionManager;
 	}
 
-	public void setUniregSessionFactory(SessionFactory uniregSessionFactory) {
-		this.uniregSessionFactory = uniregSessionFactory;
+	public void setUniregStore(UniregStore uniregStore) {
+		this.uniregStore = uniregStore;
 	}
 
 	public void setMode(MigrationMode mode) {
@@ -180,7 +179,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		// chargement du mapper d'identifiants, non-vide lors d'une reprise sur incident
 		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
 		template.setReadOnly(true);
-		this.idMapper = template.execute(status -> IdMapper.fromDatabase(uniregSessionFactory));
+		this.idMapper = template.execute(status -> IdMapper.fromDatabase(uniregStore));
 	}
 
 	@Override
@@ -291,7 +290,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.execute(status -> {
 				doMigrate(graphe, mr, localIdMapper);
-				localIdMapper.pushLocalPartToDatabase(uniregSessionFactory);
+				localIdMapper.pushLocalPartToDatabase(uniregStore);
 				return null;
 			});
 
@@ -348,10 +347,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
 		if (links != null && !links.isEmpty()) {
-			final Session session = uniregSessionFactory.getCurrentSession();
 			links.stream()
 					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
-					.forEach(session::merge);
+					.forEach(uniregStore::saveEntityToDb);
 		}
 	}
 

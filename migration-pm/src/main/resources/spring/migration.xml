@@ -28,7 +28,7 @@
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
-		<property name="uniregSessionFactory" ref="uniregSessionFactory"/>
+		<property name="uniregStore" ref="uniregStore"/>
 		<property name="mode" value="${migration.mode}"/>
 		<property name="entrepriseMigrator" ref="entrepriseMigrator"/>
 		<property name="etablissementMigrator" ref="etablissementMigrator"/>

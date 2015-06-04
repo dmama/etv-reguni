@@ -164,7 +164,7 @@
 
 	<bean id="periodeFiscaleDAO" class="ch.vd.uniregctb.declaration.PeriodeFiscaleDAOImpl" parent="uniregHibernateDao"/>
 
-    <bean id="uniregStore" class="ch.vd.uniregctb.migration.pm.store.UniregStore">
+    <bean id="uniregStore" class="ch.vd.uniregctb.migration.pm.store.UniregStoreImpl">
         <constructor-arg name="uniregSessionFactory" ref="uniregSessionFactory"/>
     </bean>
 

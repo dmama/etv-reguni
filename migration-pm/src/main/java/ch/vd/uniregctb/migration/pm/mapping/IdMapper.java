@@ -6,15 +6,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
+import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.LockHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -65,10 +63,10 @@ public class IdMapper implements IdMapping {
 	}
 
 	/**
-	 * @param sessionFactory session factory hibernate vers la base Unireg
+	 * @param uniregStore abstraction du store des données Unireg
 	 * @return une instance de mapper sans référence et pré-rempli avec les données en base
 	 */
-	public static IdMapper fromDatabase(SessionFactory sessionFactory) {
+	public static IdMapper fromDatabase(UniregStore uniregStore) {
 
 		final Map<Long, Long> entreprises = new HashMap<>();
 		final Map<Long, Long> etablissements = new HashMap<>();
@@ -78,11 +76,7 @@ public class IdMapper implements IdMapping {
 		// Chargement de toutes les entités en base pour remplissage du mapper
 		//
 
-		//noinspection JpaQlInspection
-		final Query query = sessionFactory.getCurrentSession().createQuery("select m from MigrationPmMapping m");
-
-		//noinspection unchecked
-		final Iterator<MigrationPmMapping> iterator = query.iterate();
+		final Iterator<MigrationPmMapping> iterator = uniregStore.iterateOnAllMappingEntities();
 		while (iterator.hasNext()) {
 			final MigrationPmMapping mapping = iterator.next();
 			switch (mapping.getTypeEntite()) {
@@ -108,18 +102,17 @@ public class IdMapper implements IdMapping {
 
 	/**
 	 * Gérère et persiste les entités {@link MigrationPmMapping} correspondant aux mappings locaux (dans la transaction courante)
-	 * @param sessionFactory session factory hibernate vers la base Unireg
+	 * @param uniregStore session factory hibernate vers la base Unireg
 	 */
-	public void pushLocalPartToDatabase(SessionFactory sessionFactory) {
-		final Session session = sessionFactory.getCurrentSession();
-		entreprises.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.ENTREPRISE, idRegpm, idUnireg));
-		etablissements.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.ETABLISSEMENT, idRegpm, idUnireg));
-		individus.forEach((idRegpm, idUnireg) -> persistNewMapping(session, MigrationPmMapping.TypeEntite.INDIVIDU, idRegpm, idUnireg));
+	public void pushLocalPartToDatabase(UniregStore uniregStore) {
+		entreprises.forEach((idRegpm, idUnireg) -> persistNewMapping(uniregStore, MigrationPmMapping.TypeEntite.ENTREPRISE, idRegpm, idUnireg));
+		etablissements.forEach((idRegpm, idUnireg) -> persistNewMapping(uniregStore, MigrationPmMapping.TypeEntite.ETABLISSEMENT, idRegpm, idUnireg));
+		individus.forEach((idRegpm, idUnireg) -> persistNewMapping(uniregStore, MigrationPmMapping.TypeEntite.INDIVIDU, idRegpm, idUnireg));
 	}
 
-	private static MigrationPmMapping persistNewMapping(Session session, MigrationPmMapping.TypeEntite type, long idRegpm, long idUnireg) {
+	private static MigrationPmMapping persistNewMapping(UniregStore uniregStore, MigrationPmMapping.TypeEntite type, long idRegpm, long idUnireg) {
 		final MigrationPmMapping mapping = new MigrationPmMapping(type, idRegpm, idUnireg);
-		return (MigrationPmMapping) session.merge(mapping);
+		return uniregStore.saveMappingEntityToDb(mapping);
 
 		// TODO est-on certain qu'il n'est pas possible de créer deux mappings identiques ici (si c'est possible, il faut blinder le cas...) ?
 	}
