@@ -40,11 +40,13 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	private static final MigrationResultMessage.CategorieListe CATEGORIE_LISTE = MigrationResultMessage.CategorieListe.INDIVIDUS_PM;
 
+	private final TiersDAO tiersDAO;
 	private final RcPersClient rcpersClient;
 	private final NonHabitantIndex nonHabitantIndex;
 
 	public IndividuMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
-		super(uniregStore, tiersDAO);
+		super(uniregStore);
+		this.tiersDAO = tiersDAO;
 		this.rcpersClient = rcpersClient;
 		this.nonHabitantIndex = nonHabitantIndex;
 	}

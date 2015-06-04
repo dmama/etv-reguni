@@ -1,11 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -22,33 +17,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.Graphe;
-import ch.vd.uniregctb.migration.pm.MigrationException;
 import ch.vd.uniregctb.migration.pm.MigrationMode;
-import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.Worker;
-import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
-import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
 
@@ -56,21 +38,13 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private static final RejectedExecutionHandler ABORT_POLICY = new ThreadPoolExecutor.AbortPolicy();
 
-	private static final String VISA_MIGRATION = "[MigrationPM]";
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
-	private IdMapper idMapper;
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
 	private GatheringThread gatheringThread;
 	private MigrationMode mode;
-
-	private PlatformTransactionManager uniregTransactionManager;
-	private UniregStore uniregStore;
-
-	private EntityMigrator<RegpmEntreprise> entrepriseMigrator;
-	private EntityMigrator<RegpmEtablissement> etablissementMigrator;
-	private EntityMigrator<RegpmIndividu> individuMigrator;
+	private GrapheMigrator grapheMigrator;
 
 	/**
 	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
@@ -125,42 +99,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	}
 
 	private static String dump(Throwable t) {
-		try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-			pw.print(t.getClass().getName());
-			pw.print(": ");
-			pw.println(t.getMessage());
-			t.printStackTrace(pw);
-			pw.flush();
-			return sw.toString();
-		}
-		catch (IOException e) {
-			LOGGER.error("Pas pu générer le message d'erreur pour l'exception reçue", t);
-			return "Erreur inattendue (voir logs applicatifs à " + new Date() + ")";
-		}
-	}
-
-	public void setUniregTransactionManager(PlatformTransactionManager uniregTransactionManager) {
-		this.uniregTransactionManager = uniregTransactionManager;
-	}
-
-	public void setUniregStore(UniregStore uniregStore) {
-		this.uniregStore = uniregStore;
+		return t.getClass().getName() + ": " + t.getMessage() + ExceptionUtils.getStackTrace(t);
 	}
 
 	public void setMode(MigrationMode mode) {
 		this.mode = mode;
 	}
 
-	public void setEntrepriseMigrator(EntityMigrator<RegpmEntreprise> entrepriseMigrator) {
-		this.entrepriseMigrator = entrepriseMigrator;
-	}
-
-	public void setEtablissementMigrator(EntityMigrator<RegpmEtablissement> etablissementMigrator) {
-		this.etablissementMigrator = etablissementMigrator;
-	}
-
-	public void setIndividuMigrator(EntityMigrator<RegpmIndividu> individuMigrator) {
-		this.individuMigrator = individuMigrator;
+	public void setGrapheMigrator(GrapheMigrator grapheMigrator) {
+		this.grapheMigrator = grapheMigrator;
 	}
 
 	@Override
@@ -175,11 +122,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		if (this.mode == MigrationMode.FROM_DUMP || this.mode == MigrationMode.DIRECT) {
 			this.gatheringThread.start();
 		}
-
-		// chargement du mapper d'identifiants, non-vide lors d'une reprise sur incident
-		final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
-		template.setReadOnly(true);
-		this.idMapper = template.execute(status -> IdMapper.fromDatabase(uniregStore));
 	}
 
 	@Override
@@ -271,88 +213,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	private MigrationResultMessageProvider migrate(Graphe graphe) throws MigrationException {
-		final MigrationResult mr = new MigrationResult();
-
-		// on crée un mapper d'ID dont la référence est le mapper global, en prenant soin de transvaser les nouveaux mappings dans le mapper global après la fin de la transaction
-		final IdMapper localIdMapper = idMapper.withReference();
-		mr.addPostTransactionCallback(localIdMapper::pushToReference);
-
-		// initialisation des structures de resultats
-		entrepriseMigrator.initMigrationResult(mr);
-		etablissementMigrator.initMigrationResult(mr);
-		individuMigrator.initMigrationResult(mr);
-
-		// tout le graphe sera migré dans une transaction globale
-		AuthenticationHelper.pushPrincipal(VISA_MIGRATION);
-		try {
-			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
-			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-			template.execute(status -> {
-				doMigrate(graphe, mr, localIdMapper);
-				localIdMapper.pushLocalPartToDatabase(uniregStore);
-				return null;
-			});
-
-			// une fois la transaction terminée, on passe les callbacks enregistrés
-			try {
-				mr.runPostTransactionCallbacks();
-			}
-			catch (Exception e) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
-			}
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-		}
-
-		// un dernier log avant de partir
-		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.INFO, String.format("Entreprise %d migrée", id)));
-		return mr;
-	}
-
-	/**
-	 * Appelé dans un contexte transactionnel
-	 * @param graphe le graphe d'objets à migrer
-	 * @param mr le collecteur de résultats/remarques de migration
-	 * @param idMapper mapper des identifiants des entités migrées
-	 */
-	private void doMigrate(Graphe graphe, MigrationResult mr, IdMapping idMapper) {
-
-		// on commence par les établissement, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
-		// on collecte les liens entre ces entités au fur et à mesure
-		// à la fin, on ajoute les liens
-
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
-		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
-		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
-		addLinks(linkCollector.getCollectedLinks());
-
-		// lance les consolidations nécessaires
-		mr.consolidatePreTransactionCommitRegistrations();
-	}
-
-	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
-	}
-
-	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
-	}
-
-	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
-	}
-
-	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
-		if (links != null && !links.isEmpty()) {
-			links.stream()
-					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
-					.forEach(uniregStore::saveEntityToDb);
-		}
-	}
-
 	private class MigrationTask implements Callable<MigrationResultMessageProvider> {
 		private final Graphe graphe;
 
@@ -369,7 +229,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 					final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
 					if (ticket != null) {
 						try {
-							return migrate(graphe);
+							return grapheMigrator.migrate(graphe);
 						}
 						finally {
 							synchronizer.release(ticket);

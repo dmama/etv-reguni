@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm;
+package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -16,6 +16,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+
+import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 
 /**
  * Résultat de la migration d'un graphe<br/>

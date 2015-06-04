@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -34,16 +36,14 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
-import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
-import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.rcent.model.Organisation;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
@@ -72,7 +72,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -87,14 +86,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
-	private final PeriodeFiscaleDAO periodeFiscaleDAO;
 	private final BouclementService bouclementService;
 	private final RCEntService rcEntService;
 	private final AdresseHelper adresseHelper;
 
-	public EntrepriseMigrator(UniregStore uniregStore, TiersDAO tiersDAO, PeriodeFiscaleDAO periodeFiscaleDAO, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper) {
-		super(uniregStore, tiersDAO);
-		this.periodeFiscaleDAO = periodeFiscaleDAO;
+	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper) {
+		super(uniregStore);
 		this.bouclementService = bouclementService;
 		this.rcEntService = rcEntService;
 		this.adresseHelper = adresseHelper;
@@ -154,7 +151,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
 		final Map<Integer, List<DateRange>> avantMigration = data.regpm.stream()
 				.collect(Collectors.toMap(fs -> fs.getCommune().getNoOfs(), Collections::singletonList, DATE_RANGE_LIST_MERGER));
-		final Map<Integer, List<DateRange>> apresMigration = entreprise.getForsFiscaux().stream()
+		final Set<ForFiscal> forsFiscaux = Optional.ofNullable(entreprise.getForsFiscaux()).orElse(Collections.emptySet());    // en cas de nouvelle entreprise, la collection est nulle
+		final Map<Integer, List<DateRange>> apresMigration = forsFiscaux.stream()
 				.filter(f -> f instanceof ForFiscalSecondaire)
 				.collect(Collectors.toMap(ForFiscal::getNumeroOfsAutoriteFiscale, Collections::singletonList, DATE_RANGE_LIST_MERGER));
 
@@ -403,11 +401,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	}
 
-	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin) {
-		final PeriodeFiscale pf = periodeFiscaleDAO.getPeriodeFiscaleByYear(dossier.getPf());
-		if (pf == null) {
-			throw new IllegalStateException("La période fiscale " + dossier.getPf() + " n'existe pas dans Unireg.");
+	@NotNull
+	private PeriodeFiscale getPeriodeFiscaleByYear(int year) {
+		// critère sur l'année
+		final Map<String, Object> params = new HashMap<>(1);
+		params.put("annee", year);
+
+		// récupération des données
+		final List<PeriodeFiscale> pfs = uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params);
+		if (pfs == null || pfs.isEmpty()) {
+			throw new IllegalStateException("La période fiscale " + year + " n'existe pas dans Unireg.");
 		}
+		if (pfs.size() > 1) {
+			throw new IllegalStateException("Plusieurs périodes fiscales trouvées dans Unireg pour l'année " + year);
+		}
+
+		// la seule donnée
+		final PeriodeFiscale pf = pfs.get(0);
+		if (pf == null) {
+			throw new IllegalStateException("La période fiscale " + year + " n'existe pas dans Unireg.");
+		}
+		return pf;
+	}
+
+	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin) {
+		final PeriodeFiscale pf = getPeriodeFiscaleByYear(dossier.getPf());
 
 		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 		copyCreationMutation(dossier, di);

@@ -26,22 +26,24 @@
 		<property name="fsDirectory" value="${migration.dump.dir}"/>
 	</bean>
 
-	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
+	<bean id="grapheMigrator" class="ch.vd.uniregctb.migration.pm.engine.GrapheMigrator">
 		<property name="uniregTransactionManager" ref="uniregTransactionManager"/>
 		<property name="uniregStore" ref="uniregStore"/>
-		<property name="mode" value="${migration.mode}"/>
 		<property name="entrepriseMigrator" ref="entrepriseMigrator"/>
 		<property name="etablissementMigrator" ref="etablissementMigrator"/>
 		<property name="individuMigrator" ref="individuMigrator"/>
 	</bean>
 
+	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
+		<property name="mode" value="${migration.mode}"/>
+		<property name="grapheMigrator" ref="grapheMigrator"/>
+	</bean>
+
 	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
         <constructor-arg name="uniregStore" ref="uniregStore"/>
-        <constructor-arg name="tiersDAO" ref="tiersDAO"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
-        <constructor-arg name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
         <constructor-arg name="bouclementService" ref="bouclementService"/>
         <constructor-arg name="rcEntService" ref="rcEntService"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
@@ -57,8 +59,9 @@
     </bean>
 
     <bean id="individuMigrator" class="ch.vd.uniregctb.migration.pm.engine.IndividuMigrator" parent="entityMigrator">
-		<constructor-arg name="rcpersClient" ref="rcpersClient"/>
-		<constructor-arg name="nonHabitantIndex" ref="nonHabitantIndex"/>
+	    <constructor-arg name="tiersDAO" ref="tiersDAO"/>
+	    <constructor-arg name="rcpersClient" ref="rcpersClient"/>
+	    <constructor-arg name="nonHabitantIndex" ref="nonHabitantIndex"/>
 	</bean>
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">

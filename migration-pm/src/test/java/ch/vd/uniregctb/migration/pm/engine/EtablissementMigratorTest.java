@@ -22,8 +22,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -35,7 +35,6 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -52,12 +51,11 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		migrator = new EtablissementMigrator(
 				getBean(UniregStore.class, "uniregStore"),
-				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RCEntService.class, "rcEntService"),
 				getBean(AdresseHelper.class, "adresseHelper"));
 	}
 
-	private static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
+	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
 		final RegpmEtablissement etablissement = new RegpmEtablissement();
 		etablissement.setId(id);
 		etablissement.setEntreprise(entreprise);
@@ -80,7 +78,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		return etablissement;
 	}
 
-	private static void addEtablissementStable(RegpmEtablissement etablissement, RegDate dateDebut, RegDate dateFin) {
+	static void addEtablissementStable(RegpmEtablissement etablissement, RegDate dateDebut, RegDate dateFin) {
 		// initialisation de la collection, au cas où...
 		// ... et attribution d'un nouveau numéro de séquence pour l'identifiant
 		final Set<RegpmEtablissementStable> stables = etablissement.getEtablissementsStables();
@@ -96,7 +94,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		stables.add(stable);
 	}
 
-	private static void addDomicileEtablissement(RegpmEtablissement etablissement, RegDate dateDebut, RegpmCommune commune, boolean annule) {
+	static void addDomicileEtablissement(RegpmEtablissement etablissement, RegDate dateDebut, RegpmCommune commune, boolean annule) {
 		// initialization de la collection, au cas où...
 		// ... et attribution d'un nouveau numéro de séquence pour l'identifiant
 		final SortedSet<RegpmDomicileEtablissement> domiciles = etablissement.getDomicilesEtablissements();

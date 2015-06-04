@@ -27,11 +27,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
-import ch.vd.uniregctb.migration.pm.MigrationResult;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -46,7 +45,6 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -58,8 +56,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	private final RCEntService rcEntService;
 	private final AdresseHelper adresseHelper;
 
-	public EtablissementMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RCEntService rcEntService, AdresseHelper adresseHelper) {
-		super(uniregStore, tiersDAO);
+	public EtablissementMigrator(UniregStore uniregStore, RCEntService rcEntService, AdresseHelper adresseHelper) {
+		super(uniregStore);
 		this.rcEntService = rcEntService;
 		this.adresseHelper = adresseHelper;
 	}

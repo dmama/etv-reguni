@@ -17,11 +17,10 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
-import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
@@ -44,7 +43,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
@@ -62,8 +60,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		migrator = new EntrepriseMigrator(
 				getBean(UniregStore.class, "uniregStore"),
-				getBean(TiersDAO.class, "tiersDAO"),
-				getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(RCEntService.class, "rcEntService"),
 				getBean(AdresseHelper.class, "adresseHelper"));
