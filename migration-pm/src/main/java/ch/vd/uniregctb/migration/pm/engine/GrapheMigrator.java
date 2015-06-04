@@ -19,6 +19,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -29,6 +30,7 @@ public class GrapheMigrator implements InitializingBean {
 
 	private PlatformTransactionManager uniregTransactionManager;
 	private UniregStore uniregStore;
+	private ValidationInterceptor validationInterceptor;
 
 	private IdMapper idMapper;
 
@@ -54,6 +56,10 @@ public class GrapheMigrator implements InitializingBean {
 
 	public void setIndividuMigrator(EntityMigrator<RegpmIndividu> individuMigrator) {
 		this.individuMigrator = individuMigrator;
+	}
+
+	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
+		this.validationInterceptor = validationInterceptor;
 	}
 
 	@Override
@@ -150,10 +156,22 @@ public class GrapheMigrator implements InitializingBean {
 
 	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
 		if (links != null && !links.isEmpty()) {
-			links.stream()
-					.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
-					.map(uniregStore::saveEntityToDb)
-					.forEach(this::propagateRapportEntreTiers);
+
+			// on désactive temporairement la validation (elle sera ré-activée une fois que TOUS les liens
+			// auront été générés, pour éviter de sauter sur les états incohérents intermédiaires)
+			// -> en contrepartie, c'est seulement le flush final de la transaction qui détectera les éventuels problèmes
+
+			final boolean wasEnabled = validationInterceptor.isEnabled();
+			validationInterceptor.setEnabled(false);
+			try {
+				links.stream()
+						.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
+						.map(uniregStore::saveEntityToDb)
+						.forEach(this::propagateRapportEntreTiers);
+			}
+			finally {
+				validationInterceptor.setEnabled(wasEnabled);
+			}
 		}
 	}
 

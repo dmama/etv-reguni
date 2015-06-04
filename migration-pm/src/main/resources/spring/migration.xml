@@ -32,6 +32,7 @@
 		<property name="entrepriseMigrator" ref="entrepriseMigrator"/>
 		<property name="etablissementMigrator" ref="etablissementMigrator"/>
 		<property name="individuMigrator" ref="individuMigrator"/>
+		<property name="validationInterceptor" ref="validationInterceptor"/>
 	</bean>
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">

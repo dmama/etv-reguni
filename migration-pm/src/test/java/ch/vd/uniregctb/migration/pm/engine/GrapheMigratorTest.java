@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -44,6 +46,7 @@ public class GrapheMigratorTest extends AbstractSpringTest {
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
 		final NonHabitantIndex nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
+		final ValidationInterceptor validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 
 		grapheMigrator = new GrapheMigrator();
 		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, bouclementService, rcEntService, adresseHelper));
@@ -51,11 +54,11 @@ public class GrapheMigratorTest extends AbstractSpringTest {
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, tiersDAO, rcpersClient, nonHabitantIndex));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());
+		grapheMigrator.setValidationInterceptor(validationInterceptor);
 		grapheMigrator.afterPropertiesSet();
 
 		validationService = getBean(ValidationService.class, "validationService");
 	}
-
 
 	/**
 	 * Ce remplissage est particulièrement important dès qu'on parle de validation (si le rapport n'est pas mis dans
@@ -71,7 +74,8 @@ public class GrapheMigratorTest extends AbstractSpringTest {
 
 		final RegpmEntreprise entrepriseMandataire = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandataire);
 		final RegpmEtablissement mandataire = EtablissementMigratorTest.buildEtablissement(idEtablissementMandataire, entrepriseMandataire);
-		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), null);
+		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2006, 12, 31));
+		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
 
 		final Graphe graphe = new Graphe();
 		graphe.register(mandant);
@@ -93,11 +97,13 @@ public class GrapheMigratorTest extends AbstractSpringTest {
 					vr.addError((rapportsObjet != null ? rapportsObjet.size() : 0) + " objets, " + (rapportsSujet != null ? rapportsSujet.size() : 0) + " sujets");
 					if (rapportsObjet != null) {
 						rapportsObjet.stream()
+								.sorted(Comparator.comparing(RapportEntreTiers::getDateDebut))
 								.map(obj -> String.format("Object : %s", obj))
 								.forEach(vr::addError);
 					}
 					if (rapportsSujet != null) {
 						rapportsSujet.stream()
+								.sorted(Comparator.comparing(RapportEntreTiers::getDateDebut))
 								.map(suj -> String.format("Sujet : %s", suj))
 								.forEach(vr::addError);
 					}
@@ -112,15 +118,19 @@ public class GrapheMigratorTest extends AbstractSpringTest {
 		}
 		catch (ValidationException e) {
 			final List<ValidationMessage> errors = e.getErrors();
-			Assert.assertEquals(2, errors.size());
+			Assert.assertEquals(3, errors.size());
 
 			{
 				final ValidationMessage msg = errors.get(0);
-				Assert.assertEquals("0 objets, 1 sujets", msg.getMessage());        // le mandant est le sujet
+				Assert.assertEquals("0 objets, 2 sujets", msg.getMessage());        // le mandant est le sujet
 			}
 			{
 				final ValidationMessage msg = errors.get(1);
-				Assert.assertEquals("Sujet : Mandat (01.01.2000 - ?)", msg.getMessage());
+				Assert.assertEquals("Sujet : Mandat (01.01.2000 - 31.12.2006)", msg.getMessage());
+			}
+			{
+				final ValidationMessage msg = errors.get(2);
+				Assert.assertEquals("Sujet : Mandat (01.01.2010 - ?)", msg.getMessage());
 			}
 		}
 		finally {
