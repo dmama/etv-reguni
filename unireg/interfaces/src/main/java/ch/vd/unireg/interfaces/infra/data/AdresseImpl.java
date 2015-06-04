@@ -69,7 +69,7 @@ public class AdresseImpl implements Adresse, Serializable {
 			try {
 				final Rue rue = serviceInfrastructure.getRueByNumero(target.getNumeroTechniqueRue());
 				this.rue = rue.getDesignationCourrier();
-				this.numeroOrdrePostal = rue.getNoLocalite();
+				this.numeroOrdrePostal = AdresseHelper.getNoOrdrePosteOfficiel(rue.getNoLocalite());
 			}
 			catch (RemoteException | InfrastructureException e) {
 				throw new RuntimeException("Impossible de récupérer le libellé de la rue " + target.getNumeroTechniqueRue() + " dans le mainframe...", e);
@@ -77,7 +77,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		}
 		else {
 			this.rue = target.getRue();
-			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : target.getNumeroOrdrePostal();
+			this.numeroOrdrePostal = target.getNumeroOrdrePostal() == 0 ? null : AdresseHelper.getNoOrdrePosteOfficiel(target.getNumeroOrdrePostal());
 		}
 		this.numeroRue = null;      // on ne veut plus de ces numéros qui viennent du host !!
 		this.titre = target.getTitre();
