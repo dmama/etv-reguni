@@ -114,7 +114,7 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, CommercialRegisterStatus, BigInteger> locationRcstatusCollector = new SingleValueIndexedDataCollector<>(new RcStatusExtractor(),
 		                                                                                                                                                 Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
+		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcLegalAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                        ADDRESS_EQUALATOR
 		);
 
@@ -123,7 +123,7 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, UidRegisterTypeOfOrganisation, BigInteger> locationUidTypeOfOrganisation = new SingleValueIndexedDataCollector<>(new UidTypeOfOrganisationExtractor(),
 		                                                                                                                                  Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> locationUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
+		final IndexedDataCollector<Organisation, Address, BigInteger> locationUidEffectiveAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
 		                                                                                                                                         ADDRESS_EQUALATOR
 		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationPostalBoxUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
@@ -147,9 +147,9 @@ public class OrganisationHistorizer {
 		                                                    kindsOfLocationCollector,
 		                                                    seatsCollector,
 		                                                    locationRcstatusCollector,
-		                                                    locationRcAddressCollector,
+		                                                    locationRcLegalAddressCollector,
 		                                                    locationUidTypeOfOrganisation,
-		                                                    locationUidAddressCollector,
+		                                                    locationUidEffectiveAddressCollector,
 		                                                    locationPostalBoxUidAddressCollector
 
 		));
@@ -160,35 +160,24 @@ public class OrganisationHistorizer {
 		// Etablissement
 
 		OrganisationLocationBuilder locationBuilder = new OrganisationLocationBuilder(
-
-//  	private final List<DateRanged<Identifier>> identifier;
 				locationIdentifiersCollector.getCollectedData(),
-//		private final List<DateRanged<String>> name;
 				locationNamesCollector.getCollectedData(),
-//		private final List<DateRanged<String>> otherNames;
 				locationOtherNamesCollector.getCollectedData(),
-//		private final List<DateRanged<KindOfLocation>> kindOfLocation;
 				kindsOfLocationCollector.getCollectedData(),
-//		private final List<DateRanged<Integer>> seat;
 				seatsCollector.getCollectedData(),
 //		private final List<DateRanged<Function>> function;
 //		private final List<DateRanged<Long>> replacedBy;
 //		private final List<DateRanged<Long>> inReplacementOf;
 
-//		private final List<DateRanged<CommercialRegisterStatus>> status;
 				locationRcstatusCollector.getCollectedData(),
 //		private final List<DateRanged<String>> name;
 //		private final List<DateRanged<CommercialRegisterEntryStatus>> entryStatus;
 //		private final List<DateRanged<Capital>> capital;
-//		private final List<DateRanged<Address>> legalAddress;
-				locationRcAddressCollector.getCollectedData(),
+				locationRcLegalAddressCollector.getCollectedData(),
 
 //		private final List<DateRanged<UidRegisterStatus>> status;
-//		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
 				locationUidTypeOfOrganisation.getCollectedData(),
-//		private final List<DateRanged<Address>> effectiveAddress;
-				locationUidAddressCollector.getCollectedData(),
-//		private final List<DateRanged<Address>> postOfficeBoxAddress;
+				locationUidEffectiveAddressCollector.getCollectedData(),
 				locationPostalBoxUidAddressCollector.getCollectedData()
 //		private final List<DateRanged<UidRegisterPublicStatus>> publicStatus;
 //		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
@@ -197,8 +186,6 @@ public class OrganisationHistorizer {
 
 		// Entreprise / Organisation
 		OrganisationBuilder orgaBuilder = new OrganisationBuilder(
-//		private final List<Identifier> organisationIdentifiers;
-
 				organisationMap.entrySet().stream().findFirst().get().getValue().getCantonalId(),
 				organisationIdentifiersCollector.getCollectedData(),
 				organisationNameCollector.getCollectedData(),
