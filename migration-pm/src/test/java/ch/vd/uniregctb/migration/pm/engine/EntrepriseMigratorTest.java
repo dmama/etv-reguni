@@ -21,7 +21,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;

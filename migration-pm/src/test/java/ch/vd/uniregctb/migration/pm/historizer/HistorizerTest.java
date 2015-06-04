@@ -32,7 +32,6 @@ public class HistorizerTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-
 	@Test
 	public void testSingleValueCollector() throws Exception {
 
@@ -441,7 +440,7 @@ public class HistorizerTest {
 	 * Pour montrer qu'il est possible de récupérer, par exemple, les adresses "par établissement"...
 	 */
 	@Test
-	public void testSingleValueIndexedWithHole() throws Exception {
+	public void testSingleValueIndexedWithHoles() throws Exception {
 
 		final class Adresse {
 			final String type;

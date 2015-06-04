@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.historizer.collector;
+package ch.vd.uniregctb.migration.pm.engine.collector;
 
 import java.util.LinkedList;
 import java.util.List;

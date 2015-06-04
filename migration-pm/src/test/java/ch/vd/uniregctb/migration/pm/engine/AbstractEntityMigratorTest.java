@@ -26,7 +26,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {

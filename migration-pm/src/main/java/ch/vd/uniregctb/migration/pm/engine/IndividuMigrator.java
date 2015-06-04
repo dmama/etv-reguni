@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.historizer.equalator.Equalator;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;

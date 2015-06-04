@@ -40,7 +40,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.Worker;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;

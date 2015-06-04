@@ -12,7 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
-import ch.vd.uniregctb.migration.pm.historizer.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;

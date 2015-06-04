@@ -16,5 +16,4 @@ public class AdressesLegalesExtractor implements Function<Organisation, Stream<K
 				.filter(ol -> ol.getCommercialRegisterData() != null && ol.getCommercialRegisterData().getLegalAddress() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getCommercialRegisterData().getLegalAddress()));
 	}
-
 }
