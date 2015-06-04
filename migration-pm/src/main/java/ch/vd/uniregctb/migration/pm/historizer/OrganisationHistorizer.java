@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import ch.vd.evd0021.v1.Address;
+import ch.vd.evd0022.v1.CommercialRegisterStatus;
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
+import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.historizer.collector.IndexedDataCollector;
 import ch.vd.uniregctb.migration.pm.historizer.collector.ListDataCollector;
@@ -31,9 +33,11 @@ import ch.vd.uniregctb.migration.pm.historizer.extractor.KindOfLocationExtractor
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationIdentifiersExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationNamesExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationOtherNamesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.RcStatusExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.SeatExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.TransferFromExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.TransferToExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.UidTypeOfOrganisationExtractor;
 
 public class OrganisationHistorizer {
 
@@ -105,12 +109,18 @@ public class OrganisationHistorizer {
 
 		// RC
 
+		final IndexedDataCollector<Organisation, CommercialRegisterStatus, BigInteger> locationRcstatusCollector = new SingleValueIndexedDataCollector<>(new RcStatusExtractor(),
+		                                                                                                                                                 Equalator.DEFAULT
+		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                        ADDRESS_EQUALATOR
 		);
 
 		// IDE
 
+		final IndexedDataCollector<Organisation, UidRegisterTypeOfOrganisation, BigInteger> locationUidTypeOfOrganisation = new SingleValueIndexedDataCollector<>(new UidTypeOfOrganisationExtractor(),
+		                                                                                                                                  Equalator.DEFAULT
+		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
 		                                                                                                                                         ADDRESS_EQUALATOR
 		);
@@ -134,7 +144,9 @@ public class OrganisationHistorizer {
 		                                                    locationOtherNamesCollector,
 		                                                    kindsOfLocationCollector,
 		                                                    seatsCollector,
+		                                                    locationRcstatusCollector,
 		                                                    locationRcAddressCollector,
+		                                                    locationUidTypeOfOrganisation,
 		                                                    locationUidAddressCollector,
 		                                                    locationPostalBoxUidAddressCollector
 
@@ -162,6 +174,7 @@ public class OrganisationHistorizer {
 //		private final List<DateRanged<Long>> inReplacementOf;
 
 //		private final List<DateRanged<CommercialRegisterStatus>> status;
+				locationRcstatusCollector.getCollectedData(),
 //		private final List<DateRanged<String>> name;
 //		private final List<DateRanged<CommercialRegisterEntryStatus>> entryStatus;
 //		private final List<DateRanged<Capital>> capital;
@@ -170,17 +183,11 @@ public class OrganisationHistorizer {
 
 //		private final List<DateRanged<UidRegisterStatus>> status;
 //		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
+				locationUidTypeOfOrganisation.getCollectedData(),
 //		private final List<DateRanged<Address>> effectiveAddress;
 				locationUidAddressCollector.getCollectedData(),
 //		private final List<DateRanged<Address>> postOfficeBoxAddress;
 				locationPostalBoxUidAddressCollector.getCollectedData()
-//		private final List<DateRanged<UidRegisterPublicStatus>> publicStatus;
-//		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
-
-//		private final List<DateRanged<UidRegisterStatus>> status;
-//		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
-//		private final List<DateRanged<Address>> effectiveAddress;
-//		private final List<DateRanged<Address>> postOfficeBoxAddress;
 //		private final List<DateRanged<UidRegisterPublicStatus>> publicStatus;
 //		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
 
