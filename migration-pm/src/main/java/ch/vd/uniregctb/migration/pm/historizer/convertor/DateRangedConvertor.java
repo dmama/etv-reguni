@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.historizer.convertor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,6 +20,6 @@ public class DateRangedConvertor {
 	public static <T, R> List<DateRanged<R>> convert(List<DateRanged<T>> ranges, Function<T, R> convertor) {
 		return ranges.stream()
 				.map(r -> new DateRanged<>(r.getDateDebut(), r.getDateFin(), convertor.apply(r.getPayload())))
-				.collect(Collectors.toCollection(ArrayList::new));
+				.collect(Collectors.toList());
 	}
 }
