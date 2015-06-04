@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -196,7 +195,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	@Override
 	public void onGraphe(Graphe graphe) throws Exception {
-		completionService.submit(new MigrationTask(graphe));
+		completionService.submit(() -> migrateGraphe(graphe));
 		nbEnCours.incrementAndGet();
 	}
 
@@ -213,45 +212,42 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	private class MigrationTask implements Callable<MigrationResultMessageProvider> {
-		private final Graphe graphe;
+	/**
+	 * Appelé de manière asynchrone pour migrer un graphe d'entité
+	 * @param graphe le graphe à migrer
+	 * @return les indications issues de la migration
+	 */
+	private MigrationResultMessageProvider migrateGraphe(Graphe graphe) {
 
-		private MigrationTask(Graphe graphe) {
-			this.graphe = graphe;
+		final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
+		final Set<Long> idsIndividus = graphe.getIndividus().keySet();
+		try {
+			while (true) {
+				final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
+				if (ticket != null) {
+					try {
+						return grapheMigrator.migrate(graphe);
+					}
+					finally {
+						synchronizer.release(ticket);
+					}
+				}
+				else {
+					LOGGER.info(String.format("L'une des entreprises %s ou des individus %s est déjà en cours de migration en ce moment même... On attend...",
+					                          Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
+					                          Arrays.toString(idsIndividus.toArray(new Long[idsIndividus.size()]))));
+				}
+			}
 		}
-
-		@Override
-		public MigrationResultMessageProvider call() {
-			final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
-			final Set<Long> idsIndividus = graphe.getIndividus().keySet();
-			try {
-				while (true) {
-					final EntityMigrationSynchronizer.Ticket ticket = synchronizer.hold(idsEntreprise, idsIndividus, 1000);
-					if (ticket != null) {
-						try {
-							return grapheMigrator.migrate(graphe);
-						}
-						finally {
-							synchronizer.release(ticket);
-						}
-					}
-					else {
-						LOGGER.info(String.format("L'une des entreprises %s ou des individus %s est déjà en cours de migration en ce moment même... On attend...",
-						                          Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
-						                          Arrays.toString(idsIndividus.toArray(new Long[idsIndividus.size()]))));
-					}
-				}
+		catch (Throwable t) {
+			if (t instanceof InterruptedException) {
+				Thread.currentThread().interrupt();
 			}
-			catch (Throwable t) {
-				if (t instanceof InterruptedException) {
-					Thread.currentThread().interrupt();
-				}
 
-				final MigrationResult res = new MigrationResult();
-				final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
-				res.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, msg);
-				return res;
-			}
+			final MigrationResult res = new MigrationResult();
+			final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
+			res.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, msg);
+			return res;
 		}
 	}
 }
