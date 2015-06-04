@@ -7,13 +7,18 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0022.v1.Identifier;
 
-public class NumeroIdeExtractor implements Function<List<Identifier>, String> {
+public class UidNumberExtractor implements Function<List<Identifier>, String> {
+
+	/**
+	 * catégorie (ou clé) de l'identifiant
+	 */
+	private static final String CH_UID_KEY = "CH.IDE";
 
 	@Nullable
 	@Override
 	public String apply(List<Identifier> identifiers) {
 		return identifiers.stream()
-				.filter(i -> "CH.IDE".equals(i.getIdentifierCategory()))
+				.filter(i -> CH_UID_KEY.equals(i.getIdentifierCategory()))
 				.findAny()
 				.map(Identifier::getIdentifierValue)
 				.orElse(null);

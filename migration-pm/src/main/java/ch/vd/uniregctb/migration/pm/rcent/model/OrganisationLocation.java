@@ -26,9 +26,7 @@ public class OrganisationLocation {
     @NotNull
     private final List<DateRanged<String>> name;
 
-	// CHECKSTYLE:OFF
 	public final RCEntRCData rc;
-	// CHECKSTYLE:OFF
 	public final RCEntUIDData uid;
 
 	private final List<DateRanged<Identifier>> identifier;

@@ -49,31 +49,35 @@ public class OrganisationHistorizer {
 		);
 
 		// on enregistre les data collectors au niveau de l'organisation faîtière (= l'entreprise)
-		final ListDataCollector<Organisation, String> nomsEntrepriseCollector = new SingleValueDataCollector<>(Organisation::getOrganisationName,
+		final ListDataCollector<Organisation, Identifier> organisationIdentifiersCollector = new MultiValueDataCollector<>(o -> o.getOrganisationIdentifier().stream(),
+		                                                                                                     Equalator.DEFAULT,
+		                                                                                                     locationId -> locationId
+		);
+		final ListDataCollector<Organisation, String> organisationNameCollector = new SingleValueDataCollector<>(Organisation::getOrganisationName,
 		                                                                                                       Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, String> nomsAdditionnelsEntrepriseCollector = new SingleValueDataCollector<>(Organisation::getOrganisationAdditionalName,
+		final ListDataCollector<Organisation, String> organisationAdditionalNameCollector = new SingleValueDataCollector<>(Organisation::getOrganisationAdditionalName,
 		                                                                                                                   Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, LegalForm> formesLegalesCollector = new SingleValueDataCollector<>(Organisation::getLegalForm,
+		final ListDataCollector<Organisation, LegalForm> legalFormsCollector = new SingleValueDataCollector<>(Organisation::getLegalForm,
 		                                                                                                         Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> etablissementsCollector = new MultiValueDataCollector<>(new EtablissementsExtractor(),
+		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new EtablissementsExtractor(),
 		                                                                                                          Equalator.DEFAULT,
 		                                                                                                          locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transfereACollector = new MultiValueDataCollector<>(new TransferToExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferToCollector = new MultiValueDataCollector<>(new TransferToExtractor(),
 		                                                                                                      Equalator.DEFAULT,
 		                                                                                                      locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transfereDeCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferFromCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
 		                                                                                                       Equalator.DEFAULT,
 		                                                                                                       locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> remplaceParCollector = new SingleValueDataCollector<>(o -> o.getReplacedBy().getCantonalId(),
+		final ListDataCollector<Organisation, BigInteger> replacedByCollector = new SingleValueDataCollector<>(o -> o.getReplacedBy().getCantonalId(),
 		                                                                                                        Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> enRemplacementDeCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
 		                                                                                                            Equalator.DEFAULT,
 		                                                                                                            locationId -> locationId
 		);
@@ -81,57 +85,58 @@ public class OrganisationHistorizer {
 
 		// Etablissements
 
-		final IndexedDataCollector<Organisation, Identifier, BigInteger> identifiantsEtablissementsCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationIdentifiersExtractor(),
+		final IndexedDataCollector<Organisation, Identifier, BigInteger> locationIdentifiersCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationIdentifiersExtractor(),
 		                                                                                                                                            new IdentifierEqualator(),
 		                                                                                                                                            keyed -> keyed.getValue().getIdentifierCategory()
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> nomsEtablissementsCollector = new SingleValueIndexedDataCollector<>(new OrganisationLocationNamesExtractor(),
+		final IndexedDataCollector<Organisation, String, BigInteger> locationNamesCollector = new SingleValueIndexedDataCollector<>(new OrganisationLocationNamesExtractor(),
 		                                                                                                                                 Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> autresNomsEtablissementsCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationOtherNamesExtractor(),
+		final IndexedDataCollector<Organisation, String, BigInteger> locationOtherNamesCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationOtherNamesExtractor(),
 		                                                                                                                                      Equalator.DEFAULT,
 		                                                                                                                                      Keyed::getValue
 		);
-		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> genresEtablissementCollector = new SingleValueIndexedDataCollector<>(new KindOfLocationExtractor(),
+		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> kindsOfLocationCollector = new SingleValueIndexedDataCollector<>(new KindOfLocationExtractor(),
 		                                                                                                                                          Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, Integer, BigInteger> siegesCollector = new SingleValueIndexedDataCollector<>(new SeatExtractor(),
+		final IndexedDataCollector<Organisation, Integer, BigInteger> seatsCollector = new SingleValueIndexedDataCollector<>(new SeatExtractor(),
 		                                                                                                                      Equalator.DEFAULT
 		);
 
 		// RC
 
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesRcEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
+		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
 		                                                                                                                                        ADDRESS_EQUALATOR
 		);
 
 		// IDE
 
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
+		final IndexedDataCollector<Organisation, Address, BigInteger> locationUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
 		                                                                                                                                         ADDRESS_EQUALATOR
 		);
-		final IndexedDataCollector<Organisation, Address, BigInteger> adressesIdeCasePostaleEtablissementsCollector = new SingleValueIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
+		final IndexedDataCollector<Organisation, Address, BigInteger> locationPostalBoxUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
 		                                                                                                                                                    ADDRESS_EQUALATOR
 		);
 
 
 		// on collecte les plages de dates dans les collectors
-		Historizer.historize(organisationMap, Arrays.asList(nomsEntrepriseCollector,
-		                                                    nomsAdditionnelsEntrepriseCollector,
-		                                                    formesLegalesCollector,
-		                                                    etablissementsCollector,
-		                                                    transfereACollector,
-		                                                    transfereDeCollector,
-		                                                    remplaceParCollector,
-		                                                    enRemplacementDeCollector,
-		                                                    identifiantsEtablissementsCollector,
-		                                                    nomsEtablissementsCollector,
-		                                                    autresNomsEtablissementsCollector,
-		                                                    genresEtablissementCollector,
-		                                                    siegesCollector,
-		                                                    adressesRcEtablissementsCollector,
-		                                                    adressesIdeEtablissementsCollector,
-		                                                    adressesIdeCasePostaleEtablissementsCollector
+		Historizer.historize(organisationMap, Arrays.asList(organisationIdentifiersCollector,
+		                                                    organisationNameCollector,
+		                                                    organisationAdditionalNameCollector,
+		                                                    legalFormsCollector,
+		                                                    locationsCollector,
+		                                                    transferToCollector,
+		                                                    transferFromCollector,
+		                                                    replacedByCollector,
+		                                                    inReplacementOfCollector,
+		                                                    locationIdentifiersCollector,
+		                                                    locationNamesCollector,
+		                                                    locationOtherNamesCollector,
+		                                                    kindsOfLocationCollector,
+		                                                    seatsCollector,
+		                                                    locationRcAddressCollector,
+		                                                    locationUidAddressCollector,
+		                                                    locationPostalBoxUidAddressCollector
 
 		));
 
@@ -143,15 +148,15 @@ public class OrganisationHistorizer {
 		OrganisationLocationBuilder locationBuilder = new OrganisationLocationBuilder(
 
 //  	private final List<DateRanged<Identifier>> identifier;
-				identifiantsEtablissementsCollector.getCollectedData(),
+				locationIdentifiersCollector.getCollectedData(),
 //		private final List<DateRanged<String>> name;
-				nomsEtablissementsCollector.getCollectedData(),
+				locationNamesCollector.getCollectedData(),
 //		private final List<DateRanged<String>> otherNames;
-				autresNomsEtablissementsCollector.getCollectedData(),
+				locationOtherNamesCollector.getCollectedData(),
 //		private final List<DateRanged<KindOfLocation>> kindOfLocation;
-				genresEtablissementCollector.getCollectedData(),
+				kindsOfLocationCollector.getCollectedData(),
 //		private final List<DateRanged<Integer>> seat;
-				siegesCollector.getCollectedData(),
+				seatsCollector.getCollectedData(),
 //		private final List<DateRanged<Function>> function;
 //		private final List<DateRanged<Long>> replacedBy;
 //		private final List<DateRanged<Long>> inReplacementOf;
@@ -161,14 +166,14 @@ public class OrganisationHistorizer {
 //		private final List<DateRanged<CommercialRegisterEntryStatus>> entryStatus;
 //		private final List<DateRanged<Capital>> capital;
 //		private final List<DateRanged<Address>> legalAddress;
-				adressesRcEtablissementsCollector.getCollectedData(),
+				locationRcAddressCollector.getCollectedData(),
 
 //		private final List<DateRanged<UidRegisterStatus>> status;
 //		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
 //		private final List<DateRanged<Address>> effectiveAddress;
-				adressesIdeEtablissementsCollector.getCollectedData(),
+				locationUidAddressCollector.getCollectedData(),
 //		private final List<DateRanged<Address>> postOfficeBoxAddress;
-				adressesIdeCasePostaleEtablissementsCollector.getCollectedData()
+				locationPostalBoxUidAddressCollector.getCollectedData()
 //		private final List<DateRanged<UidRegisterPublicStatus>> publicStatus;
 //		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
 
@@ -185,24 +190,16 @@ public class OrganisationHistorizer {
 		OrganisationBuilder orgaBuilder = new OrganisationBuilder(
 //		private final List<Identifier> organisationIdentifiers;
 
-//		private final List<DateRanged<String>> organisationName;
-				nomsEntrepriseCollector.getCollectedData(),
-//		private final List<DateRanged<String>> organisationAdditionalName;
-				nomsAdditionnelsEntrepriseCollector.getCollectedData(),
-//		private final List<DateRanged<LegalForm>> legalForm;
-				formesLegalesCollector.getCollectedData(),
-//
-//		private final List<DateRanged<OrganisationLocation>> locations;
-				etablissementsCollector.getCollectedData(),
-//
-//		private final List<DateRanged<Long>> transferTo;
-				transfereACollector.getCollectedData(),
-//		private final List<DateRanged<Long>> transferFrom;
-				transfereDeCollector.getCollectedData(),
-//		private final List<DateRanged<Long>> replacedBy;
-				remplaceParCollector.getCollectedData(),
-//		private final List<DateRanged<Long>> inPreplacementOf;
-				enRemplacementDeCollector.getCollectedData(),
+				organisationMap.get(0).getCantonalId(),
+				organisationIdentifiersCollector.getCollectedData(),
+				organisationNameCollector.getCollectedData(),
+				organisationAdditionalNameCollector.getCollectedData(),
+				legalFormsCollector.getCollectedData(),
+				locationsCollector.getCollectedData(),
+				transferToCollector.getCollectedData(),
+				transferFromCollector.getCollectedData(),
+				replacedByCollector.getCollectedData(),
+				inReplacementOfCollector.getCollectedData(),
 				locationBuilder.build()
 		);
 
