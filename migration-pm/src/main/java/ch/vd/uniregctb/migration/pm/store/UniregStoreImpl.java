@@ -32,6 +32,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * @return l'entité avec l'identifiant donné
 	 */
 	@Nullable
+	@Override
 	public final <E extends HibernateEntity> E getEntityFromDb(Class<E> clazz, long id) {
 		//noinspection unchecked
 		return (E) uniregSessionFactory.getCurrentSession().get(clazz, id);
@@ -44,6 +45,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * @param <E> type des entitées visées
 	 * @return la liste des entités trouvées
 	 */
+	@Override
 	public final <E extends HibernateEntity> List<E> getEntitiesFromDb(Class<E> clazz, Map<String, ?> criteria) {
 		final Criteria c = uniregSessionFactory.getCurrentSession().createCriteria(clazz);
 		if (criteria != null) {
@@ -59,6 +61,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * @param <E> type des entités visées
 	 * @return un itérateur sur les entités trouvées
 	 */
+	@Override
 	public final <E extends HibernateEntity> Iterator<E> iterateOnAllEntities(Class<E> clazz) {
 		return iterateOnAllEntitiesOfClass(clazz, uniregSessionFactory.getCurrentSession());
 	}
@@ -67,6 +70,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * Méthode qui permet de récupérer un à un les éléments de mapping persistés
 	 * @return un itérateur sur les éléments de mapping persistés
 	 */
+	@Override
 	public final Iterator<MigrationPmMapping> iterateOnAllMappingEntities() {
 		return iterateOnAllEntitiesOfClass(MigrationPmMapping.class, uniregSessionFactory.getCurrentSession());
 	}
@@ -82,6 +86,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * @param <E> type de l'entité
 	 * @return l'entité après sauvegarde
 	 */
+	@Override
 	public final <E extends HibernateEntity> E saveEntityToDb(E entity) {
 		//noinspection unchecked
 		return (E) uniregSessionFactory.getCurrentSession().merge(entity);
@@ -91,6 +96,7 @@ public class UniregStoreImpl implements UniregStore {
 	 * @param entity l'entité de mapping à sauvegarder
 	 * @return l'entité après sauvegarde (l'ID est renseigné, par exemple...)
 	 */
+	@Override
 	public final MigrationPmMapping saveMappingEntityToDb(MigrationPmMapping entity) {
 		return (MigrationPmMapping) uniregSessionFactory.getCurrentSession().merge(entity);
 	}
