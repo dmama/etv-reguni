@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -10,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,9 +33,11 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
@@ -58,6 +63,48 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	private GrapheMigrator grapheMigrator;
 	private ValidationService validationService;
 	private UniregStore uniregStore;
+
+	/**
+	 * Implémentation de test de l'interface Graphe
+	 */
+	private static class MockGraphe implements Graphe {
+
+		private final Map<Long, RegpmEntreprise> entreprises;
+		private final Map<Long, RegpmEtablissement> etablissements;
+		private final Map<Long, RegpmIndividu> individus;
+
+		public MockGraphe(Collection<RegpmEntreprise> entreprises,
+		                  Collection<RegpmEtablissement> etablissements,
+		                  Collection<RegpmIndividu> individus) {
+
+			this.entreprises = buildMap(entreprises);
+			this.etablissements = buildMap(etablissements);
+			this.individus = buildMap(individus);
+		}
+
+		@NotNull
+		private static <T extends WithLongId> Map<Long, T> buildMap(Collection<T> source) {
+			if (source == null || source.isEmpty()) {
+				return Collections.emptyMap();
+			}
+			return Collections.unmodifiableMap(source.stream().collect(Collectors.toMap(WithLongId::getId, Function.identity())));
+		}
+
+		@Override
+		public Map<Long, RegpmEntreprise> getEntreprises() {
+			return entreprises;
+		}
+
+		@Override
+		public Map<Long, RegpmEtablissement> getEtablissements() {
+			return etablissements;
+		}
+
+		@Override
+		public Map<Long, RegpmIndividu> getIndividus() {
+			return individus;
+		}
+	}
 
 	@Override
 	protected void onSetup() throws Exception {
@@ -102,10 +149,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2006, 12, 31));
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
 
-		final Graphe graphe = new Graphe();
-		graphe.register(mandant);
-		graphe.register(entrepriseMandataire);
-		graphe.register(mandataire);
+		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
+		                                     Collections.singletonList(mandataire),
+		                                     null);
 
 		// Bidouille : on ajoute temporairement un validateur sur les entreprises
 		// Ce validateur va causer une erreur sur l'entreprise mandante si celle-ci a des liens (elle doit en avoir, c'est bien, c'est juste pour pouvoir s'envoyer un message qui décrit ces liens...)
@@ -192,10 +238,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2006, 12, 31));
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
 
-		final Graphe graphe = new Graphe();
-		graphe.register(mandant);
-		graphe.register(entrepriseMandataire);
-		graphe.register(mandataire);
+		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
+		                                     Collections.singletonList(mandataire),
+		                                     null);
 
 		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(mr);
@@ -341,10 +386,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2004, 3, 22), ECHALLENS, false);
 		EtablissementMigratorTest.addEtablissementStable(etablissement2, RegDate.get(2002, 7, 14), RegDate.get(2010, 11, 25));
 
-		final Graphe graphe = new Graphe();
-		graphe.register(entreprise);
-		graphe.register(etablissement1);
-		graphe.register(etablissement2);
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     Arrays.asList(etablissement1, etablissement2),
+		                                     null);
 
 		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(mr);
@@ -483,10 +527,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addAppartenanceGroupeProprietaire(entreprise, groupe2, RegDate.get(2004, 5, 29), RegDate.get(2009, 12, 21), false);
 		EntrepriseMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
 
-		final Graphe graphe = new Graphe();
-		graphe.register(entreprise);
-		graphe.register(etablissement1);
-		graphe.register(etablissement2);
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     Arrays.asList(etablissement1, etablissement2),
+		                                     null);
 
 		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
 		Assert.assertNotNull(mr);

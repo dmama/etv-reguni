@@ -1,13 +1,19 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -35,6 +41,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmLiquidation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 
 /**
  * Feeder qui va chercher les données des PM dans la base de données du mainframe
@@ -48,7 +55,147 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 	private Set<Long> idsEntreprisesDejaMigrees;
 	private volatile boolean shutdownInProgress = false;
 
-	private static void forceLoad(RegpmImmeuble immeuble, Graphe graphe) {
+	/**
+	 * Interface de remplissage du cache
+	 */
+	private interface GrapheRecorder {
+
+		/**
+		 * @param entreprise entreprise à enregistrer
+		 * @return <code>true</code> si l'entreprise a été enregistrée, <code>false</code> si elle l'était déjà
+		 */
+		boolean register(RegpmEntreprise entreprise);
+
+		/**
+		 * @param etablissement établissement à enregistrer
+		 * @return <code>true</code> si l'établissement a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		boolean register(RegpmEtablissement etablissement);
+
+		/**
+		 * @param individu individu à enregistrer
+		 * @return <code>true</code> si l'individu a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		boolean register(RegpmIndividu individu);
+
+		/**
+		 * @param immeuble immeuble à enregistrer
+		 * @return <code>true</code> si l'immeuble a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		boolean register(RegpmImmeuble immeuble);
+	}
+
+	/**
+	 * Implémentation de graphe
+	 */
+	private static class GrapheImpl implements Serializable, Graphe, GrapheRecorder {
+
+		private final Map<Long, RegpmEntreprise> entreprises = new TreeMap<>();
+		private final Map<Long, RegpmEtablissement> etablissements = new TreeMap<>();
+		private final Map<Long, RegpmIndividu> individus = new TreeMap<>();
+		private final Map<Long, RegpmImmeuble> immeubles = new TreeMap<>();
+
+		@Override
+		public String toString() {
+			final List<String> array = new ArrayList<>(4);
+			if (!entreprises.isEmpty()) {
+				array.add(String.format("%d entreprise(s) (%s)", entreprises.size(), Arrays.toString(entreprises.keySet().toArray(new Long[entreprises.size()]))));
+			}
+			if (!etablissements.isEmpty()) {
+				array.add(String.format("%d établissement(s) (%s)", etablissements.size(), Arrays.toString(etablissements.keySet().toArray(new Long[etablissements.size()]))));
+			}
+			if (!individus.isEmpty()) {
+				array.add(String.format("%d individu(s) (%s)", individus.size(), Arrays.toString(individus.keySet().toArray(new Long[individus.size()]))));
+			}
+			if (!immeubles.isEmpty()) {
+				array.add(String.format("%d immeuble(s) (%s)", immeubles.size(), Arrays.toString(immeubles.keySet().toArray(new Long[immeubles.size()]))));
+			}
+
+			if (array.isEmpty()) {
+				return "rien (???)";
+			}
+			else {
+				return array.stream().collect(Collectors.joining(", "));
+			}
+		}
+
+		@Override
+		public Map<Long, RegpmEntreprise> getEntreprises() {
+			return Collections.unmodifiableMap(entreprises);
+		}
+
+		@Override
+		public Map<Long, RegpmEtablissement> getEtablissements() {
+			return Collections.unmodifiableMap(etablissements);
+		}
+
+		@Override
+		public Map<Long, RegpmIndividu> getIndividus() {
+			return Collections.unmodifiableMap(individus);
+		}
+
+		public Map<Long, RegpmImmeuble> getImmeubles() {
+			return Collections.unmodifiableMap(immeubles);
+		}
+
+		/**
+		 * @param entreprise entreprise à enregistrer
+		 * @return <code>true</code> si l'entreprise a été enregistrée, <code>false</code> si elle l'était déjà
+		 */
+		@Override
+		public boolean register(RegpmEntreprise entreprise) {
+			return register(entreprise, entreprises);
+		}
+
+		/**
+		 * @param etablissement établissement à enregistrer
+		 * @return <code>true</code> si l'établissement a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		@Override
+		public boolean register(RegpmEtablissement etablissement) {
+			return register(etablissement, etablissements);
+		}
+
+		/**
+		 * @param individu individu à enregistrer
+		 * @return <code>true</code> si l'individu a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		@Override
+		public boolean register(RegpmIndividu individu) {
+			return register(individu, individus);
+		}
+
+		/**
+		 * @param immeuble immeuble à enregistrer
+		 * @return <code>true</code> si l'immeuble a été enregistré, <code>false</code> s'il l'était déjà
+		 */
+		@Override
+		public boolean register(RegpmImmeuble immeuble) {
+			return register(immeuble, immeubles);
+		}
+
+		/**
+		 * @param entity une entité dont l'identifiant est un long
+		 * @param entities la map des entités du même type déjà enregistrées
+		 * @return <code>true</code> le l'entité à été enregistrée, <code>false</code> si elle l'était déjà
+		 */
+		private static <T extends WithLongId> boolean register(T entity, Map<Long, T> entities) {
+			if (entity == null) {
+				return false;
+			}
+
+			final Long id = entity.getId();
+			if (entities.containsKey(id)) {
+				return false;
+			}
+
+			// la prochaine fois, on saura que c'est fait...
+			entities.put(id, entity);
+			return true;
+		}
+	}
+
+	private static void forceLoad(RegpmImmeuble immeuble, GrapheRecorder graphe) {
 		if (!graphe.register(immeuble)) {
 			return;
 		}
@@ -57,7 +204,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		forceLoad(immeuble.getParcelle(), graphe);
 	}
 
-	private static void forceLoadProprietaire(Graphe graphe, Supplier<Collection<RegpmRattachementProprietaire>> rattachementsProprietaires, Supplier<Collection<RegpmAppartenanceGroupeProprietaire>> appartenancesGroupeProprietaire) {
+	private static void forceLoadProprietaire(GrapheRecorder graphe, Supplier<Collection<RegpmRattachementProprietaire>> rattachementsProprietaires, Supplier<Collection<RegpmAppartenanceGroupeProprietaire>> appartenancesGroupeProprietaire) {
 		// rattachements propriétaires directs
 		final Collection<RegpmRattachementProprietaire> rattachements = rattachementsProprietaires != null ? rattachementsProprietaires.get() : Collections.emptyList();
 		for (RegpmRattachementProprietaire rattachement : rattachements) {
@@ -76,7 +223,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		}
 	}
 
-	private static void forceLoad(RegpmEtablissement etablissement, Graphe graphe) {
+	private static void forceLoad(RegpmEtablissement etablissement, GrapheRecorder graphe) {
 		if (!graphe.register(etablissement)) {
 			return;
 		}
@@ -99,7 +246,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		forceLoadProprietaire(graphe, etablissement::getRattachementsProprietaires, etablissement::getAppartenancesGroupeProprietaire);
 	}
 
-	private static void forceLoad(RegpmIndividu individu, Graphe graphe) {
+	private static void forceLoad(RegpmIndividu individu, GrapheRecorder graphe) {
 		if (!graphe.register(individu)) {
 			return;
 		}
@@ -109,7 +256,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		individu.getAdresses().size();
 	}
 
-	private static void forceLoad(RegpmEntreprise pm, Graphe graphe) {
+	private static void forceLoad(RegpmEntreprise pm, GrapheRecorder graphe) {
 		if (!graphe.register(pm)) {
 			return;
 		}
@@ -275,7 +422,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 	private Graphe loadGraphe(final long idEntreprise) {
 		final long start = System.nanoTime();
-		final Graphe graphe = new Graphe();     // vide au départ...
+		final GrapheImpl graphe = new GrapheImpl();     // vide au départ...
 		try {
 			final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
 			template.setReadOnly(true);
