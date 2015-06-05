@@ -1,13 +1,11 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -25,6 +22,7 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -33,9 +31,12 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
@@ -55,9 +56,6 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	private EntrepriseMigrator migrator;
-
-	private static final String REGPM_VISA = "REGPM";
-	private static final Timestamp REGPM_MODIF = new Timestamp(DateHelper.getCurrentDate().getTime() - TimeUnit.DAYS.toMillis(2000));   // 2000 jours ~ 5.5 années
 
 	@Override
 	protected void onSetup() throws Exception {
@@ -175,6 +173,39 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return mandat;
 	}
 
+	static RegpmRattachementProprietaire addRattachementProprietaire(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateFin, RegpmImmeuble immeuble) {
+		final RegpmRattachementProprietaire rrp = new RegpmRattachementProprietaire();
+		rrp.setId(ID_GENERATOR.next());
+		assignMutationVisa(rrp, REGPM_VISA, REGPM_MODIF);
+		rrp.setDateDebut(dateDebut);
+		rrp.setDateFin(dateFin);
+		rrp.setImmeuble(immeuble);
+		entreprise.getRattachementsProprietaires().add(rrp);
+		return rrp;
+	}
+
+	static RegpmRattachementProprietaire addRattachementProprietaire(RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, RegpmImmeuble immeuble) {
+		final RegpmRattachementProprietaire rrp = new RegpmRattachementProprietaire();
+		rrp.setId(ID_GENERATOR.next());
+		assignMutationVisa(rrp, REGPM_VISA, REGPM_MODIF);
+		rrp.setDateDebut(dateDebut);
+		rrp.setDateFin(dateFin);
+		rrp.setImmeuble(immeuble);
+		groupe.getRattachementsProprietaires().add(rrp);
+		return rrp;
+	}
+
+	static RegpmAppartenanceGroupeProprietaire addAppartenanceGroupeProprietaire(RegpmEntreprise entreprise, RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, boolean leader) {
+		final RegpmAppartenanceGroupeProprietaire ragp = new RegpmAppartenanceGroupeProprietaire();
+		ragp.setId(new RegpmAppartenanceGroupeProprietaire.PK(NO_SEQUENCE_GENERATOR.next(), groupe.getId()));
+		ragp.setDateDebut(dateDebut);
+		ragp.setDateFin(dateFin);
+		ragp.setGroupeProprietaire(groupe);
+		ragp.setLeader(leader);
+		entreprise.getAppartenancesGroupeProprietaire().add(ragp);
+		return ragp;
+	}
+
 	static RegpmRegimeFiscalCH addRegimeFiscalCH(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateAnnulation, RegpmTypeRegimeFiscal type) {
 		final RegpmRegimeFiscalCH rf = new RegpmRegimeFiscalCH();
 		rf.setId(new RegpmRegimeFiscalCH.PK(computeNewSeqNo(entreprise.getRegimesFiscauxCH(), x -> x.getId().getSeqNo()), entreprise.getId()));
@@ -200,6 +231,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	private static RegpmForPrincipal addForPrincipal(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, @Nullable RegpmCommune commune, @Nullable Integer noOfsPays) {
 		final RegpmForPrincipal ffp = new RegpmForPrincipal();
 		ffp.setId(new RegpmForPrincipal.PK(computeNewSeqNo(entreprise.getForsPrincipaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(ffp, REGPM_VISA, REGPM_MODIF);
 		ffp.setCommune(commune);
 		ffp.setOfsPays(noOfsPays);
 		ffp.setDateValidite(dateDebut);

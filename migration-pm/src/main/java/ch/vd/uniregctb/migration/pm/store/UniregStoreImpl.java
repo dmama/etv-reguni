@@ -51,6 +51,7 @@ public class UniregStoreImpl implements UniregStore {
 		if (criteria != null) {
 			criteria.forEach((key, value) -> c.add(Restrictions.eq(key, value)));
 		}
+		c.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		//noinspection unchecked
 		return c.list();
 	}

@@ -13,7 +13,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
  */
 public final class EntityKey implements Serializable {
 
-	private static final long serialVersionUID = 3583505235355125259L;
+	private static final long serialVersionUID = -7195113401516584427L;
+
 	private final long id;
 	private final Type type;
 	private EntityKey(long id, Type type) {
@@ -58,5 +59,21 @@ public final class EntityKey implements Serializable {
 		public String getDisplayName() {
 			return displayName;
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final EntityKey entityKey = (EntityKey) o;
+		return id == entityKey.id && type == entityKey.type;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = (int) (id ^ (id >>> 32));
+		result = 31 * result + type.hashCode();
+		return result;
 	}
 }

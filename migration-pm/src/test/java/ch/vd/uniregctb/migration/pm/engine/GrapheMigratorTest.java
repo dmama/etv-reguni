@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -27,11 +28,15 @@ import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -43,6 +48,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.EntityValidator;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -309,6 +315,279 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 					Assert.assertNull(ffs.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs.getMotifRattachement());
 				}
+			}
+		});
+	}
+
+	@Test
+	public void testMigrationEtablissementsMultiples() throws Exception {
+
+		final long idEntreprise = 42L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, BALE);       // un for principal de base
+
+		// les établissements
+		final long idEtablissement1 = 235612L;
+		final RegpmEtablissement etablissement1 = EtablissementMigratorTest.buildEtablissement(idEtablissement1, entreprise);
+		etablissement1.setEnseigne("Le chat qui fume");
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement1, RegDate.get(1999, 5, 12), MORGES, false);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement1, RegDate.get(2003, 1, 27), LAUSANNE, false);
+		EtablissementMigratorTest.addEtablissementStable(etablissement1, RegDate.get(1999, 5, 12), RegDate.get(2006, 10, 31));
+
+		final long idEtablissement2 = 4367324L;
+		final RegpmEtablissement etablissement2 = EtablissementMigratorTest.buildEtablissement(idEtablissement2, entreprise);
+		etablissement2.setEnseigne("Le chien qui pête");
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2002, 7, 14), LAUSANNE, false);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2004, 3, 22), ECHALLENS, false);
+		EtablissementMigratorTest.addEtablissementStable(etablissement2, RegDate.get(2002, 7, 14), RegDate.get(2010, 11, 25));
+
+		final Graphe graphe = new Graphe();
+		graphe.register(entreprise);
+		graphe.register(etablissement1);
+		graphe.register(etablissement2);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification du résultat
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);       // c'est le même identifiant dans RegPM et dans Unireg
+			Assert.assertNotNull(e);
+
+			// on vérifie d'abord qu'il y a bien deux établissements liés
+			final Set<RapportEntreTiers> rapports = e.getRapportsSujet();
+			Assert.assertNotNull(rapports);
+			Assert.assertEquals(2, rapports.size());
+			rapports.stream().filter(r -> !(r instanceof ActiviteEconomique)).findAny().ifPresent(r -> Assert.fail("Rapport " + r + " trouvé là où seuls des rapports d'activité économiques étaient attendus"));
+			final List<ActiviteEconomique> activitesEconomiques = rapports.stream()
+					.map(r -> (ActiviteEconomique) r)
+					.sorted(Comparator.comparing(ActiviteEconomique::getDateDebut))
+					.collect(Collectors.toList());
+
+			final Long idEtb1;
+			{
+				final ActiviteEconomique ae = activitesEconomiques.get(0);
+				Assert.assertNotNull(ae);
+				Assert.assertEquals(RegDate.get(1999, 5, 12), ae.getDateDebut());
+				Assert.assertEquals(RegDate.get(2006, 10, 31), ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+
+				idEtb1 = ae.getObjetId();
+				Assert.assertNotNull(idEtb1);
+			}
+			final Long idEtb2;
+			{
+				final ActiviteEconomique ae = activitesEconomiques.get(1);
+				Assert.assertNotNull(ae);
+				Assert.assertEquals(RegDate.get(2002, 7, 14), ae.getDateDebut());
+				Assert.assertEquals(RegDate.get(2010, 11, 25), ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+
+				idEtb2 = ae.getObjetId();
+				Assert.assertNotNull(idEtb2);
+			}
+			Assert.assertNotEquals(idEtb1, idEtb2);
+
+			// vérification qu'il n'y a bien que ces deux établissement-là en base
+			final List<Etablissement> allEtablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(allEtablissements);
+			Assert.assertEquals(2, allEtablissements.size());
+
+			// vérification des domiciles de ces établissements
+			{
+				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtb1);
+				Assert.assertNotNull(etb);
+				Assert.assertEquals("Le chat qui fume", etb.getEnseigne());
+
+				final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(2, domiciles.size());
+
+				final Map<Integer, DomicileEtablissement> domicileParCommune = domiciles.stream().collect(Collectors.toMap(DomicileEtablissement::getNumeroOfsAutoriteFiscale, Function.identity()));
+				{
+					final DomicileEtablissement domicile = domicileParCommune.get(MockCommune.Morges.getNoOFS());
+					Assert.assertNotNull("Pas de domicile à Morges ?", domicile);
+					Assert.assertEquals(RegDate.get(1999, 5, 12), domicile.getDateDebut());
+					Assert.assertEquals(RegDate.get(2003, 1, 26), domicile.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+					Assert.assertFalse(domicile.isAnnule());
+				}
+				{
+					final DomicileEtablissement domicile = domicileParCommune.get(MockCommune.Lausanne.getNoOFS());
+					Assert.assertNotNull("Pas de domicile à Lausanne ?", domicile);
+					Assert.assertEquals(RegDate.get(2003, 1, 27), domicile.getDateDebut());
+					Assert.assertEquals(RegDate.get(2006, 10, 31), domicile.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+					Assert.assertFalse(domicile.isAnnule());
+				}
+			}
+			{
+				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtb2);
+				Assert.assertNotNull(etb);
+				Assert.assertEquals("Le chien qui pête", etb.getEnseigne());
+
+				final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(2, domiciles.size());
+
+				final Map<Integer, DomicileEtablissement> domicileParCommune = domiciles.stream().collect(Collectors.toMap(DomicileEtablissement::getNumeroOfsAutoriteFiscale, Function.identity()));
+				{
+					final DomicileEtablissement domicile = domicileParCommune.get(MockCommune.Lausanne.getNoOFS());
+					Assert.assertNotNull("Pas de domicile à Lausanne ?", domicile);
+					Assert.assertEquals(RegDate.get(2002, 7, 14), domicile.getDateDebut());
+					Assert.assertEquals(RegDate.get(2004, 3, 21), domicile.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+					Assert.assertFalse(domicile.isAnnule());
+				}
+				{
+					final DomicileEtablissement domicile = domicileParCommune.get(MockCommune.Echallens.getNoOFS());
+					Assert.assertNotNull("Pas de domicile à Echallens ?", domicile);
+					Assert.assertEquals(RegDate.get(2004, 3, 22), domicile.getDateDebut());
+					Assert.assertEquals(RegDate.get(2010, 11, 25), domicile.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+					Assert.assertFalse(domicile.isAnnule());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testCalculForsSecondairesActiviteEtImmeuble() throws Exception {
+
+		final long idEntreprise = 42L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, BALE);       // un for principal de base
+
+		// les établissements
+		final long idEtablissement1 = 235612L;
+		final RegpmEtablissement etablissement1 = EtablissementMigratorTest.buildEtablissement(idEtablissement1, entreprise);
+		etablissement1.setEnseigne("Le chat qui fume");
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement1, RegDate.get(1999, 5, 12), MORGES, false);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement1, RegDate.get(2003, 1, 27), LAUSANNE, false);
+		EtablissementMigratorTest.addEtablissementStable(etablissement1, RegDate.get(1999, 5, 12), RegDate.get(2006, 10, 31));
+
+		final long idEtablissement2 = 4367324L;
+		final RegpmEtablissement etablissement2 = EtablissementMigratorTest.buildEtablissement(idEtablissement2, entreprise);
+		etablissement2.setEnseigne("Le chien qui pête");
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2002, 7, 14), LAUSANNE, false);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement2, RegDate.get(2004, 3, 22), ECHALLENS, false);
+		EtablissementMigratorTest.addEtablissementStable(etablissement2, RegDate.get(2002, 7, 14), RegDate.get(2010, 11, 25));
+
+		// les immeubles
+		final RegpmImmeuble immeuble1 = createImmeuble(ECHALLENS);
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2006, 5, 1), RegDate.get(2010, 12, 31), immeuble1);
+
+		final RegpmImmeuble immeuble2 = createImmeuble(ECHALLENS);
+		final RegpmGroupeProprietaire groupe2 = createGroupeProprietaire("Zoo", RegpmTypeGroupeProprietaire.CONSORTIUM_SOCIETE_SIMPLE, RegDate.get(2000, 1, 1), null);
+		EntrepriseMigratorTest.addAppartenanceGroupeProprietaire(entreprise, groupe2, RegDate.get(2004, 5, 29), RegDate.get(2009, 12, 21), false);
+		EntrepriseMigratorTest.addRattachementProprietaire(groupe2, RegDate.get(2004, 7, 1), null, immeuble2);
+
+		final Graphe graphe = new Graphe();
+		graphe.register(entreprise);
+		graphe.register(etablissement1);
+		graphe.register(etablissement2);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification du résultat
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);       // c'est le même identifiant dans RegPM et dans Unireg
+			Assert.assertNotNull(e);
+
+			final List<ForFiscal> fors = e.getForsFiscauxSorted();
+			Assert.assertEquals(5, fors.size());
+
+			// for fiscal principal à Bâle (migré directement)
+			{
+				final ForFiscal ff = fors.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(RegDate.get(1990, 1, 1), ff.getDateDebut());
+				Assert.assertNull(ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalPrincipalPM);
+
+				final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) ff;
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+			}
+
+			// for fiscal secondaire (activité économique) à Morges
+			{
+				final ForFiscal ff = fors.get(1);
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(RegDate.get(1999, 5, 12), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2003, 1, 26), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalSecondaire);
+
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs.getMotifRattachement());
+			}
+
+			// for fiscal secondaire (activité économique) à Lausanne
+			{
+				final ForFiscal ff = fors.get(2);
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(RegDate.get(2002, 7, 14), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2006, 10, 31), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalSecondaire);
+
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs.getMotifRattachement());
+			}
+
+			// for fiscal secondaire (activité économique) à Echallens
+			{
+				final ForFiscal ff = fors.get(3);
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(RegDate.get(2004, 3, 22), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2010, 11, 25), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalSecondaire);
+
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ffs.getMotifRattachement());
+			}
+
+			// for fiscal secondaire (immeuble) à Echallens
+			{
+				final ForFiscal ff = fors.get(4);
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(RegDate.get(2004, 7, 1), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2010, 12, 31), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertTrue(ff instanceof ForFiscalSecondaire);
+
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
+				Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
 			}
 		});
 	}

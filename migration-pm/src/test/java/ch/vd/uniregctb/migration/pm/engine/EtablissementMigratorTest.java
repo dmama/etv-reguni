@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -10,12 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -41,9 +38,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 	private EtablissementMigrator migrator;
-
-	private static final String REGPM_VISA = "REGPM";
-	private static final Timestamp REGPM_MODIF = new Timestamp(DateHelper.getCurrentDate().getTime() - TimeUnit.DAYS.toMillis(2000));   // 2000 jours ~ 5.5 années
 
 	@Override
 	protected void onSetup() throws Exception {

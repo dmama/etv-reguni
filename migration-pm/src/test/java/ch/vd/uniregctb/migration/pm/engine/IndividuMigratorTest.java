@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
@@ -24,9 +21,6 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
-	private static final String REGPM_VISA = "REGPM";
-	private static final Timestamp REGPM_MODIF = new Timestamp(DateHelper.getCurrentDate().getTime() - TimeUnit.DAYS.toMillis(2000));   // 2000 jours ~ 5.5 années
-
 	private IndividuMigrator migrator;
 	private NonHabitantIndex nonHabitantIndex;
 
@@ -41,13 +35,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RcPersClient.class, "rcpersClient"),
 				nonHabitantIndex);
-
 	}
 
 	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
 		final RegpmIndividu individu = new RegpmIndividu();
-		individu.setLastMutationOperator(REGPM_VISA);
-		individu.setLastMutationTimestamp(REGPM_MODIF);
+		assignMutationVisa(individu, REGPM_VISA, REGPM_MODIF);
 		individu.setId(id);
 		individu.setDateNaissance(dateNaissance);
 		individu.setNom(nom);

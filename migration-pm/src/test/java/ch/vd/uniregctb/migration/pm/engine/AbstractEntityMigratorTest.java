@@ -1,11 +1,9 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
@@ -14,9 +12,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngineTest {
@@ -76,27 +72,5 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 					.collect(Collectors.joining(System.lineSeparator()));
 			Assert.fail("Aucun message ne correspond à la regex '" + regex + "' dans la catégorie " + cat + " : \n" + msgs);
 		}
-	}
-
-	protected static void assignMutationVisa(RegpmEntity entity, String visa, Timestamp ts) {
-		entity.setLastMutationOperator(visa);
-		entity.setLastMutationTimestamp(ts);
-	}
-
-	protected static RegpmCoordonneesFinancieres createCoordonneesFinancieres(String iban, String bicSwift, String noCompteBancaire, String noCcp, String nomInstitutionFinanciere, String clearing) {
-		final RegpmCoordonneesFinancieres cf = new RegpmCoordonneesFinancieres();
-		cf.setIban(iban);
-		cf.setBicSwift(bicSwift);
-		cf.setNoCompteBancaire(noCompteBancaire);
-		cf.setNoCCP(noCcp);
-		cf.setNomInstitutionFinanciere(nomInstitutionFinanciere);
-
-		if (StringUtils.isNotBlank(clearing)) {
-			final RegpmInstitutionFinanciere inst = new RegpmInstitutionFinanciere();
-			inst.setNoClearing(clearing);
-			inst.setNom(nomInstitutionFinanciere);
-			cf.setInstitutionFinanciere(inst);
-		}
-		return cf;
 	}
 }
