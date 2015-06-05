@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.SessionFactory;
@@ -36,6 +37,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -221,6 +223,14 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		});
 	}
 
+	@NotNull
+	private static <T> TransactionCallback<T> buildNullReturningCallback(Consumer<TransactionStatus> callback) {
+		return status -> {
+			callback.accept(status);
+			return null;
+		};
+	}
+
 	/**
 	 * Exécute le callback dans une transaction R/W vers la base de données Unireg (= destination de la migration)
 	 * @param callback callback à exécuter
@@ -229,6 +239,14 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	 */
 	protected final <T> T doInUniregTransaction(TransactionCallback<T> callback) {
 		return doInUniregTransaction(false, callback);
+	}
+
+	/**
+	 * Exécute le callback dans une transaction R/W vers la base de données Unireg (= destination de la migration)
+	 * @param callback callback à exécuter
+	 */
+	protected final void doInUniregTransaction(Consumer<TransactionStatus> callback) {
+		doInUniregTransaction(buildNullReturningCallback(callback));
 	}
 
 	/**
@@ -254,6 +272,15 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
+	}
+
+	/**
+	 * Exécute le callback dans une transaction qui peut être R/W ou R à choix vers la base de données Unireg (= destination de la migration)
+	 * @param readOnly <code>true</code> si la transaction doit être en lecture seule, <code>false</code> si elle doit également autoriser l'écriture
+	 * @param callback callback à exécuter
+	 */
+	protected final void doInUniregTransaction(boolean readOnly, Consumer<TransactionStatus> callback) {
+		doInUniregTransaction(readOnly, buildNullReturningCallback(callback));
 	}
 
 	protected String buildPrincipalName() {

@@ -10,6 +10,8 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,11 +26,13 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.rcent.service.RCEntService;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
@@ -36,6 +40,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
@@ -190,6 +195,25 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		rf.setType(type);
 		entreprise.getRegimesFiscauxVD().add(rf);
 		return rf;
+	}
+
+	private static RegpmForPrincipal addForPrincipal(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, @Nullable RegpmCommune commune, @Nullable Integer noOfsPays) {
+		final RegpmForPrincipal ffp = new RegpmForPrincipal();
+		ffp.setId(new RegpmForPrincipal.PK(computeNewSeqNo(entreprise.getForsPrincipaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		ffp.setCommune(commune);
+		ffp.setOfsPays(noOfsPays);
+		ffp.setDateValidite(dateDebut);
+		ffp.setType(type);
+		entreprise.getForsPrincipaux().add(ffp);
+		return ffp;
+	}
+
+	static RegpmForPrincipal addForPrincipalSuisse(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, @NotNull RegpmCommune commune) {
+		return addForPrincipal(entreprise, dateDebut, type, commune, null);
+	}
+
+	static RegpmForPrincipal addForPrincipalEtranger(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, int noOfsPays) {
+		return addForPrincipal(entreprise, dateDebut, type, null, noOfsPays);
 	}
 
 	@Test

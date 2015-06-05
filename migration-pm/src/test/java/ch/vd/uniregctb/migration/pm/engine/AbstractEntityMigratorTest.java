@@ -1,68 +1,28 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
-import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.migration.pm.AbstractSpringTest;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
-import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
-public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
-
-	protected static final Iterator<Long> ID_GENERATOR = new Iterator<Long>() {
-		private final AtomicLong seqNext = new AtomicLong(0);
-
-		@Override
-		public boolean hasNext() {
-			return true;
-		}
-
-		@Override
-		public Long next() {
-			return seqNext.incrementAndGet();
-		}
-	};
-
-	public static final RegpmCommune LAUSANNE = buildCommune(RegpmCanton.VD, "Lausanne", MockCommune.Lausanne.getNoOFS());
-	public static final RegpmCommune MORGES = buildCommune(RegpmCanton.VD, "Morges", MockCommune.Morges.getNoOFS());
-	public static final RegpmCommune ECHALLENS = buildCommune(RegpmCanton.VD, "Echallens", MockCommune.Echallens.getNoOFS());
-	public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
-	public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
-	public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngineTest {
 
 	private StreetDataMigrator streetDataMigrator;
 	private TiersDAO tiersDAO;
-
-	private static RegpmCommune buildCommune(RegpmCanton canton, String nom, int noOfs) {
-		final RegpmCommune commune = new RegpmCommune();
-		commune.setId(ID_GENERATOR.next());
-		commune.setCanton(canton);
-		commune.setNom(nom);
-		commune.setNoOfs(noOfs);
-		return commune;
-	}
 
 	@Override
 	protected void onSetup() throws Exception {
@@ -90,32 +50,6 @@ public abstract class AbstractEntityMigratorTest extends AbstractSpringTest {
 			migrator.migrate(entity, mr, linkCollector, idMapper);
 			return null;
 		});
-	}
-
-	/**
-	 * Calcul de numéro de séquence pour un nouvel élément dans une collection (-> max + 1)
-	 * @param elements collection dans laquelle on souhaite ajouter un nouvel élément
-	 * @param seqNoExtractor extracteur des numéros de séquence des éléments existants
-	 * @param <T> type des éléments dans la collection
-	 * @return le prochain numéro de séquence disponible
-	 */
-	protected static <T> int computeNewSeqNo(Collection<T> elements, Function<? super T, Integer> seqNoExtractor) {
-		final int biggestSoFar = elements.stream()
-				.map(seqNoExtractor)
-				.max(Comparator.<Integer>naturalOrder())
-				.orElse(0);
-		return biggestSoFar + 1;
-	}
-
-	/**
-	 * Ajoute une période fiscale en base de données Unireg
-	 * @param annee l'année de la PF
-	 * @return la période fiscale
-	 */
-	protected PeriodeFiscale addPeriodeFiscale(int annee) {
-		final PeriodeFiscale pf = new PeriodeFiscale();
-		pf.setAnnee(annee);
-		return (PeriodeFiscale) getUniregSessionFactory().getCurrentSession().merge(pf);
 	}
 
 	/**
