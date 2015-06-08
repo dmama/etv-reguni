@@ -26,6 +26,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.uniregctb.common.GentilIterator;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssocieSC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -388,22 +389,38 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		final List<Long> ids = getIds();
 		LOGGER.info("Récupération des identifiants des " + ids.size() + " entreprises de RegPM terminée.");
 
-		// container des identifiants des entreprises déjà présentes dans un graphe
+		// container des identifiants des entreprises déjà traitées (dans un graphe précédent ou même carrément déjà migrées)
 		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
 		idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
-		for (long id : ids) {
-//		for (long id : Arrays.asList(11112, 24234, 8814, 18655)) {
-			if (!idsDejaTrouvees.contains(id) && !shutdownInProgress) {
+		final GentilIterator<Long> idIterator = new GentilIterator<>(ids);
+		while (idIterator.hasNext()) {
+
+			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
+			if (shutdownInProgress || Thread.currentThread().isInterrupted()) {
+				break;
+			}
+
+			final Long id = idIterator.next();
+
+			// on ne recrée pas de graphe autour d'une entreprise qui a déjà été prise
+			// dans un graphe précédent (ou déjà migrée dans un run précédent)
+			if (!idsDejaTrouvees.contains(id)) {
+
+				// chargement du graphe depuis la base de données
 				final Graphe graphe = loadGraphe(id);
+
+				// récupération des IDs des entreprises concernées
 				idsDejaTrouvees.addAll(graphe.getEntreprises().keySet());
+
+				// traitement du graphe (migration, dump...)
 				worker.onGraphe(graphe);
 			}
 
-			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
-			if (Thread.currentThread().isInterrupted()) {
-				break;
+			// un peu de log pour mesurer l'avancement...
+			if (idIterator.isAtNewPercent()) {
+				LOGGER.info(String.format("Avancement de l'extraction des entreprises depuis la base : %d %%", idIterator.getPercent()));
 			}
 		}
 	}

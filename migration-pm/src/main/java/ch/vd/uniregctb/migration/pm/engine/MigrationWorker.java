@@ -219,6 +219,8 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	 */
 	private MigrationResultMessageProvider migrateGraphe(Graphe graphe) {
 
+		LOGGER.info(String.format("Migration du graphe %s", graphe));
+
 		final Set<Long> idsEntreprise = graphe.getEntreprises().keySet();
 		final Set<Long> idsIndividus = graphe.getIndividus().keySet();
 		try {
