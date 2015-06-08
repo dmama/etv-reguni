@@ -19,6 +19,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -80,6 +82,8 @@ import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
+
+	private final Logger log = LoggerFactory.getLogger(EntrepriseMigrator.class);
 
 	/**
 	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
@@ -264,8 +268,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return;
 		}
 
-		// Accès à RCEnt au moyen du numéro cantonal. Le résultat sera null si n'existe pas dans RCEnt.
-		Organisation rcent = rcEntService.getEntreprise(regpm.getNumeroCantonal()); // TODO: check no cantonal null
+		// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
+		try {
+			Organisation rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
+		}
+		catch (Exception e) { // A voir si on implemente une RCEntServiceException
+			log.warn("Erreur lors de la recherche RCEnt. Organisation cantonalId: {}", regpm.getNumeroCantonal());
+			log.info(e.getMessage());
+			log.debug("", e);
+		}
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());

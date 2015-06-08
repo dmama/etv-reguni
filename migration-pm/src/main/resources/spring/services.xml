@@ -15,6 +15,7 @@
 
 	<bean id="rcEntService" class="ch.vd.uniregctb.migration.pm.rcent.service.RCEntService">
 		<constructor-arg name="rcentClient" ref="rcentClient"/>
+		<constructor-arg name="historizer" ref="organisationHistorizer"/>
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">

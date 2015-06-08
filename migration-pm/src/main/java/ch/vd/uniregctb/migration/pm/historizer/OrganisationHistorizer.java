@@ -45,6 +45,11 @@ public class OrganisationHistorizer {
 
 	private static final Equalator<Address> ADDRESS_EQUALATOR = new AdresseEqualator();
 
+	/**
+	 * Convert a serie of snapshot into an historized representation.
+	 * @param snapshots At least one snapshot of the organisation to historize.
+	 * @return The historized data
+	 */
 	public ch.vd.uniregctb.migration.pm.rcent.model.Organisation mapOrganisation(List<OrganisationSnapshot> snapshots) {
 
 		// Entreprise
