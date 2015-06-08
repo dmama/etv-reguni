@@ -13,7 +13,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -158,28 +157,13 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	@Override
 	public String toString() {
 
-		final class Denormalized extends MigrationResultMessage {
-			final CategorieListe cat;
-
-			Denormalized(Niveau niveau, String texte, CategorieListe cat) {
-				super(niveau, texte);
-				this.cat = cat;
-			}
-
-			@Override
-			public String toString() {
-				return String.format("cat=%s, niveau=%s, texte='%s'", cat, getNiveau(), getTexte());
-			}
-		}
-
 		if (msgs.isEmpty()) {
 			return "RAS";
 		}
 
 		return msgs.entrySet().stream()
-				.map(entry -> entry.getValue().stream().map(msg -> new Denormalized(msg.getNiveau(), msg.getTexte(), entry.getKey())))
-				.flatMap(Function.<Stream<Denormalized>>identity())
-				.map(Object::toString)
+				.map(entry -> entry.getValue().stream().map(msg -> String.format("cat=%s, niveau=%s, texte='%s'", entry.getKey(), msg.getNiveau(), msg.getTexte())))
+				.flatMap(Function.identity())
 				.collect(Collectors.joining(System.lineSeparator()));
 	}
 

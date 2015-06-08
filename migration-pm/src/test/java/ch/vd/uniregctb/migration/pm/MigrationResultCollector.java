@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MigrationResultCollector implements MigrationResultProduction {
 
-	private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> messages = new HashMap<>();
+	private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> messages = new EnumMap<>(MigrationResultMessage.CategorieListe.class);
 	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
 	private final Map<Class<?>, List<?>> preTransactionCommitData = new HashMap<>();
 

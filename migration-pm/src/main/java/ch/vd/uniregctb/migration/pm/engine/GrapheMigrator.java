@@ -98,8 +98,15 @@ public class GrapheMigrator implements InitializingBean {
 			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			template.execute(status -> {
+				// migration des entités et de leurs liens
 				doMigrate(graphe, mr, localIdMapper);
+
+				// consolidations de données en fin de transaction
+				mr.consolidatePreTransactionCommitRegistrations();
+
+				// publication des nouveaux mappings vers la DB
 				localIdMapper.pushLocalPartToDatabase(uniregStore);
+
 				return null;
 			});
 
@@ -121,12 +128,12 @@ public class GrapheMigrator implements InitializingBean {
 	}
 
 	/**
-	 * Appelé dans un contexte transactionnel
+	 * Appelé dans un contexte transactionnel, pour effectuer la migration des entités et des liens qui les unissent
 	 * @param graphe le graphe d'objets à migrer
 	 * @param mr le collecteur de résultats/remarques de migration
 	 * @param idMapper mapper des identifiants des entités migrées
 	 */
-	private void doMigrate(Graphe graphe, MigrationResult mr, IdMapping idMapper) {
+	private void doMigrate(Graphe graphe, MigrationResultProduction mr, IdMapping idMapper) {
 
 		// on commence par les établissement, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
 		// on collecte les liens entre ces entités au fur et à mesure
@@ -137,9 +144,6 @@ public class GrapheMigrator implements InitializingBean {
 		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
 		addLinks(linkCollector.getCollectedLinks());
-
-		// lance les consolidations nécessaires
-		mr.consolidatePreTransactionCommitRegistrations();
 	}
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
@@ -176,7 +180,7 @@ public class GrapheMigrator implements InitializingBean {
 	}
 
 	/**
-	 * Remplissage des collections de rapports entre tiers de part et d'autre (afin que les éventuels contrôle de validation
+	 * Remplissage des collections de rapports entre tiers de part et d'autre (afin que les éventuels contrôles de validation
 	 * prennent bien en compte les nouveaux liens)
 	 * @param ret le rapport à propager
 	 */

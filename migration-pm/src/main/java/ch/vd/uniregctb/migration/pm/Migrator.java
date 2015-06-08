@@ -58,12 +58,7 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 
 	@Override
 	public void start() {
-		thread = new Thread("Migrator") {
-			@Override
-			public void run() {
-				migrate();
-			}
-		};
+		thread = new Thread(this::migrate, "Migrator");
 		thread.start();
 	}
 
