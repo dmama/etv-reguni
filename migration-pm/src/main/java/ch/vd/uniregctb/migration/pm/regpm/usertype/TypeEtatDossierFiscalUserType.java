@@ -15,8 +15,8 @@ public class TypeEtatDossierFiscalUserType extends EnumCharMappingUserType<Regpm
 		map.put("02", RegpmTypeEtatDossierFiscal.RECU);
 		map.put("03", RegpmTypeEtatDossierFiscal.SOMME);
 		map.put("04", RegpmTypeEtatDossierFiscal.ANNULE);
-		map.put("AMENDE_DD", RegpmTypeEtatDossierFiscal.AMENDE_DD);
-		map.put("EN_SAISIE", RegpmTypeEtatDossierFiscal.EN_SAISIE);
+		map.put("AMENDE DD", RegpmTypeEtatDossierFiscal.AMENDE_DD);
+		map.put("EN SAISIE", RegpmTypeEtatDossierFiscal.EN_SAISIE);
 		map.put("TRAITE", RegpmTypeEtatDossierFiscal.TRAITE);
 		return map;
 	}
