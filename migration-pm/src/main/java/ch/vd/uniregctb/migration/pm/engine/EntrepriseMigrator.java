@@ -83,7 +83,7 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
-	private final Logger log = LoggerFactory.getLogger(EntrepriseMigrator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseMigrator.class);
 
 	/**
 	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
@@ -268,14 +268,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return;
 		}
 
+		// TODO: Déterminer si le numéro cantonal existe dans RegPM. S'il n'existe pas, migration directe des données civiles.
 		// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
 		try {
 			Organisation rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
 		}
 		catch (Exception e) { // A voir si on implemente une RCEntServiceException
-			log.warn("Erreur lors de la recherche RCEnt. Organisation cantonalId: {}", regpm.getNumeroCantonal());
-			log.info(e.getMessage());
-			log.debug("", e);
+			LOGGER.warn("Erreur lors de la recherche RCEnt. Organisation cantonalId: {}", regpm.getNumeroCantonal());
+			LOGGER.info(e.getMessage());
+			LOGGER.debug("", e);
 		}
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable

@@ -9,12 +9,12 @@ import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationLocation;
 import ch.vd.uniregctb.migration.pm.historizer.container.Keyed;
 
-public class OrganisationLocationIdentifiersExtractor implements Function<Organisation, Stream<Keyed<BigInteger, Identifier>>> {
+public class LocationIdentifiersExtractor implements Function<Organisation, Stream<Keyed<BigInteger, Identifier>>> {
 
 	@Override
 	public Stream<Keyed<BigInteger, Identifier>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.flatMap(OrganisationLocationIdentifiersExtractor::mapNames);
+				.flatMap(LocationIdentifiersExtractor::mapNames);
 	}
 
 	private static Stream<Keyed<BigInteger, Identifier>> mapNames(OrganisationLocation ol) {

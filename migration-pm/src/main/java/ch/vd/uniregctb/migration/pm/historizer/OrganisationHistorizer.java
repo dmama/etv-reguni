@@ -30,15 +30,17 @@ import ch.vd.uniregctb.migration.pm.historizer.equalator.IdentifierEqualator;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.AdressesLegalesExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.EtablissementsExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.KindOfLocationExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationIdentifiersExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationNamesExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationLocationOtherNamesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationIdentifiersExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationNamesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationOtherNamesExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationssExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaInReplacementOfExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaReplacedByExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaTransferFromExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaTransferToExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.RcStatusExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.SeatExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.TransferFromExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.TransferToExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.UidTypeOfOrganisationExtractor;
 
 public class OrganisationHistorizer {
@@ -73,22 +75,22 @@ public class OrganisationHistorizer {
 		final ListDataCollector<Organisation, LegalForm> legalFormsCollector = new SingleValueDataCollector<>(Organisation::getLegalForm,
 		                                                                                                         Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new EtablissementsExtractor(),
+		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new LocationssExtractor(),
 		                                                                                                          Equalator.DEFAULT,
 		                                                                                                          locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transferToCollector = new MultiValueDataCollector<>(new TransferToExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferToCollector = new MultiValueDataCollector<>(new OrgaTransferToExtractor(),
 		                                                                                                      Equalator.DEFAULT,
 		                                                                                                      locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transferFromCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferFromCollector = new MultiValueDataCollector<>(new OrgaTransferFromExtractor(),
 		                                                                                                       Equalator.DEFAULT,
 		                                                                                                       locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> replacedByCollector = new SingleValueDataCollector<>(o -> o.getReplacedBy().getCantonalId(),
-		                                                                                                        Equalator.DEFAULT
+		final ListDataCollector<Organisation, BigInteger> replacedByCollector = new SingleValueDataCollector<>(new OrgaReplacedByExtractor(),
+		                                                                                                       Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new TransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new OrgaInReplacementOfExtractor(),
 		                                                                                                            Equalator.DEFAULT,
 		                                                                                                            locationId -> locationId
 		);
@@ -96,19 +98,19 @@ public class OrganisationHistorizer {
 
 		// Etablissements
 
-		final IndexedDataCollector<Organisation, Identifier, BigInteger> locationIdentifiersCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationIdentifiersExtractor(),
-		                                                                                                                                            new IdentifierEqualator(),
-		                                                                                                                                            keyed -> keyed.getValue().getIdentifierCategory()
+		final IndexedDataCollector<Organisation, Identifier, BigInteger> locationIdentifiersCollector = new MultiValueIndexedDataCollector<>(new LocationIdentifiersExtractor(),
+		                                                                                                                                     new IdentifierEqualator(),
+		                                                                                                                                     keyed -> keyed.getValue().getIdentifierCategory()
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> locationNamesCollector = new SingleValueIndexedDataCollector<>(new OrganisationLocationNamesExtractor(),
-		                                                                                                                                 Equalator.DEFAULT
+		final IndexedDataCollector<Organisation, String, BigInteger> locationNamesCollector = new SingleValueIndexedDataCollector<>(new LocationNamesExtractor(),
+		                                                                                                                            Equalator.DEFAULT
 		);
-		final IndexedDataCollector<Organisation, String, BigInteger> locationOtherNamesCollector = new MultiValueIndexedDataCollector<>(new OrganisationLocationOtherNamesExtractor(),
-		                                                                                                                                      Equalator.DEFAULT,
-		                                                                                                                                      Keyed::getValue
+		final IndexedDataCollector<Organisation, String, BigInteger> locationOtherNamesCollector = new MultiValueIndexedDataCollector<>(new LocationOtherNamesExtractor(),
+		                                                                                                                                Equalator.DEFAULT,
+		                                                                                                                                Keyed::getValue
 		);
 		final IndexedDataCollector<Organisation, KindOfLocation, BigInteger> kindsOfLocationCollector = new SingleValueIndexedDataCollector<>(new KindOfLocationExtractor(),
-		                                                                                                                                          Equalator.DEFAULT
+		                                                                                                                                      Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, Integer, BigInteger> seatsCollector = new SingleValueIndexedDataCollector<>(new SeatExtractor(),
 		                                                                                                                      Equalator.DEFAULT
@@ -120,19 +122,19 @@ public class OrganisationHistorizer {
 		                                                                                                                                                 Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationRcLegalAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesLegalesExtractor(),
-		                                                                                                                                        ADDRESS_EQUALATOR
+		                                                                                                                                      ADDRESS_EQUALATOR
 		);
 
 		// IDE
 
 		final IndexedDataCollector<Organisation, UidRegisterTypeOfOrganisation, BigInteger> locationUidTypeOfOrganisation = new SingleValueIndexedDataCollector<>(new UidTypeOfOrganisationExtractor(),
-		                                                                                                                                  Equalator.DEFAULT
+		                                                                                                                                                          Equalator.DEFAULT
 		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationUidEffectiveAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesEffectivesIdeExtractor(),
-		                                                                                                                                         ADDRESS_EQUALATOR
+		                                                                                                                                           ADDRESS_EQUALATOR
 		);
 		final IndexedDataCollector<Organisation, Address, BigInteger> locationPostalBoxUidAddressCollector = new SingleValueIndexedDataCollector<>(new AdressesCasePostaleIdeExtractor(),
-		                                                                                                                                                    ADDRESS_EQUALATOR
+		                                                                                                                                           ADDRESS_EQUALATOR
 		);
 
 
