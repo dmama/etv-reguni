@@ -1,8 +1,5 @@
 package ch.vd.unireg.wsclient.rcent;
 
-import java.util.List;
-
-import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationData;
 import ch.vd.evd0022.v1.OrganisationsOfNotice;
 import ch.vd.registre.base.date.RegDate;
@@ -11,6 +8,24 @@ import ch.vd.registre.base.date.RegDate;
  * Interface du client RCEnt
  */
 public interface RcEntClient {
+
+	/**
+	 * Qualification de l'état de l'organisation demandé, dans le temps par rapport
+	 * au moment d'une annonce ou dans l'absolu.
+	 */
+	enum OrganisationState {
+		BEFORE("before"), AFTER("after"), CURRENT("current");
+
+		private String value;
+
+		OrganisationState(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return this.value;
+		}
+	}
 
 	/**
 	 * @param id l'identifiant (cantonal) de l'entreprise ou établissement
@@ -22,16 +37,15 @@ public interface RcEntClient {
 	OrganisationData getOrganisation(long id, RegDate referenceDate, boolean withHistory) throws RcEntClientException;
 
 	/**
-	 * @param noticeId identifiant d'une annonce RCEnt
-	 * @return les organisations concernées par cette annonce, dans leur état juste avant l'annonce
+	 * Obtenir les entreprises concernées par une annonce, avec leurs données. Permet de retrouver le contenu d'une annonce RCEnt.
+	 *
+	 * Le paramètre when précise quel état doit être renvoyé, et peut prendre 3 valeurs:
+	 *  - "current": Renvoie l'état
+	 *
+	 * @param noticeId identifiant de l'annonce RCEnt concernée
+	 * @param when Paramètre optionel précisant quel état doit être retourné.
+	 * @return les données retournées par RCEnt
 	 * @throws RcEntClientException en cas de problème
 	 */
-	OrganisationsOfNotice getOrganisationsBeforeNotice(long noticeId) throws RcEntClientException;
-
-	/**
-	 * @param noticeId identifiant d'une annonce RCEnt
-	 * @return les organisations concernées par cette annonce, dans leur état juste après l'annonce
-	 * @throws RcEntClientException en cas de problème
-	 */
-	OrganisationsOfNotice getOrganisationsAfterNotice(long noticeId) throws RcEntClientException;
+	OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, OrganisationState when) throws RcEntClientException;
 }

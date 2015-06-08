@@ -11,6 +11,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
+	private static final int RECEIVE_TIMEOUT = 600000; // 10 minutes
+
 	private final WebClientPool wcPool = new WebClientPool();
 
 	private String organisationPath = "organisation/ct.vd.party";
@@ -43,7 +45,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	@Override
 	public OrganisationData getOrganisation(long id, RegDate referenceDate, boolean withHistory) throws RcEntClientException {
-		final WebClient wc = wcPool.borrowClient(600000);            // 10 minutes
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
 		try {
 			wc.path(organisationPath);
 			wc.path(Long.toString(id));
@@ -67,23 +69,13 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 			wcPool.returnClient(wc);
 		}
 	}
-
 	@Override
-	public OrganisationsOfNotice getOrganisationsBeforeNotice(long noticeId) throws RcEntClientException {
-		return getOrganisationsOfNotice(noticeId, false);
-	}
-
-	@Override
-	public OrganisationsOfNotice getOrganisationsAfterNotice(long noticeId) throws RcEntClientException {
-		return getOrganisationsOfNotice(noticeId, true);
-	}
-
-	private OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, boolean after) throws RcEntClientException {
-		final WebClient wc = wcPool.borrowClient(600000);            // 10 minutes
+	public OrganisationsOfNotice getOrganisationsOfNotice(long noticeId, OrganisationState when) throws RcEntClientException {
+		final WebClient wc = wcPool.borrowClient(RECEIVE_TIMEOUT);
 		try {
 			wc.path(organisationsOfNoticePath);
 			wc.path(Long.toString(noticeId));
-			wc.query("organisationsState", after ? "after" : "before");
+			wc.query("organisationsState", when != null ? when.toString() : null);
 
 			try {
 				return wc.get(OrganisationsOfNotice.class);
