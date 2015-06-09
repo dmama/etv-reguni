@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationLocation;
 
-public class LocationssExtractor implements Function<Organisation, Stream<? extends BigInteger>> {
+public class LocationsExtractor implements Function<Organisation, Stream<? extends BigInteger>> {
 
 	@Override
 	public Stream<? extends BigInteger> apply(Organisation org) {

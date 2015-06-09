@@ -34,7 +34,7 @@ import ch.vd.uniregctb.migration.pm.historizer.extractor.KindOfLocationExtractor
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationIdentifiersExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationNamesExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationOtherNamesExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationssExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationsExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationInReplacementOfExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationReplacedByExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationTransferFromExtractor;
@@ -75,7 +75,7 @@ public class OrganisationHistorizer {
 		final ListDataCollector<Organisation, LegalForm> legalFormsCollector = new SingleValueDataCollector<>(Organisation::getLegalForm,
 		                                                                                                         Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new LocationssExtractor(),
+		final ListDataCollector<Organisation, BigInteger> locationsCollector = new MultiValueDataCollector<>(new LocationsExtractor(),
 		                                                                                                          Equalator.DEFAULT,
 		                                                                                                          locationId -> locationId
 		);
@@ -93,7 +93,7 @@ public class OrganisationHistorizer {
 		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new OrganisationInReplacementOfExtractor(),
 		                                                                                                            Equalator.DEFAULT,
 		                                                                                                            locationId -> locationId
-		);
+	);
 
 
 		// Etablissements
