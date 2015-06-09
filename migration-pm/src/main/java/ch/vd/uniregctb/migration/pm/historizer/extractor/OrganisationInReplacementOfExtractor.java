@@ -7,11 +7,11 @@ import java.util.stream.Stream;
 import ch.vd.evd0022.v1.Identification;
 import ch.vd.evd0022.v1.Organisation;
 
-public class OrgaTransferFromExtractor implements Function<Organisation, Stream<? extends BigInteger>> {
+public class OrganisationInReplacementOfExtractor implements Function<Organisation, Stream<? extends BigInteger>> {
 
 	@Override
 	public Stream<BigInteger> apply(Organisation org) {
-		return org.getTransferFrom().stream()
+		return org.getInReplacementOf().stream()
 				.map(Identification::getCantonalId);
 	}
 }

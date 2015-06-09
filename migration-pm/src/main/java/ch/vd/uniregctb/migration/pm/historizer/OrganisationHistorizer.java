@@ -35,10 +35,10 @@ import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationIdentifiersExtr
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationNamesExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationOtherNamesExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.LocationssExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaInReplacementOfExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaReplacedByExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaTransferFromExtractor;
-import ch.vd.uniregctb.migration.pm.historizer.extractor.OrgaTransferToExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationInReplacementOfExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationReplacedByExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationTransferFromExtractor;
+import ch.vd.uniregctb.migration.pm.historizer.extractor.OrganisationTransferToExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.RcStatusExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.SeatExtractor;
 import ch.vd.uniregctb.migration.pm.historizer.extractor.UidTypeOfOrganisationExtractor;
@@ -79,18 +79,18 @@ public class OrganisationHistorizer {
 		                                                                                                          Equalator.DEFAULT,
 		                                                                                                          locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transferToCollector = new MultiValueDataCollector<>(new OrgaTransferToExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferToCollector = new MultiValueDataCollector<>(new OrganisationTransferToExtractor(),
 		                                                                                                      Equalator.DEFAULT,
 		                                                                                                      locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> transferFromCollector = new MultiValueDataCollector<>(new OrgaTransferFromExtractor(),
+		final ListDataCollector<Organisation, BigInteger> transferFromCollector = new MultiValueDataCollector<>(new OrganisationTransferFromExtractor(),
 		                                                                                                       Equalator.DEFAULT,
 		                                                                                                       locationId -> locationId
 		);
-		final ListDataCollector<Organisation, BigInteger> replacedByCollector = new SingleValueDataCollector<>(new OrgaReplacedByExtractor(),
+		final ListDataCollector<Organisation, BigInteger> replacedByCollector = new SingleValueDataCollector<>(new OrganisationReplacedByExtractor(),
 		                                                                                                       Equalator.DEFAULT
 		);
-		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new OrgaInReplacementOfExtractor(),
+		final ListDataCollector<Organisation, BigInteger> inReplacementOfCollector = new MultiValueDataCollector<>(new OrganisationInReplacementOfExtractor(),
 		                                                                                                            Equalator.DEFAULT,
 		                                                                                                            locationId -> locationId
 		);

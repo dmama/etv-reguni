@@ -4,9 +4,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,8 +77,9 @@ public class RCEntServiceTest {
 		List<DateRanged<Identifier>> locationIdentifiers = organisation.getLocationData().get(0).getIdentifier();
 		assertThat(locationIdentifiers.size(), equalTo(5));
 
-		Map<String, String> identifierMap = new HashMap<>();
-		locationIdentifiers.stream().forEach(d -> identifierMap.put(d.getPayload().getIdentifierCategory(), d.getPayload().getIdentifierValue()));
+		Map<String, String> identifierMap = locationIdentifiers.stream().map(DateRanged::getPayload).collect(
+				Collectors.toMap(Identifier::getIdentifierCategory, Identifier::getIdentifierValue)
+		);
 		assertThat(identifierMap.get("CH.HR"), equalTo("CH55000431371"));
 		assertThat(identifierMap.get("CH.IDE"), equalTo("CHE101992624"));
 		assertThat(identifierMap.get("CH.RC"), equalTo("CH55000431371"));

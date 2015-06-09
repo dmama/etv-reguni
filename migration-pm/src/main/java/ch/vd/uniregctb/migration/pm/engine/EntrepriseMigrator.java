@@ -19,8 +19,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -82,8 +80,6 @@ import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseMigrator.class);
 
 	/**
 	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
@@ -264,19 +260,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
-			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ?
+			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ? <- Genevois
 			return;
 		}
 
 		// TODO: Déterminer si le numéro cantonal existe dans RegPM. S'il n'existe pas, migration directe des données civiles.
-		// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
-		try {
-			Organisation rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
-		}
-		catch (Exception e) { // A voir si on implemente une RCEntServiceException
-			LOGGER.warn("Erreur lors de la recherche RCEnt. Organisation cantonalId: {}", regpm.getNumeroCantonal());
-			LOGGER.info(e.getMessage());
-			LOGGER.debug("", e);
+
+		if (regpm.getNumeroCantonal() != null) {
+			// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
+			try {
+				Organisation rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
+			}
+			catch (Exception e) {
+				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR,
+				              String.format("Erreur lors de la recherche RCEnt. Organisation cantonalId: %s", regpm.getNumeroCantonal()));
+				throw e;
+			}
 		}
 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
