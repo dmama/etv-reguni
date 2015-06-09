@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.type;
 
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum TypePermis {
 
@@ -82,7 +85,17 @@ public enum TypePermis {
 	 */
 	SUISSE_SOURCIER;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(TypePermis.class);
+
 	public static TypePermis getFromEvd(String evdPermisCode) {
+		final TypePermis type = _getFromEvd(evdPermisCode);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace(String.format("Conversion permis de séjour eVD %s -> %s", nullableToString(evdPermisCode), type));
+		}
+		return type;
+	}
+
+	private static TypePermis _getFromEvd(String evdPermisCode) {
 		if (StringUtils.isBlank(evdPermisCode)) {
 			return null;
 		}
@@ -135,11 +148,20 @@ public enum TypePermis {
 			return PAS_ATTRIBUE;
 		default:
 			// hors-catégorie
+			LOGGER.warn(String.format("Type de permis non reconnu : %d (%s)", categorie, nullableToString(evdPermisCode)));
 			return null;
 		}
 	}
 
 	public static String toEch(TypePermis typePermis) {
+		final String ech = _toEch(typePermis);
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace(String.format("Conversion permis de séjour %s -> eVD %s", typePermis, nullableToString(ech)));
+		}
+		return ech;
+	}
+
+	private static String _toEch(TypePermis typePermis) {
 		if (typePermis == null) {
 			return null;
 		}
@@ -179,5 +201,11 @@ public enum TypePermis {
 			throw new IllegalArgumentException("Type de permis inconnu = [" + typePermis + "]");
 
 		}
+	}
+
+	private static final String NULL_STRING = Objects.toString(null);
+
+	private static String nullableToString(String value) {
+		return value == null ? NULL_STRING : String.format("'%s'", value);
 	}
 }
