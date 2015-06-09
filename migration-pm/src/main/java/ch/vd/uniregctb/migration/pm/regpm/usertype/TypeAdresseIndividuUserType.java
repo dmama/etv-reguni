@@ -14,6 +14,7 @@ public class TypeAdresseIndividuUserType extends EnumCharMappingUserType<RegpmTy
 		map.put("C", RegpmTypeAdresseIndividu.COURRIER);
 		map.put("P", RegpmTypeAdresseIndividu.PRINCIPALE);
 		map.put("S", RegpmTypeAdresseIndividu.SECONDAIRE);
+		map.put("T", RegpmTypeAdresseIndividu.TUTELLE);
 		return map;
 	}
 
