@@ -61,9 +61,11 @@ public class RCEntServiceTest {
 		assertThat(organisation.getCantonalId(), equalTo(101202262L));
 
 		// Check basic organisation data
-		assertThat(organisation.getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
-		assertThat(organisation.getLegalForm().get(0).getDateFin(), nullValue());
-		assertThat(organisation.getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0101_ENTREPRISE_INDIVIDUELLE));
+		{
+			assertThat(organisation.getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
+			assertThat(organisation.getLegalForm().get(0).getDateFin(), nullValue());
+			assertThat(organisation.getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0101_ENTREPRISE_INDIVIDUELLE));
+		}
 
 		assertThat(organisation.getOrganisationName().get(0).getPayload(), equalTo("Jean-François Niklaus"));
 
@@ -154,9 +156,10 @@ public class RCEntServiceTest {
 		// Adresse postale
 		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(3));
 
-		Address postalAddress_period1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0).getPayload();
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0).getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
+		final DateRanged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
+		Address postalAddress_period1 = addressDateRanged1.getPayload();
+		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
 		assertThat(postalAddress_period1.getAddressLine1(), nullValue());
 		assertThat(postalAddress_period1.getAddressLine2(), nullValue());
 		assertThat(postalAddress_period1.getStreet(), equalTo("Chemin du Mont"));
@@ -164,12 +167,12 @@ public class RCEntServiceTest {
 		assertThat(postalAddress_period1.getTown(), equalTo("Triffouilli les oies"));
 		assertThat(postalAddress_period1.getSwissZipCode(), equalTo(1101L));
 		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
-		assertThat(postalAddress_period1.getStreet(), equalTo("Chemin du Mont"));
 
 		// Adresse changée
-		Address postalAddress_period2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1).getPayload();
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1).getDateFin(), equalTo(RegDate.get(2015, 5, 23)));
+		final DateRanged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
+		Address postalAddress_period2 = addressDateRanged2.getPayload();
+		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
+		assertThat(addressDateRanged2.getDateFin(), equalTo(RegDate.get(2015, 5, 23)));
 		assertThat(postalAddress_period2.getAddressLine1(), nullValue());
 		assertThat(postalAddress_period2.getAddressLine2(), nullValue());
 		assertThat(postalAddress_period2.getStreet(), equalTo("Chemin du Mont"));
@@ -179,9 +182,10 @@ public class RCEntServiceTest {
 		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
 
 		// Adresse enlevée puis nouvelle plus tard
-		Address postalAddress_period3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2).getPayload();
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2).getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
-		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2).getDateFin(), nullValue());
+		final DateRanged<Address> addressDateRanged3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2);
+		Address postalAddress_period3 = addressDateRanged3.getPayload();
+		assertThat(addressDateRanged3.getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
+		assertThat(addressDateRanged3.getDateFin(), nullValue());
 		assertThat(postalAddress_period3.getAddressLine1(), nullValue());
 		assertThat(postalAddress_period3.getAddressLine2(), nullValue());
 		assertThat(postalAddress_period3.getStreet(), equalTo("Chemin du lac"));
@@ -192,14 +196,102 @@ public class RCEntServiceTest {
 	}
 
 	@Test
-	public void testGetOrganisationSocieteAnonyme() throws Exception {
-		File xml = new File("src/test/resources/samples/organisationData/CHE105879116-no-history.xml");
+	public void testGetOrganisationHistorySocieteAnonyme() throws Exception {
+		File xml = new File("src/test/resources/samples/organisationData/CHE105879116.xml");
 		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
 
 		when(client.getOrganisation(101202213, null, false)).thenReturn(data.getValue());
 
 		Organisation organisation = service.getOrganisation(101202213, null);
 		assertThat(organisation.getCantonalId(), equalTo(101202213L));
-	}
 
+		// Check basic organisation data
+		assertThat(organisation.getLegalForm().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+		assertThat(organisation.getLegalForm().get(0).getDateFin(), nullValue());
+		assertThat(organisation.getLegalForm().get(0).getPayload(), equalTo(LegalForm.N_0106_SOCIETE_ANONYME));
+
+		{ // Nom
+			assertThat(organisation.getOrganisationName().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+			assertThat(organisation.getOrganisationName().get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 24)));
+			assertThat(organisation.getOrganisationName().get(0).getPayload(), equalTo("Seroc S.A."));
+
+			assertThat(organisation.getOrganisationName().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
+			assertThat(organisation.getOrganisationName().get(1).getDateFin(), equalTo(RegDate.get(2015, 6, 5)));
+			assertThat(organisation.getOrganisationName().get(1).getPayload(), equalTo("SeroKK S.A."));
+
+			assertThat(organisation.getOrganisationName().get(2).getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
+			assertThat(organisation.getOrganisationName().get(2).getDateFin(), nullValue());
+			assertThat(organisation.getOrganisationName().get(2).getPayload(), equalTo("ZeroXX S.A."));
+		}
+
+		// Locations
+		assertThat(organisation.getLocations().size(), equalTo(1));
+		assertThat(organisation.getLocations().get(0).getPayload(), equalTo(101072728L));
+
+		assertThat(organisation.getLocationData().size(), equalTo(1));
+		assertThat(organisation.getLocationData().get(0).getCantonalId(), equalTo(101072728L));
+
+		List<DateRanged<Identifier>> locationIdentifiers = organisation.getLocationData().get(0).getIdentifier();
+		assertThat(locationIdentifiers.size(), equalTo(8));
+
+		{ // Nom
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 24)));
+			assertThat(organisation.getLocationData().get(0).getName().get(0).getPayload(), equalTo("Seroc S.A."));
+
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getDateFin(), equalTo(RegDate.get(2015, 6, 5)));
+			assertThat(organisation.getLocationData().get(0).getName().get(1).getPayload(), equalTo("SeroKK S.A."));
+
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getDateFin(), nullValue());
+			assertThat(organisation.getLocationData().get(0).getName().get(2).getPayload(), equalTo("ZeroXX S.A."));
+		}
+
+		Map<String, String> identifierMap = locationIdentifiers.stream().map(DateRanged::getPayload).collect(
+				Collectors.toMap(Identifier::getIdentifierCategory, Identifier::getIdentifierValue)
+		);
+		assertThat(identifierMap.get("CH.HR"), equalTo("CH55001688715"));
+		assertThat(identifierMap.get("CH.IDE"), equalTo("CHE105879116"));
+		assertThat(identifierMap.get("CH.IDE.TVA"), equalTo("CHE105879116"));
+		assertThat(identifierMap.get("CH.MWST"), equalTo("196378"));
+		assertThat(identifierMap.get("CH.RC"), equalTo("CH55001688715"));
+		assertThat(identifierMap.get("CH.TVA"), equalTo("196378"));
+		assertThat(identifierMap.get("CHE"), equalTo("105879116"));
+		assertThat(identifierMap.get("CT.VD.PARTY"), equalTo("101072728"));
+
+		final KindOfLocation kindOfLocation = organisation.getLocationData().get(0).getKindOfLocation().get(0).getPayload();
+		assertThat(kindOfLocation, equalTo(KindOfLocation.ETABLISSEMENT_PRINCIPAL));
+
+		assertThat(organisation.getLocationData().get(0).getSeat().get(0).getPayload(), equalTo(5413));
+
+
+		// Adresse postale
+		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(2));
+
+		final DateRanged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
+		Address postalAddress_period1 = addressDateRanged1.getPayload();
+		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
+		assertThat(postalAddress_period1.getAddressLine1(), nullValue());
+		assertThat(postalAddress_period1.getAddressLine2(), nullValue());
+		assertThat(postalAddress_period1.getStreet(), equalTo("Zone Industrielle La Coche"));
+		assertThat(postalAddress_period1.getHouseNumber(), equalTo("11"));
+		assertThat(postalAddress_period1.getTown(), equalTo("Roche VD"));
+		assertThat(postalAddress_period1.getSwissZipCode(), equalTo(1852L));
+		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
+
+		// Adresse enlevée puis nouvelle plus tard, à l'identique
+		final DateRanged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
+		Address postalAddress_period2 = addressDateRanged2.getPayload();
+		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 15)));
+		assertThat(addressDateRanged2.getDateFin(), nullValue());
+		assertThat(postalAddress_period2.getAddressLine1(), nullValue());
+		assertThat(postalAddress_period2.getAddressLine2(), nullValue());
+		assertThat(postalAddress_period2.getStreet(), equalTo("Zone Industrielle La Coche"));
+		assertThat(postalAddress_period2.getHouseNumber(), equalTo("11"));
+		assertThat(postalAddress_period2.getTown(), equalTo("Roche VD"));
+		assertThat(postalAddress_period2.getSwissZipCode(), equalTo(1852L));
+		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
+	}
 }
