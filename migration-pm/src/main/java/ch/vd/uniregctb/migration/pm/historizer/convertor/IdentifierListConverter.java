@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.evd0022.v1.Identifier;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 
 public class IdentifierListConverter {
@@ -19,6 +20,7 @@ public class IdentifierListConverter {
 	 */
 	public static Map<String, List<DateRanged<String>>> toMapOfListsOfDateRangedValues(List<DateRanged<Identifier>> identifiers) {
 		Map<String, List<DateRanged<String>>> identifierMap = new HashMap<>();
+		identifiers.sort(DateRangeComparator::compareRanges);
 		for (DateRanged<Identifier> d : identifiers) {
 			List<DateRanged<String>> dateRangeds = identifierMap.get(d.getPayload().getIdentifierCategory());
 			if (dateRangeds == null) {
