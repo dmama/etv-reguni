@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.migration.pm.rcent.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 
@@ -16,7 +16,7 @@ public class Organisation {
 	private final long cantonalId;
 
 	@NotNull
-	private final List<DateRanged<Identifier>> organisationIdentifiers;
+	private final Map<String,List<DateRanged<String>>> organisationIdentifiers;
 
 	@NotNull
 	private final List<DateRanged<String>> organisationName;
@@ -31,7 +31,7 @@ public class Organisation {
 	private final List<DateRanged<Long>> replacedBy;
 	private final List<DateRanged<Long>> inReplacementOf;
 
-	public Organisation(long cantonalId, @NotNull List<DateRanged<Identifier>> organisationIdentifiers,
+	public Organisation(long cantonalId, @NotNull Map<String,List<DateRanged<String>>> organisationIdentifiers,
 	                    @NotNull List<DateRanged<String>> organisationName, List<DateRanged<String>> organisationAdditionalName,
 	                    List<DateRanged<LegalForm>> legalForm, List<DateRanged<Long>> locations, List<OrganisationLocation> locationData,
 	                    List<DateRanged<Long>> transferTo, List<DateRanged<Long>> transferFrom, List<DateRanged<Long>> replacedBy,
@@ -74,7 +74,7 @@ public class Organisation {
 	}
 
 	@NotNull
-	public List<DateRanged<Identifier>> getOrganisationIdentifiers() {
+	public Map<String,List<DateRanged<String>>> getOrganisationIdentifiers() {
 		return organisationIdentifiers;
 	}
 

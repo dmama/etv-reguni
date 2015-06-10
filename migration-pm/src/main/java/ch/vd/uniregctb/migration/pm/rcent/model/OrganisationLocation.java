@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.rcent.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +10,6 @@ import ch.vd.evd0022.v1.Capital;
 import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
 import ch.vd.evd0022.v1.CommercialRegisterStatus;
 import ch.vd.evd0022.v1.Function;
-import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.UidRegisterLiquidationReason;
 import ch.vd.evd0022.v1.UidRegisterPublicStatus;
@@ -29,7 +29,7 @@ public class OrganisationLocation {
 	public final RCEntRCData rc;
 	public final RCEntUIDData uid;
 
-	private final List<DateRanged<Identifier>> identifier;
+	private final Map<String,List<DateRanged<String>>> identifiers;
 	private final List<DateRanged<String>> otherNames;
 	private final List<DateRanged<KindOfLocation>> kindOfLocation;
 	private final List<DateRanged<Integer>> seat;
@@ -38,7 +38,7 @@ public class OrganisationLocation {
 	private final List<DateRanged<Long>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRanged<String>> name, RCEntRCData rc, RCEntUIDData uid,
-	                            List<DateRanged<Identifier>> identifier, List<DateRanged<String>> otherNames,
+	                            Map<String,List<DateRanged<String>>> identifiers, List<DateRanged<String>> otherNames,
 	                            List<DateRanged<KindOfLocation>> kindOfLocation, List<DateRanged<Integer>> seat,
 	                            List<DateRanged<Function>> function,
 	                            List<DateRanged<Long>> replacedBy, List<DateRanged<Long>> inReplacementOf) {
@@ -46,7 +46,7 @@ public class OrganisationLocation {
 		this.name = name;
 		this.rc = rc;
 		this.uid = uid;
-		this.identifier = identifier;
+		this.identifiers = identifiers;
 		this.otherNames = otherNames;
 		this.kindOfLocation = kindOfLocation;
 		this.seat = seat;
@@ -63,8 +63,8 @@ public class OrganisationLocation {
 		return function;
 	}
 
-	public List<DateRanged<Identifier>> getIdentifier() {
-		return identifier;
+	public Map<String,List<DateRanged<String>>> getIdentifiers() {
+		return identifiers;
 	}
 
 	public List<DateRanged<Long>> getInReplacementOf() {

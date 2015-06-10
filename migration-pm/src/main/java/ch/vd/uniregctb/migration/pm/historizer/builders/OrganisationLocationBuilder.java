@@ -11,6 +11,7 @@ import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
+import ch.vd.uniregctb.migration.pm.historizer.convertor.IdentifierListConverter;
 import ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation;
 
 public class OrganisationLocationBuilder {
@@ -77,7 +78,7 @@ public class OrganisationLocationBuilder {
 				                                                                         null,
 				                                                                         null
 				                                   ),
-				                                   identifiers.get(e.getKey()),
+				                                   IdentifierListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey())),
 				                                   otherNames.get(e.getKey()),
 				                                   kindOfLocations.get(e.getKey()),
 				                                   seats.get(e.getKey()),
@@ -88,4 +89,6 @@ public class OrganisationLocationBuilder {
 				)
 				.collect(Collectors.toList());
 	}
+
+
 }

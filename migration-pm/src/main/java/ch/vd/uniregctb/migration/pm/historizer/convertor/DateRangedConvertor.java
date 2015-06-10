@@ -19,7 +19,11 @@ public class DateRangedConvertor {
 	 */
 	public static <T, R> List<DateRanged<R>> convert(List<DateRanged<T>> ranges, Function<T, R> convertor) {
 		return ranges.stream()
-				.map(r -> new DateRanged<>(r.getDateDebut(), r.getDateFin(), convertor.apply(r.getPayload())))
+				.map(r -> convert(r, convertor))
 				.collect(Collectors.toList());
+	}
+
+	public static <T, R> DateRanged<R> convert(DateRanged<T> range, Function<T, R> convertor) {
+		return new DateRanged<>(range.getDateDebut(), range.getDateFin(), convertor.apply(range.getPayload()));
 	}
 }

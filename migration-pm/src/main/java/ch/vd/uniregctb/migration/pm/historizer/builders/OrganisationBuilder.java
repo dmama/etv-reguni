@@ -7,6 +7,7 @@ import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.uniregctb.migration.pm.historizer.container.DateRanged;
 import ch.vd.uniregctb.migration.pm.historizer.convertor.DateRangedConvertor;
+import ch.vd.uniregctb.migration.pm.historizer.convertor.IdentifierListConverter;
 import ch.vd.uniregctb.migration.pm.rcent.model.Organisation;
 import ch.vd.uniregctb.migration.pm.rcent.model.OrganisationLocation;
 
@@ -22,7 +23,7 @@ public class OrganisationBuilder {
 	private final List<DateRanged<BigInteger>> remplacePar;
 	private final List<DateRanged<BigInteger>> enRemplacementDe;
 
-	private final List<OrganisationLocation> locationsData;
+private final List<OrganisationLocation> locationsData;
 
 	public OrganisationBuilder(BigInteger cantonalId,
 	                           List<DateRanged<Identifier>> organisationIdentifiers,
@@ -50,15 +51,15 @@ public class OrganisationBuilder {
 
 	public Organisation build() {
 		return new Organisation(cantonalId.longValue(),
-		                                     organisationIdentifiers,
-		                                     nomsEntreprise,
-		                                     nomsAdditionnelsEntreprise,
-		                                     formesJuridiques,
-		                                     DateRangedConvertor.convert(locations, BigInteger::longValue),
-		                                     locationsData,
-		                                     DateRangedConvertor.convert(transfereA, BigInteger::longValue),
-		                                     DateRangedConvertor.convert(transfereDe, BigInteger::longValue),
-		                                     DateRangedConvertor.convert(remplacePar, BigInteger::longValue),
-		                                     DateRangedConvertor.convert(enRemplacementDe, BigInteger::longValue));
+		                        IdentifierListConverter.toMapOfListsOfDateRangedValues(organisationIdentifiers),
+		                        nomsEntreprise,
+		                        nomsAdditionnelsEntreprise,
+		                        formesJuridiques,
+		                        DateRangedConvertor.convert(locations, BigInteger::longValue),
+		                        locationsData,
+		                        DateRangedConvertor.convert(transfereA, BigInteger::longValue),
+		                        DateRangedConvertor.convert(transfereDe, BigInteger::longValue),
+		                        DateRangedConvertor.convert(remplacePar, BigInteger::longValue),
+		                        DateRangedConvertor.convert(enRemplacementDe, BigInteger::longValue));
 	}
 }
