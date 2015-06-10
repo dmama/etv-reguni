@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -65,7 +67,9 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -201,6 +205,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param regpm une PM
+	 * @return la date de début de l'activité de la PM en question
+	 */
+	private static RegDate getDateDebutActivite(RegpmEntreprise regpm) {
+		// TODO est-ce vraiment la date de début d'activité de la PM ?
+		return regpm.getDateConstitution();
+	}
+
+	/**
+	 * @param regpm une PM
+	 * @return la date de fin de l'activité de la PM en question (<code>null</code> si la PM est toujours active...)
+	 */
+	private static RegDate getDateFinActivite(RegpmEntreprise regpm) {
+		// TODO est-ce vraiment la date de fin d'activité de la PM (opionnelle, évidemment) ?
+		return regpm.getDateFinFiscale();
+	}
+
+	/**
 	 * Les listes de ranges en entrée sont supposés triés
 	 * @param l1 une liste de ranges
 	 * @param l2 une autre liste de ranges
@@ -289,7 +311,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour un contrôle final des fors secondaires (une fois que tous les immeubles et établissements ont été visés)
 		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
 
-		// TODO générer l'établissement principal (= siège...)
 		// TODO migrer les bouclements, les adresses, les documents...
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
@@ -299,9 +320,104 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateDeclarations(regpm, unireg, mr);
 		migrateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
+		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
+	}
+
+	private static final class CommuneOuPays {
+		private final RegpmCommune commune;
+		private final Integer noOfsPays;
+
+		public CommuneOuPays(@NotNull RegpmCommune commune) {
+			this.commune = commune;
+			this.noOfsPays = null;
+		}
+
+		public CommuneOuPays(@NotNull Integer noOfsPays) {
+			this.commune = null;
+			this.noOfsPays = noOfsPays;
+		}
+
+		public CommuneOuPays(@NotNull RegpmForPrincipal ffp) {
+			if (ffp.getCommune() != null) {
+				this.commune = ffp.getCommune();
+				this.noOfsPays = null;
+			}
+			else {
+				this.commune = null;
+				this.noOfsPays = ffp.getOfsPays();
+			}
+		}
+	}
+
+	/**
+	 * Génération de l'établissement principal dont le domicile est placé sur la commune de l'entreprise (ou sur les fors fiscaux principaux si la commune n'est pas indiquée)
+	 * @param regpm l'entreprise de RegPM
+	 * @param unireg l'entreprise dans Unireg
+	 * @param linkCollector le collecteur de liens à créer entre les entités
+	 * @param idMapper mapper des identifiants RegPM -> Unireg
+	 * @param mr collecteur de messages de migration
+	 */
+	private void generateEtablissementPrincipal(RegpmEntreprise regpm, Entreprise unireg, EntityLinkCollector linkCollector, IdMapping idMapper, MigrationResultProduction mr) {
+
+		// TODO peut-être pourra-t-on faire mieux avec les données de RCEnt, mais pour le moment, on suppose l'existence d'UN SEUL établissement principal avec, au besoin, plusieurs domiciles successifs
+
+		final SortedMap<RegDate, CommuneOuPays> localisations;
+		final RegpmCommune commune = regpm.getCommune();
+		if (commune != null) {
+			localisations = new TreeMap<>(Collections.singletonMap(getDateDebutActivite(regpm), new CommuneOuPays(commune)));
+		}
+		else if (!regpm.getForsPrincipaux().isEmpty()) {
+			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
+			localisations = regpm.getForsPrincipaux().stream()
+					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+					                          CommuneOuPays::new,
+					                          (cop1, cop2) -> { throw new IllegalArgumentException("Plusieurs fors principaux valides à la même date ?"); },
+					                          TreeMap::new));
+		}
+		else {
+			// pas de commune, pas de for principal... -> pas d'établissement principal
+			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
+			return;
+		}
+
+		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
+		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getId());
+		etbPrincipal.setEnseigne(regpm.getEnseigne());
+		etbPrincipal.setPrincipal(true);
+
+		// lien vers l'entreprise
+		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, moi, localisations.firstKey(), getDateFinActivite(regpm)));
+
+		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
+		final List<DomicileEtablissement> domiciles = localisations.entrySet().stream()
+				.map(entry -> {
+					final TypeAutoriteFiscale taf;
+					if (entry.getValue().commune != null) {
+						if (entry.getValue().commune.getCanton() == RegpmCanton.VD) {
+							taf = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+						}
+						else {
+							taf = TypeAutoriteFiscale.COMMUNE_HC;
+						}
+					}
+					else {
+						taf = TypeAutoriteFiscale.PAYS_HS;
+					}
+					return new DomicileEtablissement(entry.getKey(), null, taf, entry.getValue().commune != null ? entry.getValue().commune.getNoOfs() : entry.getValue().noOfsPays, null);
+				})
+				.collect(Collectors.toList());
+
+		// assignation des dates de fin
+		assigneDatesFin(getDateFinActivite(regpm), domiciles);
+
+		// liaison des domiciles à l'établissement
+		domiciles.stream().forEach(etbPrincipal::addDomicile);
+
+   		// TODO adresse ?
 	}
 
 	/**
@@ -605,9 +721,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
 				.collect(Collectors.toList());
 
-		// TODO la date de fin du dernier for est-elle la date de fin fiscale ?
 		// assignation des dates de fin
-		assigneDatesFin(regpm.getDateFinFiscale(), liste);
+		assigneDatesFin(getDateFinActivite(regpm), liste);
 
 		// assignation des motifs
 		final MovingWindow<ForFiscalPrincipalPM> wnd = new MovingWindow<>(liste);
@@ -723,13 +838,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		// TODO la date de fin du dernier régime fiscal CH est-elle la date de fin fiscale ?
 		// collecte des régimes fiscaux CH...
-		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH, regpm.getRegimesFiscauxCH(), regpm.getDateFinFiscale());
+		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH, regpm.getRegimesFiscauxCH(), getDateFinActivite(regpm));
 
-		// TODO la date de fin du dernier régime fiscal VD est-elle la date de fin fiscale ?
 		// ... puis des règimes fiscaux VD
-		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD, regpm.getRegimesFiscauxVD(), regpm.getDateFinFiscale());
+		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD, regpm.getRegimesFiscauxVD(), getDateFinActivite(regpm));
 
 		// et finalement on ajoute tout ça dans l'entreprise
 		Stream.concat(listeCH.stream(), listeVD.stream()).forEach(unireg::addRegimeFiscal);

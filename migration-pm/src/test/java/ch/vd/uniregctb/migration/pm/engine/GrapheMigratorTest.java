@@ -256,65 +256,129 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertTrue(entrepriseMap.containsKey(idEntrepriseMandante));
 			Assert.assertTrue(entrepriseMap.containsKey(idEntrepriseMandataire));
 
-			// établissements : 1
+			// établissements : 2 (le principal et le secondaire de l'entreprise mandataire - comme l'entreprise mandante n'a pas de for ni de commune, elle n'a pas d'établissement principal)
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
 			Assert.assertNotNull(etablissements);
-			Assert.assertEquals(1, etablissements.size());
+			Assert.assertEquals(2, etablissements.size());
 
-			final Etablissement etb = etablissements.get(0);
-			Assert.assertEquals(0, etb.getRapportsSujet().size());
+			// tri en mettant l'établissement secondaire d'abord...
+			final List<Etablissement> etablissementsTries = etablissements.stream().sorted(Comparator.comparing(Etablissement::isPrincipal)).collect(Collectors.toList());
 
-			final Map<TypeRapportEntreTiers, List<RapportEntreTiers>> rapportsObjetMap = etb.getRapportsObjet().stream()
-					.collect(Collectors.toMap(RapportEntreTiers::getType,
-					                          Collections::singletonList,
-					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(Comparator.comparing(RapportEntreTiers::getDateDebut)).collect(Collectors.toList())));
-			Assert.assertEquals(2, rapportsObjetMap.size());
-
-			// mandats
+			// établissement secondaire du mandataire
 			{
-				final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.MANDAT);
-				Assert.assertNotNull(rapports);
-				Assert.assertEquals(2, rapports.size());
+				final Etablissement etb = etablissementsTries.get(0);
+				Assert.assertEquals(0, etb.getRapportsSujet().size());
+				Assert.assertFalse(etb.isPrincipal());
 
-				// ils sont triés par construction (voir plus haut...)
+				final Map<TypeRapportEntreTiers, List<RapportEntreTiers>> rapportsObjetMap = etb.getRapportsObjet().stream()
+						.collect(Collectors.toMap(RapportEntreTiers::getType,
+						                          Collections::singletonList,
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(Comparator.comparing(RapportEntreTiers::getDateDebut)).collect(Collectors.toList())));
+				Assert.assertEquals(2, rapportsObjetMap.size());
+
+				// mandats
 				{
-					final RapportEntreTiers ret = rapports.get(0);
-					Assert.assertNotNull(ret);
-					Assert.assertTrue(ret instanceof Mandat);
-					Assert.assertEquals(RegDate.get(2000, 1, 1), ret.getDateDebut());
-					Assert.assertEquals(RegDate.get(2006, 12, 31), ret.getDateFin());
-					Assert.assertEquals(etb.getId(), ret.getObjetId());
-					Assert.assertEquals((Long) idEntrepriseMandante, ret.getSujetId());
-					Assert.assertFalse(ret.isAnnule());
+					final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.MANDAT);
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(2, rapports.size());
+
+					// ils sont triés par construction (voir plus haut...)
+					{
+						final RapportEntreTiers ret = rapports.get(0);
+						Assert.assertNotNull(ret);
+						Assert.assertTrue(ret instanceof Mandat);
+						Assert.assertEquals(RegDate.get(2000, 1, 1), ret.getDateDebut());
+						Assert.assertEquals(RegDate.get(2006, 12, 31), ret.getDateFin());
+						Assert.assertEquals(etb.getId(), ret.getObjetId());
+						Assert.assertEquals((Long) idEntrepriseMandante, ret.getSujetId());
+						Assert.assertFalse(ret.isAnnule());
+					}
+					{
+						final RapportEntreTiers ret = rapports.get(1);
+						Assert.assertNotNull(ret);
+						Assert.assertTrue(ret instanceof Mandat);
+						Assert.assertEquals(RegDate.get(2010, 1, 1), ret.getDateDebut());
+						Assert.assertNull(ret.getDateFin());
+						Assert.assertEquals(etb.getId(), ret.getObjetId());
+						Assert.assertEquals((Long) idEntrepriseMandante, ret.getSujetId());
+						Assert.assertFalse(ret.isAnnule());
+					}
 				}
+
+				// lien d'activité économique (établissement <-> entreprise)
 				{
-					final RapportEntreTiers ret = rapports.get(1);
-					Assert.assertNotNull(ret);
-					Assert.assertTrue(ret instanceof Mandat);
-					Assert.assertEquals(RegDate.get(2010, 1, 1), ret.getDateDebut());
-					Assert.assertNull(ret.getDateFin());
-					Assert.assertEquals(etb.getId(), ret.getObjetId());
-					Assert.assertEquals((Long) idEntrepriseMandante, ret.getSujetId());
-					Assert.assertFalse(ret.isAnnule());
+					final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					{
+						final RapportEntreTiers ret = rapports.get(0);
+						Assert.assertNotNull(ret);
+						Assert.assertTrue(ret instanceof ActiviteEconomique);
+						Assert.assertEquals(RegDate.get(1995, 1, 1), ret.getDateDebut());
+						Assert.assertNull(ret.getDateFin());
+						Assert.assertEquals(etb.getId(), ret.getObjetId());
+						Assert.assertEquals((Long) idEntrepriseMandataire, ret.getSujetId());
+						Assert.assertFalse(ret.isAnnule());
+					}
 				}
+
+				// domiciles -> 1, à Echallens
+				final List<DomicileEtablissement> domiciles = etb.getSortedDomiciles(true);
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(1, domiciles.size());
+
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertEquals(RegDate.get(1995, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
 
-			// lien d'activité économique (établissement <-> entreprise)
+			// établissement principal de l'entreprise mandataire
 			{
-				final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
-				Assert.assertNotNull(rapports);
-				Assert.assertEquals(1, rapports.size());
+				final Etablissement etb = etablissementsTries.get(1);
+				Assert.assertEquals(0, etb.getRapportsSujet().size());
+				Assert.assertTrue(etb.isPrincipal());
 
+				final Map<TypeRapportEntreTiers, List<RapportEntreTiers>> rapportsObjetMap = etb.getRapportsObjet().stream()
+						.collect(Collectors.toMap(RapportEntreTiers::getType,
+						                          Collections::singletonList,
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(Comparator.comparing(RapportEntreTiers::getDateDebut)).collect(Collectors.toList())));
+				Assert.assertEquals(1, rapportsObjetMap.size());
+
+				// lien d'activité économique (établissement <-> entreprise)
 				{
-					final RapportEntreTiers ret = rapports.get(0);
-					Assert.assertNotNull(ret);
-					Assert.assertTrue(ret instanceof ActiviteEconomique);
-					Assert.assertEquals(RegDate.get(1995, 1, 1), ret.getDateDebut());
-					Assert.assertNull(ret.getDateFin());
-					Assert.assertEquals(etb.getId(), ret.getObjetId());
-					Assert.assertEquals((Long) idEntrepriseMandataire, ret.getSujetId());
-					Assert.assertFalse(ret.isAnnule());
+					final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE);
+					Assert.assertNotNull(rapports);
+					Assert.assertEquals(1, rapports.size());
+
+					{
+						final RapportEntreTiers ret = rapports.get(0);
+						Assert.assertNotNull(ret);
+						Assert.assertTrue(ret instanceof ActiviteEconomique);
+						Assert.assertEquals(RegDate.get(1990, 1, 1), ret.getDateDebut());
+						Assert.assertNull(ret.getDateFin());
+						Assert.assertEquals(etb.getId(), ret.getObjetId());
+						Assert.assertEquals((Long) idEntrepriseMandataire, ret.getSujetId());
+						Assert.assertFalse(ret.isAnnule());
+					}
 				}
+
+				// domiciles -> 1, à l'étranger
+				final List<DomicileEtablissement> domiciles = etb.getSortedDomiciles(true);
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(1, domiciles.size());
+
+				final DomicileEtablissement domicile = domiciles.get(0);
+				Assert.assertNotNull(domicile);
+				Assert.assertFalse(domicile.isAnnule());
+				Assert.assertEquals(RegDate.get(1990, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 			}
 
 			// fors sur l'entreprise mandante -> aucun
@@ -369,6 +433,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final long idEntreprise = 42L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		entreprise.setEnseigne("Smart zoo");
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, BALE);       // un for principal de base
 
 		// les établissements
@@ -399,50 +464,82 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);       // c'est le même identifiant dans RegPM et dans Unireg
 			Assert.assertNotNull(e);
 
-			// on vérifie d'abord qu'il y a bien deux établissements liés
+			// on vérifie d'abord qu'il y a bien trois établissements liés (2 secondaires + 1 principal)
 			final Set<RapportEntreTiers> rapports = e.getRapportsSujet();
 			Assert.assertNotNull(rapports);
-			Assert.assertEquals(2, rapports.size());
+			Assert.assertEquals(3, rapports.size());
 			rapports.stream().filter(r -> !(r instanceof ActiviteEconomique)).findAny().ifPresent(r -> Assert.fail("Rapport " + r + " trouvé là où seuls des rapports d'activité économiques étaient attendus"));
 			final List<ActiviteEconomique> activitesEconomiques = rapports.stream()
 					.map(r -> (ActiviteEconomique) r)
 					.sorted(Comparator.comparing(ActiviteEconomique::getDateDebut))
 					.collect(Collectors.toList());
 
-			final Long idEtb1;
+			final Long idEtbPrn;
 			{
 				final ActiviteEconomique ae = activitesEconomiques.get(0);
+				Assert.assertNotNull(ae);
+				Assert.assertEquals(RegDate.get(1990, 1, 1), ae.getDateDebut());
+				Assert.assertNull(ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+
+				idEtbPrn = ae.getObjetId();
+				Assert.assertNotNull(idEtbPrn);
+			}
+			final Long idEtbSec1;
+			{
+				final ActiviteEconomique ae = activitesEconomiques.get(1);
 				Assert.assertNotNull(ae);
 				Assert.assertEquals(RegDate.get(1999, 5, 12), ae.getDateDebut());
 				Assert.assertEquals(RegDate.get(2006, 10, 31), ae.getDateFin());
 				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
 
-				idEtb1 = ae.getObjetId();
-				Assert.assertNotNull(idEtb1);
+				idEtbSec1 = ae.getObjetId();
+				Assert.assertNotNull(idEtbSec1);
 			}
-			final Long idEtb2;
+			final Long idEtbSec2;
 			{
-				final ActiviteEconomique ae = activitesEconomiques.get(1);
+				final ActiviteEconomique ae = activitesEconomiques.get(2);
 				Assert.assertNotNull(ae);
 				Assert.assertEquals(RegDate.get(2002, 7, 14), ae.getDateDebut());
 				Assert.assertEquals(RegDate.get(2010, 11, 25), ae.getDateFin());
 				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
 
-				idEtb2 = ae.getObjetId();
-				Assert.assertNotNull(idEtb2);
+				idEtbSec2 = ae.getObjetId();
+				Assert.assertNotNull(idEtbSec2);
 			}
-			Assert.assertNotEquals(idEtb1, idEtb2);
+			Assert.assertNotEquals(idEtbSec1, idEtbSec2);
+			Assert.assertNotEquals(idEtbSec1, idEtbPrn);
+			Assert.assertNotEquals(idEtbSec2, idEtbPrn);
 
-			// vérification qu'il n'y a bien que ces deux établissement-là en base
+			// vérification qu'il n'y a bien que ces trois établissements-là en base
 			final List<Etablissement> allEtablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
 			Assert.assertNotNull(allEtablissements);
-			Assert.assertEquals(2, allEtablissements.size());
+			Assert.assertEquals(3, allEtablissements.size());
 
 			// vérification des domiciles de ces établissements
 			{
-				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtb1);
+				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbPrn);
+				Assert.assertNotNull(etb);
+				Assert.assertEquals("Smart zoo", etb.getEnseigne());
+				Assert.assertTrue(etb.isPrincipal());
+
+				final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+				Assert.assertNotNull(domiciles);
+				Assert.assertEquals(1, domiciles.size());
+
+				final DomicileEtablissement domicile = domiciles.iterator().next();
+				Assert.assertNotNull(domicile);
+				Assert.assertEquals(RegDate.get(1990, 1, 1), domicile.getDateDebut());
+				Assert.assertNull(domicile.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, domicile.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(domicile.isAnnule());
+			}
+			{
+				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbSec1);
 				Assert.assertNotNull(etb);
 				Assert.assertEquals("Le chat qui fume", etb.getEnseigne());
+				Assert.assertFalse(etb.isPrincipal());
 
 				final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
 				Assert.assertNotNull(domiciles);
@@ -467,9 +564,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				}
 			}
 			{
-				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtb2);
+				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbSec2);
 				Assert.assertNotNull(etb);
 				Assert.assertEquals("Le chien qui pête", etb.getEnseigne());
+				Assert.assertFalse(etb.isPrincipal());
 
 				final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
 				Assert.assertNotNull(domiciles);
