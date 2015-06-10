@@ -29,13 +29,13 @@ public class Organisation {
 	private final List<DateRanged<Long>> transferTo;
 	private final List<DateRanged<Long>> transferFrom;
 	private final List<DateRanged<Long>> replacedBy;
-	private final List<DateRanged<Long>> inPreplacementOf;
+	private final List<DateRanged<Long>> inReplacementOf;
 
 	public Organisation(long cantonalId, @NotNull List<DateRanged<Identifier>> organisationIdentifiers,
 	                    @NotNull List<DateRanged<String>> organisationName, List<DateRanged<String>> organisationAdditionalName,
 	                    List<DateRanged<LegalForm>> legalForm, List<DateRanged<Long>> locations, List<OrganisationLocation> locationData,
 	                    List<DateRanged<Long>> transferTo, List<DateRanged<Long>> transferFrom, List<DateRanged<Long>> replacedBy,
-	                    List<DateRanged<Long>> inPreplacementOf) {
+	                    List<DateRanged<Long>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.organisationIdentifiers = organisationIdentifiers;
 		this.organisationName = organisationName;
@@ -46,15 +46,15 @@ public class Organisation {
 		this.transferTo = transferTo;
 		this.transferFrom = transferFrom;
 		this.replacedBy = replacedBy;
-		this.inPreplacementOf = inPreplacementOf;
+		this.inReplacementOf = inReplacementOf;
 	}
 
 	public long getCantonalId() {
 		return cantonalId;
 	}
 
-	public List<DateRanged<Long>> getInPreplacementOf() {
-		return inPreplacementOf;
+	public List<DateRanged<Long>> getInReplacementOf() {
+		return inReplacementOf;
 	}
 
 	public List<DateRanged<LegalForm>> getLegalForm() {
