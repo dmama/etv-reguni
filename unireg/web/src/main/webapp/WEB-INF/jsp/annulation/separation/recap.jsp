@@ -17,10 +17,13 @@
 				<jsp:param name="page" value="annulationSeparation" />
 				<jsp:param name="path" value="premierePersonne" />
 			</jsp:include>
-			<jsp:include page="../../general/pp.jsp">
-				<jsp:param name="page" value="annulationSeparation" />
-				<jsp:param name="path" value="secondePersonne" />
-			</jsp:include>
+
+			<c:if test="${command.secondePersonne != null}">
+				<jsp:include page="../../general/pp.jsp">
+					<jsp:param name="page" value="annulationSeparation" />
+					<jsp:param name="path" value="secondePersonne" />
+				</jsp:include>
+			</c:if>
 			<fieldset class="information">
 				<legend><span><fmt:message key="title.caracteristiques.annulation.separation" /></span></legend>
 				<table>
