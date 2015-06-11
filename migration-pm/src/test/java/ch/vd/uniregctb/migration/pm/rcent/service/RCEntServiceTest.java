@@ -77,10 +77,15 @@ public class RCEntServiceTest {
 		Map<String, List<DateRanged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(5));
 
+		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.HR").get(0).getPayload(), equalTo("CH55000431371"));
+		assertThat(identifierMap.get("CH.IDE").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.IDE").get(0).getPayload(), equalTo("CHE101992624"));
+		assertThat(identifierMap.get("CH.RC").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.RC").get(0).getPayload(), equalTo("CH55000431371"));
+		assertThat(identifierMap.get("CHE").size(), equalTo(1));
 		assertThat(identifierMap.get("CHE").get(0).getPayload(), equalTo("101992624"));
+		assertThat(identifierMap.get("CT.VD.PARTY").size(), equalTo(1));
 		assertThat(identifierMap.get("CT.VD.PARTY").get(0).getPayload(), equalTo("101072745"));
 
 		final KindOfLocation kindOfLocation = organisation.getLocationData().get(0).getKindOfLocation().get(0).getPayload();
@@ -244,13 +249,21 @@ public class RCEntServiceTest {
 		Map<String, List<DateRanged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(8));
 
+		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.HR").get(0).getPayload(), equalTo("CH55001688715"));
+		assertThat(identifierMap.get("CH.IDE").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.IDE").get(0).getPayload(), equalTo("CHE105879116"));
+		assertThat(identifierMap.get("CH.IDE.TVA").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.IDE.TVA").get(0).getPayload(), equalTo("CHE105879116"));
+		assertThat(identifierMap.get("CH.MWST").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.MWST").get(0).getPayload(), equalTo("196378"));
+		assertThat(identifierMap.get("CH.RC").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.RC").get(0).getPayload(), equalTo("CH55001688715"));
+		assertThat(identifierMap.get("CH.TVA").size(), equalTo(1));
 		assertThat(identifierMap.get("CH.TVA").get(0).getPayload(), equalTo("196378"));
+		assertThat(identifierMap.get("CHE").size(), equalTo(1));
 		assertThat(identifierMap.get("CHE").get(0).getPayload(), equalTo("105879116"));
+		assertThat(identifierMap.get("CT.VD.PARTY").size(), equalTo(1));
 		assertThat(identifierMap.get("CT.VD.PARTY").get(0).getPayload(), equalTo("101072728"));
 
 		final KindOfLocation kindOfLocation = organisation.getLocationData().get(0).getKindOfLocation().get(0).getPayload();
