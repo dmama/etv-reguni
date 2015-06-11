@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adapter.rcent.container;
+package ch.vd.uniregctb.adapter.rcent.historizer.container;
 
 import java.util.Random;
 
@@ -8,7 +8,6 @@ import org.junit.rules.ExpectedException;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adapter.rcent.convertor;
+package ch.vd.uniregctb.adapter.rcent.historizer.convertor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
-import ch.vd.uniregctb.adapter.rcent.historizer.convertor.DateRangedConvertor;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;

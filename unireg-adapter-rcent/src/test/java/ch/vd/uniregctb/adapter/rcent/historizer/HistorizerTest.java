@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.adapter.rcent;
+package ch.vd.uniregctb.adapter.rcent.historizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
