@@ -58,6 +58,6 @@
 
 	<alias name="rcentClientTracing" alias="rcentClient"/>
 
-	<bean name="organisationHistorizer" class="ch.vd.uniregctb.migration.pm.historizer.OrganisationHistorizer"/>
+	<bean name="organisationHistorizer" class="ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer"/>
 
 </beans>
