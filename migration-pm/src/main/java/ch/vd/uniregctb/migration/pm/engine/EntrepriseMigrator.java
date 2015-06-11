@@ -326,18 +326,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateFusionsApres(regpm, linkCollector, idMapper);
 	}
 
+	/**
+	 * Classe interne qui contient la donnée d'une commune Suisse ou d'un pays, de manière exclusive
+	 */
 	private static final class CommuneOuPays {
+
 		private final RegpmCommune commune;
 		private final Integer noOfsPays;
 
 		public CommuneOuPays(@NotNull RegpmCommune commune) {
 			this.commune = commune;
 			this.noOfsPays = null;
-		}
-
-		public CommuneOuPays(@NotNull Integer noOfsPays) {
-			this.commune = null;
-			this.noOfsPays = noOfsPays;
 		}
 
 		public CommuneOuPays(@NotNull RegpmForPrincipal ffp) {
@@ -349,6 +348,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				this.commune = null;
 				this.noOfsPays = ffp.getOfsPays();
 			}
+		}
+
+		/**
+		 * @return le type d'autorité fiscale représentée par l'entité
+		 */
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			if (commune != null) {
+				return commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+			}
+			else {
+				return TypeAutoriteFiscale.PAYS_HS;
+			}
+		}
+
+		/**
+		 * @return le numéro OFS de la commune ou du pays (voir {@link #getTypeAutoriteFiscale()})
+		 */
+		public Integer getNumeroOfsAutoriteFiscale() {
+			return commune != null ? commune.getNoOfs() : noOfsPays;
 		}
 	}
 
@@ -384,30 +402,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
-		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getId());
+		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
 		etbPrincipal.setEnseigne(regpm.getEnseigne());
 		etbPrincipal.setPrincipal(true);
 
-		// lien vers l'entreprise
-		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, moi, localisations.firstKey(), getDateFinActivite(regpm)));
+		// un peu de log pour indiquer la création de l'établissement principal
+		mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.INFO, "Création de l'établissement principal " + etbPrincipal.getNumero());
+
+		// lien entre l'établissement principal et son entreprise
+		final Supplier<Entreprise> entrepriseSupplier = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, localisations.firstKey(), getDateFinActivite(regpm)));
 
 		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
 		final List<DomicileEtablissement> domiciles = localisations.entrySet().stream()
 				.map(entry -> {
-					final TypeAutoriteFiscale taf;
-					if (entry.getValue().commune != null) {
-						if (entry.getValue().commune.getCanton() == RegpmCanton.VD) {
-							taf = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-						}
-						else {
-							taf = TypeAutoriteFiscale.COMMUNE_HC;
-						}
-					}
-					else {
-						taf = TypeAutoriteFiscale.PAYS_HS;
-					}
-					return new DomicileEtablissement(entry.getKey(), null, taf, entry.getValue().commune != null ? entry.getValue().commune.getNoOfs() : entry.getValue().noOfsPays, null);
+					final CommuneOuPays cop = entry.getValue();
+					return new DomicileEtablissement(entry.getKey(), null, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
 				})
 				.collect(Collectors.toList());
 
