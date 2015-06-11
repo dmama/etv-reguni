@@ -26,7 +26,7 @@ public class IdentifierListConverter {
 		final Map<String, List<DateRanged<String>>> map = identifiers.stream()
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toMap(dr -> dr.getPayload().getIdentifierCategory(),
-				                          dr -> Collections.singletonList(new DateRanged<String>(dr.getDateDebut(), dr.getDateFin(), dr.getPayload().getIdentifierValue())),
+				                          dr -> Collections.<DateRanged<String>>singletonList(dr.map(Identifier::getIdentifierValue)),
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 
 		// vérification des overlaps

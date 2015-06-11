@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.migration.pm.historizer.container;
 
+import java.util.Random;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -96,5 +98,42 @@ public class DateRangedTest {
 		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 19)), is(false));
 		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 20)), is(true));
 		assertThat(range.isValidAt(RegDateHelper.get(2015, 5, 21)), is(false));
+	}
+
+	@Test
+	public void testMap() {
+		final RegDate base = RegDate.get(2000, 1, 1);
+		final Random rnd = new Random();
+		final RegDate debut = base.addDays(rnd.nextInt(1000));
+		final RegDate fin = debut.addDays(rnd.nextInt(500));
+
+		{
+			// mapping chaîne -> longueur de la chaîne
+			final DateRanged<String> range = new DateRanged<>(debut, fin, "MaDonnéeQuiVaBien");
+			final DateRanged<Integer> longueur = range.map(String::length);
+			assertThat(longueur.getDateDebut(), equalTo(debut));
+			assertThat(longueur.getDateFin(), equalTo(fin));
+			assertThat(longueur.getPayload(), equalTo(17));
+
+			// mapping chaîne -> nombre de majuscules dans la chaîne
+			final DateRanged<Long> nombreMajuscules = range.map(s -> s.chars().map(i -> (char) i).filter(Character::isUpperCase).count());
+			assertThat(nombreMajuscules.getDateDebut(), equalTo(debut));
+			assertThat(nombreMajuscules.getDateFin(), equalTo(fin));
+			assertThat(nombreMajuscules.getPayload(), equalTo(5L));
+		}
+		{
+			// mapping chaîne -> longueur de la chaîne
+			final DateRanged<String> range = new DateRanged<>(debut, fin, "TaDonnéeQuiVaToutAussiBien");
+			final DateRanged<Integer> mappe = range.map(String::length);
+			assertThat(mappe.getDateDebut(), equalTo(debut));
+			assertThat(mappe.getDateFin(), equalTo(fin));
+			assertThat(mappe.getPayload(), equalTo(26));
+
+			// mapping chaîne -> nombre de majuscules dans la chaîne
+			final DateRanged<Long> nombreMajuscules = range.map(s -> s.chars().map(i -> (char) i).filter(Character::isUpperCase).count());
+			assertThat(nombreMajuscules.getDateDebut(), equalTo(debut));
+			assertThat(nombreMajuscules.getDateFin(), equalTo(fin));
+			assertThat(nombreMajuscules.getPayload(), equalTo(7L));
+		}
 	}
 }

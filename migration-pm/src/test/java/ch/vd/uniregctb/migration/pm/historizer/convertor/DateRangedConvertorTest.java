@@ -32,23 +32,4 @@ public class DateRangedConvertorTest {
 			assertThat(convertedRl.get(1).getPayload(), equalTo("DATA2_CONVERTED"));
 		}
 	}
-
-	@Test
-	public void testDirectConvert() throws Exception {
-		DateRanged<String> dr1 = new DateRanged<>(RegDate.get(2015, 4, 1), RegDate.get(2015, 4, 2), "DATA1");
-		DateRanged<String> dr2 = new DateRanged<>(RegDate.get(2015, 4, 3), null, "DATA2");
-
-		DateRanged<String> convertedDr1 = DateRangedConvertor.convert(dr1, e -> e + "_CONVERTED");
-		DateRanged<String> convertedDr2 = DateRangedConvertor.convert(dr2, e -> e + "_CONVERTED");
-		{
-			assertThat(convertedDr1.getDateDebut(), equalTo(RegDate.get(2015, 4, 1)));
-			assertThat(convertedDr1.getDateFin(), equalTo(RegDate.get(2015, 4, 2)));
-			assertThat(convertedDr1.getPayload(), equalTo("DATA1_CONVERTED"));
-		}
-		{
-			assertThat(convertedDr2.getDateDebut(), equalTo(RegDate.get(2015, 4, 3)));
-			assertThat(convertedDr2.getDateFin(), nullValue());
-			assertThat(convertedDr2.getPayload(), equalTo("DATA2_CONVERTED"));
-		}
-	}
 }

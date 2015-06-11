@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.migration.pm.historizer.container;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -58,5 +60,14 @@ public class DateRanged<T> implements DateRange {
 	 */
 	public T getPayload() {
 		return payload;
+	}
+
+	/**
+	 * @param mapper transformation à appliquer à la payload
+	 * @param <U> type de la payload de l'objet retourné
+	 * @return un nouvel objet DateRanged, valide aux mêmes dates, et dont la payload est constuite à partir de la payload courante au travers de la fonction de mapping
+	 */
+	public <U> DateRanged<U> map(Function<? super T, ? extends U> mapper) {
+		return new DateRanged<>(dateDebut, dateFin, mapper.apply(payload));
 	}
 }
