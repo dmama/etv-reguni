@@ -65,17 +65,18 @@ public class IdentifierListConverterTest {
 		rl.add(new DateRanged<>(RegDate.get(2015, 4, 2), null, new Identifier("CHE", "DATA2")));
 
 		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Found overlapping range in list of Identifiers!");
+		thrown.expectMessage("Found overlapping range in list of Identifiers of category CHE:");
 		Map<String, List<DateRanged<String>>> identifiersMap = IdentifierListConverter.toMapOfListsOfDateRangedValues(rl);
 	}
+
 	@Test
 	public void testFailWithOverlappingUnbounded() throws Exception {
 		List<DateRanged<Identifier>> rl = new ArrayList<>();
-		rl.add(new DateRanged<>(RegDate.get(2015, 4, 1), null, new Identifier("CHE", "DATA1")));
-		rl.add(new DateRanged<>(RegDate.get(2015, 5, 2), null, new Identifier("CHE", "DATA2")));
+		rl.add(new DateRanged<>(RegDate.get(2015, 4, 1), null, new Identifier("CHE_GUEVARA", "DATA1")));
+		rl.add(new DateRanged<>(RegDate.get(2015, 5, 2), null, new Identifier("CHE_GUEVARA", "DATA2")));
 
 		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Found overlapping range in list of Identifiers!");
+		thrown.expectMessage("Found overlapping range in list of Identifiers of category CHE_GUEVARA:");
 		Map<String, List<DateRanged<String>>> identifiersMap = IdentifierListConverter.toMapOfListsOfDateRangedValues(rl);
 	}
 }
