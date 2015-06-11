@@ -17,7 +17,7 @@ public abstract class FractionnementsAssujettissement extends Fractionnements<Fo
 		if (fraction != null) {
 			final ForFiscalPrincipalPP current = forPrincipal.getCurrent();
 			final ForFiscalPrincipalPP next = forPrincipal.getNext();
-			if (next != null && AssujettissementServiceImpl.isArriveeHCApresDepartHSMemeAnnee(current) && !AssujettissementServiceImpl.roleSourcierPur(current)) {
+			if (next != null && AssujettissementPersonnesPhysiquesCalculator.isArriveeHCApresDepartHSMemeAnnee(current) && !AssujettissementPersonnesPhysiquesCalculator.roleSourcierPur(current)) {
 				// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
 				fraction.setMotifOuverture(next.getMotifOuverture());
 			}

@@ -27,7 +27,7 @@ public class FractionnementsSource extends FractionnementsAssujettissement {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
-		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(previous, current)) {
+		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(previous, current)) {
 			// fractionnement en cas d'arrivée hors-Suisse
 			fraction = new FractionSimple(current.getDateDebut(), motifOuverture, null);
 		}
@@ -53,7 +53,7 @@ public class FractionnementsSource extends FractionnementsAssujettissement {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}
-		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(current, next)) {
+		else if (AssujettissementPersonnesPhysiquesCalculator.isDepartOuArriveeHorsSuisse(current, next)) {
 			// fractionnement en cas de départ hors-Suisse
 			fraction = new FractionSimple(current.getDateFin().getOneDayAfter(), null, motifFermeture);
 		}

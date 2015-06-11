@@ -2,9 +2,15 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.type.MotifFor;
 
 /**
@@ -84,5 +90,66 @@ public abstract class AssujettissementHelper {
 			return null;
 		}
 		return DateRangeHelper.extract(list, dateDebut, dateFin, ADAPTER);
+	}
+
+	/**
+	 * @param source calculateur d'assujettissement source
+	 * @param annee année civile de limitation de l'assujettissement
+	 * @param <T> type de contribuable supporté par le calculateur
+	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à l'année civile indiquée
+	 */
+	public static <T extends Contribuable> AssujettissementCalculator<T> yearLimiting(final AssujettissementCalculator<T> source, final int annee) {
+		return new AssujettissementCalculator<T>() {
+			@Override
+			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+				if (all == null) {
+					return null;
+				}
+				final List<Assujettissement> yearly = extractYear(all, annee);
+				return yearly.isEmpty() ? null : yearly;
+			}
+		};
+	}
+
+	/**
+	 * @param source calculateur d'assujettissement source
+	 * @param range range de limitation de l'assujettissement (obligatoire si <i>collate</i> est faux)
+	 * @param collate indique s'il faut fusionner les assujettissements adjacents dans le résultat fourni
+	 * @param <T> type de contribuable traité par le calculateur
+	 * @return calculateur qui limite l'assujettissement rendu par le calculateur source à la période indiquée
+	 */
+	public static <T extends Contribuable> AssujettissementCalculator<T> rangeLimiting(final AssujettissementCalculator<T> source, @Nullable final DateRange range, final boolean collate) {
+		return new AssujettissementCalculator<T>() {
+			@Override
+			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				final List<Assujettissement> all = source.determine(ctb, fpt, noOfsCommunesVaudoises);
+				if (all == null) {
+					return null;
+				}
+
+				final List<Assujettissement> splittedCollated;
+				if (!collate) {
+					if (range == null) {
+						throw new IllegalArgumentException("Le range doit être spécifié si collate=false");
+					}
+					splittedCollated = split(all, range.getDateDebut().year(), range.getDateFin().year());
+				}
+				else {
+					splittedCollated = DateRangeHelper.collate(all);
+				}
+
+				final List<Assujettissement> ranged;
+				if (range != null) {
+					// Limitation des assujettissements au range demandé
+					ranged = extract(splittedCollated, range.getDateDebut(), range.getDateFin());
+				}
+				else {
+					ranged = splittedCollated;
+				}
+
+				return ranged.isEmpty() ? null : ranged;
+			}
+		};
 	}
 }

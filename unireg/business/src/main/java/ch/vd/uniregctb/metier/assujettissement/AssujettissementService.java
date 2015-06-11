@@ -21,7 +21,7 @@ public interface AssujettissementService {
 	List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException;
 
 	/**
-	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement <i>du point de vue du rôle</i>.
+	 * Analyse les fors du contribuable PP et construit la liste complète des périodes d'assujettissement <i>du point de vue du rôle</i>.
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
@@ -31,7 +31,7 @@ public interface AssujettissementService {
 	List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException;
 
 	/**
-	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement <i>du point de vue de la source</i>.
+	 * Analyse les fors du contribuable PP et construit la liste complète des périodes d'assujettissement <i>du point de vue de la source</i>.
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
