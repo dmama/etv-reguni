@@ -197,7 +197,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
 		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
 		if (entiteJuridique == null) {
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une migration ou un individu.");
+			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
 		}
 		else {
 			final Supplier<Etablissement> moi = getEtablissementByRegpmIdSupplier(idMapper, regpm.getId());
