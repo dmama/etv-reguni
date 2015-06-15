@@ -118,7 +118,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	                                                                                  @NotNull AssujettissementCalculator<? super T> calculator,
 	                                                                                  @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		try {
-			return _determine(ctb, calculator, noOfsCommunesVaudoises);
+			return determine(ctb, buildInternalCalculator(calculator), noOfsCommunesVaudoises);
 		}
 		catch (AssujettissementException e) {
 			if (validationService != null && !validationService.isInValidation()) { // on évite les appels récursifs
@@ -142,7 +142,39 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	/**
-	 * Méthode la plus interne du calcul d'assujettissement, qui appelle le calculateur
+	 * Interface interne un peu plus flexible (par rapport au type exact de retour) du calculateur d'assujettissement (interne ici pour ne pas
+	 * exposer cette complexité au monde entier, en tout cas tant que ce n'est pas nécessaire)
+	 * @param <T> type de contribuable concerné par le calcul
+	 * @param <A> type d'assujettissement retourné par le calcul
+	 */
+	private interface InternalAssujettissementCalculator<T extends Contribuable, A extends Assujettissement> {
+		/**
+		 * @param ctb le contribuable concerné
+		 * @param fpt les fors valides du contribuable triés par type
+		 * @param noOfsCommunesVaudoises les numéros OFS des communes vaudoises pour lesquelles on veut spécifiquement calculer l'assujettissement
+		 * @return La liste des assujettissements du contribuable, ou <code>null</code> s'il n'en a pas
+		 */
+		List<A> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException;
+	}
+
+	/**
+	 * Construit un mapper autour d'un calculateur "classique" {@link AssujettissementCalculator} qui est exposé comme un {@link InternalAssujettissementCalculator}
+	 * @param calculator le calculateur "externe"
+	 * @param <T> le type de contribuable concerné par le calcul
+	 * @return le calculateur spécifique interne
+	 */
+	@NotNull
+	private static <T extends Contribuable> InternalAssujettissementCalculator<T, Assujettissement> buildInternalCalculator(final AssujettissementCalculator<T> calculator) {
+		return new InternalAssujettissementCalculator<T, Assujettissement>() {
+			@Override
+			public List<Assujettissement> determine(T ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+				return calculator.determine(ctb, fpt, noOfsCommunesVaudoises);
+			}
+		};
+	}
+
+	/**
+	 * Méthode la plus interne du calcul d'assujettissement, qui récolte les fors et appelle le calculateur
 	 * @param ctb contribuable sur lequel on veut calculer un assujettissement
 	 * @param calculator calculateur associé au type du contribuable
 	 * @param noOfsCommunesVaudoises (optionnel) ensemble des numéro OFS des communes pour lesquelles on veut spécifiquement calculer l'assujettissement
@@ -151,9 +183,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @throws AssujettissementException en cas de problème lors du calcul
 	 */
 	@Nullable
-	protected static <T extends Contribuable> List<Assujettissement> _determine(@NotNull T ctb,
-	                                                                            @NotNull AssujettissementCalculator<? super T> calculator,
-	                                                                            @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static <T extends Contribuable, A extends Assujettissement> List<A> determine(@NotNull T ctb,
+	                                                                                      @NotNull InternalAssujettissementCalculator<? super T, A> calculator,
+	                                                                                      @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		if (ctb.isAnnule()) {
 			// un contribuable annulé n'est évidemment pas assujetti
 			return null;
@@ -168,38 +200,34 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return calculator.determine(ctb, fpt, noOfsCommunesVaudoises);
 	}
 
+	/**
+	 * Calculateur spécifique du rôle ordinaire des personnes physiques
+	 */
+	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, Assujettissement> ROLE_PP_CALCULATOR = new InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, Assujettissement>() {
+		@Override
+		public List<Assujettissement> determine(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+			return AssujettissementPersonnesPhysiquesCalculator.determineRole(ctb, fpt, noOfsCommunesVaudoises);
+		}
+	};
+
+	/**
+	 * Calculateur spécifique de la source des personnes physiques
+	 */
+	private static final InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur> SOURCE_PP_CALCULATOR = new InternalAssujettissementCalculator<ContribuableImpositionPersonnesPhysiques, SourcierPur>() {
+		@Override
+		public List<SourcierPur> determine(ContribuableImpositionPersonnesPhysiques ctb, ForsParType fpt, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+			return AssujettissementPersonnesPhysiquesCalculator.determineSource(ctb, fpt, noOfsCommunesVaudoises);
+		}
+	};
+
 	@Override
 	public List<Assujettissement> determineRole(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
-
-		if (ctb.isAnnule()) {
-			// un contribuable annulé n'est évidemment pas assujetti
-			return null;
-		}
-
-		final ForsParType fpt = ctb.getForsParType(true);
-		if (fpt.isEmpty()) {
-			// pas de fors -> pas d'assujettissement...
-			return null;
-		}
-
-		return AssujettissementPersonnesPhysiquesCalculator.determineRole(ctb, fpt, null);
+		return determine(ctb, ROLE_PP_CALCULATOR, null);
 	}
 
 	@Override
 	public List<SourcierPur> determineSource(ContribuableImpositionPersonnesPhysiques ctb) throws AssujettissementException {
-
-		if (ctb.isAnnule()) {
-			// un contribuable annulé n'est évidemment pas assujetti
-			return null;
-		}
-
-		final ForsParType fpt = ctb.getForsParType(true);
-		if (fpt.isEmpty()) {
-			// pas de fors -> pas d'assujettissement...
-			return null;
-		}
-
-		return AssujettissementPersonnesPhysiquesCalculator.determineSource(ctb, fpt, null);
+		return determine(ctb, SOURCE_PP_CALCULATOR, null);
 	}
 
 	@Override
