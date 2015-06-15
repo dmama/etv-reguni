@@ -43,10 +43,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	protected void onSetup() throws Exception {
 		super.onSetup();
 
+		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
+
 		migrator = new EtablissementMigrator(
 				getBean(UniregStore.class, "uniregStore"),
 				getBean(RCEntService.class, "rcEntService"),
-				getBean(AdresseHelper.class, "adresseHelper"));
+				getBean(AdresseHelper.class, "adresseHelper"),
+	            activityManager);
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
@@ -138,7 +141,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -192,7 +195,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -247,7 +250,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -303,7 +306,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -382,7 +385,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -463,7 +466,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -548,7 +551,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -661,7 +664,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -730,7 +733,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -806,7 +809,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
@@ -882,7 +885,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " : "))
+				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
 				.findAny()
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 

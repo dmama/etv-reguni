@@ -93,18 +93,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final BouclementService bouclementService;
 	private final RCEntService rcEntService;
 	private final AdresseHelper adresseHelper;
+	private final ActivityManager activityManager;
 
-	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper) {
+	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper, ActivityManager activityManager) {
 		super(uniregStore);
 		this.bouclementService = bouclementService;
 		this.rcEntService = rcEntService;
 		this.adresseHelper = adresseHelper;
+		this.activityManager = activityManager;
 	}
 
 	@Nullable
 	@Override
 	protected String getMessagePrefix(RegpmEntreprise entity) {
-		return String.format("Entreprise %d", entity.getId());
+		return String.format("Entreprise %d (%s)", entity.getId(), activityManager.isActive(entity) ? "active" : "inactive");
 	}
 
 	private static Entreprise createEntreprise(RegpmEntreprise regpm) {

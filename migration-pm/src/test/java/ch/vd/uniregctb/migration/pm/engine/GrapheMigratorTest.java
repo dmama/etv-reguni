@@ -119,10 +119,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
 		final NonHabitantIndex nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		final ValidationInterceptor validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
+		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, bouclementService, rcEntService, adresseHelper));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, rcEntService, adresseHelper));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, bouclementService, rcEntService, adresseHelper, activityManager));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, rcEntService, adresseHelper, activityManager));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, tiersDAO, rcpersClient, nonHabitantIndex));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());

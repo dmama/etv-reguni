@@ -61,11 +61,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	protected void onSetup() throws Exception {
 		super.onSetup();
 
+		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
+
 		migrator = new EntrepriseMigrator(
 				getBean(UniregStore.class, "uniregStore"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(RCEntService.class, "rcEntService"),
-				getBean(AdresseHelper.class, "adresseHelper"));
+				getBean(AdresseHelper.class, "adresseHelper"),
+				activityManager);
 	}
 
 	/**

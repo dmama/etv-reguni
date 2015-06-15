@@ -48,11 +48,13 @@
         <constructor-arg name="bouclementService" ref="bouclementService"/>
         <constructor-arg name="rcEntService" ref="rcEntService"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
+		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
         <constructor-arg name="rcEntService" ref="rcEntService"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
+		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
     <bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">
@@ -67,6 +69,16 @@
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
 		<constructor-arg value="${mapping.noOrdreP.file}"/>
+	</bean>
+
+	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">
+		<constructor-arg name="filename" value="${activite.flag.perception.file}"/>
+		<constructor-arg name="seuilActivite" ref="dateSeuilActivite"/>
+	</bean>
+
+	<bean id="dateSeuilActivite" class="ch.vd.uniregctb.migration.pm.utils.RegDateFactory">
+		<constructor-arg name="format" value="DISPLAY"/>
+		<constructor-arg name="value" value="${activite.flag.seuil}"/>
 	</bean>
 
 	<bean id="streetDataMigrator" class="ch.vd.uniregctb.migration.pm.adresse.StreetDataMigratorImpl">

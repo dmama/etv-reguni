@@ -55,11 +55,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private final RCEntService rcEntService;
 	private final AdresseHelper adresseHelper;
+	private final ActivityManager activityManager;
 
-	public EtablissementMigrator(UniregStore uniregStore, RCEntService rcEntService, AdresseHelper adresseHelper) {
+	public EtablissementMigrator(UniregStore uniregStore, RCEntService rcEntService, AdresseHelper adresseHelper, ActivityManager activityManager) {
 		super(uniregStore);
 		this.rcEntService = rcEntService;
 		this.adresseHelper = adresseHelper;
+		this.activityManager = activityManager;
 	}
 
 	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {
@@ -106,7 +108,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	@Override
 	protected String getMessagePrefix(RegpmEtablissement entity) {
 		if (entity.getEntreprise() != null) {
-			return String.format("Etablissement %d de l'entreprise %d", entity.getId(), entity.getEntreprise().getId());
+			return String.format("Etablissement %d de l'entreprise %d (%s)", entity.getId(), entity.getEntreprise().getId(), activityManager.isActive(entity.getEntreprise()) ? "active" : "inactive");
 		}
 		if (entity.getIndividu() != null) {
 			return String.format("Etablissement %d de l'individu %d", entity.getId(), entity.getIndividu().getId());
