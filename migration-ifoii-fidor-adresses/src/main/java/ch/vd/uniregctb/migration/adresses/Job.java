@@ -68,16 +68,18 @@ public class Job {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		// le seul paramètre sur la ligne de commande est le chemin vers un fichier de propriétés
-		if (args == null || args.length != 1) {
+		// les seuls paramètres sur la ligne de commandes sont les chemins vers les fichiers de propriétés
+		if (args == null || args.length < 1) {
 			dumpSyntax();
 			return;
 		}
 
 		// chargement des propriétés
-		final String propertiesPath = args[0];
-		final File propertiesFile = new File(propertiesPath);
-		final Properties props = loadProperties(propertiesFile);
+		final Properties props = new Properties();
+		for (String propertiesPath : args) {
+			final File propertiesFile = new File(propertiesPath);
+			loadProperties(propertiesFile, props);
+		}
 		dumpProperties(props);
 
 		final int nbThreads = Integer.parseInt(props.getProperty("process.nbThreads"));
@@ -422,16 +424,16 @@ public class Job {
 	}
 
 	private static void dumpSyntax() {
-		System.err.println("Le job prend un paramètre qui correspond au chemin d'accès au fichier de configuration.");
+		System.err.println("Le job prend un ou plusieurs paramètres qui correspondent au chemin d'accès aux fichiers de configuration.");
 	}
 
 	private static void dumpProperties(Properties props) {
-		final Pattern pwdPattern = Pattern.compile("\\bpassword\\b", Pattern.CASE_INSENSITIVE);
+		final Pattern userpwdPattern = Pattern.compile("\\b(password|user)\\b", Pattern.CASE_INSENSITIVE);
 		final List<String> propertyNames = new ArrayList<>(props.stringPropertyNames());
 		Collections.sort(propertyNames);
 		final StringBuilder b = new StringBuilder("Dump des propriétés du traitement :").append(System.lineSeparator());
 		for (String key : propertyNames) {
-			final Matcher matcher = pwdPattern.matcher(key);
+			final Matcher matcher = userpwdPattern.matcher(key);
 			final String value;
 			if (matcher.find()) {
 				value = "********";
@@ -451,11 +453,9 @@ public class Job {
 		return String.format("'%s'", str);
 	}
 
-	private static Properties loadProperties(File file) throws IOException {
+	private static void loadProperties(File file, Properties dest) throws IOException {
 		try (InputStream is = new FileInputStream(file); Reader r = new InputStreamReader(is, "UTF-8")) {
-			final Properties props = new Properties();
-			props.load(r);
-			return props;
+			dest.load(r);
 		}
 	}
 }

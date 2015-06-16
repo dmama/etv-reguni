@@ -19,7 +19,11 @@
 			<outputDirectory>unireg-batch-migration-adresses-${pom.version}/bin</outputDirectory>
 		</file>
 		<file>
-			<source>src/main/resources/example.properties</source>
+			<source>src/main/resources/migration.properties</source>
+			<outputDirectory>unireg-batch-migration-adresses-${pom.version}/conf</outputDirectory>
+		</file>
+		<file>
+			<source>src/main/resources/credentials.properties</source>
 			<outputDirectory>unireg-batch-migration-adresses-${pom.version}/conf</outputDirectory>
 		</file>
 		<file>
