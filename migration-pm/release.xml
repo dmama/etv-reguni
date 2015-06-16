@@ -23,7 +23,7 @@
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 		<file>
-			<source>src/main/resources/données-disparues-refinf-avec-candidats.csv</source>
+			<source>src/main/resources/donnees-disparues-refinf-avec-candidats.csv</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 	</files>
