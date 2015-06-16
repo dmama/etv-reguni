@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
@@ -84,6 +86,8 @@ import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseMigrator.class);
 
 	/**
 	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
@@ -288,20 +292,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return;
 		}
 
-		// TODO: Déterminer si le numéro cantonal existe dans RegPM. S'il n'existe pas, migration directe des données civiles.
-
-		if (regpm.getNumeroCantonal() != null) {
-			// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
-			try {
-				Organisation rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
-			}
-			catch (Exception e) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR,
-				              String.format("Erreur lors de la recherche RCEnt. Organisation cantonalId: %s", regpm.getNumeroCantonal()));
-				throw e;
-			}
-		}
-
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
@@ -309,6 +299,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			unireg = uniregStore.saveEntityToDb(createEntreprise(regpm));
 		}
 		idMapper.addEntreprise(regpm, unireg);
+
+		// Récupération des données civiles si elles existent
+		Organisation rcent = null;
+		// TODO à réactiver quand on se branchera vraiment sur RCEnt
+		if (false) {
+			// TODO: Déterminer si le numéro cantonal existe dans RegPM. S'il n'existe pas, migration directe des données civiles.
+			if (regpm.getNumeroCantonal() != null) {
+				// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
+				try {
+					rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
+				}
+				catch (Exception e) {
+					LOGGER.error("Erreur lors de l'accès à l'organisation " + regpm.getNumeroCantonal() + " dans RCEnt", e);
+					mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR,
+					              String.format("Organisation %d non-renvoyée par RCEnt.", regpm.getNumeroCantonal()));
+				}
+			}
+		}
 
 		// enregistrement de cette entreprise pour un contrôle final des fors secondaires (une fois que tous les immeubles et établissements ont été visés)
 		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
