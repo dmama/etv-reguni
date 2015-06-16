@@ -8,12 +8,8 @@
 		<property name="ignoreResourceNotFound" value="false" />
 		<property name="ignoreUnresolvablePlaceholders" value="false" />
 		<property name="fileEncoding" value="UTF-8"/>
-		<property name="locationFileProps">
-			<list>
-				<!-- le nom des variables 'système' qui contiennent les chemins des fichiers à charger -->
-				<value>ch.vd.unireg.migration.pm.conf</value>
-			</list>
-		</property>
+		<property name="numberOfConfFiles" value="#{systemProperties['ch.vd.unireg.migration.pm.conf.nb']}"/>
+		<property name="confFileEnvironmentVarsPrefix" value="ch.vd.unireg.migration.pm.conf.file"/>
 	</bean>
 
 </beans>
