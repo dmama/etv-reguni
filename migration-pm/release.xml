@@ -19,15 +19,15 @@
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/bin</outputDirectory>
 		</file>
 		<file>
-			<source>src/main/resources/migration.properties</source>
+			<source>src/main/config/migration.properties</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 		<file>
-			<source>src/main/resources/credentials.properties</source>
+			<source>src/main/config/credentials.properties</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 		<file>
-			<source>src/main/resources/donnees-disparues-refinf-avec-candidats.csv</source>
+			<source>src/main/config/donnees-disparues-refinf-avec-candidats.csv</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
 	</files>
