@@ -15,10 +15,10 @@ public class LieuDeResidence {
 	/**
 	 * countryId, si disponible
 	 */
-	private Pays pays;
+	private Integer pays;
 
 
-	public LieuDeResidence(@NotNull String placeOfResidenceName, Integer commune, Pays pays) {
+	public LieuDeResidence(@NotNull String placeOfResidenceName, Integer commune, Integer pays) {
 		this.placeOfResidenceName = placeOfResidenceName;
 		this.commune = commune;
 		this.pays = pays;
@@ -28,7 +28,7 @@ public class LieuDeResidence {
 		return commune;
 	}
 
-	public Pays getPays() {
+	public Integer getPays() {
 		return pays;
 	}
 

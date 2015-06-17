@@ -15,14 +15,14 @@ public class Adresse {
     private String swissZipCodeAddOn;
     private Integer swissZipCodeId;
     private String foreignZipCode;
-    private Pays pays;
+    private Integer pays;
     private Long federalBuildingId;
     private Long xCoordinate;
     private Long yCoordinate;
 
     public Adresse(final String addressLine1, final String addressLine2, final String street, final String houseNumber, final String dwellingNumber, final String postOfficeBoxText,
                    final Long postOfficeBoxNumber, final String locality, final String town, final Long swissZipCode, final String swissZipCodeAddOn, final Integer swissZipCodeId,
-                   final String foreignZipCode, final Pays pays, final Long federalBuildingId, final Long xCoordinate, final Long yCoordinate) {
+                   final String foreignZipCode, final Integer pays, final Long federalBuildingId, final Long xCoordinate, final Long yCoordinate) {
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
         this.street = street;
@@ -50,7 +50,7 @@ public class Adresse {
         return addressLine2;
     }
 
-    public Pays getPays() {
+    public Integer getPays() {
         return pays;
     }
 

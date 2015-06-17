@@ -1,5 +1,5 @@
 package ch.vd.unireg.interfaces.organisation.data;
-public enum LegalForm {
+public enum FormeLegale {
 
 	N_00_AUTRE,
 	N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC,

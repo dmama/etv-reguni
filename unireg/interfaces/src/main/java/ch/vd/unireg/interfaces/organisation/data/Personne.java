@@ -6,13 +6,13 @@ import ch.vd.registre.base.date.RegDate;
 
 public class Personne {
 
-    private Integer cantonalId;
-    private SourceDonnees sourceDesDonnees;
-    private Long noAvs;
+    private final SourceDonnees sourceDesDonnees;
+    private final Long noAvs;
     @NotNull
-    private String nom;
-    private String prenom;
-    private Sexe sexe;
+    private final String nom;
+    private final String prenom;
+    private final Sexe sexe;
+
     /**
      * Date de naissance. Peut être partielle:
      *   AAAA-MM-JJ, par exemple 1999-05-01 ;
@@ -21,10 +21,8 @@ public class Personne {
      */
     private RegDate dateDeNaissance;
 
-
-    public Personne(Integer cantonalId, RegDate dateDeNaissance, Long noAvs, @NotNull String nom, String prenom, Sexe sexe,
+    public Personne(RegDate dateDeNaissance, Long noAvs, @NotNull String nom, String prenom, Sexe sexe,
                     SourceDonnees sourceDesDonnees) {
-        this.cantonalId = cantonalId;
         this.dateDeNaissance = dateDeNaissance;
         this.noAvs = noAvs;
         this.nom = nom;
@@ -43,4 +41,29 @@ public class Personne {
         MASCULIN,
         FEMININ
     }
+
+	public RegDate getDateDeNaissance() {
+		return dateDeNaissance;
+	}
+
+	public Long getNoAvs() {
+		return noAvs;
+	}
+
+	@NotNull
+	public String getNom() {
+		return nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public Sexe getSexe() {
+		return sexe;
+	}
+
+	public SourceDonnees getSourceDesDonnees() {
+		return sourceDesDonnees;
+	}
 }

@@ -4,19 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class Partie {
 
-	@NotNull
+	private final Integer cantonalIdPersonne;
+
 	private final Personne personne;
 	private final Adresse adresse;
 	private final LieuDeResidence lieuDeResidence;
 
-	public Partie(@NotNull Personne personne, Adresse adresse, LieuDeResidence lieuDeResidence) {
+	public Partie(Integer cantonalIdPersonne, Personne personne, Adresse adresse, LieuDeResidence lieuDeResidence) {
+		this.cantonalIdPersonne = cantonalIdPersonne;
 		this.personne = personne;
 		this.adresse = adresse;
 		this.lieuDeResidence = lieuDeResidence;
-	}
-
-	public Adresse getAdresse() {
-		return adresse;
 	}
 
 	public LieuDeResidence getLieuDeResidence() {
