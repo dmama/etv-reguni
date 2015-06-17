@@ -23,7 +23,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntService;
+import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
@@ -113,7 +113,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 
 		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
-		final RCEntService rcEntService = getBean(RCEntService.class, "rcEntService");
+		final RCEntAdapter rcEntAdapter = getBean(RCEntAdapter.class, "rcEntAdapter");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final RcPersClient rcpersClient = getBean(RcPersClient.class, "rcpersClient");
@@ -122,8 +122,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, bouclementService, rcEntService, adresseHelper, activityManager));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, rcEntService, adresseHelper, activityManager));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, bouclementService, rcEntAdapter, adresseHelper, activityManager));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, rcEntAdapter, adresseHelper, activityManager));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, tiersDAO, rcpersClient, nonHabitantIndex));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());

@@ -24,7 +24,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntService;
+import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
@@ -53,13 +53,13 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablissement> {
 
-	private final RCEntService rcEntService;
+	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
 	private final ActivityManager activityManager;
 
-	public EtablissementMigrator(UniregStore uniregStore, RCEntService rcEntService, AdresseHelper adresseHelper, ActivityManager activityManager) {
+	public EtablissementMigrator(UniregStore uniregStore, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, ActivityManager activityManager) {
 		super(uniregStore);
-		this.rcEntService = rcEntService;
+		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 		this.activityManager = activityManager;
 	}

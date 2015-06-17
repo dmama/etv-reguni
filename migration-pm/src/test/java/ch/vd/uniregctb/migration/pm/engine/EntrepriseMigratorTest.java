@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntService;
+import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -66,7 +66,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator = new EntrepriseMigrator(
 				getBean(UniregStore.class, "uniregStore"),
 				getBean(BouclementService.class, "bouclementService"),
-				getBean(RCEntService.class, "rcEntService"),
+				getBean(RCEntAdapter.class, "rcEntAdapter"),
 				getBean(AdresseHelper.class, "adresseHelper"),
 				activityManager);
 	}

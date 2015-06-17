@@ -13,7 +13,7 @@
 		<property name="assujettissementService" ref="assujettissementService"/>
 	</bean>
 
-	<bean id="rcEntService" class="ch.vd.uniregctb.adapter.rcent.service.RCEntService">
+	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">
 		<constructor-arg name="rcentClient" ref="rcentClient"/>
 		<constructor-arg name="historizer" ref="organisationHistorizer"/>
 	</bean>

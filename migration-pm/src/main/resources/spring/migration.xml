@@ -46,13 +46,13 @@
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
-        <constructor-arg name="rcEntService" ref="rcEntService"/>
+        <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
-        <constructor-arg name="rcEntService" ref="rcEntService"/>
+        <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>

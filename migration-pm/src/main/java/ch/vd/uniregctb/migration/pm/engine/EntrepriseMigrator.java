@@ -29,7 +29,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
-import ch.vd.uniregctb.adapter.rcent.service.RCEntService;
+import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
@@ -95,14 +95,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
 	private final BouclementService bouclementService;
-	private final RCEntService rcEntService;
+	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
 	private final ActivityManager activityManager;
 
-	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntService rcEntService, AdresseHelper adresseHelper, ActivityManager activityManager) {
+	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, ActivityManager activityManager) {
 		super(uniregStore);
 		this.bouclementService = bouclementService;
-		this.rcEntService = rcEntService;
+		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 		this.activityManager = activityManager;
 	}
@@ -308,7 +308,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			if (regpm.getNumeroCantonal() != null) {
 				// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
 				try {
-					rcent = rcEntService.getOrganisation(regpm.getNumeroCantonal());
+					rcent = rcEntAdapter.getOrganisation(regpm.getNumeroCantonal());
 				}
 				catch (Exception e) {
 					LOGGER.error("Erreur lors de l'accès à l'organisation " + regpm.getNumeroCantonal() + " dans RCEnt", e);
