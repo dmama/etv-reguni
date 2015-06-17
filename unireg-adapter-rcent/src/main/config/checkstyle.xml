@@ -82,6 +82,10 @@
 
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
 
+        <!-- Requis pour le SuppressionCommentFilter -->
+        <!-- Voir http://http://checkstyle.sourceforge.net/config.html#SuppressionCommentFilter -->
+        <module name="FileContentsHolder"/>
+
         <!-- required for SuppressWarningsFilter (and other Suppress* rules not used here) -->
         <!-- see http://checkstyle.sourceforge.net/config_annotation.html#SuppressWarningsHolder -->
         <module name="SuppressWarningsHolder"/>
@@ -211,6 +215,13 @@
     <!-- Support @SuppressWarnings (added in Checkstyle 5.7) -->
     <!-- see http://checkstyle.sourceforge.net/config.html#SuppressWarningsFilter -->
     <module name="SuppressWarningsFilter"/>
+
+    <!-- Supporter les commentaires permettant la désactivation de checkstyle sur une section du code. -->
+    <!-- Voir http://http://checkstyle.sourceforge.net/config.html#SuppressionCommentFilter -->
+    <module name="SuppressionCommentFilter">
+        <property name="offCommentFormat" value="CHECKSTYLE:OFF"/>
+        <property name="onCommentFormat" value="CHECKSTYLE:ON"/>
+    </module>
 
     <!-- Checks properties file for a duplicated properties. -->
     <!-- See http://checkstyle.sourceforge.net/config_misc.html#UniqueProperties -->

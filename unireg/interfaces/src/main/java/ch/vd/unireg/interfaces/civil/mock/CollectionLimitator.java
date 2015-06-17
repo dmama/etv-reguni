@@ -81,7 +81,7 @@ public class CollectionLimitator {
 		}
 	}
 
-	public static interface Limitator<T> {
+	public interface Limitator<T> {
 		boolean keep(T element, RegDate date);
 	}
 }

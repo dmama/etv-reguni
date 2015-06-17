@@ -24,29 +24,29 @@ import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public interface ServiceInfrastructureRaw {
 
-	static final String SERVICE_NAME = "ServiceInfra";
+	String SERVICE_NAME = "ServiceInfra";
 
-	final static int noOIPM = 21;
-	final static int noACI = 22;
-	final static int noACIImpotSource = 47;
-	final static int noACISuccessions = 1344;
-	final static int noCEDI = 1012;
-	final static int noTuteurGeneral = 1013;
-	final static int noCAT = 1341;
+	int noOIPM = 21;
+	int noACI = 22;
+	int noACIImpotSource = 47;
+	int noACISuccessions = 1344;
+	int noCEDI = 1012;
+	int noTuteurGeneral = 1013;
+	int noCAT = 1341;
 
-	final static int noOfsSuisse = 8100;
-	final static int noPaysApatride = 8998;
-	final static int noPaysInconnu = 8999;
+	int noOfsSuisse = 8100;
+	int noPaysApatride = 8998;
+	int noPaysInconnu = 8999;
 
 	/**
 	 * Constante sigle du canton de Vaud
 	 */
-	final static String SIGLE_CANTON_VD = "VD";
+	String SIGLE_CANTON_VD = "VD";
 
 	/**
 	 * Constante sigle du pays Suisse
 	 */
-	final static String SIGLE_SUISSE = "CH";
+	String SIGLE_SUISSE = "CH";
 
 	/**
 	 * @return la liste des pays.

@@ -203,6 +203,7 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 				}
 				catch (InterruptedException e) {
 					// ignored
+					LOGGER.info("Interruption ignorée durant l'attente de création du répértoire {}", path);
 				}
 				if (++i > 10) {
 					// après 10 essais, on laisse tomber
@@ -236,10 +237,6 @@ public class SimpleDiskCache<T extends Serializable> implements PersistentCache<
 
 		final String directory = calculateDir(id);
 		final File dir = new File(directory);
-		if (!dir.isDirectory()) {
-			// le répertoire n'existe pas => rien à faire
-		}
-
 		final File[] files = dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {

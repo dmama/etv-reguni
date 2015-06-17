@@ -810,7 +810,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	/**
 	 * Classe abstraite des clés utilisées pour le stockage des informations de pays
 	 */
-	private static abstract class KeyGetPaysByPeriod {
+	private abstract static class KeyGetPaysByPeriod {
 		private final DateRange validityRange;
 
 		protected KeyGetPaysByPeriod(DateRange validityRange) {
@@ -847,7 +847,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		protected abstract String toStringPart();
 	}
 
-	private static interface KeyGetPaysByNoOfs {
+	private interface KeyGetPaysByNoOfs {
 		int getNoOfs();
 
 		/**
@@ -901,7 +901,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	/**
 	 * Classe abstraite parente des clés utilisées pour la recherche dans le cache des informations de pays
 	 */
-	private static abstract class KeyGetPaysByDate {
+	private abstract static class KeyGetPaysByDate {
 		private final RegDate date;
 
 		protected KeyGetPaysByDate(RegDate date) {
@@ -1001,7 +1001,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static interface KeyGetPaysByCodeIso {
+	private interface KeyGetPaysByCodeIso {
 		@NotNull String getCodeIso();
 		int hashCode();
 	}

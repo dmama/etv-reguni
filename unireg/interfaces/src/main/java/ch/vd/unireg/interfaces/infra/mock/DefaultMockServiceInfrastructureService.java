@@ -11,9 +11,11 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
 
 	protected static final MockServiceInfrastructureService staticInstance = new MockServiceInfrastructureService() {
+		// CHECKSTYLE:OFF
 		@Override
 		protected void init() {
 		}
+		// CHECKSTYLE:ON
 	};
 
 	/**
@@ -27,9 +29,11 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 			try {
 				f.get(null);
 			}
+			// CHECKSTYLE:OFF
 			catch (IllegalAccessException e) {
 				// tant pis, on ignore
 			}
+			// CHECKSTYLE:ON
 		}
 		// charge toutes les inner classes statiques
 		for (Class c : clazz.getDeclaredClasses()) {

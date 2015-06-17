@@ -4,7 +4,7 @@ import ch.vd.unireg.interfaces.upi.data.UpiPersonInfo;
 
 public interface ServiceUpiRaw {
 
-	public static final String SERVICE_NAME = "ServiceUpi";
+	String SERVICE_NAME = "ServiceUpi";
 
 	/**
 	 * Appelle le service UPI avec le numéro AVS13 donné et récupère les informations liées à cet individu

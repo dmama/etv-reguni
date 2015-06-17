@@ -43,6 +43,11 @@
 			<version>5.1</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-adapter-rcent</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>
 			<artifactId>host-interfaces-client</artifactId>
 			<version>${host-interfaces.version-long}</version>
@@ -128,7 +133,26 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.15</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>src/main/config/checkstyle.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<!-- Build resources -->
