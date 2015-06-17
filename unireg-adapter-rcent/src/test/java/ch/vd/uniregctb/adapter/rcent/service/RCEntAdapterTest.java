@@ -27,7 +27,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-public class RCEntServiceTest {
+public class RCEntAdapterTest {
 
 	@Mock
 	private RcEntClient client;
@@ -36,7 +36,7 @@ public class RCEntServiceTest {
 
 	private Unmarshaller unmarshaller;
 
-	private RCEntService service;
+	private RCEntAdapter service;
 
 	@Before
 	public void setUp() throws Exception {
@@ -45,7 +45,7 @@ public class RCEntServiceTest {
 
 		MockitoAnnotations.initMocks(this);
 
-		service = new RCEntService(client, historizer);
+		service = new RCEntAdapter(client, historizer);
 	}
 
 	@Test

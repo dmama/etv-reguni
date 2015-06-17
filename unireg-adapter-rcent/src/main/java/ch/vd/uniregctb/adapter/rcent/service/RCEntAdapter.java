@@ -13,12 +13,12 @@ import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 /**
  * Adapteur / abstraction de service pour RC-ENT. Expose les requêtes dont nous avons besoin.
  */
-public class RCEntService {
+public class RCEntAdapter {
 
 	private RcEntClient rcentClient;
 	private OrganisationHistorizer historizer;
 
-	public RCEntService(RcEntClient rcentClient, OrganisationHistorizer historizer) {
+	public RCEntAdapter(RcEntClient rcentClient, OrganisationHistorizer historizer) {
 		this.rcentClient = rcentClient;
 		this.historizer = historizer;
 	}
