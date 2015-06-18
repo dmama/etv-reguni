@@ -1,6 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
-public enum TypeOfCapital {
+public enum TypeDeCapital {
 
 	CAPITAL_SOCIAL,
 	CAPITAL_ACTIONS,

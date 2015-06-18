@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Capital {
 
-    private TypeOfCapital typeOfCapital;
+    private TypeDeCapital typeOfCapital;
     private String currency;
     private BigDecimal capitalAmount;
     private BigDecimal cashedInAmount;
@@ -14,7 +14,7 @@ public class Capital {
 		super();
 	}
 
-	public Capital(final TypeOfCapital typeOfCapital, final String currency, final BigDecimal capitalAmount, final BigDecimal cashedInAmount, final String division) {
+	public Capital(final TypeDeCapital typeOfCapital, final String currency, final BigDecimal capitalAmount, final BigDecimal cashedInAmount, final String division) {
 		this.typeOfCapital = typeOfCapital;
 		this.currency = currency;
 		this.capitalAmount = capitalAmount;
@@ -38,7 +38,7 @@ public class Capital {
 		return division;
 	}
 
-	public TypeOfCapital getTypeOfCapital() {
+	public TypeDeCapital getTypeOfCapital() {
 		return typeOfCapital;
 	}
 }

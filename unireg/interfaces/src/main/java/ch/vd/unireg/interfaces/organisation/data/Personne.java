@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.organisation.data;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.Sexe;
 
 public class Personne {
 
@@ -35,11 +36,6 @@ public class Personne {
         BRUTES_RCENT,
         ENRICHIES_RCPERS,
         BRUTES_RCENT_AVEC_RCPERS_INDISPONIBLE;
-    }
-
-    public enum Sexe {
-        MASCULIN,
-        FEMININ
     }
 
 	public RegDate getDateDeNaissance() {

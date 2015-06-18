@@ -1,9 +1,14 @@
-package ch.vd.unireg.interfaces.organisation.rcent;
+package ch.vd.unireg.interfaces.organisation.rcent.converters;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.evd0021.v1.Address;
 import ch.vd.unireg.interfaces.organisation.data.Adresse;
 
-public class RCEntAddressHelper {
-	public static Adresse fromRCEntAddress(ch.vd.evd0021.v1.Address address) {
+public class AddressConverter extends BaseConverter<Address, Adresse> {
+
+	@Override
+	protected Adresse convert(@NotNull Address address) {
 		return new Adresse(address.getAddressLine1(),
 		                   address.getAddressLine2(),
 		                   address.getStreet(),

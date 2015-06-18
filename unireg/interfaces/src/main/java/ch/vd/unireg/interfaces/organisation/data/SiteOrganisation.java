@@ -10,7 +10,9 @@ public class SiteOrganisation {
 	@NotNull
 	private final List<DateRanged<String>> nom;
 
+	@NotNull
 	public final DonneesRC rc;
+	@NotNull
 	public final DonneesRegistreIDE ide;
 
 	private final Map<String,List<DateRanged<String>>> identifiants;
@@ -24,7 +26,7 @@ public class SiteOrganisation {
 	private final List<DateRanged<Long>> remplacePar;
 	private final List<DateRanged<Long>> enRemplacementDe;
 
-	public SiteOrganisation(long cantonalId, @NotNull List<DateRanged<String>> nom, DonneesRC rc, DonneesRegistreIDE ide,
+	public SiteOrganisation(long cantonalId, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
 	                        Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
 	                        List<DateRanged<TypeDeSite>> typeDeSite, List<DateRanged<Integer>> siege,
 	                        List<DateRanged<Fonction>> fonction, List<DateRanged<Long>> remplacePar,
