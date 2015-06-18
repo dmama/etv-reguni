@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -46,7 +47,9 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
@@ -627,7 +630,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegDate debut = RegDate.get(2005, 5 , 7);
-		addForPrincipal(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.Fraction.LE_BRASSUS, null);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.Fraction.LE_BRASSUS);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -665,6 +668,46 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(ffpm.getMotifFermeture());
 			Assert.assertEquals(MotifRattachement.DOMICILE, ffpm.getMotifRattachement());
 			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffpm.getGenreImpot());
+		});
+	}
+
+	@Test
+	public void testEtablissementPrincipalAvecCommune() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegDate debut = RegDate.get(2005, 5, 7);
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		e.setCommune(Commune.ECHALLENS);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> on va regarder l'établissement créé
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		doInUniregTransaction(true, status -> {
+			final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtablissement);
+			Assert.assertNotNull(etb);
+			Assert.assertTrue(etb.isPrincipal());
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(debut, domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 		});
 	}
 

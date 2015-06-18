@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
@@ -215,8 +216,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return la date de début de l'activité de la PM en question
 	 */
 	private static RegDate getDateDebutActivite(RegpmEntreprise regpm) {
-		// TODO est-ce vraiment la date de début d'activité de la PM ?
-		return regpm.getDateConstitution();
+		// TODO faut-il bien prendre la date de début du premier for principal ???
+		return regpm.getForsPrincipaux().stream()
+				.map(RegpmForPrincipal::getDateValidite)
+				.min(NullDateBehavior.LATEST::compare)
+				.orElse(null);
 	}
 
 	/**
