@@ -73,6 +73,11 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
 		public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
 		public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+
+		public static final class Fraction {
+			public static final RegpmCommune LE_SENTIER = buildFractionCommune(RegpmCanton.VD, "Le Sentier", 8000);
+			public static final RegpmCommune LE_BRASSUS = buildFractionCommune(RegpmCanton.VD, "Le Brassus", 8001);
+		}
 	}
 
 	public static final class LocalitePostale {
@@ -86,6 +91,15 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		commune.setNom(nom);
 		commune.setNoOfs(noOfs);
 		return commune;
+	}
+
+	static RegpmCommune buildFractionCommune(RegpmCanton canton, String nom, int noTechnique) {
+		final RegpmCommune fraction = new RegpmCommune();
+		fraction.setId((long) noTechnique);
+		fraction.setCanton(canton);
+		fraction.setNom(nom);
+		fraction.setNoOfs(0);
+		return fraction;
 	}
 
 	static RegpmLocalitePostale buildLocalitePostale(String nom, long onrp, int npa) {

@@ -263,13 +263,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
 			}
 			else {
+				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
+				final Integer noOfsCommuneRegpm = commune.getNoOfs();
+				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
+
 				for (DateRange dates : communeData.getValue()) {
 					final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 					ffs.setDateDebut(dates.getDateDebut());
 					ffs.setDateFin(dates.getDateFin());
 					ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 					ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+					ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
 					ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 					ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 					ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
@@ -278,7 +282,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
 					                                                                                                            DateRangeHelper.toDisplayString(dates),
-					                                                                                                            commune.getNoOfs()));
+					                                                                                                            noOfsCommune));
 				}
 			}
 		}
@@ -718,7 +722,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 			if (f.getCommune() != null) {
 				final RegpmCommune commune = f.getCommune();
-				ffp.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+
+				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
+				final Integer noOfsCommuneRegpm = commune.getNoOfs();
+				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
+
+				ffp.setNumeroOfsAutoriteFiscale(noOfsCommune);
 				ffp.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 			}
 			else if (f.getOfsPays() != null) {

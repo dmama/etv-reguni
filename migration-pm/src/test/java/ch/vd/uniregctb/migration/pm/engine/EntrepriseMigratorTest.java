@@ -47,10 +47,16 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
@@ -613,6 +619,52 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
 			Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
 			return null;
+		});
+	}
+
+	@Test
+	public void testForPrincipalSurFraction() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate debut = RegDate.get(2005, 5 , 7);
+		addForPrincipal(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.Fraction.LE_BRASSUS, null);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		// vérification de la commune du for principal créé
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<ForFiscal> fors = entreprise.getForsFiscaux();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+
+			final ForFiscal ff = fors.iterator().next();
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(debut, ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.Fraction.LE_BRASSUS.getId().intValue(), ff.getNumeroOfsAutoriteFiscale().intValue());
+			Assert.assertTrue(ff instanceof ForFiscalPrincipalPM);
+
+			final ForFiscalPrincipalPM ffpm = (ForFiscalPrincipalPM) ff;
+			Assert.assertEquals(MotifFor.INDETERMINE, ffpm.getMotifOuverture());
+			Assert.assertNull(ffpm.getMotifFermeture());
+			Assert.assertEquals(MotifRattachement.DOMICILE, ffpm.getMotifRattachement());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffpm.getGenreImpot());
 		});
 	}
 

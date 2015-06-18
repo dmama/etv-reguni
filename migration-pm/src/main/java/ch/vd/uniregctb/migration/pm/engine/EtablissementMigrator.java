@@ -149,13 +149,17 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				              String.format("Etablissement(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
 			}
 			else {
+				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
+				final Integer noOfsCommuneRegpm = commune.getNoOfs();
+				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
+
 				for (DateRange dates : communeData.getValue()) {
 					final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 					ffs.setDateDebut(dates.getDateDebut());
 					ffs.setDateFin(dates.getDateFin());
 					ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 					ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					ffs.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+					ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
 					ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
 					ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
 					ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
@@ -164,7 +168,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
 					                                                                                                            DateRangeHelper.toDisplayString(dates),
-					                                                                                                            commune.getNoOfs()));
+					                                                                                                            noOfsCommune));
 				}
 			}
 		}

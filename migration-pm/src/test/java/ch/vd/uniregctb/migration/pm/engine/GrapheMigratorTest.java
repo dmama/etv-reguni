@@ -47,6 +47,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -733,4 +734,114 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 	}
+
+	@Test
+	public void testForSecondaireImmeubleSurFraction() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate debut = RegDate.get(2005, 5 , 7);
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+
+		final RegpmImmeuble immeuble = createImmeuble(Commune.Fraction.LE_SENTIER);
+		EntrepriseMigratorTest.addRattachementProprietaire(e, debut, null, immeuble);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Entreprise> entreprises = uniregStore.getEntitiesFromDb(Entreprise.class, null);
+			Assert.assertNotNull(entreprises);
+			Assert.assertEquals(1, entreprises.size());
+			return entreprises.get(0).getNumero();
+		});
+
+		// vérification de la commune du for principal créé
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+			Assert.assertNotNull(fpt);
+			Assert.assertEquals(1, fpt.principauxPM.size());
+			Assert.assertEquals(0, fpt.principauxPP.size());
+			Assert.assertEquals(1, fpt.secondaires.size());
+			Assert.assertEquals(0, fpt.dpis.size());
+			Assert.assertEquals(0, fpt.autreElementImpot.size());
+			Assert.assertEquals(0, fpt.autresImpots.size());
+
+			final ForFiscalSecondaire ff = fpt.secondaires.get(0);
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(debut, ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.Fraction.LE_SENTIER.getId().intValue(), ff.getNumeroOfsAutoriteFiscale().intValue());
+			Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ff.getMotifOuverture());
+			Assert.assertNull(ff.getMotifFermeture());
+			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ff.getMotifRattachement());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+		});
+	}
+
+	@Test
+	public void testForSecondaireActiviteSurFraction() throws Exception {
+		final long noEntreprise = 1234L;
+		final long idEtablissement = 3267382L;
+
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegDate debut = RegDate.get(2005, 5 , 7);
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
+
+		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(idEtablissement, e);
+		EtablissementMigratorTest.addEtablissementStable(etb, debut, null);
+		EtablissementMigratorTest.addDomicileEtablissement(etb, debut, Commune.Fraction.LE_BRASSUS, false);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                     Collections.singletonList(etb),
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Entreprise> entreprises = uniregStore.getEntitiesFromDb(Entreprise.class, null);
+			Assert.assertNotNull(entreprises);
+			Assert.assertEquals(1, entreprises.size());
+			return entreprises.get(0).getNumero();
+		});
+
+		// vérification de la commune du for principal créé
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+			Assert.assertNotNull(fpt);
+			Assert.assertEquals(1, fpt.principauxPM.size());
+			Assert.assertEquals(0, fpt.principauxPP.size());
+			Assert.assertEquals(1, fpt.secondaires.size());
+			Assert.assertEquals(0, fpt.dpis.size());
+			Assert.assertEquals(0, fpt.autreElementImpot.size());
+			Assert.assertEquals(0, fpt.autresImpots.size());
+
+			final ForFiscalSecondaire ff = fpt.secondaires.get(0);
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(debut, ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.Fraction.LE_BRASSUS.getId().intValue(), ff.getNumeroOfsAutoriteFiscale().intValue());
+			Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ff.getMotifOuverture());
+			Assert.assertNull(ff.getMotifFermeture());
+			Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ff.getMotifRattachement());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+		});
+	}
+
 }
