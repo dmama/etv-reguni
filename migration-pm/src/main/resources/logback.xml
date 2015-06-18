@@ -101,7 +101,7 @@
 		<file>log/suivi-global.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [-8c] [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
 		</encoder>
 	</appender>
 	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe" additivity="false">
@@ -114,6 +114,10 @@
 
 	<logger name="ch.vd.uniregctb.migration.pm.utils.TracingFactory" additivity="false">
 		<appender-ref ref="PERF"/>
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.springframework">
@@ -132,7 +136,7 @@
 		<level value="INFO" />
 	</logger>
 
-	<root level="debug">
+	<root level="DEBUG">
 		<!--<appender-ref ref="CONSOLE"/>-->
 		<appender-ref ref="MAIN" />
 	</root>
