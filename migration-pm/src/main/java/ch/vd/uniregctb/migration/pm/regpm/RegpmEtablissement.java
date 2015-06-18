@@ -136,7 +136,8 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
 	@Transient
 	public AdresseAvecRue getAdresse() {
-		return new Adresse();
+		// l'adresse est valide aux dates des établissements stables... donc pas d'établissement stable = pas d'adresse !
+		return etablissementsStables.isEmpty() ? null : new Adresse();
 	}
 
 	@Id

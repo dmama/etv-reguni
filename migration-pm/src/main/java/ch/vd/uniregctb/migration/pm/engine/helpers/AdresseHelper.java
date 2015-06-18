@@ -32,6 +32,10 @@ public class AdresseHelper {
 	 * @return une adresse presque prête à persister
 	 */
 	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultProduction mr, @Nullable Supplier<String> complement, boolean permanente) {
+		if (source == null) {
+			return null;
+		}
+
 		final StreetData streetData = streetDataMigrator.migrate(source, mr);
 		final AdresseSupplementaire dest;
 		if (streetData != null) {

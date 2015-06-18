@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.migration.pm.AbstractSpringTest;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 
 public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
@@ -48,8 +50,7 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 	};
 
 	/**
-	 * Générateur de numéros de séquence entiers (pour le cas où il n'est pas aisément calculable - voir le cas des appartenances à
-	 * des groupes de propriétaires - ce générateur peut le simuler...)
+	 * Générateur de numéros de séquence entiers (pour le cas où il n'est pas aisément calculable - voir le cas des appartenances à des groupes de propriétaires - ce générateur peut le simuler...)
 	 */
 	protected static final Iterator<Integer> NO_SEQUENCE_GENERATOR = new Iterator<Integer>() {
 		private final AtomicInteger seqNext = new AtomicInteger(0);
@@ -65,12 +66,18 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		}
 	};
 
-	public static final RegpmCommune LAUSANNE = buildCommune(RegpmCanton.VD, "Lausanne", MockCommune.Lausanne.getNoOFS());
-	public static final RegpmCommune MORGES = buildCommune(RegpmCanton.VD, "Morges", MockCommune.Morges.getNoOFS());
-	public static final RegpmCommune ECHALLENS = buildCommune(RegpmCanton.VD, "Echallens", MockCommune.Echallens.getNoOFS());
-	public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
-	public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
-	public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+	public static final class Commune {
+		public static final RegpmCommune LAUSANNE = buildCommune(RegpmCanton.VD, "Lausanne", MockCommune.Lausanne.getNoOFS());
+		public static final RegpmCommune MORGES = buildCommune(RegpmCanton.VD, "Morges", MockCommune.Morges.getNoOFS());
+		public static final RegpmCommune ECHALLENS = buildCommune(RegpmCanton.VD, "Echallens", MockCommune.Echallens.getNoOFS());
+		public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
+		public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
+		public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+	}
+
+	public static final class LocalitePostale {
+		public static final RegpmLocalitePostale RENENS = buildLocalitePostale("Renens (VD)", MockLocalite.Renens.getNoOrdre(), MockLocalite.Renens.getNPA());
+	}
 
 	static RegpmCommune buildCommune(RegpmCanton canton, String nom, int noOfs) {
 		final RegpmCommune commune = new RegpmCommune();
@@ -79,6 +86,15 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		commune.setNom(nom);
 		commune.setNoOfs(noOfs);
 		return commune;
+	}
+
+	static RegpmLocalitePostale buildLocalitePostale(String nom, long onrp, int npa) {
+		final RegpmLocalitePostale lp = new RegpmLocalitePostale();
+		lp.setNomCourt(nom);
+		lp.setNomLong(nom);
+		lp.setNoOrdreP(onrp);
+		lp.setNpa(npa);
+		return lp;
 	}
 
 	/**

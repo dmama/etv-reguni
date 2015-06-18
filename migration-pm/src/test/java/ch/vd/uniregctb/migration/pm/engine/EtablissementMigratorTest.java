@@ -23,6 +23,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -216,7 +217,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebut, dateFin);
-		addDomicileEtablissement(etablissement, dateDebut, LAUSANNE, true);     // il y a intersection, mais le domicile est annulé, donc ignoré...
+		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, true);     // il y a intersection, mais le domicile est annulé, donc ignoré...
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -271,7 +272,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebut, dateFin);
-		addDomicileEtablissement(etablissement, dateDebut, LAUSANNE, false);
+		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -331,7 +332,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNotNull(communes);
 				Assert.assertEquals(1, communes.size());
 
-				final List<DateRange> lsneData = communes.get(LAUSANNE);
+				final List<DateRange> lsneData = communes.get(Commune.LAUSANNE);
 				Assert.assertNotNull(lsneData);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebut, dateFin)), lsneData);
 			}
@@ -350,7 +351,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebutEtablissementStable, dateFinEtablissementStable);
-		addDomicileEtablissement(etablissement, dateDebutDomicile, MORGES, false);
+		addDomicileEtablissement(etablissement, dateDebutDomicile, Commune.MORGES, false);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -411,7 +412,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNotNull(communes);
 				Assert.assertEquals(1, communes.size());
 
-				final List<DateRange> morgesData = communes.get(MORGES);
+				final List<DateRange> morgesData = communes.get(Commune.MORGES);
 				Assert.assertNotNull(morgesData);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutDomicile, dateFinEtablissementStable)), morgesData);
 			}
@@ -430,8 +431,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebut, dateFin);
-		addDomicileEtablissement(etablissement, dateDebut, LAUSANNE, false);
-		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, ECHALLENS, false);
+		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
+		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, Commune.ECHALLENS, false);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -491,11 +492,11 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNotNull(communes);
 				Assert.assertEquals(2, communes.size());
 
-				final List<DateRange> lausanne = communes.get(LAUSANNE);
+				final List<DateRange> lausanne = communes.get(Commune.LAUSANNE);
 				Assert.assertNotNull(lausanne);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebut, dateDebutSecondDomicile.getOneDayBefore())), lausanne);
 
-				final List<DateRange> echallens = communes.get(ECHALLENS);
+				final List<DateRange> echallens = communes.get(Commune.ECHALLENS);
 				Assert.assertNotNull(echallens);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutSecondDomicile, dateFin)), echallens);
 			}
@@ -515,8 +516,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebutEtablissementStable, dateFinEtablissementStable);
-		addDomicileEtablissement(etablissement, dateDebutDomicile, LAUSANNE, false);
-		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, ECHALLENS, false);
+		addDomicileEtablissement(etablissement, dateDebutDomicile, Commune.LAUSANNE, false);
+		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, Commune.ECHALLENS, false);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
@@ -577,11 +578,11 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNotNull(communes);
 				Assert.assertEquals(2, communes.size());
 
-				final List<DateRange> lausanne = communes.get(LAUSANNE);
+				final List<DateRange> lausanne = communes.get(Commune.LAUSANNE);
 				Assert.assertNotNull(lausanne);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutDomicile, dateDebutSecondDomicile.getOneDayBefore())), lausanne);
 
-				final List<DateRange> echallens = communes.get(ECHALLENS);
+				final List<DateRange> echallens = communes.get(Commune.ECHALLENS);
 				Assert.assertNotNull(echallens);
 				Assert.assertEquals(Collections.<DateRange>singletonList(new DateRangeHelper.Range(dateDebutSecondDomicile, dateFinEtablissementStable)), echallens);
 			}
@@ -696,8 +697,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setEnseigne("La verte mangouste");
-		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
-		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.ECHALLENS, true);      // domicile annulé -> pas pris en compte
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.MORGES, false);
 		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
@@ -772,8 +773,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setEnseigne("Le jaune éléphant");
-		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, true);      // domicile annulé -> pas pris en compte
-		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), BALE, false);
+		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), Commune.ECHALLENS, true);      // domicile annulé -> pas pris en compte
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.BALE, false);
 		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
@@ -848,8 +849,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setEnseigne("L'orange pie");
-		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), ECHALLENS, false);
-		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), MORGES, false);
+		addDomicileEtablissement(etablissement, RegDate.get(1998, 1, 1), Commune.ECHALLENS, false);
+		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.MORGES, false);
 		addEtablissementStable(etablissement, RegDate.get(1995, 1, 1), RegDate.get(2005, 12, 31));
 
 		final MigrationResultCollector mr = new MigrationResultCollector();
@@ -923,5 +924,24 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 			return null;
 		});
+	}
+
+	@Test
+	public void testAdresseEnAbsenceDEtablissementStable() throws Exception {
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
+		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
+		etablissement.setNomRue("Avenue de Longemalle");
+		etablissement.setLocalitePostale(LocalitePostale.RENENS);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// il y a eu un temps où la migration échouait sur un appel à RegpmEtablissement.Adresse.getDateFin()
+		// en absence d'établissement stable
+
+		final AdresseAvecRue adresse = etablissement.getAdresse();
+		Assert.assertNull(adresse);
 	}
 }
