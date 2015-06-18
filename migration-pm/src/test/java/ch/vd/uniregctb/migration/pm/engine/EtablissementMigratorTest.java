@@ -135,7 +135,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -147,7 +147,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -658,7 +657,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -671,7 +670,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
 		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
