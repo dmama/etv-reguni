@@ -555,20 +555,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		params.put("annee", year);
 
 		// récupération des données
-		final List<PeriodeFiscale> pfs = uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params);
-		if (pfs == null || pfs.isEmpty()) {
-			throw new IllegalStateException("La période fiscale " + year + " n'existe pas dans Unireg.");
+		final List<PeriodeFiscale> pfs = Optional.ofNullable(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params)).orElse(Collections.emptyList());
+		if (pfs.isEmpty()) {
+			// TODO la période fiscale n'existe pas dans Unireg... dans un premier temps, on va juste en créer une "bidon" (en particulier : sans paramètres...)
+			final PeriodeFiscale pf = new PeriodeFiscale();
+			pf.setAnnee(year);
+			pf.setDefaultPeriodeFiscaleParametres();
+			return uniregStore.saveEntityToDb(pf);
 		}
-		if (pfs.size() > 1) {
+		else if (pfs.size() > 1) {
 			throw new IllegalStateException("Plusieurs périodes fiscales trouvées dans Unireg pour l'année " + year);
 		}
-
-		// la seule donnée
-		final PeriodeFiscale pf = pfs.get(0);
-		if (pf == null) {
-			throw new IllegalStateException("La période fiscale " + year + " n'existe pas dans Unireg.");
+		else {
+			return pfs.get(0);
 		}
-		return pf;
 	}
 
 	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin) {
