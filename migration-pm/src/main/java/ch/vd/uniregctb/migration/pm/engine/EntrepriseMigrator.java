@@ -452,9 +452,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// migration des fusions (cette entreprise étant la source)
 		regpm.getFusionsApres().forEach(apres -> {
-			// TODO et les autres informations de la fusion (forme, date de contrat, date de bilan... ?)
+			// TODO et les autres informations de la fusion (forme, date d'inscription, date de contrat, date de bilan... ?)
 			final Supplier<Entreprise> apresFusion = getEntrepriseByRegpmIdSupplier(idMapper, apres.getEntrepriseApres().getId());
-			linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateInscription(), null));
+			linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateBilan().getOneDayAfter(), null));
 		});
 	}
 
@@ -620,16 +620,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// si la PF est celle de la prochaine date de bouclement, alors on peut la créer...
 					if (regpm.getDateBouclementFutur() != null && regpm.getDateBouclementFutur().year() == dossier.getPf()) {
+						mr.addMessage(MigrationResultMessage.CategorieListe.DECLARATIONS, MigrationResultMessage.Niveau.WARN,
+						              String.format("Dossier fiscal %d/%d sans exercice commercial associé sur la PF du bouclement futur -> quelle est la date de début de la déclaration ?",
+						                            dossier.getPf(), dossier.getNoParAnnee()));
 
 						// TODO comment évaluer la date de début ?
-						final RegDate dateDebut = null;
-						final Declaration di = migrateDeclaration(dossier, dateDebut, regpm.getDateBouclementFutur());
-						unireg.addDeclaration(di);
+//						final RegDate dateDebut = null;
+//						final Declaration di = migrateDeclaration(dossier, dateDebut, regpm.getDateBouclementFutur());
+//						unireg.addDeclaration(di);
 					}
 					else {
 						// TODO que faire avec ces dossiers ? Ils correspondent pourtant à une déclaration envoyée, mais pourquoi n'y a-t-il pas d'exercice commercial associé ?
 						mr.addMessage(MigrationResultMessage.CategorieListe.DECLARATIONS, MigrationResultMessage.Niveau.WARN,
-						              String.format("Dossier fiscal %d/%d sans exercice commercial associé.", dossier.getPf(), dossier.getNoParAnnee()));
+						              String.format("Dossier fiscal %d/%d passé sans exercice commercial associé.", dossier.getPf(), dossier.getNoParAnnee()));
 					}
 				});
 	}
