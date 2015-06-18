@@ -37,6 +37,7 @@
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
 		<property name="mode" value="${migration.mode}"/>
+		<property name="nbThreads" value="${migrator.threads.nb}"/>
 		<property name="grapheMigrator" ref="grapheMigrator"/>
 	</bean>
 

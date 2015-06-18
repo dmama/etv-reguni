@@ -42,8 +42,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
 	private GatheringThread gatheringThread;
+
 	private MigrationMode mode;
 	private GrapheMigrator grapheMigrator;
+	private int nbThreads = 1;
 
 	/**
 	 * Appelé quand une tâche ne peut être ajoutée à la queue d'entrée d'un {@link ThreadPoolExecutor}, afin d'attendre patiemment
@@ -109,9 +111,13 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		this.grapheMigrator = grapheMigrator;
 	}
 
+	public void setNbThreads(int nbThreads) {
+		this.nbThreads = nbThreads;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
+		this.executor = new ThreadPoolExecutor(nbThreads, nbThreads, 0L, TimeUnit.SECONDS,
 		                                       new ArrayBlockingQueue<>(20),
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),
 		                                       MigrationWorker::rejectionExecutionHandler);
