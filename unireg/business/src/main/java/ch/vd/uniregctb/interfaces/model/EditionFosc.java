@@ -12,15 +12,15 @@ public interface EditionFosc {
 	/**
 	 * @return l'année de parution
 	 */
-	public int getAnnee();
+	int getAnnee();
 
 	/**
 	 * @return le numéro dans l'année de parution
 	 */
-	public int getNumero();
+	int getNumero();
 
 	/**
 	 * @return la date de parution
 	 */
-	public RegDate getDateParution();
+	RegDate getDateParution();
 }

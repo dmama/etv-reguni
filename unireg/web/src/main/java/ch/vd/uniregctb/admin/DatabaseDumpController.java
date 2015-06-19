@@ -100,7 +100,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	/**
 	 * Une action supportée par ce contrôleur.
 	 */
-	private static interface Action {
+	private interface Action {
 
 		boolean inDevOnly();
 

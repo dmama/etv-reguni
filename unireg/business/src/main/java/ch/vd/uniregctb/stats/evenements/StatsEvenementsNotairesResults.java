@@ -16,7 +16,7 @@ import ch.vd.uniregctb.reqdes.EtatTraitement;
 
 public class StatsEvenementsNotairesResults {
 
-	public static abstract class UniteTraitementInfo {
+	public abstract static class UniteTraitementInfo {
 
 		public final long id;
 		public final EtatTraitement etat;

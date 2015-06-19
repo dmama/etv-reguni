@@ -34,7 +34,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class RapportView implements Comparable<RapportView>, Annulable {
 
-	protected final static Logger LOGGER = LoggerFactory.getLogger(RapportView.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(RapportView.class);
 
 	private static BaseComparator<RapportView> comparator = new BaseComparator<>(new String[]{"annule", "dateDebut"}, new Boolean[]{true, true});
 

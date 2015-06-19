@@ -12,7 +12,7 @@ import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 
 public interface ServicePersonneMoraleService {
 
-	public static final String SERVICE_NAME = "ServicePM";
+	String SERVICE_NAME = "ServicePM";
 
 	/**
 	 * @return tous les ids des personnes morales qui existent dans la base de données du host.

@@ -156,7 +156,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		evenementCivilProcessor.traiteEvenementCivil(id);
 	}
 
-	protected static interface IndividuModification {
+	protected interface IndividuModification {
 		void modifyIndividu(MockIndividu individu);
 	}
 

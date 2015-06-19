@@ -10,7 +10,7 @@ public interface ActivationService {
 	 * @param tiers
 	 * @param dateAnnulation
 	 */
-	public void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException;
+	void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException;
 
 	/**
 	 * Remplace un tiers par un autre (désactive le premier et ajoute un lien entre les deux)
@@ -18,7 +18,7 @@ public interface ActivationService {
 	 * @param tiersRemplacant
 	 * @param dateRemplacement
 	 */
-	public void remplaceTiers(Tiers tiersRemplace, Tiers tiersRemplacant, RegDate dateRemplacement) throws ActivationServiceException;
+	void remplaceTiers(Tiers tiersRemplace, Tiers tiersRemplacant, RegDate dateRemplacement) throws ActivationServiceException;
 
 
 	/**
@@ -26,5 +26,5 @@ public interface ActivationService {
 	 * @param tiers
 	 * @param dateReactivation
 	 */
-	public void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException;
+	void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException;
 }

@@ -38,7 +38,7 @@ public class CoupleControllerTest extends WebTestSpring3 {
 
 	private TiersService tiersService;
 
-	private final static String DB_UNIT_FILE = "classpath:ch/vd/uniregctb/couple/CoupleControllerTest.xml";
+	private static final String DB_UNIT_FILE = "classpath:ch/vd/uniregctb/couple/CoupleControllerTest.xml";
 
 	protected Long numeroPP1 = 12300002L;
 	protected Long numeroPP2 = 12300003L;

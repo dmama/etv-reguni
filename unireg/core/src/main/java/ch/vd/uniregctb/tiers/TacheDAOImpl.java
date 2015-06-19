@@ -360,14 +360,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		}
 	}
 
-	final static String queryTaches =
+	static final String queryTaches =
 			"select " +
 					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
 					"from Tache tache " +
 					"where tache.class != TacheNouveauDossier and tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
 					"group by tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative";
 
-	final static String queryDossiers =
+	static final String queryDossiers =
 			"select " +
 					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
 					"from TacheNouveauDossier tache " +

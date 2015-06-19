@@ -489,7 +489,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		});
 	}
 	
-	private static interface Handler {
+	private interface Handler {
 		HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 	}
 

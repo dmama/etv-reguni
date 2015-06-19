@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class DecesTest extends AbstractEvenementCivilInterneTest {
 
-	final static private RegDate DATE_DECES = RegDate.get(2008, 1, 1);
+	static final private RegDate DATE_DECES = RegDate.get(2008, 1, 1);
 
 	/**
 	 * Le numéro d'individu du défunt célibataire.

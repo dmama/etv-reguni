@@ -52,26 +52,26 @@ public class ConsultLogController {
 	private RemarqueDAO remarqueDAO;
 	private DecisionAciDAO decisionAciDAO;
 
-	public final static String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
-	public final static String NATURE_SITUATION_PARAMETER_VALUE = "SituationFamille";
-	public final static String NATURE_RAPPORT_PARAMETER_VALUE = "RapportEntreTiers";
-	public final static String NATURE_ADRESSE_PARAMETER_VALUE = "AdresseTiers";
-	public final static String NATURE_DI_PARAMETER_VALUE = "DI";
-	public final static String NATURE_LR_PARAMETER_VALUE = "LR";
-	public final static String NATURE_DELAI_PARAMETER_VALUE = "DelaiDeclaration";
-	public final static String NATURE_ETAT_PARAMETER_VALUE = "EtatDeclaration";
-	public final static String NATURE_TIERS_PARAMETER_VALUE = "Tiers";
-	public final static String NATURE_MOUVEMENT_PARAMETER_VALUE = "MouvementDossier";
-	public final static String NATURE_TACHE_PARAMETER_VALUE = "Tache";
-	public final static String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
-	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
-	public final static String NATURE_EVENEMENT_ECH_PARAMETER_VALUE = "EvenementEch";
-	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
-	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
-	public final static String NATURE_IMMEUBLE = "Immeuble";
-	public final static String NATURE_UNITE_TRAITEMENT_REQDES = "UniteTraitementReqDes";
-	public final static String NATURE_REMARQUE = "Remarque";
-	public final static String NATURE_DECISION_ACI = "DecisionAci";
+	public static final String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
+	public static final String NATURE_SITUATION_PARAMETER_VALUE = "SituationFamille";
+	public static final String NATURE_RAPPORT_PARAMETER_VALUE = "RapportEntreTiers";
+	public static final String NATURE_ADRESSE_PARAMETER_VALUE = "AdresseTiers";
+	public static final String NATURE_DI_PARAMETER_VALUE = "DI";
+	public static final String NATURE_LR_PARAMETER_VALUE = "LR";
+	public static final String NATURE_DELAI_PARAMETER_VALUE = "DelaiDeclaration";
+	public static final String NATURE_ETAT_PARAMETER_VALUE = "EtatDeclaration";
+	public static final String NATURE_TIERS_PARAMETER_VALUE = "Tiers";
+	public static final String NATURE_MOUVEMENT_PARAMETER_VALUE = "MouvementDossier";
+	public static final String NATURE_TACHE_PARAMETER_VALUE = "Tache";
+	public static final String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
+	public static final String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
+	public static final String NATURE_EVENEMENT_ECH_PARAMETER_VALUE = "EvenementEch";
+	public static final String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
+	public static final String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
+	public static final String NATURE_IMMEUBLE = "Immeuble";
+	public static final String NATURE_UNITE_TRAITEMENT_REQDES = "UniteTraitementReqDes";
+	public static final String NATURE_REMARQUE = "Remarque";
+	public static final String NATURE_DECISION_ACI = "DecisionAci";
 
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)

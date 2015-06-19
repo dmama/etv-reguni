@@ -27,7 +27,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(DossiersApparentesEditController.class);
 
-	public final static String TARGET_ANNULER_RAPPORT = "annulerRapport";
+	public static final String TARGET_ANNULER_RAPPORT = "annulerRapport";
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
 	public static final String RESULT_SIZE_NAME = "resultSize";

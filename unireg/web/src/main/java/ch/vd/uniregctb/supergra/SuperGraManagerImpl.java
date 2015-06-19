@@ -137,7 +137,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 */
 	private Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = null;
 
-	private static interface AttributeBuilder {
+	private interface AttributeBuilder {
 		AttributeView build(Property p, Object value, SuperGraContext context);
 	}
 

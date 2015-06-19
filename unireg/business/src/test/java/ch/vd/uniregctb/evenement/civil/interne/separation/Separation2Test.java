@@ -44,7 +44,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(Separation2Test.class);
 	
-	final static private RegDate DATE_SEPARATION = date(2008, 10, 10);
+	static final private RegDate DATE_SEPARATION = date(2008, 10, 10);
 
 	// test personne mariée seule
 	private static final long INDIVIDU_MARIE_SEUL = 12345;

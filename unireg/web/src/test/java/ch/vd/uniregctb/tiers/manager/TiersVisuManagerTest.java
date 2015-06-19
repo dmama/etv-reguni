@@ -30,7 +30,7 @@ public class TiersVisuManagerTest extends WebTest {
 
 	private TiersVisuManager tiersVisuManager;
 
-	private final static String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
+	private static final String DB_UNIT_FILE = "TiersVisuManagerTest.xml";
 
 	/**
 	 * @see ch.vd.uniregctb.common.AbstractCoreDAOTest#onSetUp()

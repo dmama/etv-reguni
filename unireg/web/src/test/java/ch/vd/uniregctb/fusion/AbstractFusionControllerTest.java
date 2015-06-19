@@ -12,7 +12,7 @@ public abstract class AbstractFusionControllerTest extends WebTest {
 	/**
 	 * DB unit
 	 */
-	private final static String DB_UNIT_FILE = "AbstractFusionControllerTest.xml";
+	private static final String DB_UNIT_FILE = "AbstractFusionControllerTest.xml";
 
 	protected Long numeroNonHab = 32100002L;
 	protected Long numeroHab = 12300002L;

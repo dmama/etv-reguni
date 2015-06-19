@@ -29,10 +29,10 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 	}
 
 	public static final String PP_CRITERIA_NAME = "identCriteria";
-	public final static String BOUTON_ANNULER = "annuler";
-	public final static String ID_PARAMETER_NAME = "id";
-	public final static String SOURCE_PARAMETER = "source";
-	public final static String UNLOCK_PARAMETER = "unlock";
+	public static final String BOUTON_ANNULER = "annuler";
+	public static final String ID_PARAMETER_NAME = "id";
+	public static final String SOURCE_PARAMETER = "source";
+	public static final String UNLOCK_PARAMETER = "unlock";
 
 
 	/**

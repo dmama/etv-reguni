@@ -16,24 +16,24 @@ public interface DatabaseService {
 	/**
 	 * Vide entièrement la base de toutes ses données.
 	 */
-	public abstract void truncateDatabase() throws Exception;
+	void truncateDatabase() throws Exception;
 
 	/**
 	 * @return la liste des noms de tables selon la base de données.
 	 */
-	public abstract String[] getTableNamesFromDatabase();
+	String[] getTableNamesFromDatabase();
 
 	/**
 	 * @return la liste des noms de tables selon la factory hibernate.
 	 */
-	public abstract String[] getTableNamesFromHibernate(boolean reverse);
+	String[] getTableNamesFromHibernate(boolean reverse);
 
 	/**
 	 * Dump la base de donnée complète dans un fichier DbUnit.
 	 */
-	public void dumpToDbunitFile(OutputStream outputStream) throws Exception;
+	void dumpToDbunitFile(OutputStream outputStream) throws Exception;
 
-	public static class DumpParts {
+	class DumpParts {
 		public final boolean sitFamille;
 		public final boolean declarations;
 		public final boolean rapportsEntreTiers;
@@ -52,7 +52,7 @@ public interface DatabaseService {
 	 * @param parts     les parties à dumper
 	 * @param status    un status manager
 	 */
-	public int dumpTiersListToDbunitFile(List<Long> tiersList, DumpParts parts, OutputStream outputStream, StatusManager status) throws Exception;
+	int dumpTiersListToDbunitFile(List<Long> tiersList, DumpParts parts, OutputStream outputStream, StatusManager status) throws Exception;
 
 	/**
 	 * Efface et recharge la base de données avec un fichier DBUnit.
@@ -62,12 +62,12 @@ public interface DatabaseService {
 	 * @param truncateBefore <b>vrai</b> si la base doit être truncatée avant le load; <b>faux</b> autrement.
 	 * @throws Exception en cas d'erreur
 	 */
-	public void loadFromDbunitFile(InputStream inputStream, StatusManager status, boolean truncateBefore) throws Exception;
+	void loadFromDbunitFile(InputStream inputStream, StatusManager status, boolean truncateBefore) throws Exception;
 
 	/**
 	 * Cette méthode s'assure que la séquence hibernate est initialisée avec une valeur assez grande pour ne pas générer d'ids qui entre en
 	 * collision avec des valeurs existantes dans la base. Il est utile d'appeler cette méthode après le chargement d'un fichier DBUnit, par
 	 * exemple.
 	 */
-	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence);
+	void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence);
 }

@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 public class EvenementImpotSourceTest extends WithoutSpringTest {
 
-	private final static Long NUMERO_CONTRIBUABLE = 1300002L;
+	private static final Long NUMERO_CONTRIBUABLE = 1300002L;
 	private Schema schemaCache;
 
 	@Override

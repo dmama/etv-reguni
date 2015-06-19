@@ -636,7 +636,7 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		return DataHelper.coreToXML(list);
 	}
 
-	private static interface PartyFactory<T extends Tiers> {
+	private interface PartyFactory<T extends Tiers> {
 		Party buildParty(T tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
 	}
 

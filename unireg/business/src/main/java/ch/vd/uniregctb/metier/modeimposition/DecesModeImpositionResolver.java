@@ -14,7 +14,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public class DecesModeImpositionResolver extends TerminaisonCoupleModeImpositionResolver {
 
-	final private DivorceModeImpositionResolver resolver;
+	private final DivorceModeImpositionResolver resolver;
 
 	public DecesModeImpositionResolver(TiersService tiersService, Long numeroEvenement) {
 		super(tiersService);

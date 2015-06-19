@@ -13,5 +13,5 @@ public interface EvenementExterneHandler {
 	 * @param event un événement externe (non-persisté).
 	 * @throws EvenementExterneException en cas de traitement impossible.
 	 */
-	public void onEvent(EvenementExterne event) throws EvenementExterneException;
+	void onEvent(EvenementExterne event) throws EvenementExterneException;
 }

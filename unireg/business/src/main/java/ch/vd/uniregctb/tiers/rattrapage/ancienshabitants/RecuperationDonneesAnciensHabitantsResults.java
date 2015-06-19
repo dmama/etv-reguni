@@ -52,7 +52,7 @@ public class RecuperationDonneesAnciensHabitantsResults extends AbstractJobResul
 		}
 	}
 
-	public static abstract class Info implements Comparable<Info> {
+	public abstract static class Info implements Comparable<Info> {
 		public final long noCtb;
 
 		protected Info(long noCtb) {

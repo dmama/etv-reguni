@@ -7,90 +7,90 @@ import org.apache.commons.lang3.StringUtils;
 
 public abstract class LengthConstants {
 
-	public final static int HIBERNATE_LOGUSER = 65;
+	public static final int HIBERNATE_LOGUSER = 65;
 
-	public final static int TIERS_PERSONNE = 200;
-	public final static int TIERS_NOM = 250;
-	public final static int TIERS_REMARQUE = 2000;
-	public final static int TIERS_ADRESSEBICSWIFT = 15;
-	public final static int TIERS_SEXE = 8;
-	public final static int TIERS_CATETRANGER = 50;
-	public final static int TIERS_NUMCOMPTE = 34;
-	public final static int TIERS_NUMAVS = 13;
-	public final static int TIERS_NUMTEL = 35;
-	public final static int TIERS_EMAIL = 255;
+	public static final int TIERS_PERSONNE = 200;
+	public static final int TIERS_NOM = 250;
+	public static final int TIERS_REMARQUE = 2000;
+	public static final int TIERS_ADRESSEBICSWIFT = 15;
+	public static final int TIERS_SEXE = 8;
+	public static final int TIERS_CATETRANGER = 50;
+	public static final int TIERS_NUMCOMPTE = 34;
+	public static final int TIERS_NUMAVS = 13;
+	public static final int TIERS_NUMTEL = 35;
+	public static final int TIERS_EMAIL = 255;
 	public static final int TIERS_LIB_ORIGINE = 250;
 	public static final int TIERS_LIBELLE_ORIGINE = 100;
 	public static final int TIERS_CANTON_ORIGINE = 2;
 	public static final int TIERS_NOM_PRENOMS_PARENT = 100;
 	public static final int TIERS_TOUS_PRENOMS = 100;
 
-	public final static int IDENTPERSONNE_IDENTIFIANT = 13;
-	public final static int IDENTPERSONNE_CATEGORIE = 10;
-	public final static int IDENT_DEMANDE_TYPE = 30;
+	public static final int IDENTPERSONNE_IDENTIFIANT = 13;
+	public static final int IDENTPERSONNE_CATEGORIE = 10;
+	public static final int IDENT_DEMANDE_TYPE = 30;
 
-	public final static int IDENT_ENTREPRISE_IDE = 12;
+	public static final int IDENT_ENTREPRISE_IDE = 12;
 
-	public final static int FOR_RATTACHEMENT = 26;
-	public final static int FOR_MOTIF = 49;
-	public final static int FOR_IMPOSITION = 11;
-	public final static int FOR_GENRE = 29;
-	public final static int FOR_AUTORITEFISCALE = 22;
+	public static final int FOR_RATTACHEMENT = 26;
+	public static final int FOR_MOTIF = 49;
+	public static final int FOR_IMPOSITION = 11;
+	public static final int FOR_GENRE = 29;
+	public static final int FOR_AUTORITEFISCALE = 22;
 
-	public final static int TACHE_ETAT = 11;
-	public final static int TACHE_TYPE = 15;
+	public static final int TACHE_ETAT = 11;
+	public static final int TACHE_TYPE = 15;
 
-	public final static int SITUATIONFAMILLE_TARIF = 11;
-	public final static int SITUATIONFAMILLE_ETATCIVIL = 34;
+	public static final int SITUATIONFAMILLE_TARIF = 11;
+	public static final int SITUATIONFAMILLE_ETATCIVIL = 34;
 
-	public final static int DPI_NOM1 = 250;
-	public final static int DPI_NOM2 = 250;
-	public final static int DPI_CATEGORIEIS = 32;
-	public final static int DPI_PERIODICITE = 11;
-	public final static int DPI_PERIODE_DECOMPTE = 3;
-	public final static int DPI_MODECOM = 12;
+	public static final int DPI_NOM1 = 250;
+	public static final int DPI_NOM2 = 250;
+	public static final int DPI_CATEGORIEIS = 32;
+	public static final int DPI_PERIODICITE = 11;
+	public static final int DPI_PERIODE_DECOMPTE = 3;
+	public static final int DPI_MODECOM = 12;
 
-	public final static int AC_FORME = 5;
+	public static final int AC_FORME = 5;
 
-	public final static int MVTDOSSIER_ETAT = 15;
+	public static final int MVTDOSSIER_ETAT = 15;
 
-	public final static int EVTFISCAL_TYPE = 29;
+	public static final int EVTFISCAL_TYPE = 29;
 
-	public final static int EVTCIVILREG_ETAT = 10;
-	public final static int EVTCIVILREG_TYPE = 45;
-	public final static int EVTCIVILREG_COMMENT = 255;
+	public static final int EVTCIVILREG_ETAT = 10;
+	public static final int EVTCIVILREG_TYPE = 45;
+	public static final int EVTCIVILREG_COMMENT = 255;
 
-	public final static int EVTCIVILECH_ETAT = 10;
-	public final static int EVTCIVILECH_TYPE = 40;
-	public final static int EVTCIVILECH_ACTION = 20;
-	public final static int EVTCIVILECH_COMMENT = 255;
+	public static final int EVTCIVILECH_ETAT = 10;
+	public static final int EVTCIVILECH_TYPE = 40;
+	public static final int EVTCIVILECH_ACTION = 20;
+	public static final int EVTCIVILECH_COMMENT = 255;
 
-	public final static int EVTCIVILERREUR_TYPE = 7;
-	public final static int EVTCIVILERREUR_MESSAGE = 1024;
+	public static final int EVTCIVILERREUR_TYPE = 7;
+	public static final int EVTCIVILERREUR_MESSAGE = 1024;
 
-	public final static int EVTEXTERNE_ETAT = 10;
-	public final static int EVTEXTERNE_QLR_TYPE = 13;
+	public static final int EVTEXTERNE_ETAT = 10;
+	public static final int EVTEXTERNE_QLR_TYPE = 13;
 
-	public final static int ADRESSE_TYPETIERS = 14;
-	public final static int ADRESSE_TYPECIVIL = 10;
-	public final static int ADRESSE_TYPEPM = 11;
-	public final static int ADRESSE_TYPESUPPLEM = 15;
-	public final static int ADRESSE_NUM = 35;
-	public final static int ADRESSE_NOM = 100;
+	public static final int ADRESSE_TYPETIERS = 14;
+	public static final int ADRESSE_TYPECIVIL = 10;
+	public static final int ADRESSE_TYPEPM = 11;
+	public static final int ADRESSE_TYPESUPPLEM = 15;
+	public static final int ADRESSE_NUM = 35;
+	public static final int ADRESSE_NOM = 100;
 
-	public final static int LOG_LEVEL = 7;
-	public final static int LOG_MESSAGE = 255;
+	public static final int LOG_LEVEL = 7;
+	public static final int LOG_MESSAGE = 255;
 
-	public final static int DI_TYPE = 17;
-	public final static int DI_ETAT = 12;
-	public final static int DI_QUALIF = 16;
-	public final static int DI_ADRESSE_RETOUR = 4;
+	public static final int DI_TYPE = 17;
+	public static final int DI_ETAT = 12;
+	public static final int DI_QUALIF = 16;
+	public static final int DI_ADRESSE_RETOUR = 4;
 	public static final int DI_CODE_CONTROLE = 6;
 
-	public final static int MODELEDOC_TYPE = 32;
+	public static final int MODELEDOC_TYPE = 32;
 
-	public final static int DOCINDEX_NOM = 100;
-	public final static int DOCINDEX_DESC = 255;
+	public static final int DOCINDEX_NOM = 100;
+	public static final int DOCINDEX_DESC = 255;
 
 	public static final int NUMERO_IMMEUBLE = 20;
 	public static final int NATURE_IMMEUBLE = 255;
@@ -121,7 +121,7 @@ public abstract class LengthConstants {
 
 	public static final int MANDAT_TYPE = 15;
 
-	public final static int MAXLEN = 2000;
+	public static final int MAXLEN = 2000;
 
 	private static final Pattern MULTI_BLANKS = Pattern.compile("\\s{2,}");
 

@@ -7,7 +7,7 @@ public abstract class AbstractRapportPrestationControllerTest extends WebTest {
 	/**
 	 * DB unit
 	 */
-	private final static String DB_UNIT_FILE = "AbstractRapportPrestationControllerTest.xml";
+	private static final String DB_UNIT_FILE = "AbstractRapportPrestationControllerTest.xml";
 
 	protected Long numeroSrc = 12300003L;
 	protected Long numeroDpi = 12500001L;

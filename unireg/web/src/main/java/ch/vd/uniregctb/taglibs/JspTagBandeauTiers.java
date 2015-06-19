@@ -614,7 +614,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 	}
 
-	public static interface Action {
+	public interface Action {
 		boolean isGranted();
 		boolean isValide(Tiers tiers);
 		String getLabel();

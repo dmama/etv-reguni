@@ -24,7 +24,7 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
 public interface ServiceCivilService {
 
-	public static final String SERVICE_NAME = "ServiceCivil";
+	String SERVICE_NAME = "ServiceCivil";
 
 	/**
 	 * Retourne les adresses civiles valide à la date donnée.

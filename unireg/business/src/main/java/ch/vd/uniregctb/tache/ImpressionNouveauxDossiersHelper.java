@@ -18,14 +18,14 @@ public interface ImpressionNouveauxDossiersHelper {
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
-	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
+	FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
 
 	/**
 	 * Calcul le prefixe
 	 * @return
 	 */
 
-	public TypeDocumentEditique getTypeDocumentEditique() ;
+	TypeDocumentEditique getTypeDocumentEditique() ;
 
 	/**
 	 * Construit le champ idDocument
@@ -33,6 +33,6 @@ public interface ImpressionNouveauxDossiersHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdDocument(Contribuable contribuable) ;
+	String construitIdDocument(Contribuable contribuable) ;
 
 }

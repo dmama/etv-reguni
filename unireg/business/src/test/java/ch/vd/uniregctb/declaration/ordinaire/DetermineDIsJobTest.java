@@ -25,7 +25,7 @@ public class DetermineDIsJobTest extends JobTest {
 	private final Logger LOGGER = LoggerFactory.getLogger(DetermineDIsJobTest.class);
 
 	// Copie du fichier tiers-basic sans les données relatives aux déclarations
-	private final static String DB_UNIT_DATA_FILE = "DetermineDIsJobTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "DetermineDIsJobTest.xml";
 
 	private BatchScheduler batchScheduler;
 

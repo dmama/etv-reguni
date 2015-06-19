@@ -745,7 +745,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 
-	protected static interface AdressesResolverCallback {
+	protected interface AdressesResolverCallback {
 		AdressesFiscalesHisto getAdresses(AdresseService service) throws AdresseException;
 
 		void setAdressesView(List<AdresseView> adresses);

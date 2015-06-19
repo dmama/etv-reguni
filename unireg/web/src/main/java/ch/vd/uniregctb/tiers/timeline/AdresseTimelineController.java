@@ -42,7 +42,7 @@ public class AdresseTimelineController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(AdresseTimelineController.class);
 
-	public final static String ID_PARAMETER = "id";
+	public static final String ID_PARAMETER = "id";
 
 	private TiersDAO dao;
 	private AdresseService adresseService;

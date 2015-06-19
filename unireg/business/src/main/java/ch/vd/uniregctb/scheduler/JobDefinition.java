@@ -34,9 +34,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 
-	public final static String KEY_JOB = "job";
-	public final static String KEY_USER = "user";
-	public final static String KEY_PARAMS = "params";
+	public static final String KEY_JOB = "job";
+	public static final String KEY_USER = "user";
+	public static final String KEY_PARAMS = "params";
 
 	// Params dynamic
 	private String runningMessage;
@@ -48,13 +48,13 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 	private JobStatusManager statusManager = null;
 
 	// Params static
-	final private String name;
-	final private String categorie;
+	private final String name;
+	private final String categorie;
 	private JobSynchronousMode synchronousMode;
-	final private int sortOrder;
-	final private String description;
-	final private Map<String, JobParam> paramDefinition = new LinkedHashMap<>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
-	final private Map<String, Object> defaultParamWebValues = new HashMap<>();
+	private final int sortOrder;
+	private final String description;
+	private final Map<String, JobParam> paramDefinition = new LinkedHashMap<>();        // java.util.LinkedHashMap pour conserver l'ordre d'insertion des paramètres
+	private final Map<String, Object> defaultParamWebValues = new HashMap<>();
 
 	private boolean logDisabled = false;
 

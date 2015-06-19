@@ -117,7 +117,7 @@ public class PartyJsonContainer {
 		return otherCommunity;
 	}
 
-	private static interface ContainerBuilder<T extends Party> {
+	private interface ContainerBuilder<T extends Party> {
 		PartyJsonContainer build(T party);
 	}
 

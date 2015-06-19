@@ -639,7 +639,7 @@ public class DeterminationDIsAEmettreProcessor {
 		return status;
 	}
 
-	final private static String queryIdsCtbWithFors = // --------------------------------
+	private static final String queryIdsCtbWithFors = // --------------------------------
 	"SELECT DISTINCT                                                                         "
 			+ "    cont.id                                                                   "
 			+ "FROM                                                                          "
@@ -656,7 +656,7 @@ public class DeterminationDIsAEmettreProcessor {
 			+ "    AND (fors.dateFin IS null OR fors.dateFin >= :debutAnnee)                 " // [UNIREG-1742] for actif n'importe quand dans l'année
 			+ "ORDER BY cont.id ASC                                                          ";
 
-	final private static String queryIdsCtbWithTasks = // ------------------
+	private static final String queryIdsCtbWithTasks = // ------------------
 	"SELECT DISTINCT                                                             "
 			+ "    tache.contribuable.id                                         "
 			+ "FROM                                                              "
@@ -668,7 +668,7 @@ public class DeterminationDIsAEmettreProcessor {
 			+ "    AND (tache.dateFin IS null OR tache.dateFin >= :debutAnnee)   "
 			+ "ORDER BY tache.contribuable.id ASC                                ";
 
-	final private static String queryIdsCtbWithDeclarations = // -------------
+	private static final String queryIdsCtbWithDeclarations = // -------------
 	"SELECT DISTINCT                                                           "
 			+ "    decl.tiers.id                                               "
 			+ "FROM                                                            "

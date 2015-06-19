@@ -54,9 +54,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(AdresseManagerImpl.class);
 
-	private final static String TYPE_LOCALITE_SUISSE = "suisse";
+	private static final String TYPE_LOCALITE_SUISSE = "suisse";
 
-	private final static String TYPE_LOCALITE_PAYS = "pays";
+	private static final String TYPE_LOCALITE_PAYS = "pays";
 
 	/**
 	 * Alimente la vue AdresseView pour une adresse existante

@@ -28,7 +28,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
  */
 public class ChooseOIDProcessingFilter extends GenericFilterBean {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(ChooseOIDProcessingFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChooseOIDProcessingFilter.class);
 
 	public static final String IFOSEC_OID_PARAM = "ifosec-oid";
 

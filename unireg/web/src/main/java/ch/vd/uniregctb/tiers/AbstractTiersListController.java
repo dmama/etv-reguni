@@ -36,12 +36,12 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 	/**
 	 * Bouton rechercher
 	 */
-	public final static String BOUTON_RECHERCHER = "rechercher";
+	public static final String BOUTON_RECHERCHER = "rechercher";
 
 	/**
 	 * Bouton effacer
 	 */
-	public final static String BOUTON_EFFACER = "effacer";
+	public static final String BOUTON_EFFACER = "effacer";
 
 
 	/**

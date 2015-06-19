@@ -11,7 +11,7 @@ import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public abstract class BusinessTest extends AbstractBusinessTest {
 
-	// private final static Logger LOGGER = LoggerFactory.getLogger(BusinessTest.class);
+	// private static final Logger LOGGER = LoggerFactory.getLogger(BusinessTest.class);
 
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServicePM servicePM;
@@ -34,11 +34,11 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		}
 	}
 
-	protected static interface IndividuModification {
+	protected interface IndividuModification {
 		void modifyIndividu(MockIndividu individu);
 	}
 
-	protected static interface IndividusModification {
+	protected interface IndividusModification {
 		void modifyIndividus(MockIndividu individu, MockIndividu other);
 	}
 

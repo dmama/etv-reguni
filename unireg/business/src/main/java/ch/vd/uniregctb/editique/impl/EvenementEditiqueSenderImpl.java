@@ -41,7 +41,7 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 	private String serviceDestinationCopieConforme;
 	private String serviceReplyTo;
 
-	private static interface HeaderCustomFiller {
+	private interface HeaderCustomFiller {
 		void addHeaders(EsbMessage msg) throws Exception;
 	}
 

@@ -9,7 +9,7 @@ public interface TicketService {
 	/**
 	 * Interface des tickets renvoyés par la méthode {@link #getTicket(Object, long)} et utilisés par la méthode {@link #releaseTicket(ch.vd.uniregctb.common.TicketService.Ticket)}.
 	 */
-	static interface Ticket {
+	interface Ticket {
 	}
 
 	/**

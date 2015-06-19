@@ -95,8 +95,8 @@ public class JspTagOut extends BodyTagSupport {
 		this.id = id;
 	}
 
-	protected static interface Editor {
-		public abstract String generate(String id, Class clazz, Object value, HttpServletRequest request);
+	protected interface Editor {
+		String generate(String id, Class clazz, Object value, HttpServletRequest request);
 	}
 
 	private static class StringEditor implements Editor {

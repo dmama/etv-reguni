@@ -71,7 +71,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		}
 	}
 
-	public static abstract class ResultDebiteur<T extends ResultDebiteur> implements Comparable<T> {
+	public abstract static class ResultDebiteur<T extends ResultDebiteur> implements Comparable<T> {
 
 		public static final String EMPTY_STRING = "";
 
@@ -105,7 +105,7 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		}
 	}
 
-	public static abstract class ResultDebiteurNonTraite<T extends ResultDebiteurNonTraite> extends ResultDebiteur<T> {
+	public abstract static class ResultDebiteurNonTraite<T extends ResultDebiteurNonTraite> extends ResultDebiteur<T> {
 		protected ResultDebiteurNonTraite(long idDebiteur, String nomDebiteur) {
 			super(idDebiteur, nomDebiteur);
 		}

@@ -16,12 +16,12 @@ import ch.vd.uniregctb.tache.view.TacheListView;
 
 public class TacheControllerTest extends WebMockMvcTest {
 
-	private final static String CONTROLLER_NAME = "tacheController";
+	private static final String CONTROLLER_NAME = "tacheController";
 
 	/**
 	 * DB unit
 	 */
-	private final static String DB_UNIT_FILE = "TacheControllerTest.xml";
+	private static final String DB_UNIT_FILE = "TacheControllerTest.xml";
 
 	@Override
 	public void onSetUp() throws Exception {

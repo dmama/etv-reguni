@@ -23,7 +23,7 @@ public class DossiersApparentesEditController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = LoggerFactory.getLogger(DossiersApparentesEditController.class);
 
-	public final static String TARGET_ANNULER_RAPPORT = "annulerRapport";
+	public static final String TARGET_ANNULER_RAPPORT = "annulerRapport";
 
 	private TiersEditManager tiersEditManager;
 	private RapportEditManager rapportEditManager;

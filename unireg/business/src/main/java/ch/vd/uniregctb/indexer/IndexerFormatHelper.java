@@ -31,7 +31,7 @@ public class IndexerFormatHelper {
 		STORAGE
 	}
 
-	private static abstract class AbstractStringRendererImpl<T> implements StringRenderer<T> {
+	private abstract static class AbstractStringRendererImpl<T> implements StringRenderer<T> {
 		@Override
 		public final String toString(T object) {
 			return object != null ? toStringFromNotNull(object) : nullValue();

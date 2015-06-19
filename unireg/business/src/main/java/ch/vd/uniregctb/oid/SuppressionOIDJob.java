@@ -262,7 +262,7 @@ public class SuppressionOIDJob extends JobDefinition {
 		});
 	}
 
-	private static interface UpdateOperation extends AutoCloseable {
+	private interface UpdateOperation extends AutoCloseable {
 		String getTable();
 		int execute(long id, final int oldOid, final long oldOfficeImpotId, final int newOid, final long newOfficeImpotId, String muser) throws SQLException;
 		void close() throws SQLException;

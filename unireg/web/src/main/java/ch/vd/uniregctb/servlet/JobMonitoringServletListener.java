@@ -17,9 +17,9 @@ import ch.vd.uniregctb.scheduler.BatchScheduler;
  */
 public class JobMonitoringServletListener implements ServletContextListener {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(JobMonitoringServletListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JobMonitoringServletListener.class);
 
-	private final static String beanName = "batchScheduler";
+	private static final String beanName = "batchScheduler";
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {

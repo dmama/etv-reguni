@@ -185,7 +185,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	/**
 	 * Interface interne pour factoriser la production de CSV d'après une liste d'information
 	 */
-	protected static interface AccesCommune {
+	protected interface AccesCommune {
 		int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable);
 	}
 

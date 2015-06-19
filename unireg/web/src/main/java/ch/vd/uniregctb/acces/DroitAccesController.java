@@ -542,7 +542,7 @@ public class DroitAccesController {
 		});
 	}
 
-	private static interface CopieTransfertAction {
+	private interface CopieTransfertAction {
 		List<DroitAccesConflitAvecDonneesContribuable> execute(ConfirmedDataView view) throws AdresseException;
 	}
 

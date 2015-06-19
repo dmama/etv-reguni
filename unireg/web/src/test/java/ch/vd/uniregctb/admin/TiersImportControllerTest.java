@@ -37,9 +37,9 @@ public class TiersImportControllerTest extends WebTestSpring3 {
 	/**
 	 * Le nom du controller à tester.
 	 */
-	private final static String CONTROLLER_NAME = "tiersImportController";
+	private static final String CONTROLLER_NAME = "tiersImportController";
 
-	private final static String DB_UNIT_FILE = "tiers-basic.xml";
+	private static final String DB_UNIT_FILE = "tiers-basic.xml";
 
 	private GlobalTiersSearcher globalTiersSearcher;
 	private TiersDAO tiersDAO;

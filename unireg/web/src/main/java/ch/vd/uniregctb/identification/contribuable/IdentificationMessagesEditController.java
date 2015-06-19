@@ -33,12 +33,12 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 	}
 
 	public static final String PP_CRITERIA_NAME = "identCriteria";
-	public final static String BOUTON_EXPERTISER = "expertiser";
-	public final static String BOUTON_IMPOSSIBLE_A_IDENTIFIER = "impossibleAIdentifier";
-	public final static String TARGET_IDENTIFIER = "identifier";
-	public final static String ID_PARAMETER_NAME = "id";
-	public final static String SOURCE_PARAMETER = "source";
-	public final static String UNLOCK_PARAMETER = "unlock";
+	public static final String BOUTON_EXPERTISER = "expertiser";
+	public static final String BOUTON_IMPOSSIBLE_A_IDENTIFIER = "impossibleAIdentifier";
+	public static final String TARGET_IDENTIFIER = "identifier";
+	public static final String ID_PARAMETER_NAME = "id";
+	public static final String SOURCE_PARAMETER = "source";
+	public static final String UNLOCK_PARAMETER = "unlock";
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)

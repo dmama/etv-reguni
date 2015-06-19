@@ -21,7 +21,7 @@ public class ListeRecapEditDelaiController extends AbstractListeRecapController 
 
 	private ListeRecapEditManager lrEditManager;
 
-	public final static String LR_ID = "idLR";
+	public static final String LR_ID = "idLR";
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {

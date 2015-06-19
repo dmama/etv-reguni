@@ -12,7 +12,7 @@ public class FusionRecapControllerTest extends AbstractFusionControllerTest {
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private final static String CONTROLLER_NAME = "fusionRecapController";
+	private static final String CONTROLLER_NAME = "fusionRecapController";
 	private FusionRecapController controller;
 
 	@Override

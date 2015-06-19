@@ -495,7 +495,7 @@ public class WorkingQueue<T> {
 		return allProcessed;
 	}
 
-	private static abstract class Listener<T> extends Thread {
+	private abstract static class Listener<T> extends Thread {
 
 		protected final WorkingQueue<T> master;
 		protected final BlockingQueue<Element<T>> queue;

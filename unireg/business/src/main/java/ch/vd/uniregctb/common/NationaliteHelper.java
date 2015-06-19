@@ -112,13 +112,13 @@ public abstract class NationaliteHelper {
 		private final boolean takeIt;
 		private final boolean stop;
 
-		private FilteringResult(boolean takeIt, boolean stop) {
+		FilteringResult(boolean takeIt, boolean stop) {
 			this.takeIt = takeIt;
 			this.stop = stop;
 		}
 	}
 
-	private static interface Filter {
+	private interface Filter {
 		@NotNull
 		FilteringResult filter(Nationalite nationalite);
 	}

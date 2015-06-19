@@ -40,7 +40,7 @@ public class AsyncStorage<K, V> {
 	 * Classe abstraite de base des résultats renvoyés par la méthode {@link #get}
 	 * @param <K> le type de la clé de stockage
 	 */
-	public static abstract class RetrievalResult<K> {
+	public abstract static class RetrievalResult<K> {
 		public final K key;
     	public RetrievalResult(K key) {
 			this.key = key;
@@ -157,7 +157,7 @@ public class AsyncStorage<K, V> {
 	 * @param <V> type de la valeur de stockage
 	 * @param <T> type de la valeur retournée par l'action
 	 */
-	protected static interface Action<K, V, T> {
+	protected interface Action<K, V, T> {
 
 		/**
 		 * Corps de l'action

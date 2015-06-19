@@ -533,7 +533,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		return template.execute(action);
 	}
 
-	private static interface GroupAction {
+	private interface GroupAction {
 		void execute(boolean principal, boolean hasReferrers, EvenementCivilEch evt);
 	}
 

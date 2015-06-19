@@ -142,7 +142,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		});
 	}
 
-	final private static String queryAllTiers = // ------------------------------
+	private static final String queryAllTiers = // ------------------------------
 	"SELECT                                                                                         "
 			+ "    tiers.id                                                                         "
 			+ "FROM                                                                                 "
@@ -189,7 +189,7 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		});
 	}
 
-	final private static String queryTiersWithNullOID = // ------------------------------
+	private static final String queryTiersWithNullOID = // ------------------------------
 	"SELECT                                                                                         "
 			+ "    tiers.id                                                                         "
 			+ "FROM                                                                                 "

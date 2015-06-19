@@ -77,7 +77,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
 
-	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml";
 
 	private DeclarationImpotOrdinaireDAO diDAO;
 	private ImpressionDeclarationImpotOrdinaireHelperImpl impressionDIHelper;

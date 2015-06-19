@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
  */
 public abstract class AbstractTiersController extends AbstractSimpleFormController {
 
-	public final static String URL_RETOUR_SESSION_NAME = "urlRetour";
+	public static final String URL_RETOUR_SESSION_NAME = "urlRetour";
 
 	protected TiersService tiersService;
 	private ParamApplicationManager paramApplicationManager;
@@ -71,43 +71,43 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		session.removeAttribute(module);
 	}
 
-	public final static String ACTION_COMMON_REFRESH = "refresh";
+	public static final String ACTION_COMMON_REFRESH = "refresh";
 
 	/**
 	 * Le nom du parametre action pour gerer bouton effacer
 	 */
-	public final static String ACTION_PARAMETER_NAME = "action";
-	public final static String EFFACER_PARAMETER_VALUE = "effacer";
+	public static final String ACTION_PARAMETER_NAME = "action";
+	public static final String EFFACER_PARAMETER_VALUE = "effacer";
 
 	/**
 	 * Le nom du parametre utilise dans la request.
 	 */
-	public final static String TIERS_ID_PARAMETER_NAME = "id";
+	public static final String TIERS_ID_PARAMETER_NAME = "id";
 
 	/**
 	 * La nature du tiers
 	 */
-	public final static String TIERS_NATURE_PARAMETER_NAME = "nature";
+	public static final String TIERS_NATURE_PARAMETER_NAME = "nature";
 
 	/**
 	 * Le type du submit
 	 */
-	public final static String TYPE_SUBMIT_PARAMETER_NAME = "typeSubmit";
+	public static final String TYPE_SUBMIT_PARAMETER_NAME = "typeSubmit";
 
 	/**
 	 * La valeur creeFor pour le type du submit
 	 */
-	public final static String TYPE_SUBMIT_CREE_FOR_VALUE = "creeFor";
+	public static final String TYPE_SUBMIT_CREE_FOR_VALUE = "creeFor";
 
 	/**
 	 * La valeur creeModeImp pour le type du submit
 	 */
-	public final static String TYPE_SUBMIT_CREE_MODE_IMP_VALUE = "creeModeImp";
+	public static final String TYPE_SUBMIT_CREE_MODE_IMP_VALUE = "creeModeImp";
 
 	/**
 	 * La valeur nature pour le type du submit
 	 */
-	public final static String TYPE_SUBMIT_NATURE_VALUE = "nature";
+	public static final String TYPE_SUBMIT_NATURE_VALUE = "nature";
 
 	/**
 	 * Le nom de l'attribut utilise pour la liste.
@@ -249,11 +249,11 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	 */
 	public static final String TYPE_ADRESSE_FISCALE_TIERS = "typeAdresseFiscaleTiers";
 
-	public final static String BUTTON_BACK_TO_LIST = "retourList";
+	public static final String BUTTON_BACK_TO_LIST = "retourList";
 
-	public final static String BUTTON_BACK_TO_VISU = "retourVisualisation";
+	public static final String BUTTON_BACK_TO_VISU = "retourVisualisation";
 
-	public final static String BUTTON_SAVE = "__confirmed_save";
+	public static final String BUTTON_SAVE = "__confirmed_save";
 
 
 	protected TiersMapHelper tiersMapHelper;

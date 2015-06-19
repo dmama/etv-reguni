@@ -247,7 +247,7 @@ public class ProduireStatsDIsProcessor {
 		return etat;
 	}
 
-	final private static String queryDIs = // --------------------------------------------------
+	private static final String queryDIs = // --------------------------------------------------
 	"SELECT DISTINCT                                       " // --------------------------------
 			+ "    di.id                                   " // --------------------------------
 			+ "FROM                                        " // --------------------------------

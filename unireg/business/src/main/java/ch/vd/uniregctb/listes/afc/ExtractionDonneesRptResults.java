@@ -40,7 +40,7 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 
 	protected final ServiceInfrastructureService infraService;
 
-	public static abstract class InfoCtbBase<T extends InfoCtbBase> implements Comparable<T> {
+	public abstract static class InfoCtbBase<T extends InfoCtbBase> implements Comparable<T> {
 		public final long noCtb;
 
 		public InfoCtbBase(long noCtb) {

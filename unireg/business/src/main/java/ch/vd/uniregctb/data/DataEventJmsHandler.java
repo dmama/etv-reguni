@@ -66,7 +66,7 @@ public class DataEventJmsHandler implements EsbMessageHandler, InitializingBean 
 		return map;
 	}
 
-	private static interface Handler<T extends DataEvent> {
+	private interface Handler<T extends DataEvent> {
 		void onEvent(T event);
 	}
 

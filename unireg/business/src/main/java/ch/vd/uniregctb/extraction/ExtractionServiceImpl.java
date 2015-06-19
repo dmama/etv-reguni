@@ -436,7 +436,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	 * @param <R> classe de résultat de chacun des lots
 	 * @param <T> classe de l'extracteur utilisé
 	 */
-	private static interface CustomBatchableRun<E, R extends BatchResults<E, R>, T extends BatchableExtractor<E, R>> {
+	private interface CustomBatchableRun<E, R extends BatchResults<E, R>, T extends BatchableExtractor<E, R>> {
 		void run(T extractor, R rapportFinal, List<E> elements);
 	}
 

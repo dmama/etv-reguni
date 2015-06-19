@@ -8,7 +8,7 @@ import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 
 public class TacheSyncResults extends AbstractJobResults<Long, TacheSyncResults> {
 
-	public static abstract class CtbInfo {
+	public abstract static class CtbInfo {
 		public final long ctbId;
 		protected CtbInfo(long ctbId) {
 			this.ctbId = ctbId;

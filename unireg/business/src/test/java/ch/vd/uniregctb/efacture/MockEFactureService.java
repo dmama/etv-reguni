@@ -52,7 +52,7 @@ public abstract class MockEFactureService implements EFactureService {
 	 */
 	private final List<Action> actions = new ArrayList<>();
 
-	private static interface Action {
+	private interface Action {
 		void execute();
 	}
 

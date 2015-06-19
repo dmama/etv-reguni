@@ -19,7 +19,7 @@ public interface ImpressionSommationDIHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration) ;
+	String construitIdDocument(DeclarationImpotOrdinaire declaration) ;
 
 
 	/**
@@ -28,7 +28,7 @@ public interface ImpressionSommationDIHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdArchivageDocument(DeclarationImpotOrdinaire declaration) ;
+	String construitIdArchivageDocument(DeclarationImpotOrdinaire declaration) ;
 
 	/**
 	 * Construit le champ idDocument pour l'archivage (avant octobre 2009)
@@ -36,7 +36,7 @@ public interface ImpressionSommationDIHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitAncienIdArchivageDocument(DeclarationImpotOrdinaire declaration) ;
+	String construitAncienIdArchivageDocument(DeclarationImpotOrdinaire declaration) ;
 
 	/**
 	 * Construit le champ idDocument pour l'archivage pour les on-line(avant octobre 2009)
@@ -44,7 +44,7 @@ public interface ImpressionSommationDIHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitAncienIdArchivageDocumentPourOnLine(DeclarationImpotOrdinaire declaration) ;
+	String construitAncienIdArchivageDocumentPourOnLine(DeclarationImpotOrdinaire declaration) ;
 
 }
 

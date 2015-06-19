@@ -24,7 +24,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(JspTagLocalisation.class);
 
-	private final static AtomicInteger counter = new AtomicInteger();
+	private static final AtomicInteger counter = new AtomicInteger();
 
 	private LocalisationView localisation;
 	private boolean showVD;

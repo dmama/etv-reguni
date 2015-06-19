@@ -126,11 +126,11 @@ public abstract class WebTest extends AbstractBusinessTest {
 		return (BeanPropertyBindingResult) mav.getModel().get("org.springframework.validation.BindingResult.command");
 	}
 
-	protected static interface IndividuModification {
+	protected interface IndividuModification {
 		void modifyIndividu(MockIndividu individu);
 	}
 
-	protected static interface IndividusModification {
+	protected interface IndividusModification {
 		void modifyIndividus(MockIndividu individu, MockIndividu other);
 	}
 

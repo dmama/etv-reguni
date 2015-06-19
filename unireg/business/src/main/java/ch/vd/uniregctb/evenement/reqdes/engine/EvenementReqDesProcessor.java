@@ -10,7 +10,7 @@ public interface EvenementReqDesProcessor {
 	/**
 	 * Interface à implémenter par celui qui veut être notifié de l'avancement des travaux
 	 */
-	public static interface Listener {
+	interface Listener {
 
 		/**
 		 * Appelé à chaque fois qu'une unité de traitement a été traitée
@@ -27,7 +27,7 @@ public interface EvenementReqDesProcessor {
 	/**
 	 * Interface de marquage du handle servant à identifier un listener
 	 */
-	static interface ListenerHandle {}
+	interface ListenerHandle {}
 
 	/**
 	 * @param listener nouveau listener qui veut être notifié

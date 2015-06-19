@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class TiersRapportControllerTest extends WebTest {
 
-	private final static String CONTROLLER_NAME = "tiersRapportController";
+	private static final String CONTROLLER_NAME = "tiersRapportController";
 
 	private TiersRapportController controller;
 

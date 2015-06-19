@@ -260,7 +260,7 @@ public class ProduireStatsCtbsProcessor {
 		return type;
 	}
 
-	final private static String queryCtbs = // --------------------------------------------------
+	private static final String queryCtbs = // --------------------------------------------------
 	"SELECT DISTINCT                                                                         "
 			+ "    cont.id                                                                   "
 			+ "FROM                                                                          "

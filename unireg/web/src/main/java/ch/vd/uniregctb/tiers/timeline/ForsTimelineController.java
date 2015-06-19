@@ -50,10 +50,10 @@ public class ForsTimelineController {
 
 //	private final Logger LOGGER = LoggerFactory.getLogger(ForsTimelineController.class);
 
-	public final static String ID_PARAMETER = "id";
-	public final static String FOR_PRINT = "print";
-	public final static String TITLE = "title";
-	public final static String DESCRIPTION = "description";
+	public static final String ID_PARAMETER = "id";
+	public static final String FOR_PRINT = "print";
+	public static final String TITLE = "title";
+	public static final String DESCRIPTION = "description";
 
 	private TiersDAO dao;
 	private TiersService tiersService;

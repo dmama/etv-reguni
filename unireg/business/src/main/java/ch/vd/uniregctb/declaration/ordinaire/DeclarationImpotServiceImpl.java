@@ -547,7 +547,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 
-	private static interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
+	private interface EntityAccessor<T extends DeclarationImpotOrdinaire, E extends HibernateEntity> {
 		Collection<E> getEntities(T declaration);
 
 		void addEntity(T declaration, E entity);

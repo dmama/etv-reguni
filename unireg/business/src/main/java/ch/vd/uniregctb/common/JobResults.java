@@ -22,7 +22,7 @@ public abstract class JobResults<E, R extends JobResults<E, R>> extends Abstract
 	/**
 	 * Classe de base des informations dumpées dans les rapports d'exécution
 	 */
-	public static abstract class Info {
+	public abstract static class Info {
 		public final long noCtb;
 		public final Integer officeImpotID;
 		public final String details;

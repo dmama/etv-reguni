@@ -29,7 +29,7 @@ public interface EditiqueHelper {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
-	public TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
+	TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
 
 	/**
 	 * Alimente la partie expéditeur ACI du document
@@ -41,7 +41,7 @@ public interface EditiqueHelper {
 	 * @throws ServiceInfrastructureException
 	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 	/**
 	 * Alimente la partie expéditeur CAT du document
@@ -53,7 +53,7 @@ public interface EditiqueHelper {
 	 * @throws ServiceInfrastructureException
 	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 
 	/**
@@ -63,7 +63,7 @@ public interface EditiqueHelper {
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteur(CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException;
 
 	/**
 	 * Alimente la partie Destinataire (contribuable/débiteur) du document
@@ -73,7 +73,7 @@ public interface EditiqueHelper {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
-	public Destinataire remplitDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
+	Destinataire remplitDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
 
 	/**
 	 * Alimente la partie Destinataire (collectivité administrative) du document
@@ -83,7 +83,7 @@ public interface EditiqueHelper {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
-	public Destinataire remplitDestinataire(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
+	Destinataire remplitDestinataire(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws AdresseException;
 
 	/**
 	 * Alimente la partie Destinataire du document avec la mention "Archives"
@@ -91,7 +91,7 @@ public interface EditiqueHelper {
 	 * @param infoEnteteDocument
 	 * @return
 	 */
-	public Destinataire remplitDestinataireArchives(InfoEnteteDocument infoEnteteDocument);
+	Destinataire remplitDestinataireArchives(InfoEnteteDocument infoEnteteDocument);
 
 	/**
 	 * Retrouve le nom de la commune à mettre dans le champs OFS des documents de sommation de DI et de confirmation de délai.
@@ -99,7 +99,7 @@ public interface EditiqueHelper {
 	 * @param di - la di concernée par la sommation ou la demande de délai
 	 * @return le nom de la commune
 	 */
-	public String getCommune(Declaration di) throws EditiqueException;
+	String getCommune(Declaration di) throws EditiqueException;
 
 
 	/**
@@ -110,7 +110,7 @@ public interface EditiqueHelper {
 	 * @param traitePar
 	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurPourSommationLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
 
 	/**  Renseigne la partie expediteur avec les données et régles spécifiques
 	 * à l'envoi de lR
@@ -120,7 +120,7 @@ public interface EditiqueHelper {
 	 * @return
 	 * @throws ServiceInfrastructureException
 	 */
-	public Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
+	Expediteur remplitExpediteurPourEnvoiLR(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws ServiceInfrastructureException;
 
 	/**
 	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
@@ -131,7 +131,7 @@ public interface EditiqueHelper {
 	 * @param dateTraitement la date de génération du document
 	 * @return la structure de demande d'archivage remplie
 	 */
-	public InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
+	InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
 
 	/**
 	 * Remplit une structure éditique pour une demande d'archivage de document lors de sa génération

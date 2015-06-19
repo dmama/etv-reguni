@@ -16,9 +16,9 @@ public class TiersRapportController extends AbstractRapportPrestationController 
 
 	private RapportEditManager rapportEditManager;
 
-	private final static String ID_RAPPORT_PARAMETER_NAME = "idRapport";
-	private final static String SENS_RAPPORT_PARAMETER_NAME = "sens";
-	private final static String VIEW_RETOUR_PARAMETER_NAME = "viewRetour";
+	private static final String ID_RAPPORT_PARAMETER_NAME = "idRapport";
+	private static final String SENS_RAPPORT_PARAMETER_NAME = "sens";
+	private static final String VIEW_RETOUR_PARAMETER_NAME = "viewRetour";
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {

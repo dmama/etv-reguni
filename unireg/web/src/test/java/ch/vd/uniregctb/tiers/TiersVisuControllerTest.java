@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TiersVisuControllerTest extends WebTest {
 
-	private final static String CONTROLLER_NAME = "tiersVisuController";
+	private static final String CONTROLLER_NAME = "tiersVisuController";
 
 	private TiersVisuController controller;
 

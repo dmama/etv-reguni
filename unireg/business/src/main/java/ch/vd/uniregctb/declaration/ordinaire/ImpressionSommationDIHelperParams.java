@@ -88,7 +88,7 @@ public class ImpressionSommationDIHelperParams {
 	 * @param dateTraitement
 	 * @return
 	 */
-	static public ImpressionSommationDIHelperParams createOnlineParams(DeclarationImpotOrdinaire di, String traitePar, String adrMsg, String tel, RegDate dateTraitement) {
+	public static ImpressionSommationDIHelperParams createOnlineParams(DeclarationImpotOrdinaire di, String traitePar, String adrMsg, String tel, RegDate dateTraitement) {
 		ImpressionSommationDIHelperParams params = new ImpressionSommationDIHelperParams();
 		params.batch = false;
 		params.di = di;
@@ -110,7 +110,7 @@ public class ImpressionSommationDIHelperParams {
 	 * @param dateTraitement
 	 * @return
 	 */
-	static public ImpressionSommationDIHelperParams createBatchParams(
+	public static ImpressionSommationDIHelperParams createBatchParams(
 			DeclarationImpotOrdinaire di, 
 			boolean miseSousPliImpossible,
 			RegDate dateTraitement

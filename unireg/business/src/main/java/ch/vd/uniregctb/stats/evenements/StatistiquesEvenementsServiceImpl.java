@@ -407,7 +407,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		});
 	}
 
-	private static interface SelectCallback<T> {
+	private interface SelectCallback<T> {
 		T onRow(Object[] row);
 	}
 
@@ -466,7 +466,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		});
 	}
 	
-	private static interface MapSelectCallback<K, V> {
+	private interface MapSelectCallback<K, V> {
 		K buildKey(Object[] row);
 		V buildValue(Object[] row);
 	}

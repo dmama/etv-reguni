@@ -27,29 +27,29 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 
 public interface ServiceInfrastructureService {
 
-	static final String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
+	String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
 
-	final static int noOIPM = ServiceInfrastructureRaw.noOIPM;
-	final static int noACI = ServiceInfrastructureRaw.noACI;
-	final static int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
-	final static int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
-	final static int noCEDI = ServiceInfrastructureRaw.noCEDI;
-	final static int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
-	final static int noCAT = ServiceInfrastructureRaw.noCAT;
+	int noOIPM = ServiceInfrastructureRaw.noOIPM;
+	int noACI = ServiceInfrastructureRaw.noACI;
+	int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
+	int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
+	int noCEDI = ServiceInfrastructureRaw.noCEDI;
+	int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
+	int noCAT = ServiceInfrastructureRaw.noCAT;
 
-	final static int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
-	final static int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
-	final static int noPaysInconnu = ServiceInfrastructureRaw.noPaysInconnu;
+	int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
+	int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
+	int noPaysInconnu = ServiceInfrastructureRaw.noPaysInconnu;
 
 	/**
 	 * Constante sigle du canton de Vaud
 	 */
-	static final String SIGLE_CANTON_VD = ServiceInfrastructureRaw.SIGLE_CANTON_VD;
+	String SIGLE_CANTON_VD = ServiceInfrastructureRaw.SIGLE_CANTON_VD;
 
 	/**
 	 * Constante sigle du pays Suisse
 	 */
-	static final String SIGLE_SUISSE = ServiceInfrastructureRaw.SIGLE_SUISSE;
+	String SIGLE_SUISSE = ServiceInfrastructureRaw.SIGLE_SUISSE;
 
 	/**
 	 * @return la liste des pays.
@@ -421,7 +421,7 @@ public interface ServiceInfrastructureService {
 	 */
 	boolean estEnSuisse(Adresse adresse) throws ServiceInfrastructureException;
 
-	static enum Zone {
+	enum Zone {
 		VAUD,
 		HORS_CANTON,
 		HORS_SUISSE

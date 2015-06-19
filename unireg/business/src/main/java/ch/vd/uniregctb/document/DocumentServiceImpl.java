@@ -41,7 +41,7 @@ public class DocumentServiceImpl implements DocumentService {
 	/**
 	 * Contient les types concrets de documents, indexés par leur noms en lettres minuscules
 	 */
-	private final static Map<String, Class<? extends Document>> docType = new HashMap<>();
+	private static final Map<String, Class<? extends Document>> docType = new HashMap<>();
 	static {
 		docType.put(DatabaseDump.class.getSimpleName().toLowerCase(), DatabaseDump.class);
 		docType.put(DeterminationDIsRapport.class.getSimpleName().toLowerCase(), DeterminationDIsRapport.class);

@@ -51,7 +51,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			}
 		}
 
-		public static interface Callback {
+		public interface Callback {
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException;
 		}
 	}

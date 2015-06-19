@@ -51,7 +51,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	 */
 	private int hoursRetourImpressionExpiration = 2;
 
-	private static interface TimeoutManager {
+	private interface TimeoutManager {
 		EditiqueResultat onTimeout(EditiqueResultatTimeout src);
 	}
 

@@ -8,7 +8,7 @@ public interface EvenementCivilEchProcessor {
 	/**
 	 * Interface à implémenter par celui qui veut être notifié de l'avancement des travaux
 	 */
-	public static interface Listener {
+	interface Listener {
 
 		/**
 		 * Appelé à chaque fois qu'un lot d'événements civils est terminé
@@ -25,7 +25,7 @@ public interface EvenementCivilEchProcessor {
 	/**
 	 * Interface de marquage du handle servant à identifier un listener
 	 */
-	public static interface ListenerHandle {}
+	interface ListenerHandle {}
 
 	/**
 	 * @param listener nouveau listener qui veut être notifié

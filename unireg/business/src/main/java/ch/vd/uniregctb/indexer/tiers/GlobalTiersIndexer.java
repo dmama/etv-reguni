@@ -15,7 +15,7 @@ public interface GlobalTiersIndexer {
 	/**
 	 * Efface l'index.
 	 */
-	public void overwriteIndex();
+	void overwriteIndex();
 
 	/**
 	 * Demande l'indexation ou la ré-indexation d'un tiers.

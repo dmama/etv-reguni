@@ -162,7 +162,7 @@ public abstract class CacheHelper {
 		});
 	}
 
-	private static interface LongStringBuilder {
+	private interface LongStringBuilder {
 		void build(BufferedWriter writer) throws IOException;
 	}
 

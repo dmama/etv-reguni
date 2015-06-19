@@ -17,7 +17,7 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 
 	private static final String IGNORE_DEJA_BON_SEGMENT = "Le contribuable est déjà assigné au bon segment";
 
-	public static abstract class Info implements Comparable<Info> {
+	public abstract static class Info implements Comparable<Info> {
 		public final long noTiers;
 
 		public Info(long noTiers) {

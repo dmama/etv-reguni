@@ -277,7 +277,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	 * @return tableau contenant le nom et l'e-mail (si disponibles) de l'utilisateur connecté
 	 */
 	private String[] getInfoOperateur() {
-		final String traitePar[] = {"ACI", null};
+		final String[] traitePar = {"ACI", null};
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		if (visa != null) {
 			final Operateur operateur = serviceSecurite.getOperateur(visa);

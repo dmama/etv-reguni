@@ -49,7 +49,7 @@ public interface EvenementFiscalService {
 	 * @param id du for
 	 * @throws Exception
 	 */
-	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
+	void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Fermeture de for'
@@ -59,7 +59,7 @@ public interface EvenementFiscalService {
 	 * @param id du for
 	 * @throws Exception
 	 */
-	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
+	void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, @Nullable MotifFor motifFor, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation de for'
@@ -68,7 +68,7 @@ public interface EvenementFiscalService {
 	 * @param dateAnnulation la date d'annulation effective
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation);
+	void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de mode d'imposition'
@@ -78,7 +78,7 @@ public interface EvenementFiscalService {
 	 * @param id du nouveaui for
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) ;
+	void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) ;
 
 	/**
 	 * [UNIREG-3244] Publie un événement de fin d'autorité parentale sur un contribuable parent suite à la majorité d'un enfant.
@@ -88,7 +88,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement      la date d'acquisition de la majorité
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
+	void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
 
 	/**
 	 * [UNIREG-3244] Publie un événement de naissance d'un contribuable enfant
@@ -98,7 +98,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement      la date de naissance
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
+	void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de situation de famille'
@@ -107,7 +107,7 @@ public interface EvenementFiscalService {
 	 * @param id de la situation de famille
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalChangementSituation(Contribuable contribuable, RegDate dateEvenement, Long id) ;
+	void publierEvenementFiscalChangementSituation(Contribuable contribuable, RegDate dateEvenement, Long id) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Ouverture de période décompte LR'
@@ -116,7 +116,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalOuverturePeriodeDecompteLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
+	void publierEvenementFiscalOuverturePeriodeDecompteLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Retour LR'
@@ -125,7 +125,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalRetourLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
+	void publierEvenementFiscalRetourLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Sommation LR'
@@ -161,7 +161,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) ;
+	void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) ;
 
 	/**
 	 * Publie un événement fiscal de type 'Retour DI'

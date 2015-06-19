@@ -26,7 +26,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @SuppressWarnings({"JavaDoc"})
 public class EditiqueListeRecapJobTest extends JobTest {
 
-	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/ListeRecapJobTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/ListeRecapJobTest.xml";
 
 	private BatchScheduler batchScheduler;
 	private TiersDAO tiersDAO;

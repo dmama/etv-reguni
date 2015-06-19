@@ -338,7 +338,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		data.setDomicilieSurVD(estDomicilieSurVaud);
 	}
 
-	final private static String QUERY_SOURCIERS = // Requete retrouvant les personnes imposées à la source ou faisant parti d'un ménage imposé à la source
+	private static final String QUERY_SOURCIERS = // Requete retrouvant les personnes imposées à la source ou faisant parti d'un ménage imposé à la source
 			"SELECT pp.id                                                                                 "
 					+ "FROM                                                                               "
 					+ "    PersonnePhysique AS pp                                                         "

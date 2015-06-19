@@ -117,7 +117,7 @@ public class ProduireRolesProcessor {
 		this.assujettissementService = assujettissementService;
 	}
 
-	private static interface GroupementCommunes {
+	private interface GroupementCommunes {
 		boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference);
 		Set<Integer> getCommunes(Integer ofsReference);
 	}
@@ -155,7 +155,7 @@ public class ProduireRolesProcessor {
 	/**
 	 * Interface implémentée par les variantes de la production des rôles (tous, pour un OID, pour une commune)
 	 */
-	private static interface VarianteProductionRole<T extends ProduireRolesResults> {
+	private interface VarianteProductionRole<T extends ProduireRolesResults> {
 		/**
 		 * Renvoie la liste des ID techniques des contribuables listés dans la variante concernée
 		 */
@@ -387,7 +387,7 @@ public class ProduireRolesProcessor {
 	 * Interface utilisable pour calculer, à partir d'un nombre de cas traités et d'un nombre total de cas,
 	 * l'avancement de l'opération
 	 */
-	private static interface ProgressCalculator {
+	private interface ProgressCalculator {
 		int getProgressPercentage(int nbTreated, int size);
 	}
 
@@ -395,7 +395,7 @@ public class ProduireRolesProcessor {
 	 * Interface utilisable pour calculer, en plus d'un avancement global, une partie locale
 	 * (cas d'un job global décomposé en plusieurs phases)
 	 */
-	private static interface DifferenciatingProgressCalculator extends ProgressCalculator {
+	private interface DifferenciatingProgressCalculator extends ProgressCalculator {
 		int getLocalProgressPercentage(int nbTreated, int size);
 	}
 
@@ -404,7 +404,7 @@ public class ProduireRolesProcessor {
 	 * les éléments fournis (nombre de cas traités et nombre total de cas), en d'autres termes
 	 * qui ne fait pas de différences entre la progression locale et la progression globale
 	 */
-	private final static ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
+	private static final ProgressCalculator DEFAULT_PROGRESS_CALCULATOR = new ProgressCalculator() {
 		@Override
 		public int getProgressPercentage(int nbTreated, int size) {
 			return size == 0 ? 0 : nbTreated * 100 / size;

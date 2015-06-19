@@ -44,7 +44,7 @@ public class InContainerTestingJob extends JobDefinition {
 	}
 
 	@Override
-	synchronized public void doExecute(Map<String, Object> params) throws Exception {
+	public synchronized void doExecute(Map<String, Object> params) throws Exception {
 		transactionListener = new TransactionListener();
 		boolean error = false;
 		String methodsInError = "";

@@ -41,7 +41,7 @@ public class PeriodeImpositionImpotSourceServiceTest extends BusinessTest {
 		service = getBean(PeriodeImpositionImpotSourceService.class, "periodeImpositionImpotSourceService");
 	}
 
-	private static interface TestRunnable {
+	private interface TestRunnable {
 		void run() throws Exception;
 	}
 

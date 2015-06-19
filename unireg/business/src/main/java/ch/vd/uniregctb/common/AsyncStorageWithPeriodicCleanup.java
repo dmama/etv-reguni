@@ -95,7 +95,7 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 	 * @param <V> le type de valeur stockée
 	 */
 	protected static class CleanupMutableObject<V> extends MutableObject<V> {
-		final public long ts;
+		public final long ts;
 		public CleanupMutableObject(@Nullable V data) {
 			super(data);
 			this.ts = TimeHelper.getPreciseCurrentTimeMillis();

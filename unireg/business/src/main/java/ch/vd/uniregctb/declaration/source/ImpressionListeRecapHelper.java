@@ -18,7 +18,7 @@ public interface ImpressionListeRecapHelper {
 	 * @throws EditiqueException
 	 * @throws ServiceInfrastructureException
 	 */
-	public FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
+	FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
 
 	/**
 	 * Construit le champ idDocument
@@ -26,7 +26,7 @@ public interface ImpressionListeRecapHelper {
 	 * @param lr
 	 * @return
 	 */
-	public String construitIdDocument(DeclarationImpotSource lr) ;
+	String construitIdDocument(DeclarationImpotSource lr) ;
 
 	/**
 	 * Calcul le prefixe
@@ -35,6 +35,6 @@ public interface ImpressionListeRecapHelper {
 	 * @return
 	 */
 
-	public TypeDocumentEditique getTypeDocumentEditique() ;
+	TypeDocumentEditique getTypeDocumentEditique() ;
 
 }

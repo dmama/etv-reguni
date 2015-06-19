@@ -1469,7 +1469,7 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		}
 	}
 
-	private static interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
+	private interface EntityAccessor<T extends Tiers, E extends HibernateEntity> {
 		Collection<E> getEntities(T tiers);
 
 		void addEntity(T tiers, E entity);

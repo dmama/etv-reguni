@@ -111,7 +111,7 @@ public class JmxStatContainer implements SmartLifecycle {
 	 * Classe de base des Beans JMX exposés
 	 * @param <T> le type de service surveillé
 	 */
-	private static abstract class StatsJmxBean<T> implements DynamicMBean {
+	private abstract static class StatsJmxBean<T> implements DynamicMBean {
 
 		protected final Map<String, T> targets;
 		protected final TabularType dataType;

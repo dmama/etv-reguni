@@ -444,7 +444,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		}
 	}
 
-	private static interface QueryDataSetCallback {
+	private interface QueryDataSetCallback {
 		QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException;
 	}
 

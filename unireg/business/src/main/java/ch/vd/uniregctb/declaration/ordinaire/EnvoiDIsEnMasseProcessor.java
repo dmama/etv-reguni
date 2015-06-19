@@ -262,7 +262,7 @@ public class EnvoiDIsEnMasseProcessor {
 		return new Cache(cedi, aci, modele, periode);
 	}
 
-	final private static String queryTacheEnvoiEnInstance = // ------------------------------
+	private static final String queryTacheEnvoiEnInstance = // ------------------------------
 	"SELECT                                                                                  "
 			+ "    tache                                                                     "
 			+ "FROM                                                                          "

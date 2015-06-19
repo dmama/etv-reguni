@@ -30,7 +30,7 @@ import ch.vd.uniregctb.type.TypePermis;
  */
 public class FinPermis extends EvenementCivilInterne {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(FinPermis.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FinPermis.class);
 
 	private TypePermis typePermis;
 

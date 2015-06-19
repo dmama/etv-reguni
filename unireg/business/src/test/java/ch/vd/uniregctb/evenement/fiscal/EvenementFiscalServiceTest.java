@@ -25,9 +25,9 @@ import static org.junit.Assert.fail;
 
 public class EvenementFiscalServiceTest extends BusinessTest {
 
-	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/evenement/fiscal/EvenementFiscalServiceTest.xml";
-	private final static Long NUMERO_CONTRIBUABLE = 12300002L;
-	private final static Long NUMERO_DEBITEUR = 12500001L;
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/evenement/fiscal/EvenementFiscalServiceTest.xml";
+	private static final Long NUMERO_CONTRIBUABLE = 12300002L;
+	private static final Long NUMERO_DEBITEUR = 12500001L;
 
 
 	private EvenementFiscalService evenementFiscalService;

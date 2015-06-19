@@ -31,7 +31,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	private EchoirDIsProcessor processor;
 	private AdresseService adresseService;
 
-	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml";
+	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml";
 
 	@Override
 	public void onSetUp() throws Exception {

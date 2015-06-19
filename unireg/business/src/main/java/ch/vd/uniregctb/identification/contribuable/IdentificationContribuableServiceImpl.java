@@ -280,7 +280,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		SANS_MOTS_RESERVES
 	}
 
-	private static interface IdFetcher<T> {
+	private interface IdFetcher<T> {
 		Long getId(T element);
 	}
 
@@ -1534,7 +1534,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		identificationContribuableCache = cache;
 	}
 
-	private static interface CustomValueFiller<T> {
+	private interface CustomValueFiller<T> {
 		Map<Etat, List<T>> getValuesParEtat(IdentCtbDAO dao);
 		void fillCache(IdentificationContribuableCache cache, Map<Etat, List<T>> values);
 	}

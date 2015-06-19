@@ -21,9 +21,9 @@ public class TiersSituationFamilleControllerTest extends WebTest {
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private final static String CONTROLLER_NAME = "tiersSituationFamilleController";
+	private static final String CONTROLLER_NAME = "tiersSituationFamilleController";
 
-	private final static String DB_UNIT_FILE = "TiersSituationFamilleControllerTest.xml";
+	private static final String DB_UNIT_FILE = "TiersSituationFamilleControllerTest.xml";
 
 	private SituationFamilleManager situationFamilleManager;
 

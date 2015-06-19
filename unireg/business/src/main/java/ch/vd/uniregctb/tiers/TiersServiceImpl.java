@@ -708,7 +708,7 @@ public class TiersServiceImpl implements TiersService {
         return collectivite;
     }
 
-    private static interface IndividuProvider {
+    private interface IndividuProvider {
         Individu getIndividu(PersonnePhysique pp);
     }
 

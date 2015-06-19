@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class BatchSchedulerTest extends JobTest {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(BatchSchedulerTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BatchSchedulerTest.class);
 
 	private BatchScheduler batchScheduler;
 

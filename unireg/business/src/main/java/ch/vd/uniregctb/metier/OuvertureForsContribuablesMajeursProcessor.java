@@ -459,7 +459,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		data.setHasNationaliteSuisse(hasNationaliteSuisse);
 	}
 
-	final private static String queryHabitantWithoutFor = // --------------------------------
+	private static final String queryHabitantWithoutFor = // --------------------------------
 	"SELECT hab.id                                                                 "
 			+ "FROM                                                                "
 			+ "    PersonnePhysique AS hab                                         "

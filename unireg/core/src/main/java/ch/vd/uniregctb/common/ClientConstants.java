@@ -5,8 +5,8 @@ package ch.vd.uniregctb.common;
  */
 public class ClientConstants {
 
-	public final static String UNIREG_CORE_DAO = "classpath:unireg-core-dao.xml";
-	public final static String UNIREG_CORE_SF = "classpath:unireg-core-sf.xml";
+	public static final String UNIREG_CORE_DAO = "classpath:unireg-core-dao.xml";
+	public static final String UNIREG_CORE_SF = "classpath:unireg-core-sf.xml";
 
-	public final static String UNIREG_BUSINESS_JOBS4WEBIT = "classpath:unireg-business-jobs4webit.xml";
+	public static final String UNIREG_BUSINESS_JOBS4WEBIT = "classpath:unireg-business-jobs4webit.xml";
 }

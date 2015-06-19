@@ -79,7 +79,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		}
 	}
 
-	protected static interface StrategyOverridingCallback {
+	protected interface StrategyOverridingCallback {
 		void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator);
 	}
 

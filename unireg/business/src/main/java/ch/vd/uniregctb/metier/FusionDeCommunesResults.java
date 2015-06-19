@@ -50,7 +50,7 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 		}
 	}
 
-	public static abstract class Info {
+	public abstract static class Info {
 		public final long noTiers;
 
 		public Info(long noTiers) {

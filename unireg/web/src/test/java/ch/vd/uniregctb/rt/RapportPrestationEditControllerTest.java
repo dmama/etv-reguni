@@ -12,7 +12,7 @@ public class RapportPrestationEditControllerTest extends AbstractRapportPrestati
 	/**
 	 * Le nom du controller a tester.
 	 */
-	private final static String CONTROLLER_NAME = "rapportPrestationEditController";
+	private static final String CONTROLLER_NAME = "rapportPrestationEditController";
 	private RapportPrestationEditController controller;
 
 	@Override

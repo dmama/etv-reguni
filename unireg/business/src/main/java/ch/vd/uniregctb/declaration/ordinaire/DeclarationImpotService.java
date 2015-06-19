@@ -24,7 +24,7 @@ public interface DeclarationImpotService {
 	/**
 	 * [SIFISC-2100] Valeur par défaut à attribuer au code segment d'une DI si celui-ci n'est pas renseigné
 	 */
-	public static final int VALEUR_DEFAUT_CODE_SEGMENT = 0;
+	int VALEUR_DEFAUT_CODE_SEGMENT = 0;
 
 	/**
 	 * Détermine les déclaration d'impôts ordinaires à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais

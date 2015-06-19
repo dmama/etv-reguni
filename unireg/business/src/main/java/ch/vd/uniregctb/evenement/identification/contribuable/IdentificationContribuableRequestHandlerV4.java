@@ -38,7 +38,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 
 public class IdentificationContribuableRequestHandlerV4 implements IdentificationContribuableRequestHandler<IdentificationContribuableRequest, IdentificationContribuableResponse> {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV4.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IdentificationContribuableRequestHandlerV4.class);
 
 	private static final int MAX_NAME_LENGTH = 100;
 
@@ -85,7 +85,7 @@ public class IdentificationContribuableRequestHandlerV4 implements Identificatio
 		}
 	}
 
-	private static interface Identificator<D extends IdentificationData, C, I extends IdentifiedTaxpayer> {
+	private interface Identificator<D extends IdentificationData, C, I extends IdentifiedTaxpayer> {
 		C getCriteres(D data);
 		List<Long> identifie(C criteres) throws TooManyIdentificationPossibilitiesException;
 		I buildIdentifiedInformation(long id);

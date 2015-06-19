@@ -9,7 +9,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 
 public interface ImpressionSommationLRHelper {
 
-	public TypeDocumentEditique getTypeDocumentEditique();
+	TypeDocumentEditique getTypeDocumentEditique();
 
 	/**
 	 * Génère l'objet pour l'impression de la sommation LR
@@ -18,7 +18,7 @@ public interface ImpressionSommationLRHelper {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException;
+	FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException;
 
 	/**
 	 * Construit le champ idDocument
@@ -26,7 +26,7 @@ public interface ImpressionSommationLRHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdDocument(DeclarationImpotSource lr) ;
+	String construitIdDocument(DeclarationImpotSource lr) ;
 
 
 	/**
@@ -35,6 +35,6 @@ public interface ImpressionSommationLRHelper {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdArchivageDocument(DeclarationImpotSource lr) ;
+	String construitIdArchivageDocument(DeclarationImpotSource lr) ;
 
 }

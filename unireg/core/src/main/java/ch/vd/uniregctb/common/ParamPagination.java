@@ -67,9 +67,9 @@ public class ParamPagination implements Serializable {
 		return Math.min(numeroPage, (totalCount / taillePage) + 1);
 	}
 
-	public static interface CustomOrderByGenerator {
-		public boolean supports(String fieldName);
-		public QueryFragment generate(String fieldName, ParamPagination pagination);
+	public interface CustomOrderByGenerator {
+		boolean supports(String fieldName);
+		QueryFragment generate(String fieldName, ParamPagination pagination);
 	}
 
 	public QueryFragment buildOrderClause(String tableAlias, @Nullable String defaultField, boolean defaultAsc, @Nullable CustomOrderByGenerator customGenerator) {

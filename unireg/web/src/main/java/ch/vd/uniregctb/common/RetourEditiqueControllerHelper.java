@@ -35,7 +35,7 @@ public interface RetourEditiqueControllerHelper {
 	/**
 	 * Permet de spécifier des comportements
 	 */
-	public static interface TraitementRetourEditique<T extends EditiqueResultat> {
+	interface TraitementRetourEditique<T extends EditiqueResultat> {
 		/**
 		 * Méthode appelée pour implémentation du comportement spécifique
 		 * @param resultat résultat renvoyé par éditique
