@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.Autorisation;
 public class AutorisationConverter extends BaseEnumConverter<Authorisation, Autorisation> {
 
 	@Override
+	@NotNull
 	protected Autorisation convert(@NotNull Authorisation value) {
 		switch (value) {
 		case AUTRE: return Autorisation.AUTRE;

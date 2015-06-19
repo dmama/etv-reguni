@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class BaseEnumConverter <T extends Enum<T>, R extends Enum<R>> extends BaseConverter<T, R> {
 
 	@NotNull
-	protected String genericUnsupportedValueMessage(T value) {
+	protected String genericUnsupportedValueMessage(@NotNull T value) {
 		return "La valeur [" + value.name() + "] de l'énumération" +
 				" [" + value.getClass().getSimpleName() + "] n'est pas supportée.";
 	}

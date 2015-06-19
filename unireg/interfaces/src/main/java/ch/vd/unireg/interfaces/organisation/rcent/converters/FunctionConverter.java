@@ -20,6 +20,7 @@ public class FunctionConverter extends BaseConverter<Function, Fonction> {
 	private static final PersonDataSourceConverter  PERSON_DATA_SOURCE_CONVERTER = new PersonDataSourceConverter();
 
 	@Override
+	@NotNull
 	protected Fonction convert(@NotNull Function function) {
 		final Party party = function.getParty();
 

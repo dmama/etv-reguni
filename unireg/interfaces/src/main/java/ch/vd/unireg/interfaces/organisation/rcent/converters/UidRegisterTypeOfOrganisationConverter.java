@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 public class UidRegisterTypeOfOrganisationConverter extends BaseEnumConverter<UidRegisterTypeOfOrganisation, TypeOrganisationRegistreIDE> {
 
 	@Override
+	@NotNull
 	protected TypeOrganisationRegistreIDE convert(@NotNull UidRegisterTypeOfOrganisation value) {
 		switch (value) {
 		case AUTRE:

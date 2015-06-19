@@ -5,7 +5,7 @@ package ch.vd.unireg.interfaces.organisation.rcent.converters;
  * @param <T> Le type de la valeur en entrée.
  * @param <R> Le type de la valeur en sortie.
  */
-public interface Convert<T, R> {
+public interface Converter<T, R> {
 	/**
 	 * Applies this function to the given argument.
 	 *

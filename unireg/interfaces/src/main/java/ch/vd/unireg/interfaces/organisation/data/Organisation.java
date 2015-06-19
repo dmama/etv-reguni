@@ -17,7 +17,9 @@ public class Organisation {
 	private final List<DateRanged<String>> nomsAdditionels;
 	private final List<DateRanged<FormeLegale>> formeLegale;
 
+	@NotNull
 	private final List<DateRanged<Long>> sites;
+	@NotNull
 	private final List<SiteOrganisation> donneesSites;
 
 	private final List<DateRanged<Long>> transfereA;
@@ -26,8 +28,8 @@ public class Organisation {
 	private final List<DateRanged<Long>> enRemplacementDe;
 
 	public Organisation(long cantonalId, @NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
-	                    List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale, List<DateRanged<Long>> sites,
-	                    List<SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
+	                    List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale, @NotNull List<DateRanged<Long>> sites,
+	                    @NotNull List<SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
 	                    List<DateRanged<Long>> remplacePar, List<DateRanged<Long>> enRemplacementDe) {
 		this.cantonalId = cantonalId;
 		this.identifiants = identifiants;
@@ -46,6 +48,7 @@ public class Organisation {
 		return cantonalId;
 	}
 
+	@NotNull
 	public List<SiteOrganisation> getDonneesSites() {
 		return donneesSites;
 	}
@@ -76,6 +79,7 @@ public class Organisation {
 		return remplacePar;
 	}
 
+	@NotNull
 	public List<DateRanged<Long>> getSites() {
 		return sites;
 	}

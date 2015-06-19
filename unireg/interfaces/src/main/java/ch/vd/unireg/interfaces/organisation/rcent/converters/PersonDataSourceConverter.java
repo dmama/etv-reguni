@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.Personne;
 public class PersonDataSourceConverter extends BaseEnumConverter<PersonDataSource, Personne.SourceDonnees> {
 
 	@Override
+	@NotNull
 	protected Personne.SourceDonnees convert(@NotNull PersonDataSource value) {
 		switch (value) {
 		case BRUTES_RCENT:

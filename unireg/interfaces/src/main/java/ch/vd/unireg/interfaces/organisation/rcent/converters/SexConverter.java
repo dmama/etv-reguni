@@ -8,6 +8,7 @@ import ch.vd.uniregctb.type.Sexe;
 public class SexConverter extends BaseEnumConverter<Sex, Sexe> {
 
 	@Override
+	@NotNull
 	protected Sexe convert(@NotNull Sex value) {
 		switch (value) {
 		case FEMININ:

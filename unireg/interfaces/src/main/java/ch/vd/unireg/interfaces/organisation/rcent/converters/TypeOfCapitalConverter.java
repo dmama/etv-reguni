@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
 public class TypeOfCapitalConverter extends BaseEnumConverter<TypeOfCapital, TypeDeCapital> {
 
 	@Override
+	@NotNull
 	protected TypeDeCapital convert(@NotNull TypeOfCapital value) {
 		switch (value) {
 		case CAPITAL_SOCIAL:

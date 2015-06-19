@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.Adresse;
 public class AddressConverter extends BaseConverter<Address, Adresse> {
 
 	@Override
+	@NotNull
 	protected Adresse convert(@NotNull Address address) {
 		return new Adresse(address.getAddressLine1(),
 		                   address.getAddressLine2(),

@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.Convert;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 
 public class RCEntHelper {
+
+	// TODO: Ecrire les tests unitaires pour cette classe
 
 	/**
 	 * Ré-enveloppe la donnée d'un DateRanged RCEnt dans un DateRanged Unireg.
@@ -60,7 +62,7 @@ public class RCEntHelper {
 	 * @return
 	 */
 	private static <R, U> DateRanged<R> convertAndMap(ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr,
-	                                                  Convert<U, R> mapper) {
+	                                                  Converter<U, R> mapper) {
 		return new DateRanged<>(dr.getDateDebut(), dr.getDateFin(), mapper.apply(dr.getPayload()));
 	}
 
@@ -74,7 +76,7 @@ public class RCEntHelper {
 	 * @return Une nouvelle liste de DateRanged Unireg, avec les données transformées.
 	 */
 	public static <U, R> List<DateRanged<R>> convertAndMap(List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>> rcEntDrList,
-	                                                       Convert<U, R> mapper) {
+	                                                       Converter<U, R> mapper) {
 		List<DateRanged<R>> drList = new ArrayList<>(rcEntDrList.size());
 		for (ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr : rcEntDrList) {
 			drList.add(
@@ -95,7 +97,7 @@ public class RCEntHelper {
 	 * @return Une nouvelle Map de listes de DateRanged Unireg, avec les données.
 	 */
 	public static <K, U, R> Map<K, List<DateRanged<R>>> convertAndMap(Map<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> rcEntDrListMap,
-	                                                            Convert<U, R> mapper) {
+	                                                            Converter<U, R> mapper) {
 		HashMap<K, List<DateRanged<R>>> map = new HashMap<>(rcEntDrListMap.size());
 		for (Map.Entry<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> e : rcEntDrListMap.entrySet()) {
 			map.put(e.getKey(), convertAndMap(e.getValue(), mapper));

@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 public class KindOfLocationConverter extends BaseEnumConverter<KindOfLocation, TypeDeSite> {
 
 	@Override
+	@NotNull
 	protected TypeDeSite convert(@NotNull KindOfLocation value) {
 		switch (value) {
 		case ETABLISSEMENT_PRINCIPAL:

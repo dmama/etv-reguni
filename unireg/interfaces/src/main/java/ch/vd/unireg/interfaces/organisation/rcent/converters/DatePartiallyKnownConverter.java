@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 public class DatePartiallyKnownConverter extends BaseConverter<DatePartiallyKnown, RegDate> {
 
 	@Override
+	@NotNull
 	protected RegDate convert(@NotNull DatePartiallyKnown birth) {
 		RegDate date = birth.getYearMonthDay();
 		if (date == null) {

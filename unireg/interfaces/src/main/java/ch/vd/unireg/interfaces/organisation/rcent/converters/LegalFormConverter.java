@@ -9,6 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 public class LegalFormConverter extends BaseEnumConverter<LegalForm, FormeLegale> {
 
 	@Override
+	@NotNull
 	protected FormeLegale convert(@NotNull LegalForm value) {
 		switch (value) {
 		case N_00_AUTRE:

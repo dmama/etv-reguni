@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 public class UidRegisterStatusConverter extends BaseEnumConverter<UidRegisterStatus, StatusRegistreIDE> {
 
 	@Override
+	@NotNull
 	protected StatusRegistreIDE convert(@NotNull UidRegisterStatus value) {
 		switch (value) {
 		case AUTRE:

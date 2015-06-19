@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 public class CommercialRegisterEntryStatusConverter extends BaseEnumConverter<CommercialRegisterEntryStatus, StatusInscriptionRC> {
 
 	@Override
+	@NotNull
 	protected StatusInscriptionRC convert(@NotNull CommercialRegisterEntryStatus value) {
 		switch (value) {
 		case AUTRE:
@@ -16,6 +17,8 @@ public class CommercialRegisterEntryStatusConverter extends BaseEnumConverter<Co
 			return StatusInscriptionRC.ACTIF;
 		case EN_LIQUIDATION:
 			return StatusInscriptionRC.EN_LIQUIDATION;
+		case RADIE:
+			return StatusInscriptionRC.RADIE;
 		case PROVISOIRE:
 			return StatusInscriptionRC.PROVISOIRE;
 		default:

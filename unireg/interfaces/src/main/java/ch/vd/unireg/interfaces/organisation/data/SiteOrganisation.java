@@ -56,6 +56,7 @@ public class SiteOrganisation {
 		return fonction;
 	}
 
+	@NotNull
 	public DonneesRegistreIDE getIde() {
 		return ide;
 	}
@@ -73,6 +74,7 @@ public class SiteOrganisation {
 		return nomsAdditionnels;
 	}
 
+	@NotNull
 	public DonneesRC getRc() {
 		return rc;
 	}

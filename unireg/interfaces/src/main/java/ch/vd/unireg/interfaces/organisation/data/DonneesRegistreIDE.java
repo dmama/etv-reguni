@@ -2,7 +2,10 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 public class DonneesRegistreIDE {
+	@NotNull
 	private final List<DateRanged<StatusRegistreIDE>> status;
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOfOrganisation;
 	private final List<DateRanged<Adresse>> adresseEffective;
@@ -10,7 +13,7 @@ public class DonneesRegistreIDE {
 	private final List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDE(List<DateRanged<Adresse>> adresseBoitePostale,
-	                          List<DateRanged<StatusRegistreIDE>> status,
+	                          @NotNull List<DateRanged<StatusRegistreIDE>> status,
 	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOfOrganisation,
 	                          List<DateRanged<Adresse>> adresseEffective,
 	                          List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {
@@ -33,6 +36,7 @@ public class DonneesRegistreIDE {
 		return raisonDeLiquidation;
 	}
 
+	@NotNull
 	public List<DateRanged<StatusRegistreIDE>> getStatus() {
 		return status;
 	}

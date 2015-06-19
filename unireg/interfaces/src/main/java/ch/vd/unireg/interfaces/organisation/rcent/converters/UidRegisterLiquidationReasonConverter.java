@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.organisation.data.RaisonLiquidationRegistreIDE;
 
 public class UidRegisterLiquidationReasonConverter extends BaseEnumConverter<UidRegisterLiquidationReason, RaisonLiquidationRegistreIDE> {
 	@Override
+	@NotNull
 	protected RaisonLiquidationRegistreIDE convert(@NotNull UidRegisterLiquidationReason value) {
 		switch (value) {
 		case AUTRE:

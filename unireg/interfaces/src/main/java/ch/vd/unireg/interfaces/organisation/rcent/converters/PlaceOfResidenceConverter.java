@@ -9,6 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.LieuDeResidence;
 public class PlaceOfResidenceConverter extends BaseConverter<PlaceOfResidence, LieuDeResidence> {
 
 	@Override
+	@NotNull
 	protected LieuDeResidence convert(@NotNull PlaceOfResidence placeOfResidence) {
 		final Country country = placeOfResidence.getCountry();
 		return new LieuDeResidence(placeOfResidence.getPlaceOfResidenceName(),

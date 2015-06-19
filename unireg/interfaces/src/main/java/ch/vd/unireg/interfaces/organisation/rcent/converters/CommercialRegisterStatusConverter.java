@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 public class CommercialRegisterStatusConverter extends BaseEnumConverter<CommercialRegisterStatus, StatusRC> {
 
 	@Override
+	@NotNull
 	protected StatusRC convert(@NotNull CommercialRegisterStatus value) {
 		switch (value) {
 		case INCONNU:

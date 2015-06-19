@@ -9,6 +9,7 @@ public class CapitalConverter extends BaseConverter<ch.vd.evd0022.v1.Capital, Ca
 	private static final TypeOfCapitalConverter TYPE_OF_CAPITAL_CONVERTER = new TypeOfCapitalConverter();
 
 	@Override
+	@NotNull
 	protected Capital convert(@NotNull ch.vd.evd0022.v1.Capital capital) {
 		return new Capital(
 				TYPE_OF_CAPITAL_CONVERTER.apply(capital.getTypeOfCapital()),
