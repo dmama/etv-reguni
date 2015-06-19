@@ -17,7 +17,7 @@ public class PersonDataSourceConverter extends BaseEnumConverter<PersonDataSourc
 		case BRUTES_RCENT_AVEC_RCPERS_INDISPONIBLE:
 			return Personne.SourceDonnees.BRUTES_RCENT_AVEC_RCPERS_INDISPONIBLE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

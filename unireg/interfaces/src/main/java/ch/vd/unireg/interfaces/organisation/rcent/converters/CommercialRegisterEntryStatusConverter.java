@@ -19,7 +19,7 @@ public class CommercialRegisterEntryStatusConverter extends BaseEnumConverter<Co
 		case PROVISOIRE:
 			return StatusInscriptionRC.PROVISOIRE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

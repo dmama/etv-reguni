@@ -28,7 +28,7 @@ public class UidRegisterLiquidationReasonConverter extends BaseEnumConverter<Uid
 		case DOUBLON_OU_ERREUR:
 			return RaisonLiquidationRegistreIDE.DOUBLON_OU_ERREUR;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

@@ -15,7 +15,7 @@ public class SexConverter extends BaseEnumConverter<Sex, Sexe> {
 		case MASCULIN:
 			return Sexe.MASCULIN;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 

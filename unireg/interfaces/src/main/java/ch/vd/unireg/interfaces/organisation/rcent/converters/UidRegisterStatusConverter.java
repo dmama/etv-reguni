@@ -27,7 +27,7 @@ public class UidRegisterStatusConverter extends BaseEnumConverter<UidRegisterSta
 		case ANNULE:
 			return StatusRegistreIDE.ANNULE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

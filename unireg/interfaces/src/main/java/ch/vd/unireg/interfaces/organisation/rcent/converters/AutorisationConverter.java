@@ -17,7 +17,7 @@ public class AutorisationConverter extends BaseEnumConverter<Authorisation, Auto
 		case SIG_COLLECTIVE_A_QUATRE: return Autorisation.SIG_COLLECTIVE_A_QUATRE;
 		case SIG_COLLECTIVE_A_CINQ: return Autorisation.SIG_COLLECTIVE_A_CINQ;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 

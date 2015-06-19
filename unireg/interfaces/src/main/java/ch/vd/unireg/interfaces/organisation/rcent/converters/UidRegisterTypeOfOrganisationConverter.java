@@ -45,8 +45,7 @@ public class UidRegisterTypeOfOrganisationConverter extends BaseEnumConverter<Ui
 		case SITE:
 			return TypeOrganisationRegistreIDE.SITE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
-
 	}
 }

@@ -15,7 +15,7 @@ public class KindOfLocationConverter extends BaseEnumConverter<KindOfLocation, T
 		case ETABLISSEMENT_SECONDAIRE:
 			return TypeDeSite.ETABLISSEMENT_SECONDAIRE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

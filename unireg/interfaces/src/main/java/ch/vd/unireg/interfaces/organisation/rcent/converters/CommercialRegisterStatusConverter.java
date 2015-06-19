@@ -17,7 +17,7 @@ public class CommercialRegisterStatusConverter extends BaseEnumConverter<Commerc
 		case NON_INSCRIT:
 			return StatusRC.NON_INSCRIT;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

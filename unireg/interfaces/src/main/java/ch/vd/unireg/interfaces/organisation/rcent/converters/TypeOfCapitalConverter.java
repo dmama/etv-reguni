@@ -21,7 +21,7 @@ public class TypeOfCapitalConverter extends BaseEnumConverter<TypeOfCapital, Typ
 		case CAPITAL_VARIABLE:
 			return TypeDeCapital.CAPITAL_VARIABLE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }

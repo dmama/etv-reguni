@@ -90,7 +90,7 @@ public class LegalFormConverter extends BaseEnumConverter<LegalForm, FormeLegale
 		case N_0441_ENTREPRISE_ETRANGERE:
 			return FormeLegale.N_0441_ENTREPRISE_ETRANGERE;
 		default:
-			throw new IllegalArgumentException(genericUnsupportedValueMessage(value.name(), value.getClass().getSimpleName()));
+			throw new IllegalArgumentException(genericUnsupportedValueMessage(value));
 		}
 	}
 }
