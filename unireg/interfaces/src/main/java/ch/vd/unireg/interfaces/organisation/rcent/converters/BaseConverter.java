@@ -29,14 +29,7 @@ public abstract class BaseConverter<T, R> implements Converter<T, R> {
 	@Nullable
 	public final R apply(T t) {
 		if (t == null) return null;
-		R converted = convert(t);
-		if (converted == null) { // Garde-fou pour éviter tout risque en cas de valeur non prise en charge. En effet, les annotations
-								 // @NotNull n'empêchent pas de définir un convertisseur renvoyant null au lieu d'une exception. Dans ce
-								 // cas, les tests seraient impuissant à faire ressortir le cas.
-			throw new IllegalStateException("La conversion de la valeur [" + t.toString() + "] " +
-					                                "a renvoyé une valeur nulle. Contrôler l'implémentation de convert().");
-		}
-		return converted;
+		return convert(t);
 	}
 
 	/**
