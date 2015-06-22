@@ -61,7 +61,7 @@ public class RCEntHelper {
 	 * @param <U> Le type de la donnée enveloppée dans le DateRanged RCEnt en entrée.
 	 * @return
 	 */
-	private static <R, U> DateRanged<R> convertAndMap(ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr,
+	public static <R, U> DateRanged<R> convertAndMap(ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr,
 	                                                  Converter<U, R> mapper) {
 		return new DateRanged<>(dr.getDateDebut(), dr.getDateFin(), mapper.apply(dr.getPayload()));
 	}
