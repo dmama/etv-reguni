@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 
 public class RCEntHelperTest {
 
-	 static final Converter<String, String> converter = new Converter<String, String>() {
+	private static final Converter<String, String> converter = new Converter<String, String>() {
 		@Override
 		public String apply(String s) {
 			return s + "_CONVERTED";

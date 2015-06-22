@@ -10,8 +10,6 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 
 public class RCEntHelper {
 
-	// TODO: Ecrire les tests unitaires pour cette classe
-
 	/**
 	 * Ré-enveloppe la donnée d'un DateRanged RCEnt dans un DateRanged Unireg.
 	 * @param rcEntDr Un DateRanged RCEnt.
