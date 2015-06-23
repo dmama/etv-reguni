@@ -442,7 +442,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		assigneDatesFin(getDateFinActivite(regpm), domiciles);
 
 		// liaison des domiciles à l'établissement
-		domiciles.stream().forEach(etbPrincipal::addDomicile);
+		domiciles.stream()
+				.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
+				                                                                                FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+				                                                                                DATE_RANGE_RENDERER.toString(domicile),
+				                                                                                domicile.getTypeAutoriteFiscale(),
+				                                                                                domicile.getNumeroOfsAutoriteFiscale())))
+				.forEach(etbPrincipal::addDomicile);
 
    		// TODO adresse ?
 	}

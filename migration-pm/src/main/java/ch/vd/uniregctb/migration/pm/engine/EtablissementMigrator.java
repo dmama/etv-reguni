@@ -314,7 +314,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile.");
 		}
 		else {
-			domicilesStables.forEach(unireg::addDomicile);
+			domicilesStables.stream()
+					.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile : %s sur %s/%d.",
+					                                                                                DATE_RANGE_RENDERER.toString(domicile),
+					                                                                                domicile.getTypeAutoriteFiscale(),
+					                                                                                domicile.getNumeroOfsAutoriteFiscale())))
+					.forEach(unireg::addDomicile);
 		}
 	}
 
