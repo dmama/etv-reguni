@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
@@ -15,7 +16,7 @@ public interface EntityMigrator<T extends RegpmEntity> {
 	 * Permet d'initialiser des structures de données dans le résultat avant toute migration
 	 * @param mr structure à initialiser
 	 */
-	void initMigrationResult(MigrationResult mr);
+	void initMigrationResult(MigrationResultInitialization mr);
 
 	/**
 	 * Migre l'entité donnée
@@ -24,5 +25,5 @@ public interface EntityMigrator<T extends RegpmEntity> {
 	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper);
+	void migrate(T entity, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper);
 }

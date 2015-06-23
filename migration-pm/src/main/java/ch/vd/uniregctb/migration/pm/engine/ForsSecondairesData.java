@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -18,7 +20,8 @@ public abstract class ForsSecondairesData {
 	protected ForsSecondairesData(AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier,
 	                              Map<RegpmCommune, List<DateRange>> communes) {
 		this.entiteJuridiqueSupplier = entiteJuridiqueSupplier;
-		this.communes = communes;
+		this.communes = new TreeMap<>(Comparator.comparing(RegpmCommune::getNoOfs));
+		this.communes.putAll(communes);
 	}
 
 	/**

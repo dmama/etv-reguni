@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
@@ -28,10 +27,13 @@ import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -55,13 +57,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
-	private final ActivityManager activityManager;
 
-	public EtablissementMigrator(UniregStore uniregStore, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, ActivityManager activityManager) {
-		super(uniregStore);
+	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper) {
+		super(uniregStore, activityManager);
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
-		this.activityManager = activityManager;
 	}
 
 	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {
@@ -71,7 +71,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domiciles...
 		if (domicileFin == null) {
 			// fin == null -> il n'y a absolument rien qui couvre le range demandé
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", DateRangeHelper.toDisplayString(range)));
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", DATE_RANGE_RENDERER.toString(range)));
 			return Collections.emptyList();
 		}
 
@@ -79,8 +79,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final Map.Entry<RegDate, RegpmDomicileEtablissement> domicileDebutEffectif;
 		if (domicileDebut == null) {
 			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
-			                                                                                                                      DateRangeHelper.toDisplayString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
+			                                                                       DATE_RANGE_RENDERER.toString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
 		}
 		else {
 			domicileDebutEffectif = domicileDebut;
@@ -104,20 +104,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 	}
 
-	@Nullable
 	@Override
-	protected String getMessagePrefix(RegpmEtablissement entity) {
-		if (entity.getEntreprise() != null) {
-			return String.format("Etablissement %d de l'entreprise %d (%s)", entity.getId(), entity.getEntreprise().getId(), activityManager.isActive(entity.getEntreprise()) ? "active" : "inactive");
-		}
-		if (entity.getIndividu() != null) {
-			return String.format("Etablissement %d de l'individu %d", entity.getId(), entity.getIndividu().getId());
-		}
-		return String.format("Etablissement %d", entity.getId());
-	}
-
-	@Override
-	public void initMigrationResult(MigrationResult mr) {
+	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
 
 		// on va regrouper les données (communes et dates) par entité juridique afin de créer,
@@ -132,46 +120,47 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	/**
 	 * Appelé pour la consolidation des données de fors secondaires par entité juridique
 	 * @param data les données collectées pour une entité juridique
-	 * @param masterMr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi
 	 */
-	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultProduction masterMr) {
+	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
-		final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
-		for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
+		doInContext(keyEntiteJuridique, mr, () -> {
+			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
+			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
-			// TODO attention, dans le cas d'un individu, les fors secondaires peuvent devoir être créés sur un couple !!
-			// TODO l'établissement principal doit-il générer un for secondaire ?
+				// TODO attention, dans le cas d'un individu, les fors secondaires peuvent devoir être créés sur un couple !!
+				// TODO l'établissement principal doit-il générer un for secondaire ?
 
-			final RegpmCommune commune = communeData.getKey();
-			if (commune.getCanton() != RegpmCanton.VD) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("Etablissement(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
-			}
-			else {
-				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
-				final Integer noOfsCommuneRegpm = commune.getNoOfs();
-				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
+				final RegpmCommune commune = communeData.getKey();
+				if (commune.getCanton() != RegpmCanton.VD) {
+					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					              String.format("Etablissement(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+				}
+				else {
+					// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
+					final Integer noOfsCommuneRegpm = commune.getNoOfs();
+					final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
 
-				for (DateRange dates : communeData.getValue()) {
-					final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-					ffs.setDateDebut(dates.getDateDebut());
-					ffs.setDateFin(dates.getDateFin());
-					ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-					ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
-					ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
-					ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-					ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
-					ffs.setTiers(entiteJuridique);
-					entiteJuridique.addForFiscal(ffs);
+					for (DateRange dates : communeData.getValue()) {
+						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+						ffs.setDateDebut(dates.getDateDebut());
+						ffs.setDateFin(dates.getDateFin());
+						ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+						ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+						ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
+						ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
+						ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+						ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
+						ffs.setTiers(entiteJuridique);
+						entiteJuridique.addForFiscal(ffs);
 
-					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
-					                                                                                                            DateRangeHelper.toDisplayString(dates),
-					                                                                                                            noOfsCommune));
+						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
+						                                                             DATE_RANGE_RENDERER.toString(dates),
+						                                                             noOfsCommune));
+					}
 				}
 			}
-		}
+		});
 	}
 
 	private static Etablissement createEtablissement(RegpmEtablissement regpm) {
@@ -181,7 +170,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	@Override
-	protected void doMigrate(RegpmEtablissement regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	public void migrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement
@@ -203,7 +192,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
 		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
 		if (entiteJuridique == null) {
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
 		}
 		else {
 			final Supplier<Etablissement> moi = getEtablissementByRegpmIdSupplier(idMapper, regpm.getId());
@@ -218,7 +207,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, etablissementsStables);
 			}
 			else {
-				mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans aucune période de validité d'un établissement stable.");
+				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans aucune période de validité d'un établissement stable.");
 			}
 		}
 
@@ -232,14 +221,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.map(Pair::getKey)
 				.distinct()
 				.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
-				.forEach(msg -> mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, msg));
+				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
 		regpm.getAppartenancesGroupeProprietaire().stream()
 				.map(AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire)
 				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
 				.map(Pair::getKey)
 				.distinct()
 				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
-				.forEach(msg -> mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, msg));
+				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
 
 		// adresse
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
@@ -261,6 +250,9 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// domiciles de l'établissement
 		migrateDomiciles(regpm, unireg, mr);
+
+		// log de suivi à la fin des opérations pour cet établissement
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Etablissement migré.");
 	}
 
 	/**
@@ -319,7 +311,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log ou ajout des domiciles dans l'établissement...
 		if (domicilesStables.isEmpty()) {
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.ERROR, "Etablissement sans domicile.");
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile.");
 		}
 		else {
 			domicilesStables.forEach(unireg::addDomicile);

@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -41,7 +41,7 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 	 * @param migrator migrateur à utiliser
 	 * @param <T> type de l'entité à migrer
 	 */
-	protected <T extends RegpmEntity> void migrate(T entity, EntityMigrator<T> migrator, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
+	protected <T extends RegpmEntity> void migrate(T entity, EntityMigrator<T> migrator, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		doInUniregTransaction(status -> {
 			migrator.migrate(entity, mr, linkCollector, idMapper);
 			return null;
@@ -54,21 +54,21 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 	 * @param cat catégorie visée
 	 * @param regex expression régulière (potentiellement partielle) recherchée
 	 */
-	protected static void assertExistMessageWithContent(MigrationResultCollector mr, MigrationResultMessage.CategorieListe cat, String regex) {
+	protected static void assertExistMessageWithContent(MigrationResultCollector mr, LogCategory cat, String regex) {
 		// s'il n'y a aucun message pour la catégorie, c'est forcément faux
-		final List<MigrationResultMessage> messages = mr.getMessages().get(cat);
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(cat);
 		Assert.assertNotNull(messages);
 
 		final Pattern pattern = Pattern.compile(regex);
-		final MigrationResultMessage candidate = messages.stream()
-				.filter(msg -> msg.getTexte() != null && pattern.matcher(msg.getTexte()).find())
+		final MigrationResultCollector.Message candidate = messages.stream()
+				.filter(msg -> msg.text != null && pattern.matcher(msg.text).find())
 				.findAny()
 				.orElse(null);
 
 		// on va faire un joli message pour voir tous les messages
 		if (candidate == null) {
 			final String msgs = messages.stream()
-					.map(MigrationResultMessage::getTexte)
+					.map(m -> m.text)
 					.collect(Collectors.joining(System.lineSeparator()));
 			Assert.fail("Aucun message ne correspond à la regex '" + regex + "' dans la catégorie " + cat + " : \n" + msgs);
 		}

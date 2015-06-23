@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.migration.pm;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 
 public interface MigrationResultProduction {
 
@@ -11,7 +13,7 @@ public interface MigrationResultProduction {
 	 * @param niveau le niveau du message
 	 * @param msg le message
 	 */
-	void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg);
+	void addMessage(LogCategory cat, LogLevel niveau, String msg);
 
 	/**
 	 * Enregistre un callback à appeler une fois la transaction courante committée
@@ -26,34 +28,4 @@ public interface MigrationResultProduction {
 	 */
 	<D> void addPreTransactionCommitData(@NotNull D data);
 
-	/**
-	 * @param prefix le préfixe à rajouter
-	 * @return une façade vers l'implémentation courante qui ajoute ce préfixe à tous les messages loggués
-	 */
-	@NotNull
-	default MigrationResultProduction withMessagePrefix(String prefix) {
-
-		// pas de préfixe, pas la peine de faire une nouvelle instance
-		if (StringUtils.isBlank(prefix)) {
-			return MigrationResultProduction.this;
-		}
-
-		// nouvelle instance en façade pour le préfixe non-vide
-		return new MigrationResultProduction() {
-			@Override
-			public void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg) {
-				MigrationResultProduction.this.addMessage(cat, niveau, String.format("%s : %s", prefix, msg));
-			}
-
-			@Override
-			public void addPostTransactionCallback(@NotNull Runnable callback) {
-				MigrationResultProduction.this.addPostTransactionCallback(callback);
-			}
-
-			@Override
-			public <D> void addPreTransactionCommitData(@NotNull D data) {
-				MigrationResultProduction.this.addPreTransactionCommitData(data);
-			}
-		};
-	}
 }

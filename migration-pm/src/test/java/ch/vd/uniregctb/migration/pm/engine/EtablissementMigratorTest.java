@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +20,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -48,9 +51,10 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		migrator = new EtablissementMigrator(
 				getBean(UniregStore.class, "uniregStore"),
+				activityManager,
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
-				getBean(AdresseHelper.class, "adresseHelper"),
-	            activityManager);
+				getBean(AdresseHelper.class, "adresseHelper")
+		);
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
@@ -135,18 +139,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -188,19 +188,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(dateFin, link.getDateFin());
 		}
 
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -243,19 +239,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(dateFin, link.getDateFin());
 		}
 
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -299,18 +291,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -378,19 +366,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -459,18 +443,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -544,19 +524,22 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 		mr.getMessages().values().stream()
 				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
+				.map(msg -> Pair.of(msg, msg.context.get(EtablissementLoggedElement.class)))
+				.filter(pair -> pair.getRight() != null)
+				.filter(pair -> noEtablissement != (Long) pair.getRight().getItemValues().get(LoggedElementAttribute.ETABLISSEMENT_ID))
 				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
+				.map(Pair::getLeft)
+				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.text)));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -657,19 +640,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -725,18 +704,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -801,18 +776,14 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -877,20 +848,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<MigrationResultMessage.CategorieListe> expectedCategories = EnumSet.of(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.CategorieListe.ADRESSES);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.ADRESSES, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().values().stream()
-				.flatMap(Collection::stream)
-				.filter(msg -> !msg.getTexte().startsWith("Etablissement " + noEtablissement + " de l'entreprise " + noEntreprise + " (active) : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'établissement (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ETABLISSEMENTS,
-		                              "\\bL'établissement stable \\[01\\.01\\.1995 ; 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable \\[01\\.01\\.1995 -> 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {

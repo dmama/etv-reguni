@@ -33,6 +33,7 @@
 		<property name="etablissementMigrator" ref="etablissementMigrator"/>
 		<property name="individuMigrator" ref="individuMigrator"/>
 		<property name="validationInterceptor" ref="validationInterceptor"/>
+		<property name="activityManager" ref="activityManager"/>
 	</bean>
 
 	<bean id="migrationWorker" class="ch.vd.uniregctb.migration.pm.engine.MigrationWorker">
@@ -43,19 +44,18 @@
 
 	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
         <constructor-arg name="uniregStore" ref="uniregStore"/>
+		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
-		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
-		<constructor-arg name="activityManager" ref="activityManager"/>
 	</bean>
 
     <bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">

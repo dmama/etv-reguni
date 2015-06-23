@@ -2,56 +2,17 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 
 public class MigrationResultTest {
-
-	@Test
-	public void testIntroductionPrefixeDansMessages() throws Exception {
-		final MigrationResult base = new MigrationResult();
-		final MigrationResultProduction avecPrefixe = base.withMessagePrefix("Mon préfixe");
-
-		// on balance toutes les combinaisons !
-		for (MigrationResultMessage.CategorieListe cat : MigrationResultMessage.CategorieListe.values()) {
-			for (MigrationResultMessage.Niveau niveau : MigrationResultMessage.Niveau.values()) {
-				base.addMessage(cat, niveau, String.format("Message sans préfixe %s/%s", cat, niveau));
-				avecPrefixe.addMessage(cat, niveau, String.format("Message avec préfixe %s/%s", cat, niveau));
-			}
-		}
-
-		// récupération de tous les messages reçus dans une liste linéaire
-		final List<MigrationResultMessage> messages = Arrays.stream(MigrationResultMessage.CategorieListe.values())
-				.map(base::getMessages)
-				.flatMap(List::stream)
-				.collect(Collectors.toList());
-		Assert.assertNotNull(messages);
-		Assert.assertEquals(2 * MigrationResultMessage.Niveau.values().length * MigrationResultMessage.CategorieListe.values().length, messages.size());
-
-		// vérification des messages reçus
-		for (int i = 0 ; i < messages.size() ; ++ i) {
-			final int indexCat = (i / (2 * MigrationResultMessage.Niveau.values().length)) % MigrationResultMessage.CategorieListe.values().length;
-			final int indexNiveau = (i / 2) % MigrationResultMessage.Niveau.values().length;
-			final boolean isPrefixExpected = i % 2 == 1;
-
-			final MigrationResultMessage.CategorieListe expectedCat = MigrationResultMessage.CategorieListe.values()[indexCat];
-			final MigrationResultMessage.Niveau expectedNiveau = MigrationResultMessage.Niveau.values()[indexNiveau];
-
-			final MigrationResultMessage msg = messages.get(i);
-			Assert.assertEquals(expectedNiveau, msg.getNiveau());
-			if (isPrefixExpected) {
-				Assert.assertEquals(Integer.toString(i), String.format("Mon préfixe : Message avec préfixe %s/%s", expectedCat, expectedNiveau), msg.getTexte());
-			}
-			else {
-				Assert.assertEquals(Integer.toString(i), String.format("Message sans préfixe %s/%s", expectedCat, expectedNiveau), msg.getTexte());
-			}
-		}
-	}
 
 	private static class MyDataToConsolidate {
 		private int key;
@@ -65,7 +26,7 @@ public class MigrationResultTest {
 
 	@Test
 	public void testConsolisationData() throws Exception {
-		final MigrationResult mr = new MigrationResult();
+		final MigrationResult mr = new MigrationResult(null);       // normalement, on n'a ici pas besoin de graphe... Ca pêtera si jamais !
 
 		// enregistrement de la structure
 
@@ -73,7 +34,7 @@ public class MigrationResultTest {
 		                                        1,
 		                                        d -> d.key,
 		                                        (d1, d2) -> new MyDataToConsolidate(d1.key, String.format("%s,%s", d1.msg, d2.msg)),
-		                                        d -> mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.INFO, String.format("%d -> %s", d.key, d.msg)));
+		                                        d -> mr.addMessage(LogCategory.EXCEPTIONS, LogLevel.INFO, String.format("%d -> %s", d.key, d.msg)));
 
 		// enregistrement des données
 
@@ -92,7 +53,7 @@ public class MigrationResultTest {
 
 		mr.addPreTransactionCommitData(new MyDataToConsolidate(1, "Aaaah ok..."));
 
-		Assert.assertEquals(0, mr.getMessages(MigrationResultMessage.CategorieListe.GENERIQUE).size());     // pour l'instant, il n'y a rien
+		Assert.assertEquals(0, mr.getMessages(LogCategory.EXCEPTIONS).size());     // pour l'instant, il n'y a rien
 
 		// consolidation
 
@@ -100,18 +61,24 @@ public class MigrationResultTest {
 
 		// validation du résultat
 
-		final List<MigrationResultMessage> msgs = mr.getMessages(MigrationResultMessage.CategorieListe.GENERIQUE);
+		final List<LoggedElement> msgs = mr.getMessages(LogCategory.EXCEPTIONS);
 		Assert.assertNotNull(msgs);
 		Assert.assertEquals(2, msgs.size());
 		{
-			final MigrationResultMessage msg = msgs.get(0);
-			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.getNiveau());
-			Assert.assertEquals("42 -> La,Réponse,A,La,Grande,Question,De,L',Univers", msg.getTexte());
+			final LoggedElement msg = msgs.get(0);
+			Assert.assertEquals(Arrays.asList(LoggedElementAttribute.NIVEAU, LoggedElementAttribute.MESSAGE), msg.getItems());
+
+			final Map<LoggedElementAttribute, Object> itemValues = msg.getItemValues();
+			Assert.assertEquals(LogLevel.INFO, itemValues.get(LoggedElementAttribute.NIVEAU));
+			Assert.assertEquals("42 -> La,Réponse,A,La,Grande,Question,De,L',Univers", itemValues.get(LoggedElementAttribute.MESSAGE));
 		}
 		{
-			final MigrationResultMessage msg = msgs.get(1);
-			Assert.assertEquals(MigrationResultMessage.Niveau.INFO, msg.getNiveau());
-			Assert.assertEquals("1 -> Hein?,Aaaah ok...", msg.getTexte());
+			final LoggedElement msg = msgs.get(1);
+			Assert.assertEquals(Arrays.asList(LoggedElementAttribute.NIVEAU, LoggedElementAttribute.MESSAGE), msg.getItems());
+
+			final Map<LoggedElementAttribute, Object> itemValues = msg.getItemValues();
+			Assert.assertEquals(LogLevel.INFO, itemValues.get(LoggedElementAttribute.NIVEAU));
+			Assert.assertEquals("1 -> Hein?,Aaaah ok...", itemValues.get(LoggedElementAttribute.MESSAGE));
 		}
 	}
 }

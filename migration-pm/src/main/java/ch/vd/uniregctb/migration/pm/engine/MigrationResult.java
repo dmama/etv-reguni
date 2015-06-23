@@ -13,12 +13,23 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.Graphe;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.engine.log.LogContexte;
+import ch.vd.uniregctb.migration.pm.engine.log.LogStructure;
+import ch.vd.uniregctb.migration.pm.log.CompositeLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
+import ch.vd.uniregctb.migration.pm.log.MessageLoggedElement;
 
 /**
  * Résultat de la migration d'un graphe<br/>
@@ -28,7 +39,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
  *     <li>...</li>
  * </ul>
  */
-public class MigrationResult implements MigrationResultProduction, MigrationResultMessageProvider {
+public class MigrationResult implements MigrationResultProduction, MigrationResultInitialization, MigrationResultContextManipulation, MigrationResultMessageProvider {
 
 	/**
 	 * Runnables enregistrables pendant la transaction, qui sont lancés une fois la transaction terminée (avec succès)
@@ -38,7 +49,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	/**
 	 * Les messages à logguer, relatifs à une migration
 	 */
-	private final Map<MigrationResultMessage.CategorieListe, List<MigrationResultMessage>> msgs = new EnumMap<>(MigrationResultMessage.CategorieListe.class);
+	private final Map<LogCategory, List<LoggedElement>> msgs = new EnumMap<>(LogCategory.class);
 
 	/**
 	 * Données maintenues pour les enregistrements de structures de données à consolider
@@ -52,22 +63,41 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	private final SortedMap<Integer, Class<?>> preCommitRegistrationSortingOrder = new TreeMap<>();
 
 	/**
+	 * Graphe pour lequel la migration est en cours
+	 */
+	private final Graphe graphe;
+
+	/**
+	 * Contexte courant de log (= définit les valeurs à logguer en association avec un nouveau message...)
+	 */
+	private final LogContexte currentContext = new LogContexte();
+
+	public MigrationResult(Graphe graphe) {
+		this.graphe = graphe;
+	}
+
+	@Override
+	public Graphe getCurrentGraphe() {
+		return graphe;
+	}
+
+	/**
 	 * Appelé lors de la migration dès qu'un message doit sortir dans une liste de contrôle
 	 * @param cat la catégorie du message (= la liste de contrôle concernée)
 	 * @param niveau le niveau du message
 	 * @param msg le message
 	 */
-	public void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage.Niveau niveau, String msg) {
-		addMessage(cat, new MigrationResultMessage(niveau, msg));
+	public void addMessage(LogCategory cat, LogLevel niveau, String msg) {
+		final List<LoggedElement> contexte = LogStructure.resolveContextForCategory(currentContext, cat);
+		final List<LoggedElement> local = Stream.concat(contexte.stream(), Stream.of(new MessageLoggedElement(niveau, msg))).collect(Collectors.toList());
+
+		final List<LoggedElement> liste = getOrCreateMessageList(cat);
+		liste.add(new CompositeLoggedElement(local));
 	}
 
-	private void addMessage(MigrationResultMessage.CategorieListe cat, MigrationResultMessage msg) {
-		final List<MigrationResultMessage> liste = getOrCreateMessageList(cat);
-		liste.add(msg);
-	}
-
-	private List<MigrationResultMessage> getOrCreateMessageList(MigrationResultMessage.CategorieListe cat) {
-		List<MigrationResultMessage> liste = msgs.get(cat);
+	@NotNull
+	private List<LoggedElement> getOrCreateMessageList(LogCategory cat) {
+		List<LoggedElement> liste = msgs.get(cat);
 		if (liste == null) {
 			liste = new LinkedList<>();
 			msgs.put(cat, liste);
@@ -75,9 +105,22 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		return liste;
 	}
 
+	/**
+	 * @param category une catégorie de log
+	 * @return la liste des attributs loggués (= le nom des colonnes du résultat, au final...) pour cette catégorie
+	 */
 	@NotNull
-	public List<MigrationResultMessage> getMessages(MigrationResultMessage.CategorieListe cat) {
-		final List<MigrationResultMessage> found = msgs.get(cat);
+	public static List<LoggedElementAttribute> getColumns(LogCategory category) {
+		final LogContexte emptyContexte = new LogContexte();
+		final List<LoggedElement> contexte = LogStructure.resolveContextForCategory(emptyContexte, category);
+		final List<LoggedElement> all = Stream.concat(contexte.stream(), Stream.of(MessageLoggedElement.EMPTY)).collect(Collectors.toList());
+		final LoggedElement composite = new CompositeLoggedElement(all);
+		return composite.getItems();
+	}
+
+	@NotNull
+	public List<LoggedElement> getMessages(LogCategory cat) {
+		final List<LoggedElement> found = msgs.get(cat);
 		return found == null ? Collections.emptyList() : found;
 	}
 
@@ -154,19 +197,6 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 				});
 	}
 
-	@Override
-	public String toString() {
-
-		if (msgs.isEmpty()) {
-			return "RAS";
-		}
-
-		return msgs.entrySet().stream()
-				.map(entry -> entry.getValue().stream().map(msg -> String.format("cat=%s, niveau=%s, texte='%s'", entry.getKey(), msg.getNiveau(), msg.getTexte())))
-				.flatMap(Function.identity())
-				.collect(Collectors.joining(System.lineSeparator()));
-	}
-
 	/**
 	 * Données maintenues pour un type de données à consolider
 	 * @param <D> type des données à consolider
@@ -183,5 +213,15 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 			this.consolidator = consolidator;
 			this.data = new LinkedHashMap<>();      // pour garder l'ordre, en test...
 		}
+	}
+
+	@Override
+	public <E extends LoggedElement> void setContextValue(Class<E> clazz, @NotNull E value) {
+		currentContext.setContextValue(clazz, value);
+	}
+
+	@Override
+	public <E extends LoggedElement> void resetContextValue(Class<E> clazz) {
+		currentContext.resetContextValue(clazz);
 	}
 }

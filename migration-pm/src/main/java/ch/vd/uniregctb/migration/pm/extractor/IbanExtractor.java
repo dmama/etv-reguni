@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.regpm.CoordonneesFinancieresContainer;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmInstitutionFinanciere;
 
@@ -31,32 +34,45 @@ public abstract class IbanExtractor {
 
 	/**
 	 * @param coordonneesFinancieres des coordonnées financières extraites de la base du mainframe
+	 * @param mr le collecteur de messages de suivi
 	 * @return un IBAN (<code>null</code> si les coordonnées financières passées sont <code>null</code>)
 	 * @throws IllegalArgumentException en cas d'incohérence, ou de problème en général
 	 */
 	@Nullable
-	public static String extractIban(@Nullable CoordonneesFinancieresContainer coordonneesFinancieres) throws IbanExtratorException {
+	public static String extractIban(@Nullable CoordonneesFinancieresContainer coordonneesFinancieres, MigrationResultProduction mr) throws IbanExtratorException {
 		if (coordonneesFinancieres == null) {
 			return null;
 		}
 
+		final String iban;
+
 		// si l'IBAN est déjà là, on le renvoie tout simplement
 		if (StringUtils.isNotBlank(coordonneesFinancieres.getIban())) {
-			return coordonneesFinancieres.getIban();
+			iban = coordonneesFinancieres.getIban();
+			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, "IBAN déjà présent dans les données source.");
 		}
 
 		// si on a un CCP, on le convertit
-		if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCCP())) {
-			return extractIbanFromCCP(coordonneesFinancieres.getNoCCP());
+		else if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCCP())) {
+			iban = extractIbanFromCCP(coordonneesFinancieres.getNoCCP());
+			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN extrait du numéro CCP %s : %s.", coordonneesFinancieres.getNoCCP(), iban));
 		}
 
 		// si on a un compte bancaire, on le convertit
-		if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCompteBancaire())) {
-			return extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere());
+		else if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCompteBancaire())) {
+			iban = extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere());
+			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN extrait du numéro de compte '%s' et du clearing '%s' : %s.",
+			                                                                                coordonneesFinancieres.getNoCompteBancaire(),
+			                                                                                coordonneesFinancieres.getInstitutionFinanciere().getNoClearing(),
+			                                                                                iban));
 		}
 
 		// je ne vois pas comment...
-		return null;
+		else {
+			iban = null;
+		}
+
+		return iban;
 	}
 
 	private static String buildIban(int clearing, String noCompte) throws IbanExtratorException {

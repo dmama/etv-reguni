@@ -33,6 +33,7 @@ import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -46,11 +47,14 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -98,20 +102,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final BouclementService bouclementService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
-	private final ActivityManager activityManager;
 
-	public EntrepriseMigrator(UniregStore uniregStore, BouclementService bouclementService, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, ActivityManager activityManager) {
-		super(uniregStore);
+	public EntrepriseMigrator(UniregStore uniregStore, ActivityManager activityManager, BouclementService bouclementService, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper) {
+		super(uniregStore, activityManager);
 		this.bouclementService = bouclementService;
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
-		this.activityManager = activityManager;
-	}
-
-	@Nullable
-	@Override
-	protected String getMessagePrefix(RegpmEntreprise entity) {
-		return String.format("Entreprise %d (%s)", entity.getId(), activityManager.isActive(entity) ? "active" : "inactive");
 	}
 
 	private static Entreprise createEntreprise(RegpmEntreprise regpm) {
@@ -131,7 +127,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	@Override
-	public void initMigrationResult(MigrationResult mr) {
+	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
 
 		// enregistrement de la consolidation pour la constitution des fors "immeuble"
@@ -152,55 +148,55 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Consolidation de toutes les migrations de PM par rapport au contrôle final des fors secondaires
 	 * @param data données de l'entreprise
-	 * @param masterMr collecteur de messages de suivi
+	 * @param mr collecteur de messages de suivi
 	 */
-	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultProduction masterMr) {
+	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entrepriseSupplier.getKey();
-		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
-		final Entreprise entreprise = data.entrepriseSupplier.get();
+		doInContext(keyEntiteJuridique, mr, () -> {
+			final Entreprise entreprise = data.entrepriseSupplier.get();
 
-		// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
-		final Map<Integer, List<DateRange>> avantMigration = data.regpm.stream()
-				.collect(Collectors.toMap(fs -> fs.getCommune().getNoOfs(), Collections::singletonList, DATE_RANGE_LIST_MERGER));
-		final Set<ForFiscal> forsFiscaux = Optional.ofNullable(entreprise.getForsFiscaux()).orElse(Collections.emptySet());    // en cas de nouvelle entreprise, la collection est nulle
-		final Map<Integer, List<DateRange>> apresMigration = forsFiscaux.stream()
-				.filter(f -> f instanceof ForFiscalSecondaire)
-				.collect(Collectors.toMap(ForFiscal::getNumeroOfsAutoriteFiscale, Collections::singletonList, DATE_RANGE_LIST_MERGER));
+			// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
+			final Map<Integer, List<DateRange>> avantMigration = data.regpm.stream()
+					.collect(Collectors.toMap(fs -> fs.getCommune().getNoOfs(), Collections::singletonList, DATE_RANGE_LIST_MERGER, TreeMap::new));
+			final Set<ForFiscal> forsFiscaux = Optional.ofNullable(entreprise.getForsFiscaux()).orElse(Collections.emptySet());    // en cas de nouvelle entreprise, la collection est nulle
+			final Map<Integer, List<DateRange>> apresMigration = forsFiscaux.stream()
+					.filter(f -> f instanceof ForFiscalSecondaire)
+					.collect(Collectors.toMap(ForFiscal::getNumeroOfsAutoriteFiscale, Collections::singletonList, DATE_RANGE_LIST_MERGER, TreeMap::new));
 
-		// rien avant, rien après, pas la peine de continuer...
-		if (avantMigration.isEmpty() && apresMigration.isEmpty()) {
-			return;
-		}
-
-		// des communes présentes d'un côté et pas du tout de l'autre ?
-		final Set<Integer> ofsSeulementAvant = avantMigration.keySet().stream().filter(ofs -> !apresMigration.containsKey(ofs)).collect(Collectors.toSet());
-		final Set<Integer> ofsSeulementApres = apresMigration.keySet().stream().filter(ofs -> !avantMigration.containsKey(ofs)).collect(Collectors.toSet());
-		if (!ofsSeulementAvant.isEmpty()) {
-			for (Integer ofs : ofsSeulementAvant) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("Il n'y a plus de fors secondaires sur la commune OFS %d (avant : %s).", ofs, toDisplayString(avantMigration.get(ofs))));
+			// rien avant, rien après, pas la peine de continuer...
+			if (avantMigration.isEmpty() && apresMigration.isEmpty()) {
+				return;
 			}
-		}
-		if (!ofsSeulementApres.isEmpty()) {
-			for (Integer ofs : ofsSeulementApres) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("Il n'y avait pas de fors secondaires sur la commune OFS %d (maintenant : %s).", ofs, toDisplayString(apresMigration.get(ofs))));
-			}
-		}
 
-		// et sur les communes effectivement en commun, il faut comparer les périodes
-		final Set<Integer> ofsCommunes = avantMigration.keySet().stream().filter(apresMigration::containsKey).collect(Collectors.toSet());
-		if (!ofsCommunes.isEmpty()) {
-			for (Integer ofs : ofsCommunes) {
-				final List<DateRange> rangesAvant = avantMigration.get(ofs);
-				final List<DateRange> rangesApres = apresMigration.get(ofs);
-				if (!sameDateRanges(rangesAvant, rangesApres)) {
-					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-					              String.format("Sur la commune OFS %d, la couverture des fors secondaires n'est plus la même : avant (%s) et après (%s).",
-					                            ofs, toDisplayString(rangesAvant), toDisplayString(rangesApres)));
+			// des communes présentes d'un côté et pas du tout de l'autre ?
+			final Set<Integer> ofsSeulementAvant = avantMigration.keySet().stream().filter(ofs -> !apresMigration.containsKey(ofs)).collect(Collectors.toCollection(LinkedHashSet::new));
+			final Set<Integer> ofsSeulementApres = apresMigration.keySet().stream().filter(ofs -> !avantMigration.containsKey(ofs)).collect(Collectors.toCollection(LinkedHashSet::new));
+			if (!ofsSeulementAvant.isEmpty()) {
+				for (Integer ofs : ofsSeulementAvant) {
+					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					              String.format("Il n'y a plus de fors secondaires sur la commune OFS %d (avant : %s).", ofs, toDisplayString(avantMigration.get(ofs))));
 				}
 			}
-		}
+			if (!ofsSeulementApres.isEmpty()) {
+				for (Integer ofs : ofsSeulementApres) {
+					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					              String.format("Il n'y avait pas de fors secondaires sur la commune OFS %d (maintenant : %s).", ofs, toDisplayString(apresMigration.get(ofs))));
+				}
+			}
+
+			// et sur les communes effectivement en commun, il faut comparer les périodes
+			avantMigration.keySet().stream()
+					.filter(apresMigration::containsKey)
+					.forEach(ofs -> {
+						final List<DateRange> rangesAvant = avantMigration.get(ofs);
+						final List<DateRange> rangesApres = apresMigration.get(ofs);
+						if (!sameDateRanges(rangesAvant, rangesApres)) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("Sur la commune OFS %d, la couverture des fors secondaires n'est plus la même : avant (%s) et après (%s).",
+							                            ofs, toDisplayString(rangesAvant), toDisplayString(rangesApres)));
+						}
+					});
+		});
 	}
 
 	/**
@@ -208,7 +204,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return une représentation String de cette liste
 	 */
 	private static String toDisplayString(List<? extends DateRange> list) {
-		return list.stream().map(DateRangeHelper::toDisplayString).collect(Collectors.joining(", "));
+		return list.stream().map(DATE_RANGE_RENDERER::toString).collect(Collectors.joining(", "));
 	}
 
 	/**
@@ -253,47 +249,48 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Consolidation de toutes les demandes de créations de fors secondaires "immeuble" pour une PM
 	 * @param data les données consolidées des communes/dates sur lesquels les fors doivent être créés
-	 * @param masterMr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi
 	 */
-	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultProduction masterMr) {
+	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		final MigrationResultProduction mr = masterMr.withMessagePrefix(String.format("%s %d", keyEntiteJuridique.getType().getDisplayName(), keyEntiteJuridique.getId()));
-		final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
-		for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
+		doInContext(keyEntiteJuridique, mr, () -> {
+			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
+			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
-			final RegpmCommune commune = communeData.getKey();
-			if (commune.getCanton() != RegpmCanton.VD) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.WARN,
-				              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
-			}
-			else {
-				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
-				final Integer noOfsCommuneRegpm = commune.getNoOfs();
-				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
+				final RegpmCommune commune = communeData.getKey();
+				if (commune.getCanton() != RegpmCanton.VD) {
+					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+				}
+				else {
+					// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
+					final Integer noOfsCommuneRegpm = commune.getNoOfs();
+					final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
 
-				for (DateRange dates : communeData.getValue()) {
-					final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-					ffs.setDateDebut(dates.getDateDebut());
-					ffs.setDateFin(dates.getDateFin());
-					ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-					ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-					ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
-					ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-					ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
-					ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
-					ffs.setTiers(entiteJuridique);
-					entiteJuridique.addForFiscal(ffs);
+					for (DateRange dates : communeData.getValue()) {
+						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+						ffs.setDateDebut(dates.getDateDebut());
+						ffs.setDateFin(dates.getDateFin());
+						ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+						ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+						ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
+						ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+						ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+						ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
+						ffs.setTiers(entiteJuridique);
+						entiteJuridique.addForFiscal(ffs);
 
-					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
-					                                                                                                            DateRangeHelper.toDisplayString(dates),
-					                                                                                                            noOfsCommune));
+						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
+						                                                             DATE_RANGE_RENDERER.toString(dates),
+						                                                             noOfsCommune));
+					}
 				}
 			}
-		}
+		});
 	}
 
 	@Override
-	protected void doMigrate(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	public void migrate(RegpmEntreprise regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
 			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ? <- Genevois
@@ -303,7 +300,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// Les entreprises conservent leur numéro comme numéro de contribuable
 		Entreprise unireg = uniregStore.getEntityFromDb(Entreprise.class, regpm.getId());
 		if (unireg == null) {
-			mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.");
 			unireg = uniregStore.saveEntityToDb(createEntreprise(regpm));
 		}
 		idMapper.addEntreprise(regpm, unireg);
@@ -320,8 +317,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				}
 				catch (Exception e) {
 					LOGGER.error("Erreur lors de l'accès à l'organisation " + regpm.getNumeroCantonal() + " dans RCEnt", e);
-					mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR,
-					              String.format("Organisation %d non-renvoyée par RCEnt.", regpm.getNumeroCantonal()));
+					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Organisation %d non-renvoyée par RCEnt.", regpm.getNumeroCantonal()));
 				}
 			}
 		}
@@ -342,6 +338,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
+
+		// log de suivi à la fin des opérations pour cette entreprise
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Entreprise migrée.");
 	}
 
 	/**
@@ -415,7 +414,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		else {
 			// pas de commune, pas de for principal... -> pas d'établissement principal
-			mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
 			return;
 		}
 
@@ -425,7 +424,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal
-		mr.addMessage(MigrationResultMessage.CategorieListe.ETABLISSEMENTS, MigrationResultMessage.Niveau.INFO, "Création de l'établissement principal " + etbPrincipal.getNumero());
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()) + ".");
 
 		// lien entre l'établissement principal et son entreprise
 		final Supplier<Entreprise> entrepriseSupplier = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
@@ -483,7 +482,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
 			final Supplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
 			if (mandataire == null) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
 				return;
 			}
 
@@ -491,7 +490,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// on ne migre que les mandats généraux pour le moment
 			if (mandat.getType() != RegpmTypeMandat.GENERAL) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
 				return;
 			}
 
@@ -499,10 +498,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final String bicSwift = mandat.getBicSwift();
 			String iban;
 			try {
-				iban = IbanExtractor.extractIban(mandat);
+				iban = IbanExtractor.extractIban(mandat, mr);
 			}
 			catch (IbanExtractor.IbanExtratorException e) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
 				iban = null;
 			}
 
@@ -628,7 +627,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 					// si la PF est celle de la prochaine date de bouclement, alors on peut la créer...
 					if (regpm.getDateBouclementFutur() != null && regpm.getDateBouclementFutur().year() == dossier.getPf()) {
-						mr.addMessage(MigrationResultMessage.CategorieListe.DECLARATIONS, MigrationResultMessage.Niveau.WARN,
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
 						              String.format("Dossier fiscal %d/%d sans exercice commercial associé sur la PF du bouclement futur -> quelle est la date de début de la déclaration ?",
 						                            dossier.getPf(), dossier.getNoParAnnee()));
 
@@ -639,7 +638,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					else {
 						// TODO que faire avec ces dossiers ? Ils correspondent pourtant à une déclaration envoyée, mais pourquoi n'y a-t-il pas d'exercice commercial associé ?
-						mr.addMessage(MigrationResultMessage.CategorieListe.DECLARATIONS, MigrationResultMessage.Niveau.WARN,
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
 						              String.format("Dossier fiscal %d/%d passé sans exercice commercial associé.", dossier.getPf(), dossier.getNoParAnnee()));
 					}
 				});
@@ -736,14 +735,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			else if (f.getOfsPays() != null) {
 				if (f.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-					mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
+					mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
 					return Optional.empty();
 				}
 				ffp.setNumeroOfsAutoriteFiscale(f.getOfsPays());
 				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 			}
 			else {
-				mr.addMessage(MigrationResultMessage.CategorieListe.FORS, MigrationResultMessage.Niveau.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
+				mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
 				return Optional.empty();
 			}
 			ffp.setTiers(unireg);

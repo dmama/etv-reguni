@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+
 public interface MigrationResultMessageProvider {
 
 	/**
@@ -11,5 +14,5 @@ public interface MigrationResultMessageProvider {
 	 * @return tous les messages enregistrés pour cette catégorie
 	 */
 	@NotNull
-	List<MigrationResultMessage> getMessages(MigrationResultMessage.CategorieListe cat);
+	List<LoggedElement> getMessages(LogCategory cat);
 }

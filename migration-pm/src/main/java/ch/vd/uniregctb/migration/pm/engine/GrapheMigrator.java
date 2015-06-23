@@ -9,10 +9,14 @@ import org.springframework.transaction.TransactionDefinition;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.migration.pm.Graphe;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -31,6 +35,7 @@ public class GrapheMigrator implements InitializingBean {
 	private PlatformTransactionManager uniregTransactionManager;
 	private UniregStore uniregStore;
 	private ValidationInterceptor validationInterceptor;
+	private ActivityManager activityManager;
 
 	private IdMapper idMapper;
 
@@ -62,6 +67,10 @@ public class GrapheMigrator implements InitializingBean {
 		this.validationInterceptor = validationInterceptor;
 	}
 
+	public void setActivityManager(ActivityManager activityManager) {
+		this.activityManager = activityManager;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// chargement du mapper d'identifiants, non-vide lors d'une reprise sur incident
@@ -81,7 +90,7 @@ public class GrapheMigrator implements InitializingBean {
 	 * @throws MigrationException en cas de gros souci
 	 */
 	public MigrationResultMessageProvider migrate(Graphe graphe) throws MigrationException {
-		final MigrationResult mr = new MigrationResult();
+		final MigrationResult mr = new MigrationResult(graphe);
 
 		// on crée un mapper d'ID dont la référence est le mapper global, en prenant soin de transvaser les nouveaux mappings dans le mapper global après la fin de la transaction
 		final IdMapper localIdMapper = idMapper.withReference();
@@ -115,15 +124,13 @@ public class GrapheMigrator implements InitializingBean {
 				mr.runPostTransactionCallbacks();
 			}
 			catch (Exception e) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
+				mr.addMessage(LogCategory.EXCEPTIONS, LogLevel.WARN, String.format("Exception levée lors de l'exécution des callbacks post-transaction : %s", dump(e)));
 			}
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
 
-		// un dernier log avant de partir
-		graphe.getEntreprises().keySet().forEach(id -> mr.addMessage(MigrationResultMessage.CategorieListe.PM_MIGREE, MigrationResultMessage.Niveau.INFO, String.format("Entreprise %d migrée", id)));
 		return mr;
 	}
 
@@ -133,7 +140,7 @@ public class GrapheMigrator implements InitializingBean {
 	 * @param mr le collecteur de résultats/remarques de migration
 	 * @param idMapper mapper des identifiants des entités migrées
 	 */
-	private void doMigrate(Graphe graphe, MigrationResultProduction mr, IdMapping idMapper) {
+	private void doMigrate(Graphe graphe, MigrationResultContextManipulation mr, IdMapping idMapper) {
 
 		// on commence par les établissement, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
 		// on collecte les liens entre ces entités au fur et à mesure
@@ -146,16 +153,40 @@ public class GrapheMigrator implements InitializingBean {
 		addLinks(linkCollector.getCollectedLinks());
 	}
 
-	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
+	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		entreprises.forEach(e -> {
+			mr.setContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(e, activityManager.isActive(e)));
+			try {
+				entrepriseMigrator.migrate(e, mr, linkCollector, idMapper);
+			}
+			finally {
+				mr.resetContextValue(EntrepriseLoggedElement.class);
+			}
+		});
 	}
 
-	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
+	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		etablissements.forEach(e -> {
+			mr.setContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(e));
+			try {
+				etablissementMigrator.migrate(e, mr, linkCollector, idMapper);
+			}
+			finally {
+				mr.resetContextValue(EtablissementLoggedElement.class);
+			}
+		});
 	}
 
-	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
+	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		individus.forEach(i -> {
+			mr.setContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(i));
+			try {
+				individuMigrator.migrate(i, mr, linkCollector, idMapper);
+			}
+			finally {
+				mr.resetContextValue(IndividuLoggedElement.class);
+			}
+		});
 	}
 
 	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {

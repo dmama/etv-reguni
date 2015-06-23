@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -26,9 +27,13 @@ import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationMode;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.Worker;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
+import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -76,9 +81,16 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 	}
 
-	private static void log(Logger logger, MigrationResultMessage.Niveau niveau, String msg) {
+	@NotNull
+	private static LogLevel extractLevel(LoggedElement elt, @NotNull LogLevel defaultLevel) {
+		final LogLevel setInElement = (LogLevel) elt.getItemValues().get(LoggedElementAttribute.NIVEAU);
+		return setInElement == null ? defaultLevel : setInElement;
+	}
+
+	private static void log(Logger logger, LoggedElement elt) {
+		final LogLevel level = extractLevel(elt, LogLevel.INFO);
 		final Consumer<String> realLogger;
-		switch (niveau) {
+		switch (level) {
 		case DEBUG:
 			realLogger = logger::debug;
 			break;
@@ -92,11 +104,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			realLogger = logger::warn;
 			break;
 		default:
-			throw new IllegalArgumentException("Niveau invalide : " + niveau);
+			throw new IllegalArgumentException("Niveau invalide : " + level);
 		}
 
 		// envoi dans le log
-		realLogger.accept(msg);
+		realLogger.accept(LoggedElementRenderer.INSTANCE.toString(elt));
 	}
 
 	private static String dump(Throwable t) {
@@ -153,6 +165,18 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		public void run() {
 			LOGGER.info("Gathering thread starting...");
 			try {
+
+				// dump des noms de colonnes dans les logs "type CSV"
+				for (LogCategory cat : LogCategory.values()) {
+					final Logger logger = getLogger(cat);
+					final List<LoggedElementAttribute> columns = MigrationResult.getColumns(cat);
+					if (!columns.isEmpty()) {
+						final String line = LoggedElementRenderer.renderColumns(columns);
+						logger.info(line);
+					}
+				}
+
+				// boucle principale du thread... réception des résultats de migration de graphes
 				while (!(stopOnNextLoop || (stopOnExhaustion && nbEnCours.get() == 0))) {
 					final Future<MigrationResultMessageProvider> future = completionService.poll(1, TimeUnit.SECONDS);
 					if (future != null) {
@@ -165,11 +189,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 							}
 
 							// utilisation des loggers pour les fichiers/listes de contrôle
-							for (MigrationResultMessage.CategorieListe cat : MigrationResultMessage.CategorieListe.values()) {
-								final List<MigrationResultMessage> messages = res.getMessages(cat);
+							for (LogCategory cat : LogCategory.values()) {
+								final List<LoggedElement> messages = res.getMessages(cat);
 								if (!messages.isEmpty()) {
-									final Logger logger = LoggerFactory.getLogger(String.format("%s.%s", MigrationResultMessage.CategorieListe.class.getName(), cat.name()));
-									messages.forEach(msg -> log(logger, msg.getNiveau(), msg.getTexte()));
+									final Logger logger = getLogger(cat);
+									messages.forEach(msg -> log(logger, msg));
 								}
 							}
 						}
@@ -197,6 +221,15 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		public void signalFeedingOver() {
 			this.stopOnExhaustion = true;
 		}
+	}
+
+	/**
+	 * @param category une catégorie de log
+	 * @return le logger responsable de cette catégorie
+	 */
+	@NotNull
+	private static Logger getLogger(LogCategory category) {
+		return LoggerFactory.getLogger(String.format("%s.%s", LogCategory.class.getName(), category.name()));
 	}
 
 	@Override
@@ -252,9 +285,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				Thread.currentThread().interrupt();
 			}
 
-			final MigrationResult res = new MigrationResult();
+			final MigrationResult res = new MigrationResult(graphe);
 			final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
-			res.addMessage(MigrationResultMessage.CategorieListe.GENERIQUE, MigrationResultMessage.Niveau.ERROR, msg);
+			res.addMessage(LogCategory.EXCEPTIONS, LogLevel.ERROR, msg);
 			return res;
 		}
 	}

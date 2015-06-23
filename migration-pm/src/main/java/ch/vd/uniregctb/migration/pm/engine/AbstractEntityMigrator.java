@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,11 +20,19 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.migration.pm.Graphe;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
-import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -46,9 +55,11 @@ import ch.vd.uniregctb.tiers.Tiers;
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
 	protected final UniregStore uniregStore;
+	protected final ActivityManager activityManager;
 
-	public AbstractEntityMigrator(UniregStore uniregStore) {
+	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager) {
 		this.uniregStore = uniregStore;
+		this.activityManager = activityManager;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
@@ -62,6 +73,11 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
 			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
+
+	protected static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
+			range -> String.format("[%s -> %s]",
+			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateDebut()), "?"),
+			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateFin()), "?"));
 
 	/**
 	 * Remplit l'ensemble donné en paramètre avec les communes concernées par l'immeuble, en évitant la récursivité infinie
@@ -150,22 +166,11 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
-	 * @param entity entité à migrer
-	 * @param mr récipiendaire de messages à logguer
-	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
-	 * @param idMapper mapper d'identifiants RegPM -> Unireg
-	 */
-	@Override
-	public final void migrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		final MigrationResultProduction localMr = mr.withMessagePrefix(getMessagePrefix(entity));
-		doMigrate(entity, localMr, linkCollector, idMapper);
-	}
-
-	/**
 	 * Permet d'initialiser des structures de données dans le résultat
 	 * @param mr structure à initialiser
 	 */
-	public void initMigrationResult(MigrationResult mr) {
+	@Override
+	public void initMigrationResult(MigrationResultInitialization mr) {
 	}
 
 	@NotNull
@@ -242,23 +247,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
-	 * Réel job de migration
-	 * @param entity entité à migrer
-	 * @param mr récipiendaire de messages à logguer
-	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
-	 * @param idMapper mapper d'identifiants RegPM -> Unireg
-	 */
-	protected abstract void doMigrate(T entity, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper);
-
-	/**
-	 * Renvoie l'éventuel préfixe à utiliser pour tous les messages enregistrés dans les MigrationResults
-	 * @param entity entité en cours de migration
-	 * @return le préfixe pour cette entité
-	 */
-	@Nullable
-	protected abstract String getMessagePrefix(T entity);
-
-	/**
 	 * Supplier qui connaît aussi le type d'objet
 	 * @param <T> type d'objet fourni
 	 */
@@ -306,7 +294,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		final RegpmCoordonneesFinancieres cf = getter.get();
 		if (cf != null) {
 			try {
-				final String iban = IbanExtractor.extractIban(cf);
+				final String iban = IbanExtractor.extractIban(cf, mr);
 				final String bicSwift = cf.getBicSwift();
 				if (iban != null || bicSwift != null) {
 					unireg.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
@@ -316,8 +304,58 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				// TODO faut-il également introduire le POFICHBEXXX (= BIC de postfinance) ?
 			}
 			catch (IbanExtractor.IbanExtratorException e) {
-				mr.addMessage(MigrationResultMessage.CategorieListe.COORDONNEES_FINANCIERES, MigrationResultMessage.Niveau.ERROR, e.getMessage());
+				mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.ERROR, e.getMessage());
 			}
+		}
+	}
+
+	protected void doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
+		addEntityToContext(contextEntityKey, mr);
+		try {
+			action.run();
+		}
+		finally {
+			resetEntityContext(contextEntityKey, mr);
+		}
+	}
+
+	private void addEntityToContext(EntityKey key, MigrationResultContextManipulation mr) {
+		final Graphe graphe = mr.getCurrentGraphe();
+
+		switch (key.getType()) {
+		case ENTREPRISE: {
+			final RegpmEntreprise entreprise = graphe.getEntreprises().get(key.getId());
+			mr.setContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(entreprise, activityManager));
+			break;
+		}
+		case ETABLISSEMENT: {
+			final RegpmEtablissement etablissement = graphe.getEtablissements().get(key.getId());
+			mr.setContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(etablissement));
+			break;
+		}
+		case INDIVIDU: {
+			final RegpmIndividu individu = graphe.getIndividus().get(key.getId());
+			mr.setContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(individu));
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
+		}
+	}
+
+	private void resetEntityContext(EntityKey key, MigrationResultContextManipulation mr) {
+		switch (key.getType()) {
+		case ENTREPRISE:
+			mr.resetContextValue(EntrepriseLoggedElement.class);
+			break;
+		case ETABLISSEMENT:
+			mr.resetContextValue(EtablissementLoggedElement.class);
+			break;
+		case INDIVIDU:
+			mr.resetContextValue(IndividuLoggedElement.class);
+			break;
+		default:
+			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
 		}
 	}
 }

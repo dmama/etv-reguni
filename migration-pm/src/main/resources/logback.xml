@@ -31,83 +31,92 @@
 	<!-- Appenders/loggers spécifiques pour les listes de contrôles -->
 
 	<appender name="ADRESSES" class="ch.qos.logback.core.FileAppender">
-		<file>log/adresses.log</file>
+		<file>log/adresses.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.ADRESSES" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.ADRESSES" additivity="false">
 		<appender-ref ref="ADRESSES"/>
 	</logger>
 
 	<appender name="INDIVIDUS_PM" class="ch.qos.logback.core.FileAppender">
-		<file>log/individus-pm.log</file>
+		<file>log/individus-pm.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.INDIVIDUS_PM" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.INDIVIDUS_PM" additivity="false">
 		<appender-ref ref="INDIVIDUS_PM"/>
 	</logger>
 
 	<appender name="ETABLISSEMENTS" class="ch.qos.logback.core.FileAppender">
-		<file>log/etablissements.log</file>
+		<file>log/etablissements.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.ETABLISSEMENTS" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.ETABLISSEMENTS" additivity="false">
 		<appender-ref ref="ETABLISSEMENTS"/>
 	</logger>
 
 	<appender name="FORS" class="ch.qos.logback.core.FileAppender">
-		<file>log/fors.log</file>
+		<file>log/fors.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.FORS" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.FORS" additivity="false">
 		<appender-ref ref="FORS"/>
 	</logger>
 
 	<appender name="DECLARATIONS" class="ch.qos.logback.core.FileAppender">
-		<file>log/declarations.log</file>
+		<file>log/declarations.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.DECLARATIONS" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.DECLARATIONS" additivity="false">
 		<appender-ref ref="DECLARATIONS"/>
 	</logger>
 
 	<appender name="COORDONNEES_FINANCIERES" class="ch.qos.logback.core.FileAppender">
-		<file>log/coordonnees-financieres.log</file>
+		<file>log/coordonnees-financieres.csv</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe.COORDONNEES_FINANCIERES" additivity="false">
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.COORDONNEES_FINANCIERES" additivity="false">
 		<appender-ref ref="COORDONNEES_FINANCIERES"/>
 	</logger>
 
-	<!-- tous les messages envoyés par la migration dans les MigrationResults seront loggués ici s'ils ne sont pas explicitement pris en compte par un autre logger -->
-	<appender name="OTHERS" class="ch.qos.logback.core.FileAppender">
-		<file>log/suivi-global.log</file>
+	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
+		<file>log/exceptions.log</file>
 		<append>true</append>
 		<encoder>
-			<pattern>%-5level [%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n</pattern>
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}];%msg%n</pattern>
 		</encoder>
 	</appender>
-	<logger name="ch.vd.uniregctb.migration.pm.MigrationResultMessage$CategorieListe" additivity="false">
-		<appender-ref ref="OTHERS"/>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.EXCEPTIONS" additivity="false">
+		<appender-ref ref="EXCEPTIONS"/>
 	</logger>
 
+	<appender name="SUIVI" class="ch.qos.logback.core.FileAppender">
+		<file>log/suivi.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.SUIVI" additivity="false">
+		<appender-ref ref="SUIVI"/>
+	</logger>
 
 	<!-- -->
 	<!-- Logger généraux -->

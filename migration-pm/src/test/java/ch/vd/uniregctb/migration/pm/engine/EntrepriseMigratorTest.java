@@ -77,10 +77,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 		migrator = new EntrepriseMigrator(
 				uniregStore,
+				activityManager,
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
-				getBean(AdresseHelper.class, "adresseHelper"),
-				activityManager);
+				getBean(AdresseHelper.class, "adresseHelper")
+		);
 	}
 
 	/**

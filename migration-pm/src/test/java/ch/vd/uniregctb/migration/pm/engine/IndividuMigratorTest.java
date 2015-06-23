@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,9 +10,9 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
@@ -30,8 +32,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		nonHabitantIndex.overwriteIndex();
 
+		final ActivityManager activityManager = entreprise -> true;     // tout le monde est actif dans ces tests!
+
 		migrator = new IndividuMigrator(
 				getBean(UniregStore.class, "uniregStore"),
+				activityManager,
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RcPersClient.class, "rcpersClient"),
 				nonHabitantIndex);
@@ -81,19 +86,17 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividuRegpm));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
-				.filter(cat -> cat != MigrationResultMessage.CategorieListe.INDIVIDUS_PM)
+				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM,
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM,
 		                              "\\bAucun non-habitant trouvé dans Unireg avec ces nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "Individu migré\\.$");
 	}
 
 	@Test
@@ -137,17 +140,15 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividu));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
-				.filter(cat -> cat != MigrationResultMessage.CategorieListe.INDIVIDUS_PM)
+				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividu + " : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
 	}
 
 	@Test
@@ -184,18 +185,16 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividu));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
-				.filter(cat -> cat != MigrationResultMessage.CategorieListe.INDIVIDUS_PM)
+				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividu + " : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bIndividu 33153 trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu 33153 trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
 	}
 
 	@Test
@@ -241,17 +240,15 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividuRegpm));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
-				.filter(cat -> cat != MigrationResultMessage.CategorieListe.INDIVIDUS_PM)
+				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé un individu \\([0-9]+\\) de RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé un individu \\([0-9]+\\) de RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
 	}
 
 	@Test
@@ -307,17 +304,15 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividuRegpm));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
 
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
-				.filter(cat -> cat != MigrationResultMessage.CategorieListe.INDIVIDUS_PM)
+				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
-		mr.getMessages().get(MigrationResultMessage.CategorieListe.INDIVIDUS_PM).stream()
-				.filter(msg -> !msg.getTexte().startsWith("Individu " + noIndividuRegpm + " : "))
-				.findAny()
-				.ifPresent(msg -> Assert.fail(String.format("Tous les messages devraient être dans le contexte de l'individu (trouvé '%s')", msg.getTexte())));
 
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bL'individu RCPers [0-9]+ ne peut être renvoyé \\(Personne .* introuvable\\)\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
-		assertExistMessageWithContent(mr, MigrationResultMessage.CategorieListe.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bL'individu RCPers [0-9]+ ne peut être renvoyé \\(Personne .* introuvable\\)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
 	}
 }

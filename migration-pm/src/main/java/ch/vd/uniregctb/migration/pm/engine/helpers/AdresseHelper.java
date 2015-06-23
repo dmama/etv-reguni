@@ -8,9 +8,10 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.adresse.StreetData;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
+import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 
 public class AdresseHelper {
@@ -31,31 +32,37 @@ public class AdresseHelper {
 	 * @param permanente <code>true</code> si l'adresse doit être flaggée comme "permanente"
 	 * @return une adresse presque prête à persister
 	 */
-	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultProduction mr, @Nullable Supplier<String> complement, boolean permanente) {
+	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultContextManipulation mr, @Nullable Supplier<String> complement, boolean permanente) {
 		if (source == null) {
 			return null;
 		}
 
-		final StreetData streetData = streetDataMigrator.migrate(source, mr);
-		final AdresseSupplementaire dest;
-		if (streetData != null) {
-			// on ne migre pas une adresse qui ne contient ni rue ni localité postale...
-			if (streetData instanceof StreetData.AucuneNomenclatureTrouvee) {
-				return null;
-			}
+		mr.setContextValue(AdresseLoggedElement.class, new AdresseLoggedElement(source));
+		try {
+			final StreetData streetData = streetDataMigrator.migrate(source, mr);
+			final AdresseSupplementaire dest;
+			if (streetData != null) {
+				// on ne migre pas une adresse qui ne contient ni rue ni localité postale...
+				if (streetData instanceof StreetData.AucuneNomenclatureTrouvee) {
+					return null;
+				}
 
-			// adresse suisse
-			dest = buildAdresseSuisse(streetData);
+				// adresse suisse
+				dest = buildAdresseSuisse(streetData);
+			}
+			else {
+				// adresse étrangère
+				dest = buildAdresseEtrangere(source);
+			}
+			dest.setDateDebut(source.getDateDebut());
+			dest.setDateFin(source.getDateFin());
+			dest.setPermanente(permanente);
+			dest.setComplement(complement != null ? complement.get() : null);
+			return dest;
 		}
-		else {
-			// adresse étrangère
-			dest = buildAdresseEtrangere(source);
+		finally {
+			mr.resetContextValue(AdresseLoggedElement.class);
 		}
-		dest.setDateDebut(source.getDateDebut());
-		dest.setDateFin(source.getDateFin());
-		dest.setPermanente(permanente);
-		dest.setComplement(complement != null ? complement.get() : null);
-		return dest;
 	}
 
 	private static AdresseSuisse buildAdresseSuisse(StreetData streetData) {

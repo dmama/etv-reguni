@@ -25,10 +25,12 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessage;
+import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
+import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
@@ -38,14 +40,12 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
-	private static final MigrationResultMessage.CategorieListe CATEGORIE_LISTE = MigrationResultMessage.CategorieListe.INDIVIDUS_PM;
-
 	private final TiersDAO tiersDAO;
 	private final RcPersClient rcpersClient;
 	private final NonHabitantIndex nonHabitantIndex;
 
-	public IndividuMigrator(UniregStore uniregStore, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
-		super(uniregStore);
+	public IndividuMigrator(UniregStore uniregStore, ActivityManager activityManager, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
+		super(uniregStore, activityManager);
 		this.tiersDAO = tiersDAO;
 		this.rcpersClient = rcpersClient;
 		this.nonHabitantIndex = nonHabitantIndex;
@@ -63,7 +63,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		ok = checkSexe(regpm, rcpers, mr) && ok;
 		ok = checkDateNaissance(regpm, rcpers, mr) && ok;
 		if (!ok) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, "Correspondance d'identifiants avec individu RCPers ignorée.");
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, "Correspondance d'identifiants avec individu RCPers ignorée.");
 		}
 		return ok;
 	}
@@ -75,7 +75,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final boolean equals = checkEquality(npRegpm.getNom(), npRcpers.getNom(), nameEqualator, false)
 				&& (checkEquality(npRegpm.getPrenom(), npRcpers.getPrenom(), nameEqualator, false) || checkEquality(npRegpm.getPrenom(), extractPrenomUsuel(npRcpers.getPrenom()), nameEqualator, false));
 		if (!equals) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Noms différents dans RegPM (%s) et RCPers (%s).", npRegpm, npRcpers));
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Noms différents dans RegPM (%s) et RCPers (%s).", npRegpm, npRcpers));
 		}
 		return equals;
 	}
@@ -86,7 +86,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final Sexe sRcpers = EchHelper.sexeFromEch44(rcpers.getIdentity().getSex());
 		final boolean equals = checkEquality(sRegpm, sRcpers, enumEqualator, false);
 		if (!equals) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Sexes différents dans RegPM (%s) et RCPers (%s).", sRegpm, sRcpers));
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Sexes différents dans RegPM (%s) et RCPers (%s).", sRegpm, sRcpers));
 		}
 		return equals;
 	}
@@ -97,7 +97,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final RegDate dRcpers = EchHelper.partialDateFromEch44(rcpers.getIdentity().getDateOfBirth());
 		final boolean equals = checkEquality(dRegpm, dRcpers, dateEqualator, false);
 		if (!equals) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Dates de naissance différentes dans RegPM (%s) et RCPers (%s).", dRegpm, dRcpers));
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Dates de naissance différentes dans RegPM (%s) et RCPers (%s).", dRegpm, dRcpers));
 		}
 		return equals;
 	}
@@ -131,7 +131,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	@Override
-	protected void doMigrate(RegpmIndividu regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	public void migrate(RegpmIndividu regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForIndividu(regpm.getId())) {
 			// l'individu a déjà été migré, pas la peine d'aller plus loin
@@ -144,7 +144,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		if (migreRCPers != null && checkIdentite(regpm, migreRCPers, mr)) {
 			// cet individu a toutes les caractéristiques, on va dire que c'est lui
 			trouveRCPersId = Pair.of(getRcPersId(migreRCPers.getIdentity().getOtherPersonId()), !migreRCPers.getCurrentResidence().isEmpty());
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, "Individu trouvé avec le même identifiant et la même identité dans RCPers.");
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, "Individu trouvé avec le même identifiant et la même identité dans RCPers.");
 		}
 		else {
 			trouveRCPersId = searchDansRCPers(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(), mr);
@@ -165,7 +165,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			if (trouveRCPersId != null) {
 				pp.setNumeroIndividu(trouveRCPersId.getLeft());
 				pp.setHabitant(trouveRCPersId.getRight());
-				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, String.format("Individu %d trouvé dans RCPers sans équivalent dans Unireg...", trouveRCPersId.getLeft()));
+				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Individu %d trouvé dans RCPers sans équivalent dans Unireg...", trouveRCPersId.getLeft()));
 
 				// Dans le cas d'un non-habitant (= ancien habitant, donc...), il faut recopier certaines données dans Unireg
 				if (!pp.isHabitantVD()) {
@@ -211,7 +211,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 			final PersonnePhysique saved = uniregStore.saveEntityToDb(pp);
 			idMapper.addIndividu(regpm, saved);
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO,
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO,
 			              String.format("Création de la personne physique %s pour correspondre à l'individu RegPM.", FormatNumeroHelper.numeroCTBToDisplay(saved.getId())));
 
 			// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
@@ -220,12 +220,16 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		}
 		else {
 			idMapper.addIndividu(regpm, ppExistant);
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Trouvé personne physique existante %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getId())));
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé personne physique existante %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getId())));
 
 			// enregistrement d'un callback appelé une fois la transaction committée, afin d'associer personne physique existante avec le numéro RegPM dans l'indexeur ad'hoc
 			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
 			mr.addPostTransactionCallback(() -> nonHabitantIndex.reindex(ppExistant, regpm.getId()));
 		}
+
+
+		// log de suivi à la fin des opérations pour cet établissement
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Individu migré.");
 	}
 
 	@Nullable
@@ -237,7 +241,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			final List<Long> idsPP = nonHabitantIndex.search(paramsIdRegPm, Integer.MAX_VALUE);
 			if (idsPP != null && idsPP.size() == 1) {
 				final long id = idsPP.get(0);
-				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Non-habitant %s déjà mappé sur le même individu PM dans une transaction précédente.", FormatNumeroHelper.numeroCTBToDisplay(id)));
+				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Non-habitant %s déjà mappé sur le même individu PM dans une transaction précédente.", FormatNumeroHelper.numeroCTBToDisplay(id)));
 				return (PersonnePhysique) tiersDAO.get(id);
 			}
 		}
@@ -246,18 +250,18 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final PersonnePhysique ppExistant;
 		final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(), null);
 		if (params.isEmpty()) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.ERROR, "Individu RegPM sans nom, prenom, sexe ni date de naissance.");
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu RegPM sans nom, prenom, sexe ni date de naissance.");
 			ppExistant = null;
 		}
 		else {
 			final List<Long> idsPP = nonHabitantIndex.search(params, Integer.MAX_VALUE);
 			if (idsPP == null || idsPP.isEmpty()) {
-				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Aucun non-habitant trouvé dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Aucun non-habitant trouvé dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
 				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance()));
 				ppExistant = null;
 			}
 			else if (idsPP.size() > 1) {
-				mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, String.format("Plusieurs non-habitants trouvés dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s) : %s.",
+				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Plusieurs non-habitants trouvés dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s) : %s.",
 				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(),
 				                                                                                 Arrays.toString(idsPP.toArray(new Long[idsPP.size()]))));
 				ppExistant = null;
@@ -270,12 +274,6 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	@Nullable
-	@Override
-	protected String getMessagePrefix(RegpmIndividu entity) {
-		return String.format("Individu %d", entity.getId());
-	}
-
-	@Nullable
 	private Person getFromRCPersWithId(MigrationResultProduction mr, long id) {
 		final ListOfPersons list = rcpersClient.getPersons(Collections.singletonList(id), RegDate.get(), false);
 		if (list == null || list.getNumberOfResults().equals(BigInteger.ZERO)) {
@@ -284,14 +282,14 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		}
 		else if (!list.getNumberOfResults().equals(BigInteger.ONE)) {
 			// plusieurs individus civils pour un numéro !!! -> erreur
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.ERROR, "L'identifiant " + id + " correspond à plus d'un individu dans RCPers.");
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "L'identifiant " + id + " correspond à plus d'un individu dans RCPers.");
 			return null;
 		}
 
 		// il n'y a bien qu'un seul résultat... voyons voir
 		final ListOfPersons.ListOfResults.Result res = list.getListOfResults().getResult().get(0);
 		if (res.getNotReturnedPersonReason() != null) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, "L'individu RCPers " + id + " ne peut être renvoyé (" + res.getNotReturnedPersonReason().getMessage() + ").");
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "L'individu RCPers " + id + " ne peut être renvoyé (" + res.getNotReturnedPersonReason().getMessage() + ").");
 		}
 
 		return res.getPerson();
@@ -328,7 +326,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 		// aucun résultat
 		if (found == null || found.getNumberOfResults().equals(BigInteger.ZERO)) {
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Aucun résultat dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Aucun résultat dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
 			                                                                                 nom, prenom, sexe, dateNaissance));
 			return null;
 		}
@@ -341,7 +339,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			final List<Long> ids = found.getListOfResults().getFoundPerson().stream()
 					.map(idExtractor)
 					.collect(Collectors.toList());
-			mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.WARN, String.format("Plusieurs (%d -> %s) résultats trouvés dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Plusieurs (%d -> %s) résultats trouvés dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
 			                                                                                 found.getNumberOfResults(), Arrays.toString(ids.toArray(new Long[ids.size()])),
 			                                                                                 nom, prenom, sexe, dateNaissance));
 			return null;
@@ -350,7 +348,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		// un seul résultat -> ok
 		final FoundPerson fp = found.getListOfResults().getFoundPerson().get(0);
 		final long id = idExtractor.apply(fp);
-		mr.addMessage(CATEGORIE_LISTE, MigrationResultMessage.Niveau.INFO, String.format("Trouvé un individu (%d) de RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
+		mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé un individu (%d) de RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
 		                                                                                 id, nom, prenom, sexe, dateNaissance));
 
 		return Pair.of(id, fp.getResidence() != null);
