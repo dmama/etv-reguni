@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -471,10 +472,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		else if (!regpm.getForsPrincipaux().isEmpty()) {
 			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
+
+			// d'abord, un petit log explicatif des cas où on trouve deux fors principaux valides à la même date
+			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
+					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+					                          Collections::singletonList,
+					                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
+			forsParDate.entrySet().stream()
+					.filter(e -> e.getValue().size() > 1)
+					.forEach(e -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					                            String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte pour l'établissement principal.",
+					                                          e.getValue().size(),
+					                                          RegDateHelper.dateToDisplayString(e.getKey()))));
+
+			// les fors sont déjà triés par date et numéro de séquence dans le set, d'où l'implémentation du merger qui prend juste le deuxième...
 			localisations = regpm.getForsPrincipaux().stream()
 					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
 					                          CommuneOuPays::new,
-					                          (cop1, cop2) -> { throw new IllegalArgumentException("Plusieurs fors principaux valides à la même date ?"); },
+					                          (cop1, cop2) -> cop2,
 					                          TreeMap::new));
 		}
 		else {
@@ -815,7 +830,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return Optional.of(ffp);
 		};
 
-		final List<ForFiscalPrincipalPM> liste = regpm.getForsPrincipaux().stream()
+		// d'abord, un petit log explicatif des cas où on trouve deux fors principaux valides à la même date
+		final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
+				.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+				                          Collections::singletonList,
+				                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
+		forsParDate.entrySet().stream()
+				.filter(e -> e.getValue().size() > 1)
+				.forEach(e -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				                            String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte pour la migration.",
+				                                          e.getValue().size(),
+				                                          RegDateHelper.dateToDisplayString(e.getKey()))));
+
+		// puis la migration, justement
+		final List<ForFiscalPrincipalPM> liste = forsParDate.values().stream()
+				.filter(fors -> !fors.isEmpty())
+				.map(fors -> fors.get(fors.size() - 1))     // comme indiqué dans le log plus haut, on prend le dernier...
 				.map(mapper)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
