@@ -74,10 +74,20 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
 
+	/**
+	 * Entité qui permet de dumper des valeurs de ranges dans un format lisible
+	 */
 	protected static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
 			range -> String.format("[%s -> %s]",
 			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateDebut()), "?"),
 			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateFin()), "?"));
+
+	/**
+	 * Extracteur du numéro OFS (au sens Unireg) d'une commune en prenant en compte la spécificité des fractions de communes
+	 * vaudoises (qui n'ont pas de numéro OFS officiel mais dont l'ID technique en tient lieu dans Unireg)
+	 */
+	protected static final Function<RegpmCommune, Integer> NO_OFS_COMMUNE_EXTRACTOR =
+			commune -> commune.getNoOfs() == null || commune.getNoOfs() == 0 ? commune.getId().intValue() : commune.getNoOfs();
 
 	/**
 	 * Remplit l'ensemble donné en paramètre avec les communes concernées par l'immeuble, en évitant la récursivité infinie

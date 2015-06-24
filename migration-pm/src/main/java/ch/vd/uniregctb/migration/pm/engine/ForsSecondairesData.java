@@ -20,7 +20,7 @@ public abstract class ForsSecondairesData {
 	protected ForsSecondairesData(AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier,
 	                              Map<RegpmCommune, List<DateRange>> communes) {
 		this.entiteJuridiqueSupplier = entiteJuridiqueSupplier;
-		this.communes = new TreeMap<>(Comparator.comparing(RegpmCommune::getNoOfs));
+		this.communes = new TreeMap<>(Comparator.comparing(AbstractEntityMigrator.NO_OFS_COMMUNE_EXTRACTOR));
 		this.communes.putAll(communes);
 	}
 

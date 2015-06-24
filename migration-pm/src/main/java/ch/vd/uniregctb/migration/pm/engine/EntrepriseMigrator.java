@@ -157,7 +157,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
 			final Map<Integer, List<DateRange>> avantMigration = data.regpm.stream()
-					.collect(Collectors.toMap(fs -> fs.getCommune().getNoOfs(), Collections::singletonList, DATE_RANGE_LIST_MERGER, TreeMap::new));
+					.collect(Collectors.toMap(fs -> NO_OFS_COMMUNE_EXTRACTOR.apply(fs.getCommune()),
+					                          Collections::singletonList,
+					                          DATE_RANGE_LIST_MERGER,
+					                          TreeMap::new));
 			final Set<ForFiscal> forsFiscaux = Optional.ofNullable(entreprise.getForsFiscaux()).orElse(Collections.emptySet());    // en cas de nouvelle entreprise, la collection est nulle
 			final Map<Integer, List<DateRange>> apresMigration = forsFiscaux.stream()
 					.filter(f -> f instanceof ForFiscalSecondaire)
@@ -260,13 +263,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				final RegpmCommune commune = communeData.getKey();
 				if (commune.getCanton() != RegpmCanton.VD) {
 					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-					              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+					              String.format("Immeuble(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.",
+					                            commune.getNom(),
+					                            NO_OFS_COMMUNE_EXTRACTOR.apply(commune),
+					                            commune.getCanton()));
 				}
 				else {
-					// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
-					final Integer noOfsCommuneRegpm = commune.getNoOfs();
-					final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
-
+					final Integer noOfsCommune = NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
 					for (DateRange dates : communeData.getValue()) {
 						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 						ffs.setDateDebut(dates.getDateDebut());
@@ -383,7 +386,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		 * @return le numéro OFS de la commune ou du pays (voir {@link #getTypeAutoriteFiscale()})
 		 */
 		public Integer getNumeroOfsAutoriteFiscale() {
-			return commune != null ? commune.getNoOfs() : noOfsPays;
+			return commune != null ? NO_OFS_COMMUNE_EXTRACTOR.apply(commune) : noOfsPays;
 		}
 	}
 
@@ -731,12 +734,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 			if (f.getCommune() != null) {
 				final RegpmCommune commune = f.getCommune();
-
-				// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
-				final Integer noOfsCommuneRegpm = commune.getNoOfs();
-				final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
-
-				ffp.setNumeroOfsAutoriteFiscale(noOfsCommune);
+				ffp.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
 				ffp.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 			}
 			else if (f.getOfsPays() != null) {

@@ -135,13 +135,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				final RegpmCommune commune = communeData.getKey();
 				if (commune.getCanton() != RegpmCanton.VD) {
 					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-					              String.format("Etablissement(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.", commune.getNom(), commune.getNoOfs(), commune.getCanton()));
+					              String.format("Etablissement(s) sur la commune de %s (%d) sise dans le canton %s -> pas de for secondaire créé.",
+					                            commune.getNom(),
+					                            NO_OFS_COMMUNE_EXTRACTOR.apply(commune),
+					                            commune.getCanton()));
 				}
 				else {
-					// les fractions de communes vaudoises ont un numéro OFS à 0 (leur identifiant en tient lieu dans le monde Unireg)
-					final Integer noOfsCommuneRegpm = commune.getNoOfs();
-					final int noOfsCommune = noOfsCommuneRegpm == null || noOfsCommuneRegpm == 0 ? commune.getId().intValue() : noOfsCommuneRegpm;
-
+					final int noOfsCommune = NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
 					for (DateRange dates : communeData.getValue()) {
 						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
 						ffs.setDateDebut(dates.getDateDebut());
@@ -221,14 +221,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
 				.map(Pair::getKey)
 				.distinct()
-				.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
+				.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
 				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
 		regpm.getAppartenancesGroupeProprietaire().stream()
 				.map(AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire)
 				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
 				.map(Pair::getKey)
 				.distinct()
-				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), c.getNoOfs()))
+				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
 				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
 
 		// adresse
@@ -273,7 +273,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 			final RegpmCommune commune = d.getCommune();
 			domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-			domicile.setNumeroOfsAutoriteFiscale(commune.getNoOfs());
+			domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
 			return domicile;
 		};
 
