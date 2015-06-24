@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +79,14 @@ public class SerializationIntermediary implements Worker, Feeder {
 	public void setFsDirectory(String fsDirectory) throws IOException {
 		if (StringUtils.isNotBlank(fsDirectory)) {
 			this.fsDirectory = new File(fsDirectory).toPath();
-			Files.createDirectories(this.fsDirectory);
+
+			if (Files.exists(this.fsDirectory, LinkOption.NOFOLLOW_LINKS)) {
+				// des fois que cela serait un lien symbolique...
+				Files.createDirectories(this.fsDirectory.toRealPath());
+			}
+			else {
+				Files.createDirectories(this.fsDirectory);
+			}
 		}
 	}
 
