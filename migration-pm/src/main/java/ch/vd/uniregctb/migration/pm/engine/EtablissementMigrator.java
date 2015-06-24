@@ -26,6 +26,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -252,7 +253,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		migrateDomiciles(regpm, unireg, mr);
 
 		// log de suivi à la fin des opérations pour cet établissement
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Etablissement migré.");
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
 	}
 
 	/**

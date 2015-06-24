@@ -146,7 +146,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -196,7 +196,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -247,7 +247,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'intersecte aucun domicile\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -298,7 +298,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -374,7 +374,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable .* n'est couvert par les domiciles qu'à partir du [0-9.]+\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -450,7 +450,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// vérification des demandes de fors secondaires enregistrées
 		final Map<Class<?>, List<?>> preCommitData = mr.getPreTransactionCommitData();
@@ -648,7 +648,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -711,7 +711,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -783,7 +783,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -856,7 +856,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bL'établissement stable \\[01\\.01\\.1995 -> 31\\.12\\.2005\\] n'est couvert par les domiciles qu'à partir du 01\\.01\\.1998\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {

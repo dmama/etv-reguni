@@ -96,7 +96,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM,
 		                              "\\bAucun non-habitant trouvé dans Unireg avec ces nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "Individu migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "Individu migré : [0-9.]+\\.$");
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu trouvé avec le même identifiant et la même identité dans RCPers\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu 33153 trouvé dans RCPers sans équivalent dans Unireg\\.\\.\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
 	}
 
 	@Test
@@ -248,7 +248,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé un individu \\([0-9]+\\) de RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
 	}
 
 	@Test
@@ -313,6 +313,6 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bL'individu RCPers [0-9]+ ne peut être renvoyé \\(Personne .* introuvable\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
 	}
 }

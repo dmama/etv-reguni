@@ -159,6 +159,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			ppExistant = rechercheNonHabitantExistant(regpm, mr);
 		}
 
+		// numéro de contribuable pour le log final
+		final long noCtbPersonnePhysique;
+
 		// création d'une personne physique au besoin (= réelle migration)
 		if (ppExistant == null) {
 			final PersonnePhysique pp = new PersonnePhysique();
@@ -214,6 +217,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO,
 			              String.format("Création de la personne physique %s pour correspondre à l'individu RegPM.", FormatNumeroHelper.numeroCTBToDisplay(saved.getId())));
 
+			// capture du nouveau numéro de contribuable
+			noCtbPersonnePhysique = saved.getId();
+
 			// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
 			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
 			mr.addPostTransactionCallback(() -> nonHabitantIndex.index(saved, regpm.getId()));
@@ -222,14 +228,16 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			idMapper.addIndividu(regpm, ppExistant);
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé personne physique existante %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getId())));
 
+			// capture du numéro de contribuable utilisé
+			noCtbPersonnePhysique = ppExistant.getId();
+
 			// enregistrement d'un callback appelé une fois la transaction committée, afin d'associer personne physique existante avec le numéro RegPM dans l'indexeur ad'hoc
 			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
 			mr.addPostTransactionCallback(() -> nonHabitantIndex.reindex(ppExistant, regpm.getId()));
 		}
 
-
-		// log de suivi à la fin des opérations pour cet établissement
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Individu migré.");
+		// log de suivi à la fin des opérations pour cet individu
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Individu migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(noCtbPersonnePhysique)));
 	}
 
 	@Nullable

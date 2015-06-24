@@ -340,7 +340,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateFusionsApres(regpm, linkCollector, idMapper);
 
 		// log de suivi à la fin des opérations pour cette entreprise
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Entreprise migrée.");
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
 	}
 
 	/**
