@@ -21,4 +21,9 @@ public abstract class MigrationConstants {
 	 * Le contrôle des fors secondaires avant/après migration (doit être après {@link #PHASE_FORS_ACTIVITE} et {@link #PHASE_FORS_IMMEUBLES})
 	 */
 	public static final int PHASE_CONTROLE_FORS_SECONDAIRES = 30;
+
+	/**
+	 * Le contrôle et mise à jour des fors principaux en fonction des fors secondaires (il y a parfois des zones non-couvertes de fors secondaires)
+	 */
+	public static final int PHASE_COUVERTURE_FORS = 40;
 }

@@ -27,6 +27,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
@@ -953,5 +954,209 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(MotifRattachement.ETABLISSEMENT_STABLE, ff.getMotifRattachement());
 			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
 		});
+	}
+
+	@Test
+	public void testCouvertureForsSecondairesParForsPrincipaux() throws Exception {
+
+		final long noEntreprise = 43782L;
+		final RegDate dateDebutForPrincipal = RegDate.get(1987, 5, 1);
+		final RegDate dateAchatImmeuble1 = dateDebutForPrincipal.addYears(-5);   // avant le for principal !!
+		final RegDate dateAchatImmeuble2 = dateDebutForPrincipal.addMonths(-23); // avant le for principal !!
+
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final RegpmImmeuble immeuble1 = EntrepriseMigratorTest.createImmeuble(Commune.MORGES);
+		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble1, null, immeuble1);
+
+		final RegpmImmeuble immeuble2 = EntrepriseMigratorTest.createImmeuble(Commune.LAUSANNE);
+		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble2, null, immeuble2);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
+		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
+
+		// vérification du contenu de la base -> une nouvelle regpm
+		doInUniregTransaction(true, status -> {
+			final List<Entreprise> entreprises = uniregStore.getEntitiesFromDb(Entreprise.class, null);
+			Assert.assertNotNull(entreprises);
+			Assert.assertEquals(1, entreprises.size());
+
+			final Entreprise entreprise = entreprises.get(0);
+			Assert.assertNotNull(entreprise);
+
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+			final Etablissement etbPrincipal = etablissements.get(0);
+			Assert.assertNotNull(etbPrincipal);
+			Assert.assertTrue(etbPrincipal.isPrincipal());
+			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+
+			// fors secondaires
+			{
+				Assert.assertEquals(2, fpt.secondaires.size());
+
+				// le plus ancien d'abord
+				{
+					final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(dateAchatImmeuble1, ffs.getDateDebut());
+					Assert.assertNull(ffs.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.MORGES.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs.getGenreImpot());
+					Assert.assertFalse(ffs.isAnnule());
+				}
+				// l'autre ensuite
+				{
+					final ForFiscalSecondaire ffs = fpt.secondaires.get(1);
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(dateAchatImmeuble2, ffs.getDateDebut());
+					Assert.assertNull(ffs.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs.getGenreImpot());
+					Assert.assertFalse(ffs.isAnnule());
+				}
+			}
+
+			// fors principaux
+			{
+				Assert.assertEquals(2, fpt.principauxPM.size());
+
+				// le plus ancien d'abord = le bouche-trou
+				{
+					final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateAchatImmeuble1, ffp.getDateDebut());
+					Assert.assertEquals(dateDebutForPrincipal.getOneDayBefore(), ffp.getDateFin());
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) ServiceInfrastructureService.noPaysInconnu, ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+					Assert.assertFalse(ffp.isAnnule());
+				}
+				// le pré-existant dans Regpm ensuite
+				{
+					final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(1);
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateDebutForPrincipal, ffp.getDateDebut());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+					Assert.assertFalse(ffp.isAnnule());
+				}
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.05.1987 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'immeuble' [01.06.1985 -> ?] ajouté sur la commune 5586.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'immeuble' [01.05.1982 -> ?] ajouté sur la commune 5642.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5586 (maintenant : [01.06.1985 -> ?]).", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5642 (maintenant : [01.05.1982 -> ?]).", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Création d'un for principal 'bouche-trou' [01.05.1982 -> 30.04.1987] pour couvrir les fors secondaires.", msgs.get(4));
+		}
+	}
+
+	@Test
+	public void testAucunForSecondaire() throws Exception {
+
+		final long noEntreprise = 43782L;
+		final RegDate dateDebutForPrincipal = RegDate.get(1987, 5, 1);
+
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
+		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
+
+		// vérification du contenu de la base -> une nouvelle regpm
+		doInUniregTransaction(true, status -> {
+			final List<Entreprise> entreprises = uniregStore.getEntitiesFromDb(Entreprise.class, null);
+			Assert.assertNotNull(entreprises);
+			Assert.assertEquals(1, entreprises.size());
+
+			final Entreprise entreprise = entreprises.get(0);
+			Assert.assertNotNull(entreprise);
+
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+			final Etablissement etbPrincipal = etablissements.get(0);
+			Assert.assertNotNull(etbPrincipal);
+			Assert.assertTrue(etbPrincipal.isPrincipal());
+			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+			Assert.assertEquals(0, fpt.secondaires.size());
+			Assert.assertEquals(0, fpt.principauxPP.size());
+			Assert.assertEquals(0, fpt.dpis.size());
+			Assert.assertEquals(0, fpt.autresImpots.size());
+			Assert.assertEquals(0, fpt.autreElementImpot.size());
+			Assert.assertEquals(1, fpt.principauxPM.size());
+
+			// for principal
+			{
+				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateDebutForPrincipal, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+				Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+				Assert.assertFalse(ffp.isAnnule());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.05.1987 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+		}
 	}
 }

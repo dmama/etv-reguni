@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -81,6 +82,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -117,11 +119,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private static class ControleForsSecondairesData {
-		final Set<RegpmForSecondaire> regpm;
-		final KeyedSupplier<Entreprise> entrepriseSupplier;
+		private final Set<RegpmForSecondaire> regpm;
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 
 		public ControleForsSecondairesData(Set<RegpmForSecondaire> regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.regpm = regpm;
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static class CouvertureForsData {
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+
+		public CouvertureForsData(KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -143,6 +153,53 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleForsSecondaires(d, mr));
+
+		// enregistrement d'un callback pour le contrôle (et la correction) de la couverture des fors secondaires par des fors principaux
+		mr.registerPreTransactionCommitCallback(CouvertureForsData.class,
+		                                        MigrationConstants.PHASE_COUVERTURE_FORS,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> controleCouvertureFors(d, mr));
+	}
+
+	/**
+	 * @param data donnée d'identification de l'entreprise dont la couverture des fors est à contrôler
+	 * @param mr collecteur de message de suivi
+	 */
+	private void controleCouvertureFors(CouvertureForsData data, MigrationResultContextManipulation mr) {
+		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
+		doInContext(keyEntreprise, mr, () -> {
+			final Entreprise entreprise = data.entrepriseSupplier.get();
+			final ForsParType fpt = entreprise.getForsParType(true);
+			if (!fpt.secondaires.isEmpty()) {
+
+				// récupération des périodes couvertes par des fors secondaires
+				final List<DateRange> fs = DateRangeHelper.merge(fpt.secondaires);
+
+				// récupération des périodes couvertes par les fors principaux
+				final List<? extends DateRange> fp = entreprise.getForsFiscauxPrincipauxActifsSorted();
+
+				// périodes des fors secondaires non-couvertes par les fors principaux ?
+				final List<DateRange> rangesNonCouverts = DateRangeHelper.subtract(fs, fp, new DateRangeAdapterCallback());
+				if (rangesNonCouverts != null && !rangesNonCouverts.isEmpty()) {
+					rangesNonCouverts.stream()
+							.map(range -> new ForFiscalPrincipalPM(range.getDateDebut(),
+							                                       MotifFor.INDETERMINE,
+							                                       range.getDateFin(),
+							                                       range.getDateFin() != null ? MotifFor.INDETERMINE : null,
+							                                       ServiceInfrastructureService.noPaysInconnu,
+							                                       TypeAutoriteFiscale.PAYS_HS,
+							                                       MotifRattachement.DOMICILE))
+							.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
+							.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.", DATE_RANGE_RENDERER.toString(ff))))
+							.forEach(entreprise::addForFiscal);
+
+					// on va forcer le re-calcul des motifs
+					calculeMotifsOuvertureFermeture(entreprise.getForsFiscauxPrincipauxActifsSorted());
+				}
+			}
+		});
 	}
 
 	/**
@@ -325,8 +382,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 		}
 
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
+
 		// enregistrement de cette entreprise pour un contrôle final des fors secondaires (une fois que tous les immeubles et établissements ont été visés)
-		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()))));
+		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), moi));
+
+		// enregistrement de cette entreprise pour un contrôle final de la couverture des fors secondaires par les fors principaux
+		mr.addPreTransactionCommitData(new CouvertureForsData(moi));
 
 		// TODO migrer les bouclements, les adresses, les documents...
 
@@ -764,7 +826,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		assigneDatesFin(getDateFinActivite(regpm), liste);
 
 		// assignation des motifs
-		final MovingWindow<ForFiscalPrincipalPM> wnd = new MovingWindow<>(liste);
+		calculeMotifsOuvertureFermeture(liste);
+
+		// on les ajoute au tiers
+		liste.forEach(unireg::addForFiscal);
+	}
+
+	/**
+	 * Calcul des motifs d'ouverture/fermeture des fors fiscaux principaux passés en paramètre
+	 * @param fors liste des fors principaux (supposés triés dans l'ordre chronologique)
+	 */
+	private static void calculeMotifsOuvertureFermeture(List<ForFiscalPrincipalPM> fors) {
+		final MovingWindow<ForFiscalPrincipalPM> wnd = new MovingWindow<>(fors);
 		while (wnd.hasNext()) {
 			final MovingWindow.Snapshot<ForFiscalPrincipalPM> snap = wnd.next();
 			final ForFiscalPrincipal current = snap.getCurrent();
@@ -809,9 +882,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				next.setMotifOuverture(motif);
 			}
 		}
-
-		// on les ajoute au tiers
-		liste.forEach(unireg::addForFiscal);
 	}
 
 	private void migrateImmeubles(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
