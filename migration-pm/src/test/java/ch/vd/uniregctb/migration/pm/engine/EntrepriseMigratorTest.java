@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -494,6 +495,143 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
+	public void testMandataireDateAttributionFuture() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get().addDays(2), null);        // après demain est toujours dans le futur...
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de la non-instantiation du lien (avec une date de début dans le futur, il doit être ignoré...)
+		final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+		Assert.assertEquals(0, collectedLinks.size());
+
+		// vérification du message ad'hoc dans le collecteur
+		final List<MigrationResultCollector.Message> msgSuivi = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(msgSuivi);
+		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
+		final String messageMandatDateDebutFuture = messages.stream()
+				.filter(s -> s.matches("La date d'attribution du mandat .* est dans le futur \\(.*\\), le mandat sera donc ignoré dans la migration\\."))
+				.findAny()
+				.orElse(null);
+		if (messageMandatDateDebutFuture == null) {
+			Assert.fail("Aucun message ne parle du mandat dont la date d'attribution est dans le futur... : " + Arrays.toString(messages.toArray(new String[messages.size()])));
+		}
+	}
+
+	@Test
+	public void testMandataireDateAttributionNulle() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", null, null);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de la non-instantiation du lien (avec une date de début nulle, il doit être ignoré...)
+		final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+		Assert.assertEquals(0, collectedLinks.size());
+
+		// vérification du message ad'hoc dans le collecteur
+		final List<MigrationResultCollector.Message> msgSuivi = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(msgSuivi);
+		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
+		final String messageMandatDateDebutFuture = messages.stream()
+				.filter(s -> s.matches("Le mandat .* n'a pas de date d'attribution \\(ou cette date est très loin dans le passé\\), il sera donc ignoré dans la migration\\."))
+				.findAny()
+				.orElse(null);
+		if (messageMandatDateDebutFuture == null) {
+			Assert.fail("Aucun message ne parle du mandat dont la date d'attribution nulle... : " + Arrays.toString(messages.toArray(new String[messages.size()])));
+		}
+	}
+
+	@Test
+	public void testMandataireDateResiliationFuture() throws Exception {
+
+		final long noEntrepriseMandant = 42L;
+		final long noEntrepriseMandataire = 548L;
+		final RegpmEntreprise mandant = buildEntreprise(noEntrepriseMandant);
+		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
+		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), RegDate.get().addDays(2));     // après-demain est toujours dans le futur !
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(mandataire, migrator, mr, linkCollector, idMapper);
+		migrate(mandant, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> deux nouvelles entreprises
+		final long[] idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			final List<Long> sorted = new ArrayList<>(ids);
+			Collections.sort(sorted);
+			Assert.assertNotNull(sorted);
+			Assert.assertEquals(2, sorted.size());
+			return new long[] {sorted.get(0), sorted.get(1)};
+		});
+
+		// vérification de l'instantiation du lien
+		final RapportEntreTiers ret = doInUniregTransaction(true, status -> {
+			final List<EntityLinkCollector.EntityLink> collectedLinks = linkCollector.getCollectedLinks();
+			Assert.assertEquals(1, collectedLinks.size());
+			final EntityLinkCollector.EntityLink link = collectedLinks.get(0);
+			Assert.assertNotNull(link);
+			return link.toRapportEntreTiers();
+		});
+		Assert.assertEquals(Mandat.class, ret.getClass());
+		Assert.assertEquals(RegDate.get(2001, 5, 1), ret.getDateDebut());
+		Assert.assertNull(ret.getDateFin());                                // malgré la date présente dans RegPM, elle est nulle ici
+		Assert.assertEquals((Long) idEntreprise[0], ret.getSujetId());
+		Assert.assertEquals((Long) idEntreprise[1], ret.getObjetId());
+		Assert.assertEquals("CH7009000000170003317", ((Mandat) ret).getCoordonneesFinancieres().getIban());
+
+		// vérification du message ad'hoc dans le collecteur
+		final List<MigrationResultCollector.Message> msgSuivi = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(msgSuivi);
+		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
+		final String messageMandatDateDebutFuture = messages.stream()
+				.filter(s -> s.matches("La date de résiliation du mandat .* est dans le futur \\(.*\\), le mandat sera donc laissé ouvert dans la migration\\."))
+				.findAny()
+				.orElse(null);
+		if (messageMandatDateDebutFuture == null) {
+			Assert.fail("Aucun message ne parle du mandat dont la date de résiliation est future... : " + Arrays.toString(messages.toArray(new String[messages.size()])));
+		}
+	}
+
+	@Test
 	public void testRegimesFiscaux() throws Exception {
 
 		final long noEntreprise = 1234L;
@@ -735,7 +873,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		doInUniregTransaction(true, status -> {
-   			// l'établissement principal
+			// l'établissement principal
 			final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtablissement);
 			Assert.assertNotNull(etb);
 			Assert.assertTrue(etb.isPrincipal());

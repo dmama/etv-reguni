@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StringRenderer;
@@ -367,5 +369,13 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		default:
 			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
 		}
+	}
+
+	/**
+	 * @param date date testée
+	 * @return <code>true</code> si la date est non nulle et postérieure à la date du jour
+	 */
+	protected static boolean isFutureDate(@Nullable RegDate date) {
+		return NullDateBehavior.EARLIEST.compare(RegDate.get(), date) < 0;
 	}
 }

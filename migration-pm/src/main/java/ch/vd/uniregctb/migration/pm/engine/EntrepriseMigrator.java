@@ -591,8 +591,32 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				iban = null;
 			}
 
+			// une date de début nulle pose un grave problème (c'est peut-être une date trop lointaine dans le passé, i.e. avant 1291... -> vraissemblablement une erreur de saisie)
+			if (mandat.getDateAttribution() == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
+				return;
+			}
+
+			// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
+			if (isFutureDate(mandat.getDateAttribution())) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
+				                                                               mandat.getId(), RegDateHelper.dateToDisplayString(mandat.getDateAttribution())));
+				return;
+			}
+
+			// date de fin dans le futur -> on ignore la date de fin
+			final RegDate dateFin;
+			if (isFutureDate(mandat.getDateResiliation())) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date de résiliation du mandat %s est dans le futur (%s), le mandat sera donc laissé ouvert dans la migration.",
+				                                                              mandat.getId(), RegDateHelper.dateToDisplayString(mandat.getDateResiliation())));
+				dateFin = null;
+			}
+			else {
+				dateFin = mandat.getDateResiliation();
+			}
+
 			// ajout du lien entre l'entreprise et son mandataire
-			linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), mandat.getDateResiliation(), typeMandat, iban, bicSwift));
+			linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), dateFin, typeMandat, iban, bicSwift));
 		});
 	}
 

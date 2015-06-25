@@ -908,4 +908,56 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final AdresseAvecRue adresse = etablissement.getAdresse();
 		Assert.assertNull(adresse);
 	}
+
+	@Test
+	public void testEtablissementStableAvecDateFinDansLeFutur() throws Exception {
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
+		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
+		addEtablissementStable(etablissement, RegDate.get(2005, 3, 12), RegDate.get().addDays(2));       // date de fin toujours dans le futur
+		addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// extraction de l'identifiant de l'établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		// validation des dates de domiciles
+		doInUniregTransaction(true, status -> {
+			final Etablissement etb = (Etablissement) getTiersDAO().get(idEtablissement);
+			Assert.assertNotNull(etb);
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(RegDate.get(2005, 3, 12), domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());               // -> date nulle car ignorée dans le futur
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+		});
+
+		// validation des liens (en particulier dates)
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
+		{
+			final EntityLinkCollector.EntityLink collectedLink = linkCollector.getCollectedLinks().get(0);
+			Assert.assertNotNull(collectedLink);
+			Assert.assertEquals(RegDate.get(2005, 3, 12), collectedLink.getDateDebut());
+			Assert.assertNull(collectedLink.getDateFin());          // -> date null car ignorée dans le futur
+			Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, collectedLink.getType());
+		}
+
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement stable avec date de fin dans le futur [0-9.]+ : la migration ignore cette date\\.$");
+	}
 }

@@ -201,7 +201,19 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			if (etablissementsStables != null && !etablissementsStables.isEmpty()) {
 				// création des liens (= rapports entre tiers)
 				etablissementsStables.stream()
-						.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin()))
+						.map(range -> {
+							final RegDate dateFin;
+							if (isFutureDate(range.getDateFin())) {
+								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+								              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
+								                            RegDateHelper.dateToDisplayString(range.getDateFin())));
+								dateFin = null;
+							}
+							else {
+								dateFin = range.getDateFin();
+							}
+							return new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), dateFin);
+						})
 						.forEach(linkCollector::addLink);
 
 				// génération de l'information pour la création des fors secondaires associés à ces établissements stables
@@ -295,9 +307,17 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// maintenant, on a des domiciles à mettre en regard des établissements stables
 		// (en partie pour ajouter une date de fin au dernier domicile le cas échéant)
 		final List<DateRange> etablissementsStables = DateRangeHelper.merge(regpm.getEtablissementsStables().stream()
-				                                                                           .sorted(DateRangeComparator::compareRanges)
-				                                                                           .map(DateRangeHelper.Range::new)
-				                                                                           .collect(Collectors.toList()));
+				                                                                    .sorted(DateRangeComparator::compareRanges)
+				                                                                    .map(DateRangeHelper.Range::new)
+				                                                                    .map(r -> {
+					                                                                    if (isFutureDate(r.getDateFin())) {
+						                                                                    return new DateRangeHelper.Range(r.getDateDebut(), null);
+					                                                                    }
+					                                                                    else {
+						                                                                    return r;
+					                                                                    }
+				                                                                    })
+				                                                                    .collect(Collectors.toList()));
 		final List<DomicileEtablissement> domicilesStables = domiciles.stream()
 				.map(domicile -> Pair.of(domicile, DateRangeHelper.intersections(domicile, etablissementsStables)))     // intersection avec les établissements stables
 				.filter(pair -> pair.getValue() != null && !pair.getValue().isEmpty())                      // filtrage des domiciles qui n'ont pas d'intersection avec les établissements stables
