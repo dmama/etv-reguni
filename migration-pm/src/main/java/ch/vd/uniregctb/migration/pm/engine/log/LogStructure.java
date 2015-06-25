@@ -25,7 +25,7 @@ public abstract class LogStructure {
 	 * Map qui décrit, pour chacune des catégories de log, la récupération des données contextuelles pour chaque ligne de log de cette
 	 * catégorie (= quelles seront les colonnes à remplir, et quelles en sont les valeurs courantes)
 	 */
-	private static final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> STRUCTURES_CONTEXTES = buildStructuresContextes();
+	static final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> STRUCTURES_CONTEXTES = buildStructuresContextes();
 
 	/**
 	 * Implémentation du mapping entre le contexte courant et une valeur spécifique, prenant en compte une valeur
