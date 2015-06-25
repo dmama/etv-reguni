@@ -77,12 +77,15 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
 
 	/**
+	 * Entité qui permet de dumper une valeur de date dans un format lisible (et commun...)
+	 */
+	protected static final StringRenderer<RegDate> DATE_RENDERER = date -> StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(date), "?");
+
+	/**
 	 * Entité qui permet de dumper des valeurs de ranges dans un format lisible
 	 */
 	protected static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
-			range -> String.format("[%s -> %s]",
-			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateDebut()), "?"),
-			                       StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(range.getDateFin()), "?"));
+			range -> String.format("[%s -> %s]", DATE_RENDERER.toString(range.getDateDebut()), DATE_RENDERER.toString(range.getDateFin()));
 
 	/**
 	 * Extracteur du numéro OFS (au sens Unireg) d'une commune en prenant en compte la spécificité des fractions de communes

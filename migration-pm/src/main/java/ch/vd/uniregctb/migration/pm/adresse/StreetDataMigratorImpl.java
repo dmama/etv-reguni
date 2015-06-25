@@ -161,7 +161,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 
 			final String npaLocaliteMainframe = String.format("%d (%d %s)", localitePostale.getNoOrdreP(), localitePostale.getNpa(), localitePostale.getNomLong());
 			final String detailsFin = adresse.getDateFin() != null
-					? String.format("fermée le %s", RegDateHelper.dateToDisplayString(adresse.getDateFin()))
+					? String.format("fermée le %s", StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(adresse.getDateFin()), "?"))
 					: "active";
 
 			final String msg = String.format("Adresse %s: données du mainframe {onrp=%s, rue=%s, noRue=%s}, onrp pris par défaut %d (%s)",

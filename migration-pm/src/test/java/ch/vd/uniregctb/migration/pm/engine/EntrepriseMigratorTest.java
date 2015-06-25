@@ -908,9 +908,147 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals(1, textesFors.size());
 		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte pour l'établissement principal.", textesFors.get(1));
+
+		// et côté "SUIVI"
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au 07\\.05\\.2005 : seul le dernier sera pris en compte pour l'établissement principal.");
+	}
+
+	@Test
+	public void testForsPrincipauxMultiplesAvecDateDebutNulle() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegDate debut = RegDate.get(2005, 5, 7);
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);      // <- celui-là devrait être éliminé car le suivant a une date de validité nulle
+		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);     // <- celui-là devrait être éliminé car il a lui-même une date de validité nulle...
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> on va regarder l'établissement principal et les fors créés
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		doInUniregTransaction(true, status -> {
+			// l'établissement principal
+			final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtablissement);
+			Assert.assertNotNull(etb);
+			Assert.assertTrue(etb.isPrincipal());
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(debut, domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+
+			// le for principal
+			final Entreprise entr = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entr);
+			Assert.assertEquals(1, entr.getForsFiscauxPrincipauxActifsSorted().size());
+
+			final ForFiscalPrincipalPM ffp = entr.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(debut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messagesFors);
+		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
+		Assert.assertEquals("Le for {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
+
+		// vérification des messages dans le contexte "SUIVI"
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au \\? : seul le dernier sera pris en compte pour l'établissement principal\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bLe for \\{idEntreprise=1234, seqNo=2\\} est ignoré pour l'établissement principal car il a une date de début nulle\\.");
+	}
+
+	@Test
+	public void testTousForsPrincipauxAvecDateDebutNulle() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegDate debut = RegDate.get(2005, 5, 7);
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);      // <- celui-là devrait être éliminé car le suivant a une date de validité nulle
+		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);     // <- celui-là devrait être éliminé car il a lui-même une date de validité nulle...
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> pas d'établissement principal, mais quand-même une entreprise (sans for principal)
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(0, ids.size());
+
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(0, entreprise.getForsFiscaux().size());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messagesFors);
+		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
+		Assert.assertEquals("Le for {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
+
+		// .. et dans le contexte "SUIVI"
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au \\? : seul le dernier sera pris en compte pour l'établissement principal\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bLe for \\{idEntreprise=1234, seqNo=2\\} est ignoré pour l'établissement principal car il a une date de début nulle\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bTous les fors principaux ont été ignorés, pas d'établissement principal créé\\.");
+	}
+
+	@Test
+	public void testRegimesFiscauxDateDeDebutNulle() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalCH(e, null, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalVD(e, null, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+
+		final MigrationResultCollector mr = new MigrationResultCollector();
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> régimes fiscaux associés à l'entreprise (aucun, car ils doivent être ignorés en raison de leur date nulle)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRegimesFiscaux());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messagesFors);
+		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(5, textesFors.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textesFors.get(0));
+		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textesFors.get(2));
+		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textesFors.get(3));
+		Assert.assertEquals("Entreprise migrée : 12.34.", textesFors.get(4));
 	}
 
 	// TODO il reste encore plein de tests à faire...

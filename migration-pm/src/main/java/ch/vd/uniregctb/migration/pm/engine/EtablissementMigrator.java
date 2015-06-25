@@ -81,7 +81,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		if (domicileDebut == null) {
 			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
-			                                                                       DATE_RANGE_RENDERER.toString(range), RegDateHelper.dateToDisplayString(domicileDebutEffectif.getKey())));
+			                                                                       DATE_RANGE_RENDERER.toString(range), DATE_RENDERER.toString(domicileDebutEffectif.getKey())));
 		}
 		else {
 			domicileDebutEffectif = domicileDebut;
@@ -206,7 +206,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 							if (isFutureDate(range.getDateFin())) {
 								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
 								              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
-								                            RegDateHelper.dateToDisplayString(range.getDateFin())));
+								                            DATE_RENDERER.toString(range.getDateFin())));
 								dateFin = null;
 							}
 							else {
