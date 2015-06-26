@@ -49,7 +49,7 @@ public abstract class IbanExtractor {
 		// si l'IBAN est déjà là, on le renvoie tout simplement
 		if (StringUtils.isNotBlank(coordonneesFinancieres.getIban())) {
 			iban = coordonneesFinancieres.getIban();
-			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, "IBAN déjà présent dans les données source.");
+			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN déjà présent dans les données source : %s.", iban));
 		}
 
 		// si on a un CCP, on le convertit

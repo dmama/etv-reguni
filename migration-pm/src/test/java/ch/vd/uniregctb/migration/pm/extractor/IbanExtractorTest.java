@@ -42,7 +42,7 @@ public class IbanExtractorTest {
 			Assert.assertEquals(EnumSet.of(LogCategory.COORDONNEES_FINANCIERES), messages.keySet());
 
 			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
-			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source."), textes);
+			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source : CH003247823."), textes);
 		}
 		{
 			final MigrationResultCollector mr = new MigrationResultCollector();
@@ -52,7 +52,7 @@ public class IbanExtractorTest {
 			Assert.assertEquals(EnumSet.of(LogCategory.COORDONNEES_FINANCIERES), messages.keySet());
 
 			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
-			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source."), textes);
+			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source : CH003247822."), textes);
 		}
 		{
 			final MigrationResultCollector mr = new MigrationResultCollector();
@@ -62,7 +62,7 @@ public class IbanExtractorTest {
 			Assert.assertEquals(EnumSet.of(LogCategory.COORDONNEES_FINANCIERES), messages.keySet());
 
 			final List<String> textes = messages.get(LogCategory.COORDONNEES_FINANCIERES).stream().map(m -> m.text).collect(Collectors.toList());
-			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source."), textes);
+			Assert.assertEquals(Collections.singletonList("IBAN déjà présent dans les données source : CH003247824."), textes);
 		}
 	}
 
