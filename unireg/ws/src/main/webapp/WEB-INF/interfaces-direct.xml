@@ -42,6 +42,31 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
+	<!-- Client RCEnt -->
+
+	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
+		<property name="username" value="${extprop.webservice.rcent.username}"/>
+		<property name="password" value="${extprop.webservice.rcent.password}"/>
+		<property name="organisationPath" value="organisation/ct.vd.party"/>
+		<property name="organisationsOfNoticePath" value="organisationsOfNotice"/>
+	</bean>
+
+	<!-- Adapteur RCEnt -->
+
+	<bean id="organisationHistorizer" class="ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer"/>
+
+	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">
+		<constructor-arg ref="rcEntClientRaw"/>
+		<constructor-arg ref="organisationHistorizer"/>
+	</bean>
+
+	<!-- Service Organisation -->
+
+	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
+		<constructor-arg ref="rcEntAdapter"/>
+	</bean>
+
 	<!-- Client fidor -->
 
 	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">

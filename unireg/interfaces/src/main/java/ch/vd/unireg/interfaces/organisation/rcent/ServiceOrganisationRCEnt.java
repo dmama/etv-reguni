@@ -12,6 +12,10 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
 	private RCEntAdapter adapter;
 
+	public ServiceOrganisationRCEnt(RCEntAdapter adapter) {
+		this.adapter = adapter;
+	}
+
 	@Override
 	public Organisation getOrganisation(long cantonalId) throws ServiceOrganisationException {
 		ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getOrganisation(cantonalId);
