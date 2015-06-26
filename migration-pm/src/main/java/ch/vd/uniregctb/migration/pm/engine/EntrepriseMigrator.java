@@ -707,15 +707,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin) {
+	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin, MigrationResultProduction mr) {
 		final PeriodeFiscale pf = getPeriodeFiscaleByYear(dossier.getPf());
 
 		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 		copyCreationMutation(dossier, di);
 		di.setDateDebut(dateDebut);
 		di.setDateFin(dateFin);
-		di.setDelais(migrateDelaisDeclaration(dossier, di));
-		di.setEtats(migrateEtatsDeclaration(dossier, di));
+		di.setDelais(migrateDelaisDeclaration(dossier, di, mr));
+		di.setEtats(migrateEtatsDeclaration(dossier, di, mr));
 		di.setNumero(dossier.getNoParAnnee());
 		di.setPeriode(pf);
 
@@ -743,7 +743,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// pour trouver au final ceux qui ne le sont pas (= les déclarations envoyées mais pas encore traitées ???)
 				dossiersFiscauxAttribuesAuxExercicesCommerciaux.add(dossier);
 
-				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin());
+				// un peu de log pour le suivi
+				mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+				              String.format("Génération d'une déclaration sur la PF %d à partir des dates %s de l'exercice commercial %d et du dossier fiscal correspondant.",
+				                            dossier.getPf(),
+				                            DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
+				                            exercice.getId().getSeqNo()));
+
+				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin(), mr);
 				unireg.addDeclaration(di);
 			}
 		});
@@ -776,7 +783,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des délais de dépôt
 	 */
-	private static Set<DelaiDeclaration> migrateDelaisDeclaration(RegpmDossierFiscal dossier, Declaration di) {
+	private static Set<DelaiDeclaration> migrateDelaisDeclaration(RegpmDossierFiscal dossier, Declaration di, MigrationResultProduction mr) {
 
 		final Set<DelaiDeclaration> delais = new LinkedHashSet<>();
 
@@ -790,6 +797,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			delai.setDeclaration(di);
 			delai.setDelaiAccordeAu(dossier.getDelaiRetour());
 			delais.add(delai);
+
+			// un peu de traçabilité
+			mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+			              String.format("Délai initial de retour fixé au %s.", DATE_RENDERER.toString(dossier.getDelaiRetour())));
 		}
 
 		// fonction de conversion
@@ -810,9 +821,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// demandes ultérieures
 		dossier.getDemandesDelai().stream()
-				.filter(demande -> demande.getType() == RegpmTypeDemandeDelai.AVANT_SOMMATION)
-				.filter(demande -> demande.getEtat() == RegpmTypeEtatDemandeDelai.ACCORDEE)
+				.filter(demande -> {
+					if (demande.getType() != RegpmTypeDemandeDelai.AVANT_SOMMATION) {
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+						              String.format("Demande de délai 'après sommation' du %s ignorée.", DATE_RENDERER.toString(demande.getDateDemande())));
+						return false;
+					}
+					return true;
+				})
+				.filter(demande -> {
+					if (demande.getEtat() != RegpmTypeEtatDemandeDelai.ACCORDEE) {
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+						              String.format("Demande de délai non-accordée (%s) du %s ignorée.", demande.getEtat(), DATE_RENDERER.toString(demande.getDateDemande())));
+						return false;
+					}
+					return true;
+				})
 				.map(mapper)
+				.peek(delai -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Nouveau délai généré au %s.", DATE_RENDERER.toString(delai.getDelaiAccordeAu()))))
 				.forEach(delais::add);
 		return delais;
 	}
@@ -820,7 +846,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Génération des états d'une déclaration
 	 */
-	private static Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, Declaration di) {
+	private static Set<EtatDeclaration> migrateEtatsDeclaration(RegpmDossierFiscal dossier, Declaration di, MigrationResultProduction mr) {
 
 		final Set<EtatDeclaration> etats = new LinkedHashSet<>();
 
@@ -840,6 +866,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// TODO la taxation d'office (= échéance, au sens Unireg) existait-elle ?
+
+		// un peu de traçabilité sur le travail accompli ici
+		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Etat '%s' migré au %s.", etat.getEtat(), DATE_RENDERER.toString(etat.getDateObtention()))));
 
 		return etats;
 	}
@@ -913,7 +942,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		calculeMotifsOuvertureFermeture(liste);
 
 		// on les ajoute au tiers
-		liste.forEach(unireg::addForFiscal);
+		liste.forEach(ff -> {
+			// un peu de traçabilité.
+			mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+			              String.format("For principal %s/%d %s généré.", ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), DATE_RANGE_RENDERER.toString(ff)));
+
+			// ajout au tiers
+			unireg.addForFiscal(ff);
+		});
 	}
 
 	/**

@@ -343,6 +343,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
 			return null;
 		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		final List<MigrationResultCollector.Message> messagesDeclarations = mr.getMessages().get(LogCategory.DECLARATIONS);
+		Assert.assertNotNull(messagesDeclarations);
+		final List<String> textesDeclarations = messagesDeclarations.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(3, textesDeclarations.size());
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(0));
+		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textesDeclarations.get(1));
+		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textesDeclarations.get(2));
 	}
 
 	@Test
@@ -418,6 +427,17 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			}
 			return null;
 		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		final List<MigrationResultCollector.Message> messagesDeclarations = mr.getMessages().get(LogCategory.DECLARATIONS);
+		Assert.assertNotNull(messagesDeclarations);
+		final List<String> textesDeclarations = messagesDeclarations.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(5, textesDeclarations.size());
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(0));
+		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textesDeclarations.get(1));
+		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textesDeclarations.get(2));
+		Assert.assertEquals("Etat 'SOMMEE' migré au 24.03.2015.", textesDeclarations.get(3));
+		Assert.assertEquals("Etat 'RETOURNEE' migré au 03.04.2015.", textesDeclarations.get(4));
 	}
 
 	@Test
@@ -908,8 +928,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(1, textesFors.size());
+		Assert.assertEquals(2, textesFors.size());
 		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
+		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] généré.", textesFors.get(1));
 
 		// et côté "SUIVI"
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au 07\\.05\\.2005 : seul le dernier sera pris en compte pour l'établissement principal.");
@@ -973,9 +994,10 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals(3, textesFors.size());
 		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
 		Assert.assertEquals("Le for {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
 
 		// vérification des messages dans le contexte "SUIVI"
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au \\? : seul le dernier sera pris en compte pour l'établissement principal\\.");
