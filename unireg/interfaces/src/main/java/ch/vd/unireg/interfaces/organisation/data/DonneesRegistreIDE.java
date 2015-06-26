@@ -7,19 +7,19 @@ import org.jetbrains.annotations.NotNull;
 public class DonneesRegistreIDE {
 	@NotNull
 	private final List<DateRanged<StatusRegistreIDE>> status;
-	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOfOrganisation;
+	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
 	private final List<DateRanged<Adresse>> adresseEffective;
 	private final List<DateRanged<Adresse>> adresseBoitePostale;
 	private final List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDE(List<DateRanged<Adresse>> adresseBoitePostale,
 	                          @NotNull List<DateRanged<StatusRegistreIDE>> status,
-	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOfOrganisation,
+	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
 	                          List<DateRanged<Adresse>> adresseEffective,
 	                          List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.status = status;
-		this.typeOfOrganisation = typeOfOrganisation;
+		this.typeOrganisation = typeOrganisation;
 		this.adresseEffective = adresseEffective;
 		this.raisonDeLiquidation = raisonDeLiquidation;
 	}
@@ -41,7 +41,7 @@ public class DonneesRegistreIDE {
 		return status;
 	}
 
-	public List<DateRanged<TypeOrganisationRegistreIDE>> getTypeOfOrganisation() {
-		return typeOfOrganisation;
+	public List<DateRanged<TypeOrganisationRegistreIDE>> getTypeOrganisation() {
+		return typeOrganisation;
 	}
 }

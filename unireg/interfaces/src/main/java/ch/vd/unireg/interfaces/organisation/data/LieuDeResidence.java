@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class LieuDeResidence {
 
 	@NotNull
-	private String placeOfResidenceName;
+	private String nomDuLieuResidence;
 
 	/**
 	 * municipalityId, si disponible
@@ -18,8 +18,8 @@ public class LieuDeResidence {
 	private Integer pays;
 
 
-	public LieuDeResidence(@NotNull String placeOfResidenceName, Integer commune, Integer pays) {
-		this.placeOfResidenceName = placeOfResidenceName;
+	public LieuDeResidence(@NotNull String nomDuLieuResidence, Integer commune, Integer pays) {
+		this.nomDuLieuResidence = nomDuLieuResidence;
 		this.commune = commune;
 		this.pays = pays;
 	}
@@ -33,7 +33,7 @@ public class LieuDeResidence {
 	}
 
 	@NotNull
-	public String getPlaceOfResidenceName() {
-		return placeOfResidenceName;
+	public String getNomDuLieuResidence() {
+		return nomDuLieuResidence;
 	}
 }
