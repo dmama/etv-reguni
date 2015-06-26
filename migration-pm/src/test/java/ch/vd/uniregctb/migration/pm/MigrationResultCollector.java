@@ -6,18 +6,27 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.migration.pm.engine.data.ExtractedDataCache;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 
 /**
  * Implémentation de l'interface {@link MigrationResultProduction} qui ne fait que collecter les données envoyées,
  * dans un but de contrôle
  */
-public class MigrationResultCollector implements MigrationResultContextManipulation, MigrationResultProduction {
+public class MigrationResultCollector implements MigrationResultContextManipulation, MigrationResultProduction, MigrationResultInitialization {
 
 	public static final class Message {
 		public final LogLevel level;
@@ -35,6 +44,13 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
 	private final Map<Class<?>, List<?>> preTransactionCommitData = new HashMap<>();
 	private final Map<Class<? extends LoggedElement>, LoggedElement> context = new HashMap<>();
+	private final Graphe currentGraphe;
+	private final ExtractedDataCache extractedDataCache;
+
+	public MigrationResultCollector(Graphe graphe) {
+		this.currentGraphe = graphe;
+		this.extractedDataCache = new ExtractedDataCache(graphe);
+	}
 
 	@Override
 	public void addMessage(LogCategory cat, LogLevel niveau, String msg) {
@@ -100,6 +116,44 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 
 	@Override
 	public Graphe getCurrentGraphe() {
-		return null;
+		return currentGraphe;
+	}
+
+	@Override
+	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
+	                                                     int consolidationPhaseIndicator,
+	                                                     Function<? super D, ?> keyExtractor,
+	                                                     BinaryOperator<D> dataMerger,
+	                                                     Consumer<? super D> consolidator) {
+
+		// on ne fait rien ici, de toute façon on n'utilise pas vraiment ces données, on
+		// ne fait que collecter les appels à addPreTransactionCommitData...
+	}
+
+	/**
+	 * Enregistre une méthode d'extraction de données depuis les données RegPM (l'idée est de ne la calculer qu'une seule fois,
+	 * ces extracteurs ne seront appelés qu'une seule fois par instance de graphe) utilisable ensuite au travers de la méthode
+	 * {@link MigrationResultProduction#getExtractedData(Class, EntityKey)}
+	 * @param dataClass classe discriminante pour la donnée à extraire (une donnée par classe et entité)
+	 * @param entrepriseExtractor l'extracteur à utiliser si cette données est extraite d'une entreprise
+	 * @param etablissementExtractor l'extracteur à utiliser si cette données est extraite d'un établissement
+	 * @param individuExtractor l'extracteur à utiliser si cette données est extraite d'un individu
+	 * @param <D> le type de la donnée extraite
+	 */
+	@Override
+	public <D> void registerDataExtractor(Class<D> dataClass,
+	                                      @Nullable Function<? super RegpmEntreprise, ? extends D> entrepriseExtractor,
+	                                      @Nullable Function<? super RegpmEtablissement, ? extends D> etablissementExtractor,
+	                                      @Nullable Function<? super RegpmIndividu, ? extends D> individuExtractor) {
+
+		// on laisse faire le pro
+		extractedDataCache.registerDataExtractor(dataClass, entrepriseExtractor, etablissementExtractor, individuExtractor);
+	}
+
+	@NotNull
+	@Override
+	public <T> T getExtractedData(Class<T> clazz, EntityKey key) {
+		// on laisse faire le pro
+		return extractedDataCache.getExtractedData(clazz, key);
 	}
 }

@@ -53,6 +53,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -136,9 +137,28 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	public static class ForsPrincipauxData implements Supplier<List<RegpmForPrincipal>> {
+
+		private final List<RegpmForPrincipal> liste;
+
+		public ForsPrincipauxData(List<RegpmForPrincipal> liste) {
+			this.liste = liste == null ? Collections.emptyList() : liste;
+		}
+
+		@NotNull
+		@Override
+		public List<RegpmForPrincipal> get() {
+			return liste;
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
+		
+		//
+		// callbacks avant la fin des transactions
+		//
 
 		// enregistrement de la consolidation pour la constitution des fors "immeuble"
 		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Immeuble.class,
@@ -160,6 +180,58 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleCouvertureFors(d, mr));
+		
+		//
+		// données "cachées" sur les entreprises
+		//
+		
+		mr.registerDataExtractor(ForsPrincipauxData.class,
+		                         e -> extractForsPrincipaux(e, mr),
+		                         null,
+		                         null);
+	}
+
+	/**
+	 * Extraction des fors principaux valides d'une entreprise de RegPM (en particulier, on blinde le
+	 * cas de fors multiples à la même date ete des fors sans date de début)
+	 * @param regpm l'entreprise cible
+	 * @param mr le collecteur de messages de suivi
+	 * @return un container des fors principaux valides de l'entreprise
+	 */
+	@NotNull
+	private static ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultProduction mr) {
+
+		final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
+				.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+				                          Collections::singletonList,
+				                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
+
+		final List<RegpmForPrincipal> liste = forsParDate.entrySet().stream()
+				.filter(entry -> !entry.getValue().isEmpty())
+				.map(entry -> {
+					final List<RegpmForPrincipal> fors = entry.getValue();
+					if (fors.size() > 1) {
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte.",
+						                            fors.size(),
+						                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+					}
+
+					// dans le set d'entrée, les fors sont triés... (à date égale, par numéro de séquence)
+					// -> le dernier de la liste ici est celui que l'on veut conserver
+					return fors.get(fors.size() - 1);
+				})
+				.filter(ff -> {
+					if (ff.getDateValidite() == null) {
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("Le for principal %s est ignoré car il a une date de début nulle.", ff.getId()));
+						return false;
+					}
+					return true;
+				})
+				.collect(Collectors.toList());
+
+		return new ForsPrincipauxData(liste);
 	}
 
 	/**
@@ -192,7 +264,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							                                       MotifRattachement.DOMICILE))
 							.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
 							.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.", DATE_RANGE_RENDERER.toString(ff))))
+							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.", StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
 							.forEach(entreprise::addForFiscal);
 
 					// on va forcer le re-calcul des motifs
@@ -264,16 +336,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return une représentation String de cette liste
 	 */
 	private static String toDisplayString(List<? extends DateRange> list) {
-		return list.stream().map(DATE_RANGE_RENDERER::toString).collect(Collectors.joining(", "));
+		return list.stream().map(StringRenderers.DATE_RANGE_RENDERER::toString).collect(Collectors.joining(", "));
 	}
 
 	/**
 	 * @param regpm une PM
 	 * @return la date de début de l'activité de la PM en question
 	 */
-	private static RegDate getDateDebutActivite(RegpmEntreprise regpm) {
+	private static RegDate getDateDebutActivite(RegpmEntreprise regpm, MigrationResultProduction mr) {
 		// TODO faut-il bien prendre la date de début du premier for principal ???
-		return regpm.getForsPrincipaux().stream()
+		return mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get().stream()
 				.map(RegpmForPrincipal::getDateValidite)
 				.min(NullDateBehavior.LATEST::compare)
 				.orElse(null);
@@ -341,7 +413,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						entiteJuridique.addForFiscal(ffs);
 
 						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
-						                                                             DATE_RANGE_RENDERER.toString(dates),
+						                                                             StringRenderers.DATE_RANGE_RENDERER.toString(dates),
 						                                                             noOfsCommune));
 					}
 				}
@@ -467,54 +539,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final SortedMap<RegDate, CommuneOuPays> localisations;
 		final RegpmCommune commune = regpm.getCommune();
 		if (commune != null) {
-			localisations = new TreeMap<>(Collections.singletonMap(getDateDebutActivite(regpm), new CommuneOuPays(commune)));
-		}
-		else if (!regpm.getForsPrincipaux().isEmpty()) {
-			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
-
-			// d'abord, un petit log explicatif des cas où on trouve deux fors principaux valides à la même date
-			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
-					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
-					                          Collections::singletonList,
-					                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
-
-			// les fors sont déjà triés par date et numéro de séquence dans le set, d'où l'implémentation du merger qui prend juste le deuxième...
-			localisations = forsParDate.entrySet().stream()
-					.filter(entry -> !entry.getValue().isEmpty())
-					.map(entry -> {
-						final List<RegpmForPrincipal> fors = entry.getValue();
-						if (fors.size() > 1) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-							              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte pour l'établissement principal.",
-							                            fors.size(),
-							                            DATE_RENDERER.toString(entry.getKey())));
-						}
-						return fors.get(fors.size() - 1);
-					})
-					.filter(ff -> {
-						if (ff.getDateValidite() == null) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-							              String.format("Le for %s est ignoré pour l'établissement principal car il a une date de début nulle.", ff.getId()));
-							return false;
-						}
-						return true;
-					})
-					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
-					                          CommuneOuPays::new,
-					                          (cop1, cop2) -> { throw new IllegalStateException("Map construite pour n'avoir qu'un seul for par date... pas besoin d'appeler le merger..."); },
-					                          TreeMap::new));
-
-			// s'il n'y a plus de localisation prise en compte (ce qui est possible si tous les fors principaux ont une date de début nulle, car
-			// ils ont été ignorés plus haut), il faut s'arrêter là
-			if (localisations.isEmpty()) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Tous les fors principaux ont été ignorés, pas d'établissement principal créé.");
-				return;
-			}
+			localisations = new TreeMap<>(Collections.singletonMap(getDateDebutActivite(regpm, mr), new CommuneOuPays(commune)));
 		}
 		else {
-			// pas de commune, pas de for principal... -> pas d'établissement principal
-			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
-			return;
+			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
+			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get();
+			if (!forsPrincipaux.isEmpty()) {
+
+				// pas besoin de faire de merge (voir l'exception lancée plus bas) car la liste extraite est, par construction, fiable
+				// (en tout cas au niveau des dates...)
+				localisations = forsPrincipaux.stream()
+						.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+						                          CommuneOuPays::new,
+						                          (cop1, cop2) -> { throw new IllegalStateException("Map construite pour n'avoir qu'un seul for par date... pas besoin d'appeler le merger..."); },
+						                          TreeMap::new));
+			}
+			else {
+				// pas de commune, pas de for principal... -> pas d'établissement principal
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
+				return;
+			}
 		}
 
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
@@ -544,7 +588,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		domiciles.stream()
 				.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
 				                                                                                FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-				                                                                                DATE_RANGE_RENDERER.toString(domicile),
+				                                                                                StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
 				                                                                                domicile.getTypeAutoriteFiscale(),
 				                                                                                domicile.getNumeroOfsAutoriteFiscale())))
 				.forEach(etbPrincipal::addDomicile);
@@ -619,7 +663,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
 			if (isFutureDate(mandat.getDateAttribution())) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
-				                                                               mandat.getId(), DATE_RENDERER.toString(mandat.getDateAttribution())));
+				                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
 				return;
 			}
 
@@ -627,7 +671,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final RegDate dateFin;
 			if (isFutureDate(mandat.getDateResiliation())) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date de résiliation du mandat %s est dans le futur (%s), le mandat sera donc laissé ouvert dans la migration.",
-				                                                              mandat.getId(), DATE_RENDERER.toString(mandat.getDateResiliation())));
+				                                                              mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
 				dateFin = null;
 			}
 			else {
@@ -747,7 +791,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
 				              String.format("Génération d'une déclaration sur la PF %d à partir des dates %s de l'exercice commercial %d et du dossier fiscal correspondant.",
 				                            dossier.getPf(),
-				                            DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
+				                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
 				                            exercice.getId().getSeqNo()));
 
 				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin(), mr);
@@ -800,7 +844,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// un peu de traçabilité
 			mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
-			              String.format("Délai initial de retour fixé au %s.", DATE_RENDERER.toString(dossier.getDelaiRetour())));
+			              String.format("Délai initial de retour fixé au %s.", StringRenderers.DATE_RENDERER.toString(dossier.getDelaiRetour())));
 		}
 
 		// fonction de conversion
@@ -824,7 +868,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(demande -> {
 					if (demande.getType() != RegpmTypeDemandeDelai.AVANT_SOMMATION) {
 						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Demande de délai 'après sommation' du %s ignorée.", DATE_RENDERER.toString(demande.getDateDemande())));
+						              String.format("Demande de délai 'après sommation' du %s ignorée.", StringRenderers.DATE_RENDERER.toString(demande.getDateDemande())));
 						return false;
 					}
 					return true;
@@ -832,13 +876,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(demande -> {
 					if (demande.getEtat() != RegpmTypeEtatDemandeDelai.ACCORDEE) {
 						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Demande de délai non-accordée (%s) du %s ignorée.", demande.getEtat(), DATE_RENDERER.toString(demande.getDateDemande())));
+						              String.format("Demande de délai non-accordée (%s) du %s ignorée.", demande.getEtat(), StringRenderers.DATE_RENDERER.toString(demande.getDateDemande())));
 						return false;
 					}
 					return true;
 				})
 				.map(mapper)
-				.peek(delai -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Nouveau délai généré au %s.", DATE_RENDERER.toString(delai.getDelaiAccordeAu()))))
+				.peek(delai -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Nouveau délai généré au %s.", StringRenderers.DATE_RENDERER.toString(delai.getDelaiAccordeAu()))))
 				.forEach(delais::add);
 		return delais;
 	}
@@ -868,7 +912,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// TODO la taxation d'office (= échéance, au sens Unireg) existait-elle ?
 
 		// un peu de traçabilité sur le travail accompli ici
-		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Etat '%s' migré au %s.", etat.getEtat(), DATE_RENDERER.toString(etat.getDateObtention()))));
+		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Etat '%s' migré au %s.", etat.getEtat(), StringRenderers.DATE_RENDERER.toString(etat.getDateObtention()))));
 
 		return etats;
 	}
@@ -902,33 +946,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return Optional.of(ffp);
 		};
 
-		// d'abord, un petit log explicatif des cas où on trouve deux fors principaux valides à la même date
-		final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
-				.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
-				                          Collections::singletonList,
-				                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
+		// récupération des fors principaux valides
+		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get();
 
 		// puis la migration, justement
-		final List<ForFiscalPrincipalPM> liste = forsParDate.entrySet().stream()
-				.filter(entry -> !entry.getValue().isEmpty())
-				.map(entry -> {
-					final List<RegpmForPrincipal> fors = entry.getValue();
-					if (fors.size() > 1) {
-						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-						              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte pour la migration.",
-						                            fors.size(),
-						                            DATE_RENDERER.toString(entry.getKey())));
-					}
-					return fors.get(fors.size() - 1);
-				})
-				.filter(ff -> {
-					if (ff.getDateValidite() == null) {
-						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-						              String.format("Le for %s est ignoré car il a une date de début nulle.", ff.getId()));
-						return false;
-					}
-					return true;
-				})
+		final List<ForFiscalPrincipalPM> liste = forsRegpm.stream()
 				.map(mapper)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
@@ -945,7 +967,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		liste.forEach(ff -> {
 			// un peu de traçabilité.
 			mr.addMessage(LogCategory.FORS, LogLevel.INFO,
-			              String.format("For principal %s/%d %s généré.", ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), DATE_RANGE_RENDERER.toString(ff)));
+			              String.format("For principal %s/%d %s généré.", ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), StringRenderers.DATE_RANGE_RENDERER.toString(ff)));
 
 			// ajout au tiers
 			unireg.addForFiscal(ff);

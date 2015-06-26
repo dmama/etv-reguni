@@ -272,9 +272,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -306,9 +310,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			return null;
 		});
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -373,9 +381,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			return null;
 		});
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -433,7 +445,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesDeclarations);
 		final List<String> textesDeclarations = messagesDeclarations.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(5, textesDeclarations.size());
-		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(0));
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(
+				0));
 		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textesDeclarations.get(1));
 		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textesDeclarations.get(2));
 		Assert.assertEquals("Etat 'SOMMEE' migré au 24.03.2015.", textesDeclarations.get(3));
@@ -447,9 +460,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		e.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "POFICHBEXXX", null, "17-331-7", "Postfinance", null));
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -482,9 +499,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
 		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), null);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -523,9 +544,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
 		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get().addDays(2), null);        // après demain est toujours dans le futur...
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -565,9 +590,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
 		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", null, null);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -607,9 +636,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise mandataire = buildEntreprise(noEntrepriseMandataire);
 		addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, "17-331-7", RegDate.get(2001, 5, 1), RegDate.get().addDays(2));     // après-demain est toujours dans le futur !
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Arrays.asList(mandant, mandataire),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -661,9 +694,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRegimeFiscalCH(e, RegDate.get(2006, 1, 1), null, RegpmTypeRegimeFiscal._109_PM_AVEC_EXONERATION_ART_90G);
 		addRegimeFiscalVD(e, RegDate.get(2000, 1, 1), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -738,9 +775,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			}
 		});
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// on vérifie que la PF existe maintenant en base
@@ -792,9 +833,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.Fraction.LE_BRASSUS);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -839,9 +884,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		e.setCommune(Commune.ECHALLENS);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BERN);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> on va regarder l'établissement créé
@@ -879,9 +928,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);        // <- c'est lui, le deuxième, qui devrait être pris en compte
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> on va regarder l'établissement principal et les fors créés
@@ -929,11 +982,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(2, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
+		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(0));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] généré.", textesFors.get(1));
-
-		// et côté "SUIVI"
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au 07\\.05\\.2005 : seul le dernier sera pris en compte pour l'établissement principal.");
 	}
 
 	@Test
@@ -945,9 +995,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);     // <- celui-là devrait être éliminé car il a lui-même une date de validité nulle...
 		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> on va regarder l'établissement principal et les fors créés
@@ -995,13 +1049,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(3, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
-		Assert.assertEquals("Le for {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Le for principal {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
-
-		// vérification des messages dans le contexte "SUIVI"
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au \\? : seul le dernier sera pris en compte pour l'établissement principal\\.");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bLe for \\{idEntreprise=1234, seqNo=2\\} est ignoré pour l'établissement principal car il a une date de début nulle\\.");
 	}
 
 	@Test
@@ -1012,9 +1062,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);      // <- celui-là devrait être éliminé car le suivant a une date de validité nulle
 		addForPrincipalSuisse(e, null, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);     // <- celui-là devrait être éliminé car il a lui-même une date de validité nulle...
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> pas d'établissement principal, mais quand-même une entreprise (sans for principal)
@@ -1033,13 +1087,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(2, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte pour la migration.", textesFors.get(0));
-		Assert.assertEquals("Le for {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Le for principal {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
 
 		// .. et dans le contexte "SUIVI"
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPlusieurs \\(2\\) fors principaux ont une date de début identique au \\? : seul le dernier sera pris en compte pour l'établissement principal\\.");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bLe for \\{idEntreprise=1234, seqNo=2\\} est ignoré pour l'établissement principal car il a une date de début nulle\\.");
-		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bTous les fors principaux ont été ignorés, pas d'établissement principal créé\\.");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de commune ni de for principal associé, pas d'établissement principal créé\\.");
 	}
 
 	@Test
@@ -1049,9 +1101,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addRegimeFiscalCH(e, null, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 		addRegimeFiscalVD(e, null, null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> régimes fiscaux associés à l'entreprise (aucun, car ils doivent être ignorés en raison de leur date nulle)

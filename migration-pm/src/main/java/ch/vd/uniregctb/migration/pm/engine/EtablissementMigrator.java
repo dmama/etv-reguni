@@ -33,6 +33,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -72,7 +73,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// si l'une ou l'autre des entrées est nulle, c'est que le range demandé est plus grand que le range couvert par les domiciles...
 		if (domicileFin == null) {
 			// fin == null -> il n'y a absolument rien qui couvre le range demandé
-			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", DATE_RANGE_RENDERER.toString(range)));
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, String.format("L'établissement stable %s n'intersecte aucun domicile.", StringRenderers.DATE_RANGE_RENDERER.toString(range)));
 			return Collections.emptyList();
 		}
 
@@ -81,7 +82,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		if (domicileDebut == null) {
 			domicileDebutEffectif = domicilesValides.ceilingEntry(range.getDateDebut());        // il y en a forcément un, puisque domicileFin != null
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, String.format("L'établissement stable %s n'est couvert par les domiciles qu'à partir du %s.",
-			                                                                       DATE_RANGE_RENDERER.toString(range), DATE_RENDERER.toString(domicileDebutEffectif.getKey())));
+			                                                                       StringRenderers.DATE_RANGE_RENDERER.toString(range), StringRenderers.DATE_RENDERER.toString(domicileDebutEffectif.getKey())));
 		}
 		else {
 			domicileDebutEffectif = domicileDebut;
@@ -156,7 +157,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 						entiteJuridique.addForFiscal(ffs);
 
 						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
-						                                                             DATE_RANGE_RENDERER.toString(dates),
+						                                                             StringRenderers.DATE_RANGE_RENDERER.toString(dates),
 						                                                             noOfsCommune));
 					}
 				}
@@ -206,7 +207,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 							if (isFutureDate(range.getDateFin())) {
 								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
 								              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
-								                            DATE_RENDERER.toString(range.getDateFin())));
+								                            StringRenderers.DATE_RENDERER.toString(range.getDateFin())));
 								dateFin = null;
 							}
 							else {
@@ -337,7 +338,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		else {
 			domicilesStables.stream()
 					.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile : %s sur %s/%d.",
-					                                                                                DATE_RANGE_RENDERER.toString(domicile),
+					                                                                                StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
 					                                                                                domicile.getTypeAutoriteFiscale(),
 					                                                                                domicile.getNumeroOfsAutoriteFiscale())))
 					.forEach(unireg::addDomicile);

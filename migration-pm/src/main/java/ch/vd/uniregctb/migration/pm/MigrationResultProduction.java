@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.util.function.Function;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 
 public interface MigrationResultProduction {
 
@@ -28,4 +31,15 @@ public interface MigrationResultProduction {
 	 */
 	<D> void addPreTransactionCommitData(@NotNull D data);
 
+	/**
+	 * Récupère la donnée préalablement enregistrée lors d'un précédent appel pour la même classe et la même entité. Si aucune donnée
+	 * n'a été préalablement enregistrée (= premier appel), alors l'extracteur correspondant (préalablement enregistré par un
+	 * appel à {@link MigrationResultInitialization#registerDataExtractor(Class, Function, Function, Function)}) est sollicité
+	 * @param clazz classe discriminante pour la donnée à extraire (une donnée par classe et entité)
+	 * @param key clé de l'entité concernée par la donnée à extraire (une donnée par classe et entité)
+	 * @param <T> le type de la donnée extraite
+	 * @return la donnée extraite
+	 */
+	@NotNull
+	<T> T getExtractedData(Class<T> clazz, EntityKey key);
 }

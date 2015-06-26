@@ -122,9 +122,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -163,9 +167,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		addEtablissementStable(etablissement, dateDebut, dateFin);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -214,9 +222,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addEtablissementStable(etablissement, dateDebut, dateFin);
 		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, true);     // il y a intersection, mais le domicile est annulé, donc ignoré...
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -265,9 +277,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addEtablissementStable(etablissement, dateDebut, dateFin);
 		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -340,9 +356,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addEtablissementStable(etablissement, dateDebutEtablissementStable, dateFinEtablissementStable);
 		addDomicileEtablissement(etablissement, dateDebutDomicile, Commune.MORGES, false);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -417,9 +437,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
 		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, Commune.ECHALLENS, false);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -498,9 +522,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addDomicileEtablissement(etablissement, dateDebutDomicile, Commune.LAUSANNE, false);
 		addDomicileEtablissement(etablissement, dateDebutSecondDomicile, Commune.ECHALLENS, false);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -580,9 +608,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -622,9 +654,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setEnseigne("La rouge musaraigne");
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -678,9 +714,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.MORGES, false);
 		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -750,9 +790,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.BALE, false);
 		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -822,9 +866,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addDomicileEtablissement(etablissement, RegDate.get(2000, 1, 1), Commune.MORGES, false);
 		addEtablissementStable(etablissement, RegDate.get(1995, 1, 1), RegDate.get(2005, 12, 31));
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -897,9 +945,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setNomRue("Avenue de Longemalle");
 		etablissement.setLocalitePostale(LocalitePostale.RENENS);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// il y a eu un temps où la migration échouait sur un appel à RegpmEtablissement.Adresse.getDateFin()
@@ -917,9 +969,13 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		addEtablissementStable(etablissement, RegDate.get(2005, 3, 12), RegDate.get().addDays(2));       // date de fin toujours dans le futur
 		addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// extraction de l'identifiant de l'établissement

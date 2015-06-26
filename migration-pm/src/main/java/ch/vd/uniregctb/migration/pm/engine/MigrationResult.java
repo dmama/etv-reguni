@@ -16,12 +16,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.engine.data.ExtractedDataCache;
 import ch.vd.uniregctb.migration.pm.engine.log.LogContexte;
 import ch.vd.uniregctb.migration.pm.engine.log.LogStructure;
 import ch.vd.uniregctb.migration.pm.log.CompositeLoggedElement;
@@ -30,6 +32,10 @@ import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.log.MessageLoggedElement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 
 /**
  * Résultat de la migration d'un graphe<br/>
@@ -43,17 +49,21 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 
 	/**
 	 * Runnables enregistrables pendant la transaction, qui sont lancés une fois la transaction terminée (avec succès)
+	 * @see #addPostTransactionCallback(Runnable)
 	 */
 	private final List<Runnable> postTransactionCallbacks = new LinkedList<>();
 
 	/**
 	 * Les messages à logguer, relatifs à une migration
+	 * @see #addMessage(LogCategory, LogLevel, String)
 	 */
 	private final Map<LogCategory, List<LoggedElement>> msgs = new EnumMap<>(LogCategory.class);
 
 	/**
 	 * Données maintenues pour les enregistrements de structures de données à consolider
 	 * pendant la transaction
+	 * @see #registerPreTransactionCommitCallback(Class, int, Function, BinaryOperator, Consumer)
+	 * @see #addPreTransactionCommitData(Object)
 	 */
 	private final Map<Class<?>, PreTransactionCommitRegistration<?>> preCommitRegistrations = new HashMap<>();
 
@@ -72,8 +82,17 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	 */
 	private final LogContexte currentContext = new LogContexte();
 
+	/**
+	 * Cache de données extraites sur les entités à migrer
+	 */
+	private final ExtractedDataCache extractedDataCache;
+
+	/**
+	 * @param graphe pour lequel la migration est en cours
+	 */
 	public MigrationResult(Graphe graphe) {
 		this.graphe = graphe;
+		this.extractedDataCache = new ExtractedDataCache(graphe);
 	}
 
 	@Override
@@ -215,6 +234,10 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		}
 	}
 
+	//
+	// Gestion du contexte de log
+	//
+
 	@Override
 	public <E extends LoggedElement> void setContextValue(Class<E> clazz, @NotNull E value) {
 		currentContext.setContextValue(clazz, value);
@@ -223,5 +246,25 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	@Override
 	public <E extends LoggedElement> void resetContextValue(Class<E> clazz) {
 		currentContext.resetContextValue(clazz);
+	}
+
+	//
+	// Gestion des extracteurs de données
+	//
+
+	@Override
+	public <D> void registerDataExtractor(Class<D> dataClass,
+	                                      @Nullable Function<? super RegpmEntreprise, ? extends D> entrepriseExtractor,
+	                                      @Nullable Function<? super RegpmEtablissement, ? extends D> etablissementExtractor,
+	                                      @Nullable Function<? super RegpmIndividu, ? extends D> individuExtractor) {
+		// on laisse faire le pro
+		extractedDataCache.registerDataExtractor(dataClass, entrepriseExtractor, etablissementExtractor, individuExtractor);
+	}
+
+	@NotNull
+	@Override
+	public <T> T getExtractedData(Class<T> clazz, EntityKey key) {
+		// on laisse faire le pro
+		return extractedDataCache.getExtractedData(clazz, key);
 	}
 }

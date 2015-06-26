@@ -1,0 +1,26 @@
+package ch.vd.uniregctb.migration.pm.engine.helpers;
+
+import org.apache.commons.lang3.StringUtils;
+
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.StringRenderer;
+
+/**
+ * Quelques implémentation de {@link ch.vd.uniregctb.common.StringRenderer} bien pratiques
+ */
+public abstract class StringRenderers {
+
+	/**
+	 * Entité qui permet de dumper une valeur de date dans un format lisible (et commun...)
+	 */
+	public static final StringRenderer<RegDate> DATE_RENDERER = date -> StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(date), "?");
+
+	/**
+	 * Entité qui permet de dumper des valeurs de ranges dans un format lisible
+	 */
+	public static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
+			range -> String.format("[%s -> %s]", DATE_RENDERER.toString(range.getDateDebut()), DATE_RENDERER.toString(range.getDateFin()));
+
+}

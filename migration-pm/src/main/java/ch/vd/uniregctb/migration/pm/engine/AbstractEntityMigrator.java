@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,9 +21,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -75,17 +72,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected static final BinaryOperator<Map<RegpmCommune, List<DateRange>>> DATE_RANGE_MAP_MERGER =
 			(m1, m2) -> Stream.concat(m1.entrySet().stream(), m2.entrySet().stream())
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, DATE_RANGE_LIST_MERGER));
-
-	/**
-	 * Entité qui permet de dumper une valeur de date dans un format lisible (et commun...)
-	 */
-	protected static final StringRenderer<RegDate> DATE_RENDERER = date -> StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(date), "?");
-
-	/**
-	 * Entité qui permet de dumper des valeurs de ranges dans un format lisible
-	 */
-	protected static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
-			range -> String.format("[%s -> %s]", DATE_RENDERER.toString(range.getDateDebut()), DATE_RENDERER.toString(range.getDateFin()));
 
 	/**
 	 * Extracteur du numéro OFS (au sens Unireg) d'une commune en prenant en compte la spécificité des fractions de communes

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -56,13 +57,17 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 	@Test
 	public void testNouvelIndividu() throws Exception {
 
-		final MigrationResultCollector mr = new MigrationResultCollector();
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-
 		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
 		final long noIndividuRegpm = 7484841141411857L;
 		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce que l'on a créé en base
@@ -112,9 +117,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -158,9 +167,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmIndividu individu = buildBaseIndividu(noIndividu, "Dusonchet", "Thérèse", RegDate.get(1953, 3, 12), Sexe.FEMININ);
 
 		// migration de l'individu RepPM -> la personne physique doit être nouvellement créée et liée au civil
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -212,9 +225,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -277,9 +294,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MigrationResultCollector mr = new MigrationResultCollector();
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce que l'on a créé en base
