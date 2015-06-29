@@ -4,8 +4,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
 public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
@@ -47,33 +45,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	}
 
 	@Override
-	public SiteOrganisation getLocation(Long cantonalId) throws ServiceOrganisationException {
-		OrganisationLocation received = adapter.getLocation(cantonalId);
+	public Long getOrganisationPourSite(Long cantonalId) throws ServiceOrganisationException {
+		ch.vd.uniregctb.adapter.rcent.model.Organisation received = adapter.getLocation(cantonalId);
 		if (received == null) {
 			return null;
 		}
-		sanityCheck(cantonalId, received.getCantonalId());
-		return RCEntSiteOrganisationHelper.get(received);
-	}
-
-	@Override
-	public SiteOrganisation getLocation(Long cantonalId, RegDate date) throws ServiceOrganisationException {
-		OrganisationLocation received = adapter.getLocation(cantonalId, date);
-		if (received == null) {
-			return null;
-		}
-		sanityCheck(cantonalId, received.getCantonalId());
-		return RCEntSiteOrganisationHelper.get(received);
-	}
-
-	@Override
-	public SiteOrganisation getLocationHistory(Long cantonalId) throws ServiceOrganisationException {
-		OrganisationLocation received = adapter.getLocationHistory(cantonalId);
-		if (received == null) {
-			return null;
-		}
-		sanityCheck(cantonalId, received.getCantonalId());
-		return RCEntSiteOrganisationHelper.get(received);
+		return received.getCantonalId();
 	}
 
 	private void sanityCheck(long cantonalId, long receivedId) {

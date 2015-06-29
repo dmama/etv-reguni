@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 
 public abstract class MockServiceOrganisation implements ServiceOrganisationRaw {
 
@@ -37,17 +36,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	}
 
 	@Override
-	public SiteOrganisation getLocation(Long cantonalId) throws ServiceOrganisationException {
+	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public SiteOrganisation getLocation(Long cantonalId, RegDate date) throws ServiceOrganisationException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SiteOrganisation getLocationHistory(Long cantonalId) throws ServiceOrganisationException {
-		throw new UnsupportedOperationException();
-	}
 }

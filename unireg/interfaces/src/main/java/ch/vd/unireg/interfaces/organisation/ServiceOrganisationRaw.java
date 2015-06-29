@@ -2,7 +2,6 @@ package ch.vd.unireg.interfaces.organisation;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 
 public interface ServiceOrganisationRaw {
 
@@ -35,37 +34,11 @@ public interface ServiceOrganisationRaw {
 	Organisation getOrganisationHistory(long cantonalId) throws ServiceOrganisationException;
 
 	/**
-	 * Recherche l'état d'un établissement aujourd'hui.
+	 * Obtenir un numéro d'organisation à partir d'un numéro de site.
 	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
-	 * l'établissement demandé.
-	 * @param cantonalId
-	 * @return
+	 * @param noSite Identifiant cantonal du site.
+	 * @return L'identifiant cantonal de l'organisation détenant le site.
 	 * @throws ServiceOrganisationException
 	 */
-	SiteOrganisation getLocation(Long cantonalId) throws ServiceOrganisationException;
-
-	/**
-	 * Recherche l'état d'un établissement à la date indiquée.
-	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
-	 * l'établissement demandé.
-	 * @param cantonalId
-	 * @param date
-	 * @return
-	 * @throws ServiceOrganisationException
-	 */
-	SiteOrganisation getLocation(Long cantonalId, RegDate date) throws ServiceOrganisationException;
-
-	/**
-	 * Recherche tous les états d'un établissement.
-	 *
-	 * NOTE: La structure renvoiée est bien celle d'une organisation mais qui ne contient QUE
-	 * l'établissement demandé.
-	 * @param cantonalId
-	 * @return
-	 * @throws ServiceOrganisationException
-	 */
-	SiteOrganisation getLocationHistory(Long cantonalId) throws ServiceOrganisationException;
-
+	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
 }
