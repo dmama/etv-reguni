@@ -48,6 +48,7 @@ import ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessa
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
+import ch.vd.uniregctb.indexer.messageidentification.GlobalMessageIdentificationSearcher;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -472,7 +473,8 @@ public class IdentificationController {
 			listIdentifications = identificationMessagesListManager.findEncoursSeul(criteria, pagination, types);
 			nombreElements = identificationMessagesListManager.countEnCoursSeul(criteria, types);
 		}
-
+		final int tailleTableau = nombreElements > GlobalMessageIdentificationSearcher.MAX_RESULTS?GlobalMessageIdentificationSearcher.MAX_RESULTS:nombreElements;
+		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
 		model.put("messageEnCours", true);
@@ -486,12 +488,13 @@ public class IdentificationController {
 		final WebParamPagination pagination = paginationStockee !=null? paginationStockee: new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
-
 		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
-
+		final int tailleTableau = nombreElements > GlobalMessageIdentificationSearcher.MAX_RESULTS?GlobalMessageIdentificationSearcher.MAX_RESULTS:nombreElements;
+		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
+
 		model.put("messageEnCours", false);
 		model.put("messageTraite", false);
 		model.put("messageSuspendu", true);
@@ -508,7 +511,8 @@ public class IdentificationController {
 		final TypeDemande types[] = getAllowedTypes();
 		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
 		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
-
+		final int tailleTableau = nombreElements > GlobalMessageIdentificationSearcher.MAX_RESULTS?GlobalMessageIdentificationSearcher.MAX_RESULTS:nombreElements;
+		model.put("tailleTableau", tailleTableau);
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
 		model.put("messageEnCours", false);

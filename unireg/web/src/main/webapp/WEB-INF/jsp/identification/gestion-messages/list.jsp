@@ -44,13 +44,26 @@
                 }
             </script>
 
-			<display:table name="identifications" id="message" pagesize="25" defaultsort="1" size="identificationsSize" requestURI="/identification/gestion-messages/${myAction}"
+			<display:table name="identifications" id="message" pagesize="25" defaultsort="1" size="tailleTableau" requestURI="/identification/gestion-messages/${myAction}"
 			class="display_table" sort="external"  excludedParams="*" partialList="true" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.message.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.message.trouve" /></span></display:setProperty>
-				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.messages.trouves" /></span></display:setProperty>
+				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">
+                    <c:choose>
+                        <c:when test="${identificationsSize > tailleTableau}">
+                            <fmt:message key="banner.limitation.messages.trouves">
+                                <fmt:param>${identificationsSize}</fmt:param>
+                                <fmt:param>${tailleTableau}</fmt:param>
+                            </fmt:message>
+                        </c:when>
+                        <c:otherwise>
+                            {0} <fmt:message key="banner.messages.trouves">
+                        </fmt:message>
+                        </c:otherwise>
+                    </c:choose>
+                </span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.messages.trouves" /></span></display:setProperty>
-				
+
 				<c:if test="${!messageTraite}">
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_SUPERGRA">
 					<display:column title="<input type='checkbox'  name='selectAll' onclick='javascript:IdentificationCtb.selectAllIdentifications(this);' />">

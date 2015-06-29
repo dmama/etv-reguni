@@ -90,7 +90,7 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 				final int maxResults;
 				if (pagination == null) {
 					firstIndex = 0;
-					maxResults = Integer.MAX_VALUE;
+					maxResults = MAX_RESULTS;
 				}
 				else {
 					firstIndex = pagination.getSqlFirstResult();
@@ -112,10 +112,10 @@ public class GlobalMessageIdentificationSearcherImpl implements GlobalMessageIde
 			final SortBuilder sortBuilder = sortingInfo.getRight();
 			final String fieldName = sortingInfo.getLeft();
 			final Sort sort = sortBuilder.build(fieldName, !pagination.isSensAscending());
-			globalIndex.search(query, Integer.MAX_VALUE, sort, callback);
+			globalIndex.search(query, MAX_RESULTS, sort, callback);
 		}
 		else {
-			globalIndex.search(query, Integer.MAX_VALUE, callback);
+			globalIndex.search(query, MAX_RESULTS, callback);
 		}
 
 		return result;
