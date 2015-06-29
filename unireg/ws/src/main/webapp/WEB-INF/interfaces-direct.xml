@@ -67,6 +67,11 @@
 		<constructor-arg ref="rcEntAdapter"/>
 	</bean>
 
+	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
+		<property name="target" ref="serviceOrganisationRCEnt" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
 	<!-- Client fidor -->
 
 	<bean id="fidorClientRaw" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">

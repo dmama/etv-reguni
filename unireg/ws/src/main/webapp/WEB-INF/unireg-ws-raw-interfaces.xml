@@ -20,6 +20,11 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
+	<!-- Service Organisation -->
+
+	<!-- No cache for now -->
+	<alias alias="serviceOrganisationRaw" name="serviceOrganisationTracing" />
+
 	<!-- Service infra -->
 
 	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">

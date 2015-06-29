@@ -394,6 +394,11 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	}
 
 	@Override
+	public void onOrganisationChange(long id) {
+		// rien à faire
+	}
+
+	@Override
 	public void onIndividuChange(long id) {
 		// rien à faire
 	}

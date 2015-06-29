@@ -25,6 +25,21 @@
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
 
+	<!-- Service Organisation -->
+
+	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
+		<constructor-arg ref="rcEntAdapter"/>
+	</bean>
+
+	<bean id="serviceOrganisationServiceTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
+		<property name="target" ref="serviceOrganisationRCEnt" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<!-- TODO: Definir un cache? -->
+
+	<alias alias="serviceOrganisationRaw" name="serviceOrganisationServiceTracing"/>
+
 	<!-- Service UPI -->
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">

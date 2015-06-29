@@ -1,8 +1,9 @@
-package ch.vd.unireg.interfaces.organisation;
+package ch.vd.uniregctb.interfaces.service;
 
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 
-public interface ServiceOrganisationRaw {
+public interface ServiceOrganisationService {
 
 	String SERVICE_NAME = "ServiceOrganisation";
 
@@ -24,10 +25,4 @@ public interface ServiceOrganisationRaw {
 	 */
 	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
 
-	/**
-	 * Méthode qui permet de tester que le service organisation répond bien. Cette méthode est insensible aux caches.
-	 *
-	 * @throws ServiceOrganisationException en cas de non-fonctionnement du service organisation
-	 */
-	void ping() throws ServiceOrganisationException;
 }

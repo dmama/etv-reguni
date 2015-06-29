@@ -20,6 +20,7 @@ import ch.vd.unireg.xml.event.data.v1.DatabaseTruncateEvent;
 import ch.vd.unireg.xml.event.data.v1.DroitAccesChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.IndividuChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.data.v1.OrganisationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.PmChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.RelationChangeEvent;
 import ch.vd.unireg.xml.event.data.v1.Relationship;
@@ -109,6 +110,22 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 		}
 		catch (Exception e) {
 			LOGGER.error("Impossible d'envoyer un message de changement du tiers n°" + id, e);
+		}
+	}
+
+	@Override
+	public void onOrganisationChange(long id) {
+		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Emission d'un événement db de changement sur l'organisation n°" + id);
+			}
+
+			final OrganisationChangeEvent event = objectFactory.createOrganisationChangeEvent();
+			event.setId(id);
+			sendDataEvent(String.valueOf(id), event);
+		}
+		catch (Exception e) {
+			LOGGER.error("Impossible d'envoyer un message de changement de l'organisation n°" + id, e);
 		}
 	}
 

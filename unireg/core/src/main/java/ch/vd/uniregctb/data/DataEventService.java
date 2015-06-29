@@ -26,6 +26,13 @@ public interface DataEventService {
 	void onIndividuChange(long id);
 
 	/**
+	 * Notifie à tous les listeners qu'une organisation à été changé dans le registre des entreprises.
+	 *
+	 * @param id le numéro de l'organisation changée
+	 */
+	void onOrganisationChange(long id);
+
+	/**
 	 * Notifie à tous les listeners qu'une personne morale à été changée dans le registre PM.
 	 *
 	 * @param id le numéro de la personne morale changée

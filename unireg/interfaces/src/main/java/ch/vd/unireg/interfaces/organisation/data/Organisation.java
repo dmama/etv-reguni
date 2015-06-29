@@ -1,13 +1,19 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Organisation {
+public class Organisation implements Serializable {
 
-	private final long cantonalId;
+	private static final long serialVersionUID = 7148376177681713313L;
+
+	/**
+	 * Le numéro technique de l'organisation pour Unireg
+	 */
+	private final long no;
 
 	@NotNull
 	private final Map<String, List<DateRanged<String>>> identifiants;
@@ -27,11 +33,11 @@ public class Organisation {
 	private final List<DateRanged<Long>> remplacePar;
 	private final List<DateRanged<Long>> enRemplacementDe;
 
-	public Organisation(long cantonalId, @NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
+	public Organisation(long no, @NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
 	                    List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale, @NotNull List<DateRanged<Long>> sites,
 	                    @NotNull List<SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
 	                    List<DateRanged<Long>> remplacePar, List<DateRanged<Long>> enRemplacementDe) {
-		this.cantonalId = cantonalId;
+		this.no = no;
 		this.identifiants = identifiants;
 		this.nom = nom;
 		this.nomsAdditionels = nomsAdditionels;
@@ -44,8 +50,12 @@ public class Organisation {
 		this.enRemplacementDe = enRemplacementDe;
 	}
 
-	public long getCantonalId() {
-		return cantonalId;
+	/**
+	 *
+	 * @return Le numéro technique de l'organisation pour Unireg
+	 */
+	public long getNo() {
+		return no;
 	}
 
 	@NotNull

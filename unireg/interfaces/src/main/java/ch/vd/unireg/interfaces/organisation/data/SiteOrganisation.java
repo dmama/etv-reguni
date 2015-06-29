@@ -6,7 +6,10 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class SiteOrganisation {
-	private final long cantonalId;
+	/**
+	 * Le numéro technique du site pour Unireg
+	 */
+	private final long no;
 	@NotNull
 	private final List<DateRanged<String>> nom;
 
@@ -26,12 +29,12 @@ public class SiteOrganisation {
 	private final List<DateRanged<Long>> remplacePar;
 	private final List<DateRanged<Long>> enRemplacementDe;
 
-	public SiteOrganisation(long cantonalId, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
+	public SiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
 	                        Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
 	                        List<DateRanged<TypeDeSite>> typeDeSite, List<DateRanged<Integer>> siege,
 	                        List<DateRanged<Fonction>> fonction, List<DateRanged<Long>> remplacePar,
 	                        List<DateRanged<Long>> enRemplacementDe) {
-		this.cantonalId = cantonalId;
+		this.no = no;
 		this.nom = nom;
 		this.rc = rc;
 		this.ide = ide;
@@ -44,8 +47,12 @@ public class SiteOrganisation {
 		this.enRemplacementDe = enRemplacementDe;
 	}
 
-	public long getCantonalId() {
-		return cantonalId;
+	/**
+	 *
+	 * @return Le numéro technique du site pour Unireg
+	 */
+	public long getNo() {
+		return no;
 	}
 
 	public List<DateRanged<Long>> getEnRemplacementDe() {

@@ -20,6 +20,12 @@
 		<property name="serviceLogger" ref="serviceCivilLogger"/>
 	</bean>
 
+	<!-- Service Organisation -->
+
+	<bean id="serviceOrganisationService" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
+		<property name="target" ref="serviceOrganisationRaw"/>
+	</bean>
+
 	<!-- Service Securité -->
 
 	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">

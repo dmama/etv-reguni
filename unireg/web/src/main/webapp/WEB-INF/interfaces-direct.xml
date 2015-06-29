@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<!-- Ce fichier permet de configurer les services civils et infrastructure en mode direct, c'est-à-dire sans passer par le cache centralisé Nexus.
+	<!-- Ce fichier permet de configurer les services civils, infrastructure et organisation en mode direct, c'est-à-dire sans passer par le cache centralisé Nexus.
 	 L'idée est de permettre aux développeurs de travailler en débug sans devoir démarrage deux applications Java. -->
 
 	<!-- Client RcPers -->
@@ -64,6 +64,11 @@
 
 	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
+	</bean>
+
+	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
+		<property name="target" ref="serviceOrganisationRCEnt" />
+		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<!-- Service UPI -->
