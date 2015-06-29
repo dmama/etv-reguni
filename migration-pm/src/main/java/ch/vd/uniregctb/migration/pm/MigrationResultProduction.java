@@ -40,6 +40,5 @@ public interface MigrationResultProduction {
 	 * @param <T> le type de la donnée extraite
 	 * @return la donnée extraite
 	 */
-	@NotNull
 	<T> T getExtractedData(Class<T> clazz, EntityKey key);
 }

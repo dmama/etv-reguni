@@ -6,7 +6,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.Graphe;
@@ -20,7 +19,7 @@ import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 
 /**
- * Container d'extraction et cache de données (non-nulles !!!) depuis une entité RegPM
+ * Container d'extraction et cache de données depuis une entité RegPM
  * (il faut d'abord enregistrer les extracteurs - voir {@link #registerDataExtractor(Class, Function, Function, Function)} -
  * avant d'utiliser la méthode {@link #getExtractedData(Class, EntityKey)}
  */
@@ -64,10 +63,22 @@ public class ExtractedDataCache {
 	                                      @Nullable Function<? super RegpmEntreprise, ? extends D> entrepriseExtractor,
 	                                      @Nullable Function<? super RegpmEtablissement, ? extends D> etablissementExtractor,
 	                                      @Nullable Function<? super RegpmIndividu, ? extends D> individuExtractor) {
-		if (dataExtractionRegistrations.containsKey(dataClass)) {
-			throw new IllegalStateException("Classe " + dataClass.getName() + " déjà utilisée!");
+
+		if (entrepriseExtractor == null && etablissementExtractor == null && individuExtractor == null) {
+			throw new NullPointerException("Au moins un des extracteurs doit être fourni.");
 		}
-		dataExtractionRegistrations.put(dataClass, new DataExtractionRegistration<>(entrepriseExtractor, etablissementExtractor, individuExtractor));
+
+		//noinspection unchecked
+		final DataExtractionRegistration<D> existing = (DataExtractionRegistration<D>) dataExtractionRegistrations.get(dataClass);
+		final DataExtractionRegistration<D> newRegistration = new DataExtractionRegistration<>(entrepriseExtractor, etablissementExtractor, individuExtractor);
+		final DataExtractionRegistration<D> resulting;
+		if (existing != null) {
+			resulting = existing.merge(newRegistration);
+		}
+		else {
+			resulting = newRegistration;
+		}
+		dataExtractionRegistrations.put(dataClass, resulting);
 	}
 
 	/**
@@ -79,12 +90,11 @@ public class ExtractedDataCache {
 	 * @param <D> le type de la donnée extraite
 	 * @return la donnée extraite
 	 */
-	@NotNull
 	public <D> D getExtractedData(Class<D> clazz, EntityKey key) {
 		//noinspection unchecked
 		final DataExtractionRegistration<D> registration = (DataExtractionRegistration<D>) dataExtractionRegistrations.get(clazz);
 		if (registration == null) {
-			throw new IllegalArgumentException("Aucun extracteur n'a été enregistré pour la classe " + clazz.getName());
+			throw new IllegalStateException("Aucun extracteur n'a été enregistré pour la classe " + clazz.getName());
 		}
 
 		switch (key.getType()) {
@@ -99,7 +109,12 @@ public class ExtractedDataCache {
 		}
 	}
 
+	/**
+	 * Structure interne d'enregistrement d'un cache
+	 * @param <D> type de la donnée cachée
+	 */
 	private static final class DataExtractionRegistration<D> {
+
 		final Function<? super RegpmEntreprise, ? extends D> entrepriseExtractor;
 		final Function<? super RegpmEtablissement, ? extends D> etablissementExtractor;
 		final Function<? super RegpmIndividu, ? extends D> individuExtractor;
@@ -111,17 +126,42 @@ public class ExtractedDataCache {
 			this.etablissementExtractor = etablissementExtractor;
 			this.individuExtractor = individuExtractor;
 		}
+
+		/**
+		 * Fusionne les données d'enregistrement avec les nouvelles données fournies
+		 * @param autre les nouvelles données à fusionner
+		 * @return une nouvelle instance des données fusionnées
+		 * @throws IllegalArgumentException en cas de conflit sur les extracteurs fournis (il ne doit y en avoir qu'un seul par type !)
+		 */
+		public DataExtractionRegistration<D> merge(DataExtractionRegistration<D> autre) {
+			// petit blindage facile...
+			if (this == autre) {
+				return this;
+			}
+
+			if (entrepriseExtractor != null && autre.entrepriseExtractor != null && entrepriseExtractor != autre.entrepriseExtractor) {
+				throw new IllegalArgumentException("Deux extracteurs 'entreprise' en conflit.");
+			}
+			if (etablissementExtractor != null && autre.etablissementExtractor != null && etablissementExtractor != autre.etablissementExtractor) {
+				throw new IllegalArgumentException("Deux extracteurs 'établissement' en conflit.");
+			}
+			if (individuExtractor != null && autre.individuExtractor != null && individuExtractor != autre.individuExtractor) {
+				throw new IllegalArgumentException("Deux extracteurs 'individu' en conflit.");
+			}
+
+			return new DataExtractionRegistration<>(entrepriseExtractor != null ? entrepriseExtractor : autre.entrepriseExtractor,
+			                                        etablissementExtractor != null ? etablissementExtractor : autre.etablissementExtractor,
+			                                        individuExtractor != null ? individuExtractor : autre.individuExtractor);
+		}
 	}
 
 	private <S extends RegpmEntity & WithLongId, D> D getExtractedData(EntityKey key, Class<D> clazz, Supplier<S> entity, @Nullable Function<? super S, ? extends D> extractor) {
 		final Pair<EntityKey, Class<?>> cacheKey = Pair.of(key, clazz);
 
 		// la valeur a-t-elle déjà été extraite ?
-		//noinspection unchecked
-		final D cachedValue = (D) dataExtractionCache.get(cacheKey);
-		if (cachedValue != null) {
+		if (dataExtractionCache.containsKey(cacheKey)) {
 			//noinspection unchecked
-			return cachedValue;
+			return (D) dataExtractionCache.get(cacheKey);
 		}
 
 		// non, c'est la première fois que cette valeur est demandée -> il faut donc la calculer
@@ -133,10 +173,6 @@ public class ExtractedDataCache {
 
 		// calcul et sauvegarde pour la prochaine fois
 		final D data = extractor.apply(entity.get());
-		if (data == null) {
-			throw new NullPointerException("Les extracteurs de données cachées ne doivent jamais retourner null... (extracteur " + extractor + " avec entité " + key + ")");
-		}
-
 		dataExtractionCache.put(cacheKey, data);
 		return data;
 	}

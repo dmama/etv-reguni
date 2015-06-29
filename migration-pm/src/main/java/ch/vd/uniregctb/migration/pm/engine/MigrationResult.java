@@ -261,7 +261,6 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		extractedDataCache.registerDataExtractor(dataClass, entrepriseExtractor, etablissementExtractor, individuExtractor);
 	}
 
-	@NotNull
 	@Override
 	public <T> T getExtractedData(Class<T> clazz, EntityKey key) {
 		// on laisse faire le pro
