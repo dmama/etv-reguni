@@ -166,11 +166,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// on recherche également par l'entreprise, si jamais...
 		final RegpmEntreprise entreprise = etablissement.getEntreprise();
-		Organisation donneesEntreprises = null;
+		Organisation donneesEntreprise = null;
 		if (entreprise != null) {
 			final EntityKey entrepriseKey = EntityKey.of(entreprise);
 			final DonneesCiviles dce = doInContext(entrepriseKey, mr, () -> mr.getExtractedData(DonneesCiviles.class, entrepriseKey));
-			donneesEntreprises = dce != null ? dce.getOrganisation() : null;
+			donneesEntreprise = dce != null ? dce.getOrganisation() : null;
 		}
 
 		// si j'ai un identifiant cantonal, je peux demander l'info à RCEnt
@@ -178,8 +178,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		if (idCantonal != null) {
 
 			// si j'ai déjà les données de l'entreprise, je vais directement chercher les données là...
-			if (donneesEntreprises != null) {
-				donneesEtablissement = extractLocationInOrganisation(donneesEntreprises, idCantonal);
+			if (donneesEntreprise != null) {
+				donneesEtablissement = extractLocationInOrganisation(donneesEntreprise, idCantonal);
 			}
 			else {
 			    // pas de données d'entreprise, donc il faut demander à RCEnt les données de l'entreprise en passant par l'établissement
@@ -201,7 +201,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
 							}
 							else {
-								donneesEntreprises = complete;
+								donneesEntreprise = complete;
 								donneesEtablissement = extractLocationInOrganisation(complete, idCantonal);
 							}
 						}
@@ -221,7 +221,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// si on a des données, on les renvoie
 		// on ne peut avoir des données d'établissement que si on a des données d'entreprise
 		// il suffit donc de tester les données d'entreprise pour savoir si on a des données tout court
-		return donneesEntreprises != null ? new DonneesCiviles(donneesEntreprises, donneesEtablissement) : null;
+		return donneesEntreprise != null ? new DonneesCiviles(donneesEntreprise, donneesEtablissement) : null;
 	}
 
 	/**
