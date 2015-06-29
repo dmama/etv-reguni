@@ -29,6 +29,12 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="organisationChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="pmChangeEvent">
 		<xs:complexContent>
 			<xs:extension base="dataChangeEvent"/>
