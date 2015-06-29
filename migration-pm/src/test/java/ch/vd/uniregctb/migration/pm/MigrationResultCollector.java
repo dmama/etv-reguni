@@ -105,12 +105,12 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 	}
 
 	@Override
-	public <E extends LoggedElement> void setContextValue(Class<E> clazz, @NotNull E value) {
+	public <E extends LoggedElement> void pushContextValue(Class<E> clazz, @NotNull E value) {
 		context.put(clazz, value);
 	}
 
 	@Override
-	public <E extends LoggedElement> void resetContextValue(Class<E> clazz) {
+	public <E extends LoggedElement> void popContexteValue(Class<E> clazz) {
 		context.remove(clazz);
 	}
 

@@ -175,36 +175,36 @@ public class GrapheMigrator implements InitializingBean {
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		entreprises.forEach(e -> {
-			mr.setContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(e, activityManager.isActive(e)));
+			mr.pushContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(e, activityManager.isActive(e)));
 			try {
 				entrepriseMigrator.migrate(e, mr, linkCollector, idMapper);
 			}
 			finally {
-				mr.resetContextValue(EntrepriseLoggedElement.class);
+				mr.popContexteValue(EntrepriseLoggedElement.class);
 			}
 		});
 	}
 
 	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		etablissements.forEach(e -> {
-			mr.setContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(e));
+			mr.pushContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(e));
 			try {
 				etablissementMigrator.migrate(e, mr, linkCollector, idMapper);
 			}
 			finally {
-				mr.resetContextValue(EtablissementLoggedElement.class);
+				mr.popContexteValue(EtablissementLoggedElement.class);
 			}
 		});
 	}
 
 	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		individus.forEach(i -> {
-			mr.setContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(i));
+			mr.pushContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(i));
 			try {
 				individuMigrator.migrate(i, mr, linkCollector, idMapper);
 			}
 			finally {
-				mr.resetContextValue(IndividuLoggedElement.class);
+				mr.popContexteValue(IndividuLoggedElement.class);
 			}
 		});
 	}

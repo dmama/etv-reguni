@@ -111,12 +111,12 @@ public class StreetDataMigratorTest extends AbstractSpringTest {
 			for (final RegpmAdresseEntreprise adresse : adresses) {
 				completionService.submit(() -> {
 					final MigrationResultCollector mr = new MigrationResultCollector(new MockGraphe(null, null, null));
-					mr.setContextValue(AdresseLoggedElement.class, new AdresseLoggedElement(adresse));
+					mr.pushContextValue(AdresseLoggedElement.class, new AdresseLoggedElement(adresse));
 					try {
 						return new Data(migrator.migrate(adresse, mr), adresse.getId());
 					}
 					finally {
-						mr.resetContextValue(AdresseLoggedElement.class);
+						mr.popContexteValue(AdresseLoggedElement.class);
 					}
 				});
 				++ envoyees;

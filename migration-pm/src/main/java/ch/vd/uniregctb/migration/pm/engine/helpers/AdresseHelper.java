@@ -37,7 +37,7 @@ public class AdresseHelper {
 			return null;
 		}
 
-		mr.setContextValue(AdresseLoggedElement.class, new AdresseLoggedElement(source));
+		mr.pushContextValue(AdresseLoggedElement.class, new AdresseLoggedElement(source));
 		try {
 			final StreetData streetData = streetDataMigrator.migrate(source, mr);
 			final AdresseSupplementaire dest;
@@ -61,7 +61,7 @@ public class AdresseHelper {
 			return dest;
 		}
 		finally {
-			mr.resetContextValue(AdresseLoggedElement.class);
+			mr.popContexteValue(AdresseLoggedElement.class);
 		}
 	}
 

@@ -239,13 +239,13 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	//
 
 	@Override
-	public <E extends LoggedElement> void setContextValue(Class<E> clazz, @NotNull E value) {
-		currentContext.setContextValue(clazz, value);
+	public <E extends LoggedElement> void pushContextValue(Class<E> clazz, @NotNull E value) {
+		currentContext.pushContextValue(clazz, value);
 	}
 
 	@Override
-	public <E extends LoggedElement> void resetContextValue(Class<E> clazz) {
-		currentContext.resetContextValue(clazz);
+	public <E extends LoggedElement> void popContexteValue(Class<E> clazz) {
+		currentContext.popContextValue(clazz);
 	}
 
 	//

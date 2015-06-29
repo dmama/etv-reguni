@@ -311,32 +311,32 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	protected void doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
-		addEntityToContext(contextEntityKey, mr);
+		pushEntityToContext(contextEntityKey, mr);
 		try {
 			action.run();
 		}
 		finally {
-			resetEntityContext(contextEntityKey, mr);
+			popEntityFromContext(contextEntityKey, mr);
 		}
 	}
 
-	private void addEntityToContext(EntityKey key, MigrationResultContextManipulation mr) {
+	private void pushEntityToContext(EntityKey key, MigrationResultContextManipulation mr) {
 		final Graphe graphe = mr.getCurrentGraphe();
 
 		switch (key.getType()) {
 		case ENTREPRISE: {
 			final RegpmEntreprise entreprise = graphe.getEntreprises().get(key.getId());
-			mr.setContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(entreprise, activityManager));
+			mr.pushContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(entreprise, activityManager));
 			break;
 		}
 		case ETABLISSEMENT: {
 			final RegpmEtablissement etablissement = graphe.getEtablissements().get(key.getId());
-			mr.setContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(etablissement));
+			mr.pushContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(etablissement));
 			break;
 		}
 		case INDIVIDU: {
 			final RegpmIndividu individu = graphe.getIndividus().get(key.getId());
-			mr.setContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(individu));
+			mr.pushContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(individu));
 			break;
 		}
 		default:
@@ -344,16 +344,16 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 	}
 
-	private void resetEntityContext(EntityKey key, MigrationResultContextManipulation mr) {
+	private void popEntityFromContext(EntityKey key, MigrationResultContextManipulation mr) {
 		switch (key.getType()) {
 		case ENTREPRISE:
-			mr.resetContextValue(EntrepriseLoggedElement.class);
+			mr.popContexteValue(EntrepriseLoggedElement.class);
 			break;
 		case ETABLISSEMENT:
-			mr.resetContextValue(EtablissementLoggedElement.class);
+			mr.popContexteValue(EtablissementLoggedElement.class);
 			break;
 		case INDIVIDU:
-			mr.resetContextValue(IndividuLoggedElement.class);
+			mr.popContexteValue(IndividuLoggedElement.class);
 			break;
 		default:
 			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
