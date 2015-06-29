@@ -8,7 +8,6 @@ import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.unireg.wsclient.rcent.RcEntClientException;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
-import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
 /**
  * Adapteur / abstraction de service pour RC-ENT. Expose les requêtes dont nous avons besoin.
@@ -65,9 +64,9 @@ public class RCEntAdapter {
 	 * @param id
 	 * @return
 	 */
-    public OrganisationLocation getLocation(Long id) {
+    public Organisation getLocation(Long id) {
 	    OrganisationData data = rcentClient.getOrganisation(id, RegDate.get(), false);
-	    return historizer.mapOrganisation(data.getOrganisationSnapshot()).getLocationData().stream().findFirst().orElse(null);
+	    return historizer.mapOrganisation(data.getOrganisationSnapshot());
     }
 
 	/**
@@ -79,9 +78,9 @@ public class RCEntAdapter {
 	 * @param date
 	 * @return
 	 */
-	public OrganisationLocation getLocation(Long id, RegDate date) {
+	public Organisation getLocation(Long id, RegDate date) {
 		OrganisationData data = rcentClient.getOrganisation(id, date, false);
-		return historizer.mapOrganisation(data.getOrganisationSnapshot()).getLocationData().stream().findFirst().orElse(null);
+		return historizer.mapOrganisation(data.getOrganisationSnapshot());
 	}
 
 	/**
@@ -92,9 +91,9 @@ public class RCEntAdapter {
 	 * @param id
 	 * @return
 	 */
-	public OrganisationLocation getLocationHistory(Long id) {
+	public Organisation getLocationHistory(Long id) {
 		OrganisationData data = rcentClient.getOrganisation(id, null, true);
-		return historizer.mapOrganisation(data.getOrganisationSnapshot()).getLocationData().stream().findFirst().orElse(null);
+		return historizer.mapOrganisation(data.getOrganisationSnapshot());
 	}
 
 	/**
