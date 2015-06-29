@@ -310,14 +310,21 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 	}
 
-	protected void doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
+	protected <D> D doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Supplier<D> action) {
 		pushEntityToContext(contextEntityKey, mr);
 		try {
-			action.run();
+			return action.get();
 		}
 		finally {
 			popEntityFromContext(contextEntityKey, mr);
 		}
+	}
+
+	protected void doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
+		doInContext(contextEntityKey, mr, () -> {
+			action.run();
+			return null;
+		});
 	}
 
 	private void pushEntityToContext(EntityKey key, MigrationResultContextManipulation mr) {

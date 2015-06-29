@@ -52,6 +52,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
@@ -185,10 +186,47 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// données "cachées" sur les entreprises
 		//
 		
+		// les fors principaux non-ignorés
 		mr.registerDataExtractor(ForsPrincipauxData.class,
 		                         e -> extractForsPrincipaux(e, mr),
 		                         null,
 		                         null);
+
+		// les données qui viennent du civil
+		mr.registerDataExtractor(DonneesCiviles.class,
+		                         e -> extractDonneesCiviles(e, mr),
+		                         null,
+		                         null);
+	}
+
+	/**
+	 * Appel de RCEnt pour les données de l'entreprise
+	 * @param e entreprise de RegPM
+	 * @param mr le collecteur de messages de suivi
+	 * @return les données civiles collectées (peut être <code>null</code> si l'entreprise n'a pas de pendant civil)
+	 */
+	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultProduction mr) {
+		final Long idCantonal = e.getNumeroCantonal();
+		if (idCantonal == null) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
+			return null;
+		}
+
+		try {
+			final Organisation org = rcEntAdapter.getOrganisation(idCantonal);
+			if (org != null) {
+				return new DonneesCiviles(org);
+			}
+
+			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cette entreprise.");
+		}
+		catch (Exception ex) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'entreprise.");
+			LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'entreprise dont l'ID cantonal est " + idCantonal, ex);
+		}
+
+		// rien trouvé -> on ignore les erreurs RCEnt
+		return null;
 	}
 
 	/**
@@ -437,24 +475,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
+
 		// Récupération des données civiles si elles existent
 		Organisation rcent = null;
 		// TODO à réactiver quand on se branchera vraiment sur RCEnt
 		if (false) {
-			// TODO: Déterminer si le numéro cantonal existe dans RegPM. S'il n'existe pas, migration directe des données civiles.
-			if (regpm.getNumeroCantonal() != null) {
-				// Accès à RCEnt au moyen du numéro cantonal. Une exception est lancée s'il n'existe pas dans RCEnt
-				try {
-					rcent = rcEntAdapter.getOrganisation(regpm.getNumeroCantonal());
-				}
-				catch (Exception e) {
-					LOGGER.error("Erreur lors de l'accès à l'organisation " + regpm.getNumeroCantonal() + " dans RCEnt", e);
-					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Organisation %d non-renvoyée par RCEnt.", regpm.getNumeroCantonal()));
-				}
+			final DonneesCiviles donneesCiviles = mr.getExtractedData(DonneesCiviles.class, moi.getKey());
+			if (donneesCiviles != null) {
+				rcent = donneesCiviles.getOrganisation();
 			}
 		}
-
-		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
 
 		// enregistrement de cette entreprise pour un contrôle final des fors secondaires (une fois que tous les immeubles et établissements ont été visés)
 		mr.addPreTransactionCommitData(new ControleForsSecondairesData(regpm.getForsSecondaires(), moi));
