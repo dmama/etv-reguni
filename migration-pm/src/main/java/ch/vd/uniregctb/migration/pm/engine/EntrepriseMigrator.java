@@ -224,8 +224,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cette entreprise.");
 			}
 			catch (Exception ex) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'entreprise.");
-				LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'entreprise dont l'ID cantonal est " + idCantonal, ex);
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'interrogation de RCEnt pour l'entreprise.");
+				LOGGER.error("Exception lancée lors de l'interrogation de RCEnt pour l'entreprise dont l'ID cantonal est " + idCantonal, ex);
 			}
 
 			// rien trouvé -> on ignore les erreurs RCEnt

@@ -209,14 +209,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 								}
 							}
 							catch (Exception e) {
-								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Erreur rencontrée lors de l'intérogation de RCEnt pour l'organisation %d.", partielleCantonalId));
-								LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'organisation dont l'ID cantonal est " + partielleCantonalId, e);
+								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Erreur rencontrée lors de l'interrogation de RCEnt pour l'organisation %d.", partielleCantonalId));
+								LOGGER.error("Exception lancée lors de l'interrogation de RCEnt pour l'organisation dont l'ID cantonal est " + partielleCantonalId, e);
 							}
 						}
 					}
 					catch (Exception e) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'établissement.");
-						LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'établissement dont l'ID cantonal est " + idCantonal, e);
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'interrogation de RCEnt pour l'établissement.");
+						LOGGER.error("Exception lancée lors de l'interrogation de RCEnt pour l'établissement dont l'ID cantonal est " + idCantonal, e);
 					}
 				}
 			}
