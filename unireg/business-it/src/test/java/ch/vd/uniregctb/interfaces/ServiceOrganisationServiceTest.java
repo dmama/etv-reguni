@@ -23,7 +23,7 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 	@Test
 	public void testGetOrganisation() throws Exception {
 
-		Organisation org = service.getOrganisation(101202100L);
+		Organisation org = service.getOrganisationHistory(101202100L);
 		assertNotNull(org);
 		assertContains("Springbok Ski Tours", org.getNom().get(0).getPayload());
 	}
