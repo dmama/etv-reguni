@@ -183,10 +183,10 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			}
 			else {
 			    // pas de données d'entreprise, donc il faut demander à RCEnt les données de l'entreprise en passant par l'établissement
-				// (ici, on fait sciemment un appel à getOrganisation avec un numéro d'établissement... il est prévu que dans ce cas, RCEnt
-				// nous renvoie les données partielles de l'entreprise (mais son identifiant y est !)
+				// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
+				// obtenir l'entreprise complète)
 				try {
-					final Organisation partielle = rcEntAdapter.getOrganisation(idCantonal);
+					final Organisation partielle = rcEntAdapter.getLocation(idCantonal);
 					if (partielle == null) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
 					}
