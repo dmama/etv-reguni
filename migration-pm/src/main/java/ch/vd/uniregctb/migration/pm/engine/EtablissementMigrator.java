@@ -155,83 +155,87 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	/**
 	 * Appel de RCEnt pour les données de l'établissement
 	 * @param etablissement établissement de RegPM
-	 * @param mr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si ni l'établissement ni son entreprise n'a pas de pendant civil)
 	 */
 	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr) {
-		final Long idCantonal = etablissement.getNumeroCantonal();
-		if (idCantonal == null) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
-		}
+		final EntityKey etablissementKey = EntityKey.of(etablissement);
+		return doInLogContext(etablissementKey, mr, () -> {
 
-		// on recherche également par l'entreprise, si jamais...
-		final RegpmEntreprise entreprise = etablissement.getEntreprise();
-		Organisation donneesEntreprise = null;
-		if (entreprise != null) {
-			final EntityKey entrepriseKey = EntityKey.of(entreprise);
-			final DonneesCiviles dce = doInContext(entrepriseKey, mr, () -> mr.getExtractedData(DonneesCiviles.class, entrepriseKey));
-			donneesEntreprise = dce != null ? dce.getOrganisation() : null;
-		}
-
-		// si j'ai un identifiant cantonal, je peux demander l'info à RCEnt
-		OrganisationLocation donneesEtablissement = null;
-		if (idCantonal != null) {
-
-			// si j'ai déjà les données de l'entreprise, je vais directement chercher les données là...
-			if (donneesEntreprise != null) {
-				donneesEtablissement = extractLocationInOrganisation(donneesEntreprise, idCantonal);
+			final Long idCantonal = etablissement.getNumeroCantonal();
+			if (idCantonal == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
 			}
-			else {
-			    // pas de données d'entreprise, donc il faut demander à RCEnt les données de l'entreprise en passant par l'établissement
-				// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
-				// obtenir l'entreprise complète)
-				try {
-					final Organisation partielle = rcEntAdapter.getLocation(idCantonal);
-					if (partielle == null) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
-					}
-					else {
-						final long partielleCantonalId = partielle.getCantonalId();
-						mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement lié à l'organisation RCEnt %d.", partielleCantonalId));
 
-						// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
-						try {
-							final Organisation complete = rcEntAdapter.getOrganisation(partielleCantonalId);
-							if (complete == null) {
-								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
+			// on recherche également par l'entreprise, si jamais...
+			final RegpmEntreprise entreprise = etablissement.getEntreprise();
+			Organisation donneesEntreprise = null;
+			if (entreprise != null) {
+				final EntityKey entrepriseKey = EntityKey.of(entreprise);
+				final DonneesCiviles dce = mr.getExtractedData(DonneesCiviles.class, entrepriseKey);
+				donneesEntreprise = dce != null ? dce.getOrganisation() : null;
+			}
+
+			// si j'ai un identifiant cantonal, je peux demander l'info à RCEnt
+			OrganisationLocation donneesEtablissement = null;
+			if (idCantonal != null) {
+
+				// si j'ai déjà les données de l'entreprise, je vais directement chercher les données là...
+				if (donneesEntreprise != null) {
+					donneesEtablissement = extractLocationInOrganisation(donneesEntreprise, idCantonal);
+				}
+				else {
+					// pas de données d'entreprise, donc il faut demander à RCEnt les données de l'entreprise en passant par l'établissement
+					// (ici, on récupère sciemment une organisation partielle depuis le numéro d'établissement... et on rappelle ensuite pour
+					// obtenir l'entreprise complète)
+					try {
+						final Organisation partielle = rcEntAdapter.getLocation(idCantonal);
+						if (partielle == null) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cet établissement.");
+						}
+						else {
+							final long partielleCantonalId = partielle.getCantonalId();
+							mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement lié à l'organisation RCEnt %d.", partielleCantonalId));
+
+							// on a une organisation partielle -> il faut rappeler RCEnt pour avoir une vue complète
+							try {
+								final Organisation complete = rcEntAdapter.getOrganisation(partielleCantonalId);
+								if (complete == null) {
+									mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Aucune donnée renvoyée par RCEnt pour l'organisation %d.", partielleCantonalId));
+								}
+								else {
+									donneesEntreprise = complete;
+									donneesEtablissement = extractLocationInOrganisation(complete, idCantonal);
+								}
 							}
-							else {
-								donneesEntreprise = complete;
-								donneesEtablissement = extractLocationInOrganisation(complete, idCantonal);
+							catch (Exception e) {
+								mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Erreur rencontrée lors de l'intérogation de RCEnt pour l'organisation %d.", partielleCantonalId));
+								LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'organisation dont l'ID cantonal est " + partielleCantonalId, e);
 							}
 						}
-						catch (Exception e) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Erreur rencontrée lors de l'intérogation de RCEnt pour l'organisation %d.", partielleCantonalId));
-							LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'organisation dont l'ID cantonal est " + partielleCantonalId, e);
-						}
+					}
+					catch (Exception e) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'établissement.");
+						LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'établissement dont l'ID cantonal est " + idCantonal, e);
 					}
 				}
-				catch (Exception e) {
-					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'établissement.");
-					LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'établissement dont l'ID cantonal est " + idCantonal, e);
-				}
 			}
-		}
 
-		// si on a des données, on les renvoie
-		// on ne peut avoir des données d'établissement que si on a des données d'entreprise
-		// il suffit donc de tester les données d'entreprise pour savoir si on a des données tout court
-		return donneesEntreprise != null ? new DonneesCiviles(donneesEntreprise, donneesEtablissement) : null;
+			// si on a des données, on les renvoie
+			// on ne peut avoir des données d'établissement que si on a des données d'entreprise
+			// il suffit donc de tester les données d'entreprise pour savoir si on a des données tout court
+			return donneesEntreprise != null ? new DonneesCiviles(donneesEntreprise, donneesEtablissement) : null;
+		});
 	}
 
 	/**
 	 * Appelé pour la consolidation des données de fors secondaires par entité juridique
 	 * @param data les données collectées pour une entité juridique
-	 * @param mr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 */
 	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		doInContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, () -> {
 			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 

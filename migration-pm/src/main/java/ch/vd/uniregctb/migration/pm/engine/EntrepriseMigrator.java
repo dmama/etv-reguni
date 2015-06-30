@@ -202,83 +202,90 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Appel de RCEnt pour les données de l'entreprise
 	 * @param e entreprise de RegPM
-	 * @param mr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si l'entreprise n'a pas de pendant civil)
 	 */
-	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultProduction mr) {
-		final Long idCantonal = e.getNumeroCantonal();
-		if (idCantonal == null) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
-			return null;
-		}
+	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = EntityKey.of(e);
+		return doInLogContext(entrepriseKey, mr, () -> {
 
-		try {
-			final Organisation org = rcEntAdapter.getOrganisation(idCantonal);
-			if (org != null) {
-				return new DonneesCiviles(org);
+			final Long idCantonal = e.getNumeroCantonal();
+			if (idCantonal == null) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
+				return null;
 			}
 
-			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cette entreprise.");
-		}
-		catch (Exception ex) {
-			mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'entreprise.");
-			LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'entreprise dont l'ID cantonal est " + idCantonal, ex);
-		}
+			try {
+				final Organisation org = rcEntAdapter.getOrganisation(idCantonal);
+				if (org != null) {
+					return new DonneesCiviles(org);
+				}
 
-		// rien trouvé -> on ignore les erreurs RCEnt
-		return null;
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Aucune donnée renvoyée par RCEnt pour cette entreprise.");
+			}
+			catch (Exception ex) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Erreur rencontrée lors de l'intérogation de RCEnt pour l'entreprise.");
+				LOGGER.error("Exception lancée lors de l'intérogation de RCEnt pour l'entreprise dont l'ID cantonal est " + idCantonal, ex);
+			}
+
+			// rien trouvé -> on ignore les erreurs RCEnt
+			return null;
+		});
 	}
 
 	/**
 	 * Extraction des fors principaux valides d'une entreprise de RegPM (en particulier, on blinde le
 	 * cas de fors multiples à la même date ete des fors sans date de début)
 	 * @param regpm l'entreprise cible
-	 * @param mr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return un container des fors principaux valides de l'entreprise
 	 */
 	@NotNull
-	private static ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultProduction mr) {
+	private ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = EntityKey.of(regpm);
+		return doInLogContext(entrepriseKey, mr, () -> {
 
-		final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
-				.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
-				                          Collections::singletonList,
-				                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
+			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
+					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
+					                          Collections::singletonList,
+					                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
 
-		final List<RegpmForPrincipal> liste = forsParDate.entrySet().stream()
-				.filter(entry -> !entry.getValue().isEmpty())
-				.map(entry -> {
-					final List<RegpmForPrincipal> fors = entry.getValue();
-					if (fors.size() > 1) {
-						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-						              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte.",
-						                            fors.size(),
-						                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
-					}
+			final List<RegpmForPrincipal> liste = forsParDate.entrySet().stream()
+					.filter(entry -> !entry.getValue().isEmpty())
+					.map(entry -> {
+						final List<RegpmForPrincipal> fors = entry.getValue();
+						if (fors.size() > 1) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte.",
+							                            fors.size(),
+							                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+						}
 
-					// dans le set d'entrée, les fors sont triés... (à date égale, par numéro de séquence)
-					// -> le dernier de la liste ici est celui que l'on veut conserver
-					return fors.get(fors.size() - 1);
-				})
-				.filter(ff -> {
-					if (ff.getDateValidite() == null) {
-						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-						              String.format("Le for principal %s est ignoré car il a une date de début nulle.", ff.getId()));
-						return false;
-					}
-					return true;
-				})
-				.collect(Collectors.toList());
+						// dans le set d'entrée, les fors sont triés... (à date égale, par numéro de séquence)
+						// -> le dernier de la liste ici est celui que l'on veut conserver
+						return fors.get(fors.size() - 1);
+					})
+					.filter(ff -> {
+						if (ff.getDateValidite() == null) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("Le for principal %s est ignoré car il a une date de début nulle.", ff.getId()));
+							return false;
+						}
+						return true;
+					})
+					.collect(Collectors.toList());
 
-		return new ForsPrincipauxData(liste);
+			return new ForsPrincipauxData(liste);
+		});
 	}
 
 	/**
 	 * @param data donnée d'identification de l'entreprise dont la couverture des fors est à contrôler
-	 * @param mr collecteur de message de suivi
+	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
 	 */
 	private void controleCouvertureFors(CouvertureForsData data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
-		doInContext(keyEntreprise, mr, () -> {
+		doInLogContext(keyEntreprise, mr, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			final ForsParType fpt = entreprise.getForsParType(true);
 			if (!fpt.secondaires.isEmpty()) {
@@ -302,7 +309,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							                                       MotifRattachement.DOMICILE))
 							.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
 							.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.", StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
+							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.",
+							                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
 							.forEach(entreprise::addForFiscal);
 
 					// on va forcer le re-calcul des motifs
@@ -315,11 +323,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Consolidation de toutes les migrations de PM par rapport au contrôle final des fors secondaires
 	 * @param data données de l'entreprise
-	 * @param mr collecteur de messages de suivi
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
 	 */
 	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entrepriseSupplier.getKey();
-		doInContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 
 			// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
@@ -419,11 +427,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Consolidation de toutes les demandes de créations de fors secondaires "immeuble" pour une PM
 	 * @param data les données consolidées des communes/dates sur lesquels les fors doivent être créés
-	 * @param mr le collecteur de messages de suivi
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 */
 	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultContextManipulation mr) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		doInContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, () -> {
 			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 

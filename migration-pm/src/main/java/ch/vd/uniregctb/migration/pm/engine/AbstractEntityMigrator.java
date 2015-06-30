@@ -310,24 +310,38 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 	}
 
-	protected <D> D doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Supplier<D> action) {
-		pushEntityToContext(contextEntityKey, mr);
+	/**
+	 * Exécute l'action donnée dans un contexte de log contenant les données de l'entité (entreprise, établissement, individu) fournie
+	 * @param contextEntityKey entité dont les données doivent être temporairement poussées sur le contexte de log
+	 * @param mr collecteur de messages de suivis et manipulateur de contextes de log
+	 * @param action action à lancer
+	 * @param <D> type de résultat retourné par l'action
+	 * @return la donnée retournée par l'action
+	 */
+	protected <D> D doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Supplier<D> action) {
+		pushEntityToLogContext(contextEntityKey, mr);
 		try {
 			return action.get();
 		}
 		finally {
-			popEntityFromContext(contextEntityKey, mr);
+			popEntityFromLogContext(contextEntityKey, mr);
 		}
 	}
 
-	protected void doInContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
-		doInContext(contextEntityKey, mr, () -> {
+	/**
+	 * Exécute l'action donnée dans un contexte de log contenant les données de l'entité (entreprise, établissement, individu) fournie
+	 * @param contextEntityKey entité dont les données doivent être temporairement poussées sur le contexte de log
+	 * @param mr collecteur de messages de suivis et manipulateur de contextes de log
+	 * @param action action à lancer
+	 */
+	protected void doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
+		doInLogContext(contextEntityKey, mr, () -> {
 			action.run();
 			return null;
 		});
 	}
 
-	private void pushEntityToContext(EntityKey key, MigrationResultContextManipulation mr) {
+	private void pushEntityToLogContext(EntityKey key, MigrationResultContextManipulation mr) {
 		final Graphe graphe = mr.getCurrentGraphe();
 
 		switch (key.getType()) {
@@ -351,7 +365,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 	}
 
-	private void popEntityFromContext(EntityKey key, MigrationResultContextManipulation mr) {
+	private void popEntityFromLogContext(EntityKey key, MigrationResultContextManipulation mr) {
 		switch (key.getType()) {
 		case ENTREPRISE:
 			mr.popContexteValue(EntrepriseLoggedElement.class);
