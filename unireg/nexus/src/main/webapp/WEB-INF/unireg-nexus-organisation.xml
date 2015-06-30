@@ -22,7 +22,7 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilOrganisationCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceOrganisationPersistentCache">
+	<bean id="serviceCivilOrganisationCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceOrganisationPersistentCache">
 		<property name="target" ref="serviceOrganisationTracing" />
 		<property name="cache" ref="organisationBerkeleyCache" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />

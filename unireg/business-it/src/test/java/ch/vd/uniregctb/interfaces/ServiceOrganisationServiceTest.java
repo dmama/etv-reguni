@@ -17,7 +17,7 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		service = getBean(ServiceOrganisationService.class, "ServiceOrganisationService");
+		service = getBean(ServiceOrganisationService.class, "serviceOrganisationService");
 	}
 
 	@Test

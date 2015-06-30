@@ -73,10 +73,10 @@
 	<!-- Client RCEnt -->
 
 	<bean id="rcEntClientRaw" class="ch.vd.unireg.wsclient.rcent.RcEntClientImpl">
-		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
-		<property name="username" value="${extprop.webservice.rcent.username}"/>
-		<property name="password" value="${extprop.webservice.rcent.password}"/>
-		<property name="organisationPath" value="organisation/ct.vd.party"/>
+		<property name="baseUrl" value="${testprop.webservice.rcent.url}"/>
+		<property name="username" value="${testprop.webservice.rcent.username}"/>
+		<property name="password" value="${testprop.webservice.rcent.password}"/>
+		<property name="organisationPath" value="organisation/CT.VD.PARTY"/>
 		<property name="organisationsOfNoticePath" value="organisationsOfNotice"/>
 	</bean>
 

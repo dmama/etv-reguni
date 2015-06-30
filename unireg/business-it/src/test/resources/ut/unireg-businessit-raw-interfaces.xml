@@ -37,7 +37,6 @@
 	</bean>
 
 	<!-- TODO: Definir un cache? -->
-
 	<alias alias="serviceOrganisationRaw" name="serviceOrganisationServiceTracing"/>
 
 	<!-- Service UPI -->

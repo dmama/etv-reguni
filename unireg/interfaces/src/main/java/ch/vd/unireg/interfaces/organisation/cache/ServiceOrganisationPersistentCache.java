@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.civil.cache;
+package ch.vd.unireg.interfaces.organisation.cache;
 
 import java.util.Objects;
 
