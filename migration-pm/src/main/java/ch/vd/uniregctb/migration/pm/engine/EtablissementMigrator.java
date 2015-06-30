@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +160,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @return les données civiles collectées (peut être <code>null</code> si ni l'établissement ni son entreprise n'a pas de pendant civil)
 	 */
 	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr) {
-		final EntityKey etablissementKey = EntityKey.of(etablissement);
+		final EntityKey etablissementKey = buildEtablissementKey(etablissement);
 		return doInLogContext(etablissementKey, mr, () -> {
 
 			final Long idCantonal = etablissement.getNumeroCantonal();
@@ -171,7 +172,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			final RegpmEntreprise entreprise = etablissement.getEntreprise();
 			Organisation donneesEntreprise = null;
 			if (entreprise != null) {
-				final EntityKey entrepriseKey = EntityKey.of(entreprise);
+				final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 				final DonneesCiviles dce = mr.getExtractedData(DonneesCiviles.class, entrepriseKey);
 				donneesEntreprise = dce != null ? dce.getOrganisation() : null;
 			}
@@ -280,8 +281,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		return unireg;
 	}
 
+	@NotNull
 	@Override
-	public void migrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected EntityKey buildEntityKey(RegpmEtablissement entity) {
+		return buildEtablissementKey(entity);
+	}
+
+	@Override
+	public void doMigrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement

@@ -206,7 +206,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return les données civiles collectées (peut être <code>null</code> si l'entreprise n'a pas de pendant civil)
 	 */
 	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultContextManipulation mr) {
-		final EntityKey entrepriseKey = EntityKey.of(e);
+		final EntityKey entrepriseKey = buildEntrepriseKey(e);
 		return doInLogContext(entrepriseKey, mr, () -> {
 
 			final Long idCantonal = e.getNumeroCantonal();
@@ -242,7 +242,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	@NotNull
 	private ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultContextManipulation mr) {
-		final EntityKey entrepriseKey = EntityKey.of(regpm);
+		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
 		return doInLogContext(entrepriseKey, mr, () -> {
 
 			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
@@ -391,7 +391,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static RegDate getDateDebutActivite(RegpmEntreprise regpm, MigrationResultProduction mr) {
 		// TODO faut-il bien prendre la date de début du premier for principal ???
-		return mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get().stream()
+		return mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get().stream()
 				.map(RegpmForPrincipal::getDateValidite)
 				.min(NullDateBehavior.LATEST::compare)
 				.orElse(null);
@@ -467,8 +467,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		});
 	}
 
+	@NotNull
 	@Override
-	public void migrate(RegpmEntreprise regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected EntityKey buildEntityKey(RegpmEntreprise entity) {
+		return buildEntrepriseKey(entity);
+	}
+
+	@Override
+	public void doMigrate(RegpmEntreprise regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
 			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ? <- Genevois
@@ -483,7 +489,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		idMapper.addEntreprise(regpm, unireg);
 
-		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(buildEntrepriseKey(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
 
 		// Récupération des données civiles si elles existent
 		Organisation rcent = null;
@@ -582,7 +588,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		else {
 			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
-			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get();
+			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get();
 			if (!forsPrincipaux.isEmpty()) {
 
 				// pas besoin de faire de merge (voir l'exception lancée plus bas) car la liste extraite est, par construction, fiable
@@ -986,7 +992,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		};
 
 		// récupération des fors principaux valides
-		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, EntityKey.of(regpm)).get();
+		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get();
 
 		// puis la migration, justement
 		final List<ForFiscalPrincipalPM> liste = forsRegpm.stream()
@@ -1067,7 +1073,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateImmeubles(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 		// les fors secondaires devront être créés sur l'entreprise migrée
-		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(EntityKey.of(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
+		final KeyedSupplier<Entreprise> moi = new KeyedSupplier<>(buildEntrepriseKey(regpm), getEntrepriseByUniregIdSupplier(unireg.getId()));
 
 		// les immeubles en possession directe
 		final Map<RegpmCommune, List<DateRange>> mapDirecte = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());

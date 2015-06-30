@@ -26,6 +26,7 @@ import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
@@ -219,17 +220,17 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
 		if (entreprise != null) {
-			return new KeyedSupplier<>(EntityKey.of(entreprise), getEntrepriseByRegpmIdSupplier(idMapper, entreprise.getId()));
+			return new KeyedSupplier<>(buildEntrepriseKey(entreprise), getEntrepriseByRegpmIdSupplier(idMapper, entreprise.getId()));
 		}
 
 		final RegpmEtablissement etablissement = etablissementSupplier != null ? etablissementSupplier.get() : null;
 		if (etablissement != null) {
-			return new KeyedSupplier<>(EntityKey.of(etablissement), getEtablissementByRegpmIdSupplier(idMapper, etablissement.getId()));
+			return new KeyedSupplier<>(buildEtablissementKey(etablissement), getEtablissementByRegpmIdSupplier(idMapper, etablissement.getId()));
 		}
 
 		final RegpmIndividu individu = individuSupplier != null ? individuSupplier.get() : null;
 		if (individu != null) {
-			return new KeyedSupplier<>(EntityKey.of(individu), getIndividuByRegpmIdSupplier(idMapper, individu.getId()));
+			return new KeyedSupplier<>(buildIndividuKey(individu), getIndividuByRegpmIdSupplier(idMapper, individu.getId()));
 		}
 
 		return null;
@@ -308,6 +309,66 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.ERROR, e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Point d'entrée de la migration d'une entité
+	 * @param entity entité à migrer
+	 * @param mr récipiendaire de messages à logguer
+	 * @param linkCollector collecteur de liens entre entités (seront résolus à la fin de la migration)
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 */
+	@Override
+	public final void migrate(T entity, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		final EntityKey entityKey = buildEntityKey(entity);
+		doInLogContext(entityKey, mr, () -> doMigrate(entity, mr, linkCollector, idMapper));
+	}
+
+	/**
+	 * A implémenter dans les classes dérivées pour le réel travail de migration
+	 * @param entity entité à migrer
+	 * @param mr collecteur des messages de suivi et manipulateur de contexte de log
+	 * @param linkCollector collecteur de liens entre entités
+	 * @param idMapper mapper des identifiants regpm -> unireg
+	 */
+	protected abstract void doMigrate(T entity, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper);
+
+	/**
+	 * Construit une clé à partir de l'entité migrée
+	 * @param entity entité à migrer
+	 * @return clé pour l'entité
+	 */
+	@NotNull
+	protected abstract EntityKey buildEntityKey(T entity);
+
+	/**
+	 * Génère une clé pour une entreprise de RegPM
+	 * @param entreprise entreprise de RegPM
+	 * @return la clé associée
+	 */
+	@NotNull
+	protected static EntityKey buildEntrepriseKey(RegpmEntreprise entreprise) {
+		return EntityKey.of(entreprise);
+	}
+
+	/**
+	 * Génère une clé pour un établissement de RegPM
+	 * @param etablissement établissement de RegPM
+	 * @return la clé associée
+	 */
+	@NotNull
+	protected static EntityKey buildEtablissementKey(RegpmEtablissement etablissement) {
+		return EntityKey.of(etablissement);
+	}
+
+	/**
+	 * Génère une clé pour un individu de RegPM
+	 * @param individu individu de RegPM
+	 * @return la clé associée
+	 */
+	@NotNull
+	protected static EntityKey buildIndividuKey(RegpmIndividu individu) {
+		return EntityKey.of(individu);
 	}
 
 	/**

@@ -18,9 +18,6 @@ import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
-import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
-import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
@@ -44,7 +41,6 @@ public class GrapheMigrator implements InitializingBean {
 	private PlatformTransactionManager uniregTransactionManager;
 	private UniregStore uniregStore;
 	private ValidationInterceptor validationInterceptor;
-	private ActivityManager activityManager;
 
 	private IdMapper idMapper;
 
@@ -74,10 +70,6 @@ public class GrapheMigrator implements InitializingBean {
 
 	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
 		this.validationInterceptor = validationInterceptor;
-	}
-
-	public void setActivityManager(ActivityManager activityManager) {
-		this.activityManager = activityManager;
 	}
 
 	@Override
@@ -162,7 +154,7 @@ public class GrapheMigrator implements InitializingBean {
 	 */
 	private void doMigrate(Graphe graphe, MigrationResultContextManipulation mr, IdMapping idMapper) {
 
-		// on commence par les établissement, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
+		// on commence par les établissements, puis les entreprises, puis les individus (au final, je ne crois pas que l'ordre soit réellement important...)
 		// on collecte les liens entre ces entités au fur et à mesure
 		// à la fin, on ajoute les liens
 
@@ -174,39 +166,15 @@ public class GrapheMigrator implements InitializingBean {
 	}
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		entreprises.forEach(e -> {
-			mr.pushContextValue(EntrepriseLoggedElement.class, new EntrepriseLoggedElement(e, activityManager.isActive(e)));
-			try {
-				entrepriseMigrator.migrate(e, mr, linkCollector, idMapper);
-			}
-			finally {
-				mr.popContexteValue(EntrepriseLoggedElement.class);
-			}
-		});
+		entreprises.forEach(e -> entrepriseMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
 	private void doMigrateEtablissements(Collection<RegpmEtablissement> etablissements, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		etablissements.forEach(e -> {
-			mr.pushContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(e));
-			try {
-				etablissementMigrator.migrate(e, mr, linkCollector, idMapper);
-			}
-			finally {
-				mr.popContexteValue(EtablissementLoggedElement.class);
-			}
-		});
+		etablissements.forEach(e -> etablissementMigrator.migrate(e, mr, linkCollector, idMapper));
 	}
 
 	private void doMigrateIndividus(Collection<RegpmIndividu> individus, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		individus.forEach(i -> {
-			mr.pushContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(i));
-			try {
-				individuMigrator.migrate(i, mr, linkCollector, idMapper);
-			}
-			finally {
-				mr.popContexteValue(IndividuLoggedElement.class);
-			}
-		});
+		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
 	}
 
 	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {

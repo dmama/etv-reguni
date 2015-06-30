@@ -34,6 +34,7 @@ import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
@@ -130,8 +131,14 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 				.orElseThrow(() -> new IllegalStateException("Individu RCPers sans identifiant CT.VD.RCPERS (" + Arrays.toString(ids.toArray(new NamedPersonId[ids.size()])) + ")"));
 	}
 
+	@NotNull
 	@Override
-	public void migrate(RegpmIndividu regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected EntityKey buildEntityKey(RegpmIndividu entity) {
+		return buildIndividuKey(entity);
+	}
+
+	@Override
+	public void doMigrate(RegpmIndividu regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForIndividu(regpm.getId())) {
 			// l'individu a déjà été migré, pas la peine d'aller plus loin

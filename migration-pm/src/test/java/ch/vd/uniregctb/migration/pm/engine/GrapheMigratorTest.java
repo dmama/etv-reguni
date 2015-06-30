@@ -101,7 +101,6 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());
 		grapheMigrator.setValidationInterceptor(validationInterceptor);
-		grapheMigrator.setActivityManager(activityManager);
 		grapheMigrator.afterPropertiesSet();
 
 		validationService = getBean(ValidationService.class, "validationService");
