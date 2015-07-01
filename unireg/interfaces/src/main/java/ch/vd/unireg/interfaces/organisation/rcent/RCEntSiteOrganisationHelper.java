@@ -28,14 +28,14 @@ public class RCEntSiteOrganisationHelper {
 
 	public static SiteOrganisation get(final OrganisationLocation rcEntLocation) {
 
-		DonneesRC donneesRC = createDonneesRC(rcEntLocation.getRc());
-		DonneesRegistreIDE donneesIDE = createDonneesIDE(rcEntLocation.getUid());
+		final OrganisationLocation.RCEntRCData rc = rcEntLocation.getRc();
+		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();
 
 		return new SiteOrganisation(
 				rcEntLocation.getCantonalId(),
 				RCEntHelper.convert(rcEntLocation.getName()),
-				donneesRC,
-				donneesIDE,
+				rc != null ? createDonneesRC(rc) : null,
+				uid != null ? createDonneesIDE(uid) : null,
 				RCEntHelper.convert(rcEntLocation.getIdentifiers()),
 				RCEntHelper.convert(rcEntLocation.getOtherNames()),
 				RCEntHelper.convertAndMap(rcEntLocation.getKindOfLocation(), KIND_OF_LOCATION_CONVERTER),
