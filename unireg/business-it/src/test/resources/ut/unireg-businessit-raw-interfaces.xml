@@ -36,8 +36,16 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<!-- TODO: Definir un cache? -->
-	<alias alias="serviceOrganisationRaw" name="serviceOrganisationServiceTracing"/>
+	<bean id="serviceOrganisationCache" class="ch.vd.unireg.interfaces.organisation.cache.ServiceOrganisationCache">
+		<property name="target" ref="serviceOrganisationTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache"/>
 
 	<!-- Service UPI -->
 

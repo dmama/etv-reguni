@@ -43,6 +43,14 @@
 		overflowToDisk="false"
 		/>
 
+	<cache name="serviceOrganisation"
+	       maxElementsInMemory="1000"
+	       eternal="false"
+	       timeToIdleSeconds="500"
+	       timeToLiveSeconds="500"
+	       overflowToDisk="false"
+			/>
+
 	<cache name="servicePM"
 		maxElementsInMemory="2500"
 		eternal="false"
