@@ -31,7 +31,7 @@
 		<constructor-arg ref="rcEntAdapter"/>
 	</bean>
 
-	<bean id="serviceOrganisationServiceTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
+	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">
 		<property name="target" ref="serviceOrganisationRCEnt" />
 		<property name="statsService" ref="statsService" />
 	</bean>
