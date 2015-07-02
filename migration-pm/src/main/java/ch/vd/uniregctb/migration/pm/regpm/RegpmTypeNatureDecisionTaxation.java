@@ -23,5 +23,12 @@ public enum RegpmTypeNatureDecisionTaxation {
 	/**
 	 * La décision est une taxation d'office pour défaut de dossier
 	 */
-	TAXATION_OFFICE_DEFAUT_DOSSIER
+	TAXATION_OFFICE_DEFAUT_DOSSIER;
+
+	/**
+	 * @return si oui ou non nous avons affaire à une taxation d'office
+	 */
+	public boolean isTaxationOffice() {
+		return this == TAXATION_OFFICE_DEFAUT_DOSSIER || this == TAXATION_OFFICE_DEFAUT_PIECES;
+	}
 }

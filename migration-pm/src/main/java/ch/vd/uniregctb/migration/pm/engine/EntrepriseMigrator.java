@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -41,6 +42,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
@@ -64,12 +66,14 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -992,12 +996,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			etats.add(new EtatDeclarationSommee(dossier.getDateEnvoiSommation(), dossier.getDateEnvoiSommation()));
 		}
 
+		// échéance, est dans les données de taxation (= taxation d'office)
+		dossier.getEnvironnementsTaxation().stream()
+				.map(RegpmEnvironnementTaxation::getDecisionsTaxation)
+				.flatMap(Set::stream)
+				.filter(dt -> dt.getNatureDecision().isTaxationOffice())
+				.filter(dt -> dt.getEtatCourant() != RegpmTypeEtatDecisionTaxation.ANNULEE)
+				.findAny()
+				.ifPresent(dt -> etats.add(new EtatDeclarationEchue(RegDateHelper.get(dt.getLastMutationTimestamp()))));
+
 		// retour
 		if (dossier.getDateRetour() != null) {
 			etats.add(new EtatDeclarationRetournee(dossier.getDateRetour(), SOURCE_RETOUR_DI_MIGREE));
 		}
-
-		// TODO la taxation d'office (= échéance, au sens Unireg) existait-elle ?
 
 		// un peu de traçabilité sur le travail accompli ici
 		etats.forEach(etat -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO, String.format("Etat '%s' migré au %s.", etat.getEtat(), StringRenderers.DATE_RENDERER.toString(etat.getDateObtention()))));

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
@@ -29,9 +31,11 @@ import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
@@ -39,14 +43,17 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -137,7 +144,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return a;
 	}
 
-	static RegpmDossierFiscal addDossierFiscal(RegpmEntreprise entreprise, RegpmAssujettissement assujettissement, int pf, RegDate dateEnvoi) {
+	static RegpmDossierFiscal addDossierFiscal(RegpmEntreprise entreprise, RegpmAssujettissement assujettissement, int pf, RegDate dateEnvoi, RegpmModeImposition modeImposition) {
 		final RegpmDossierFiscal df = new RegpmDossierFiscal();
 		df.setId(new RegpmDossierFiscal.PK(computeNewSeqNo(entreprise.getDossiersFiscaux(), d -> d.getId().getSeqNo()), assujettissement.getId()));
 		assignMutationVisa(df, REGPM_VISA, REGPM_MODIF);
@@ -147,6 +154,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		df.setDemandesDelai(new TreeSet<>());
 		df.setEtat(RegpmTypeEtatDossierFiscal.ENVOYE);
 		df.setMotifEnvoi(RegpmMotifEnvoi.FIN_EXERCICE);
+		df.setModeImposition(modeImposition);
+		df.setEnvironnementsTaxation(new TreeSet<>());
 
 		df.setNoParAnnee(computeNewSeqNo(entreprise.getDossiersFiscaux().stream().filter(d -> d.getPf() == pf).collect(Collectors.toList()),
 		                                 RegpmDossierFiscal::getNoParAnnee));
@@ -164,6 +173,27 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		ex.setDossierFiscal(dossierFiscal);
 		entreprise.getExercicesCommerciaux().add(ex);
 		return ex;
+	}
+
+	static RegpmEnvironnementTaxation addEnvironnementTaxation(RegpmEntreprise entreprise, RegpmDossierFiscal dossier, RegDate dateCreation) {
+		final RegpmEnvironnementTaxation et = new RegpmEnvironnementTaxation();
+		et.setId(new RegpmEnvironnementTaxation.PK(NO_SEQUENCE_GENERATOR.next(), entreprise.getId(), dossier.getPf()));
+		assignMutationVisa(et, REGPM_VISA, REGPM_MODIF);
+		et.setDateCreation(dateCreation);
+		et.setDecisionsTaxation(new HashSet<>());
+		dossier.getEnvironnementsTaxation().add(et);
+		return et;
+	}
+
+	static RegpmDecisionTaxation addDecisionTaxation(RegpmEnvironnementTaxation et, boolean derniereTaxation, RegpmTypeEtatDecisionTaxation etat, RegpmTypeNatureDecisionTaxation nature, RegDate date) {
+		final RegpmDecisionTaxation dt = new RegpmDecisionTaxation();
+		dt.setId(new RegpmDecisionTaxation.PK(NO_SEQUENCE_GENERATOR.next(), et.getId().getIdEntreprise(), et.getId().getAnneeFiscale(), et.getId().getSeqNo()));
+		assignMutationVisa(dt, REGPM_VISA, new Timestamp(DateHelper.getDate(date.year(), date.month(), date.day()).getTime()));
+		dt.setDerniereTaxation(derniereTaxation);
+		dt.setEtatCourant(etat);
+		dt.setNatureDecision(nature);
+		et.getDecisionsTaxation().add(dt);
+		return dt;
 	}
 
 	static RegpmMandat addMandat(RegpmEntreprise mandant, RegpmEntity mandataire, RegpmTypeMandat type, String noCCP, RegDate dateDebut, RegDate dateFin) {
@@ -301,7 +331,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
 		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
 
 		// on crée d'abord la PF en base
@@ -369,7 +399,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
 		df.setDateEnvoiSommation(df.getDelaiRetour().addDays(30));
 		df.setDelaiSommation(df.getDateEnvoiSommation().addDays(45));
 		df.setDateRetour(df.getDateEnvoiSommation().addDays(10));
@@ -452,6 +482,106 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Etat 'RETOURNEE' migré au 03.04.2015.", textesDeclarations.get(4));
 	}
 
+	@Test
+	public void testMigrationDeclarationEchue() throws Exception {
+
+		final int pf = 2014;
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 1, 1), null, RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
+		df.setDateEnvoiSommation(df.getDelaiRetour().addDays(30));
+		df.setDelaiSommation(df.getDateEnvoiSommation().addDays(45));
+		df.setDateRetour(df.getDateEnvoiSommation().addDays(100));
+		final RegpmExerciceCommercial ex = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
+		final RegpmEnvironnementTaxation envTaxation = addEnvironnementTaxation(e, df, RegDate.get(pf, 9, 10));
+		addDecisionTaxation(envTaxation, true, RegpmTypeEtatDecisionTaxation.ANNULEE, RegpmTypeNatureDecisionTaxation.DEFINITIVE, RegDate.get(pf, 9, 25));
+		addDecisionTaxation(envTaxation, false, RegpmTypeEtatDecisionTaxation.NOTIFIEE, RegpmTypeNatureDecisionTaxation.TAXATION_OFFICE_DEFAUT_DOSSIER, df.getDateEnvoiSommation().addDays(50));
+		addDecisionTaxation(envTaxation, true, RegpmTypeEtatDecisionTaxation.ENTREE_EN_FORCE, RegpmTypeNatureDecisionTaxation.DEFINITIVE, df.getDateRetour().addDays(15));
+
+		// on crée d'abord la PF en base
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(pf);
+			return null;
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise
+		final long idEntreprise = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		// .. et une déclaration dessus
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getUniregSessionFactory().getCurrentSession().get(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Declaration> declarations = entreprise.getDeclarations();
+			Assert.assertNotNull(declarations);
+			Assert.assertEquals(1, declarations.size());
+
+			final Declaration declaration = declarations.iterator().next();
+			Assert.assertNotNull(declaration);
+			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
+			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
+			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
+
+			final List<EtatDeclaration> etats = declaration.getEtatsSorted();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(4, etats.size());
+			{
+				final EtatDeclaration etat = etats.get(0);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(1);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.SOMMEE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12).addDays(225 + 30), etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(2);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.ECHUE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12).addDays(225 + 30 + 50), etat.getDateObtention());
+			}
+			{
+				final EtatDeclaration etat = etats.get(3);
+				Assert.assertNotNull(etat);
+				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
+				Assert.assertEquals(RegDate.get(pf, 7, 12).addDays(225 + 30 + 100), etat.getDateObtention());
+			}
+			return null;
+		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		final List<MigrationResultCollector.Message> messagesDeclarations = mr.getMessages().get(LogCategory.DECLARATIONS);
+		Assert.assertNotNull(messagesDeclarations);
+		final List<String> textesDeclarations = messagesDeclarations.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(6, textesDeclarations.size());
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(0));
+		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textesDeclarations.get(1));
+		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textesDeclarations.get(2));
+		Assert.assertEquals("Etat 'SOMMEE' migré au 24.03.2015.", textesDeclarations.get(3));
+		Assert.assertEquals("Etat 'ECHUE' migré au 13.05.2015.", textesDeclarations.get(4));
+		Assert.assertEquals("Etat 'RETOURNEE' migré au 02.07.2015.", textesDeclarations.get(5));
+	}
 
 	@Test
 	public void testExerciceCommercialEtDossierFiscalSurAnneesDifferentes() throws Exception {
@@ -459,7 +589,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
 		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 2, 7, 1), RegDate.get(pf - 1, 6, 30));     // décalage entre les années du df et de l'exercice
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -800,7 +930,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
 		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
 
 		// on vérifie que la PF n'existe pas en base (= pré-requis au test)
