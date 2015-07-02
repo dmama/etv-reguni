@@ -690,11 +690,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
 
 		// migration des fusions (cette entreprise étant la source)
-		regpm.getFusionsApres().forEach(apres -> {
-			// TODO et les autres informations de la fusion (forme, date d'inscription, date de contrat, date de bilan... ?)
-			final Supplier<Entreprise> apresFusion = getEntrepriseByRegpmIdSupplier(idMapper, apres.getEntrepriseApres().getId());
-			linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateBilan().getOneDayAfter(), null));
-		});
+		regpm.getFusionsApres().stream()
+				.filter(fusion -> !fusion.isRectifiee())
+				.forEach(apres -> {
+					// TODO et les autres informations de la fusion (forme, date d'inscription, date de contrat, date de bilan... ?)
+					final Supplier<Entreprise> apresFusion = getEntrepriseByRegpmIdSupplier(idMapper, apres.getEntrepriseApres().getId());
+					linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateBilan().getOneDayAfter(), null));
+				});
 	}
 
 	/**
