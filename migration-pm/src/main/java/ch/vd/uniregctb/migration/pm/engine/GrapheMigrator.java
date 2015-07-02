@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionDefinition;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.migration.pm.Graphe;
+import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
@@ -33,8 +34,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class GrapheMigrator implements InitializingBean {
-
-	private static final String VISA_MIGRATION = "[MigrationPM]";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GrapheMigrator.class);
 
@@ -103,7 +102,7 @@ public class GrapheMigrator implements InitializingBean {
 		individuMigrator.initMigrationResult(mr);
 
 		// tout le graphe sera migré dans une transaction globale
-		AuthenticationHelper.pushPrincipal(VISA_MIGRATION);
+		AuthenticationHelper.pushPrincipal(MigrationConstants.VISA_MIGRATION);
 		try {
 			final TransactionTemplate template = new TransactionTemplate(uniregTransactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

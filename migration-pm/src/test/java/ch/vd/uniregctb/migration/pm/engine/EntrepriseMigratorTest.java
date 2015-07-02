@@ -21,7 +21,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
@@ -592,6 +591,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
 		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 2, 7, 1), RegDate.get(pf - 1, 6, 30));     // décalage entre les années du df et de l'exercice
 
+		// ajout de la période fiscale
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(pf);
+		});
+
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
 		                                         null);
@@ -920,74 +924,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertNull(rf.getAnnulationDate());
 				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
 			}
-			return null;
-		});
-	}
-
-	@Test
-	public void testPeriodeFiscaleInexistante() throws Exception {
-		final int pf = 2014;
-		final long noEntreprise = 1234L;
-		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
-		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12), RegpmModeImposition.POST);
-		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 1, 7, 1), RegDate.get(pf, 6, 30));
-
-		// on vérifie que la PF n'existe pas en base (= pré-requis au test)
-		doInUniregTransaction(true, status -> {
-			final List<PeriodeFiscale> allPfs = uniregStore.getEntitiesFromDb(PeriodeFiscale.class, null);
-			if (allPfs != null && allPfs.stream().filter(p -> p.getAnnee() == pf).findAny().isPresent()) {
-				Assert.fail("Les conditions de départ ne sont pas respectées : la pf " + pf + " existe déjà en base...");
-			}
-		});
-
-		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
-		                                         null,
-		                                         null);
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
-		migrate(e, migrator, mr, linkCollector, idMapper);
-
-		// on vérifie que la PF existe maintenant en base
-		doInUniregTransaction(true, status -> {
-			final List<PeriodeFiscale> allPfs = uniregStore.getEntitiesFromDb(PeriodeFiscale.class, null);
-			if (allPfs == null || !allPfs.stream().filter(p -> p.getAnnee() == pf).findAny().isPresent()) {
-				Assert.fail("La pf " + pf + " n'existe toujours pas...");
-			}
-		});
-
-		// vérification du contenu de la base -> une nouvelle entreprise
-		final long idEntreprise = doInUniregTransaction(true, status -> {
-			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ENTREPRISE);
-			Assert.assertNotNull(ids);
-			Assert.assertEquals(1, ids.size());
-			return ids.get(0);
-		});
-
-		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
-
-		// .. et une déclaration dessus
-		doInUniregTransaction(true, status -> {
-			final Entreprise entreprise = (Entreprise) getUniregSessionFactory().getCurrentSession().get(Entreprise.class, idEntreprise);
-			Assert.assertNotNull(entreprise);
-
-			final Set<Declaration> declarations = entreprise.getDeclarations();
-			Assert.assertNotNull(declarations);
-			Assert.assertEquals(1, declarations.size());
-
-			final Declaration declaration = declarations.iterator().next();
-			Assert.assertNotNull(declaration);
-			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
-			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
-			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
-
-			final EtatDeclaration etat = declaration.getDernierEtat();
-			Assert.assertNotNull(etat);
-			Assert.assertEquals(TypeEtatDeclaration.EMISE, etat.getEtat());
-			Assert.assertEquals(RegDate.get(pf, 7, 12), etat.getDateObtention());
 			return null;
 		});
 	}

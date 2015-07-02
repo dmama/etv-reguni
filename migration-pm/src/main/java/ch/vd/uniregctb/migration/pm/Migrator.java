@@ -95,9 +95,16 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 			// phase d'initialization ?
 			synchronized (initCallbacks) {
 				if (!initCallbacks.isEmpty()) {
-					LOGGER.info("Lancement de la procédure d'initialisation.");
-					initCallbacks.forEach(Runnable::run);
-					LOGGER.info("Procédure d'initialisation terminée.");
+					try {
+						LOGGER.info("Lancement de la procédure d'initialisation.");
+						initCallbacks.forEach(Runnable::run);
+						LOGGER.info("Procédure d'initialisation terminée.");
+					}
+					catch (Exception e) {
+						// on va sortir, il faut dire au worker de s'arrêter...
+						migrationWorker.feedingOver();
+						throw e;
+					}
 				}
 			}
 
