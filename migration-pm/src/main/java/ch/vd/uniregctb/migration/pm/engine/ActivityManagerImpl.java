@@ -28,6 +28,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
@@ -160,6 +161,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	 */
 	private static boolean isActiveTaxation(RegpmEntreprise entreprise) {
 		return entreprise.getDossiersFiscaux().stream()
+				.filter(df -> df.getModeImposition() == RegpmModeImposition.POST)
 				.map(RegpmDossierFiscal::getEnvironnementsTaxation)
 				.flatMap(Set::stream)
 				.map(RegpmEnvironnementTaxation::getDecisionsTaxation)

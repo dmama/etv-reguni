@@ -67,6 +67,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
@@ -132,24 +133,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private static class CouvertureForsData {
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-
 		public CouvertureForsData(KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
 
-	public static class ForsPrincipauxData implements Supplier<List<RegpmForPrincipal>> {
-
+	private static class ForsPrincipauxData {
+		@NotNull
 		private final List<RegpmForPrincipal> liste;
-
-		public ForsPrincipauxData(List<RegpmForPrincipal> liste) {
+		public ForsPrincipauxData(@Nullable List<RegpmForPrincipal> liste) {
 			this.liste = liste == null ? Collections.emptyList() : liste;
 		}
+	}
 
+	private static class DossiersFiscauxData {
 		@NotNull
-		@Override
-		public List<RegpmForPrincipal> get() {
-			return liste;
+		private final List<RegpmDossierFiscal> liste;
+		public DossiersFiscauxData(@Nullable List<RegpmDossierFiscal> liste) {
+			this.liste = liste == null ? Collections.emptyList() : liste;
 		}
 	}
 
@@ -197,6 +198,38 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractDonneesCiviles(e, mr),
 		                         null,
 		                         null);
+
+		// les dossiers fiscaux non-ignorés
+		mr.registerDataExtractor(DossiersFiscauxData.class,
+		                         e -> extractDossiersFiscaux(e, mr),
+		                         null,
+		                         null);
+	}
+
+	/**
+	 * Extraction des dossiers fiscaux valides d'une entreprise
+	 * @param e entreprise de RegPM
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return les dossiers fiscaux de l'entreprise
+	 */
+	@NotNull
+	private DossiersFiscauxData extractDossiersFiscaux(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(e);
+		return doInLogContext(entrepriseKey, mr, () -> {
+
+			final List<RegpmDossierFiscal> liste = e.getDossiersFiscaux().stream()
+					.filter(df -> {
+						if (df.getModeImposition() != RegpmModeImposition.POST) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+							              String.format("Le dossier fiscal de la PF %d en mode %s est ignoré dans la migration.", df.getPf(), df.getModeImposition()));
+							return false;
+						}
+						return true;
+					})
+					.collect(Collectors.toList());
+
+			return new DossiersFiscauxData(liste);
+		});
 	}
 
 	/**
@@ -205,6 +238,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si l'entreprise n'a pas de pendant civil)
 	 */
+	@Nullable
 	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultContextManipulation mr) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
 		return doInLogContext(entrepriseKey, mr, () -> {
@@ -391,7 +425,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private static RegDate getDateDebutActivite(RegpmEntreprise regpm, MigrationResultProduction mr) {
 		// TODO faut-il bien prendre la date de début du premier for principal ???
-		return mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get().stream()
+		return mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste.stream()
 				.map(RegpmForPrincipal::getDateValidite)
 				.min(NullDateBehavior.LATEST::compare)
 				.orElse(null);
@@ -588,7 +622,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 		else {
 			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
-			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get();
+			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
 			if (!forsPrincipaux.isEmpty()) {
 
 				// pas besoin de faire de merge (voir l'exception lancée plus bas) car la liste extraite est, par construction, fiable
@@ -820,13 +854,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(regpm.getDossiersFiscaux().size());
+		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, buildEntrepriseKey(regpm)).liste;
+		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(dossiers.size());
 
 		// boucle sur chacun des exercices commerciaux
 		regpm.getExercicesCommerciaux().forEach(exercice -> {
 
 			final RegpmDossierFiscal dossier = exercice.getDossierFiscal();
-			if (dossier != null) {
+			if (dossier != null && dossier.getModeImposition() == RegpmModeImposition.POST) {
 
 				// on collecte les dossiers fiscaux attachés aux exercices commerciaux
 				// pour trouver au final ceux qui ne le sont pas (= les déclarations envoyées mais pas encore traitées ???)
@@ -854,7 +889,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// ensuite, il faut éventuellement trouver une déclaration envoyée mais pour laquelle je n'ai pas encore
 		// d'entrée dans la table des exercices commerciaux
-		regpm.getDossiersFiscaux().stream()
+		dossiers.stream()
 				.filter(dossier -> !dossiersFiscauxAttribuesAuxExercicesCommerciaux.contains(dossier))
 				.forEach(dossier -> {
 
@@ -1000,7 +1035,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		};
 
 		// récupération des fors principaux valides
-		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).get();
+		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
 
 		// puis la migration, justement
 		final List<ForFiscalPrincipalPM> liste = forsRegpm.stream()
