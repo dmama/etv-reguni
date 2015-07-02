@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.interfaces;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
