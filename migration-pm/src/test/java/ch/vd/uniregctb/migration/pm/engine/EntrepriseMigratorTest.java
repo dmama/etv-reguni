@@ -445,12 +445,48 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesDeclarations);
 		final List<String> textesDeclarations = messagesDeclarations.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(5, textesDeclarations.size());
-		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(
-				0));
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2013 -> 30.06.2014] de l'exercice commercial 1 et du dossier fiscal correspondant.", textesDeclarations.get(0));
 		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textesDeclarations.get(1));
 		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textesDeclarations.get(2));
 		Assert.assertEquals("Etat 'SOMMEE' migré au 24.03.2015.", textesDeclarations.get(3));
 		Assert.assertEquals("Etat 'RETOURNEE' migré au 03.04.2015.", textesDeclarations.get(4));
+	}
+
+
+	@Test
+	public void testExerciceCommercialEtDossierFiscalSurAnneesDifferentes() throws Exception {
+		final int pf = 2014;
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2000, 7, 1), null, RegpmTypeAssujettissement.LIFD);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, pf, RegDate.get(pf, 7, 12));
+		final RegpmExerciceCommercial exerciceCommercial = addExerciceCommercial(e, df, RegDate.get(pf - 2, 7, 1), RegDate.get(pf - 1, 6, 30));     // décalage entre les années du df et de l'exercice
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> régimes fiscaux associés à l'entreprise (aucun, car ils doivent être ignorés en raison de leur date nulle)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRegimesFiscaux());
+		});
+
+		// vérification des messages dans le contexte "DECLARATIONS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DECLARATIONS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(4, textes.size());
+		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2012 -> 30.06.2013] de l'exercice commercial 1 et du dossier fiscal correspondant.", textes.get(0));
+		Assert.assertEquals("Dossier fiscal sur la PF 2014 alors que la fin de l'exercice commercial est en 2013... N'est-ce pas étrange ?", textes.get(1));
+		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textes.get(2));
+		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textes.get(3));
 	}
 
 	@Test
@@ -1117,17 +1153,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(Collections.emptySet(), entreprise.getRegimesFiscaux());
 		});
 
-		// vérification des messages dans le contexte "FORS"
-		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.SUIVI);
-		Assert.assertNotNull(messagesFors);
-		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(5, textesFors.size());
-		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textesFors.get(0));
-		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textesFors.get(1));
-		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textesFors.get(2));
-		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textesFors.get(3));
-		Assert.assertEquals("Entreprise migrée : 12.34.", textesFors.get(4));
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(5, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textes.get(1));
+		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textes.get(2));
+		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(3));
+		Assert.assertEquals("Entreprise migrée : 12.34.", textes.get(4));
 	}
-
 	// TODO il reste encore plein de tests à faire...
 }

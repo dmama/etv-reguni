@@ -839,6 +839,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
 				                            exercice.getId().getSeqNo()));
 
+				// un petit warning sur des cas bizarres...
+				if (dossier.getPf() != exercice.getDateFin().year()) {
+					mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+					              String.format("Dossier fiscal sur la PF %d alors que la fin de l'exercice commercial est en %d... N'est-ce pas étrange ?",
+					                            dossier.getPf(),
+					                            exercice.getDateFin().year()));
+				}
+
 				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin(), mr);
 				unireg.addDeclaration(di);
 			}
