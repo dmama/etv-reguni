@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +24,13 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 
 /**
  * Entité qui maintient les flags d'activité pour les entreprises pendant la migration
@@ -32,6 +38,14 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 public class ActivityManagerImpl implements ActivityManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivityManagerImpl.class);
+
+	/**
+	 * Etats des décisions de taxations qui indiquent une taxation en cours
+	 */
+	private static final Set<RegpmTypeEtatDecisionTaxation> ETATS_EN_COURS = EnumSet.of(RegpmTypeEtatDecisionTaxation.A_REVISER,
+	                                                                                    RegpmTypeEtatDecisionTaxation.EN_RECLAMATION,
+	                                                                                    RegpmTypeEtatDecisionTaxation.ERREUR_DE_CALCUL,
+	                                                                                    RegpmTypeEtatDecisionTaxation.ERREUR_DE_TRANSCRIPTION);
 
 	private final Set<Long> numerosContribuablesActifsPerception;
 	private final RegDate seuilActivite;
@@ -123,7 +137,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	public boolean isActive(RegpmEntreprise entreprise) {
 		return isActiveAssujettissement(entreprise, seuilActivite)
-				|| isActiveTaxation(entreprise, seuilActivite)
+				|| isActiveTaxation(entreprise)
 				|| isActivePerception(entreprise);
 	}
 
@@ -142,12 +156,19 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	/**
 	 * @param entreprise entreprise dont l'état de taxation est à vérifier
-	 * @param seuil date de référence du test
 	 * @return <code>true</code> s'il existe une taxation en cours à la date donnée ou plus tard
 	 */
-	private static boolean isActiveTaxation(RegpmEntreprise entreprise, RegDate seuil) {
-		// TODO manque l'information venant des taxations...
-		return false;
+	private static boolean isActiveTaxation(RegpmEntreprise entreprise) {
+		return entreprise.getDossiersFiscaux().stream()
+				.map(RegpmDossierFiscal::getEnvironnementsTaxation)
+				.flatMap(Set::stream)
+				.map(RegpmEnvironnementTaxation::getDecisionsTaxation)
+				.flatMap(Set::stream)
+				.filter(RegpmDecisionTaxation::isDerniereTaxation)
+				.filter(decision -> decision.getEtatCourant() != RegpmTypeEtatDecisionTaxation.ANNULEE)
+				.filter(decision -> decision.getNatureDecision() == RegpmTypeNatureDecisionTaxation.PROVISOIRE || ETATS_EN_COURS.contains(decision.getEtatCourant()))
+				.findAny()
+				.isPresent();
 	}
 
 	/**
