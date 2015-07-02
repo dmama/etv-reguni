@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Test;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -20,6 +21,12 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 		service = getBean(ServiceOrganisationService.class, "serviceOrganisationService");
 	}
 
+	/*
+	Test ignoré en attendant que:
+	- L'API compatible soit disponible chez RCEnt
+	- Que le bug RCEnt empêchant la requête basée sur un numéro cantonal soit réparé.
+	 */
+	@Ignore
 	@Test
 	public void testGetOrganisation() throws Exception {
 
