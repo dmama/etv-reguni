@@ -31,6 +31,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssocieSC;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
@@ -286,6 +287,11 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 				// lazy init
 				df.getDemandesDelai().size();
+
+				// lazy init en profondeur
+				for (RegpmEnvironnementTaxation et : df.getEnvironnementsTaxation()) {
+					et.getDecisionsTaxation().size();
+				}
 			}
 		}
 		{

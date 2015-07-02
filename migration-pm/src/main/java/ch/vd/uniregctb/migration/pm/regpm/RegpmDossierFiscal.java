@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.FixedCharUserType;
+import ch.vd.uniregctb.migration.pm.regpm.usertype.ModeImpositionUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.MotifEnvoiUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDossierFiscalUserType;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.TypeEtatDossierFiscalUserType
 		@TypeDef(name = "FixedChar", typeClass = FixedCharUserType.class),
 		@TypeDef(name = "RegDate", typeClass = RegDateUserType.class),
 		@TypeDef(name = "TypeEtatDossierFiscal", typeClass = TypeEtatDossierFiscalUserType.class),
+		@TypeDef(name = "ModeImposition", typeClass = ModeImpositionUserType.class),
 		@TypeDef(name = "MotifEnvoi", typeClass = MotifEnvoiUserType.class)
 })
 public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmDossierFiscal> {
@@ -104,11 +106,13 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 	private RegDate dateEnvoiSommation;
 	private RegDate delaiSommation;
 	private RegpmTypeEtatDossierFiscal etat;
+	private RegpmModeImposition modeImposition;
 	private Integer pf;
 	private Integer noParAnnee;
 	private RegpmAssujettissement assujettissement;
 	private RegpmMotifEnvoi motifEnvoi;
 	private SortedSet<RegpmDemandeDelaiSommation> demandesDelai;
+	private SortedSet<RegpmEnvironnementTaxation> environnementsTaxation;
 
 	@Override
 	public int compareTo(@NotNull RegpmDossierFiscal o) {
@@ -191,6 +195,16 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 		this.etat = etat;
 	}
 
+	@Column(name = "MODE_IMPOSITION")
+	@Type(type = "ModeImposition")
+	public RegpmModeImposition getModeImposition() {
+		return modeImposition;
+	}
+
+	public void setModeImposition(RegpmModeImposition modeImposition) {
+		this.modeImposition = modeImposition;
+	}
+
 	@Column(name = "ANNEE_FISCALE")
 	public Integer getPf() {
 		return pf;
@@ -241,5 +255,19 @@ public class RegpmDossierFiscal extends RegpmEntity implements Comparable<RegpmD
 
 	public void setDemandesDelai(SortedSet<RegpmDemandeDelaiSommation> demandesDelai) {
 		this.demandesDelai = demandesDelai;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumns({
+			@JoinColumn(name = "FK_DOFNOSEQ", referencedColumnName = "NO_SEQUENCE"),
+			@JoinColumn(name = "FK_DOF_FKASSUJPMNO", referencedColumnName = "FK_ASSUJNO")
+	})
+	@Sort(type = SortType.NATURAL)
+	public SortedSet<RegpmEnvironnementTaxation> getEnvironnementsTaxation() {
+		return environnementsTaxation;
+	}
+
+	public void setEnvironnementsTaxation(SortedSet<RegpmEnvironnementTaxation> environnementsTaxation) {
+		this.environnementsTaxation = environnementsTaxation;
 	}
 }

@@ -22,10 +22,12 @@
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCaracteristiquesIndividu</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCommune</value>
+		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise</value>
+		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise</value>
