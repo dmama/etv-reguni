@@ -512,7 +512,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	@Override
-	public void doMigrate(RegpmEntreprise regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected void doMigrate(RegpmEntreprise regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForEntreprise(regpm.getId())) {
 			// l'entreprise a déjà été migrée... pas la peine d'aller plus loin, ou bien ? <- Genevois

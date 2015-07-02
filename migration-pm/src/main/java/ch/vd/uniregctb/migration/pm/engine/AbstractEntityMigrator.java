@@ -237,6 +237,38 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
+	 * Le côté polymorphique d'une relation est en général exprimé dans RegPM par plusieurs liens distincts, dont un seul est non-vide. Dans Unireg,
+	 * il n'y a en général qu'un seul lien vers une entité à caractère polymorphique... Cette méthode permet donc de transcrire une façon de faire
+	 * dans l'autre.
+	 * @param entrepriseSupplier accès au lien vers une entreprise
+	 * @param etablissementSupplier accès au lien vers un établissement
+	 * @param individuSupplier accès au lien vers un individu
+	 * @return la clé de l'entité (entreprise, établissement ou individu) de RegPM
+	 */
+	@Nullable
+	protected EntityKey getPolymorphicKey(@Nullable Supplier<RegpmEntreprise> entrepriseSupplier,
+	                                      @Nullable Supplier<RegpmEtablissement> etablissementSupplier,
+	                                      @Nullable Supplier<RegpmIndividu> individuSupplier) {
+
+		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
+		if (entreprise != null) {
+			return buildEntrepriseKey(entreprise);
+		}
+
+		final RegpmEtablissement etablissement = etablissementSupplier != null ? etablissementSupplier.get() : null;
+		if (etablissement != null) {
+			return buildEtablissementKey(etablissement);
+		}
+
+		final RegpmIndividu individu = individuSupplier != null ? individuSupplier.get() : null;
+		if (individu != null) {
+			return buildIndividuKey(individu);
+		}
+
+		return null;
+	}
+
+	/**
 	 * Appelé par qui le veut bien à la création d'une nouvelle entité migrée, afin d'initialiser les valeurs des colonnes LOG_CDATE, LOG_CUSER, LOG_MDATE et LOG_MUSER
 	 * @param src entité de RegPM qui fournit ces informations
 	 * @param dest entité d'Unireg qui les utilise

@@ -154,14 +154,36 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	/**
+	 * @param etablissement un établissement de RegPM en cours de migration
+	 * @return la clé vers l'entité juridique de l'établissement
+	 */
+	@Nullable
+	private EntityKey getEntiteJuridiqueKey(RegpmEtablissement etablissement) {
+		return getPolymorphicKey(etablissement::getEntreprise, null, etablissement::getIndividu);
+	}
+
+	/**
+	 * Le contexte d'un établissement est aussi celui de son entité juridique...
+	 * @param etablissement établissement en cours de migration
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param action action à effectuer dans le contexte de log de l'établissement
+	 * @param <T> type de la donnée renvoyée par l'action
+	 * @return données renvoyée par l'action
+	 */
+	private <T> T doInCompleteLogContext(RegpmEtablissement etablissement, MigrationResultContextManipulation mr, Supplier<T> action) {
+		final EntityKey etbKey = buildEtablissementKey(etablissement);
+		final EntityKey entiteJuridiqueKey = getEntiteJuridiqueKey(etablissement);
+		return doInLogContext(etbKey, mr, () -> doInLogContext(entiteJuridiqueKey, mr, action));
+	}
+
+	/**
 	 * Appel de RCEnt pour les données de l'établissement
 	 * @param etablissement établissement de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si ni l'établissement ni son entreprise n'a pas de pendant civil)
 	 */
 	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr) {
-		final EntityKey etablissementKey = buildEtablissementKey(etablissement);
-		return doInLogContext(etablissementKey, mr, () -> {
+		return doInCompleteLogContext(etablissement, mr, () -> {
 
 			final Long idCantonal = etablissement.getNumeroCantonal();
 			if (idCantonal == null) {
@@ -287,8 +309,26 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		return buildEtablissementKey(entity);
 	}
 
+	/**
+	 * Point d'entrée de la migration à ce niveau (utile pour compléter le contexte de log avec les données de l'entité juridique parente également)
+	 * @param regpm établissement de RegPM à migrer
+	 * @param mr collecteur des messages de suivi et manipulateur de contexte de log
+	 * @param linkCollector collecteur de liens entre entités
+	 * @param idMapper mapper des identifiants regpm -> unireg
+	 */
 	@Override
-	public void doMigrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected void doMigrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+		doInLogContext(getEntiteJuridiqueKey(regpm), mr, () -> doMigrateEtablissement(regpm, mr, linkCollector, idMapper));
+	}
+
+	/**
+	 * Implémentation effective de la migration
+	 * @param regpm établissement de RegPM à migrer
+	 * @param mr collecteur des messages de suivi et manipulateur de contexte de log
+	 * @param linkCollector collecteur de liens entre entités
+	 * @param idMapper mapper des identifiants regpm -> unireg
+	 */
+	private void doMigrateEtablissement(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// TODO à un moment, il faudra quand-même se demander comment cela se passe avec RCEnt, non ?
 
 		// Attention, il y a des cas où on ne doit pas aveuglément créer un établissement

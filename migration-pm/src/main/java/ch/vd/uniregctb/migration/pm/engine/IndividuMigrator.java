@@ -138,7 +138,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	}
 
 	@Override
-	public void doMigrate(RegpmIndividu regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
+	protected void doMigrate(RegpmIndividu regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 
 		if (idMapper.hasMappingForIndividu(regpm.getId())) {
 			// l'individu a déjà été migré, pas la peine d'aller plus loin

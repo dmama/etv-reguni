@@ -414,8 +414,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(9, msgs.size());
-			Assert.assertEquals("INFO;;;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;;Domicile : [01.01.1995 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(0));
-			Assert.assertEquals("INFO;;;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaireMandataire.longValue()) + ".", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;;Domicile : [01.01.1995 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaireMandataire.longValue()) + ".", msgs.get(1));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;Pas de commune ni de for principal associé, pas d'établissement principal créé.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandante) + ".", msgs.get(4));
@@ -427,7 +427,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;;;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -622,12 +622,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(0));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire1.longValue()) + ".", msgs.get(2));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(3));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(4));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire2.longValue()) + ".", msgs.get(5));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire1.longValue()) + ".", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire2.longValue()) + ".", msgs.get(5));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(6));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(7));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> ?] sur COMMUNE_HC/2701.", msgs.get(8));
@@ -636,8 +636,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("WARN;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
-			Assert.assertEquals("WARN;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -818,12 +818,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(0));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire1.longValue()) + ".", msgs.get(2));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(3));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(4));
-			Assert.assertEquals("INFO;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire2.longValue()) + ".", msgs.get(5));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire1.longValue()) + ".", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire2.longValue()) + ".", msgs.get(5));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(6));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(7));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> ?] sur COMMUNE_HC/2701.", msgs.get(8));
@@ -832,8 +832,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("WARN;;;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
-			Assert.assertEquals("WARN;;;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
