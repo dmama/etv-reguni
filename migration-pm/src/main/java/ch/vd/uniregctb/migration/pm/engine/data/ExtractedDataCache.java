@@ -9,8 +9,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.migration.pm.Graphe;
-import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
-import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -52,7 +50,7 @@ public class ExtractedDataCache {
 	/**
 	 * Enregistre une méthode d'extraction de données depuis les données RegPM (l'idée est de ne la calculer qu'une seule fois,
 	 * ces extracteurs ne seront appelés qu'une seule fois par instance de graphe) utilisable ensuite au travers de la méthode
-	 * {@link MigrationResultProduction#getExtractedData(Class, EntityKey)}
+	 * {@link #getExtractedData(Class, EntityKey)}
 	 * @param dataClass classe discriminante pour la donnée à extraire (une donnée par classe et entité)
 	 * @param entrepriseExtractor l'extracteur à utiliser si cette données est extraite d'une entreprise
 	 * @param etablissementExtractor l'extracteur à utiliser si cette données est extraite d'un établissement
@@ -84,7 +82,7 @@ public class ExtractedDataCache {
 	/**
 	 * Récupère la donnée préalablement enregistrée lors d'un précédent appel pour la même classe et la même entité. Si aucune donnée
 	 * n'a été préalablement enregistrée (= premier appel), alors l'extracteur correspondant (préalablement enregistré par un
-	 * appel à {@link MigrationResultInitialization#registerDataExtractor(Class, Function, Function, Function)}) est sollicité
+	 * appel à {@link #registerDataExtractor(Class, Function, Function, Function)}) est sollicité
 	 * @param clazz classe discriminante pour la donnée à extraire (une donnée par classe et entité)
 	 * @param key clé de l'entité concernée par la donnée à extraire (une donnée par classe et entité)
 	 * @param <D> le type de la donnée extraite
