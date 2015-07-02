@@ -12,6 +12,7 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class RCEntHelperTest {
@@ -251,4 +252,17 @@ public class RCEntHelperTest {
 		}
 	}
 
+	@Test
+	public void testConvertNullReturnNull() {
+		DateRanged<String> nullDr = null;
+		List<DateRanged<String>> nullDrList = null;
+		Map<String, List<DateRanged<String>>> nullDrMap = null;
+
+		assertThat(RCEntHelper.convert(nullDr), nullValue());
+		assertThat(RCEntHelper.convert(nullDrList), nullValue());
+		assertThat(RCEntHelper.convert(nullDrMap), nullValue());
+		assertThat(RCEntHelper.convertAndMap(nullDr, converter), nullValue());
+		assertThat(RCEntHelper.convertAndMap(nullDrList, converter), nullValue());
+		assertThat(RCEntHelper.convertAndMap(nullDrMap, converter), nullValue());
+	}
 }
