@@ -49,7 +49,6 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -116,6 +115,14 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 	}
 
+	private static final class DatesEtablissementsStables {
+		@NotNull
+		final List<DateRange> liste;
+		public DatesEtablissementsStables(List<DateRange> liste) {
+			this.liste = liste == null ? Collections.emptyList() : liste;
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
@@ -137,6 +144,41 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                         null,
 		                         e -> extractDonneesCiviles(e, mr),
 		                         null);
+
+		// les données des dates des établissements stables
+		mr.registerDataExtractor(DatesEtablissementsStables.class,
+		                         null,
+		                         e -> extractDatesEtablissementsStables(e, mr),
+		                         null);
+	}
+
+	/**
+	 * Calcul des dates des établissements stables en fusionnant les éventuels ranges qui se chevauchent
+	 * @param e établissement de RegPM
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return la structure contenant les ranges des dates des établissements stables
+	 */
+	@NotNull
+	private DatesEtablissementsStables extractDatesEtablissementsStables(RegpmEtablissement e, MigrationResultContextManipulation mr) {
+		final EntityKey key = buildEtablissementKey(e);
+		return doInLogContext(key, mr, () -> {
+			final List<DateRange> dates = e.getEtablissementsStables().stream()
+					.map(DateRangeHelper.Range::new)
+					.map(range -> {
+						if (isFutureDate(range.getDateFin())) {
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+							              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
+							                            StringRenderers.DATE_RENDERER.toString(range.getDateFin())));
+							return new DateRangeHelper.Range(range.getDateDebut(), null);
+						}
+						else {
+							return range;
+						}
+					})
+					.sorted(DateRangeComparator::compareRanges)
+					.collect(Collectors.toList());
+			return new DatesEtablissementsStables(DateRangeHelper.merge(dates));
+		});
 	}
 
 	/**
@@ -354,27 +396,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 		else {
 			final Supplier<Etablissement> moi = getEtablissementByRegpmIdSupplier(idMapper, regpm.getId());
-			final Collection<RegpmEtablissementStable> etablissementsStables = regpm.getEtablissementsStables();
-			if (etablissementsStables != null && !etablissementsStables.isEmpty()) {
+			final List<DateRange> datesEtablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, buildEtablissementKey(regpm)).liste;
+			if (!datesEtablissementsStables.isEmpty()) {
 				// création des liens (= rapports entre tiers)
-				etablissementsStables.stream()
-						.map(range -> {
-							final RegDate dateFin;
-							if (isFutureDate(range.getDateFin())) {
-								mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
-								              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
-								                            StringRenderers.DATE_RENDERER.toString(range.getDateFin())));
-								dateFin = null;
-							}
-							else {
-								dateFin = range.getDateFin();
-							}
-							return new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), dateFin);
-						})
+				datesEtablissementsStables.stream()
+						.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin()))
 						.forEach(linkCollector::addLink);
 
 				// génération de l'information pour la création des fors secondaires associés à ces établissements stables
-				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, etablissementsStables);
+				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
 			}
 			else {
 				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans aucune période de validité d'un établissement stable.");
@@ -463,18 +493,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// maintenant, on a des domiciles à mettre en regard des établissements stables
 		// (en partie pour ajouter une date de fin au dernier domicile le cas échéant)
-		final List<DateRange> etablissementsStables = DateRangeHelper.merge(regpm.getEtablissementsStables().stream()
-				                                                                    .sorted(DateRangeComparator::compareRanges)
-				                                                                    .map(DateRangeHelper.Range::new)
-				                                                                    .map(r -> {
-					                                                                    if (isFutureDate(r.getDateFin())) {
-						                                                                    return new DateRangeHelper.Range(r.getDateDebut(), null);
-					                                                                    }
-					                                                                    else {
-						                                                                    return r;
-					                                                                    }
-				                                                                    })
-				                                                                    .collect(Collectors.toList()));
+		final List<DateRange> etablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, buildEtablissementKey(regpm)).liste;
 		final List<DomicileEtablissement> domicilesStables = domiciles.stream()
 				.map(domicile -> Pair.of(domicile, DateRangeHelper.intersections(domicile, etablissementsStables)))     // intersection avec les établissements stables
 				.filter(pair -> pair.getValue() != null && !pair.getValue().isEmpty())                      // filtrage des domiciles qui n'ont pas d'intersection avec les établissements stables
@@ -504,7 +523,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	private void enregistrerDemandesForsSecondaires(KeyedSupplier<? extends Tiers> entiteJuridique,
 	                                                Set<RegpmDomicileEtablissement> domiciles,
 	                                                MigrationResultProduction mr,
-	                                                Collection<RegpmEtablissementStable> etablissementsStables) {
+	                                                Collection<DateRange> datesEtablissementsStables) {
 
 		// les domiciles avec leurs dates d'établissement
 		final NavigableMap<RegDate, RegpmDomicileEtablissement> mapDomiciles;
@@ -521,7 +540,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// les informations, par communes, des périodes concernées
-		final Map<RegpmCommune, List<DateRange>> mapFors = etablissementsStables.stream()
+		final Map<RegpmCommune, List<DateRange>> mapFors = datesEtablissementsStables.stream()
 				.map(range -> buildPeriodesForsSecondaires(mapDomiciles, range, mr))
 				.flatMap(List::stream)
 				.collect(Collectors.toMap(Pair::getKey,

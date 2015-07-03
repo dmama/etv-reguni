@@ -483,7 +483,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final Set<RapportEntreTiers> rapports = e.getRapportsSujet();
 			Assert.assertNotNull(rapports);
 			Assert.assertEquals(3, rapports.size());
-			rapports.stream().filter(r -> !(r instanceof ActiviteEconomique)).findAny().ifPresent(r -> Assert.fail("Rapport " + r + " trouvé là où seuls des rapports d'activité économiques étaient attendus"));
+			rapports.stream().filter(r -> !(r instanceof ActiviteEconomique)).findAny().ifPresent(
+					r -> Assert.fail("Rapport " + r + " trouvé là où seuls des rapports d'activité économiques étaient attendus"));
 			final List<ActiviteEconomique> activitesEconomiques = rapports.stream()
 					.map(r -> (ActiviteEconomique) r)
 					.sorted(Comparator.comparing(ActiviteEconomique::getDateDebut))
@@ -622,7 +623,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [12.05.1999 -> 26.01.2003] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(
+					0));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";;;" + idEntreprise + ";;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire1.longValue()) + ".", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";;;" + idEntreprise + ";;;;;;;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(3));
@@ -1166,5 +1168,56 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5518 [01.05.1987 -> ?] généré.", msgs.get(0));
 		}
+	}
+
+	@Test
+	public void testEtablissementsStablesAvecChevauchement() throws Exception {
+
+		final long idEntreprise = 12442L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(5435L, entreprise);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, RegDate.get(2005, 3, 12), RegDate.get(2010, 5, 3));       // les 1, 2 et 3 mai 2005 sont en chevauchement entre les deux établissements stables
+		EtablissementMigratorTest.addEtablissementStable(etablissement, RegDate.get(2010, 5, 1), null);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// extraction de l'établissement et vérification des données
+		doInUniregTransaction(true, status -> {
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(1, etbs.size());
+
+			final Etablissement etb = etbs.get(0);
+			Assert.assertNotNull(etb);
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(RegDate.get(2005, 3, 12), domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());               // -> date nulle car ignorée dans le futur
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), domicile.getNumeroOfsAutoriteFiscale());
+
+			final Set<RapportEntreTiers> rets = etb.getRapportsObjet();
+			Assert.assertNotNull(rets);
+			Assert.assertEquals(1, rets.size());
+
+			final RapportEntreTiers ret = rets.iterator().next();
+			Assert.assertNotNull(ret);
+			Assert.assertEquals(RegDate.get(2005, 3, 12), ret.getDateDebut());      // un seul rapport entre tiers "activité" qui reprend toute la période
+			Assert.assertNull(ret.getDateFin());
+			Assert.assertEquals(TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE, ret.getType());
+			Assert.assertFalse(ret.isAnnule());
+			Assert.assertEquals((Long) idEntreprise, ret.getSujetId());
+		});
 	}
 }
