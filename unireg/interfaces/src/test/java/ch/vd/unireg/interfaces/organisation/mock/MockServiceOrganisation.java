@@ -28,4 +28,8 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		throw new UnsupportedOperationException();
 	}
+
+	protected void addOrganisation(Organisation organisation) {
+		organisationMap.put(organisation.getNo(), organisation);
+	}
 }

@@ -16,22 +16,22 @@ public class Organisation implements Serializable {
 	private final long no;
 
 	@NotNull
-	private final Map<String, List<DateRanged<String>>> identifiants;
+	private Map<String, List<DateRanged<String>>> identifiants;
 
 	@NotNull
-	private final List<DateRanged<String>> nom;
-	private final List<DateRanged<String>> nomsAdditionels;
-	private final List<DateRanged<FormeLegale>> formeLegale;
+	private List<DateRanged<String>> nom;
+	private List<DateRanged<String>> nomsAdditionels;
+	private List<DateRanged<FormeLegale>> formeLegale;
 
 	@NotNull
-	private final List<DateRanged<Long>> sites;
+	private List<DateRanged<Long>> sites;
 	@NotNull
-	private final List<SiteOrganisation> donneesSites;
+	private List<SiteOrganisation> donneesSites;
 
-	private final List<DateRanged<Long>> transfereA;
-	private final List<DateRanged<Long>> transferDe;
-	private final List<DateRanged<Long>> remplacePar;
-	private final List<DateRanged<Long>> enRemplacementDe;
+	private List<DateRanged<Long>> transfereA;
+	private List<DateRanged<Long>> transferDe;
+	private List<DateRanged<Long>> remplacePar;
+	private List<DateRanged<Long>> enRemplacementDe;
 
 	public Organisation(long no, @NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
 	                    List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale, @NotNull List<DateRanged<Long>> sites,
@@ -100,5 +100,49 @@ public class Organisation implements Serializable {
 
 	public List<DateRanged<Long>> getTransfereA() {
 		return transfereA;
+	}
+
+	/*
+		Setters réservés au Mock
+	 */
+
+	protected void setDonneesSites(@NotNull List<SiteOrganisation> donneesSites) {
+		this.donneesSites = donneesSites;
+	}
+
+	protected void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
+		this.enRemplacementDe = enRemplacementDe;
+	}
+
+	protected void setFormeLegale(List<DateRanged<FormeLegale>> formeLegale) {
+		this.formeLegale = formeLegale;
+	}
+
+	protected void setIdentifiants(@NotNull Map<String, List<DateRanged<String>>> identifiants) {
+		this.identifiants = identifiants;
+	}
+
+	protected void setNom(@NotNull List<DateRanged<String>> nom) {
+		this.nom = nom;
+	}
+
+	protected void setNomsAdditionels(List<DateRanged<String>> nomsAdditionels) {
+		this.nomsAdditionels = nomsAdditionels;
+	}
+
+	protected void setRemplacePar(List<DateRanged<Long>> remplacePar) {
+		this.remplacePar = remplacePar;
+	}
+
+	protected void setSites(@NotNull List<DateRanged<Long>> sites) {
+		this.sites = sites;
+	}
+
+	protected void setTransferDe(List<DateRanged<Long>> transferDe) {
+		this.transferDe = transferDe;
+	}
+
+	protected void setTransfereA(List<DateRanged<Long>> transfereA) {
+		this.transfereA = transfereA;
 	}
 }

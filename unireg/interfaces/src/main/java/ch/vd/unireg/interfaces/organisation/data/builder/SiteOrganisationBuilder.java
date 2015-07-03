@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
@@ -15,8 +16,7 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 
 	private final long cantonalId;
-	@NotNull
-	private final List<DateRanged<String>> nom;
+	private List<DateRanged<String>> nom;
 
 	public DonneesRC rc;
 	public DonneesRegistreIDE ide;
@@ -37,46 +37,98 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		this.nom = nom;
 	}
 
+	public SiteOrganisationBuilder(long cantonalId) {
+		this.cantonalId = cantonalId;
+	}
+
 	@Override
 	public SiteOrganisation build() {
 		return new SiteOrganisation(cantonalId, nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite,
 		                            siege, fonction, remplacePar, enRemplacementDe);
 	}
 
-	public void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
-		this.enRemplacementDe = enRemplacementDe;
+	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
 	}
 
-	public void setFonction(List<DateRanged<Fonction>> fonction) {
-		this.fonction = fonction;
+	public SiteOrganisationBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
 	}
 
-	public void setIde(DonneesRegistreIDE ide) {
-		this.ide = ide;
+	public SiteOrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
 	}
 
-	public void setIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
-		this.identifiants = identifiants;
+	public SiteOrganisationBuilder addTypeDeSite(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeDeSite valeur) {
+		BuilderHelper.addValueToList(typeDeSite, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
 	}
 
-	public void setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
-		this.nomsAdditionnels = nomsAdditionnels;
+	public SiteOrganisationBuilder addSiege(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Integer valeur) {
+		BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
 	}
 
-	public void setRc(DonneesRC rc) {
+	public SiteOrganisationBuilder addFonction(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Fonction valeur) {
+		BuilderHelper.addValueToList(fonction, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder withRC(@NotNull DonneesRC rc) {
 		this.rc = rc;
+		return this;
 	}
 
-	public void setRemplacePar(List<DateRanged<Long>> remplacePar) {
+	public SiteOrganisationBuilder withIde(@NotNull DonneesRegistreIDE ide) {
+		this.ide = ide;
+		return this;
+	}
+
+	public SiteOrganisationBuilder setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
+		this.enRemplacementDe = enRemplacementDe;
+		return this;
+	}
+
+	public SiteOrganisationBuilder setFonction(List<DateRanged<Fonction>> fonction) {
+		this.fonction = fonction;
+		return this;
+	}
+
+	public SiteOrganisationBuilder setIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
+		this.identifiants = identifiants;
+		return this;
+	}
+
+	public SiteOrganisationBuilder setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+		this.nomsAdditionnels = nomsAdditionnels;
+		return this;
+	}
+
+	public SiteOrganisationBuilder setRemplacePar(List<DateRanged<Long>> remplacePar) {
 		this.remplacePar = remplacePar;
+		return this;
 	}
 
-	public void setSiege(List<DateRanged<Integer>> siege) {
+	public SiteOrganisationBuilder setSiege(List<DateRanged<Integer>> siege) {
 		this.siege = siege;
+		return this;
 	}
 
-	public void setTypeDeSite(List<DateRanged<TypeDeSite>> typeDeSite) {
+	public SiteOrganisationBuilder setTypeDeSite(List<DateRanged<TypeDeSite>> typeDeSite) {
 		this.typeDeSite = typeDeSite;
+		return this;
 	}
-
 }
