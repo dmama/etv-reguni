@@ -20,6 +20,7 @@
 		<property name="regpmTransactionManager" ref="regpmTransactionManager"/>
 		<property name="sessionFactory" ref="regpmSessionFactory"/>
 		<property name="idsEntreprisesDejaMigrees" ref="alreadyMigratedEntrepriseIds"/>
+		<property name="nomFichierIdentifiantsAExtraire" value="${migration.test.extracted.pm.file}"/>
 	</bean>
 
 	<bean id="serializationIntermediary" class="ch.vd.uniregctb.migration.pm.SerializationIntermediary">

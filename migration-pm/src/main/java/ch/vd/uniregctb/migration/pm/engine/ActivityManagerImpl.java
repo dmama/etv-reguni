@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,11 +8,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +27,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
+import ch.vd.uniregctb.migration.pm.utils.DataLoadHelper;
 
 /**
  * Entité qui maintient les flags d'activité pour les entreprises pendant la migration
@@ -103,31 +99,8 @@ public class ActivityManagerImpl implements ActivityManager {
 	private static Set<Long> readPerceptionActiveIds(@Nullable Reader reader) throws IOException {
 		// pour les tests de base, aucun fichier n'est fourni -> aucune entreprise active annoncée par la perception
 		if (reader != null) {
-
-			// d'abord une liste chaînée car on n'a aucune idée du nombre d'éléments
-			final List<Long> liste = new LinkedList<>();
-
-			final Pattern pattern = Pattern.compile("[0-9]{1,5}");      // les numéros de PM sont constitués d'un à 5 chiffres, pour l'instant...
-
-			// remplissage de la liste d'après les lignes du fichier
-			try (BufferedReader br = new BufferedReader(reader)) {
-
-				// ligne par ligne, on lit les numéros de contribuables
-				String ligne;
-				while ((ligne = br.readLine()) != null) {
-					final Matcher matcher = pattern.matcher(ligne);
-					if (matcher.matches()) {
-						final long id = Long.parseLong(matcher.group());
-						liste.add(id);
-					}
-					else {
-						LOGGER.warn("Ligne ignorée dans le fichier des contribuables actifs en perception : '" + ligne + "'");
-					}
-				}
-			}
-
-			// puis constitution d'un ensemble (la taille est maintenant connue, les éventuels doublons sont enlevés et la recherche facilitée)
-			return new HashSet<>(liste);
+			// on constitue un ensemble (les éventuels doublons sont enlevés et la recherche facilitée)
+			return new HashSet<>(DataLoadHelper.loadIdentifiantsPM(reader));
 		}
 		else {
 			LOGGER.warn("Aucune donnée de numéros de contribuables actifs en provenance de la perception...");

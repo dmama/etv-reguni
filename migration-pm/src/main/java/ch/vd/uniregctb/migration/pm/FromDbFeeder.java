@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.migration.pm;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -44,6 +47,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.WithLongId;
+import ch.vd.uniregctb.migration.pm.utils.DataLoadHelper;
 
 /**
  * Feeder qui va chercher les données des PM dans la base de données du mainframe
@@ -55,6 +59,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 	private PlatformTransactionManager regpmTransactionManager;
 	private SessionFactory sessionFactory;
 	private Set<Long> idsEntreprisesDejaMigrees;
+	private String nomFichierIdentifiantsAExtraire;
 	private volatile boolean shutdownInProgress = false;
 
 	/**
@@ -383,6 +388,10 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		this.idsEntreprisesDejaMigrees = idsEntreprisesDejaMigrees;
 	}
 
+	public void setNomFichierIdentifiantsAExtraire(String nomFichierIdentifiantsAExtraire) {
+		this.nomFichierIdentifiantsAExtraire = StringUtils.trimToNull(nomFichierIdentifiantsAExtraire);
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		this.shutdownInProgress = true;
@@ -431,7 +440,16 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		}
 	}
 
-	private List<Long> getIds() {
+	private List<Long> getIds() throws Exception {
+		return nomFichierIdentifiantsAExtraire == null ? getAllIds() : getSpecificIdsFromFile(nomFichierIdentifiantsAExtraire);
+	}
+
+	private List<Long> getSpecificIdsFromFile(String filename) throws IOException {
+		final List<Long> brut = DataLoadHelper.loadIdentifiantsPM(filename, () -> "les identifiants des PM à migrer");
+		return new ArrayList<>(new LinkedHashSet<>(brut));      // on conserve l'ordre mais on enlève les éventuels doublons
+	}
+
+	private List<Long> getAllIds() {
 		final TransactionTemplate template = new TransactionTemplate(regpmTransactionManager);
 		template.setReadOnly(true);
 		return template.execute(status -> {
