@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +16,9 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 
 	private final Class<T> targetInterface;
 	private final T target;
+
+	private final Map<Key, Object> cache = new HashMap<>();
+	private final LockHelper lock = new LockHelper(false);
 
 	private T proxy;
 
@@ -39,7 +39,7 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		//noinspection unchecked
-		this.proxy = (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, new Handler(target));
+		this.proxy = (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, this::invokeTargetIfResultUnknown);
 	}
 
 	@Override
@@ -57,6 +57,9 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 		return true;
 	}
 
+	/**
+	 * La clé qui détermine si un appel donné (= méthode + paramètres) a déjà été fait
+	 */
 	private static final class Key {
 		private final Method method;
 		private final Object[] args;
@@ -83,62 +86,48 @@ public final class CacheFactory<T> implements FactoryBean<T>, InitializingBean {
 		}
 	}
 
-	private class Handler implements InvocationHandler {
-
-		private final T target;
-		private final Map<Key, Object> cache = new HashMap<>();
-		private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
-
-		private Handler(T target) {
-			this.target = target;
+	/**
+	 * Invocation de l'implémentation "target" si la valeur demandée n'est pas déjà en cache (sinon, on la prend du cache, justement)
+	 * @param proxy instance de proxy
+	 * @param method la méthode à appeler
+	 * @param args les arguments à passer à la méthode en question
+	 * @return la valeur renvoyée par l'implémentation "target" ou directement prise dans le cache
+	 * @throws Throwable l'exception renvoyée, éventuellement, par l'implémentation "target"
+	 */
+	private Object invokeTargetIfResultUnknown(Object proxy, Method method, Object[] args) throws Throwable {
+		final Key key = new Key(method, args);
+		final Supplier<Object> inCache = findInCache(key);
+		if (inCache == null) {
+			try {
+				final Object value = method.invoke(target, args);
+				addToCache(key, value);
+				return value;
+			}
+			catch (InvocationTargetException e) {
+				throw e.getCause();
+			}
 		}
+		else {
+			return inCache.get();
+		}
+	}
 
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			final Key key = new Key(method, args);
-			final Supplier<Object> inCache = findInCache(key);
-			if (inCache == null) {
-				try {
-					final Object value = method.invoke(target, args);
-					addToCache(key, value);
-					return value;
-				}
-				catch (InvocationTargetException e) {
-					throw e.getCause();
-				}
+	@Nullable
+	private Supplier<Object> findInCache(Key key) {
+		return lock.doInReadLock(() -> {
+			final Supplier<Object> supplier;
+			if (cache.containsKey(key)) {
+				final Object value = cache.get(key);
+				supplier = () -> value;
 			}
 			else {
-				return inCache.get();
+				supplier = null;
 			}
-		}
+			return supplier;
+		});
+	}
 
-		@Nullable
-		private Supplier<Object> findInCache(Key key) {
-			final Lock lock = rwLock.readLock();
-			lock.lock();
-			try {
-				if (cache.containsKey(key)) {
-					final Object value = cache.get(key);
-					return () -> value;
-				}
-				else {
-					return null;
-				}
-			}
-			finally {
-				lock.unlock();
-			}
-		}
-
-		private void addToCache(Key key, Object value) {
-			final Lock lock = rwLock.writeLock();
-			lock.lock();
-			try {
-				cache.put(key, value);
-			}
-			finally {
-				lock.unlock();
-			}
-		}
+	private void addToCache(Key key, Object value) {
+		lock.doInWriteLock(() -> cache.put(key, value));
 	}
 }

@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -40,7 +39,7 @@ public final class TracingFactory<T> implements FactoryBean<T>, InitializingBean
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		//noinspection unchecked
-		this.proxy = (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, new Handler(LOGGER, target));
+		this.proxy = (T) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{targetInterface}, this::invokeTarget);
 	}
 
 	@Override
@@ -58,48 +57,45 @@ public final class TracingFactory<T> implements FactoryBean<T>, InitializingBean
 		return true;
 	}
 
-	private class Handler implements InvocationHandler {
-		private final Logger logger;
-		private final T target;
-
-		public Handler(Logger logger, T target) {
-			this.logger = logger;
-			this.target = target;
-		}
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			final long start = System.nanoTime();
-			Throwable t = null;
-			int nbItems = 0;
-			try {
-				final Object result = method.invoke(target, args);
-				if (result != null) {
-					if (result instanceof Collection) {
-						nbItems = ((Collection) result).size();
-					}
-					else {
-						nbItems = 1;
-					}
+	/**
+	 * Invocation de l'implémentation "target" en prenant soin de mesurer le temps écoulé et de logguer les paramètres d'appel
+	 * @param proxy instance de proxy
+	 * @param method la méthode à appeler
+	 * @param args les arguments à passer à la méthode en question
+	 * @return la valeur renvoyée par l'implémentation "target"
+	 * @throws Throwable l'exception renvoyée, éventuellement, par l'implémentation "target"
+	 */
+	private Object invokeTarget(Object proxy, Method method, Object[] args) throws Throwable {
+		final long start = System.nanoTime();
+		Throwable t = null;
+		int nbItems = 0;
+		try {
+			final Object result = method.invoke(target, args);
+			if (result != null) {
+				if (result instanceof Collection) {
+					nbItems = ((Collection) result).size();
 				}
-				return result;
+				else {
+					nbItems = 1;
+				}
 			}
-			catch (InvocationTargetException e) {
-				t = e.getCause();
-				throw t;
-			}
-			catch (Throwable e) {
-				t = e;
-				throw t;
-			}
-			finally {
-				final long end = System.nanoTime();
-				final String exceptionPart = t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass().getName());
-				logger.info(String.format("(%d ms) %s.%s%s => %d item(s)%s",
-				                          TimeUnit.NANOSECONDS.toMillis(end - start),
-				                          targetInterface.getSimpleName(), method.getName(), Arrays.toString(args),
-				                          nbItems, exceptionPart));
-			}
+			return result;
+		}
+		catch (InvocationTargetException e) {
+			t = e.getCause();
+			throw t;
+		}
+		catch (Throwable e) {
+			t = e;
+			throw t;
+		}
+		finally {
+			final long end = System.nanoTime();
+			final String exceptionPart = t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass().getName());
+			LOGGER.info(String.format("(%d ms) %s.%s%s => %d item(s)%s",
+			                          TimeUnit.NANOSECONDS.toMillis(end - start),
+			                          targetInterface.getSimpleName(), method.getName(), Arrays.toString(args),
+			                          nbItems, exceptionPart));
 		}
 	}
 }
