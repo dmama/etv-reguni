@@ -52,7 +52,7 @@ public class TableFillerWithCivilValues {
 
 	private static final String dbDriverClassName = "oracle.jdbc.OracleDriver";
 
-	private static final String dbUrl = "jdbc:oracle:thin:@sli2578v.etat-de-vaud.ch:1527/UNIREGI";
+	private static final String dbUrl = "jdbc:oracle:thin:@sli2824v.etat-de-vaud.ch:1527/UNIREGI";
 	private static final String dbUser = "UNIREG";
 	private static final String dbPassword = "nfha6_bwixik";
 
