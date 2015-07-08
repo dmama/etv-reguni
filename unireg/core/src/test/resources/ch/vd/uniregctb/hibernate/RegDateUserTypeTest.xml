@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TEST_DATA">
+    <column>ID</column>
+    <column>FULLDATE</column>
+    <column>PARTIALDATE</column>
+    <row>
+      <value>1</value>
+      <value>19530312</value>
+      <value>19530000</value>
+    </row>
+    <row>
+      <value>2</value>
+      <value>19431009</value>
+      <value>19431000</value>
+    </row>
+    <row>
+      <value>3</value>
+      <value>20031022</value>
+      <value>20081224</value>
+    </row>
+    <row>
+      <value>4</value>
+      <value>19431000</value>
+      <value>19431000</value>
+    </row>
+    <row>
+      <value>5</value>
+      <value>19430000</value>
+      <value>19430000</value>
+    </row>
+  </table>
+</dataset>
