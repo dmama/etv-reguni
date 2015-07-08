@@ -416,6 +416,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 					map.put(MODIF_ADRESSE, Boolean.TRUE);
 					map.put(ADR_P, Boolean.TRUE);
 				}
+				if (SecurityHelper.isGranted(securityProvider,Role.GEST_DECISION_ACI,visa,oid)) {
+					map.put(FISCAL_DECISION_ACI, Boolean.TRUE);
+				}
 			}
 			return map;
 		}

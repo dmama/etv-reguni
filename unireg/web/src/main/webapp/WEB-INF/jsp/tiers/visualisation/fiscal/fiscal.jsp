@@ -3,8 +3,9 @@
 
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 <c:set var="showEditLink" value="${autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
+<c:set var="hasDroitGestionDecision" value="${autorisations.decisionsAci}" />
 <c:set var="showTimelineLink" value="${false}" />
-<c:set var="showMessagePresenceDecision" value="${command.decisionRecente && ! showEditLink}" />
+<c:set var="showMessagePresenceDecision" value="${command.decisionRecente && ! hasDroitGestionDecision}" />
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux && command.natureTiers != 'DebiteurPrestationImposable'}" />
 </authz:authorize>
