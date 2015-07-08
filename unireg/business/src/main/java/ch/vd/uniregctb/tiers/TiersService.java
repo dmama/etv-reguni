@@ -1483,7 +1483,6 @@ public interface TiersService {
 	 * @param dateFin la date de fin à utiliser
 	 */
 	void closeAllegementFiscal(AllegementFiscal af, RegDate dateFin);
-    boolean isSousInfluenceDecisions(Contribuable ctb);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre
