@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
@@ -18,6 +19,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -28,6 +30,8 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static org.junit.Assert.assertTrue;
 
 public class AutorisationCacheTest extends WebTest {
 
@@ -210,4 +214,187 @@ public class AutorisationCacheTest extends WebTest {
 		Assert.assertTrue(cache.hasCachedData(ids.ppElle, visaOperateur, 5));
 		Assert.assertTrue(cache.hasCachedData(ids.ppMenageCommun, visaOperateur, 5));
 	}
+
+	@Test
+	public void testEvictionContribuableDepuisCtbAvecDecisionAci() throws Exception {
+
+		final String visaOperateurAvecDroitDecision = "XXXXX";
+		final String visaOperateurSansDroitDecision = "YYYYY";
+
+
+		// extrait du profile OID
+		serviceSecurite.setUp(new MockServiceSecuriteService() {
+			@Override
+			protected void init() {
+				addOperateur(visaOperateurAvecDroitDecision, 42L, Role.VISU_ALL, Role.GEST_DECISION_ACI, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
+				addOperateur(visaOperateurSansDroitDecision, 42L, Role.VISU_ALL, Role.MODIF_VD_ORD, Role.MODIF_HAB_DEBPUR, Role.FOR_AUTRE);
+			}
+		});
+
+
+		final long noIndividuLui = 236723537L;
+		final long noIndividuElle = 231923587L;
+		final long noIndividuElleEx = 236736537L;
+		final class IdsDecision {
+			public Long idOriginal;
+			Long idNouvel;
+		}
+		final class Ids {
+			long ppLui;
+			long ppElle;
+			long ppElleEx;
+			long menageCommun;
+			long menageCommunEx;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addNonHabitant("Albert", "Dubourg", null, Sexe.MASCULIN);
+				final PersonnePhysique mm = addNonHabitant("Juliane", "Dubourg", null, Sexe.FEMININ);
+				final PersonnePhysique mmEx = addNonHabitant("Valentine", "Dubourg", null, Sexe.FEMININ);
+				final int anneeFinAncienCouple = RegDate.get().year() - 4;
+				final int anneeDebutNouveauCouple = RegDate.get().year() - 3;
+				EnsembleTiersCouple etcEx = addEnsembleTiersCouple(m, mmEx, date(2001, 3, 7), date(anneeFinAncienCouple, 5, 1));
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(m, mm, date(anneeDebutNouveauCouple, 5, 7), null);
+				final MenageCommun mc = etc.getMenage();
+				final MenageCommun mcEx = etcEx.getMenage();
+				final Ids ids = new Ids();
+				ids.ppLui = m.getNumero();
+				ids.ppElle = mm.getNumero();
+				ids.ppElleEx = mmEx.getNumero();
+				ids.menageCommun = mc.getNumero();
+				ids.menageCommunEx = mcEx.getNumero();
+
+				return ids;
+			}
+		});
+
+		// mise en place decision
+		final IdsDecision idsDecision = doInNewTransactionAndSession(new TransactionCallback<IdsDecision>() {
+			@Override
+			public IdsDecision doInTransaction(TransactionStatus status) {
+				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				DecisionAci d = addDecisionAci(personneEx, date(2013, 11, 1), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
+				final IdsDecision idDec = new IdsDecision();
+				idDec.idOriginal = d.getId();
+				return idDec;
+			}
+		});
+
+
+		// vérification de la situation sur le nouveau couple,
+		//tout le monde sous influence de la décision aci posé sur l'ex, c'est la nouvelle femme qui va être contente ....
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique ppLui = (PersonnePhysique) tiersDAO.get(ids.ppLui);
+				Assert.assertNotNull(ppLui);
+				assertTrue(tiersService.isSousInfluenceDecisions(ppLui));
+
+				final MenageCommun nouveauMc = (MenageCommun) tiersDAO.get(ids.menageCommun);
+				Assert.assertNotNull(nouveauMc);
+				assertTrue(tiersService.isSousInfluenceDecisions(nouveauMc));
+
+				final PersonnePhysique ppElle = (PersonnePhysique) tiersDAO.get(ids.ppElle);
+				Assert.assertNotNull(ppElle);
+				assertTrue(tiersService.isSousInfluenceDecisions(ppElle));
+			}
+		});
+
+		// contenu du cache -> vide
+		Assert.assertFalse(cache.hasCachedData(ids.ppLui, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElle, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElleEx, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommun, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5));
+
+		Assert.assertFalse(cache.hasCachedData(ids.ppLui, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElle, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElleEx, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommun, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommunEx, visaOperateurSansDroitDecision, 5));
+
+		// droit de modification du fiscal, c'est normal
+		Assert.assertTrue(cache.getAutorisations(ids.ppLui, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElle, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElleEx, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommun, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+
+		//Pas le droit de modif sur le fiscal à cause présence de la decision
+		Assert.assertFalse(cache.getAutorisations(ids.ppLui, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertFalse(cache.getAutorisations(ids.ppElle, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertFalse(cache.getAutorisations(ids.ppElleEx, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertFalse(cache.getAutorisations(ids.menageCommun, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertFalse(cache.getAutorisations(ids.menageCommunEx, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+
+		// contenu du cache -> plein
+		Assert.assertTrue(cache.hasCachedData(ids.ppLui, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElle, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElleEx, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommun, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5));
+
+		Assert.assertTrue(cache.hasCachedData(ids.ppLui, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElle, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElleEx, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommun, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommunEx, visaOperateurSansDroitDecision, 5));
+
+		//fermeture Decision
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			public void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique personneEx = (PersonnePhysique) tiersDAO.get(ids.ppElleEx);
+				DecisionAci d = personneEx.getDecisionsSorted().get(0);
+				final RegDate dateFin = date(RegDate.get().year() - 2, 12, 31);
+				d.setDateFin(dateFin);
+
+			}
+		});
+
+		//Cache vide pour tout le monde
+		Assert.assertFalse(cache.hasCachedData(ids.ppLui, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElle, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElleEx, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommun, visaOperateurAvecDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5));
+
+		Assert.assertFalse(cache.hasCachedData(ids.ppLui, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElle, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.ppElleEx, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommun, visaOperateurSansDroitDecision, 5));
+		Assert.assertFalse(cache.hasCachedData(ids.menageCommunEx, visaOperateurSansDroitDecision, 5));
+		// droit de modification du fiscal, c'est normal
+		Assert.assertTrue(cache.getAutorisations(ids.ppLui, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElle, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElleEx, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommun, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5).isDonneesFiscales());
+
+		//droit de modif sur le fiscal car decision aci fermée
+		Assert.assertTrue(cache.getAutorisations(ids.ppLui, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElle, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.ppElleEx, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommun, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+		Assert.assertTrue(cache.getAutorisations(ids.menageCommunEx, visaOperateurSansDroitDecision, 5).isDonneesFiscales());
+
+		// contenu du cache -> plein
+		Assert.assertTrue(cache.hasCachedData(ids.ppLui, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElle, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElleEx, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommun, visaOperateurAvecDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommunEx, visaOperateurAvecDroitDecision, 5));
+
+		Assert.assertTrue(cache.hasCachedData(ids.ppLui, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElle, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.ppElleEx, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommun, visaOperateurSansDroitDecision, 5));
+		Assert.assertTrue(cache.hasCachedData(ids.menageCommunEx, visaOperateurSansDroitDecision, 5));
+
+
+	}
+
 }

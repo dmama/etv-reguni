@@ -130,6 +130,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 public class TiersServiceImpl implements TiersService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TiersServiceImpl.class);
+	private static final int AGE_MAXIMUM_LIEN_VERS_TIERS = 5;
 
 	private TiersDAO tiersDAO;
 	private EvenementFiscalService evenementFiscalService;
@@ -4987,7 +4988,8 @@ public class TiersServiceImpl implements TiersService {
 		final RegDate dateMinimalEffet = FiscalDateHelper.getDateMinimalPourEffetDecisionAci();
 
 		final Set<Contribuable> contribuablesToCheck = new HashSet<>();
-		final int ageMaximumLienVersTiers = 5;
+
+		final int ageMaximumLienVersTiers = AGE_MAXIMUM_LIEN_VERS_TIERS;
 		construireListeTiersLies(ctb,contribuablesToCheck, ageMaximumLienVersTiers);
 		//Verification sur tous les ctb trouvés
 		for (Contribuable ctbToCheck : contribuablesToCheck) {
@@ -4998,6 +5000,17 @@ public class TiersServiceImpl implements TiersService {
 
 		return false;
 	}
+
+	@Override
+	public Set<Contribuable> getContribuablesLies(Contribuable ctb, Integer ageLiaison) {
+		if (ageLiaison == null) {
+			ageLiaison = AGE_MAXIMUM_LIEN_VERS_TIERS;
+		}
+		final Set<Contribuable> listeCtbs = new HashSet<>();
+		construireListeTiersLies(ctb,listeCtbs,ageLiaison);
+		return listeCtbs;
+	}
+
 
 	private void construireListeTiersLies(Contribuable ctb, Set<Contribuable> tiersLies, int ageMaximum) {
 		if (tiersLies == null) {

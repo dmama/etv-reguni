@@ -28,6 +28,7 @@ import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -207,6 +208,41 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 
 		// [SIFISC-12035] le changement sur un tiers ménage commun peut avoir des conséquences (en termes d'accès) sur les membres du couple
 		evictHouseholdMembers(id);
+
+		//[SIFISC-15837] Il faut également mettre à jour les droits sur les tiers liés en cas de presence d'une décision ACI sur le tiers à evicter
+		evictTiersLiesParDecisionAci(id);
+	}
+
+	/**
+	 * Si le tiers possède une décision aci, tous les tiers liés doivent être evictés
+	 * @param id
+	 */
+	private void evictTiersLiesParDecisionAci(final long id) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final Set<Long> otherIds = template.execute(new TxCallback<Set<Long>>() {
+			@Override
+			public Set<Long> execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(id);
+				if (tiers instanceof Contribuable) {
+					final Contribuable ctb = (Contribuable)tiers;
+					if (ctb.hasDecisionsNonAnnulees()) {
+						final Set<Contribuable> listeCtb = tiersService.getContribuablesLies(ctb,null);
+						final Set<Long> ids = new HashSet<>(listeCtb.size());
+						for (Contribuable c : listeCtb) {
+							ids.add(c.getNumero());
+						}
+						return ids;
+					}
+				}
+				return Collections.emptySet();
+			}
+		});
+
+		// éviction du cache des tiers liés
+		for (long otherId : otherIds) {
+			evictTiers(otherId);
+		}
 	}
 
 	/**
