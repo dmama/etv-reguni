@@ -283,6 +283,130 @@ public class EvenementCivilEchGrappeProcessorTest extends AbstractEvenementCivil
 		});
 	}
 
+	//SIFISC-15545
+	@Test(timeout = 10000L)
+	public void testOrdonnancement1Deces1AnnulationDeces1NouveauDeces() throws Exception {
+
+		final long noIndividu = 2367326L;
+		final RegDate dateNaissance = date(1980, 12, 25);
+		final RegDate dateArrivee = date(1998, 12, 25);
+		final RegDate dateDeces = date(2015, 3, 25);
+		final RegDate dateSecondDeces = date(2015, 4, 25);
+		final RegDate dateAnnulationPremierDeces = date(2015, 4, 25);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Sorel", "Julien", Sexe.MASCULIN);
+				individu.setDateDeces(dateDeces);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Aubonne.CheminDesClos, null, dateArrivee, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+				return pp.getNumero();
+			}
+		});
+
+		// réception des événements civils de mariage, de correction de mariage et d'annulation
+		final long noEvtPremierDeces = 23673256L;
+		final long noEvtAnnulationPremierDeces = 32536200L;
+		final long noEvtSecondDeces = 32536263L;
+				doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(noEvtPremierDeces);
+					evt.setType(TypeEvenementCivilEch.DECES);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDeces);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setRefMessageId(null);
+
+					hibernateTemplate.merge(evt);
+				}
+
+				return null;
+			}
+		});
+
+		// traitement des événements de l'individu
+		traiterEvenements(noIndividu);
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(noEvtSecondDeces);
+					evt.setType(TypeEvenementCivilEch.DECES);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDeces);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setRefMessageId(null);
+					hibernateTemplate.merge(evt);
+				}
+
+				{
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(noEvtAnnulationPremierDeces);
+					evt.setType(TypeEvenementCivilEch.DECES);
+					evt.setAction(ActionEvenementCivilEch.ANNULATION);
+					evt.setDateEvenement(dateDeces);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setRefMessageId(null);
+					hibernateTemplate.merge(evt);
+				}
+				return null;
+			}
+		});
+
+
+		// traitement des événements de l'individu
+		traiterEvenements(noIndividu);
+		// vérification que les événements ont bien été marqués comme redondant sans traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(noEvtPremierDeces);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				}
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(noEvtSecondDeces);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				}
+				{
+					final EvenementCivilEch evt = evtCivilDAO.get(noEvtAnnulationPremierDeces);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				}
+
+				// et fiscalement, rien ne doit avoir changé
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertEquals(dateDeces,pp.getDateDeces());
+				return null;
+			}
+		});
+	}
+
 	@Test(timeout = 10000L)
 	public void testTraitementGroupeCorrectif() throws Exception {
 
