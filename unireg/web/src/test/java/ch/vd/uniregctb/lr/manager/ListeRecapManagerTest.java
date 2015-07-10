@@ -470,6 +470,68 @@ public class ListeRecapManagerTest extends WebTest {
 		assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
 	}
 
+	//SIFISC-15772
+	@Test
+	public void testLRAvecChangementPeriodeDecomptePourPeriodicitesUniques() throws Exception {
+		//Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
+		final int anneeReference = 2014;
+		final int anneeSuivante = 2015;
+
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M06, date(anneeReference, 1, 1), date(anneeReference, 12, 31));
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeSuivante, 1, 1), null);
+
+				addForDebiteur(dpi, date(2014, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+
+				final PeriodeFiscale periodeFiscaleReference = addPeriodeFiscale(anneeReference);
+				final PeriodeFiscale periodeFiscaleSuivante = addPeriodeFiscale(anneeSuivante);
+				addLRPeriodiciteUnique(dpi, date(anneeReference, 6, 1), date(anneeReference, 6, 30), periodeFiscaleReference, TypeEtatDeclaration.RETOURNEE);
+				return dpi.getNumero();
+			}
+		});
+
+		ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
+		assertNotNull(lrView);
+		RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 10, 1);
+		RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 10, 31);
+		assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+		assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+	}
+
+	@Test
+	public void testLRPourPeriodicitesUniquesSurDeuxAnnees() throws Exception {
+		//Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
+		final int anneeReference = 2014;
+		final int anneeSuivante = 2015;
+
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.UNIQUE, PeriodeDecompte.M10, date(anneeReference, 1, 1), null);
+
+				addForDebiteur(dpi, date(2014, 1, 1), MotifFor.INDETERMINE, null, null, MockCommune.Bex);
+
+				final PeriodeFiscale periodeFiscaleReference = addPeriodeFiscale(anneeReference);
+				final PeriodeFiscale periodeFiscaleSuivante = addPeriodeFiscale(anneeSuivante);
+				addLRPeriodiciteUnique(dpi, date(anneeReference, 10, 1), date(anneeReference, 10, 31), periodeFiscaleReference, TypeEtatDeclaration.RETOURNEE);
+				return dpi.getNumero();
+			}
+		});
+
+		ListeRecapDetailView lrView = lrEditManager.creerLr(dpiId);
+		assertNotNull(lrView);
+		RegDate dateDebutPeriodeAttendue = RegDate.get(anneeSuivante, 10, 1);
+		RegDate dateFinPeriodeAttendue = RegDate.get(anneeSuivante, 10, 31);
+		assertEquals(dateDebutPeriodeAttendue, lrView.getRegDateDebutPeriode());
+		assertEquals(dateFinPeriodeAttendue, lrView.getRegDateFinPeriode());
+	}
+
 	@Test
 	public void testLRForPeriodicitesUniqueSansLR() throws Exception {
 		//Ajout d'une première periodicite'final int anneeReference = RegDate.get().year();
