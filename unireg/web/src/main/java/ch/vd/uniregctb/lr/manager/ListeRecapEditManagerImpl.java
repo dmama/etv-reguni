@@ -344,31 +344,39 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private DateRange getPeriodeSuivante(DebiteurPrestationImposable dpi, Periodicite periodiciteSuivante, DeclarationImpotSource lrPrecedente) {
 		final RegDate dateDebutPeriode;
 		final RegDate dateFinPeriode;
-		final RegDate dateFinLR = lrPrecedente.getDateFin();
-		final Periodicite periodicitePrecedente = dpi.getPeriodiciteAt(dateFinLR);
+		final RegDate dateFinLRPrecedente = lrPrecedente.getDateFin();
+		final Periodicite periodicitePrecedente = dpi.getPeriodiciteAt(dateFinLRPrecedente);
+		final RegDate dateDebutPeriodeSuivante = periodiciteSuivante.getDateDebut();
 		if (periodicitePrecedente.getPeriodiciteDecompte() != periodiciteSuivante.getPeriodiciteDecompte()) {
 			//Changement de periodicite,
-			final RegDate dateDebut = periodiciteSuivante.getDateDebut();
+
 			if(periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE){
 				final PeriodeDecompte periode = periodiciteSuivante.getPeriodeDecompte();
-				final DateRange periodeUnique = periode.getPeriodeCourante(dateDebut);
+				final DateRange periodeUnique = periode.getPeriodeCourante(dateDebutPeriodeSuivante);
 				dateDebutPeriode = periodeUnique.getDateDebut();
 				dateFinPeriode =  periodeUnique.getDateFin();
 			}
 			else{
-				dateDebutPeriode = periodiciteSuivante.getDebutPeriode(dateDebut);
+				dateDebutPeriode = periodiciteSuivante.getDebutPeriode(dateDebutPeriodeSuivante);
 				dateFinPeriode =  periodiciteSuivante.getFinPeriode(dateDebutPeriode);
 			}
 		}
 		else {
 			if (periodiciteSuivante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
-				final PeriodeDecompte periode = periodicitePrecedente.getPeriodeDecompte();
-				final DateRange periodeUnique = periode.getPeriodeSuivante(dateFinLR);
+
+				final PeriodeDecompte periodeDecomptePrecedente = periodicitePrecedente.getPeriodeDecompte();
+				final PeriodeDecompte periodeDecompteSuivante = periodiciteSuivante.getPeriodeDecompte();
+				//SIFISC-15772 Si la période de décompte est differente entre les deux périodicités, il faut prendre la nouvelle sinon on se retrouve à proposer l'ancienne
+				//période de décompte
+				final PeriodeDecompte periode = periodeDecomptePrecedente == periodeDecompteSuivante ? periodeDecomptePrecedente:periodeDecompteSuivante;
+				//En cas de changement de periode de décompte il faut également changer la date de référence pour le calcul de période
+				final RegDate dateReferencePourCalculPeriode = periodeDecomptePrecedente == periodeDecompteSuivante ? dateFinLRPrecedente:dateDebutPeriodeSuivante;
+				final DateRange periodeUnique = periode.getPeriodeSuivante(dateReferencePourCalculPeriode);
 				dateDebutPeriode = periodeUnique.getDateDebut();
 				dateFinPeriode =  periodeUnique.getDateFin();
 			}
 			else {
-				dateDebutPeriode = periodicitePrecedente.getDebutPeriodeSuivante(dateFinLR);
+				dateDebutPeriode = periodicitePrecedente.getDebutPeriodeSuivante(dateFinLRPrecedente);
 				dateFinPeriode =  periodicitePrecedente.getFinPeriode(dateDebutPeriode);
 			}
 		}
