@@ -30,7 +30,7 @@ public abstract class AbstractControlRule<T extends Enum<T>> implements TaxLiabi
 		return echec;
 	}
 
-	public abstract boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException;
+	public abstract AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException;
 
 	/**
 	 * Les types d'assujettissement portés par le tiers
@@ -39,4 +39,14 @@ public abstract class AbstractControlRule<T extends Enum<T>> implements TaxLiabi
 	 * @throws ControlRuleException en cas de souci
 	 */
 	public abstract Set<T> getSourceAssujettissement(@NotNull Tiers tiers) throws ControlRuleException;
+
+	public class AssujettissementStatut {
+		 boolean isAssujetti;
+		 boolean assujettissementNonConforme;
+
+		public AssujettissementStatut(boolean isAssujetti, boolean assujettissementNonConforme) {
+			this.isAssujetti = isAssujetti;
+			this.assujettissementNonConforme = assujettissementNonConforme;
+		}
+	}
 }

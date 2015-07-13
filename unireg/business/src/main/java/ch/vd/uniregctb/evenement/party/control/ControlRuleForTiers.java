@@ -20,16 +20,18 @@ public abstract class ControlRuleForTiers<T extends Enum<T>> extends AbstractCon
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
 		//S'il y a un assujettissement sur tout ou partie de la PF (au moins 1 jour) -> CTRL OK
 		final TaxLiabilityControlResult<T> result;
-		if (isAssujetti(tiers)) {
+		final AssujettissementStatut assujettissementStatut = checkAssujettissement(tiers, aRejeter);
+		if (assujettissementStatut.isAssujetti) {
 			final Set<T> sourceAssujettissement = getSourceAssujettissement(tiers);
 			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.INITIAL, tiers.getId(), sourceAssujettissement);
 		}
 		//	Dans le cas contraire (pas un seul jour d'assujettissement)-> CTRL KO
 		else {
 			result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, null, null, null));
+			result.getEchec().setAssujetissementNonConforme(assujettissementStatut.assujettissementNonConforme);
 		}
 		return result;
 	}

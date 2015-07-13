@@ -43,7 +43,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -91,7 +91,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -140,7 +140,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -194,7 +194,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -249,7 +249,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -302,7 +302,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -359,7 +359,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -422,7 +422,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -486,7 +486,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -546,7 +546,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 
@@ -605,7 +605,7 @@ public class ControlRuleForParentPeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentPeriode.check(pp);
+				return controlRuleForParentPeriode.check(pp, null);
 			}
 		});
 

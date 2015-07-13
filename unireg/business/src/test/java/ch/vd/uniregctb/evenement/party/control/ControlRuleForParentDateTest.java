@@ -43,7 +43,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -91,7 +91,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -141,7 +141,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -193,7 +193,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -246,7 +246,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -300,7 +300,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -359,7 +359,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -423,7 +423,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -489,7 +489,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -550,7 +550,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 
@@ -610,7 +610,7 @@ public class ControlRuleForParentDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idFille);
-				return controlRuleForParentDate.check(pp);
+				return controlRuleForParentDate.check(pp, null);
 			}
 		});
 

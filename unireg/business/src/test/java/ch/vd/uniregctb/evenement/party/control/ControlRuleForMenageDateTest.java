@@ -44,7 +44,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForMenageDate.check(pp);
+				return controlRuleForMenageDate.check(pp, null);
 			}
 		});
 
@@ -97,7 +97,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenageDate.check(pp);
+				return controlRuleForMenageDate.check(pp, null);
 			}
 		});
 
@@ -150,7 +150,7 @@ public class ControlRuleForMenageDateTest extends AbstractControlTaxliabilityTes
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenageDate.check(pp);
+				return controlRuleForMenageDate.check(pp, null);
 			}
 		});
 

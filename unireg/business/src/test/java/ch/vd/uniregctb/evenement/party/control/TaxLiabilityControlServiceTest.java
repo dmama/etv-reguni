@@ -425,6 +425,161 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		assertEquals(ids.idMc, result.getEchec().getMenageCommunIds().get(0));
 	}
 
+
+	@Test
+	public void testRunControlAssujettissementPPSouricerPurObtenantPermisC() throws Exception {
+
+		final long noInd = 1244;
+		class Ids {
+			Long idpp;
+			Long idMc;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				ids.idpp = pp.getId();
+				addForPrincipalSource(pp, date(2013, 9, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2014, 3, 26), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon.getNoOFS());
+				addForPrincipal(pp, date(2014, 3, 27), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon);
+
+
+				return null;
+
+			}
+		});
+		final int periode = 2014;
+		final boolean rechercheMenageCommun = true;
+		final boolean rechercheParent = false;
+		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(ids.idpp,result);
+	}
+
+	@Test
+	public void testRunControlAssujettissementPPSouricerAvecMenageAssuejettiOrdinaire() throws Exception {
+
+		final long noInd = 1244;
+		class Ids {
+			Long idpp;
+			Long idMc;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				ids.idpp = pp.getId();
+				addForPrincipalSource(pp, date(2013, 9, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2014, 3, 26), MotifFor.PERMIS_C_SUISSE, MockCommune.Moudon.getNoOFS());
+
+				addForPrincipal(pp, date(2014, 3, 27), MotifFor.PERMIS_C_SUISSE,date(2014, 8, 13), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Moudon);
+
+				final RegDate dateMariage = date(2014, 8, 14);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
+				addForPrincipal(menage,dateMariage,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,MockCommune.Moudon);
+				ids.idMc = menage.getId();
+
+
+				return null;
+
+			}
+		});
+		final int periode = 2014;
+		final boolean rechercheMenageCommun = true;
+		final boolean rechercheParent = false;
+		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toReject);
+			}
+		});
+
+		assertTiersAssujetti(ids.idMc,result);
+	}
+
+
+
+
+	@Test
+	public void testRunControlAssujettissementPPSouricerAvecDemandeMenageCommun() throws Exception {
+
+		final long noInd = 1244;
+		class Ids {
+			Long idpp;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noInd, date(1994, 3, 12), "RuppertPeriode", "Jeroma", Sexe.FEMININ);
+			}
+		});
+
+		// on crée un habitant vaudois ordinaire
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				ids.idpp = pp.getId();
+				addForPrincipalSource(pp, date(2013, 9, 5), MotifFor.ARRIVEE_HS, null, null, MockCommune.Moudon.getNoOFS());
+
+
+
+
+
+				return null;
+
+			}
+		});
+		final int periode = 2014;
+		final boolean rechercheMenageCommun = true;
+		final boolean rechercheParent = false;
+		final Set<TypeAssujettissement> toReject = EnumSet.of(TypeAssujettissement.SOURCE_PURE);
+
+		final TaxLiabilityControlResult<TypeAssujettissement> result = doInNewTransaction(new TxCallback<TaxLiabilityControlResult<TypeAssujettissement>>() {
+			@Override
+			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
+				return controlService.doControlOnPeriod(pp, periode, rechercheMenageCommun, rechercheParent, false, toReject);
+			}
+		});
+
+		assertAssujetissmentModeImpositionNonConforme(result);
+		assertEquals(TaxLiabilityControlEchec.EchecType.CONTROLE_NUMERO_KO, result.getEchec().getType());
+	}
+
+
 	//N0A1.2a - KO
 	@Test
 	public void testRunControlAssujettissementTiersSansMenageKO() throws Exception {

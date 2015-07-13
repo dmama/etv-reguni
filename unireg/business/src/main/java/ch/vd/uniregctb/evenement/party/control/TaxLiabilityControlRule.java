@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.party.control;
 
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.tiers.Tiers;
@@ -9,5 +11,5 @@ import ch.vd.uniregctb.tiers.Tiers;
  */
 public interface TaxLiabilityControlRule<T extends Enum<T>> {
 
-	TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException;
+	TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException;
 }
