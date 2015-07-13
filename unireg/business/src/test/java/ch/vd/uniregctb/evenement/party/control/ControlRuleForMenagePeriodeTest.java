@@ -44,7 +44,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 
@@ -92,7 +92,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 
@@ -146,7 +146,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 
@@ -205,7 +205,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 
@@ -259,7 +259,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 
@@ -306,7 +306,7 @@ public class ControlRuleForMenagePeriodeTest extends AbstractControlTaxliability
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idpp);
-				return controlRuleForMenagePeriode.check(pp);
+				return controlRuleForMenagePeriode.check(pp, null);
 			}
 		});
 

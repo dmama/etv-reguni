@@ -21,8 +21,8 @@ public abstract class ControlRuleForTiersComposite<T extends Enum<T>> extends Ab
 		this.controlRule = controlRule;
 	}
 
-	public final boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
-		return controlRule.isAssujetti(tiers);
+	public final AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
+		return controlRule.checkAssujettissement(tiers, aRejeter);
 	}
 
 	@Override

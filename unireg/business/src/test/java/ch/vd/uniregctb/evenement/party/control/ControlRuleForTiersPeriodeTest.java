@@ -39,7 +39,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp);
+				return controlRuleForTiersPeriode.check(pp, null);
 			}
 		});
 		assertTiersAssujetti(idPP, result);
@@ -72,7 +72,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp);
+				return controlRuleForTiersPeriode.check(pp, null);
 			}
 		});
 
@@ -106,7 +106,7 @@ public class ControlRuleForTiersPeriodeTest extends AbstractControlTaxliabilityT
 			@Override
 			public TaxLiabilityControlResult<TypeAssujettissement> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersPeriode.check(pp);
+				return controlRuleForTiersPeriode.check(pp, null);
 			}
 		});
 

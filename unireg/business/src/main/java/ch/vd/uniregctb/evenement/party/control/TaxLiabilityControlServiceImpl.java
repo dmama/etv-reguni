@@ -69,11 +69,30 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 	}
 
 	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule<T>> rules, Set<T> aRejeter) throws ControlRuleException {
-		final TaxLiabilityControlResult<T> analyse = doControl(tiers, rules);
-		if (aRejeter == null || aRejeter.isEmpty()) {
-			return analyse;
+
+		TaxLiabilityControlResult<T> echecARetourner = null;
+		TaxLiabilityControlResult<T> analyse = null;
+		for (TaxLiabilityControlRule<T> taxLiabilityControlRule : rules) {
+			analyse = taxLiabilityControlRule.check(tiers,aRejeter);
+			if (analyse.getIdTiersAssujetti() != null) {
+				// on a trouvé un controle OK on retourne le résultat
+				return analyse;
+			}
+			else{
+				final TaxLiabilityControlEchec.EchecType echecType = analyse.getEchec().getType();
+				if(echecType == TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE) {
+					if (echecARetourner == null || !echecARetourner.getEchec().isAssujetissementNonConforme()) {
+						echecARetourner = analyse;
+					}
+				}
+				else{
+					echecARetourner = analyse;
+				}
+			}
 		}
-		return verifierAssujettissement(analyse, aRejeter);
+
+		//On a un controle Ko
+		return echecARetourner;
 	}
 
 	private <T extends Enum<T>> TaxLiabilityControlResult<T> verifierAssujettissement(TaxLiabilityControlResult<T> analyse, Set<T> aRejeter) {
@@ -115,19 +134,7 @@ public class TaxLiabilityControlServiceImpl implements TaxLiabilityControlServic
 		return analyse;
 	}
 
-	private <T extends Enum<T>> TaxLiabilityControlResult<T> doControl(@NotNull Tiers tiers, List<TaxLiabilityControlRule<T>> rules) throws ControlRuleException {
-		TaxLiabilityControlResult<T> result = null;
-		for (TaxLiabilityControlRule<T> taxLiabilityControlRule : rules) {
-			result = taxLiabilityControlRule.check(tiers);
-			if (result.getIdTiersAssujetti() != null) {
-				// on a trouvé un controle OK on retourne le résultat
-				return result;
-			}
-		}
 
-		//On a un controle Ko
-		return result;
-	}
 
 	private <T extends Enum<T>> List<TaxLiabilityControlRule<T>> buildRuleList(Tiers tiers, ControlRuleForTiers<T> ruleTiers, ControlRuleForMenage<T> ruleMenage, ControlRuleForParent<T> ruleParents) {
 

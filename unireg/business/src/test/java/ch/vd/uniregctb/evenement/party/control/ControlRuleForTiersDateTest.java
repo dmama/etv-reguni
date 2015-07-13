@@ -46,7 +46,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 			    final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersDate.check(pp);
+				return controlRuleForTiersDate.check(pp, null);
 			}
 		});
 
@@ -79,7 +79,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersDate.check(pp);
+				return controlRuleForTiersDate.check(pp, null);
 			}
 		});
 
@@ -113,7 +113,7 @@ public class ControlRuleForTiersDateTest extends AbstractControlTaxliabilityTest
 			@Override
 			public TaxLiabilityControlResult<ModeImposition> execute(TransactionStatus status) throws Exception {
 		        final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idPP);
-				return controlRuleForTiersDate.check(pp);
+				return controlRuleForTiersDate.check(pp, null);
 			}
 		});
 

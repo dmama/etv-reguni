@@ -22,20 +22,25 @@ public abstract class ControlRuleForMenage<T extends Enum<T>> extends ControlRul
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
 		final TaxLiabilityControlResult<T> result;
 		final List<EnsembleTiersCouple> listeCouples = tiers instanceof PersonnePhysique ? getEnsembleTiersCouple((PersonnePhysique) tiers) : null;
 		if (listeCouples != null && !listeCouples.isEmpty()) {
 			//recherche des menages communs assujettis sur la période
 			final List<Long> menagesCommunsAssujettis = new ArrayList<>();
 			final List<Long> menagesCommunsNonAssujettis = new ArrayList<>();
+			boolean assujettissementNonConformeTrouve = false;
 			for (EnsembleTiersCouple couple : listeCouples) {
 				final MenageCommun menageCommun = couple.getMenage();
-				if (isAssujetti(menageCommun)) {
+				final AssujettissementStatut assujettissementStatut = checkAssujettissement(menageCommun, aRejeter);
+				if (assujettissementStatut.isAssujetti) {
 					menagesCommunsAssujettis.add(menageCommun.getId());
 				}
 				else {
 					menagesCommunsNonAssujettis.add(menageCommun.getId());
+					if (assujettissementStatut.assujettissementNonConforme) {
+						assujettissementNonConformeTrouve = true;
+					}
 				}
 
 			}
@@ -57,6 +62,7 @@ public abstract class ControlRuleForMenage<T extends Enum<T>> extends ControlRul
 				final TaxLiabilityControlEchec echec;
 				if (!menagesCommunsNonAssujettis.isEmpty()) {
 					echec = createEchec(TaxLiabilityControlEchec.EchecType.UN_PLUSIEURS_MC_NON_ASSUJETTI_TROUVES, menagesCommunsNonAssujettis, null, null);
+					echec.setAssujetissementNonConforme(assujettissementNonConformeTrouve);
 				}
 				else {
 					echec = createEchec(TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE, null, null, null);

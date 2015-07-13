@@ -27,13 +27,25 @@ public class ControlRuleForTiersDate extends ControlRuleForTiers<ModeImposition>
 	}
 
 	@Override
-	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
-		return hasForPrincipalVaudois(tiers);
+	public AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
+		return hasForPrincipalVaudois(tiers,aRejeter);
 	}
 
-	private boolean hasForPrincipalVaudois(@NotNull Tiers tiers) throws ControlRuleException {
+	private AssujettissementStatut hasForPrincipalVaudois(@NotNull Tiers tiers, Set<ModeImposition> aRejeter) throws ControlRuleException {
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(date);
-		return forFiscalPrincipal != null && forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		final boolean modeImpositionNonConforme = isModeImpositionNonConforme(aRejeter, forFiscalPrincipal);
+		final boolean isAssujetti = forFiscalPrincipal != null && forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && !modeImpositionNonConforme;
+
+		return  new AssujettissementStatut(isAssujetti,modeImpositionNonConforme);
+	}
+
+	private boolean isModeImpositionNonConforme(Set<ModeImposition> aRejeter, ForFiscalPrincipal forFiscalPrincipal) {
+
+		if (aRejeter == null || aRejeter.isEmpty() || forFiscalPrincipal==null) {
+			return false;
+		}
+
+		return aRejeter.contains(forFiscalPrincipal.getModeImposition());
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.party.control;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 	}
 
 	@Override
-	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> check(@NotNull Tiers tiers, Set<T> aRejeter) throws ControlRuleException {
 		final TaxLiabilityControlResult<T> result;
 
 		//Recherche des parents:
@@ -40,12 +41,13 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 			final PersonnePhysique parent = (PersonnePhysique) tiersService.getTiers(parentId);
 			if (parent != null) {
 				// le parent est assujetti tout va bien
-				if (isAssujetti(parent)) {
+				final AssujettissementStatut assujettissementStatut = checkAssujettissement(parent, aRejeter);
+				if (assujettissementStatut.isAssujetti) {
 					final Set<T> sourceAssujettissement = getSourceAssujettissement(parent);
 					result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.PARENT, parentId, sourceAssujettissement);
 				}
 				else {
-					final TaxLiabilityControlResult<T> resultMenagesParent = rechercheAssujettisementSurMenage(parent);
+					final TaxLiabilityControlResult<T> resultMenagesParent = rechercheAssujettisementSurMenage(parent,aRejeter);
 					final Long idTiersAssujetti = resultMenagesParent.getIdTiersAssujetti();
 					if (idTiersAssujetti != null) {
 						result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.MENAGE_COMMUN_PARENT, resultMenagesParent);
@@ -54,6 +56,15 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 						//on est dans un echec du controle d'assujetissement sur le ménage du parent
 						final List<Long> ParentmenageCommunIds = resultMenagesParent.getEchec().getMenageCommunIds();
 						result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, ParentmenageCommunIds, Arrays.asList(parentId)));
+						//Si aucun menage trouvée, on reste sur les premières causes d'echecs notamment un assujettissement non conforme
+						if (resultMenagesParent.getEchec().getType() == TaxLiabilityControlEchec.EchecType.AUCUN_MC_ASSOCIE_TROUVE) {
+							result.getEchec().setAssujetissementNonConforme(assujettissementStatut.assujettissementNonConforme);
+						}
+						else{
+							//On prend les status du ménage trouvé
+							result.getEchec().setAssujetissementNonConforme(resultMenagesParent.getEchec().isAssujetissementNonConforme());
+						}
+
 					}
 				}
 			}
@@ -62,7 +73,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 			}
 		}
 		else if (parentes.size() == 2) {
-			result = checkAppartenanceMenageAssujetti(parentes);
+			result = checkAppartenanceMenageAssujetti(parentes,aRejeter);
 		}
 		else {
 			final List<Long> parentsIds = new ArrayList<>(parentes.size());
@@ -74,7 +85,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 		return result;
 	}
 
-	public TaxLiabilityControlResult<T> checkAppartenanceMenageAssujetti(List<Parente> parenteParents) throws ControlRuleException {
+	public TaxLiabilityControlResult<T> checkAppartenanceMenageAssujetti(List<Parente> parenteParents, Set<T> aRejeter) throws ControlRuleException {
 		final Parente rapportParent1 = parenteParents.get(0);
 		final PersonnePhysique parent1 = (PersonnePhysique) tiersService.getTiers(rapportParent1.getObjetId());
 
@@ -82,10 +93,10 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 		final PersonnePhysique parent2 = (PersonnePhysique) tiersService.getTiers(rapportParent2.getObjetId());
 
 		final Long parent1Id = parent1.getId();
-		final TaxLiabilityControlResult<T> resultMenageParent1 = rechercheAssujettisementSurMenage(parent1);
+		final TaxLiabilityControlResult<T> resultMenageParent1 = rechercheAssujettisementSurMenage(parent1, aRejeter);
 
 		final Long parent2Id = parent2.getId();
-		final TaxLiabilityControlResult<T> resultMenageParent2 = rechercheAssujettisementSurMenage(parent2);
+		final TaxLiabilityControlResult<T> resultMenageParent2 = rechercheAssujettisementSurMenage(parent2, aRejeter);
 
 		final Long idMenageAssujettiParent1 = resultMenageParent1.getIdTiersAssujetti();
 		final Long idMenageAssujettiParent2 = resultMenageParent2.getIdTiersAssujetti();
@@ -97,13 +108,14 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 			result = new TaxLiabilityControlResult<>(TaxLiabilityControlResult.Origine.MENAGE_COMMUN_PARENT, idMenageAssujettiParent1, sourceAssujettissement);
 		}
 		else {
+			 boolean assujettissementNonConforme  = false;
 			//Liste des parents
 			final List<Long> parentsIds = new ArrayList<>();
 			parentsIds.add(parent1Id);
 			parentsIds.add(parent2Id);
 
 			//Liste des ménages communs des parents
-			final List<Long> listeMenage = new ArrayList<>();
+			final Set<Long> listeMenage = new HashSet<>();
 			if (idMenageAssujettiParent1 != null) {
 				listeMenage.add(idMenageAssujettiParent1);
 			}
@@ -116,15 +128,25 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 			final TaxLiabilityControlEchec echecParent1 = resultMenageParent1.getEchec();
 			if (echecParent1 != null && echecParent1.getMenageCommunIds() != null) {
 				listeMenage.addAll(echecParent1.getMenageCommunIds());
+				if (echecParent1.isAssujetissementNonConforme()) {
+					assujettissementNonConforme = true;
+				}
+
 			}
 
 			final TaxLiabilityControlEchec echecParent2 = resultMenageParent2.getEchec();
 			if (echecParent2 != null &&  echecParent2.getMenageCommunIds() != null) {
 				listeMenage.addAll(echecParent2.getMenageCommunIds());
+				if (echecParent2.isAssujetissementNonConforme()) {
+					assujettissementNonConforme = true;
+				}
 			}
 
-			final List<Long> menageCommunParentsIds = listeMenage.isEmpty() ? null : listeMenage;
+			final List<Long> menageCommunParentsIds = listeMenage.isEmpty() ? null : new ArrayList<>(listeMenage);
 			result = new TaxLiabilityControlResult<>(createEchec(TaxLiabilityControlEchec.EchecType.CONTROLE_SUR_PARENTS_KO, null, menageCommunParentsIds, parentsIds));
+			//Si au moins un des parents à un assujettissement non conforme, on le remonte
+			result.getEchec().setAssujetissementNonConforme(assujettissementNonConforme);
+
 		}
 
 		return result;
@@ -132,7 +154,7 @@ public abstract class ControlRuleForParent<T extends Enum<T>> extends ControlRul
 
 	protected abstract List<Parente> extractParents(List<Parente> parentes);
 
-	private TaxLiabilityControlResult<T> rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent) throws ControlRuleException{
-		return ruleForMenage.check(parent);
+	private TaxLiabilityControlResult<T> rechercheAssujettisementSurMenage(@NotNull PersonnePhysique parent, Set<T> aRejeter) throws ControlRuleException{
+		return ruleForMenage.check(parent, aRejeter);
 	}
 }

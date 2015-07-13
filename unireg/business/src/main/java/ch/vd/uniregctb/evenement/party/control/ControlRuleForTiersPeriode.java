@@ -31,8 +31,8 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujett
 	}
 
 	@Override
-	public boolean isAssujetti(@NotNull Tiers tiers) throws ControlRuleException {
-		return isAssujettiSurPeriode(tiers);
+	public AssujettissementStatut checkAssujettissement(@NotNull Tiers tiers, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
+		return assujettissementSurPeriode(tiers, aRejeter);
 	}
 
 	@Override
@@ -47,11 +47,28 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujett
 		return types;
 	}
 
-	private boolean isAssujettiSurPeriode(@NotNull Tiers tiers) throws ControlRuleException {
-		final List<Assujettissement> assujetissements = getAssujettissements(tiers);
+	private AssujettissementStatut assujettissementSurPeriode(@NotNull Tiers tiers, Set<TypeAssujettissement> aRejeter) throws ControlRuleException {
 
-		//return vrai si le contribuable est assutti sur la periode
-		return (assujetissements != null && !assujetissements.isEmpty());
+		final Set<TypeAssujettissement> typeAssujettissementsTrouves = getSourceAssujettissement(tiers);
+		AssujettissementStatut statut = null;
+		final boolean aucunAssujettissement = typeAssujettissementsTrouves == null || typeAssujettissementsTrouves.isEmpty();
+		final boolean pasDeTypeAssujettissementARejeter = aRejeter == null || aRejeter.isEmpty();
+		if (aucunAssujettissement) {
+			return new AssujettissementStatut(false,false);
+		}
+		//assujetissement trouvé, aucun type à rejeter
+
+		if (pasDeTypeAssujettissementARejeter) {
+			return new AssujettissementStatut(true,false);
+		}
+
+		//A ce stade on a des assujetissements et des types d'assujettissement à rejeter
+		typeAssujettissementsTrouves.removeAll(aRejeter);
+
+		final boolean isAssujetti = !typeAssujettissementsTrouves.isEmpty();
+		final boolean assujettissementNonConforme = typeAssujettissementsTrouves.isEmpty();
+		return new AssujettissementStatut(isAssujetti, assujettissementNonConforme);
+
 	}
 
 	private List<Assujettissement> getAssujettissements(Tiers tiers) throws ControlRuleException {
@@ -62,6 +79,20 @@ public class ControlRuleForTiersPeriode extends ControlRuleForTiers<TypeAssujett
 			final String message = String.format("Exception lors du calcul d'assujetissement pour le tiers %d", tiers.getId());
 			throw new ControlRuleException(message, e);
 		}
+	}
+	private boolean assujetissementConforme(List<Assujettissement>trouves, Set<TypeAssujettissement> aRejeter){
+		if (trouves == null || trouves.isEmpty()) {
+			return true;
+		}
+		if (aRejeter == null || aRejeter.isEmpty()) {
+			return true;
+		}
+		for (Assujettissement trouve : trouves) {
+			if (aRejeter.contains(trouve.getType())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
