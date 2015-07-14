@@ -22,16 +22,28 @@
                         html += '<unireg:raccourciModifier link="../efacture/edit.do?ctb=' + destinataire.ctbId + '" tooltip="Interagir avec les états e-Facture" display="label.bouton.modifier"/>';
                         html += '</td></tr></table>';
                     </authz:authorize>
-
+                    var url = document.location.toString();
                     html += '<fieldset>\n';
                     // d'abord le destinataire
-                    html += '<legend><span><fmt:message key="label.efacture.historique.destinataire" /></span></legend>\n';
+                    if (url.indexOf("printview=true") != -1) {
+                        html += '<legend><span><fmt:message key="label.efacture.historique.destinataire.mode.print" /></span></legend>\n';
+                    }
+                    else{
+                        html += '<legend><span><fmt:message key="label.efacture.historique.destinataire" /></span></legend>\n';
+                    }
+
                     html += eFacture.buildHistoriqueDestinataire(destinataire.etats);
                     html += '</fieldset>\n';
 
                     // puis ses demandes individuelles
                     html += '<fieldset>\n';
-                    html += '<legend><span><fmt:message key="label.efacture.historique.demandes" /></span></legend>\n';
+                    if (url.indexOf("printview=true") != -1) {
+                        html += '<legend><span><fmt:message key="label.efacture.historique.demandes.mode.print" /></span></legend>\n';
+                    }
+                    else{
+                        html += '<legend><span><fmt:message key="label.efacture.historique.demandes" /></span></legend>\n';
+                    }
+
                     html += eFacture.buildHistoriqueDemandes(destinataire.ctbId, destinataire.demandes);
                     html += '</fieldset>\n';
                 }
