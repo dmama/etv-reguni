@@ -23,7 +23,7 @@ public class MockOrganisation extends Organisation {
 	                        List<DateRanged<String>> nomsAdditionels,
 	                        List<DateRanged<FormeLegale>> formeLegale,
 	                        @NotNull List<DateRanged<Long>> sites,
-	                        @NotNull List<SiteOrganisation> donneesSites,
+	                        @NotNull Map<Long, SiteOrganisation> donneesSites,
 	                        List<DateRanged<Long>> transfereA,
 	                        List<DateRanged<Long>> transferDe,
 	                        List<DateRanged<Long>> remplacePar,
@@ -31,7 +31,7 @@ public class MockOrganisation extends Organisation {
 		super(no, identifiants, nom, nomsAdditionels, formeLegale, sites, donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe);
 	}
 
-	protected void setDonneesSites(@NotNull List<SiteOrganisation> donneesSites) {
+	protected void setDonneesSites(@NotNull Map<Long, SiteOrganisation> donneesSites) {
 		super.setDonneesSites(donneesSites);
 	}
 
