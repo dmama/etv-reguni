@@ -18,8 +18,9 @@ public class BuilderHelper {
 	 * @param value La valeur à insérer
 	 * @param <K> Le type de la clé
 	 * @param <V> Le type de la valeur
+	 * @return La map de liste modifiée ou créée dans l'opération
 	 */
-	public static <K,V> void addValueToMapOfList(@Nullable Map<K, List<V>> map,
+	public static <K,V> Map<K, List<V>> addValueToMapOfList(@Nullable Map<K, List<V>> map,
 	                                             @NotNull final K key,
 	                                             @NotNull final V value) {
 		if (map == null) {
@@ -31,12 +32,22 @@ public class BuilderHelper {
 			map.put(key, l);
 		}
 		l.add(value);
+		return map;
 	}
 
-	public static <T> void addValueToList(@Nullable List<T> list, @NotNull T value) {
+	/**
+	 * Ajoute une valeur à la liste correspondant à une clé de la map.
+	 *
+	 * @param list Une liste. Si null, une nouvelle liste sera créé en place.
+	 * @param value La valeur à insérer
+	 * @param <T> Le type de la valeur
+	 * @return La liste modifiée ou créée dans l'opération
+	 */
+	public static <T> List<T> addValueToList(@Nullable List<T> list, @NotNull T value) {
 		if (list == null) {
 			list = new ArrayList<>();
 		}
 		list.add(value);
+		return list;
 	}
 }

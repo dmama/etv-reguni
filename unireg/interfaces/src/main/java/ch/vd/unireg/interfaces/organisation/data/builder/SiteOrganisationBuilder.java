@@ -48,42 +48,42 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	}
 
 	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		identifiants = BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		nom = BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		nomsAdditionnels = BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addTypeDeSite(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeDeSite valeur) {
-		BuilderHelper.addValueToList(typeDeSite, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		typeDeSite = BuilderHelper.addValueToList(typeDeSite, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addSiege(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Integer valeur) {
-		BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		siege =BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addFonction(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Fonction valeur) {
-		BuilderHelper.addValueToList(fonction, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		fonction = BuilderHelper.addValueToList(fonction, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		remplacePar = BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		enRemplacementDe = BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 

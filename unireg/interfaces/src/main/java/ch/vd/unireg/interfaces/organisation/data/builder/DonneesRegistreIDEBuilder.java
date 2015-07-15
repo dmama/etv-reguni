@@ -32,27 +32,27 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 	}
 
 	public DonneesRegistreIDEBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRegistreIDE valeur) {
-		BuilderHelper.addValueToList(status, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		status = BuilderHelper.addValueToList(status, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRegistreIDEBuilder addTypeOrganisation(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeOrganisationRegistreIDE valeur) {
-		BuilderHelper.addValueToList(typeOrganisation, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		typeOrganisation = BuilderHelper.addValueToList(typeOrganisation, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRegistreIDEBuilder addAdresseEffective(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		BuilderHelper.addValueToList(adresseEffective, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		adresseEffective = BuilderHelper.addValueToList(adresseEffective, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRegistreIDEBuilder addAdresseBoitePostale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		BuilderHelper.addValueToList(adresseBoitePostale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		adresseBoitePostale = BuilderHelper.addValueToList(adresseBoitePostale, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRegistreIDEBuilder addRaisonDeLiquidation(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull RaisonLiquidationRegistreIDE valeur) {
-		BuilderHelper.addValueToList(raisonDeLiquidation, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		raisonDeLiquidation = BuilderHelper.addValueToList(raisonDeLiquidation, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 

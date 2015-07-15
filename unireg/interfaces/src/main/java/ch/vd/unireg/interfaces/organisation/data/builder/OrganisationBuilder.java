@@ -21,7 +21,7 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
  *  En dernier, l'appel à build() crée l'entité définitive en appelant son constructeur, validant ainsi les
  *  éventuelles contraintes.
  *
- * Il y a deux types de méthodes:
+ * Il y a deux types de méthodes:1
  * - les méthodes commençant par "add":   Ajouter des éléments un par un à une propriété collection de l'entité.
  * - les méthodes commençant par "with":  Spécifier d'un coup la valeur définitive de la propriété.
  *
@@ -61,52 +61,52 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	}
 
 	public OrganisationBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		nom = BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		identifiants = BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		nomsAdditionnels = BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addFormeLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FormeLegale valeur) {
-		BuilderHelper.addValueToList(formeLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		formeLegale = BuilderHelper.addValueToList(formeLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addSite(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(sites, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		sites = BuilderHelper.addValueToList(sites, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addDonneesSite(@NotNull SiteOrganisation site) {
-		BuilderHelper.addValueToList(donneesSites, site);
+		donneesSites = BuilderHelper.addValueToList(donneesSites, site);
 		return this;
 	}
 
 	public OrganisationBuilder addTransfereA(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(transfereA, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		transfereA = BuilderHelper.addValueToList(transfereA, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addTransferDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(transferDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		transferDe = BuilderHelper.addValueToList(transferDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder AddRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		remplacePar = BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public OrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		enRemplacementDe = BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 

@@ -19,6 +19,9 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	 */
 	protected abstract void init();
 
+	public MockServiceOrganisation() {
+		this.init();
+	}
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 		return organisationMap.get(noOrganisation);

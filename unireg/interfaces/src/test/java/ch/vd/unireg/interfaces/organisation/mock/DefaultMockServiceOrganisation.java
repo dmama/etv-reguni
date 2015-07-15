@@ -20,6 +20,10 @@ import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder
 
 public class DefaultMockServiceOrganisation extends MockServiceOrganisation {
 
+	public DefaultMockServiceOrganisation() {
+		super();
+	}
+
 	@Override
 	protected void init() {
 
@@ -30,6 +34,8 @@ public class DefaultMockServiceOrganisation extends MockServiceOrganisation {
 						.addIdentifiant("CH.IDE", RegDate.get(2015, 4, 29), null, "CHE543257199")
 						.addIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
 						.addIdentifiant("CT.VD.PARTY", RegDate.get(2015, 4, 29), null, "101202100")
+
+						.addSite(RegDate.get(2015, 4, 29), null, 101072613L)
 
 						.addDonneesSite(
 								new SiteOrganisationBuilder(101072613L)

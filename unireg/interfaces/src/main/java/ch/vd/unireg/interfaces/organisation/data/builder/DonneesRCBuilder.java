@@ -33,27 +33,27 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	}
 
 	public DonneesRCBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRC valeur) {
-		BuilderHelper.addValueToList(status, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		status = BuilderHelper.addValueToList(status, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRCBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		nom = BuilderHelper.addValueToList(nom, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRCBuilder addStatusInscription(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusInscriptionRC valeur) {
-		BuilderHelper.addValueToList(statusInscription, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		statusInscription = BuilderHelper.addValueToList(statusInscription, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRCBuilder addCapital(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Capital valeur) {
-		BuilderHelper.addValueToList(capital, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		capital = BuilderHelper.addValueToList(capital, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public DonneesRCBuilder addAdresseLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		BuilderHelper.addValueToList(adresseLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		adresseLegale = BuilderHelper.addValueToList(adresseLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
