@@ -1,0 +1,114 @@
+package ch.vd.uniregctb.indexer.lucene;
+
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.document.Document;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Constants;
+import ch.vd.uniregctb.common.StringParser;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+
+public abstract class DocumentExtractorHelper {
+
+	public static boolean isBlank(String value) {
+		return IndexerFormatHelper.isBlank(value);
+	}
+
+	public static RegDate indexStringToDate(String date, boolean allowPartial) {
+		try {
+			return RegDateHelper.StringFormat.INDEX.fromString(date, allowPartial);
+		}
+		catch (ParseException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
+	 *
+	 * @param key clé de la valeur recherchée
+	 * @param document document Lucene
+	 * @return la valeur présente pour la clé donnée dans le document Lucene
+	 */
+	@NotNull
+	public static String getDocValue(String key, Document document) {
+		final String str = document.get(key);
+		return isBlank(str) ? StringUtils.EMPTY : str;
+	}
+
+	/**
+	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
+	 *
+	 * @param key      la clé sous laquelle est stocké la valeur
+	 * @param document le document Lucene
+	 * @return la valeur du document Lucene
+	 */
+	public static Long getLongValue(String key, Document document) {
+		return getValue(key, document, new StringParser<Long>() {
+			@Override
+			public Long parse(String string) throws IllegalArgumentException {
+				return Long.valueOf(string);
+			}
+		});
+	}
+
+	public static Boolean getBooleanValue(String key, Document document, @Nullable Boolean defaultValue) {
+		final String str = document.get(key);
+		if (isBlank(str)) {
+			return defaultValue;
+		}
+		else {
+			return Constants.OUI.equals(str);
+		}
+	}
+
+	public static Integer getIntegerValue(String key, Document document) {
+		return getValue(key, document, new StringParser<Integer>() {
+			@Override
+			public Integer parse(String string) throws IllegalArgumentException {
+				return Integer.valueOf(string);
+			}
+		});
+	}
+
+	public static <T extends Enum<T>> T getEnumValue(String key, Document document, final Class<T> clazz) {
+		return getValue(key, document, new StringParser<T>() {
+			@Override
+			public T parse(String string) throws IllegalArgumentException {
+				return Enum.valueOf(clazz, string);
+			}
+		});
+	}
+
+	public static RegDate getRegDateValue(String key, Document document, final boolean allowPartial) {
+		return getValue(key, document, new StringParser<RegDate>() {
+			@Override
+			public RegDate parse(String string) throws IllegalArgumentException {
+				final int index = Integer.valueOf(string);
+				return RegDate.fromIndex(index, allowPartial);
+			}
+		});
+	}
+
+	public static <T> T getValue(String key, Document document, StringParser<T> parser) {
+		final String str = document.get(key);
+		return isBlank(str) ? null : parser.parse(str);
+	}
+
+	public static List<String> getList(String str) {
+		if (isBlank(str)) {
+			return Collections.emptyList();
+		}
+
+		final String[] splitted = StringUtils.split(str);
+		return Arrays.asList(splitted);
+	}
+}
