@@ -1,15 +1,16 @@
-package ch.vd.uniregctb.evenement.civil;
+package ch.vd.uniregctb.evenement.common;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
- * Interface de génération découplée d'erreurs lors du traitement des événements civils
+ * Interface de génération découplée d'erreurs lors du traitement des événements des registres civil et organisation
  */
-public abstract class EvenementCivilErreurFactory<T extends EvenementCivilErreur> {
+public abstract class EvenementRegistreErreurFactory<T extends EvenementCivilErreur> {
 
 	/**
 	 * Crée une erreur (de type {@link TypeEvenementErreur#ERROR}) avec le message et la callstack définis par l'exception passée en paramètre

@@ -2,15 +2,14 @@ package ch.vd.uniregctb.evenement.organisation;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurFactory;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
-public class EvenementOrganisationErreurFactory extends EvenementCivilErreurFactory<EvenementCivilEchErreur> {
+public class EvenementOrganisationErreurFactory extends EvenementRegistreErreurFactory<EvenementOrganisationErreur> {
 
 	@Override
-	protected EvenementCivilEchErreur createErreur(String message, @Nullable Exception e, TypeEvenementErreur type) {
-		final EvenementCivilEchErreur erreur = new EvenementCivilEchErreur();
+	protected EvenementOrganisationErreur createErreur(String message, @Nullable Exception e, TypeEvenementErreur type) {
+		final EvenementOrganisationErreur erreur = new EvenementOrganisationErreur();
 		erreur.setMessage(buildActualMessage(message, e));
 		erreur.setType(type);
 		erreur.setCallstack(extractCallstack(e));

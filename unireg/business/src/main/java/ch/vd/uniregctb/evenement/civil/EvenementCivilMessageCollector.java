@@ -3,15 +3,16 @@ package ch.vd.uniregctb.evenement.civil;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class EvenementCivilMessageCollector<T extends EvenementCivilErreur> implements EvenementCivilErreurCollector, EvenementCivilWarningCollector {
 
-	private final EvenementCivilErreurFactory<T> factory;
+	private final EvenementRegistreErreurFactory<T> factory;
 	private final List<T> erreurs = new ArrayList<>();
 	private final List<T> warnings = new ArrayList<>();
 
-	public EvenementCivilMessageCollector(EvenementCivilErreurFactory<T> factory) {
+	public EvenementCivilMessageCollector(EvenementRegistreErreurFactory<T> factory) {
 		this.factory = factory;
 	}
 
