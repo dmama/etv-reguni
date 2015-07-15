@@ -148,13 +148,6 @@ public class ServiceOrganisationChangeTest extends WithoutSpringTest {
 									             .withPays(8100)
 									             .build()
 							)
-							.addFonction(RegDate.get(2015, 5, 26), null,
-							             new FonctionBuilder("Roger Truc", "Rennens")
-									             .withAutorisation(Autorisation.SIG_COLLECTIVE_A_DEUX)
-									             .withCommune(4747)
-									             .withPays(8100)
-									             .build()
-							)
 
 							.withRC(
 									new DonneesRCBuilder()

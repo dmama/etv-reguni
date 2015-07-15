@@ -26,6 +26,10 @@ create table EVENEMENT_CIVIL_ERREUR (id number(19,0) not null, ANNULATION_DATE t
 
 create table EVENEMENT_CIVIL_ECH_ERREUR (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), CALLSTACK nvarchar2(2000), MESSAGE nvarchar2(1024), TYPE nvarchar2(7) not null, EVT_CIVIL_ID number(19,0) not null, primary key (id));
 
+create table EVENEMENT_ORGANISATION (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), IDENT_EMETTEUR nvarchar2(48), REFDATA_EMETTEUR nvarchar2(48), COMMENTAIRE_TRAITEMENT nvarchar2(255), DATE_EVENEMENT number(10,0) not null, DATE_TRAITEMENT timestamp, ETAT nvarchar2(10) not null, NO_ORGANISATION number(19,0), TYPE nvarchar2(40) not null, primary key (id));
+
+create table EVENEMENT_ORGANISATION_ERREUR (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), CALLSTACK nvarchar2(2000), MESSAGE nvarchar2(1024), TYPE nvarchar2(7) not null, EVT_ORGANISATION_ID number(19,0) not null, primary key (id));
+
 create table EVENEMENT_EXTERNE (EVENT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), CORRELATION_ID nvarchar2(255) not null, DATE_EVENEMENT date, DATE_TRAITEMENT date, ERREUR_MESSAGE nvarchar2(255), ETAT nvarchar2(10), MESSAGE clob, QLR_DATE_DEBUT number(10,0), QLR_DATE_FIN number(10,0), QLR_TYPE nvarchar2(13), TIERS_ID number(19,0), primary key (id));
 
 create table EVENEMENT_FISCAL (EVT_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_EVENEMENT number(10,0), NUMERO_TECHNIQUE number(19,0), TYPE nvarchar2(29), MODE_IMPOSITION nvarchar2(11), MOTIF_FOR nvarchar2(49), DATE_DEBUT_PERIODE number(10,0), DATE_FIN_PERIODE number(10,0), TIERS_ID number(19,0), ENFANT_ID number(19,0), primary key (id));
@@ -104,11 +108,17 @@ create index IDX_EV_CIV_ECH_NO_IND on EVENEMENT_CIVIL_ECH (NO_INDIVIDU);
 
 create index IDX_EV_CIV_ECH_REF on EVENEMENT_CIVIL_ECH (REF_MESSAGE_ID);
 
+create index IDX_EV_ORGA_ETAT on EVENEMENT_ORGANISATION (ETAT);
+
+create index IDX_EV_ORGA_NO_ORGA on EVENEMENT_ORGANISATION (NO_ORGANISATION);
+
 alter table EVENEMENT_CIVIL_ERREUR add constraint FK_EV_ERR_EV_RGR_ID foreign key (EVT_CIVIL_ID) references EVENEMENT_CIVIL;
 
 create index IDX_EV_ECH_ERR_EV_ID on EVENEMENT_CIVIL_ECH_ERREUR (EVT_CIVIL_ID);
 
 alter table EVENEMENT_CIVIL_ECH_ERREUR add constraint FK_EV_ERR_EV_ECH_ID foreign key (EVT_CIVIL_ID) references EVENEMENT_CIVIL_ECH;
+
+alter table EVENEMENT_ORGANISATION_ERREUR add constraint FK_EV_ERR_EV_ORGA_ID foreign key (EVT_ORGANISATION_ID) references EVENEMENT_ORGANISATION;
 
 alter table EVENEMENT_EXTERNE add constraint FK_EV_EXT_TRS_ID foreign key (TIERS_ID) references TIERS;
 

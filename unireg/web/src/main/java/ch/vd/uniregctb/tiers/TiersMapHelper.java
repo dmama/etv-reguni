@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -45,6 +46,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeOperation;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -75,6 +77,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeEvenementCivilEch, String> mapTypeEvenementCivilEch;
 	private Map<ActionEvenementCivilEch, String> mapActionEvenementCivilEch;
 	private Map<EtatEvenementCivil, String> mapStatusEvenementCivil;
+	private Map<TypeEvenementOrganisation, String> mapTypeEvenementOrganisation;
+	private Map<EtatEvenementOrganisation, String> mapEtatEvenementOrganisation;
 	private Map<TypeRapportEntreTiers, String> mapTypeRapportEntreTiers;
 	private Map<EtatEvenementCivil, String> mapEtatsEvenementCivil;
 	private Map<TypeEtatDeclaration, String> mapTypeEtatDeclaration;
@@ -406,6 +410,30 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapEtatsEvenementCivil = initMapEnum(ApplicationConfig.masterKeyEtatEvenementCivil, EtatEvenementCivil.class);
 		}
 		return mapEtatsEvenementCivil;
+	}
+
+	/**
+	 * Initialise la map des types d'evenements civils ech
+	 *
+	 * @return une map
+	 */
+	public Map<TypeEvenementOrganisation, String> getMapTypeEvenementOrganisation() {
+		if (mapTypeEvenementOrganisation == null) {
+			mapTypeEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyTypeEvenementOrganisation, TypeEvenementOrganisation.class);
+		}
+		return mapTypeEvenementOrganisation;
+	}
+
+	/**
+	 * Initialise la map de etats des evts organisation
+	 *
+	 * @return une map
+	 */
+	public Map<EtatEvenementOrganisation, String> getMapEtatsEvenementOrganisation() {
+		if (mapEtatEvenementOrganisation == null) {
+			mapEtatEvenementOrganisation = initMapEnum(ApplicationConfig.masterKeyEtatEvenementOrganisation, EtatEvenementOrganisation.class);
+		}
+		return mapEtatEvenementOrganisation;
 	}
 
 	/**
