@@ -71,63 +71,51 @@ public class FonctionBuilder implements DataBuilder<Fonction> {
 		return new Fonction(autorisation, partie, texteFonction, restrictionAutorisation);
 	}
 
-	public FonctionBuilder withAdresse(Adresse adresse) {
+	public void setAdresse(Adresse adresse) {
 		this.adresse = adresse;
-		return this;
 	}
 
-	public FonctionBuilder withAutorisation(Autorisation autorisation) {
+	public void setAutorisation(Autorisation autorisation) {
 		this.autorisation = autorisation;
-		return this;
 	}
 
-	public FonctionBuilder withCantonalIdPersonne(Integer cantonalIdPersonne) {
+	public void setCantonalIdPersonne(Integer cantonalIdPersonne) {
 		this.cantonalIdPersonne = cantonalIdPersonne;
-		return this;
 	}
 
-	public FonctionBuilder withCommune(Integer commune) {
+	public void setCommune(Integer commune) {
 		this.commune = commune;
-		return this;
 	}
 
-	public FonctionBuilder withDateDeNaissance(RegDate dateDeNaissance) {
+	public void setDateDeNaissance(RegDate dateDeNaissance) {
 		this.dateDeNaissance = dateDeNaissance;
-		return this;
 	}
 
-	public FonctionBuilder withNoAvs(Long noAvs) {
+	public void setNoAvs(Long noAvs) {
 		this.noAvs = noAvs;
-		return this;
 	}
 
-	public FonctionBuilder withPays(Integer pays) {
+	public void setPays(Integer pays) {
 		this.pays = pays;
-		return this;
 	}
 
-	public FonctionBuilder withPrenom(String prenom) {
+	public void setPrenom(String prenom) {
 		this.prenom = prenom;
-		return this;
 	}
 
-	public FonctionBuilder withRestrictionAutorisation(String restrictionAutorisation) {
+	public void setRestrictionAutorisation(String restrictionAutorisation) {
 		this.restrictionAutorisation = restrictionAutorisation;
-		return this;
 	}
 
-	public FonctionBuilder withSexe(Sexe sexe) {
+	public void setSexe(Sexe sexe) {
 		this.sexe = sexe;
-		return this;
 	}
 
-	public FonctionBuilder withSourceDesDonnees(Personne.SourceDonnees sourceDesDonnees) {
+	public void setSourceDesDonnees(Personne.SourceDonnees sourceDesDonnees) {
 		this.sourceDesDonnees = sourceDesDonnees;
-		return this;
 	}
 
-	public FonctionBuilder withTexteFonction(String texteFonction) {
+	public void setTexteFonction(String texteFonction) {
 		this.texteFonction = texteFonction;
-		return this;
 	}
 }

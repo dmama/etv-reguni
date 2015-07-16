@@ -107,15 +107,6 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testCacheReturnsCorrectOrganisation() {
-		long id = 101202100L;
-		Organisation organisationFromService = target.getOrganisationHistory(id);
-		Organisation organisationFromCache = cache.getOrganisationHistory(id);
-		assertEquals(organisationFromService.getNo(), organisationFromCache.getNo());
-		assertEquals(organisationFromService.getNom().get(0).getPayload(), organisationFromCache.getNom().get(0).getPayload());
-	}
-
-	@Test
 	public void testCallTwiceHitServiceOnce() {
 		long id = 101202100L;
 		Organisation organisation = cache.getOrganisationHistory(id);

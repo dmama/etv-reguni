@@ -1,8 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -27,10 +26,10 @@ public class RCEntOrganisationHelper {
 		);
 	}
 
-	private static Map<Long, SiteOrganisation> convertLocations(List<OrganisationLocation> locations) {
-		Map<Long, SiteOrganisation> sites = new HashMap<>();
+	private static List<SiteOrganisation> convertLocations(List<OrganisationLocation> locations) {
+		List<SiteOrganisation> sites = new ArrayList<>();
 		for (OrganisationLocation loc : locations) {
-			sites.put(loc.getCantonalId(), RCEntSiteOrganisationHelper.get(loc));
+			sites.add(RCEntSiteOrganisationHelper.get(loc));
 		}
 		return sites;
 	}

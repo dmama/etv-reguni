@@ -36,7 +36,7 @@ public class BuilderHelper {
 	}
 
 	/**
-	 * Ajoute une valeur à la liste.
+	 * Ajoute une valeur à la liste correspondant à une clé de la map.
 	 *
 	 * @param list Une liste. Si null, une nouvelle liste sera créé en place.
 	 * @param value La valeur à insérer
@@ -49,23 +49,5 @@ public class BuilderHelper {
 		}
 		list.add(value);
 		return list;
-	}
-
-	/**
-	 * Ajoute une valeur à la map.
-	 *
-	 * @param map Une map. Si null, une nouvelle map sera créé en place.
-	 * @param key La clé représentant la valeur dans la map
-	 * @param value La valeur à insérer
-	 * @param <K> Le type de la clé
-	 * @param <V> Le type de la valeur
-	 * @return La liste modifiée ou créée dans l'opération
-	 */
-	public static <K, V> Map<K, V> addValueToMap(@Nullable Map<K, V> map, @NotNull K key, @NotNull V value) {
-		if (map == null) {
-			map = new HashMap<>();
-		}
-		map.put(key, value);
-		return map;
 	}
 }

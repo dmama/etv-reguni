@@ -113,11 +113,6 @@
 			<artifactId>xalan</artifactId>
 			<version>2.7.1</version>
 		</dependency>
-		<dependency>
-			<groupId>de.danielbechler</groupId>
-			<artifactId>java-object-diff</artifactId>
-			<version>0.92.2-SNAPSHOT</version>
-		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -125,6 +120,7 @@
 			<version>2.0.0.0</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<!-- Build plugins and sources -->

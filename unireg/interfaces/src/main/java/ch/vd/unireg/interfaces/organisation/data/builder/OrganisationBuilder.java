@@ -37,7 +37,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private List<DateRanged<FormeLegale>> formeLegale;
 
 	private List<DateRanged<Long>> sites;
-	private Map<Long, SiteOrganisation> donneesSites;
+	private List<SiteOrganisation> donneesSites;
 
 	private List<DateRanged<Long>> transfereA;
 	private List<DateRanged<Long>> transferDe;
@@ -86,7 +86,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	}
 
 	public OrganisationBuilder addDonneesSite(@NotNull SiteOrganisation site) {
-		donneesSites = BuilderHelper.addValueToMap(donneesSites, site.getNo(), site);
+		donneesSites = BuilderHelper.addValueToList(donneesSites, site);
 		return this;
 	}
 
@@ -110,7 +110,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder withDonneesSites(Map<Long, SiteOrganisation> donneesSites) {
+	public OrganisationBuilder withDonneesSites(List<SiteOrganisation> donneesSites) {
 		this.donneesSites = donneesSites;
 		return this;
 	}
@@ -163,7 +163,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return cantonalId;
 	}
 
-	protected Map<Long, SiteOrganisation> getDonneesSites() {
+	protected List<SiteOrganisation> getDonneesSites() {
 		return donneesSites;
 	}
 

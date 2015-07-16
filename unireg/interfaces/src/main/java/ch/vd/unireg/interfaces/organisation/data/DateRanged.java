@@ -71,24 +71,4 @@ public class DateRanged<T> implements DateRange {
 		return new DateRanged<>(dateDebut, dateFin, mapper.apply(payload));
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		final DateRanged<?> that = (DateRanged<?>) o;
-
-		if (!getDateDebut().equals(that.getDateDebut())) return false;
-		if (getDateFin() != null ? !getDateFin().equals(that.getDateFin()) : that.getDateFin() != null) return false;
-		return getPayload().equals(that.getPayload());
-
-	}
-
-	@Override
-	public int hashCode() {
-		int result = getDateDebut().hashCode();
-		result = 31 * result + (getDateFin() != null ? getDateFin().hashCode() : 0);
-		result = 31 * result + getPayload().hashCode();
-		return result;
-	}
 }
