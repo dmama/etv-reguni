@@ -6,7 +6,7 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
 /*
  * Classe générique qui convient pour les critères de recherche sur les évenements organisation.
@@ -23,7 +23,7 @@ public class EvenementOrganisationCriteria<TYPE_EVT extends Enum<TYPE_EVT> > imp
 	}
 
 	private TYPE_EVT type;
-	private EtatEvenementCivil etat;
+	private EtatEvenementOrganisation etat;
 	private Date dateTraitementDebut;
 	private Date dateTraitementFin;
 	private RegDate dateEvenementDebut;
@@ -40,11 +40,11 @@ public class EvenementOrganisationCriteria<TYPE_EVT extends Enum<TYPE_EVT> > imp
 		this.type = type;
 	}
 
-	public EtatEvenementCivil getEtat() {
+	public EtatEvenementOrganisation getEtat() {
 		return etat;
 	}
 
-	public void setEtat(EtatEvenementCivil etat) {
+	public void setEtat(EtatEvenementOrganisation etat) {
 		this.etat = etat;
 	}
 

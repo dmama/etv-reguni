@@ -2,21 +2,31 @@ package ch.vd.uniregctb.evenement.organisation;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.dao.support.DataAccessUtils;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
-public class EvenementOrganisationDAOImpl extends AbstractEvenementOrganisationDAOImpl<EvenementOrganisation, TypeEvenementOrganisation> implements EvenementOrganisationDAO {
+public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisation, Long> implements EvenementOrganisationDAO {
 
 	private static final Set<EtatEvenementOrganisation> ETATS_NON_TRAITES;
 
@@ -81,18 +91,100 @@ public class EvenementOrganisationDAOImpl extends AbstractEvenementOrganisationD
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<EvenementOrganisation> find(final EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion, @Nullable final ParamPagination paramPagination) {
-		return genericFind(criterion, paramPagination);
+		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
+
+		final Map<String, Object> paramsWhere = new HashMap<>();
+		final String queryWhere = buildCriterion(paramsWhere, criterion);
+		if (queryWhere == null) {
+			return Collections.emptyList();
+		}
+
+		final String fromComplement = "";//criterion.isJoinOnOrganisation() ? ", PersonnePhysique pp" : ""; // FIXME
+		final String select = String.format("select evenement from %s evenement %s where 1=1 %s", EvenementOrganisation.class.getSimpleName(), fromComplement, queryWhere);
+		final QueryFragment fragment = new QueryFragment(select, paramsWhere);
+
+		// tri par défaut
+		if (paramPagination != null) {
+			fragment.add(paramPagination.buildOrderClause("evenement", "dateEvenement", true, null));
+		}
+
+		final Session session = getCurrentSession();
+		final Query queryObject = fragment.createQuery(session);
+		if (paramPagination != null) {
+			final int firstResult = paramPagination.getSqlFirstResult();
+			final int maxResult = paramPagination.getSqlMaxResults();
+
+			queryObject.setFirstResult(firstResult);
+			queryObject.setMaxResults(maxResult);
+		}
+
+		return queryObject.list();
 	}
 
 	@Override
 	public int count(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
-		return genericCount(criterion);
+		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
+		final Map<String, Object> criteria = new HashMap<>();
+		String queryWhere = buildCriterion(criteria, criterion);
+		String query = String.format(
+				"select count(*) from %s evenement %s where 1=1 %s",
+				EvenementOrganisation.class.getSimpleName(),
+				"", //criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
+				queryWhere);
+		return DataAccessUtils.intResult(find(query, criteria, null));
 	}
 
+	/**
+	 * @param criteria target
+	 * @param criterion source
+	 * @return la clause where correspondante à l'objet criterion
+	 */
+	protected String buildCriterion(Map<String, Object> criteria, EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion) {
+		String queryWhere = "";
 
-	@Override
-	protected Class getEvenementOrganisationClass() {
-		return EvenementOrganisation.class;
+		// Si la valeur n'existe pas (TOUS par exemple), type = null
+		final TypeEvenementOrganisation type = criterion.getType();
+		if (type != null) {
+			queryWhere += " and evenement.type = :type";
+			criteria.put("type", type);
+		}
+
+		// Si la valeur n'existe pas (TOUS par exemple), etat = null
+		final EtatEvenementOrganisation etat = criterion.getEtat();
+		if (etat != null) {
+			queryWhere += " and evenement.etat = :etat";
+			criteria.put("etat", etat);
+		}
+
+		Date dateTraitementDebut = criterion.getDateTraitementDebut();
+		if (dateTraitementDebut != null) {
+			queryWhere += " and evenement.dateTraitement >= :dateTraitementMin";
+			// On prends la date a Zero Hour
+			criteria.put("dateTraitementMin", dateTraitementDebut);
+		}
+
+		Date dateTraitementFin = criterion.getDateTraitementFin();
+		if (dateTraitementFin != null) {
+			queryWhere += " and evenement.dateTraitement <= :dateTraitementMax";
+			// On prends la date a 24 Hour
+			criteria.put("dateTraitementMax", dateTraitementFin);
+		}
+
+		RegDate dateEvenementDebut = criterion.getRegDateEvenementDebut();
+		if (dateEvenementDebut != null) {
+			queryWhere += " and evenement.dateEvenement >= :dateEvtMin";
+			criteria.put("dateEvtMin", dateEvenementDebut);
+		}
+
+		RegDate dateEvenementFin = criterion.getRegDateEvenementFin();
+		if (dateEvenementFin != null) {
+			queryWhere += " and evenement.dateEvenement <= :dateEvtMax";
+			criteria.put("dateEvtMax", dateEvenementFin);
+		}
+
+		return queryWhere;
 	}
+
 }

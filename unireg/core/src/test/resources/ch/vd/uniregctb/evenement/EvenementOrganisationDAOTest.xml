@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+<!--  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>6789</value>
+      <value>PersonnePhysique</value>
+      <value>12345</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>5678</value>
+      <value>PersonnePhysique</value>
+      <value>23456</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>-->
+  <table name="EVENEMENT_ORGANISATION">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>DATE_EVENEMENT</column>
+    <column>IDENT_EMETTEUR</column>
+    <column>ETAT</column>
+    <column>NO_ORGANISATION</column>
+    <row>
+      <value>2010-05-04</value>
+      <value>19001</value>
+      <value>FOSC_NOUVELLE_ENTREPRISE</value>
+      <value>20100501</value>
+      <value>IDE</value>
+      <value>TRAITE</value>
+      <value>123454321</value>
+    </row>
+    <row>
+      <value>2015-05-04</value>
+      <value>19002</value>
+      <value>FOSC_DISSOLUTION_ENTREPRISE</value>
+      <value>20150501</value>
+      <value>IDE</value>
+      <value>A_TRAITER</value>
+      <value>123454321</value>
+    </row>
+  </table>
+</dataset>

@@ -92,6 +92,10 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		return id;
 	}
 
+	public void setId(@NotNull long id) {
+		this.id = id;
+	}
+
 	@Column(name = "IDENT_EMETTEUR", length = LengthConstants.EVTORGANISATION_IDENTITEEMETTEUR, nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.EmetteurEvenementOrganisationUserType")
 	@NotNull
@@ -103,7 +107,7 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		this.identiteEmetteur = identiteEmetteur;
 	}
 
-	@Column(name = "REFDATA_EMETTEUR", length = LengthConstants.EVTORGANISATION_REFDATAEMETTEUR, nullable = false)
+	@Column(name = "REFDATA_EMETTEUR", length = LengthConstants.EVTORGANISATION_REFDATAEMETTEUR)
 	public String getRefDataEmetteur() {
 		return refDataEmetteur;
 	}

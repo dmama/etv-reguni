@@ -32,6 +32,8 @@
 
 	<bean id="evenementCivilEchDAO" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDao">
 	</bean>
+	<bean id="evenementOrganisationDAO" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAOImpl" parent="hibernateDao">
+	</bean>
 	<bean id="lrDAO" class="ch.vd.uniregctb.declaration.ListeRecapitulativeDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="diDAO" class="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAOImpl" parent="hibernateDao">

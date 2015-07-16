@@ -41,6 +41,8 @@
 		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur</value>
+		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisation</value>
+		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur</value>
 		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP</value>
 		<value>ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur</value>
 		<value>ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable</value>
