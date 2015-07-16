@@ -26,7 +26,7 @@ public class Organisation implements Serializable {
 	@NotNull
 	private List<DateRanged<Long>> sites;
 	@NotNull
-	private List<SiteOrganisation> donneesSites;
+	private Map<Long, SiteOrganisation> donneesSites;
 
 	private List<DateRanged<Long>> transfereA;
 	private List<DateRanged<Long>> transferDe;
@@ -35,7 +35,7 @@ public class Organisation implements Serializable {
 
 	public Organisation(long no, @NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
 	                    List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale, @NotNull List<DateRanged<Long>> sites,
-	                    @NotNull List<SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
+	                    @NotNull Map<Long, SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
 	                    List<DateRanged<Long>> remplacePar, List<DateRanged<Long>> enRemplacementDe) {
 		this.no = no;
 		this.identifiants = identifiants;
@@ -59,7 +59,7 @@ public class Organisation implements Serializable {
 	}
 
 	@NotNull
-	public List<SiteOrganisation> getDonneesSites() {
+	public Map<Long, SiteOrganisation> getDonneesSites() {
 		return donneesSites;
 	}
 
@@ -106,7 +106,7 @@ public class Organisation implements Serializable {
 		Setters réservés au Mock
 	 */
 
-	protected void setDonneesSites(@NotNull List<SiteOrganisation> donneesSites) {
+	protected void setDonneesSites(@NotNull Map<Long, SiteOrganisation> donneesSites) {
 		this.donneesSites = donneesSites;
 	}
 
