@@ -101,7 +101,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 			return Collections.emptyList();
 		}
 
-		final String fromComplement = "";//criterion.isJoinOnOrganisation() ? ", PersonnePhysique pp" : ""; // FIXME
+		final String fromComplement = criterion.isJoinOnEntreprise() ? ", Entreprise en" : "";
 		final String select = String.format("select evenement from %s evenement %s where 1=1 %s", EvenementOrganisation.class.getSimpleName(), fromComplement, queryWhere);
 		final QueryFragment fragment = new QueryFragment(select, paramsWhere);
 
@@ -131,7 +131,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		String query = String.format(
 				"select count(*) from %s evenement %s where 1=1 %s",
 				EvenementOrganisation.class.getSimpleName(),
-				"", //criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
+				criterion.isJoinOnEntreprise() ? ", Entreprise en": "",
 				queryWhere);
 		return DataAccessUtils.intResult(find(query, criteria, null));
 	}
@@ -183,6 +183,19 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 			queryWhere += " and evenement.dateEvenement <= :dateEvtMax";
 			criteria.put("dateEvtMax", dateEvenementFin);
 		}
+
+		Long numero = criterion.getNumeroOrganisation();
+		if (numero != null) {
+			queryWhere += " and evenement.noOrganisation = :noOrganisation";
+			criteria.put("noOrganisation", numero);
+		}
+
+		Long numeroCTB = criterion.getNumeroCTB();
+		if (numeroCTB != null) {
+			queryWhere += " and (evenement.noOrganisation = en.numeroEntreprise) and en.numero = :noCtb";
+			criteria.put("noCtb", numeroCTB);
+		}
+
 
 		return queryWhere;
 	}

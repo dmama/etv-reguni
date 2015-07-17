@@ -107,7 +107,7 @@ public class EvenementOrganisationCriteria<TYPE_EVT extends Enum<TYPE_EVT> > imp
 		this.dateEvenementFin = dateEvenementFin;
 	}
 
-	public boolean isJoinOnOrganisation() {
+	public boolean isJoinOnEntreprise() {
 		// si on fait une recherche par numero de ctb alors la requete devra avoir une jointure sur Tiers
 		return numeroCTB != null;
 	}

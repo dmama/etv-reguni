@@ -116,6 +116,7 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 
 	    final long numeroOrganisation = evt.getNoOrganisation();
 	    try {
+		    // FIXME: Uniquement si Entreprise.id == Entreprise.numeroEntreprise
 		    final Tiers tiers = tiersDAO.get(numeroOrganisation);
 		    if (tiers != null) {
 			    // FIXME: On fait quelque chose?

@@ -8,9 +8,9 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public interface EvenementOrganisationService {
 
 	/**
-	 * Interroge le DAO des événements civils pour construire une collection des événements à traiter pour l'individu donné
+	 * Interroge le DAO des événements organisation pour construire une collection des événements à traiter pour l'organisation donnée
      *
-	 * @param noIndividu numéro de l'individu civil dont on cherche les événements à traiter
+	 * @param noIndividu numéro de l'organisation dont on cherche les événements à traiter
      *
 	 * @return une liste des informations autour des événements à traiter
 	 */
