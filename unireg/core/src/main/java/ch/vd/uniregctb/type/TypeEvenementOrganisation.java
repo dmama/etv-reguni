@@ -10,6 +10,8 @@ import java.util.Map;
  * "Norme d'interface entre registres d'entreprises" du 13 mai 2015.
  *
  * @author Raphaël Marmier, 2015-07-13.
+ *
+ * @since 6.x
  */
 public enum TypeEvenementOrganisation {
 		FOSC_NOUVELLE_ENTREPRISE(1, "Nouvelle entreprise au registre du commerce"),

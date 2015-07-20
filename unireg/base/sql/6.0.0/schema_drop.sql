@@ -24,6 +24,10 @@ drop table EVENEMENT_CIVIL_ECH cascade constraints;
 
 drop table EVENEMENT_CIVIL_ECH_ERREUR cascade constraints;
 
+drop table EVENEMENT_ORGANISATION cascade constraints;
+
+drop table EVENEMENT_ORGANISATION_ERREUR cascade constraints;
+
 drop table EVENEMENT_EXTERNE cascade constraints;
 
 drop table EVENEMENT_FISCAL cascade constraints;

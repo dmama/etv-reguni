@@ -4,6 +4,8 @@ package ch.vd.uniregctb.type;
  * Les différents état que peut prendre un événement organisation.
  * <p/>
  * Longueur de colonne : 10
+ *
+ * @since 6.x
  */
 public enum EtatEvenementOrganisation {
 
@@ -14,8 +16,6 @@ public enum EtatEvenementOrganisation {
 
 	/**
 	 * Evénement dont le traitement n'a pas été tenté en raison de la présence d'autres événements antérieurs eux-mêmes en attente ou en erreur
-	 *
-	 * @since 5.x
 	 */
 	EN_ATTENTE(false),
 
@@ -41,8 +41,6 @@ public enum EtatEvenementOrganisation {
 
 	/**
 	 * Evénement dont l'effet sur Unireg a été null car les données étaient déjà dans l'état voulu.
-	 *
-	 * @since 5.x
 	 */
 	REDONDANT(true);
 
