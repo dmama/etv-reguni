@@ -32,6 +32,7 @@ public class EvenementReqDes extends HibernateEntity {
 	private String numeroMinute;
 	private InformationsActeur notaire;
 	private InformationsActeur operateur;
+	private Long noAffaire;
 	private Set<TransactionImmobiliere> transactions;
 
 	@Transient
@@ -87,6 +88,15 @@ public class EvenementReqDes extends HibernateEntity {
 
 	public void setNumeroMinute(String numeroMinute) {
 		this.numeroMinute = numeroMinute;
+	}
+
+	@Column(name = "NO_AFFAIRE")
+	public Long getNoAffaire() {
+		return noAffaire;
+	}
+
+	public void setNoAffaire(Long noAffaire) {
+		this.noAffaire = noAffaire;
 	}
 
 	@Embedded

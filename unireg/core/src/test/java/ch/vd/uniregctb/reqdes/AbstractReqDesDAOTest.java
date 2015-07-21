@@ -9,13 +9,14 @@ import ch.vd.uniregctb.common.CoreDAOTest;
 
 public abstract class AbstractReqDesDAOTest extends CoreDAOTest {
 
-	protected EvenementReqDes addEvenementReqDes(RegDate date, String noMinute, String visaNotaire, String nomNotaire, String prenomNotaire) {
+	protected EvenementReqDes addEvenementReqDes(RegDate date, Long noAffaire, String noMinute, String visaNotaire, String nomNotaire, String prenomNotaire) {
 		final InformationsActeur notaire = new InformationsActeur(visaNotaire, nomNotaire, prenomNotaire);
 		final EvenementReqDes evt = new EvenementReqDes();
 		evt.setXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><bidon/>");
 		evt.setDateActe(date);
 		evt.setNumeroMinute(noMinute);
 		evt.setNotaire(notaire);
+		evt.setNoAffaire(noAffaire);
 		return hibernateTemplate.merge(evt);
 	}
 

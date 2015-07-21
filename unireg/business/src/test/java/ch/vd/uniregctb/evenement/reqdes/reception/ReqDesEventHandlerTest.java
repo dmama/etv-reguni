@@ -190,6 +190,8 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 	public void testEnregistrement() throws Exception {
 
 		final String path = "TestEvent.xml";
+		final long noAffaire = 484166165L;
+		final String businessId = Long.toString(noAffaire);
 
 		// arrivée d'un événement
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
@@ -197,7 +199,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 			public void execute(TransactionStatus status) throws Exception {
 				try (InputStream in = ReqDesEventHandlerTest.class.getResourceAsStream(path)) {
 					final Source src = new StreamSource(in);
-					handler.onMessage(src, "<empty/>");
+					handler.onMessage(src, "<empty/>", businessId);
 				}
 			}
 		});
@@ -337,6 +339,7 @@ public class ReqDesEventHandlerTest extends BusinessTest {
 				// vérification du contenu de l'événement lui-même
 				Assert.assertEquals(date(2008, 9, 29), evt.getDateActe());
 				Assert.assertEquals("124846154", evt.getNumeroMinute());
+				Assert.assertEquals((Long) noAffaire, evt.getNoAffaire());
 				Assert.assertEquals("<empty/>", evt.getXml());
 				Assert.assertNotNull(evt.getNotaire());
 				Assert.assertEquals("moinotaire", evt.getNotaire().getVisa());

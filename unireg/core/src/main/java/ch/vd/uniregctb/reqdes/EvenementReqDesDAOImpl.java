@@ -21,4 +21,12 @@ public class EvenementReqDesDAOImpl extends BaseDAOImpl<EvenementReqDes, Long> i
 		criteria.add(Restrictions.eq("notaire.visa", visaNotaire));
 		return criteria.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<EvenementReqDes> findByNoAffaire(long noAffaire) {
+		final Criteria criteria = getCurrentSession().createCriteria(getPersistentClass());
+		criteria.add(Restrictions.eq("noAffaire", noAffaire));
+		return criteria.list();
+	}
 }
