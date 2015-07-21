@@ -31,6 +31,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 		final String noMinute2 = "458415854";
 		final String visaNotaire1 = "ufi6738v";
 		final String visaNotaire2 = "ew89ghvb";
+		final long noAffaire1 = 465515468L;
+		final long noAffaire2 = 915198L;
 
 		final class Ids {
 			long ut1;
@@ -43,7 +45,7 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final EvenementReqDes evt1 = addEvenementReqDes(dateActe1, noMinute1, visaNotaire1, "Notaire", "Clothaire");
+				final EvenementReqDes evt1 = addEvenementReqDes(dateActe1, noAffaire1, noMinute1, visaNotaire1, "Notaire", "Clothaire");
 				final UniteTraitement ut1 = addUniteTraitement(evt1, EtatTraitement.A_TRAITER, null);
 				final PartiePrenante pp1 = addPartiePrenante(ut1, "Wallbert", "Gaspard André");
 				final PartiePrenante pp2 = addPartiePrenante(ut1, "Wallbert", "Albertine");
@@ -53,7 +55,7 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 				final UniteTraitement ut2 = addUniteTraitement(evt1, EtatTraitement.EN_ERREUR, DateHelper.getDateTime(2006, 5, 12, 15, 53, 14));
 				addPartiePrenante(ut2, "Petitbois", "Philippe");
 
-				final EvenementReqDes evt2 = addEvenementReqDes(dateActe2, noMinute2, visaNotaire2, "Notilde", "Clothilde");
+				final EvenementReqDes evt2 = addEvenementReqDes(dateActe2, noAffaire2, noMinute2, visaNotaire2, "Notilde", "Clothilde");
 				final UniteTraitement ut3 = addUniteTraitement(evt2, EtatTraitement.FORCE, DateHelper.getDateTime(2008, 6, 30, 18, 12, 14));
 				final UniteTraitement ut4 = addUniteTraitement(evt2, EtatTraitement.TRAITE, DateHelper.getDateTime(2014, 6, 1, 12, 0, 0));
 
@@ -206,6 +208,8 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 		final String noMinute2 = "458415854";
 		final String visaNotaire1 = "ufi6738v";
 		final String visaNotaire2 = "ew89ghvb";
+		final long noAffaire1 = 465515468L;
+		final long noAffaire2 = 915198L;
 
 		final class Ids {
 			long ut1;
@@ -218,11 +222,11 @@ public class UniteTraitementDAOTest extends AbstractReqDesDAOTest {
 		final Ids ids = doInNewTransaction(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final EvenementReqDes evt1 = addEvenementReqDes(dateActe1, noMinute1, visaNotaire1, "Notaire", "Clothaire");
+				final EvenementReqDes evt1 = addEvenementReqDes(dateActe1, noAffaire1, noMinute1, visaNotaire1, "Notaire", "Clothaire");
 				final UniteTraitement ut1 = addUniteTraitement(evt1, EtatTraitement.A_TRAITER, null);
 				final UniteTraitement ut2 = addUniteTraitement(evt1, EtatTraitement.EN_ERREUR, DateHelper.getDateTime(2006, 5, 12, 15, 53, 14));
 
-				final EvenementReqDes evt2 = addEvenementReqDes(dateActe2, noMinute2, visaNotaire2, "Notilde", "Clothilde");
+				final EvenementReqDes evt2 = addEvenementReqDes(dateActe2, noAffaire2, noMinute2, visaNotaire2, "Notilde", "Clothilde");
 				final UniteTraitement ut3 = addUniteTraitement(evt2, EtatTraitement.FORCE, DateHelper.getDateTime(2008, 6, 30, 18, 12, 14));
 				final UniteTraitement ut4 = addUniteTraitement(evt2, EtatTraitement.TRAITE, DateHelper.getDateTime(2014, 6, 1, 12, 0, 0));
 

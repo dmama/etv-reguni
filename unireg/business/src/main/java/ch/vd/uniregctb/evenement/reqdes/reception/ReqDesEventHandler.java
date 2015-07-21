@@ -130,7 +130,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 
 			AuthenticationHelper.pushPrincipal(VISA);
 			try {
-				onMessage(src, xml);
+				onMessage(src, xml, businessId);
 			}
 			finally {
 				AuthenticationHelper.popPrincipal();
@@ -144,7 +144,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 		}
 	}
 
-	protected void onMessage(Source xml, String xmlContent) throws IOException, EsbBusinessException {
+	protected void onMessage(Source xml, String xmlContent, String businessId) throws IOException, EsbBusinessException {
 		final CreationModification data;
 		try {
 			data = parse(xml);
@@ -154,13 +154,12 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 			throw new EsbBusinessException(EsbBusinessCode.XML_INVALIDE, e.getMessage(), e);
 		}
 
-		// a-t-on déjà reçu ce message ?
-		final String noAffaire = data.getNotarialDeed().getDealNumber();
-		final String visaNotaire = data.getNotarialInformation().getSollicitor().getVisa();
-		final List<EvenementReqDes> dejaPresent = evenementDAO.findByNumeroMinute(noAffaire, visaNotaire);
+		// a-t-on déjà reçu un message pour la même affaire ?
+		final long noAffaire = Long.parseLong(businessId);      // TODO il faudra changer cela pour avoir un vrai champ dans le XML...
+		final List<EvenementReqDes> dejaPresent = evenementDAO.findByNoAffaire(noAffaire);
 		final boolean doublon = dejaPresent != null && !dejaPresent.isEmpty();
 		if (doublon) {
-			LOGGER.warn(String.format("Un message ReqDes avec le même numéro de minute (%s/%s) a déjà été reçu -> traitement manuel systématique.", visaNotaire, noAffaire));
+			LOGGER.warn(String.format("Un message ReqDes avec le même numéro d'affaire (%d) a déjà été reçu -> traitement manuel systématique.", noAffaire));
 		}
 
 		final Map<Integer, ReqDesPartiePrenante> partiesPrenantes = extractPartiesPrenantes(data.getStakeholder(), infraService);
@@ -178,7 +177,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 		final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles = extractRoles(data.getTransaction());
 
 		// persistence des données reçues avant traitement asynchrone
-		final Set<Long> idsUnitesTraitement = persistData(xmlContent, doublon, data.getNotarialDeed(), data.getNotarialInformation(), transactions, groupes, roles);
+		final Set<Long> idsUnitesTraitement = persistData(xmlContent, doublon, noAffaire, data.getNotarialDeed(), data.getNotarialInformation(), transactions, groupes, roles);
 		lancementTraitementAsynchrone(idsUnitesTraitement);
 	}
 
@@ -192,6 +191,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 	 * Persiste les données en base et renvoie les identifiants des unités de traitement
 	 * @param xmlContent contenu du message XML sous forme de chaîne de caractères
 	 * @param doublon <code>true</code> si un acte avec les mêmes coordonnées a déjà été reçu auparavant
+	 * @param noAffaire numéro unique d'affaire au niveau de ReqDes
 	 * @param acteAuthentique données de l'acte
 	 * @param operateurs données sur le notaire et l'opérateur
 	 * @param transactions transactions immobilières présentes dans l'acte
@@ -199,7 +199,8 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 	 * @param roles les rôles des différentes parties prenantes
 	 * @return l'ensemble des identifiants des unités de traitement générées
 	 */
-	private Set<Long> persistData(final String xmlContent, final boolean doublon, final NotarialDeed acteAuthentique, final NotarialInformation operateurs,
+	private Set<Long> persistData(final String xmlContent, final boolean doublon, final long noAffaire,
+	                              final NotarialDeed acteAuthentique, final NotarialInformation operateurs,
 	                              final List<ReqDesTransactionImmobiliere> transactions,
 	                              final List<List<ReqDesPartiePrenante>> groupes,
 	                              final Map<Integer, List<Pair<RoleDansActe, Integer>>> roles) {
@@ -211,7 +212,7 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 			public Set<Long> doInTransaction(TransactionStatus status) {
 
 				// on crée d'abord l'événement lui-même
-				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, xmlContent);
+				final EvenementReqDes evt = buildEvenementReqDes(acteAuthentique, operateurs, doublon, noAffaire, xmlContent);
 
 				// toutes les autres entités seront créées avec un visa spécifique à l'événement
 				AuthenticationHelper.pushPrincipal(String.format("ReqDes-%d", evt.getId()));
@@ -254,11 +255,12 @@ public class ReqDesEventHandler implements EsbMessageHandler, InitializingBean {
 		});
 	}
 
-	private EvenementReqDes buildEvenementReqDes(NotarialDeed acteAuthentique, NotarialInformation operateurs, boolean doublon, String xml) {
+	private EvenementReqDes buildEvenementReqDes(NotarialDeed acteAuthentique, NotarialInformation operateurs, boolean doublon, long noAffaire, String xml) {
 		final EvenementReqDes evt = new EvenementReqDes();
 		evt.setXml(xml);
 		evt.setDoublon(doublon);
 		evt.setDateActe(XmlUtils.xmlcal2regdate(acteAuthentique.getReferenceDate()));
+		evt.setNoAffaire(noAffaire);
 		evt.setNumeroMinute(acteAuthentique.getDealNumber());
 		evt.setNotaire(buildInformationActeur(operateurs.getSollicitor()));
 		evt.setOperateur(buildInformationActeur(operateurs.getOperator()));
