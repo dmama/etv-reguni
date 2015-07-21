@@ -50,7 +50,7 @@ public abstract class DataLoadHelper {
 	 */
 	public static List<Long> loadIdentifiantsPM(Reader reader) throws IOException {
 		try (BufferedReader br = new BufferedReader(reader)) {
-			return loadData(br, ID_PM, Long::parseLong);
+			return loadData(br, ID_PM, matcher -> Long.parseLong(matcher.group()));
 		}
 	}
 
@@ -58,12 +58,12 @@ public abstract class DataLoadHelper {
 	 * Méthode générique de récupération de données depuis un fichier plat (ligne à ligne)
 	 * @param reader extracteur de lignes
 	 * @param pattern pattern qui permet de ne conserver que les lignes valides
-	 * @param builder transcripteur de {@link String} en donnée structurée
+	 * @param builder transcripteur de {@link Matcher} en donnée structurée
 	 * @param <T> type de la donnée structurée renvoyée
 	 * @return la liste des données lues
 	 * @throws IOException en cas de souci avec l'accès aux données
 	 */
-	public static <T> List<T> loadData(BufferedReader reader, Pattern pattern, Function<String, ? extends T> builder) throws IOException {
+	public static <T> List<T> loadData(BufferedReader reader, Pattern pattern, Function<Matcher, ? extends T> builder) throws IOException {
 
 		// une liste chaînée car on n'a aucune idée du nombre d'éléments
 		final List<T> liste = new LinkedList<>();
@@ -73,7 +73,7 @@ public abstract class DataLoadHelper {
 		while ((ligne = reader.readLine()) != null) {
 			final Matcher matcher = pattern.matcher(ligne);
 			if (matcher.matches()) {
-				final T data = builder.apply(matcher.group());
+				final T data = builder.apply(matcher);
 				liste.add(data);
 			}
 			else {
