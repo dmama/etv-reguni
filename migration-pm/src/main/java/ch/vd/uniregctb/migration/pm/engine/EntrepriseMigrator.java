@@ -337,19 +337,68 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// périodes des fors secondaires non-couvertes par les fors principaux ?
 				final List<DateRange> rangesNonCouverts = DateRangeHelper.subtract(fs, fp, new DateRangeAdapterCallback());
 				if (rangesNonCouverts != null && !rangesNonCouverts.isEmpty()) {
-					rangesNonCouverts.stream()
-							.map(range -> new ForFiscalPrincipalPM(range.getDateDebut(),
-							                                       MotifFor.INDETERMINE,
-							                                       range.getDateFin(),
-							                                       range.getDateFin() != null ? MotifFor.INDETERMINE : null,
-							                                       ServiceInfrastructureService.noPaysInconnu,
-							                                       TypeAutoriteFiscale.PAYS_HS,
-							                                       MotifRattachement.DOMICILE))
-							.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
-							.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.",
-							                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
-							.forEach(entreprise::addForFiscal);
+
+					// la règle dit d'étendre le prochain for principal trouvé (= celui juste après le trou)
+					// afin qu'il couvre le trou (s'il n'y en a pas après, on prendra celui d'avant)
+					// (dans le cas où il n'y a ni for avant, ni for après le trou, c'est qu'il n'y a pas de for principal
+					// du tout, et on fait un for pays inconnu...)
+
+					// y a-t-il des fors principaux ?
+					if (fp == null || fp.isEmpty()) {
+						// non -> aucun, on va créer des fors "pays inconnu"
+						rangesNonCouverts.stream()
+								.map(range -> new ForFiscalPrincipalPM(range.getDateDebut(),
+								                                       MotifFor.INDETERMINE,
+								                                       range.getDateFin(),
+								                                       range.getDateFin() != null ? MotifFor.INDETERMINE : null,
+								                                       ServiceInfrastructureService.noPaysInconnu,
+								                                       TypeAutoriteFiscale.PAYS_HS,
+								                                       MotifRattachement.DOMICILE))
+								.peek(ff -> ff.setGenreImpot(GenreImpot.BENEFICE_CAPITAL))
+								.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+								                          String.format("Création d'un for principal 'bouche-trou' %s pour couvrir les fors secondaires.",
+								                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
+								.forEach(entreprise::addForFiscal);
+					}
+					else {
+						// il y a des fors principaux, donc il y a toujours au moins un for principal
+						// juste avant ou juste après chaque trou...
+						for (DateRange nonCouvert : rangesNonCouverts) {
+
+							final RegDate dateFinTrou = nonCouvert.getDateFin();
+							final ForFiscalPrincipalPM forApresTrou = dateFinTrou == null ? null : entreprise.getForFiscalPrincipalAt(dateFinTrou.getOneDayAfter());
+							if (forApresTrou != null) {
+								// on change la date de début pour couvrir le trou
+								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+								              String.format("La date de début du for fiscal principal %s est adaptée (-> %s) pour couvrir les fors secondaires.",
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(forApresTrou),
+								                            StringRenderers.DATE_RENDERER.toString(nonCouvert.getDateDebut())));
+
+								// il ne suffit pas de le dire, il faut le faire...
+								forApresTrou.setDateDebut(nonCouvert.getDateDebut());
+							}
+							else {
+								// TODO il y a un souci, non ?
+								// s'il n'y a pas de for principal après, c'est que le dernier for principal est fermé
+								// mais s'il est fermé, c'est que l'entreprise est dissoute, non ?
+								// comment, dans ce cas, peut-il encore y avoir des fors secondaires actifs après la dissolution ?
+
+								// il n'y a pas de for après, on regarde avant...
+								final RegDate dateDebutTrou = nonCouvert.getDateDebut();
+								final ForFiscalPrincipalPM forAvantTrou = dateDebutTrou == null ? null : entreprise.getForFiscalPrincipalAt(dateDebutTrou.getOneDayBefore());
+								if (forAvantTrou != null) {
+									// on change la date de fin pour couvrir le trou
+									mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+									              String.format("La date de fin du for fiscal principal %s est adaptée (-> %s) pour couvrir les fors secondaires.",
+									                            StringRenderers.DATE_RANGE_RENDERER.toString(forAvantTrou),
+									                            StringRenderers.DATE_RENDERER.toString(nonCouvert.getDateFin())));
+
+									// là non plus, il ne suffit pas de le dire...
+									forAvantTrou.setDateFin(nonCouvert.getDateFin());
+								}
+							}
+						}
+					}
 
 					// on va forcer le re-calcul des motifs
 					calculeMotifsOuvertureFermeture(entreprise.getForsFiscauxPrincipauxActifsSorted());
