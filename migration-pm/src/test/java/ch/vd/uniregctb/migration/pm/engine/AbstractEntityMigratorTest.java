@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.adresse.StreetDataMigrator;
@@ -13,6 +14,9 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngineTest {
@@ -72,5 +76,16 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 					.collect(Collectors.joining(System.lineSeparator()));
 			Assert.fail("Aucun message ne correspond à la regex '" + regex + "' dans la catégorie " + cat + " : \n" + msgs);
 		}
+	}
+
+	static RegpmRattachementProprietaire addRattachementProprietaire(RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, RegpmImmeuble immeuble) {
+		final RegpmRattachementProprietaire rrp = new RegpmRattachementProprietaire();
+		rrp.setId(ID_GENERATOR.next());
+		assignMutationVisa(rrp, REGPM_VISA, REGPM_MODIF);
+		rrp.setDateDebut(dateDebut);
+		rrp.setDateFin(dateFin);
+		rrp.setImmeuble(immeuble);
+		groupe.getRattachementsProprietaires().add(rrp);
+		return rrp;
 	}
 }

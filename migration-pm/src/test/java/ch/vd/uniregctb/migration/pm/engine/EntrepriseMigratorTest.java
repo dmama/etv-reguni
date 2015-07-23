@@ -231,17 +231,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return rrp;
 	}
 
-	static RegpmRattachementProprietaire addRattachementProprietaire(RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, RegpmImmeuble immeuble) {
-		final RegpmRattachementProprietaire rrp = new RegpmRattachementProprietaire();
-		rrp.setId(ID_GENERATOR.next());
-		assignMutationVisa(rrp, REGPM_VISA, REGPM_MODIF);
-		rrp.setDateDebut(dateDebut);
-		rrp.setDateFin(dateFin);
-		rrp.setImmeuble(immeuble);
-		groupe.getRattachementsProprietaires().add(rrp);
-		return rrp;
-	}
-
 	static RegpmAppartenanceGroupeProprietaire addAppartenanceGroupeProprietaire(RegpmEntreprise entreprise, RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, boolean leader) {
 		final RegpmAppartenanceGroupeProprietaire ragp = new RegpmAppartenanceGroupeProprietaire();
 		ragp.setId(new RegpmAppartenanceGroupeProprietaire.PK(NO_SEQUENCE_GENERATOR.next(), groupe.getId()));

@@ -27,11 +27,15 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -111,6 +115,28 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		domicile.setCommune(commune);
 		domicile.setRectifiee(annule);
 		domiciles.add(domicile);
+	}
+
+	static RegpmRattachementProprietaire addRattachementProprietaire(RegpmEtablissement etb, RegDate dateDebut, RegDate dateFin, RegpmImmeuble immeuble) {
+		final RegpmRattachementProprietaire rrp = new RegpmRattachementProprietaire();
+		rrp.setId(ID_GENERATOR.next());
+		assignMutationVisa(rrp, REGPM_VISA, REGPM_MODIF);
+		rrp.setDateDebut(dateDebut);
+		rrp.setDateFin(dateFin);
+		rrp.setImmeuble(immeuble);
+		etb.getRattachementsProprietaires().add(rrp);
+		return rrp;
+	}
+
+	static RegpmAppartenanceGroupeProprietaire addAppartenanceGroupeProprietaire(RegpmEtablissement etb, RegpmGroupeProprietaire groupe, RegDate dateDebut, RegDate dateFin, boolean leader) {
+		final RegpmAppartenanceGroupeProprietaire ragp = new RegpmAppartenanceGroupeProprietaire();
+		ragp.setId(new RegpmAppartenanceGroupeProprietaire.PK(NO_SEQUENCE_GENERATOR.next(), groupe.getId()));
+		ragp.setDateDebut(dateDebut);
+		ragp.setDateFin(dateFin);
+		ragp.setGroupeProprietaire(groupe);
+		ragp.setLeader(leader);
+		etb.getAppartenancesGroupeProprietaire().add(ragp);
+		return ragp;
 	}
 
 	@Test

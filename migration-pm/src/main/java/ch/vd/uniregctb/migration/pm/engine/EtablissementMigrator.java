@@ -12,7 +12,6 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -413,22 +412,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// on ne fait rien des "succursales" d'un établissement, car il n'y en a aucune dans le modèle RegPM
 
-		// on ne fait rien non plus avec les rattachements propriétaires (directs ou via groupe) des établissements, car ceux-ci n'ont pas la personalité juridique
-		// (mais on loggue les cas)
-		regpm.getRattachementsProprietaires().stream()
-				.map(AbstractEntityMigrator::couvertureDepuisRattachementProprietaire)
-				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
-				.map(Pair::getKey)
-				.distinct()
-				.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
-				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
-		regpm.getAppartenancesGroupeProprietaire().stream()
-				.map(AbstractEntityMigrator::couvertureDepuisAppartenanceGroupeProprietaire)
-				.flatMap(Function.<Stream<Pair<RegpmCommune, DateRange>>>identity())
-				.map(Pair::getKey)
-				.distinct()
-				.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
-				.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
+		// les éventuels immeubles (à transférer sur l'entité juridique parente)
+		migrateImmeubles(regpm, entiteJuridique, mr);
 
 		// adresse
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
@@ -453,6 +438,39 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log de suivi à la fin des opérations pour cet établissement
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Les rattachements propriétaires (directs ou via groupe) des établissements (qui sont des erreurs de saisie dans RegPM, car les établissements n'ont
+	 * pas la personalité juridique) doivent être loggués et transférés sur l'entreprise parente
+	 * @param regpm l'établissement en cours de migration
+	 * @param entiteJuridique l'entité juridique parente
+	 * @param mr collecteur des messages de suivi et manipulateur de contexte de log
+	 */
+	private void migrateImmeubles(RegpmEtablissement regpm, KeyedSupplier<? extends Contribuable> entiteJuridique, MigrationResultProduction mr) {
+
+		final Map<RegpmCommune, List<DateRange>> immeublesDirects = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());
+		final Map<RegpmCommune, List<DateRange>> immeublesGroupes = couvertureDepuisAppartenancesGroupeProprietaire(regpm.getAppartenancesGroupeProprietaire());
+
+		// un peu de log d'abord et puis enregistrement dans les données de l'entité juridique
+		if (!immeublesDirects.isEmpty()) {
+			// log
+			immeublesDirects.keySet().stream()
+					.map(c -> String.format("Etablissement avec rattachement propriétaire direct sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
+					.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
+
+			// enregistrement
+			mr.addPreTransactionCommitData(new ForsSecondairesData.Immeuble(entiteJuridique, immeublesDirects));
+		}
+		if (!immeublesGroupes.isEmpty()) {
+			// log
+			immeublesGroupes.keySet().stream()
+					.map(c -> String.format("Etablissement avec rattachement propriétaire (via groupe) sur la commune %s/%d.", c.getNom(), NO_OFS_COMMUNE_EXTRACTOR.apply(c)))
+					.forEach(msg -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, msg));
+
+			// enregistrement
+			mr.addPreTransactionCommitData(new ForsSecondairesData.Immeuble(entiteJuridique, immeublesGroupes));
+		}
 	}
 
 	/**
