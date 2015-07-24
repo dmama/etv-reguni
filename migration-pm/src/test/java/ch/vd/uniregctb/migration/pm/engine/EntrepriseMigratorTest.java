@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -55,6 +56,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -1133,15 +1135,30 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(ffp.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+
+			// la décision ACI, car le for principal source est une administration effective
+			final List<DecisionAci> decisions = entr.getDecisionsSorted();
+			Assert.assertNotNull(decisions);
+			Assert.assertEquals(1, decisions.size());
+
+			final DecisionAci decision = decisions.get(0);
+			Assert.assertNotNull(decision);
+			Assert.assertFalse(decision.isAnnule());
+			Assert.assertEquals(debut, decision.getDateDebut());
+			Assert.assertNull(decision.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, decision.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(String.format("Selon décision de %s le %s.", REGPM_VISA, RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF))), decision.getRemarque());
 		});
 
 		// vérification des messages dans le contexte "FORS"
 		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals(3, textesFors.size());
 		Assert.assertEquals("Plusieurs (3) fors principaux de types différents (ADMINISTRATION_EFFECTIVE, SIEGE) ont une date de début identique au 07.05.2005 : seuls les fors 'ADMINISTRATION_EFFECTIVE' seront pris en compte.", textesFors.get(0));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] généré.", textesFors.get(1));
+		Assert.assertEquals("Décision ACI COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] générée.", textesFors.get(2));
 	}
 
 	@Test
@@ -1201,16 +1218,31 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(ffp.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+
+			// la décision ACI, car le for principal source est une administration effective
+			final List<DecisionAci> decisions = entr.getDecisionsSorted();
+			Assert.assertNotNull(decisions);
+			Assert.assertEquals(1, decisions.size());
+
+			final DecisionAci decision = decisions.get(0);
+			Assert.assertNotNull(decision);
+			Assert.assertFalse(decision.isAnnule());
+			Assert.assertEquals(debut, decision.getDateDebut());
+			Assert.assertNull(decision.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, decision.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(String.format("Selon décision de %s le %s.", REGPM_VISA, RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF))), decision.getRemarque());
 		});
 
 		// vérification des messages dans le contexte "FORS"
 		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(3, textesFors.size());
+		Assert.assertEquals(4, textesFors.size());
 		Assert.assertEquals("Plusieurs (4) fors principaux de types différents (ADMINISTRATION_EFFECTIVE, SIEGE) ont une date de début identique au 07.05.2005 : seuls les fors 'ADMINISTRATION_EFFECTIVE' seront pris en compte.", textesFors.get(0));
 		Assert.assertEquals("Plusieurs (2) fors principaux de type ADMINISTRATION_EFFECTIVE ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(1));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
+		Assert.assertEquals("Décision ACI COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] générée.", textesFors.get(3));
 	}
 
 	@Test

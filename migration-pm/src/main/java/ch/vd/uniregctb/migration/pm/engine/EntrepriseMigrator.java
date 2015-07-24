@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -84,6 +86,7 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -1106,7 +1109,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		final Function<RegpmForPrincipal, Optional<ForFiscalPrincipalPM>> mapper = f -> {
+		final Function<RegpmForPrincipal, Optional<Pair<Boolean, ForFiscalPrincipalPM>>> mapper = f -> {
 			final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 			copyCreationMutation(f, ffp);
 			ffp.setDateDebut(f.getDateValidite());
@@ -1130,17 +1133,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				return Optional.empty();
 			}
 			ffp.setTiers(unireg);
-			return Optional.of(ffp);
+			return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
 		};
 
 		// récupération des fors principaux valides
 		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
 
 		// puis la migration, justement
+
+		// ici, on va collecter les fors qui sont issus d'une décision ACI (= administration effective)
+		// afin de générer les entités Unireg 'DecisionACI'
+		final List<ForFiscalPrincipalPM> listeIssueDeDecisionAci = new ArrayList<>(forsRegpm.size());
 		final List<ForFiscalPrincipalPM> liste = forsRegpm.stream()
 				.map(mapper)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
+				.peek(pair -> {
+					if (pair.getLeft()) {
+						listeIssueDeDecisionAci.add(pair.getRight());
+					}
+				})
+				.map(Pair::getRight)
 				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
 				.collect(Collectors.toList());
 
@@ -1159,6 +1172,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// ajout au tiers
 			unireg.addForFiscal(ff);
 		});
+
+		// ... et finalement on crée également les éventuelles décisions ACI
+		listeIssueDeDecisionAci.stream()
+				.map(ff -> {
+					final DecisionAci decision = new DecisionAci();
+					decision.setDateDebut(ff.getDateDebut());
+					decision.setDateFin(ff.getDateFin());
+					decision.setNumeroOfsAutoriteFiscale(ff.getNumeroOfsAutoriteFiscale());
+					decision.setTypeAutoriteFiscale(ff.getTypeAutoriteFiscale());
+					decision.setRemarque(String.format("Selon décision de %s le %s.", ff.getLogCreationUser(), StringRenderers.DATE_RENDERER.toString(RegDateHelper.get(ff.getLogCreationDate()))));
+					return decision;
+				})
+				.peek(decision -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+				                                String.format("Décision ACI %s/%d %s générée.",
+				                                              decision.getTypeAutoriteFiscale(),
+				                                              decision.getNumeroOfsAutoriteFiscale(),
+				                                              StringRenderers.DATE_RANGE_RENDERER.toString(decision))))
+				.forEach(unireg::addDecisionAci);
 	}
 
 	/**
