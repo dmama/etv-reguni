@@ -66,6 +66,9 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 	private String commentaireTraitement;
 	private Set<EvenementOrganisationErreur> erreurs;
 
+	/**
+	  Réservé à Hibernate
+	 */
 	public EvenementOrganisation() {
 	}
 
