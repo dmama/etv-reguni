@@ -1250,7 +1250,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					decision.setDateFin(ff.getDateFin());
 					decision.setNumeroOfsAutoriteFiscale(ff.getNumeroOfsAutoriteFiscale());
 					decision.setTypeAutoriteFiscale(ff.getTypeAutoriteFiscale());
-					decision.setRemarque(String.format("Selon décision de %s le %s.", ff.getLogCreationUser(), StringRenderers.DATE_RENDERER.toString(RegDateHelper.get(ff.getLogCreationDate()))));
+					decision.setRemarque(String.format("Selon décision OIPM du %s par %s.", StringRenderers.DATE_RENDERER.toString(RegDateHelper.get(ff.getLogCreationDate())), ff.getLogCreationUser()));
 					return decision;
 				})
 				.peek(decision -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,

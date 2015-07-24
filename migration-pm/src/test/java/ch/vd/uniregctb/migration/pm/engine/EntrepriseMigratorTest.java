@@ -1148,7 +1148,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(decision.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, decision.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
-			Assert.assertEquals(String.format("Selon décision de %s le %s.", REGPM_VISA, RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF))), decision.getRemarque());
+			Assert.assertEquals(String.format("Selon décision OIPM du %s par %s.", RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF)), REGPM_VISA), decision.getRemarque());
 		});
 
 		// vérification des messages dans le contexte "FORS"
@@ -1231,7 +1231,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(decision.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, decision.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
-			Assert.assertEquals(String.format("Selon décision de %s le %s.", REGPM_VISA, RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF))), decision.getRemarque());
+			Assert.assertEquals(String.format("Selon décision OIPM du %s par %s.", RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF)), REGPM_VISA), decision.getRemarque());
 		});
 
 		// vérification des messages dans le contexte "FORS"
@@ -1386,7 +1386,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(decision.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, decision.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
-			Assert.assertEquals(String.format("Selon décision de %s le %s.", REGPM_VISA, RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF))), decision.getRemarque());
+			Assert.assertEquals(String.format("Selon décision OIPM du %s par %s.", RegDateHelper.dateToDisplayString(RegDateHelper.get(REGPM_MODIF)), REGPM_VISA), decision.getRemarque());
 		});
 
 		// vérification des messages dans le contexte "FORS"
