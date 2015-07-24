@@ -1012,7 +1012,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testPlusieursForsPrincipauxALaMemeDate() throws Exception {
+	public void testPlusieursForsPrincipauxDeMemeTypeALaMemeDate() throws Exception {
 		final long noEntreprise = 1234L;
 		final RegDate debut = RegDate.get(2005, 5, 7);
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
@@ -1073,8 +1073,144 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(2, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Plusieurs (2) fors principaux de même type (SIEGE) ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(0));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] généré.", textesFors.get(1));
+	}
+
+	@Test
+	public void testPlusieursForsPrincipauxDeTypesDifferentsALaMemeDate() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegDate debut = RegDate.get(2005, 5, 7);
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ECHALLENS);        // <- c'est lui, l'administration effective, qui devrait être pris en compte
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> on va regarder l'établissement principal et les fors créés
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		doInUniregTransaction(true, status -> {
+			// l'établissement principal
+			final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtablissement);
+			Assert.assertNotNull(etb);
+			Assert.assertTrue(etb.isPrincipal());
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(debut, domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+
+			// le for principal
+			final Entreprise entr = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entr);
+			Assert.assertEquals(1, entr.getForsFiscauxPrincipauxActifsSorted().size());
+
+			final ForFiscalPrincipalPM ffp = entr.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(debut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messagesFors);
+		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(2, textesFors.size());
+		Assert.assertEquals("Plusieurs (3) fors principaux de types différents (ADMINISTRATION_EFFECTIVE, SIEGE) ont une date de début identique au 07.05.2005 : seuls les fors 'ADMINISTRATION_EFFECTIVE' seront pris en compte.", textesFors.get(0));
+		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [07.05.2005 -> ?] généré.", textesFors.get(1));
+	}
+
+	@Test
+	public void testPlusieursForsPrincipauxDeTypesDifferentsAvecPlusieursAdministrationsEffectivesALaMemeDate() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegDate debut = RegDate.get(2005, 5, 7);
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ECHALLENS);
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.MORGES);        // <- c'est lui, la dernière administration effective, qui devrait être pris en compte
+		addForPrincipalSuisse(e, debut, RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> on va regarder l'établissement principal et les fors créés
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		doInUniregTransaction(true, status -> {
+			// l'établissement principal
+			final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtablissement);
+			Assert.assertNotNull(etb);
+			Assert.assertTrue(etb.isPrincipal());
+
+			final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(debut, domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
+
+			// le for principal
+			final Entreprise entr = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entr);
+			Assert.assertEquals(1, entr.getForsFiscauxPrincipauxActifsSorted().size());
+
+			final ForFiscalPrincipalPM ffp = entr.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(debut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messagesFors = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messagesFors);
+		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(3, textesFors.size());
+		Assert.assertEquals("Plusieurs (4) fors principaux de types différents (ADMINISTRATION_EFFECTIVE, SIEGE) ont une date de début identique au 07.05.2005 : seuls les fors 'ADMINISTRATION_EFFECTIVE' seront pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Plusieurs (2) fors principaux de type ADMINISTRATION_EFFECTIVE ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(1));
+		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
 	}
 
 	@Test
@@ -1140,7 +1276,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(3, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Plusieurs (2) fors principaux de même type (SIEGE) ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
 		Assert.assertEquals("Le for principal {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
 	}
@@ -1178,7 +1314,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messagesFors);
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(2, textesFors.size());
-		Assert.assertEquals("Plusieurs (2) fors principaux ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
+		Assert.assertEquals("Plusieurs (2) fors principaux de même type (SIEGE) ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
 		Assert.assertEquals("Le for principal {idEntreprise=1234, seqNo=2} est ignoré car il a une date de début nulle.", textesFors.get(1));
 
 		// .. et dans le contexte "SUIVI"

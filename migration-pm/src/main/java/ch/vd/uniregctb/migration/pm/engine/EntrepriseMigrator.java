@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,6 +77,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
@@ -293,10 +295,49 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.map(entry -> {
 						final List<RegpmForPrincipal> fors = entry.getValue();
 						if (fors.size() > 1) {
-							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							              String.format("Plusieurs (%d) fors principaux ont une date de début identique au %s : seul le dernier sera pris en compte.",
-							                            fors.size(),
-							                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+
+							// si les fors sont de même type, on a effectivement une erreur (et on ne garde que le dernier pour ce run de migration)
+							// sinon, on ne considère que ceux qui sont en administration effective (s'il y en a plusieurs, c'est aussi une erreur
+							// et on ne garde que le dernier d'entre eux dans ce run de migration)
+							final Map<RegpmTypeForPrincipal, List<RegpmForPrincipal>> parType = fors.stream()
+									.collect(Collectors.toMap(RegpmForPrincipal::getType,
+									                          Collections::singletonList,
+									                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList()),
+									                          () -> new EnumMap<>(RegpmTypeForPrincipal.class)));
+
+							// tous de même type = taille de la map == 1
+							if (parType.size() == 1) {
+								mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
+								              String.format("Plusieurs (%d) fors principaux de même type (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
+								                            fors.size(),
+								                            parType.keySet().iterator().next(),
+								                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+							}
+							else {
+
+								// les deux types sont donc représentés, c'est l'administration effective qui gagne
+
+								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+								              String.format("Plusieurs (%d) fors principaux de types différents (%s) ont une date de début identique au %s : seuls les fors '%s' seront pris en compte.",
+								                            fors.size(),
+								                            parType.keySet().stream().map(Enum::name).collect(Collectors.joining(", ")),
+								                            StringRenderers.DATE_RENDERER.toString(entry.getKey()),
+								                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE));
+
+								final List<RegpmForPrincipal> forsAdministrationEffective = parType.get(RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE);
+								if (forsAdministrationEffective.size() > 1) {
+									mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
+									              String.format("Plusieurs (%d) fors principaux de type %s ont une date de début identique au %s : seul le dernier sera pris en compte.",
+									                            forsAdministrationEffective.size(),
+									                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE,
+									                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+								}
+
+								// on ne considère que le dernier, comme indiqué dans le message, et comme
+								// dans le set d'entrée, les fors sont triés... (à date égale, par numéro de séquence)
+								// -> le dernier de la liste ici est celui que l'on veut conserver
+								return forsAdministrationEffective.get(forsAdministrationEffective.size() - 1);
+							}
 						}
 
 						// dans le set d'entrée, les fors sont triés... (à date égale, par numéro de séquence)
