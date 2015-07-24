@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -299,6 +300,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						final List<RegpmForPrincipal> fors = entry.getValue();
 						if (fors.size() > 1) {
 
+							// si les fors représentent le même pays ou la même commune, on prend le premier
+							final Map<CommuneOuPays, List<RegpmForPrincipal>> parLocalisation = fors.stream()
+									.collect(Collectors.toMap(CommuneOuPays::new,
+									                          Collections::singletonList,
+									                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList()),
+									                          LinkedHashMap::new));     // on veut conserver l'ordre des localisation pour les tests
+							if (parLocalisation.size() == 1) {
+								mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+								              String.format("Plusieurs (%d) fors principaux sur la même autorité fiscale (%s) ont une date de début identique au %s : seul le premier sera pris en compte.",
+								                            fors.size(),
+								                            parLocalisation.keySet().iterator().next(),
+								                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+
+								return fors.get(0);
+							}
+
 							// si les fors sont de même type, on a effectivement une erreur (et on ne garde que le dernier pour ce run de migration)
 							// sinon, on ne considère que ceux qui sont en administration effective (s'il y en a plusieurs, c'est aussi une erreur
 							// et on ne garde que le dernier d'entre eux dans ce run de migration)
@@ -311,28 +328,57 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							// tous de même type = taille de la map == 1
 							if (parType.size() == 1) {
 								mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
-								              String.format("Plusieurs (%d) fors principaux de même type (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
+								              String.format("Plusieurs (%d) fors principaux de même type (%s) mais sur des autorités fiscales différentes (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
 								                            fors.size(),
 								                            parType.keySet().iterator().next(),
+								                            parLocalisation.keySet().stream().map(Object::toString).collect(Collectors.joining(", ")),
 								                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
 							}
 							else {
 
 								// les deux types sont donc représentés, c'est l'administration effective qui gagne
 
-								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-								              String.format("Plusieurs (%d) fors principaux de types différents (%s) ont une date de début identique au %s : seuls les fors '%s' seront pris en compte.",
-								                            fors.size(),
-								                            parType.keySet().stream().map(Enum::name).collect(Collectors.joining(", ")),
-								                            StringRenderers.DATE_RENDERER.toString(entry.getKey()),
-								                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE));
+								parType.entrySet().stream()
+										.filter(parTypeEntry -> parTypeEntry.getKey() != RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE)
+										.map(Map.Entry::getValue)
+										.flatMap(List::stream)
+										.map(ff -> Pair.of(ff.getId().getSeqNo(), new CommuneOuPays(ff)))
+										.forEach(pair -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+										                               String.format(
+												                               "For fiscal principal %d %s ignoré en raison de la présence à la même date (%s) d'un for fiscal principal différent de type %s.",
+												                               pair.getLeft(),
+												                               pair.getRight(),
+												                               StringRenderers.DATE_RENDERER.toString(entry.getKey()),
+												                               RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE)));
 
 								final List<RegpmForPrincipal> forsAdministrationEffective = parType.get(RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE);
 								if (forsAdministrationEffective.size() > 1) {
+
+									final Map<CommuneOuPays, List<RegpmForPrincipal>> admEffectiveParLocalisation = forsAdministrationEffective.stream()
+											.collect(Collectors.toMap(CommuneOuPays::new,
+											                          Collections::singletonList,
+											                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList()),
+											                          LinkedHashMap::new));         // on veut conserver l'ordre des localisation pour les tests
+
+									// tous au même endroit ou pas ?
+									if (admEffectiveParLocalisation.size() == 1) {
+
+										// tous au même endroit -> on prend le premier
+										mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+										              String.format("Plusieurs (%d) fors principaux de type %s et sur la même autorité fiscale (%s) ont une date de début identique au %s : seul le premier sera pris en compte.",
+										                            fors.size(),
+										                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE,
+										                            admEffectiveParLocalisation.keySet().iterator().next(),
+										                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
+
+										return forsAdministrationEffective.get(0);
+									}
+
 									mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
-									              String.format("Plusieurs (%d) fors principaux de type %s ont une date de début identique au %s : seul le dernier sera pris en compte.",
+									              String.format("Plusieurs (%d) fors principaux de type %s sur des autorités fiscales différentes (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
 									                            forsAdministrationEffective.size(),
 									                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE,
+									                            admEffectiveParLocalisation.keySet().stream().map(Object::toString).collect(Collectors.joining(", ")),
 									                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
 								}
 
@@ -350,7 +396,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.filter(ff -> {
 						if (ff.getDateValidite() == null) {
 							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							              String.format("Le for principal %s est ignoré car il a une date de début nulle.", ff.getId()));
+							              String.format("Le for principal %d est ignoré car il a une date de début nulle.", ff.getId().getSeqNo()));
 							return false;
 						}
 						return true;
@@ -697,6 +743,29 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		 */
 		public Integer getNumeroOfsAutoriteFiscale() {
 			return commune != null ? NO_OFS_COMMUNE_EXTRACTOR.apply(commune) : noOfsPays;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final CommuneOuPays that = (CommuneOuPays) o;
+
+			if (commune != null ? !commune.equals(that.commune) : that.commune != null) return false;
+			return !(noOfsPays != null ? !noOfsPays.equals(that.noOfsPays) : that.noOfsPays != null);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = commune != null ? commune.hashCode() : 0;
+			result = 31 * result + (noOfsPays != null ? noOfsPays.hashCode() : 0);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("%s/%d", getTypeAutoriteFiscale(), getNumeroOfsAutoriteFiscale());
 		}
 	}
 
