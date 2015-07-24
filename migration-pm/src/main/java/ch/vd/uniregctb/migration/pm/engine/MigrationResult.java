@@ -165,7 +165,7 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	 * @param consolidationPhaseIndicator indicateur de l'emplacement de cette consolidation dans la grande liste des consolidations
 	 * @param keyExtractor extracteur de la clé de regroupement pour les données postées
 	 * @param dataMerger fusionneur des données associées à une clé postée plusieurs fois
-	 * @param consolidator opération finale à effectuée sur les données consolidées
+	 * @param consolidator opération finale à effectuer sur les données consolidées
 	 * @param <D> type des données postées et traitées
 	 */
 	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
