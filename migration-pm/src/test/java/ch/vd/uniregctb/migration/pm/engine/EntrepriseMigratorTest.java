@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,8 +30,11 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -45,10 +50,12 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
@@ -56,6 +63,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -284,6 +292,43 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmForPrincipal addForPrincipalEtranger(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, int noOfsPays) {
 		return addForPrincipal(entreprise, dateDebut, type, null, noOfsPays);
+	}
+
+	static RegpmAllegementFiscal addAllegementFiscal(RegpmEntreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, @NotNull BigDecimal pourcentage, @NotNull RegpmObjectImpot objectImpot) {
+		final RegpmAllegementFiscal a = new RegpmAllegementFiscal();
+		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNo(entreprise.getAllegementsFiscaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
+		a.setCommune(null);
+		a.setDateAnnulation(null);
+		a.setDateDebut(dateDebut);
+		a.setDateFin(dateFin);
+		a.setObjectImpot(objectImpot);
+		a.setPourcentage(pourcentage);
+		a.setTypeContribution(null);
+		entreprise.getAllegementsFiscaux().add(a);
+		return a;
+	}
+
+	static RegpmAllegementFiscal addAllegementFiscal(RegpmEntreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, @NotNull BigDecimal pourcentage,
+	                                                 @NotNull RegpmCodeContribution codeContribution, @NotNull RegpmCodeCollectivite codeCollectivite, @Nullable RegpmCommune commune) {
+		final RegpmAllegementFiscal a = new RegpmAllegementFiscal();
+		a.setId(new RegpmAllegementFiscal.PK(computeNewSeqNo(entreprise.getAllegementsFiscaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
+		a.setCommune(commune);
+		a.setDateAnnulation(null);
+		a.setDateDebut(dateDebut);
+		a.setDateFin(dateFin);
+		a.setObjectImpot(null);
+		a.setPourcentage(pourcentage);
+
+		final RegpmTypeContribution typeContribution = new RegpmTypeContribution();
+		typeContribution.setCodeCollectivite(codeCollectivite);
+		typeContribution.setCodeContribution(codeContribution);
+		typeContribution.setId(ID_GENERATOR.next());
+		a.setTypeContribution(typeContribution);
+
+		entreprise.getAllegementsFiscaux().add(a);
+		return a;
 	}
 
 	@Test
@@ -1543,5 +1588,198 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(3));
 		Assert.assertEquals("Entreprise migrée : 12.34.", textes.get(4));
 	}
+
+	@Test
+	public void testAllegementsFiscauxObjectImpot() throws Exception {
+		final long noEntreprise = 4784L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addAllegementFiscal(e, RegDate.get(1950, 1, 1), RegDate.get(1955, 3, 31), BigDecimal.valueOf(12L), RegpmObjectImpot.CANTONAL);
+		addAllegementFiscal(e, RegDate.get(1956, 5, 1), RegDate.get(1956, 12, 27), BigDecimal.valueOf(13L), RegpmObjectImpot.FEDERAL);
+		addAllegementFiscal(e, RegDate.get(1957, 3, 12), null, BigDecimal.valueOf(135L, 1), RegpmObjectImpot.COMMUNAL);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
+			final List<AllegementFiscal> allegementsTries = allegements.stream()
+					.sorted(Comparator.comparing(AllegementFiscal::getDateDebut).thenComparing(AllegementFiscal::getTypeImpot))
+					.collect(Collectors.toList());
+			Assert.assertNotNull(allegementsTries);
+			Assert.assertEquals(6, allegementsTries.size());
+			{
+				final AllegementFiscal a = allegementsTries.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CANTON, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(2);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(3);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(4);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1957, 3, 12), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13.5, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(135L, 1).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(5);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1957, 3, 12), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13.5, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(135L, 1).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(9, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> 31.03.1955], collectivité CANTON, type BENEFICE : 12%.", textes.get(1));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> 31.03.1955], collectivité CANTON, type CAPITAL : 12%.", textes.get(2));
+		Assert.assertEquals("Allègement fiscal généré [01.05.1956 -> 27.12.1956], collectivité CONFEDERATION, type BENEFICE : 13%.", textes.get(3));
+		Assert.assertEquals("Allègement fiscal généré [01.05.1956 -> 27.12.1956], collectivité CONFEDERATION, type CAPITAL : 13%.", textes.get(4));
+		Assert.assertEquals("Allègement fiscal généré [12.03.1957 -> ?], collectivité COMMUNE, type BENEFICE : 13.5%.", textes.get(5));
+		Assert.assertEquals("Allègement fiscal généré [12.03.1957 -> ?], collectivité COMMUNE, type CAPITAL : 13.5%.", textes.get(6));
+		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(7));
+		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(8));
+	}
+
+	@Test
+	public void testAllegementsFiscauxTypeContribution() throws Exception {
+		final long noEntreprise = 4784L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addAllegementFiscal(e, RegDate.get(1950, 1, 1), RegDate.get(1955, 3, 31), BigDecimal.valueOf(12L), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.COMMUNE, null);
+		addAllegementFiscal(e, RegDate.get(1956, 5, 1), RegDate.get(1956, 12, 27), BigDecimal.valueOf(13L), RegpmCodeContribution.BENEFICE, RegpmCodeCollectivite.COMMUNE, Commune.MORGES);
+		addAllegementFiscal(e, RegDate.get(1956, 6, 1), RegDate.get(1956, 12, 28), BigDecimal.valueOf(14L), RegpmCodeContribution.BENEFICE, RegpmCodeCollectivite.COMMUNE, Commune.BALE);       // ignoré HC
+		addAllegementFiscal(e, RegDate.get(1957, 3, 12), null, BigDecimal.valueOf(135L, 1), RegpmCodeContribution.IMPOT_BENEFICE_CAPITAL, RegpmCodeCollectivite.CONFEDERATION, null);           // ignoré pas le bon code de contribution
+		addAllegementFiscal(e, RegDate.get(1958, 3, 12), null, BigDecimal.valueOf(134L, 1), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.CONFEDERATION, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
+			final List<AllegementFiscal> allegementsTries = allegements.stream()
+					.sorted(Comparator.comparing(AllegementFiscal::getDateDebut).thenComparing(AllegementFiscal::getTypeImpot))
+					.collect(Collectors.toList());
+			Assert.assertNotNull(allegementsTries);
+			Assert.assertEquals(3, allegementsTries.size());
+			{
+				final AllegementFiscal a = allegementsTries.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1955, 3, 31), a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1956, 5, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(1956, 12, 27), a.getDateFin());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(13L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.BENEFICE, a.getTypeImpot());
+			}
+			{
+				final AllegementFiscal a = allegementsTries.get(2);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1958, 3, 12), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 13.4, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(134L, 1).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.CONFEDERATION, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(8, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> 31.03.1955], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(1));
+		Assert.assertEquals("Allègement fiscal généré [01.05.1956 -> 27.12.1956], collectivité COMMUNE (5642), type BENEFICE : 13%.", textes.get(2));
+		Assert.assertEquals("Allègement fiscal 3 sur une commune hors-canton (Bâle/2701/BS) -> ignoré.", textes.get(3));
+		Assert.assertEquals("Allègement fiscal 4 avec un code de contribution IMPOT_BENEFICE_CAPITAL -> ignoré.", textes.get(4));
+		Assert.assertEquals("Allègement fiscal généré [12.03.1958 -> ?], collectivité CONFEDERATION, type CAPITAL : 13.4%.", textes.get(5));
+		Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(6));
+		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(7));
+	}
+
 	// TODO il reste encore plein de tests à faire...
 }

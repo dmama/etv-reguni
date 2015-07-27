@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -67,7 +66,10 @@ import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -77,7 +79,9 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
@@ -87,6 +91,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -700,6 +705,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
 
+		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarations(regpm, unireg, mr);
@@ -915,14 +921,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// une date de début nulle pose un grave problème (c'est peut-être une date trop lointaine dans le passé, i.e. avant 1291... -> vraissemblablement une erreur de saisie)
 			if (mandat.getDateAttribution() == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
+				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+				              "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
 				return;
 			}
 
 			// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
 			if (isFutureDate(mandat.getDateAttribution())) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
-				                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
+				                                                              mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
 				return;
 			}
 
@@ -990,8 +997,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	@NotNull
 	private PeriodeFiscale getPeriodeFiscaleByYear(int year) {
 		// critère sur l'année
-		final Map<String, Object> params = new HashMap<>(1);
-		params.put("annee", year);
+		final Map<String, Object> params = Collections.singletonMap("annee", year);
 
 		// récupération des données
 		final List<PeriodeFiscale> pfs = Optional.ofNullable(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params)).orElse(Collections.emptyList());
@@ -1415,5 +1421,126 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// et finalement on ajoute tout ça dans l'entreprise
 		Stream.concat(listeCH.stream(), listeVD.stream()).forEach(unireg::addRegimeFiscal);
+	}
+
+	private static AllegementFiscal.TypeImpot toTypeImpot(@NotNull RegpmCodeContribution codeContribution) {
+		switch (codeContribution) {
+		case BENEFICE:
+			return AllegementFiscal.TypeImpot.BENEFICE;
+		case CAPITAL:
+			return AllegementFiscal.TypeImpot.CAPITAL;
+		default:
+			throw new IllegalArgumentException("Seuls BENEFICE et CAPITAL sont supportés ici.");
+		}
+	}
+
+	private static AllegementFiscal.TypeCollectivite toTypeCollectivite(@NotNull RegpmCodeCollectivite codeCollectivite) {
+		switch (codeCollectivite) {
+		case CANTON:
+			return AllegementFiscal.TypeCollectivite.CANTON;
+		case COMMUNE:
+			return AllegementFiscal.TypeCollectivite.COMMUNE;
+		case CONFEDERATION:
+			return AllegementFiscal.TypeCollectivite.CONFEDERATION;
+		default:
+			throw new IllegalArgumentException("Code collectivité inconnu : " + codeCollectivite);
+		}
+	}
+
+	private static AllegementFiscal.TypeCollectivite toTypeCollectivite(@NotNull RegpmObjectImpot objectImpot) {
+		switch (objectImpot) {
+		case CANTONAL:
+			return AllegementFiscal.TypeCollectivite.CANTON;
+		case COMMUNAL:
+			return AllegementFiscal.TypeCollectivite.COMMUNE;
+		case FEDERAL:
+			return AllegementFiscal.TypeCollectivite.CONFEDERATION;
+		default:
+			throw new IllegalArgumentException("Code object impôt inconnu : " + objectImpot);
+		}
+	}
+
+	private static AllegementFiscal buildAllegementFiscal(RegpmAllegementFiscal regpm, AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, @Nullable Integer noOfsCommune) {
+		final AllegementFiscal unireg = new AllegementFiscal();
+		copyCreationMutation(regpm, unireg);
+		unireg.setDateDebut(regpm.getDateDebut());
+		unireg.setDateFin(regpm.getDateFin());
+		unireg.setPourcentageAllegement(regpm.getPourcentage());
+		unireg.setTypeCollectivite(typeCollectivite);
+		unireg.setTypeImpot(typeImpot);
+		unireg.setNoOfsCommune(noOfsCommune);
+		return unireg;
+	}
+
+	private static Stream<AllegementFiscal> mapAllegementFiscal(RegpmAllegementFiscal a, MigrationResultProduction mr) {
+
+		final Stream.Builder<AllegementFiscal> builder = Stream.builder();
+
+		if (a.getTypeContribution() != null) {
+			final RegpmTypeContribution typeContribution = a.getTypeContribution();
+
+			// on ne s'intéresse ici qu'aux allégements "bénéfice" et "capital"
+			final RegpmCodeContribution codeContribution = typeContribution.getCodeContribution();
+			if (codeContribution != RegpmCodeContribution.BENEFICE && codeContribution != RegpmCodeContribution.CAPITAL) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Allègement fiscal %d avec un code de contribution %s -> ignoré.", a.getId().getSeqNo(), codeContribution));
+			}
+			else {
+				final RegpmCodeCollectivite codeCollectivite = typeContribution.getCodeCollectivite();
+				final AllegementFiscal.TypeImpot typeImpot = toTypeImpot(codeContribution);
+				final AllegementFiscal.TypeCollectivite typeCollectivite = toTypeCollectivite(codeCollectivite);
+				final Integer noOfsCommune = typeCollectivite == AllegementFiscal.TypeCollectivite.COMMUNE && a.getCommune() != null ? NO_OFS_COMMUNE_EXTRACTOR.apply(a.getCommune()) : null;
+				builder.accept(buildAllegementFiscal(a, typeImpot, typeCollectivite, noOfsCommune));
+			}
+		}
+		else if (a.getObjectImpot() != null) {
+			final AllegementFiscal.TypeCollectivite typeCollectivite = toTypeCollectivite(a.getObjectImpot());
+			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.BENEFICE, typeCollectivite, null));
+			builder.accept(buildAllegementFiscal(a, AllegementFiscal.TypeImpot.CAPITAL, typeCollectivite, null));
+		}
+		else if (a.getId().getSeqNo() == 998 || a.getId().getSeqNo() == 999) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Allègement fiscal %d avec un numéro de séquence 998/999 -> ignoré.", a.getId().getSeqNo()));
+		}
+		else {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+			              String.format("Allègement fiscal %d sans type de contribution ni object impôt -> ignoré.", a.getId().getSeqNo()));
+		}
+
+		return builder.build();
+	}
+
+	private static String buildCollectiviteString(AllegementFiscal a) {
+		if (a.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE && a.getNoOfsCommune() != null) {
+			return String.format("%s (%d)", a.getTypeCollectivite(), a.getNoOfsCommune());
+		}
+		return a.getTypeCollectivite().name();
+	}
+
+	private void migrateAllegementsFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		regpm.getAllegementsFiscaux().stream()
+				.filter(a -> a.getDateAnnulation() == null)                 // on ne prend pas en compte les allègements annulés
+				.sorted(Comparator.comparing(a -> a.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
+				.filter(a -> {
+					if (a.getCommune() != null && a.getCommune().getCanton() != RegpmCanton.VD) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Allègement fiscal %d sur une commune hors-canton (%s/%d/%s) -> ignoré.",
+						                            a.getId().getSeqNo(),
+						                            a.getCommune().getNom(),
+						                            NO_OFS_COMMUNE_EXTRACTOR.apply(a.getCommune()),
+						                            a.getCommune().getCanton()));
+						return false;
+					}
+					return true;
+				})
+				.map(a -> mapAllegementFiscal(a, mr))
+				.flatMap(Function.identity())
+				.peek(a -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                         String.format("Allègement fiscal généré %s, collectivité %s, type %s : %s%%.",
+				                                       StringRenderers.DATE_RANGE_RENDERER.toString(a),
+				                                       buildCollectiviteString(a),
+				                                       a.getTypeImpot(),
+				                                       a.getPourcentageAllegement())))
+				.forEach(unireg::addAllegementFiscal);
 	}
 }
