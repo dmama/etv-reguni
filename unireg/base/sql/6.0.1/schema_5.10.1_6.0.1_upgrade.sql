@@ -1,5 +1,8 @@
 -- Version
-INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('6.0.0', '5.13.2_6.0.0_upgrade');
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('6.0.1', '5.10.1_6.0.1_upgrade');
+
+-- SIFISC-15849 (le numéro d'affaire d'un message ReqDes)
+ALTER TABLE EVENEMENT_REQDES ADD NO_AFFAIRE NUMBER(19, 0);
 
 -- Table de la migration PM (inutile à l'application Unireg elle-même, mais utilisée par
 -- le programme de migration des PM pour sa reprise en cas de crash)
