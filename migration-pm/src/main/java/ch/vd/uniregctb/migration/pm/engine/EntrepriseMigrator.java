@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
+import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -331,7 +333,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								              String.format("Plusieurs (%d) fors principaux de même type (%s) mais sur des autorités fiscales différentes (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
 								                            fors.size(),
 								                            parType.keySet().iterator().next(),
-								                            parLocalisation.keySet().stream().map(Object::toString).collect(Collectors.joining(", ")),
+								                            toDisplayString(parLocalisation.keySet(), Object::toString),
 								                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
 							}
 							else {
@@ -378,7 +380,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									              String.format("Plusieurs (%d) fors principaux de type %s sur des autorités fiscales différentes (%s) ont une date de début identique au %s : seul le dernier sera pris en compte.",
 									                            forsAdministrationEffective.size(),
 									                            RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE,
-									                            admEffectiveParLocalisation.keySet().stream().map(Object::toString).collect(Collectors.joining(", ")),
+									                            toDisplayString(admEffectiveParLocalisation.keySet(), Object::toString),
 									                            StringRenderers.DATE_RENDERER.toString(entry.getKey())));
 								}
 
@@ -559,7 +561,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return une représentation String de cette liste
 	 */
 	private static String toDisplayString(List<? extends DateRange> list) {
-		return list.stream().map(StringRenderers.DATE_RANGE_RENDERER::toString).collect(Collectors.joining(", "));
+		return toDisplayString(list, StringRenderers.DATE_RANGE_RENDERER);
+	}
+
+	/**
+	 * @param list une collection d'élément
+	 * @param renderer un renderer capable de fournir une chaîne de caractère pour chaque élément de la liste
+	 * @param <T> le type des éléments dans la liste
+	 * @return une représentation String de cette liste
+	 */
+	private static <T> String toDisplayString(Collection<T> list, StringRenderer<? super T> renderer) {
+		return list.stream().map(renderer::toString).collect(Collectors.joining(", "));
 	}
 
 	/**
