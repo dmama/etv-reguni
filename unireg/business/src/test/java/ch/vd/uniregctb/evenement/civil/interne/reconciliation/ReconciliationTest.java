@@ -14,9 +14,9 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -193,7 +193,7 @@ public class ReconciliationTest extends AbstractEvenementCivilInterneTest {
 
 		assertEquals("Il devrait y avoir exactement une erreur", 1, collector.getErreurs().size());
 
-		final EvenementCivilErreur erreur = collector.getErreurs().iterator().next();
+		final EvenementErreur erreur = collector.getErreurs().iterator().next();
 		assertEquals("L'erreur n'est pas la bonne", "La date de l'événement est dans le futur", erreur.getMessage());
 	}
 

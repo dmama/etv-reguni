@@ -1,0 +1,62 @@
+#
+# Fichier regroupant les instructions d'installation et configuration pour la version 6 d'Unireg,
+# vouées à figurer dans INSTALL.doc dès la livraison.
+#
+#
+
+1. RCEnt
+
+Dans le cadre du projet PM, Unireg utilise RCEnt, le référenciel des entreprises et personne morale,
+pour obtenir les informations civiles concernant ces entités.
+
+1.1.
+
+
+
+
+1.xx Reception des événements
+
+
+
+
+
+unireg.properties
+=================
+
+# Service RCEnt
+extprop.webservice.rcent.url=http://slv2737v.etat-de-vaud.ch:8040/services
+
+
+extprop.jms.queue.evtOrganisationMasse=unireg.evenementOrganisationMasse
+extprop.jms.queue.evtOrganisationMasse.enabled=false
+extprop.jms.queue.evtOrganisationMasse.consumers=10
+
+
+# réception des événements: délai de prise en compte (en secondes) des messages reçus par la queue JMS des événements civils
+# (problématique de tri avec arrivée sur plusieurs threads)
+extprop.evtOrganisation.acknowledgementDelay=3
+
+# écart maximal autorisé entre la date de fin d'une adresse et la date de l'événement de départ correspondant (en jours)
+extprop.evtOrganisation.depart.maxMargin=1
+
+# délai, en minutes, entre le démarrage de l'application et la relance des événements encore "à traiter"
+extprop.evtOrganisation.rethrowDelayOnStartup=10
+
+
+ehcache.xml
+===========
+    <cache name="serviceOrganisation"
+           maxElementsInMemory="1000"
+           eternal="false"
+           timeToIdleSeconds="500"
+           timeToLiveSeconds="500"
+           overflowToDisk="false"
+            />
+
+
+credentials.properties
+======================
+
+# Service RCEnt
+extprop.webservice.rcent.username=gvd0unireg
+extprop.webservice.rcent.password=Welc0me_

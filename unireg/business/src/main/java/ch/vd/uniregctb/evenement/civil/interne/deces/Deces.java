@@ -21,8 +21,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -183,7 +183,7 @@ public class Deces extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		try {
 			return handleDeces(warnings);
 		}
@@ -193,7 +193,7 @@ public class Deces extends EvenementCivilInterne {
 		}
 	}
 
-	private HandleStatus handleDeces(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private CivilHandleStatus handleDeces(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant au defunt.
@@ -208,7 +208,7 @@ public class Deces extends EvenementCivilInterne {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
 				Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal, rien à faire");
 				checkForsFermesAvecPassageToutDroit(warnings);
-				return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
+				return redondantSelonFors ? CivilHandleStatus.REDONDANT : CivilHandleStatus.TRAITE;
 			}
 			else {
 
@@ -217,7 +217,7 @@ public class Deces extends EvenementCivilInterne {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
 					Audit.info(getNumeroEvenement(), "Date de décès déjà enregistrée dans le fiscal avec un jour de différence (" + RegDateHelper.dateToDisplayString(dateDecesUnireg) + "), rien à faire");
 					checkForsFermesAvecPassageToutDroit(warnings);
-					return redondantSelonFors ? HandleStatus.REDONDANT : HandleStatus.TRAITE;
+					return redondantSelonFors ? CivilHandleStatus.REDONDANT : CivilHandleStatus.TRAITE;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {
 					// si plus d'1 jour d'écart ou sur une PF différente : KO (evt en Erreur --> pour traitement par la Cellule vérif de la date de décès)
@@ -234,7 +234,7 @@ public class Deces extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 
 	/**

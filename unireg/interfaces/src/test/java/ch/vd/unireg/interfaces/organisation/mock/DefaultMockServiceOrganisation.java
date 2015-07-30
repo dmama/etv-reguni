@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.OrganisationBuilder;
-import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationBuilder;
 
 public class DefaultMockServiceOrganisation extends MockServiceOrganisation {
 
@@ -38,7 +38,7 @@ public class DefaultMockServiceOrganisation extends MockServiceOrganisation {
 						.addSite(RegDate.get(2015, 4, 29), null, 101072613L)
 
 						.addDonneesSite(
-								new SiteOrganisationBuilder(101072613L)
+								new MockSiteOrganisationBuilder(101072613L)
 										.addNom(RegDate.get(2015, 4, 29), null, "Springbok Ski Tours S.A., en liquidation")
 
 										.addIdentifiant("CH.IDE", RegDate.get(2015, 4, 29), null, "CHE100057199")

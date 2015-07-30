@@ -28,17 +28,15 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 @Entity
 @Table(name = "EVENEMENT_ORGANISATION")
-public class EvenementOrganisation extends HibernateEntity implements EvenementOrganisationFacade {
+public class EvenementOrganisation extends HibernateEntity {
 
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:header:notice:noticeId
 	 */
-	@NotNull
 	private long id;
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:header:senderIdentification
 	 */
-	@NotNull
 	private EmetteurEvenementOrganisation identiteEmetteur;
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:header:senderReferenceData
@@ -47,20 +45,16 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:header:notice:typeOfNotice
 	 */
-	@NotNull
 	private TypeEvenementOrganisation type;
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:header:notice:noticeDate
 	 */
-	@NotNull
 	private RegDate dateEvenement;
 	/**
 	 * ch.vd.evd0024.v1:noticeRoot:noticeOrganisation:organisationIdentification:cantonalId
 	 */
-	@NotNull
-	private Long noOrganisation;
+	private long noOrganisation;
 
-	@NotNull
 	private EtatEvenementOrganisation etat;
 	private Date dateTraitement;
 	private String commentaireTraitement;
@@ -90,18 +84,16 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 	}
 
 	@Id
-	@Override
 	public long getId() {
 		return id;
 	}
 
-	public void setId(@NotNull long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
 	@Column(name = "IDENT_EMETTEUR", length = LengthConstants.EVTORGANISATION_IDENTITEEMETTEUR, nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.EmetteurEvenementOrganisationUserType")
-	@NotNull
 	public EmetteurEvenementOrganisation getIdentiteEmetteur() {
 		return identiteEmetteur;
 	}
@@ -119,7 +111,6 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		this.refDataEmetteur = refDataEmetteur;
 	}
 
-	@NotNull
 	@Column(name = "TYPE", length = LengthConstants.EVTORGANISATION_TYPE, nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeEvenementOrganisationUserType")
 	public TypeEvenementOrganisation getType() {
@@ -130,7 +121,6 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		this.type = type;
 	}
 
-	@NotNull
 	@Column(name = "ETAT", length = LengthConstants.EVTORGANISATION_ETAT, nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.EtatEvenementOrganisationUserType")
 	@Index(name = "IDX_EV_ORGA_ETAT")
@@ -151,7 +141,6 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		this.dateTraitement = dateTraitement;
 	}
 
-	@NotNull
 	@Column(name = "DATE_EVENEMENT", nullable = false)
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateEvenement() {
@@ -162,14 +151,13 @@ public class EvenementOrganisation extends HibernateEntity implements EvenementO
 		this.dateEvenement = dateEvenement;
 	}
 
-	@NotNull
-	@Column(name = "NO_ORGANISATION")
+	@Column(name = "NO_ORGANISATION", nullable = false)
 	@Index(name = "IDX_EV_ORGA_NO_ORGA")
 	public long getNoOrganisation() {
 		return noOrganisation;
 	}
 
-	public void setNoOrganisation(@NotNull Long noOrganisation) {
+	public void setNoOrganisation(long noOrganisation) {
 		this.noOrganisation = noOrganisation;
 	}
 

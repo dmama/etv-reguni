@@ -164,6 +164,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		throw new NotImplementedException();
 	}

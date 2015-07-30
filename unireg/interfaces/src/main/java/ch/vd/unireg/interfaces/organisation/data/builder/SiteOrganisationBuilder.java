@@ -131,4 +131,52 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		this.typeDeSite = typeDeSite;
 		return this;
 	}
+
+	/*
+		Getters réservés au Mock
+	 */
+
+	protected long getCantonalId() {
+		return cantonalId;
+	}
+
+	protected List<DateRanged<Long>> getEnRemplacementDe() {
+		return enRemplacementDe;
+	}
+
+	protected List<DateRanged<Fonction>> getFonction() {
+		return fonction;
+	}
+
+	protected DonneesRegistreIDE getIde() {
+		return ide;
+	}
+
+	protected Map<String, List<DateRanged<String>>> getIdentifiants() {
+		return identifiants;
+	}
+
+	protected List<DateRanged<String>> getNom() {
+		return nom;
+	}
+
+	protected List<DateRanged<String>> getNomsAdditionnels() {
+		return nomsAdditionnels;
+	}
+
+	protected DonneesRC getRc() {
+		return rc;
+	}
+
+	protected List<DateRanged<Long>> getRemplacePar() {
+		return remplacePar;
+	}
+
+	protected List<DateRanged<Integer>> getSiege() {
+		return siege;
+	}
+
+	protected List<DateRanged<TypeDeSite>> getTypeDeSite() {
+		return typeDeSite;
+	}
 }

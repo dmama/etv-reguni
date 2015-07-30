@@ -36,8 +36,8 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.PollingThread;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.evenement.EvenementErreurHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -665,8 +665,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			grappe.forEach(DATE_TRAITEMENT);
 
 			// les erreurs et warnings collectés sont maintenant associés à l'événement en base
-			final List<EvenementCivilEchErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
-			final List<EvenementCivilEchErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
+			final List<EvenementCivilEchErreur> erreurs = EvenementErreurHelper.eliminerDoublons(collector.getErreurs());
+			final List<EvenementCivilEchErreur> warnings = EvenementErreurHelper.eliminerDoublons(collector.getWarnings());
 			event.getErreurs().addAll(erreurs);
 			event.getErreurs().addAll(warnings);
 

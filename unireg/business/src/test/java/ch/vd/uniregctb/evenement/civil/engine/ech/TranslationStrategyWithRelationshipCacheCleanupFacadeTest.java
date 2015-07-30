@@ -20,8 +20,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -38,8 +38,8 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-						return HandleStatus.TRAITE;
+					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						return CivilHandleStatus.TRAITE;
 					}
 
 					@Override
@@ -65,8 +65,8 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-						return HandleStatus.TRAITE;
+					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						return CivilHandleStatus.TRAITE;
 					}
 
 					@Override
@@ -126,7 +126,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						throw new EvenementCivilException("Boom!");
 					}
 
@@ -153,7 +153,7 @@ public class TranslationStrategyWithRelationshipCacheCleanupFacadeTest extends A
 				return new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						throw new EvenementCivilException("Boom!");
 					}
 

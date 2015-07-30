@@ -30,12 +30,12 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -391,7 +391,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		assertEquals(1, collector.getErreurs().size());
 
-		final EvenementCivilErreur erreur = collector.getErreurs().get(0);
+		final EvenementErreur erreur = collector.getErreurs().get(0);
 		assertNotNull(erreur);
 		assertEquals("Adresse de résidence avant départ inconnue", erreur.getMessage());
 	}
@@ -729,9 +729,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	 * @param message
 	 * @return
 	 */
-	private boolean findMessage(List<? extends EvenementCivilErreur> erreurs, String message) {
+	private boolean findMessage(List<? extends EvenementErreur> erreurs, String message) {
 		boolean isPresent = false;
-		for (EvenementCivilErreur evenementErreur : erreurs) {
+		for (EvenementErreur evenementErreur : erreurs) {
 			if (evenementErreur.getMessage().contains(message)) {
 				isPresent = true;
 				break;
@@ -1606,7 +1606,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				handleDepart(depart, collector, collector);
 				assertEquals(1, collector.getErreurs().size());
 
-				final EvenementCivilErreur erreur = collector.getErreurs().get(0);
+				final EvenementErreur erreur = collector.getErreurs().get(0);
 				assertEquals("Un départ HC/HS ne peut être traité qu'à partir du lendemain de sa date d'effet", erreur.getMessage());
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
@@ -1706,7 +1706,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepart(depart, collector, collector);
 
 		if (collector.hasErreurs()) {
-			for (EvenementCivilErreur erreur : collector.getErreurs()) {
+			for (EvenementErreur erreur : collector.getErreurs()) {
 				LOGGER.error("Erreur trouvée : " + erreur.getMessage());
 			}
 			fail("Une erreur est survenue lors du traitement du départ");

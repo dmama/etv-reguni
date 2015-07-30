@@ -18,11 +18,11 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -124,13 +124,13 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		});
 
 		if (collector.hasErreurs()) {
-			for (EvenementCivilErreur e : collector.getErreurs()) {
+			for (EvenementErreur e : collector.getErreurs()) {
 				LOGGER.error("Trouvé erreur : " + e);
 			}
 			Assert.fail("Il y a des erreurs...");
 		}
 		if (collector.hasWarnings()) {
-			for (EvenementCivilErreur e : collector.getWarnings()) {
+			for (EvenementErreur e : collector.getWarnings()) {
 				LOGGER.error("Trouvé warning : " + e);
 			}
 			Assert.fail("Il y a des warnings...");
@@ -457,11 +457,11 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 				final MessageCollector collector = buildMessageCollector();
 				mariage.validate(collector, collector);
-				final HandleStatus etat = mariage.handle(collector);
+				final CivilHandleStatus etat = mariage.handle(collector);
 
 				assertEmpty(collector.getErreurs());
 				assertEmpty(collector.getWarnings());
-				assertEquals(HandleStatus.REDONDANT, etat);
+				assertEquals(CivilHandleStatus.REDONDANT, etat);
 				return null;
 			}
 		});

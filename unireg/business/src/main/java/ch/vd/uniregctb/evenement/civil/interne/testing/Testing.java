@@ -8,8 +8,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
 public class Testing extends EvenementCivilInterne {
@@ -51,23 +51,23 @@ public class Testing extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (getNumeroEvenement().equals(NoExceptionDansHandle)) {
 			throw new EvenementCivilException("Exception de test");
 		}
 		else if (getNumeroEvenement().equals(NoTraiteAvecWarningDansHandle)) {
 			warnings.addWarning("Warning de test");
-			return HandleStatus.TRAITE;
+			return CivilHandleStatus.TRAITE;
 		}
 		else if (getNumeroEvenement().equals(NoRedondantAvecWarningDansHandle)) {
 			warnings.addWarning("Warning de test");
-			return HandleStatus.REDONDANT;
+			return CivilHandleStatus.REDONDANT;
 		}
 		else if (getNumeroEvenement().equals(NoRedondantSansWarning)) {
-			return HandleStatus.REDONDANT;
+			return CivilHandleStatus.REDONDANT;
 		}
 		else {
-			return HandleStatus.TRAITE;
+			return CivilHandleStatus.TRAITE;
 		}
 	}
 }

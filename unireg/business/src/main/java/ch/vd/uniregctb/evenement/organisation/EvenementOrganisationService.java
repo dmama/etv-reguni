@@ -10,11 +10,11 @@ public interface EvenementOrganisationService {
 	/**
 	 * Interroge le DAO des événements organisation pour construire une collection des événements à traiter pour l'organisation donnée
      *
-	 * @param noIndividu numéro de l'organisation dont on cherche les événements à traiter
+	 * @param noOrganisation numéro de l'organisation dont on cherche les événements à traiter
      *
 	 * @return une liste des informations autour des événements à traiter
 	 */
-	List<EvenementOrganisationBasicInfo> buildLotEvenementsOrganisationNonTraites(long noIndividu);
+	List<EvenementOrganisationBasicInfo> buildLotEvenementsOrganisationNonTraites(long noOrganisation);
 
     /**
      *

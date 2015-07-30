@@ -927,6 +927,19 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return pp;
 	}
 
+	/**
+	 * Recherche l'Entreprise par son numéro d'organisation au régistre des entreprises.
+	 *
+	 * @param numeroOrganisation Le numéro RCEnt
+	 * @return L'entreprise correspondant au numéro, ou null si aucune n'est trouvée.
+	 */
+	public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+		final Criteria crit = getCurrentSession().createCriteria(Entreprise.class);
+		crit.add(Restrictions.eq("numeroEntreprise", numeroOrganisation));
+
+		return (Entreprise) crit.uniqueResult();
+	}
+
 	@Override
 	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {
 

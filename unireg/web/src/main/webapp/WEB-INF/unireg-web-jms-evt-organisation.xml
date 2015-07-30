@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Evénements Organisation -->
+
+	<!-- Traitements de masse -->
+
+	<bean id="evtOrganisationMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evtOrganisationMasseEsbHandler"/>
+	</bean>
+
+	<bean id="evtOrganisationMasseEsbHandler" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler" parent="evtOrganisationEsbHandler">
+		<property name="processingMode" value="BULK"/>
+		<property name="recuperateur" ref="evtOrganisationRecuperateur"/>
+		<property name="delaiRecuperationMinutes" value="${extprop.evtOrganisation.rethrowDelayOnStartup}"/>
+	</bean>
+
+	<bean id="evtOrganisationRecuperateur" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationRecuperateurImpl">
+		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
+		<property name="receptionHandler" ref="evtOrganisationReceptionHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtOrganisationMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtOrganisationMasse}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtOrganisationMasse.consumers}"/>
+				<property name="maxMessagesPerSessions" value="100"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtOrganisationMasseListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisationMasse.enabled}" />
+	</bean>
+
+	<!-- Parties communes -->
+
+	<bean id="evtOrganisationEsbHandler" abstract="true" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler">
+		<property name="receptionHandler" ref="evtOrganisationReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+			</set>
+		</property>
+	</bean>
+
+	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl">
+		<constructor-arg name="delayInSeconds" value="${extprop.evtOrganisation.acknowledgementDelay}"/>
+		<property name="evtOrganisationService" ref="evtOrganisationService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="evtOrganisationReceptionHandler" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationReceptionHandlerImpl">
+		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
+		<property name="notificationQueue" ref="evtOrganisationNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="evtOrganisationProcessor" class="ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorFacade">
+		<property name="notificationQueue" ref="evtOrganisationNotificationQueue"/>
+		<property name="internalProcessor" ref="evtOrganisationProcessorInternal"/>
+	</bean>
+
+	<bean id="evtOrganisationProcessorInternal" class="ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
+		<property name="translator" ref="evenementOrganisationTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="serviceOrganisation" ref="serviceOrganisationService"/>
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="mainInterceptor" ref="modificationInterceptor"/>
+	</bean>
+
+	<bean id="evtOrganisationProcessorRetry" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtOrganisationNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
+		<property name="processor" ref="evtOrganisationProcessor"/>
+		<property name="recuperateur" ref="evtOrganisationRecuperateur"/>
+	</bean>
+</beans>

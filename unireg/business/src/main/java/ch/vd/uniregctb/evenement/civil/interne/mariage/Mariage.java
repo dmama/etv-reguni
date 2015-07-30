@@ -17,8 +17,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -241,10 +241,10 @@ public class Mariage extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isRedondant) {
-			return HandleStatus.REDONDANT;
+			return CivilHandleStatus.REDONDANT;
 		}
 
 		final PersonnePhysique contribuable = getPrincipalPP();
@@ -289,7 +289,7 @@ public class Mariage extends EvenementCivilInterne {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
 
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 
 	private static class ConjointBizarreException extends Exception {

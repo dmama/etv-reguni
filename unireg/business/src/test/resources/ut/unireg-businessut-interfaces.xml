@@ -13,6 +13,10 @@
 	</bean>
 	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
+	<!-- Bean client ServiceOrganisation MOCK -->
+	<bean id="serviceOrganisationServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation" />
+	<alias alias="serviceOrganisationService" name="serviceOrganisationServiceMock"/>
+
 	<!-- Service UPI -->
 	<bean id="serviceUpiMock" class="ch.vd.unireg.interfaces.upi.mock.DefaultMockServiceUpi"/>
 	<alias alias="serviceUpiRaw" name="serviceUpiMock"/>

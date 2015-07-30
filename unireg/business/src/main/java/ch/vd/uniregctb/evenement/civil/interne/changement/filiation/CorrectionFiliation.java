@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 
@@ -46,7 +46,7 @@ public class CorrectionFiliation extends ChangementBase {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		Audit.info(getNumeroEvenement(), String.format("Correction de filiation de l'individu : %d", getNoIndividu()));
 
 		// [SIFISC-855] Il faut invalider les caches des individus civils parents de cet individu
@@ -58,6 +58,6 @@ public class CorrectionFiliation extends ChangementBase {
 		}
 
 		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 }

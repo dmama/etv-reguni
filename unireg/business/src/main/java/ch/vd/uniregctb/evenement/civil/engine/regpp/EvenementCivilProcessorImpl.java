@@ -22,8 +22,8 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CheckedTransactionCallback;
 import ch.vd.uniregctb.common.CheckedTransactionTemplate;
+import ch.vd.uniregctb.evenement.EvenementErreurHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -235,8 +235,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private Long traiteErreurs(EtatEvenementCivil etat, EvenementCivilRegPP evenementCivilExterne, List<EvenementCivilRegPPErreur> errorList, List<EvenementCivilRegPPErreur> warningList) {
 
-		final List<EvenementCivilRegPPErreur> erreurs = EvenementCivilHelper.eliminerDoublons(errorList);
-		final List<EvenementCivilRegPPErreur> warnings = EvenementCivilHelper.eliminerDoublons(warningList);
+		final List<EvenementCivilRegPPErreur> erreurs = EvenementErreurHelper.eliminerDoublons(errorList);
+		final List<EvenementCivilRegPPErreur> warnings = EvenementErreurHelper.eliminerDoublons(warningList);
 
 		final Long result;
 		

@@ -33,12 +33,12 @@ public class EvenementCivilInterneComposite extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		HandleStatus ret = HandleStatus.REDONDANT;
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		CivilHandleStatus ret = CivilHandleStatus.REDONDANT;
 		for (EvenementCivilInterne evt : listEvtEch) {
-			final HandleStatus hs = evt.handle(warnings);
-			if (HandleStatus.TRAITE == hs) {
-				ret = HandleStatus.TRAITE;
+			final CivilHandleStatus hs = evt.handle(warnings);
+			if (CivilHandleStatus.TRAITE == hs) {
+				ret = CivilHandleStatus.TRAITE;
 			}
 		}
 		return ret;

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -51,7 +51,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		Audit.info(getNumeroEvenement(), String.format("Correction de la date de naissance de l'individu : %d", getNoIndividu()));
 
@@ -86,7 +86,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 			// forcer la reindexation du tiers
 			super.handle(warnings);
 		}
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 
 	private ForFiscalPrincipal findForFiscalPrincipalMajorite(PersonnePhysique habitant) {

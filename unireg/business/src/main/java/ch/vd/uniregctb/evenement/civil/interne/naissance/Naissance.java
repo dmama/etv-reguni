@@ -17,8 +17,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -93,7 +93,7 @@ public class Naissance extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + getNoIndividu() );
 
 		/*
@@ -136,6 +136,6 @@ public class Naissance extends EvenementCivilInterne {
 			Audit.warn(getNumeroEvenement(), "Contribuable de l'autorité parentale non trouvé, pas d'envoi de faire-part...");
 		}
 
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 }

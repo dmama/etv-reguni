@@ -26,10 +26,10 @@ import ch.vd.uniregctb.type.ActionEvenementCivilEch;
  * Stratégie de construction des événements civils internes issus d'événements civils eCH de correction qui
  * traite par une simple indexation les corrections sans impact fiscal et laisse en traitement manuel les autres
  */
-public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTranslationStrategy {
+public class DefaultCorrectionCivilEchTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 
-	private static final EvenementCivilEchTranslationStrategy INDEXATION_PURE = new IndexationPureTranslationStrategy();
-	private static final EvenementCivilEchTranslationStrategy TRAITEMENT_MANUEL = new TraitementManuelTranslationStrategy();
+	private static final EvenementCivilEchTranslationStrategy INDEXATION_PURE = new IndexationPureCivilEchTranslationStrategy();
+	private static final EvenementCivilEchTranslationStrategy TRAITEMENT_MANUEL = new TraitementManuelCivilEchTranslationStrategy();
 
 	private static final String MESSAGE_ANCIEN_HABITANT = "Evénement civil de correction sur un ancien habitant du canton.";
 	private static final String SEPARATEUR = ", ";
@@ -38,7 +38,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	private final TiersService tiersService;
 	private final List<IndividuComparisonStrategy> comparisonStrategies;
 
-	public DefaultCorrectionTranslationStrategy(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfrastructureService, TiersService tiersService) {
+	public DefaultCorrectionCivilEchTranslationStrategy(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfrastructureService, TiersService tiersService) {
 		this.serviceCivil = serviceCivil;
 		this.tiersService = tiersService;
 		this.comparisonStrategies = buildStrategies(serviceInfrastructureService);

@@ -244,6 +244,17 @@ public class TiersServiceImpl implements TiersService {
         return tiersDAO.getPPByNumeroIndividu(numeroIndividu);
     }
 
+	/**
+     * Renvoie l'entreprise correspondant au numéro d'individu passé en paramètre.
+     *
+     * @param numeroOrganisation le numéro de l'organisation.
+     * @return l'entreprise correspondante au numéro d'organisation passé en paramètre, ou <b>null</b> s'il n'existe pas.
+     */
+    @Override
+    public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
+        return tiersDAO.getEntrepriseByNumeroOrganisation(numeroOrganisation);
+    }
+
     @Override
     public Tiers getTiers(long numeroTiers) {
         return tiersDAO.get(numeroTiers);

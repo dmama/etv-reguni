@@ -21,9 +21,9 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -177,7 +177,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Dans le cas d'une commune normale, rien a faire. Traitement
@@ -290,6 +290,6 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 				fermeAdresseTiersTemporaire(menage, getDate().getOneDayBefore());
 			}
 		}
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 }

@@ -11,23 +11,23 @@ public class SiteOrganisation {
 	 */
 	private final long no;
 	@NotNull
-	private final List<DateRanged<String>> nom;
+	private List<DateRanged<String>> nom;
 
 	@NotNull
-	public final DonneesRC rc;
+	public DonneesRC rc;
 	@NotNull
-	public final DonneesRegistreIDE ide;
+	public DonneesRegistreIDE ide;
 
-	private final Map<String,List<DateRanged<String>>> identifiants;
-	private final List<DateRanged<String>> nomsAdditionnels;
-	private final List<DateRanged<TypeDeSite>> typeDeSite;
+	private Map<String,List<DateRanged<String>>> identifiants;
+	private List<DateRanged<String>> nomsAdditionnels;
+	private List<DateRanged<TypeDeSite>> typeDeSite;
 	/**
 	 * municipalityId du SwissMunicipality
 	 */
-	private final List<DateRanged<Integer>> siege;
-	private final List<DateRanged<Fonction>> fonction;
-	private final List<DateRanged<Long>> remplacePar;
-	private final List<DateRanged<Long>> enRemplacementDe;
+	private List<DateRanged<Integer>> siege;
+	private List<DateRanged<Fonction>> fonction;
+	private List<DateRanged<Long>> remplacePar;
+	private List<DateRanged<Long>> enRemplacementDe;
 
 	public SiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
 	                        Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
@@ -96,5 +96,45 @@ public class SiteOrganisation {
 
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
 		return typeDeSite;
+	}
+
+	protected void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
+		this.enRemplacementDe = enRemplacementDe;
+	}
+
+	protected void setFonction(List<DateRanged<Fonction>> fonction) {
+		this.fonction = fonction;
+	}
+
+	protected void setIde(@NotNull DonneesRegistreIDE ide) {
+		this.ide = ide;
+	}
+
+	protected void setIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
+		this.identifiants = identifiants;
+	}
+
+	protected void setNom(@NotNull List<DateRanged<String>> nom) {
+		this.nom = nom;
+	}
+
+	protected void setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+		this.nomsAdditionnels = nomsAdditionnels;
+	}
+
+	protected void setRc(@NotNull DonneesRC rc) {
+		this.rc = rc;
+	}
+
+	protected void setRemplacePar(List<DateRanged<Long>> remplacePar) {
+		this.remplacePar = remplacePar;
+	}
+
+	protected void setSiege(List<DateRanged<Integer>> siege) {
+		this.siege = siege;
+	}
+
+	protected void setTypeDeSite(List<DateRanged<TypeDeSite>> typeDeSite) {
+		this.typeDeSite = typeDeSite;
 	}
 }

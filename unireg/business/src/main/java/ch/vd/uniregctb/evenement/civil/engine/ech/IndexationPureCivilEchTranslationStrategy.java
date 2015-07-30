@@ -9,14 +9,14 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Stratégie applicable aux événements civils dont le traitement consiste en une ré-indexation seule
  */
-public class IndexationPureTranslationStrategy implements EvenementCivilEchTranslationStrategy {
+public class IndexationPureCivilEchTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 
 	private static final String MESSAGE_INDEXATION_PURE = "Événement traité sans modification Unireg.";
 
@@ -25,7 +25,7 @@ public class IndexationPureTranslationStrategy implements EvenementCivilEchTrans
 		return new EvenementCivilInterne(event, context, options) {
 			@NotNull
 			@Override
-			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				final PersonnePhysique pp = getPrincipalPP();
 				if (pp != null) {
 					context.getIndexer().schedule(pp.getNumero());
@@ -35,7 +35,7 @@ public class IndexationPureTranslationStrategy implements EvenementCivilEchTrans
 				} else {
 					event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 				}
-				return HandleStatus.TRAITE;
+				return CivilHandleStatus.TRAITE;
 			}
 
 			@Override

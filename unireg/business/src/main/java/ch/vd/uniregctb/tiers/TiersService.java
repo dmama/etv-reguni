@@ -56,6 +56,14 @@ public interface TiersService {
     PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
 
     /**
+     * Renvoie la personne physique correspondant au numéro d'organisation passé en paramètre.
+     *
+     * @param numeroOrganisation le numéro de l'organisation
+     * @return l'entreprise (tiers non-annulé) correspondante au numéro d'organisation passé en paramètre, ou <b>null</b>.
+     */
+    Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
+
+    /**
      * Retourne un tiers en fonction de son numéro de tiers.
      *
      * @param numeroTiers le numéro de tiers (= numéro de contribuable, sauf dans le cas du débiteur prestation imposable)

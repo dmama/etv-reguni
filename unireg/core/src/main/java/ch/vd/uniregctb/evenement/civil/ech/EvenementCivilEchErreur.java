@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 @Entity
 @Table(name = "EVENEMENT_CIVIL_ECH_ERREUR")
-public class EvenementCivilEchErreur extends HibernateEntity implements EvenementCivilErreur {
+public class EvenementCivilEchErreur extends HibernateEntity implements EvenementErreur {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchErreur.class);
 

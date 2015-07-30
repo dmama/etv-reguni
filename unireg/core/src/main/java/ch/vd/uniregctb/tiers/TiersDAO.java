@@ -185,6 +185,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush);
 
+	Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
+
 	/**
 	 * Renvoie le numéro de la personne physique dont le numéro d'individu est passé en paramètre
 	 *

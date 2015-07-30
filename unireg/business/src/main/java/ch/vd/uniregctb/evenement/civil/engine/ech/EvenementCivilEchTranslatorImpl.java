@@ -116,16 +116,16 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	/**
 	 * Stratégie par défaut tant que certains traitements ne sont pas encore implémentés (de manière politiquement correcte, il faut dire "implémentés en traitement manuel")
 	 */
-	private static final EvenementCivilEchTranslationStrategy NOT_IMPLEMENTED = new TraitementManuelTranslationStrategy();
+	private static final EvenementCivilEchTranslationStrategy NOT_IMPLEMENTED = new TraitementManuelCivilEchTranslationStrategy();
 
 	/**
 	 * Stratégie utilisable pour les événements dont le seul traitement est une indexation
 	 */
-	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new IndexationPureTranslationStrategy();
+	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new IndexationPureCivilEchTranslationStrategy();
 
 	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(EvenementCivilContext context, EvenementCivilEchStrategyParameters params) {
 
-		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
+		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionCivilEchTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
 		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = embedInRelationshipCacheCleanupStrategy(defaultCorrectionStrategy, context);
 		final EvenementCivilEchTranslationStrategy correctionRelationTranslationStrategy = new CorrectionRelationTranslationStrategy(context.getServiceCivil(), context.getDataEventService(), context.getTiersService());
 

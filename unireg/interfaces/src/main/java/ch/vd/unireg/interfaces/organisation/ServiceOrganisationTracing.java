@@ -113,7 +113,7 @@ public class ServiceOrganisationTracing implements ServiceOrganisationRaw, Initi
 		try {
 			target.ping();
 		}
-		catch (ServiceCivilException e) {
+		catch (ServiceOrganisationException e) {
 			t = e;
 			throw e;
 		}

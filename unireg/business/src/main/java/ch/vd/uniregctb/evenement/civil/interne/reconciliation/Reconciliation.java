@@ -15,8 +15,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -121,7 +121,7 @@ public class Reconciliation extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(getNoIndividu());
 		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
@@ -134,7 +134,7 @@ public class Reconciliation extends EvenementCivilInterne {
 			if (couple.estComposeDe(contribuable, conjoint)) {
 				final ForFiscalPrincipal ffp = couple.getMenage().getForFiscalPrincipalAt(getDate());
 				if (ffp != null && ffp.getDateDebut() == getDate() && ffp.getMotifOuverture() == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) {
-					return HandleStatus.REDONDANT;
+					return CivilHandleStatus.REDONDANT;
 				}
 			}
 		}
@@ -145,6 +145,6 @@ public class Reconciliation extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 }

@@ -2,14 +2,14 @@ package ch.vd.uniregctb.evenement.civil.interne;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class MessageCollector extends EvenementCivilMessageCollector<MessageCollector.Msg> {
 
-	public static final class Msg implements EvenementCivilErreur {
+	public static final class Msg implements EvenementErreur {
 
 		private final String msg;
 		private final TypeEvenementErreur type;

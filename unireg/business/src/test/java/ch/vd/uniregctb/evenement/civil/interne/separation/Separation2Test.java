@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -319,11 +319,11 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 
 				final MessageCollector collector = buildMessageCollector();
 				separation.validate(collector, collector);
-				final HandleStatus etat = separation.handle(collector);
+				final CivilHandleStatus etat = separation.handle(collector);
 
 				assertEmpty(collector.getErreurs());
 				assertEmpty(collector.getWarnings());
-				assertEquals(HandleStatus.REDONDANT, etat);
+				assertEquals(CivilHandleStatus.REDONDANT, etat);
 				return null;
 			}
 		});

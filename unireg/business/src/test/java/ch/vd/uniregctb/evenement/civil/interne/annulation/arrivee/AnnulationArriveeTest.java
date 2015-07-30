@@ -15,10 +15,10 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -40,10 +40,10 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private static class ErrorFoundException extends Exception {
 		public final ErrorLocation location;
-		public final List<? extends EvenementCivilErreur> erreurs;
-		public final List<? extends EvenementCivilErreur> warnings;
+		public final List<? extends EvenementErreur> erreurs;
+		public final List<? extends EvenementErreur> warnings;
 
-		private ErrorFoundException(ErrorLocation location, List<? extends EvenementCivilErreur> erreurs, List<? extends EvenementCivilErreur> warnings) {
+		private ErrorFoundException(ErrorLocation location, List<? extends EvenementErreur> erreurs, List<? extends EvenementErreur> warnings) {
 			this.location = location;
 			this.erreurs = erreurs;
 			this.warnings = warnings;
@@ -64,7 +64,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 	 * @return la liste des warnings reçus
 	 * @throws ErrorFoundException si des erreurs ont été levées dans la méthode validate du handler
 	 */
-	private List<? extends EvenementCivilErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
+	private List<? extends EvenementErreur> sendEvent(AnnulationArrivee evt) throws ErrorFoundException, EvenementCivilException {
 
 		final MessageCollector collector = buildMessageCollector();
 		evt.validate(collector, collector);
@@ -101,7 +101,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que la personne physique n'a toujours pas de for
@@ -138,7 +138,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que la personne physique n'a toujours pas de for
@@ -217,7 +217,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -266,7 +266,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -368,7 +368,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for
@@ -424,7 +424,7 @@ public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 		// envoi de l'événement dans le handler
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		final AnnulationArrivee evt = createValideAnnulationArrivee(individu);
-		final List<? extends EvenementCivilErreur> warnings = sendEvent(evt);
+		final List<? extends EvenementErreur> warnings = sendEvent(evt);
 		Assert.assertEquals(0, warnings.size());
 
 		// vérification que le ménage n'a toujours pas de for

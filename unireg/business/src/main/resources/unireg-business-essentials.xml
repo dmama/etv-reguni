@@ -98,6 +98,21 @@
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 
+	<bean id="metierServicePM" class="ch.vd.uniregctb.metier.MetierServicePMImpl">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="infrastructureService" ref="serviceInfrastructureService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="remarqueDAO" ref="remarqueDAO" />
+		<property name="validationService" ref="validationService" />
+		<property name="validationInterceptor" ref="validationInterceptor" />
+		<property name="eFactureService" ref="efactureService" />
+		<property name="parametreAppService" ref="parametreAppService" />
+	</bean>
+
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="tiersDAO" ref="tiersDAO" />

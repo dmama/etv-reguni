@@ -16,6 +16,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -29,7 +30,8 @@ import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean {
+public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean,
+		ServiceOrganisationServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationCache.class);
 
@@ -124,6 +126,21 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	@Override
 	public void reset() {
 		cache.removeAll();
+	}
+
+	@Override
+	public ServiceOrganisationRaw getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceOrganisationRaw getUltimateTarget() {
+		if (target instanceof ServiceOrganisationServiceWrapper) {
+			return ((ServiceOrganisationServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 
 	private static class GetOrganisationKey implements Serializable {

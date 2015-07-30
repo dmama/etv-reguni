@@ -23,14 +23,14 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypePermis;
 
-public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementCivilEchProcessorTest {
+public class DefaultCorrectionCivilEchTranslationStrategyTest extends AbstractEvenementCivilEchProcessorTest {
 
-	private DefaultCorrectionTranslationStrategy strategy;
+	private DefaultCorrectionCivilEchTranslationStrategy strategy;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		strategy = new DefaultCorrectionTranslationStrategy(serviceCivil, serviceInfra, tiersService);
+		strategy = new DefaultCorrectionCivilEchTranslationStrategy(serviceCivil, serviceInfra, tiersService);
 	}
 
 	@Override

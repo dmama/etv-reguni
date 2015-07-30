@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.ObjectKey;
@@ -20,7 +21,7 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class ServiceOrganisationPersistentCache implements ServiceOrganisationRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean {
+public class ServiceOrganisationPersistentCache implements ServiceOrganisationRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationPersistentCache.class);
 
@@ -239,5 +240,20 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	@Override
 	public void onLoadDatabase() {
 		// rien à faire
+	}
+
+	@Override
+	public ServiceOrganisationRaw getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceOrganisationRaw getUltimateTarget() {
+		if (target instanceof ServiceOrganisationServiceWrapper) {
+			return ((ServiceOrganisationServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
+		}
 	}
 }

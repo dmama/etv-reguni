@@ -13,11 +13,11 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -53,8 +53,8 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 
 		@NotNull
 		@Override
-		public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-			return HandleStatus.TRAITE;
+		public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			return CivilHandleStatus.TRAITE;
 		}
 	}
 
@@ -168,11 +168,11 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		});
 	}
 
-	private static void assertContent(List<String> msgs, List<? extends EvenementCivilErreur> erreurs) {
+	private static void assertContent(List<String> msgs, List<? extends EvenementErreur> erreurs) {
 		assertEquals(msgs.size(), erreurs.size());
 		for (int i = 0 ; i < msgs.size() ; ++ i) {
 			final String expected = msgs.get(i);
-			final EvenementCivilErreur erreur = erreurs.get(i);
+			final EvenementErreur erreur = erreurs.get(i);
 			assertNotNull(expected);
 			assertNotNull(erreur);
 			assertEquals(expected, erreur.getMessage());

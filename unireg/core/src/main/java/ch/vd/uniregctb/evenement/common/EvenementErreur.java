@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.evenement.civil;
+package ch.vd.uniregctb.evenement.common;
 
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
- * Interface commune à toutes les erreurs des événements civils
+ * Interface commune à toutes les erreurs des événements civils et organisation
  */
-public interface EvenementCivilErreur {
+public interface EvenementErreur {
 
 	/**
 	 * @return Description textuelle de l'erreur

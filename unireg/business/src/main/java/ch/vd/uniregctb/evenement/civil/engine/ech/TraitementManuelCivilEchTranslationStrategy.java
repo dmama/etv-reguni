@@ -8,13 +8,13 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 
 /**
  * Stratégie utilisable pour les événements civils eCH qui partent systématiquement en traitement manuel
  */
-public class TraitementManuelTranslationStrategy implements EvenementCivilEchTranslationStrategy {
+public class TraitementManuelCivilEchTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 
 	public static final String MSG = "Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.";
 
@@ -24,7 +24,7 @@ public class TraitementManuelTranslationStrategy implements EvenementCivilEchTra
 
 			@NotNull
 			@Override
-			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				throw new IllegalArgumentException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
 			}
 

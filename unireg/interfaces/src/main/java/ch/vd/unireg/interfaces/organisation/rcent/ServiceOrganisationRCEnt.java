@@ -32,8 +32,16 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 		return received.getCantonalId();
 	}
 
+	@Override
 	public void ping() throws ServiceOrganisationException {
-		throw new UnsupportedOperationException(); // FIXME: Implement ping operation
+		long noOrganisation = 12345678L;
+		final Organisation organisation = getOrganisationHistory(noOrganisation); // Francis Perroset
+		if (organisation == null) {
+			throw new ServiceOrganisationException(String.format("L'organisation n°%s est introuvable", noOrganisation));
+		}
+		if (organisation.getNo() != noOrganisation) {
+			throw new ServiceOrganisationException(String.format("Demandé l'organisation n°%s, reçu l'individu n°%s!", noOrganisation, organisation.getNo()));
+		}
 	}
 
 	private void sanityCheck(long noOrganisation, long receivedId) {

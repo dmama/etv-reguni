@@ -18,8 +18,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -77,12 +77,12 @@ public class AnnulationMariage extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Obtention du tiers correspondant au conjoint principal.
 		final PersonnePhysique principal = getPrincipalPP();
 
 		if (isAnnulationRedondante()) {
-			return HandleStatus.REDONDANT;
+			return CivilHandleStatus.REDONDANT;
 		}
 		// Récupération de l'ensemble tiers couple
 		final EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
@@ -121,7 +121,7 @@ public class AnnulationMariage extends EvenementCivilInterne {
 		if (conjoint != null && conjoint.isHabitantVD()) {
 			context.getDataEventService().onIndividuChange(conjoint.getNumeroIndividu());
 		}
-		return HandleStatus.TRAITE;
+		return CivilHandleStatus.TRAITE;
 	}
 
 	private boolean isAnnulationRedondante() {

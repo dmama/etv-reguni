@@ -14,12 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 @Entity
 @Table(name = "EVENEMENT_ORGANISATION_ERREUR")
-public class EvenementOrganisationErreur extends HibernateEntity implements EvenementCivilErreur {
+public class EvenementOrganisationErreur extends HibernateEntity implements EvenementErreur {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationErreur.class);
 
@@ -45,7 +45,7 @@ public class EvenementOrganisationErreur extends HibernateEntity implements Even
 	}
 
 	@Override
-	@Column(name = "MESSAGE", length = LengthConstants.EVTCIVILERREUR_MESSAGE)
+	@Column(name = "MESSAGE", length = LengthConstants.EVTORGANISATIONERREUR_MESSAGE)
 	public String getMessage() {
 		return message;
 	}

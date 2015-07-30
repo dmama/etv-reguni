@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -91,7 +91,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 
 	@NotNull
 	@Override
-	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous
@@ -100,7 +100,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 			return super.handle(warnings);
 		}
 		else {
-			return HandleStatus.TRAITE;
+			return CivilHandleStatus.TRAITE;
 		}
 	}
 }

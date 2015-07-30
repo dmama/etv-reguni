@@ -11,6 +11,7 @@
 			classpath*:/unireg-business-services.xml,
 			classpath*:/unireg-business-jobs.xml,
 			classpath*:/unireg-business-evtcivil.xml,		
+			classpath*:/unireg-business-evtorganisation.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			/WEB-INF/unireg-web-acces.xml,
 			/WEB-INF/unireg-web-activation.xml,

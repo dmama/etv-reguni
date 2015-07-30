@@ -180,7 +180,7 @@ public abstract class EvenementCivilInterne {
 	 * @throws EvenementCivilException si le traitement de l'événement est impossible pour une raison ou pour une autre.
 	 */
 	@NotNull
-	public abstract HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
+	public abstract CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
 	/**
 	 * Validation commune l'objet target passé en paramètre.
