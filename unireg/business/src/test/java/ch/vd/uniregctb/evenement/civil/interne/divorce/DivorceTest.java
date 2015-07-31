@@ -14,7 +14,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -328,11 +328,11 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 
 				final MessageCollector collector = buildMessageCollector();
 				divorce.validate(collector, collector);
-				final CivilHandleStatus etat = divorce.handle(collector);
+				final HandleStatus etat = divorce.handle(collector);
 
 				assertEmpty(collector.getErreurs());
 				assertEmpty(collector.getWarnings());
-				assertEquals(CivilHandleStatus.REDONDANT, etat);
+				assertEquals(HandleStatus.REDONDANT, etat);
 				return null;
 			}
 		});

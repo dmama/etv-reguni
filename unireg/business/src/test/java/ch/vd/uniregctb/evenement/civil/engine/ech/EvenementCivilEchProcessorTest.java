@@ -23,9 +23,9 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -473,7 +473,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	public void testEvenementCompositeEtTransactionAvecRuntimeException() throws Exception {
 		doTestEvenementCompositeEtTransaction(new Handler() {
 			@Override
-			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				throw new RuntimeException("Boom!");
 			}
 		});
@@ -483,14 +483,14 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 	public void testEvenementCompositeEtTransactionAvecCheckedException() throws Exception {
 		doTestEvenementCompositeEtTransaction(new Handler() {
 			@Override
-			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				throw new EvenementCivilException("Boom!");
 			}
 		});
 	}
 	
 	private interface Handler {
-		CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
+		HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 	}
 
 	/**
@@ -519,11 +519,11 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 				final EvenementCivilInterne naissance = new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						final PersonnePhysique pp = new PersonnePhysique(true);
 						pp.setNumeroIndividu(getNoIndividu());
 						context.getTiersDAO().save(pp);
-						return CivilHandleStatus.TRAITE;
+						return HandleStatus.TRAITE;
 					}
 
 					@Override
@@ -540,7 +540,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 				final EvenementCivilInterne boom = new EvenementCivilInterne(event, context, options) {
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						return handler.handle(warnings);
 					}
 

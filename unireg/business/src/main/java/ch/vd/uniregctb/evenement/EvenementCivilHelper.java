@@ -8,15 +8,15 @@ import java.util.Map;
 import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
-public abstract class EvenementErreurHelper {
+public abstract class EvenementCivilHelper {
 
-	private static final class EvenementErreurKey {
+	private static final class EvenementCivilKey {
 
 		private final String message;
 		private final TypeEvenementErreur type;
 		private final String callstack;
 
-		private EvenementErreurKey(EvenementErreur erreur) {
+		private EvenementCivilKey(EvenementErreur erreur) {
 			this.message = erreur.getMessage();
 			this.type = erreur.getType();
 			this.callstack = erreur.getCallstack();
@@ -27,7 +27,7 @@ public abstract class EvenementErreurHelper {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final EvenementErreurKey that = (EvenementErreurKey) o;
+			final EvenementCivilKey that = (EvenementCivilKey) o;
 
 			if (type != that.type) return false;
 			if (message != null ? !message.equals(that.message) : that.message != null) return false;
@@ -55,9 +55,9 @@ public abstract class EvenementErreurHelper {
 		if (source == null || source.size() < 2) {
 			return source;
 		}
-		final Map<EvenementErreurKey, T> map = new LinkedHashMap<>(source.size());
+		final Map<EvenementCivilKey, T> map = new LinkedHashMap<>(source.size());
 		for (T src : source) {
-			final EvenementErreurKey key = new EvenementErreurKey(src);
+			final EvenementCivilKey key = new EvenementCivilKey(src);
 			if (!map.containsKey(key)) {
 				map.put(key, src);
 			}

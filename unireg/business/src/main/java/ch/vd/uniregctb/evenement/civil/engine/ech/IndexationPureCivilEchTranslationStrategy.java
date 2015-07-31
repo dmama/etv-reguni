@@ -9,8 +9,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
@@ -25,7 +25,7 @@ public class IndexationPureCivilEchTranslationStrategy implements EvenementCivil
 		return new EvenementCivilInterne(event, context, options) {
 			@NotNull
 			@Override
-			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				final PersonnePhysique pp = getPrincipalPP();
 				if (pp != null) {
 					context.getIndexer().schedule(pp.getNumero());
@@ -35,7 +35,7 @@ public class IndexationPureCivilEchTranslationStrategy implements EvenementCivil
 				} else {
 					event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 				}
-				return CivilHandleStatus.TRAITE;
+				return HandleStatus.TRAITE;
 			}
 
 			@Override

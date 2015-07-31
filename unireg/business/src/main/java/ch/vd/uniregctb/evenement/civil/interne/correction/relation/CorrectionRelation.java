@@ -27,8 +27,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -52,11 +52,11 @@ public class CorrectionRelation extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// on arrive ici que s'il n'y a pas de différence dans les conjoints
 		// on va re-calculer les parentés pour être sûr, et puis c'est tout...
 		// rien de spécial à faire, l'intercepteur fait tout le boulot...
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 
 	@Override

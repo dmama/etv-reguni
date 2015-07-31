@@ -8,8 +8,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 
 /**
  * Stratégie utilisable pour les événements civils eCH qui partent systématiquement en traitement manuel
@@ -24,7 +24,7 @@ public class TraitementManuelCivilEchTranslationStrategy implements EvenementCiv
 
 			@NotNull
 			@Override
-			public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 				throw new IllegalArgumentException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
 			}
 

@@ -14,8 +14,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -119,7 +119,7 @@ public class AnnulationDeces extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		/*
 		 * Obtention du tiers correspondant a l'ancient defunt.
@@ -135,6 +135,6 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 }

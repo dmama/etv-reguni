@@ -12,8 +12,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -47,7 +47,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// si l'habitant a un permis C (événement annulation permis C)
 		// ou a la nationalité suisse (événement annulation de l'obtention de la nationalité suisse)
@@ -71,7 +71,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 			// il y a eu d'autres opérations aprés l'obtention, passer en erreur
 			throw new EvenementCivilException("Il y a eu d'autres opérations après l'obtention du permis C/nationalité");
 		}
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 
 	/**

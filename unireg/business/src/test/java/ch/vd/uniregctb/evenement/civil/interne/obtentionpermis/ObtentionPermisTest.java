@@ -19,7 +19,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -863,9 +863,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final CivilHandleStatus evStatus = obtentionPermis.handle(collector);
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
 				assertFalse(collector.hasWarnings());
-				assertEquals(CivilHandleStatus.TRAITE, evStatus);
+				assertEquals(HandleStatus.TRAITE, evStatus);
 				return null;
 			}
 		});
@@ -942,9 +942,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final CivilHandleStatus evStatus = obtentionPermis.handle(collector);
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
 				assertFalse(collector.hasWarnings());
-				assertEquals(CivilHandleStatus.TRAITE, evStatus);
+				assertEquals(HandleStatus.TRAITE, evStatus);
 				return null;
 			}
 		});
@@ -1017,9 +1017,9 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final CivilHandleStatus evStatus = obtentionPermis.handle(collector);
+				final HandleStatus evStatus = obtentionPermis.handle(collector);
 				assertFalse(collector.hasWarnings());
-				assertEquals(CivilHandleStatus.TRAITE, evStatus);
+				assertEquals(HandleStatus.TRAITE, evStatus);
 				return null;
 			}
 		});

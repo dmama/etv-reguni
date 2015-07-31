@@ -34,12 +34,12 @@ public class EvenementOrganisationInterneComposite extends EvenementOrganisation
 
 	@NotNull
 	@Override
-	public OrganisationHandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		OrganisationHandleStatus ret = OrganisationHandleStatus.REDONDANT;
+	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+		HandleStatus ret = HandleStatus.REDONDANT;
 		for (EvenementOrganisationInterne evt : listEvtEch) {
-			final OrganisationHandleStatus hs = evt.handle(warnings);
-			if (OrganisationHandleStatus.TRAITE == hs) {
-				ret = OrganisationHandleStatus.TRAITE;
+			final HandleStatus hs = evt.handle(warnings);
+			if (HandleStatus.TRAITE == hs) {
+				ret = HandleStatus.TRAITE;
 			}
 		}
 		return ret;

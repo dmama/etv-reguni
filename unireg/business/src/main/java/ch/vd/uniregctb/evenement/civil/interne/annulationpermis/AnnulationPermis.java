@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -80,11 +80,11 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (isAnnulationPermisC()) {
 			return super.handle(warnings);
 		}
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 
 	private boolean isAnnulationPermisC() {

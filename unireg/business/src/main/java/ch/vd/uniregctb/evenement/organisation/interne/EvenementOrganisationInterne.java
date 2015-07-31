@@ -71,7 +71,7 @@ public abstract class EvenementOrganisationInterne {
 	 * @throws EvenementOrganisationException si le traitement de l'événement est impossible pour une raison ou pour une autre.
 	 */
 	@NotNull
-	public abstract OrganisationHandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
+	public abstract HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 

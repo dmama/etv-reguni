@@ -25,7 +25,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -128,11 +128,11 @@ public abstract class Depart extends Mouvement {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isDepartVaudois()) { // on ignore les départs vaudois car dans ce cas c'est l'arrivée qui fait foi
 			Audit.info(getNumeroEvenement(), "Départ vaudois -> ignoré.");
-			return CivilHandleStatus.TRAITE;
+			return HandleStatus.TRAITE;
 		}
 
 		final PersonnePhysique pp = getPrincipalPP();
@@ -153,7 +153,7 @@ public abstract class Depart extends Mouvement {
 			updateHabitantStatus(getConjointPP(), getNoIndividuConjoint(), dateFermetureEffective.getOneDayAfter());
 		}
 
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 
 	/**

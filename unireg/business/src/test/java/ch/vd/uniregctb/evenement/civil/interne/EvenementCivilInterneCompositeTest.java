@@ -177,31 +177,31 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock() {
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[0] = true;
-						return CivilHandleStatus.TRAITE;
+						return HandleStatus.TRAITE;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[1] = true;
-						return CivilHandleStatus.TRAITE;
+						return HandleStatus.TRAITE;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[2] = true;
-						return CivilHandleStatus.TRAITE;
+						return HandleStatus.TRAITE;
 					}
 				}
 		};
 
-		final CivilHandleStatus hs = testHandle();
-		assertEquals(CivilHandleStatus.TRAITE, hs);
+		final HandleStatus hs = testHandle();
+		assertEquals(HandleStatus.TRAITE, hs);
 		for(boolean flag : flags ) {
 			if (!flag) {
 				fail("Une méthode handle sur un objet composant n'a pas été appelée");
@@ -226,31 +226,31 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock() {
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[0] = true;
-						return CivilHandleStatus.TRAITE;
+						return HandleStatus.TRAITE;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[1] = true;
-						return CivilHandleStatus.REDONDANT;
+						return HandleStatus.REDONDANT;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[2] = true;
-						return CivilHandleStatus.REDONDANT;
+						return HandleStatus.REDONDANT;
 					}
 				}
 		};
 
-		CivilHandleStatus hs = testHandle();
-		assertEquals(CivilHandleStatus.TRAITE, hs);
+		HandleStatus hs = testHandle();
+		assertEquals(HandleStatus.TRAITE, hs);
 
 		for(boolean flag : flags ) {
 			if (!flag) {
@@ -276,31 +276,31 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 				new EvenementCivilInterneMock() {
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[0] = true;
-						return CivilHandleStatus.REDONDANT;
+						return HandleStatus.REDONDANT;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[1] = true;
-						return CivilHandleStatus.REDONDANT;
+						return HandleStatus.REDONDANT;
 					}
 				},
 				new EvenementCivilInterneMock(){
 					@NotNull
 					@Override
-					public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 						flags[2] = true;
-						return CivilHandleStatus.REDONDANT;
+						return HandleStatus.REDONDANT;
 					}
 				}
 		};
 
-		CivilHandleStatus hs = testHandle();
-		assertEquals(CivilHandleStatus.REDONDANT, hs);
+		HandleStatus hs = testHandle();
+		assertEquals(HandleStatus.REDONDANT, hs);
 
 		for(boolean flag : flags ) {
 			if (!flag) {
@@ -313,7 +313,7 @@ public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 	/*
 	 * Factorise le code pour les differents tests de la method handle()
 	 */
-	private CivilHandleStatus testHandle() throws EvenementCivilException {
+	private HandleStatus testHandle() throws EvenementCivilException {
 
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
@@ -486,8 +486,8 @@ class EvenementCivilInterneMock extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		return CivilHandleStatus.TRAITE;
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		return HandleStatus.TRAITE;
 	}
 
 	@Override

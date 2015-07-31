@@ -21,8 +21,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.metier.MetierServiceException;
@@ -220,7 +220,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		long numeroIndividu = getNoIndividu();
 		RegDate dateEvenement = getDate();
@@ -238,7 +238,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		return handleSeparation(warnings);
 	}
 
-	private CivilHandleStatus handleSeparation(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	private HandleStatus handleSeparation(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// Obtention du premier tiers.
 		final PersonnePhysique principal = getPrincipalPP();
@@ -246,7 +246,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		final RegDate dateEvt = getDate();
 
 		if (isSeparesFiscalement(dateEvt, principal, null)) {
-			return CivilHandleStatus.REDONDANT;
+			return HandleStatus.REDONDANT;
 		}
 
 		// récupération de l'ensemble tiers-couple
@@ -284,6 +284,6 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 }

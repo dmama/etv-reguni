@@ -20,7 +20,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementErreurHelper;
+import ch.vd.uniregctb.evenement.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationBasicInfo;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
@@ -319,8 +319,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		addDateTraitement(event);
 
 		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
-		final List<EvenementOrganisationErreur> erreurs = EvenementErreurHelper.eliminerDoublons(collector.getErreurs());
-		final List<EvenementOrganisationErreur> warnings = EvenementErreurHelper.eliminerDoublons(collector.getWarnings());
+		final List<EvenementOrganisationErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
+		final List<EvenementOrganisationErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
 		event.getErreurs().addAll(erreurs);
 		event.getErreurs().addAll(warnings);
 

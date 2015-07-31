@@ -53,8 +53,8 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 
 		@NotNull
 		@Override
-		public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-			return CivilHandleStatus.TRAITE;
+		public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+			return HandleStatus.TRAITE;
 		}
 	}
 

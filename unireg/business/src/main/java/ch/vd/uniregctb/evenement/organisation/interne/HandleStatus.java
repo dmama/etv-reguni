@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
-public enum OrganisationHandleStatus {
+public enum HandleStatus {
 	/**
 	 * L'événement a été bien traité et les données d'Unireg ont été modifiées en conséquences.
 	 */

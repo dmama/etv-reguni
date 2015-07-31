@@ -20,8 +20,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneAvecAdresses;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.metier.common.DecalageDateHelper;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -144,7 +144,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 */
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = getIndividu();
 		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
@@ -276,6 +276,6 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				Audit.info(getNumeroEvenement(), "Domicile hors du territoire cantonal : pas d'ouverture de for");
 			}
 		}
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 }

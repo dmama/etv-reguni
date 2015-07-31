@@ -30,7 +30,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
@@ -113,7 +113,7 @@ public abstract class Arrivee extends Mouvement {
 
 	@NotNull
 	@Override
-	public CivilHandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		if (isIndividuEnMenage(getIndividu(), getDate())) {
 			return handleIndividuEnMenage(warnings);
 		}
@@ -136,10 +136,10 @@ public abstract class Arrivee extends Mouvement {
 	 * Gère l'arrivée d'un contribuable seul.
 	 */
 	@NotNull
-	protected final CivilHandleStatus handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	protected final HandleStatus handleIndividuSeul(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isArriveeRedondantePourIndividuSeul()) {
-			return CivilHandleStatus.REDONDANT;
+			return HandleStatus.REDONDANT;
 		}
 
 		try {
@@ -173,7 +173,7 @@ public abstract class Arrivee extends Mouvement {
 			 */
 			doHandleCreationForIndividuSeul(habitant, warnings);
 
-			return CivilHandleStatus.TRAITE;
+			return HandleStatus.TRAITE;
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
@@ -477,7 +477,7 @@ public abstract class Arrivee extends Mouvement {
 	 * Gère l'arrive d'un contribuable en ménage commun.
 	 */
 	@NotNull
-	protected final CivilHandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+	protected final HandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		if (isConjointMarieSeul()) {
 			long numeroIndividu = getNoIndividu();
@@ -505,7 +505,7 @@ public abstract class Arrivee extends Mouvement {
 		if (isArriveeRedondantePosterieurPourIndividuEnMenage() || isArriveeRedondantePourIndividuEnMenage()) {
 			Audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
 			updateHabitantStatus(getPrincipalPP(), dateEvenement);
-			return CivilHandleStatus.REDONDANT;
+			return HandleStatus.REDONDANT;
 		}
 
 		/*
@@ -559,7 +559,7 @@ public abstract class Arrivee extends Mouvement {
 		// création du for principal si nécessaire
 		doHandleCreationForMenage(arrivant, menageCommun, warnings);
 
-		return CivilHandleStatus.TRAITE;
+		return HandleStatus.TRAITE;
 	}
 
 	/**

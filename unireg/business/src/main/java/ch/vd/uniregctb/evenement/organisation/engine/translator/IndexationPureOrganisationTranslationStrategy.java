@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.OrganisationHandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -29,7 +29,7 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 		return new EvenementOrganisationInterne(event, organisation, context, options) {
 			@NotNull
 			@Override
-			public OrganisationHandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+			public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 				final Entreprise pm = getEntreprise();
 				if (pm != null) {
 					context.getIndexer().schedule(pm.getNumero());
@@ -39,7 +39,7 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 				} else {
 					event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 				}
-				return OrganisationHandleStatus.TRAITE;
+				return HandleStatus.TRAITE;
 			}
 
 			@Override

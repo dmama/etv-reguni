@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.OrganisationHandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 
 /**
  * TODO: Est-ce vraiment applicable à RCEnt sous cette forme? On devrait avoir cette notion au niveau des evts interne, puisqu'il peut y en avoir plusieurs.
@@ -28,7 +28,7 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 
 			@NotNull
 			@Override
-			public OrganisationHandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+			public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 				throw new IllegalArgumentException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
 			}
 

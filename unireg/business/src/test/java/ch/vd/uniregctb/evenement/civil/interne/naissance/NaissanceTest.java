@@ -24,7 +24,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.tiers.Parente;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -313,8 +313,8 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final CivilHandleStatus code = naissance.handle(collector);
-				assertEquals(CivilHandleStatus.TRAITE, code);
+				final HandleStatus code = naissance.handle(collector);
+				assertEquals(HandleStatus.TRAITE, code);
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
@@ -426,8 +426,8 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 
-				final CivilHandleStatus code = naissance.handle(collector);
-				assertEquals(CivilHandleStatus.TRAITE, code);
+				final HandleStatus code = naissance.handle(collector);
+				assertEquals(HandleStatus.TRAITE, code);
 				assertFalse(collector.hasErreurs());
 				assertFalse(collector.hasWarnings());
 

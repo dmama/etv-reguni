@@ -20,7 +20,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
-import ch.vd.uniregctb.evenement.civil.interne.CivilHandleStatus;
+import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -457,11 +457,11 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
 				final MessageCollector collector = buildMessageCollector();
 				mariage.validate(collector, collector);
-				final CivilHandleStatus etat = mariage.handle(collector);
+				final HandleStatus etat = mariage.handle(collector);
 
 				assertEmpty(collector.getErreurs());
 				assertEmpty(collector.getWarnings());
-				assertEquals(CivilHandleStatus.REDONDANT, etat);
+				assertEquals(HandleStatus.REDONDANT, etat);
 				return null;
 			}
 		});
