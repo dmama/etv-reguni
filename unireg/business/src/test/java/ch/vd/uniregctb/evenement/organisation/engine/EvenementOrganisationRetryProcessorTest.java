@@ -23,7 +23,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationProcessingMode;
-import ch.vd.uniregctb.evenement.organisation.MockEvenementOrganisationRecuperateur;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
 import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -203,7 +202,6 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 		final IntegratedQueueAndProcessor queueProcessor = new IntegratedQueueAndProcessor();
 		final EvenementOrganisationRetryProcessorImpl retry = new EvenementOrganisationRetryProcessorImpl();
 		retry.setEvtOrganisationDAO(getBean(EvenementOrganisationDAO.class, "evenementOrganisationDAO"));
-		retry.setRecuperateur(new MockEvenementOrganisationRecuperateur());
 		retry.setTransactionManager(transactionManager);
 		retry.setProcessor(queueProcessor);
 		retry.setNotificationQueue(queueProcessor);

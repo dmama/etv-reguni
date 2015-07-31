@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
+ * TODO: triple check everything
  * Convertisseur d'événements reçus de RCEnt en événements organisation internes
  */
 public class EvenementOrganisationTranslatorImpl implements EvenementOrganisationTranslator, InitializingBean {
@@ -57,11 +58,12 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 * Non injecté mais créé ci-dessous dans afterPropertiesSet()
 	 */
 	private EvenementOrganisationContext context;
-	List<EvenementOrganisationTranslationStrategy> strategies;
+	private List<EvenementOrganisationTranslationStrategy> strategies;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementOrganisationContext(serviceOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
+		                                           evenementFiscalService, parametreAppService);
 
 		// Construction des stratégies
 		strategies = new ArrayList<>();
@@ -69,37 +71,38 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	}
 
 	/**
-	 * Traduit un événement organisation en zéro, un ou plusieurs événements externes correspondant (Dans ce cas, un
-	 * événement composite est retourné.
+	 * Traduit un événement organisation en zéro, un ou plusieurs événements externes correspondant (Dans ce cas, un événement composite est retourné.
+	 * <p>
+	 * AVERTISSEMENT: Contrairement au traitement des événements Civil Ech, pour lesquel un cablage explicite des stratégies est en vigueur, le traitement des événements organisation fait l'objet d'un
+	 * essai de chaque stratégie disponible, chacune détectant un cas particulier de changement et donnant lieu à un événement interne. Au cas ou aucune stratégie ne fonctionne, un événement
+	 * d'indexation est AUTOMATIQUEMENT ajouté. De fait, les nouveaux types d'événements organisation sont donc silencieusement ignorés jusqu'à ce qu'une stratégie soit codée pour les reconnaître.
 	 *
-	 * AVERTISSEMENT: Contrairement au traitement des événements Civil Ech, pour lesquel un cablage explicite des stratégies est en vigueur, le traitement
-	 * des événements organisation fait l'objet d'un essai de chaque stratégie disponible, chacune détectant un cas particulier de changement et
-	 * donnant lieu à un événement interne. Au cas ou aucune stratégie ne fonctionne, un événement d'indexation est AUTOMATIQUEMENT ajouté. De fait,
-	 * les nouveaux types d'événements organisation sont donc silencieusement ignorés jusqu'à ce qu'une stratégie soit codée pour les reconnaître.
-	 *
- 	 * @param event   un événement organisation externe
+	 * @param event   un événement organisation externe
 	 * @param options les options d'exécution de l'événement
 	 * @return Un événement interne correspondant à l'événement passé en paramètre
 	 * @throws EvenementOrganisationException En cas d'erreur dans la création de l'événements interne, null s'il n'y a pas lieu de créer un événement
 	 */
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
 
-		List<EvenementOrganisationInterne> evenements = createEvents(event, organisation, strategies, context, options);
+		final List<EvenementOrganisationInterne> evenements = createEvents(event, organisation, strategies, context, options);
 		if (evenements.size() == 0) {
 			return INDEXATION_ONLY.create(event, organisation, context, options);
-		} else if (evenements.size() == 1) {
+		}
+		else if (evenements.size() == 1) {
 			return evenements.get(0);
 		}
 		return new EvenementOrganisationInterneComposite(event, organisation, context, options, evenements);
 	}
 
-	private List<EvenementOrganisationInterne> createEvents(EvenementOrganisation event, Organisation organisation, List<EvenementOrganisationTranslationStrategy> strategies, EvenementOrganisationContext context,
-	                                                       EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		List<EvenementOrganisationInterne> evenements = new ArrayList<>();
+	private List<EvenementOrganisationInterne> createEvents(EvenementOrganisation event, Organisation organisation, List<EvenementOrganisationTranslationStrategy> strategies,
+	                                                        EvenementOrganisationContext context,
+	                                                        EvenementOrganisationOptions options) throws EvenementOrganisationException {
+		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			evenements.add(strategy.match(event, organisation, context, options));
+			// FIXME: D'abord reconnaitre si la stratégie s'applique à l'événement!
+			evenements.add(strategy.create(event, organisation, context, options));
 		}
 		return evenements;
 	}

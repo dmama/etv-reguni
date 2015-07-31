@@ -25,9 +25,6 @@ extprop.jms.queue.evtOrganisation.consumers=10
 # réception des événements: délai de prise en compte (en secondes) des messages reçus par la queue JMS des événements civils
 # (problématique de tri avec arrivée sur plusieurs threads)
 extprop.evtOrganisation.acknowledgementDelay=3
-
-# délai, en minutes, entre le démarrage de l'application et la relance des événements encore "à traiter"
-extprop.evtOrganisation.rethrowDelayOnStartup=10
 ------------------------------
 
 

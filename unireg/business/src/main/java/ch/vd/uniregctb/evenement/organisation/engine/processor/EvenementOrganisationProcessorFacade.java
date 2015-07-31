@@ -40,9 +40,9 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 		stop(false);
 	}
 
-	private void stop(boolean agressiveKill) {
+	private void stop(boolean aggressiveKill) {
 		if (processor != null) {
-			if (agressiveKill) {
+			if (aggressiveKill) {
 				processor.interrupt();
 			}
 			else {

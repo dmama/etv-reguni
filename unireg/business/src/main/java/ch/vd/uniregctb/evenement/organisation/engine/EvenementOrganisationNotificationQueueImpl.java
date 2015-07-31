@@ -96,7 +96,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		LOGGER.info(String.format("Traitement des événements organisation artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
 		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
 
-		final List<BlockingQueue<DelayedOrganisation>> input = new ArrayList<>(3);
+		final List<BlockingQueue<DelayedOrganisation>> input = new ArrayList<>(2);
 		input.add(immediateQueue);
 		input.add(bulkQueue);
 		mixer = new AgeTrackingBlockingQueueMixer<>(input, finalQueue, 5, 30);  // 5 minutes en 30 intervales -> intervales de 10 secondes
@@ -216,7 +216,7 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 		Assert.isTrue(lock.isHeldByCurrentThread());
 
 		if (noOrganisation == null) {
-			throw new NullPointerException("noIndividu");
+			throw new NullPointerException("noOrganisation");
 		}
 
 		final DelayedOrganisation elt = new DelayedOrganisation(noOrganisation);

@@ -19,6 +19,8 @@ import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.evd0022.v1.Header;
+import ch.vd.evd0022.v1.Notice;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -66,14 +68,17 @@ public class EvenementOrganisation extends HibernateEntity {
 	public EvenementOrganisation() {
 	}
 
-	public EvenementOrganisation(ch.vd.evd0022.v1.NoticeRoot notice) {
-		this.id = notice.getHeader().getNotice().getNoticeId().longValue();
-		this.identiteEmetteur = EmetteurEvenementOrganisation.valueOf(notice.getHeader().getSenderIdentification().value());
-		this.dateEvenement = notice.getHeader().getNotice().getNoticeDate();
+	public EvenementOrganisation(ch.vd.evd0022.v1.NoticeRoot message) {
+		Header header = message.getHeader();
+		Notice notice = header.getNotice();
+		this.id = notice.getNoticeId().longValue();
+		this.identiteEmetteur = EmetteurEvenementOrganisation.valueOf(header.getSenderIdentification().value());
+		this.refDataEmetteur = header.getSenderReferenceData();
+		this.dateEvenement = notice.getNoticeDate();
 		this.etat = EtatEvenementOrganisation.A_TRAITER;
-		this.type = TypeEvenementOrganisation.valueOf(notice.getHeader().getNotice().getTypeOfNotice().value());
+		this.type = TypeEvenementOrganisation.valueOf(notice.getTypeOfNotice().value());
 		this.dateTraitement = null;
-		this.noOrganisation = notice.getNoticeOrganisation().get(0).getOrganisationIdentification().getCantonalId().longValue();
+		this.noOrganisation = message.getNoticeOrganisation().get(0).getOrganisationIdentification().getCantonalId().longValue();
 		this.commentaireTraitement = null;
 	}
 

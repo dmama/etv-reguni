@@ -43,7 +43,7 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 		for (EvenementOrganisationBasicInfo info : remainingEvents) {
 			if (info.getEtat() == EtatEvenementOrganisation.A_TRAITER) {
 				final EvenementOrganisation evt = evtOrganisationDAO.get(info.getId());
-				if (!evt.getEtat().isTraite()) {// && translator.isIndexationOnly(evt)) {
+				if (!evt.getEtat().isTraite()) {// && translator.isIndexationOnly(evt)) { // FIXME: a réviser
 					traites.add(info);
 				}
 				else {

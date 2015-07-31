@@ -45,16 +45,13 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 
 /**
+ * TODO: A faire: bien vérifier tout le code
  * @author Raphaël Marmier, 2015-07-27
  */
 public class EvenementOrganisationProcessorInternal implements ProcessorInternal, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationProcessorInternal.class);
 	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementOrganisationInterne.class);
-
-	private static final String COMMENTAIRE_ANNULATION_GROUPEE = "Groupe d'événements annulés alors qu'ils étaient encore en attente.";
-	private static final String COMMENTAIRE_CORRECTION_GROUPEE = "Evénement directement pris en compte dans le traitement de l'événement référencé.";
-	private static final String COMMENTAIRE_ACTION_CORRECTIVE_GROUPEE = "Evénement et correction(s) pris en compte ensemble.";
 
 	private static final EvenementOrganisationErreurFactory ERREUR_FACTORY = new EvenementOrganisationErreurFactory();
 
@@ -118,7 +115,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
-		//serviceOrganisation.setOrganisationLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
+		//serviceOrganisation.setOrganisationLogging(EVT_INTERNE_LOGGER.isTraceEnabled()); // FIXME: On veut du log à ce niveau?
 		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getId()));
 		try {
 			final boolean success = processEvent(evt);

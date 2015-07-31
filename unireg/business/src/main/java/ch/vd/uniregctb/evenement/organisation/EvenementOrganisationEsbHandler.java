@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,13 +22,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0001.v5.ObjectFactory;
+import ch.vd.evd0022.v1.Header;
+import ch.vd.evd0022.v1.Notice;
+import ch.vd.evd0022.v1.NoticeOrganisation;
 import ch.vd.evd0022.v1.NoticeRoot;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -43,25 +44,37 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationEsbHandler.class);
 
+	/*
+		Configuration des schémas applicables pour le décodage des annonces RCEnt
+	 */
+	private static final String[] RCENT_XSDS = new String[]{"eVD-0021-1-0.xsd", "eVD-0022-1-0.xsd", "eVD-0023-1-0.xsd", "eVD-0024-1-0.xsd"};
+
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
 
 	private EvenementOrganisationReceptionHandler receptionHandler;
-	private EvenementOrganisationRecuperateur recuperateur;
-	private int delaiRecuperationMinutes = 0;
-	private RecuperationThread recuperationThread;
 	private Set<TypeEvenementOrganisation> ignoredEventTypes;
-	private Set<TypeEvenementOrganisation> eventTypesWithNullEventDateReplacement;
 	private EvenementOrganisationProcessingMode processingMode;
 	private boolean running;
 
 	/**
 	 * Renderer d'un événement organisation à la réception (on ne renvoie que les données fournies à la réception de l'événement)
 	 */
-	private static final StringRenderer<EvenementOrganisation> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<EvenementOrganisation>() {
+	private static final StringRenderer<NoticeRoot> RECEPTION_EVT_ORGANISATION_RENDERER = new StringRenderer<NoticeRoot>() {
 		@Override
-		public String toString(EvenementOrganisation evt) {
-			return String.format("id=%d, refData=%s, type=%s, date=%s", evt.getId(), evt.getRefDataEmetteur(), evt.getType(), evt.getDateEvenement());
+		public String toString(NoticeRoot message) {
+			Header header = message.getHeader();
+			Notice notice = header.getNotice();
+			NoticeOrganisation content = message.getNoticeOrganisation().get(0);
+			return String.format("id=%d, type=%s, date=%s, senderId=%s, refData=%s, noOrganisation=%d, nom=%s",
+			                     notice.getNoticeId(),
+			                     notice.getTypeOfNotice(),
+			                     notice.getNoticeDate(),
+			                     header.getSenderIdentification(),
+			                     header.getSenderReferenceData(),
+			                     content.getOrganisationIdentification().getCantonalId(),
+			                     content.getOrganisation().getOrganisationName()
+			);
 		}
 	};
 
@@ -73,21 +86,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIgnoredEventTypes(Set<TypeEvenementOrganisation> ignoredEventTypes) {
 		this.ignoredEventTypes = ignoredEventTypes;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEventTypesWithNullEventDateReplacement(Set<TypeEvenementOrganisation> eventTypesWithNullEventDateReplacement) {
-		this.eventTypesWithNullEventDateReplacement = eventTypesWithNullEventDateReplacement;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setRecuperateur(EvenementOrganisationRecuperateur recuperateur) {
-		this.recuperateur = recuperateur;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDelaiRecuperationMinutes(int delaiRecuperationMinutes) {
-		this.delaiRecuperationMinutes = delaiRecuperationMinutes;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -104,15 +102,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 		final long start = System.nanoTime();
 		try {
-			final Source content = message.getBodyAsSource();
-			final String visaMutation = EvenementOrganisationSourceHelper.getVisaCreation(message);
-			AuthenticationHelper.pushPrincipal(visaMutation);
-			try {
-				onEvenementOrganisation(content);
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-			}
+			onEvenementOrganisation(message.getBodyAsSource());
 		}
 		catch (EvenementOrganisationEsbException e) {
 			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
@@ -139,52 +129,101 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 * <ol>
 	 *     <li>Décodage de l'XML reçu</li>
 	 *     <li>Les événements de types ignorés provoquent un log et c'est tout...</li>
-	 *     <li>Sauvegarde de l'événement correspondant (dans une transaction séparée) dans l'état {@link ch.vd.uniregctb.type.EtatEvenementOrganisation#A_TRAITER A_TRAITER}</li>
+	 *     <li>Création de l'objet de l'evenement, avec une validation plus poussée.</li>
+	 *     <li>Sauvegarde de l'événement (dans une transaction séparée) dans l'état {@link ch.vd.uniregctb.type.EtatEvenementOrganisation#A_TRAITER A_TRAITER}</li>
 	 *     <li>Notification du moteur de traitement de l'arrivée d'un nouvel événement pour l'organisation</li>
 	 * </ol>
 	 * @param xml le contenu XML du message envoyé par le registre entreprises
 	 * @throws EvenementOrganisationEsbException en cas de problème <i>métier</i>
 	 */
 	private void onEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
-		final EvenementOrganisation event = decodeEvenementOrganisation(xml);
-		if (event != null) {
 
-			// à partir d'ici, l'événement est sauvegardé en base... Il n'est donc plus question
-			// de rejetter en erreur (ou exception) le message entrant...
-			try {
-				receptionHandler.handleEvent(event, processingMode);
-			}
-			catch (Exception e) {
-				// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...
-				LOGGER.error(String.format("Erreur à la réception de l'événement organisation %d", event.getId()), e);
-			}
+		NoticeRoot message = decodeEvenementOrganisation(xml);
+
+		if (isIgnored(message)) {
+			onIgnoredEvent(message);
+			return;
+		}
+
+		final EvenementOrganisation event = createEvenementOrganisation(message);
+
+		saveIncomingEvent(event);
+
+		// à partir d'ici, l'événement est sauvegardé en base... Il n'est donc plus question
+		// de rejetter en erreur (ou exception) le message entrant...
+		try {
+			receptionHandler.handleEvent(event, processingMode);
+		}
+		catch (Exception e) {
+			// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...
+			LOGGER.error(String.format("Erreur à la réception de l'événement organisation %d", event.getId()), e);
 		}
 	}
 
-	private void fillCurrentDateOnSpecificIncomingEvent(EvenementOrganisation evt) throws EvenementOrganisationEsbException {
-		// on ne s'intéresse qu'à des événements organisation qui n'auraient pas de date en entrée
-		// (ou une date tellement hors des clous que cela ne fait pas de différence)
-		if (evt.getDateEvenement() == null) {
-			if (eventTypesWithNullEventDateReplacement.contains(evt.getType())) {
-				evt.setDateEvenement(RegDate.get());
-				LOGGER.info(String.format("La date de l'événement %d de type %s a été modifiée pour correspondre à la date de réception.", evt.getId(), evt.getType()));
-			}
+	/*
+		Décodage de l'événement brut, et si c'est ok, on crée l'événement. Dans tous les cas pas ok
+		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
+	 */
+	@NotNull
+	private NoticeRoot decodeEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
+		try {
+			return parse(xml);
+		}
+		catch (JAXBException e) {
+			final Throwable src = e.getLinkedException();
+			throw new EvenementOrganisationEsbException(EsbBusinessCode.XML_INVALIDE, src != null ? src : e);
+		}
+		catch (SAXException | IOException e) {
+			throw new EvenementOrganisationEsbException(EsbBusinessCode.XML_INVALIDE, e);
 		}
 	}
 
-	private static void checkValidIncomingEventData(EvenementOrganisation evt) throws EvenementOrganisationEsbException {
+	/*
+		Validation du message décodé, et seulement si c'est ok, on crée l'événement. Dans tous les cas pas ok
+		une exception adéquate doit être lancée pour être remontée à l'ESB. Interdit de sortir d'ici sans un objet.
+	 */
+	@NotNull
+	private EvenementOrganisation createEvenementOrganisation(NoticeRoot message) throws EvenementOrganisationEsbException {
+
+		try {
+			checkValidIncomingEventData(message);
+
+			return new EvenementOrganisation(message);
+		}
+		catch (RuntimeException e) {
+			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
+		}
+	}
+
+	/*
+	 On valide sur le message brut car il peut y avoir NullPointerException à la création de l'instance de l'événement.
+
+	 En réalité, l'absence d'une bonne partie de ces champs entrainera une erreur de déserialisation JAXB en amont, car
+	 ils sont obligatoire de part le xsd. Mais on ne contrôle pas le xsd.
+	  */
+	private static void checkValidIncomingEventData(NoticeRoot message) throws EvenementOrganisationEsbException {
 		final List<String> attributs = new ArrayList<>();
-		if (evt.getDateEvenement() == null) {
-			attributs.add("date");
+
+		final Notice notice = message.getHeader().getNotice();
+		if (notice.getNoticeId() == null) {
+			attributs.add("notice id");
 		}
-		attributs.add("identifiant");
-		if (evt.getType() == null) {
-			attributs.add("type");
+		if (notice.getNoticeDate() == null) {
+			attributs.add("notice date");
+		}
+		if (message.getNoticeOrganisation().get(0).getOrganisationIdentification().getCantonalId() == null) {
+			attributs.add("cantonal id");
+		}
+		if (notice.getTypeOfNotice() == null) {
+			attributs.add("type of notice");
+		}
+		if (message.getHeader().getSenderIdentification() == null) {
+			attributs.add("sender identification");
 		}
 
 		final int size = attributs.size();
 		if (size > 0) {
-			final String details = RECEPTION_EVT_ORGANISATION_RENDERER.toString(evt);
+			final String details = RECEPTION_EVT_ORGANISATION_RENDERER.toString(message);
 			final String msg;
 			if (size == 1) {
 				msg = String.format("L'attribut '%s' est obligatoire pour un événement organisation à l'entrée dans Unireg (%s).", attributs.get(0), details);
@@ -212,51 +251,31 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 	}
 
-	private EvenementOrganisation decodeEvenementOrganisation(Source xml) throws EvenementOrganisationEsbException {
-
+	/*
+		Action lorsqu'on ignore le message entrant. On tient compte du fait que des exceptions peuvent être lancées en parcourant le message.
+	 */
+	protected void onIgnoredEvent(NoticeRoot message) throws EvenementOrganisationEsbException {
 		try {
-			// 1. décodage de l'événement reçu
-			final NoticeRoot message = parse(xml);
-
-			final EvenementOrganisation ech;
-			try {
-				ech = new EvenementOrganisation(message);
-			}
-			catch (IllegalArgumentException e) {
-				throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
-			}
-
-			// 2. rattrapage de la date nulle
-			fillCurrentDateOnSpecificIncomingEvent(ech);
-
-			// 3. validation des données de base
-			checkValidIncomingEventData(ech);
-
-			// 4. événement ignoré ?
-			if (isIgnored(ech)) {
-				onIgnoredEvent(ech);
-				return null;
-			}
-			else {
-				// 5. sauvegarde de l'événement dès son arrivée
-				return saveIncomingEvent(ech);
-			}
+			Notice notice = message.getHeader().getNotice();
+			Audit.info(notice.getNoticeId().longValue(), String.format("Evénement organisation ignoré (id=%d, type=%s)",
+			                                                           notice.getNoticeId(),
+			                                                           notice.getTypeOfNotice().name()));
 		}
-		catch (JAXBException e) {
-			final Throwable src = e.getLinkedException();
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.XML_INVALIDE, src != null ? src : e);
-		}
-		catch (SAXException | IOException e) {
-			throw new EvenementOrganisationEsbException(EsbBusinessCode.XML_INVALIDE, e);
+		catch (RuntimeException e) {
+			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
 	}
 
-	protected void onIgnoredEvent(EvenementOrganisation evt) {
-		Audit.info(evt.getId(), String.format("Evénement organisation ignoré (id=%d, type=%s)", evt.getId(), evt.getType()));
-	}
-
-	private boolean isIgnored(EvenementOrganisation event) {
-		return ignoredEventTypes != null && ignoredEventTypes.contains(event.getType());
+	/*
+		Contrôle si on doit ignorer le message entrant. On tient compte du fait que des exceptions peuvent être lancées en parcourant le message.
+	 */
+	private boolean isIgnored(NoticeRoot message) throws EvenementOrganisationEsbException {
+		try {
+			return ignoredEventTypes != null && ignoredEventTypes.contains(TypeEvenementOrganisation.valueOf(message.getHeader().getNotice().getTypeOfNotice().name()));
+		}
+		catch (RuntimeException e) {
+			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
+		}
 	}
 
 	private EvenementOrganisation saveIncomingEvent(EvenementOrganisation event) {
@@ -282,7 +301,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources("eVD-0021-1-0.xsd", "eVD-00022-1-0.xsd", "eVD-0023-1-0.xsd", "eVD-0024-1-0.xsd");
+			final Source[] source = getClasspathSources(RCENT_XSDS);
 			schemaCache = sf.newSchema(source);
 		}
 	}
@@ -307,90 +326,15 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		callback.run();
 	}
 
-	/**
-	 * Thread séparé pour la tentative de relance au démarrage des événements organisation "A_TRAITER" afin
-	 * de laisser le temps à la web-app NEXUS de se mettre en place. // FIXME: Plus strictement nécessaire car on ne passe plus
-	 * par NEXUS, les événements organisation comprennent l'identifiant.
-	 */
-	private final class RecuperationThread extends Thread {
-
-		private volatile boolean stopping = false;
-
-		private RecuperationThread() {
-			super("EvtOrganisationRecup");
-		}
-
-		@Override
-		public void run() {
-			AuthenticationHelper.pushPrincipal("Récupération-démarrage");
-			try {
-				waitDelay();
-				if (!stopping) {
-					recuperateur.recupererEvenementsOrganisation();
-				}
-			}
-			catch (InterruptedException e) {
-				LOGGER.error("Erreur pendant l'attente préalable à la récupération des événements organisation à traiter", e);
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-			}
-		}
-
-		private void waitDelay() throws InterruptedException {
-			if (delaiRecuperationMinutes > 0) {
-				LOGGER.info(String.format("On attend %d minute%s avant de démarrer la récupération des événements organisation à traiter",
-				                          delaiRecuperationMinutes, delaiRecuperationMinutes > 1 ? "s" : StringUtils.EMPTY));
-				final long recupDelayMillis = TimeUnit.MINUTES.toMillis(delaiRecuperationMinutes);
-				final long start = System.currentTimeMillis();
-				synchronized (this) {
-					while (!stopping) {
-						final long now = System.currentTimeMillis();
-						if (now - start < recupDelayMillis) {
-							wait(recupDelayMillis - (now - start));
-						}
-						else {
-							// l'attente est finie !
-							LOGGER.info("Attente terminée...");
-							break;
-						}
-					}
-					if (stopping) {
-						LOGGER.info("Attente interrompue pour cause d'arrêt de l'application.");
-					}
-				}
-			}
-		}
-
-		public void stopNow() {
-			synchronized (this) {
-				stopping = true;
-				notifyAll();
-			}
-		}
-	}
 
 	@Override
 	public void start() {
-		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
-		if (recuperateur != null) {
-			// FIXME: Plus nécessaire, cf. ci-dessus. Est-ce qu'on le garde pour le jour où on a besoin de chercher une info de
-			// NEXUS à la reception des messages organisation?
-			// msi (24.05.2012) : on le fait dans un thread séparé pour éviter le deadlock suivant : l'application web est
-			// en cours de démarrage et a besoin des individus stockés dans nexus, mais nexus ne peut pas répondre
-			// à la moindre requête tant que toutes les webapps ne sont pas démarrées.
-			recuperationThread = new RecuperationThread();
-			recuperationThread.start();
-		}
 		running = true;
 	}
 
 	@Override
 	public void stop() {
 		running = false;
-		if (recuperationThread != null && recuperationThread.isAlive()) {
-			recuperationThread.stopNow();
-		}
 	}
 
 	@Override
@@ -413,11 +357,6 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 				}
 			};
 			LOGGER.info(String.format("Liste des événements organisation ignorés en mode %s : %s", processingMode, CollectionsUtils.toString(ignoredEventTypes, renderer, ", ", "Aucun")));
-			LOGGER.info(String.format("Liste des événements organisation dont une date nulle sera remplacée par la date de réception en mode %s : %s", processingMode, CollectionsUtils.toString(eventTypesWithNullEventDateReplacement, renderer, ", ", "Aucun")));
-		}
-
-		if (recuperateur != null && delaiRecuperationMinutes < 0) {
-			throw new IllegalArgumentException("La propriété 'delaiRecuperationMinutes' devrait être positive ou nulle");
 		}
 
 		this.jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());

@@ -108,7 +108,6 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 		notificationQueue.post(noOrganisation, mode);
 	}
 
-
 	@Override
     @Nullable
 	public EvenementOrganisation saveIncomingEvent(final EvenementOrganisation event) {
@@ -116,7 +115,7 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return template.execute(new TransactionCallback<EvenementOrganisation>() {
 			@Nullable
-            @Override
+			@Override
 			public EvenementOrganisation doInTransaction(TransactionStatus status) {
 
 				// si un événement organnisation existe déjà avec l'ID donné, on log un warning et on s'arrête là...

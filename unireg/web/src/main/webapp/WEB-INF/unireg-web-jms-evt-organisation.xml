@@ -8,13 +8,16 @@
 	<!-- Traitements de masse -->
 
 	<bean id="evtOrganisationMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
-		<property name="handler" ref="evtOrganisationMasseEsbHandler"/>
+		<property name="handler" ref="evtOrganisationEsbHandler"/>
 	</bean>
 
-	<bean id="evtOrganisationMasseEsbHandler" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler" parent="evtOrganisationEsbHandler">
+	<bean id="evtOrganisationEsbHandler" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler">
 		<property name="processingMode" value="BULK"/>
-		<property name="recuperateur" ref="evtOrganisationRecuperateur"/>
-		<property name="delaiRecuperationMinutes" value="${extprop.evtOrganisation.rethrowDelayOnStartup}"/>
+		<property name="receptionHandler" ref="evtOrganisationReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+			</set>
+		</property>
 	</bean>
 
 	<bean id="evtOrganisationRecuperateur" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationRecuperateurImpl">
@@ -36,16 +39,6 @@
 		<property name="messageListener" ref="evtOrganisationMasseListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
-	</bean>
-
-	<!-- Parties communes -->
-
-	<bean id="evtOrganisationEsbHandler" abstract="true" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationEsbHandler">
-		<property name="receptionHandler" ref="evtOrganisationReceptionHandler"/>
-		<property name="ignoredEventTypes">
-			<set>
-			</set>
-		</property>
 	</bean>
 
 	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl">
