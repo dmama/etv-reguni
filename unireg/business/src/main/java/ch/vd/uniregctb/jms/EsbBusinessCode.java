@@ -17,7 +17,7 @@ public enum EsbBusinessCode {
 	DECLARATION_NON_QUITTANCEE(ErrorType.BUSINESS, "1080", "La déclaration n'est pas quittancée"),
 	DECLARATION_ABSENTE(ErrorType.BUSINESS, "1093", "La déclaration ciblée n'existe pas"),
 	EVT_CIVIL(ErrorType.BUSINESS, "1350", "Données invalides dans l'événement civil entrant"),
-	EVT_ORGANISATION(ErrorType.BUSINESS, "XXXX", "Données invalides dans l'événement organisation entrant"), // FIXME: Determiner le numéro.
+	EVT_ORGANISATION(ErrorType.BUSINESS, "1351", "Données invalides dans l'événement civil entreprise entrant"),
 	IAM_INCOMPLET(ErrorType.BUSINESS, "1550", "Données invalides/manquantes dans l'événement IAM entrant"),
 	EVT_EXTERNE(ErrorType.BUSINESS, "8451", "Données invalides/manquantes dans l'événement externe entrant");
 
