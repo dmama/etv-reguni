@@ -27,15 +27,15 @@
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-				<property name="destination" value="${extprop.jms.queue.evtOrganisationMasse}"/>
+				<property name="destination" value="${extprop.jms.queue.evtOrganisation}"/>
 				<property name="destinationType" value="javax.jms.Queue"/>
-				<property name="maxSessions" value="${extprop.jms.queue.evtOrganisationMasse.consumers}"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtOrganisation.consumers}"/>
 				<property name="maxMessagesPerSessions" value="100"/>
 			</bean>
 		</property>
 		<property name="messageListener" ref="evtOrganisationMasseListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisationMasse.enabled}" />
+		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
 	</bean>
 
 	<!-- Parties communes -->
