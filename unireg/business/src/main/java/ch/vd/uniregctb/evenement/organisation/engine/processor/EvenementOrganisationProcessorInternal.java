@@ -37,7 +37,6 @@ import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -50,7 +49,6 @@ import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 public class EvenementOrganisationProcessorInternal implements ProcessorInternal, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationProcessorInternal.class);
-	private static final Logger EVT_INTERNE_LOGGER = LoggerFactory.getLogger(EvenementOrganisationInterne.class);
 
 	private static final EvenementOrganisationErreurFactory ERREUR_FACTORY = new EvenementOrganisationErreurFactory();
 
@@ -61,7 +59,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
-	private ServiceOrganisationService serviceOrganisation; // For logging
 
 	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
 
@@ -90,10 +87,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		this.tiersService = tiersService;
 	}
 
-	public void setServiceOrganisation(ServiceOrganisationService serviceOrganisation) {
-		this.serviceOrganisation = serviceOrganisation;
-	}
-
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
 	}
@@ -107,7 +100,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
 	public boolean processEventAndDoPostProcessingOnError(EvenementOrganisationBasicInfo evt, List<EvenementOrganisationBasicInfo> evts, int pointer) {
-		//serviceOrganisation.setOrganisationLogging(EVT_INTERNE_LOGGER.isTraceEnabled()); // FIXME: On veut du log à ce niveau?
 		AuthenticationHelper.pushPrincipal(String.format("EvtOrganisation-%d", evt.getId()));
 		try {
 			final boolean success = processEvent(evt);
@@ -118,7 +110,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			//	serviceOrganisation.setOrganisationLogging(false);
 		}
 	}
 

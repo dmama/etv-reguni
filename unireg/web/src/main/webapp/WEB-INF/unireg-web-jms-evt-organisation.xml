@@ -59,9 +59,7 @@
 		<property name="translator" ref="evenementOrganisationTranslator"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
-		<property name="serviceOrganisation" ref="serviceOrganisationService"/>
 		<property name="dataEventService" ref="dataEventService"/>
-		<property name="mainInterceptor" ref="modificationInterceptor"/>
 	</bean>
 
 	<bean id="evtOrganisationProcessorRetry" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationRetryProcessorImpl">
@@ -69,6 +67,5 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
 		<property name="processor" ref="evtOrganisationProcessor"/>
-		<property name="recuperateur" ref="evtOrganisationRecuperateur"/>
 	</bean>
 </beans>
