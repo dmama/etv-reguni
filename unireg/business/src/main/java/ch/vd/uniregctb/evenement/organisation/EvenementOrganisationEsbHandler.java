@@ -187,7 +187,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	@NotNull
 	private EvenementOrganisation createEvenementOrganisation(NoticeRoot message) throws EvenementOrganisationEsbException {
 		try {
-			return new EvenementOrganisation(message);
+			return EvenementOrganisationConversionHelper.createEvenement(message);
 		}
 		catch (RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
