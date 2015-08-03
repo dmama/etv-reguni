@@ -36,7 +36,6 @@ import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAt
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -62,12 +61,9 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
-	private ServiceOrganisationService serviceOrganisation; // FIXME: Why are these leftover? Check
+	private ServiceOrganisationService serviceOrganisation; // For logging
 
 	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
-
-	private ModificationInterceptor mainInterceptor; // FIXME: Why are these leftover? Check
-
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -100,10 +96,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
-	}
-
-	public void setMainInterceptor(ModificationInterceptor mainInterceptor) {
-		this.mainInterceptor = mainInterceptor;
 	}
 
 	/**

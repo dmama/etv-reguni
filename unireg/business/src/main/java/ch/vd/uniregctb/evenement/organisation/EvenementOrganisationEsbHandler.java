@@ -140,6 +140,8 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 
 		NoticeRoot message = decodeEvenementOrganisation(xml);
 
+		checkValidIncomingEventData(message);
+
 		if (isIgnored(message)) {
 			onIgnoredEvent(message);
 			return;
@@ -184,10 +186,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	 */
 	@NotNull
 	private EvenementOrganisation createEvenementOrganisation(NoticeRoot message) throws EvenementOrganisationEsbException {
-
 		try {
-			checkValidIncomingEventData(message);
-
 			return new EvenementOrganisation(message);
 		}
 		catch (RuntimeException e) {
