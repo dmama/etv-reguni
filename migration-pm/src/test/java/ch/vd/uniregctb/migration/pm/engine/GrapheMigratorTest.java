@@ -1191,6 +1191,110 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	/**
+	 * Cas vu dans la base de RegPM où le for secondaire non-couvert n'est pas juste en bordure des fors principaux
+	 * (= par exemple, revente de l'immeuble alors que le for principal n'existe toujours pas avant potentiellement plusieurs années)
+	 */
+	@Test
+	public void testCouvertureForsSecondairesParForsPrincipauxLoinDeForsPrincipaux() throws Exception {
+
+		final long noEntreprise = 43782L;
+		final RegDate dateDebutForPrincipal = RegDate.get(1987, 5, 1);
+		final RegDate dateAchatImmeuble = dateDebutForPrincipal.addYears(-5);      // avant le for principal !!
+		final RegDate dateVenteImmeuble = dateDebutForPrincipal.addYears(-1);       // ça aussi, avant le for principal !!
+
+		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final RegpmImmeuble immeuble1 = EntrepriseMigratorTest.createImmeuble(Commune.MORGES);
+		EntrepriseMigratorTest.addRattachementProprietaire(regpm, dateAchatImmeuble, dateVenteImmeuble, immeuble1);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(regpm),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
+		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
+
+		// vérification du contenu de la base -> une nouvelle regpm
+		doInUniregTransaction(true, status -> {
+			final List<Entreprise> entreprises = uniregStore.getEntitiesFromDb(Entreprise.class, null);
+			Assert.assertNotNull(entreprises);
+			Assert.assertEquals(1, entreprises.size());
+
+			final Entreprise entreprise = entreprises.get(0);
+			Assert.assertNotNull(entreprise);
+
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+			final Etablissement etbPrincipal = etablissements.get(0);
+			Assert.assertNotNull(etbPrincipal);
+			Assert.assertTrue(etbPrincipal.isPrincipal());
+			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
+
+			final ForsParType fpt = entreprise.getForsParType(true);
+
+			// fors secondaires
+			{
+				Assert.assertEquals(1, fpt.secondaires.size());
+				{
+					final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(dateAchatImmeuble, ffs.getDateDebut());
+					Assert.assertEquals(dateVenteImmeuble, ffs.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.MORGES.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, ffs.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffs.getGenreImpot());
+					Assert.assertFalse(ffs.isAnnule());
+				}
+			}
+
+			// fors principaux
+			{
+				Assert.assertEquals(1, fpt.principauxPM.size());
+
+				// le pré-existant dans Regpm, dont la date de début a cependant été modifiée
+				{
+					final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+					Assert.assertNotNull(ffp);
+					Assert.assertEquals(dateAchatImmeuble, ffp.getDateDebut());
+					Assert.assertNull(ffp.getDateFin());
+					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifFermeture());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
+					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ffp.getGenreImpot());
+					Assert.assertFalse(ffp.isAnnule());
+				}
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + ".", msgs.get(1));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.05.1987 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(2));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5518 [01.05.1987 -> ?] généré.", msgs.get(0));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;For secondaire 'immeuble' [01.05.1982 -> 01.05.1986] ajouté sur la commune 5642.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5642 (maintenant : [01.05.1982 -> 01.05.1986]).", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;La date de début du for fiscal principal [01.05.1987 -> ?] est adaptée (-> 01.05.1982) pour couvrir les fors secondaires.", msgs.get(3));
+		}
+	}
+
 	@Test
 	public void testAucunForSecondaire() throws Exception {
 

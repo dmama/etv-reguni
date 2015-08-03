@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -459,11 +460,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					else {
 						// il y a des fors principaux, donc il y a toujours au moins un for principal
-						// juste avant ou juste après chaque trou...
+						// avant ou après chaque trou... (pas forcément juste avant ou juste après car la période des ranges non-couverts
+						// ne concerne que les fors secondaires...)
+
+						final NavigableMap<RegDate, ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted()
+								.stream()
+								.collect(Collectors.toMap(ForFiscalPrincipalPM::getDateDebut,
+								                          Function.identity(),
+								                          (f1, f2) -> { throw new IllegalArgumentException("Plusieurs fors principaux commençant le même jour ???"); },
+								                          TreeMap::new));
+
 						for (DateRange nonCouvert : rangesNonCouverts) {
 
 							final RegDate dateFinTrou = nonCouvert.getDateFin();
-							final ForFiscalPrincipalPM forApresTrou = dateFinTrou == null ? null : entreprise.getForFiscalPrincipalAt(dateFinTrou.getOneDayAfter());
+							final ForFiscalPrincipalPM forApresTrou = dateFinTrou == null ? null : forsPrincipaux.higherEntry(dateFinTrou).getValue();
 							if (forApresTrou != null) {
 								// on change la date de début pour couvrir le trou
 								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
@@ -482,7 +492,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 								// il n'y a pas de for après, on regarde avant...
 								final RegDate dateDebutTrou = nonCouvert.getDateDebut();
-								final ForFiscalPrincipalPM forAvantTrou = dateDebutTrou == null ? null : entreprise.getForFiscalPrincipalAt(dateDebutTrou.getOneDayBefore());
+								final ForFiscalPrincipalPM forAvantTrou = dateDebutTrou == null ? null : forsPrincipaux.lowerEntry(dateDebutTrou).getValue();
 								if (forAvantTrou != null) {
 									// on change la date de fin pour couvrir le trou
 									mr.addMessage(LogCategory.FORS, LogLevel.WARN,
