@@ -66,7 +66,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			Header header = message.getHeader();
 			Notice notice = header.getNotice();
 			NoticeOrganisation content = message.getNoticeOrganisation().get(0);
-			return String.format("id=%d, type=%s, date=%s, senderId=%s, refData=%s, noOrganisation=%d, nom=%s",
+			return String.format("id=%d, type=%s, date=%s, senderId=%s, refData='%s', noOrganisation=%d, nom='%s'",
 			                     notice.getNoticeId(),
 			                     notice.getTypeOfNotice(),
 			                     notice.getNoticeDate(),
@@ -276,6 +276,10 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		catch (RuntimeException e) {
 			throw new EvenementOrganisationEsbException(EsbBusinessCode.EVT_ORGANISATION, e);
 		}
+	}
+
+	public static StringRenderer<NoticeRoot> getReceptionEvtOrganisationRenderer() {
+		return RECEPTION_EVT_ORGANISATION_RENDERER;
 	}
 
 	private EvenementOrganisation saveIncomingEvent(EvenementOrganisation event) {

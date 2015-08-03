@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationRecuperateur;
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessor;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
@@ -27,7 +26,6 @@ public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganis
 	private EvenementOrganisationDAO evtOrganisationDAO;
 	private PlatformTransactionManager transactionManager;
 	private EvenementOrganisationProcessor processor;
-	private EvenementOrganisationRecuperateur recuperateur;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationQueue(EvenementOrganisationNotificationQueue notificationQueue) {
@@ -49,11 +47,6 @@ public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganis
 		this.processor = processor;
 	}
 
-	@SuppressWarnings("UnusedDeclaration")
-	public void setRecuperateur(EvenementOrganisationRecuperateur recuperateur) {
-		this.recuperateur = recuperateur;
-	}
-
 	@Override
 	public void retraiteEvenements(@Nullable StatusManager status) {
 
@@ -61,9 +54,6 @@ public class EvenementOrganisationRetryProcessorImpl implements EvenementOrganis
 			status = new LoggingStatusManager(LOGGER);
 		}
 
-		// dans un premier temps, on essaie de récupérer les événements organisation "à traiter"
-		recuperateur.recupererEvenementsOrganisation();
-		
 		// ensuite, allons rechercher les numéros d'organisations qui sont concernés (ce sont ces numéros qu'il faudra poster dans la queue)
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

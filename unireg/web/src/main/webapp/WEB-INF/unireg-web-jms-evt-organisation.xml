@@ -20,12 +20,6 @@
 		</property>
 	</bean>
 
-	<bean id="evtOrganisationRecuperateur" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationRecuperateurImpl">
-		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
-		<property name="receptionHandler" ref="evtOrganisationReceptionHandler"/>
-		<property name="transactionManager" ref="transactionManager"/>
-	</bean>
-
 	<bean id="evtOrganisationMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
