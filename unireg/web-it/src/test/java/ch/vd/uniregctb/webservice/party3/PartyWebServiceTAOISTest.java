@@ -986,8 +986,8 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		assertNotNull(organisation);
 		assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
 		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(organisation.getOrganisationName()));
-		assertNull(organisation.getOrganisationNameAddOn1());
-		assertNull(organisation.getOrganisationNameAddOn2());
+		assertEquals("Test ligne 2", trimValiPattern(organisation.getOrganisationNameAddOn1()));
+		assertEquals("Test ligne 3", trimValiPattern(organisation.getOrganisationNameAddOn2()));
 
 		final AddressInformation info = courrier.getAddressInformation();
 		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
