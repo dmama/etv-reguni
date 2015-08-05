@@ -378,14 +378,14 @@
 								<c:set var="pi" value="${ligne.periodeImposition.range}" />
 								<td class="periodeImposition tooltip_cell" id="pi-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.periodeImposition.longueurAffichage}" />">
 	                                <fmt:message key="option.type.contribuable.${pi.typeContribuable}"/>
-									<c:if test="${pi.typeDocument != null}">
+									<c:if test="${pi.typeDocumentDeclaration != null}">
 										/
-	                                    <fmt:message key="option.type.document.${pi.typeDocument}"/>
+	                                    <fmt:message key="option.type.document.${pi.typeDocumentDeclaration}"/>
 									</c:if>
-                                    <c:if test="${pi.optionnelle}">
+                                    <c:if test="${pi.declarationOptionnelle}">
                                         (optionnelle)
                                     </c:if>
-                                    <c:if test="${pi.remplaceeParNote}">
+                                    <c:if test="${pi.declarationRemplaceeParNote}">
                                         (remplacée par note)
                                     </c:if>
                                     <c:if test="${pi.diplomateSuisseSansImmeuble}">
@@ -394,12 +394,11 @@
 	                                <div id="pi-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
 	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
+		                                Période fiscale : <b>${pi.periodeFiscale}</b>
 	                                    Type de contribuable : <b><fmt:message key="option.type.contribuable.${pi.typeContribuable}"/></b><br/>
-	                                    Type de document : <c:if test="${pi.typeDocument != null}"><b><fmt:message key="option.type.document.${pi.typeDocument}"/></b></c:if><br/>
-	                                    Qualification : <c:if test="${pi.qualification != null}"><b><fmt:message key="option.qualification.${pi.qualification}"/></b></c:if><br/>
-	                                    Adresse de retour : <c:if test="${pi.adresseRetour != null}"><b><fmt:message key="option.type.adresse.retour.${pi.adresseRetour}"/></b></c:if><br/>
-	                                    Optionnelle : <b><fmt:message key="option.ouinon.${pi.optionnelle}"/></b><br/>
-	                                    Remplacée par note : <b><fmt:message key="option.ouinon.${pi.remplaceeParNote}"/></b>
+	                                    Type de document : <c:if test="${pi.typeDocumentDeclaration != null}"><b><fmt:message key="option.type.document.${pi.typeDocumentDeclaration}"/></b></c:if><br/>
+	                                    Optionnelle : <b><fmt:message key="option.ouinon.${pi.declarationOptionnelle}"/></b><br/>
+	                                    Remplacée par note : <b><fmt:message key="option.ouinon.${pi.declarationRemplaceeParNote}"/></b>
 	                                </div>
 								</td>
 							</c:when>

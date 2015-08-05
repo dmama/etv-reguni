@@ -42,12 +42,13 @@ import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
@@ -201,10 +202,10 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
+        final List<ContribuableImpositionPersonnesPhysiques> list = hibernateTemplate.execute(new HibernateCallback<List<ContribuableImpositionPersonnesPhysiques>>() {
 	        @Override
-	        public List<Contribuable> doInHibernate(Session session) throws HibernateException {
-		        final Criteria crit = session.createCriteria(Contribuable.class);
+	        public List<ContribuableImpositionPersonnesPhysiques> doInHibernate(Session session) throws HibernateException {
+		        final Criteria crit = session.createCriteria(ContribuableImpositionPersonnesPhysiques.class);
 		        crit.add(Restrictions.in("numero", batch));
 		        crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
 		        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -213,7 +214,7 @@ public class DeterminationDIsAEmettreProcessor {
         });
 
 		// Traite tous les contribuables
-		for (Contribuable ctb : list) {
+		for (ContribuableImpositionPersonnesPhysiques ctb : list) {
 			traiterContribuable(ctb, periode, r);
 		}
 	}
@@ -227,7 +228,7 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param r
 	 * @throws AssujettissementException en cas d'impossibilité de déterminer l'assujettissement
 	 */
-	protected void traiterContribuable(Contribuable contribuable, PeriodeFiscale periodeFiscale, DeterminationDIsResults r) throws AssujettissementException {
+	protected void traiterContribuable(ContribuableImpositionPersonnesPhysiques contribuable, PeriodeFiscale periodeFiscale, DeterminationDIsResults r) throws AssujettissementException {
 
 		r.nbCtbsTotal++;
 
@@ -237,7 +238,7 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 
 		// on calcule les périodes d'imposition et on les traite
-		final List<PeriodeImposition> periodes = determineDetailsEnvoi(contribuable, periodeFiscale.getAnnee(), r);
+		final List<PeriodeImpositionPersonnesPhysiques> periodes = determineDetailsEnvoi(contribuable, periodeFiscale.getAnnee(), r);
 		traiterPeriodesImposition(contribuable, periodeFiscale, periodes, r);
 
 		// [UNIREG-1742] rattrapage des déclarations et des tâches non-valides
@@ -253,12 +254,12 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param periodes       les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param r
 	 */
-	private void traiterPeriodesImposition(Contribuable contribuable, PeriodeFiscale periodeFiscale, List<PeriodeImposition> periodes, DeterminationDIsResults r) {
+	private void traiterPeriodesImposition(ContribuableImpositionPersonnesPhysiques contribuable, PeriodeFiscale periodeFiscale, List<PeriodeImpositionPersonnesPhysiques> periodes, DeterminationDIsResults r) {
 		if (periodes == null || periodes.isEmpty()) {
 			r.addIgnorePasAssujetti(contribuable); // pas assujetti au rôle ordinaire (départ HC, mariage, ...)
 		}
 		else {
-			for (PeriodeImposition p : periodes) {
+			for (PeriodeImpositionPersonnesPhysiques p : periodes) {
 				if (needsDeclaration(p, r)) {
 					traiterPeriodeImposition(contribuable, periodeFiscale, p, r);
 				}
@@ -274,7 +275,10 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param periodes       les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param r
 	 */
-	private void verifierValiditeDeclarations(Contribuable contribuable, PeriodeFiscale periodeFiscale, List<PeriodeImposition> periodes, DeterminationDIsResults r) {
+	private void verifierValiditeDeclarations(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                          PeriodeFiscale periodeFiscale,
+	                                          List<PeriodeImpositionPersonnesPhysiques> periodes,
+	                                          DeterminationDIsResults r) {
 		final Set<Declaration> declarations = contribuable.getDeclarations();
 		if (declarations != null && !declarations.isEmpty()) {
 			for (Declaration d : declarations) {
@@ -294,9 +298,12 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param di           la déclaration d'impôt ordinaire à vérifier
 	 * @param r
 	 */
-	private void verifierValiditeDeclaration(Contribuable contribuable, List<PeriodeImposition> periodes, DeclarationImpotOrdinaire di, DeterminationDIsResults r) {
+	private void verifierValiditeDeclaration(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                         List<PeriodeImpositionPersonnesPhysiques> periodes,
+	                                         DeclarationImpotOrdinaire di,
+	                                         DeterminationDIsResults r) {
 
-		final ExistenceResults<PeriodeImposition> results = checkExistencePeriode(periodes, di);
+		final ExistenceResults<PeriodeImpositionPersonnesPhysiques> results = checkExistencePeriode(periodes, di);
 		if (results == null) {
 
 			TacheCriteria criterion = new TacheCriteria();
@@ -345,9 +352,12 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param periodes       les périodes d'imposition calculées pour le contribuable et la période fiscale concernée
 	 * @param r
 	 */
-	private void verifierValiditeTachesEnvoi(Contribuable contribuable, PeriodeFiscale periodeFiscale, List<PeriodeImposition> periodes, DeterminationDIsResults r) {
+	private void verifierValiditeTachesEnvoi(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                         PeriodeFiscale periodeFiscale,
+	                                         List<PeriodeImpositionPersonnesPhysiques> periodes,
+	                                         DeterminationDIsResults r) {
 		
-		TacheCriteria criterion = new TacheCriteria();
+		final TacheCriteria criterion = new TacheCriteria();
 		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 		criterion.setAnnee(periodeFiscale.getAnnee());
 		criterion.setContribuable(contribuable);
@@ -372,9 +382,12 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param tache        la tache d'envoi de déclaration à vérifier
 	 * @param r
 	 */
-	private void verifierValiditeTacheEnvoi(Contribuable contribuable, List<PeriodeImposition> periodes, TacheEnvoiDeclarationImpot tache, DeterminationDIsResults r) {
+	private void verifierValiditeTacheEnvoi(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                        List<PeriodeImpositionPersonnesPhysiques> periodes,
+	                                        TacheEnvoiDeclarationImpot tache,
+	                                        DeterminationDIsResults r) {
 
-		final ExistenceResults<PeriodeImposition> results = checkExistencePeriode(periodes, tache);
+		final ExistenceResults<PeriodeImpositionPersonnesPhysiques> results = checkExistencePeriode(periodes, tache);
 		if (results == null) {
 			// [UNIREG-1742] pas de période pour la tâche => on l'annule
 			tache.setAnnule(true);
@@ -403,12 +416,21 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param r
 	 * @return les périodes d'imposition déterminées; ou <b>null</b> s'il n'y en a pas ou s'il n'a pas été possible de les déterminer.
 	 */
-	protected List<PeriodeImposition> determineDetailsEnvoi(Contribuable contribuable, int annee, DeterminationDIsResults r) {
+	protected List<PeriodeImpositionPersonnesPhysiques> determineDetailsEnvoi(ContribuableImpositionPersonnesPhysiques contribuable, int annee, DeterminationDIsResults r) {
 
 		// Détermination des périodes d'imposition du contribuable dans l'année
-		final List<PeriodeImposition> periodes;
+		final List<PeriodeImpositionPersonnesPhysiques> periodes;
 		try {
-			periodes = periodeImpositionService.determine(contribuable, annee);
+			final List<PeriodeImposition> generic = periodeImpositionService.determine(contribuable, annee);
+			if (generic == null || generic.isEmpty()) {
+				periodes = null;
+			}
+			else {
+				periodes = new ArrayList<>(generic.size());
+				for (PeriodeImposition pi : generic) {
+					periodes.add((PeriodeImpositionPersonnesPhysiques) pi);
+				}
+			}
 		}
 		catch (AssujettissementException e) {
 			if (r != null) {
@@ -428,7 +450,7 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param r
 	 * @return <b>vrai</b> si la période nécessite l'envoi d'une déclaration d'impôt; <b>faux</i> autrement.
 	 */
-	protected boolean needsDeclaration(PeriodeImposition periode, DeterminationDIsResults r) {
+	protected boolean needsDeclaration(PeriodeImpositionPersonnesPhysiques periode, DeterminationDIsResults r) {
 
 		final Contribuable contribuable = periode.getContribuable();
 
@@ -437,12 +459,12 @@ public class DeterminationDIsAEmettreProcessor {
 			return false; // pas d'envoi de DI
 		}
 
-		if (periode.isRemplaceeParNote()) {
+		if (periode.isDeclarationRemplaceeParNote()) {
 			r.addIgnoreDeclarationRemplaceeParNote(contribuable);
 			return false; // pas d'envoi de DI
 		}
 
-		if (periode.isOptionnelle()) {
+		if (periode.isDeclarationOptionnelle()) {
 			r.addIgnoreDeclarationOptionnelle(contribuable);
 			return false; // pas d'envoi de DI
 		}
@@ -460,7 +482,10 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param r
 	 * @return la tâche créée; ou <b>null</i> si une erreur a été détectée
 	 */
-	protected TacheEnvoiDeclarationImpot traiterPeriodeImposition(Contribuable contribuable, PeriodeFiscale periode, PeriodeImposition details, DeterminationDIsResults r) {
+	protected TacheEnvoiDeclarationImpot traiterPeriodeImposition(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                              PeriodeFiscale periode,
+	                                                              PeriodeImpositionPersonnesPhysiques details,
+	                                                              DeterminationDIsResults r) {
 
 		// Vérifie qu'une déclaration d'impôt n'existe pas déjà
 		final ExistenceResults<DeclarationImpotOrdinaire> checkDI = checkExistenceDeclaration(contribuable, details);
@@ -511,12 +536,12 @@ public class DeterminationDIsAEmettreProcessor {
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base
-		final CategorieEnvoiDI categorie = details.getCategorieEnvoiDI();
-		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(categorie.getTypeContribuable()).getDateFinEnvoiMasseDI();
+		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(details.getTypeContribuable()).getDateFinEnvoiMasseDI();
 		Assert.notNull(dateEcheance);
 
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
-				categorie.getTypeContribuable(), categorie.getTypeDocument(), details.getQualification(), details.getCodeSegment(), details.getAdresseRetour(), oid);
+		                                                                        details.getTypeContribuable(), details.getTypeDocumentDeclaration(), null,
+		                                                                        details.getCodeSegment(), details.getAdresseRetour(), oid);
 		if (r != null) {
 			r.addTacheEnvoiCreee(contribuable, tache);
 		}
@@ -546,12 +571,12 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 	}
 
-	protected ExistenceResults<PeriodeImposition> checkExistencePeriode(final List<PeriodeImposition> periodes, final DateRange range) {
+	protected ExistenceResults<PeriodeImpositionPersonnesPhysiques> checkExistencePeriode(final List<PeriodeImpositionPersonnesPhysiques> periodes, final DateRange range) {
 
-		ExistenceResults<PeriodeImposition> status = null;
+		ExistenceResults<PeriodeImpositionPersonnesPhysiques> status = null;
 
 		if (periodes != null && !periodes.isEmpty()) {
-			for (PeriodeImposition p : periodes) {
+			for (PeriodeImpositionPersonnesPhysiques p : periodes) {
 
 				if (DateRangeHelper.equals(p, range)) {
 					status = new ExistenceResults<>(TacheStatus.EXISTE_DEJA, p);
@@ -573,7 +598,8 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param periode      la période
 	 * @return <b>null</b> si aucune déclaraiton n'existe, ou un résultat détaillé si une déclaration préexistente a été détectée.
 	 */
-	protected ExistenceResults<DeclarationImpotOrdinaire> checkExistenceDeclaration(final Contribuable contribuable, final PeriodeImposition periode) {
+	protected ExistenceResults<DeclarationImpotOrdinaire> checkExistenceDeclaration(final ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                                                final PeriodeImpositionPersonnesPhysiques periode) {
 
 		ExistenceResults<DeclarationImpotOrdinaire> status = null;
 

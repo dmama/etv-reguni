@@ -10,6 +10,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
  * Action permettant de mettre-à-jour les dates de début/fin et le type de contribuable d'une déclaration d'impôt.
  */
 public class UpdateDI extends SynchronizeAction {
+
 	public final PeriodeImposition periodeImposition;
 	public final Long diId;
 

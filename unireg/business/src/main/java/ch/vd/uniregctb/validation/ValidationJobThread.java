@@ -160,7 +160,7 @@ public class ValidationJobThread extends Thread {
 			}
 			catch (Exception e) {
 				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Calcul impossible de la période d'imposition pour le contribuable n°" + contribuable.getNumero() + " et l'année" + annee);
+					LOGGER.debug("Calcul impossible de la période d'imposition pour le contribuable n°" + contribuable.getNumero() + " et l'année " + annee);
 				}
 				results.addErrorPeriodeImposition(contribuable, annee, e);
 			}
@@ -202,7 +202,7 @@ public class ValidationJobThread extends Thread {
 			// au moins une période d'imposition, mais pas de DI (pas grave si c'est l'année en cours...)
 			if (annee < RegDate.get().year()) {
 				for (PeriodeImposition pi : periodesImposition) {
-					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
+					if (pi.isDeclarationMandatory()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}
@@ -282,7 +282,7 @@ public class ValidationJobThread extends Thread {
 			if (nbDeclarationNonAssociees < periodesImposition.size()) {
 				// il ne reste que des périodes d'imposition sans DI
 				for (PeriodeImposition pi : periodesImposition.subList(nbDeclarationNonAssociees, periodesImposition.size())) {
-					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
+					if (pi.isDeclarationMandatory()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}

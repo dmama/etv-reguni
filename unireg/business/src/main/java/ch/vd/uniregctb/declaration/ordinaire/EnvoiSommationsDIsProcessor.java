@@ -34,7 +34,7 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -294,14 +294,14 @@ public class EnvoiSommationsDIsProcessor  {
 		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
 		boolean optionnel = true;
 		for (Assujettissement a : assujettissements) {
-			final PeriodeImposition periodeImposition = periodeImpositionService.determinePeriodeImposition(fors, a);
+			final PeriodeImpositionPersonnesPhysiques periodeImposition = periodeImpositionService.determinePeriodeImposition(fors, a);
 			//Ajout du test afin de detecter les periodes d'imposition null
 			//exemple: contribuable avec 2 types d'assujettissements sur la même période, sourcier et ensuite à l'ordinaire
 			//la méthode doit prendre en compte les assujettissements autre que le type sourcier
 			//  qui est caractérisé par un rsultat null lor du calcul de la période d'imposition.
 			if (periodeImposition != null) {
 				if (DateRangeHelper.intersect(di, periodeImposition)) {
-					optionnel = periodeImposition.isOptionnelle() || periodeImposition.isRemplaceeParNote();
+					optionnel = periodeImposition.isDeclarationOptionnelle() || periodeImposition.isDeclarationRemplaceeParNote();
 					if (!optionnel) {
 						break;
 					}

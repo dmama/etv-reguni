@@ -125,7 +125,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 
 			// [SIFISC-3127] on valide les déclarations d'impôts ordinaires par rapport aux périodes d'imposition théoriques
 			try {
-				final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb, null);
+				final List<PeriodeImposition> periodes = periodeImpositionService.determine(ctb);
 				for (Declaration d : decls) {
 					if (d.isAnnule()) {
 						continue;

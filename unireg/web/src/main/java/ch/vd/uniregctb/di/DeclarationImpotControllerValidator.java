@@ -20,7 +20,7 @@ import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -85,12 +85,12 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
-		if (!(tiers instanceof Contribuable)) {
+		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
 			errors.reject("error.tiers.doit.etre.contribuable");
 			return;
 		}
 
-		final Contribuable ctb = (Contribuable) tiers;
+		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
 		if (view.getDateDebutPeriodeImposition() == null) {
 			errors.rejectValue("dateDebutPeriodeImposition", "error.date.debut.vide");

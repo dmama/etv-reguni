@@ -29,11 +29,11 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.Declaratio
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -153,23 +153,24 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		r.nbCtbsTotal++;
 
-		final Contribuable contribuable = hibernateTemplate.get(Contribuable.class, id);
+		final ContribuableImpositionPersonnesPhysiques contribuable = hibernateTemplate.get(ContribuableImpositionPersonnesPhysiques.class, id);
 		if (validationService.validate(contribuable).hasErrors()) {
 			LOGGER.info("Le ctb n'a pas pu recevoir de DI car il est invalide");
 			return;
 		}
 
-		final List<PeriodeImposition> details = determinationDIsAEmettreProcessor.determineDetailsEnvoi(contribuable, periode.getAnnee(), null);
+		final List<PeriodeImpositionPersonnesPhysiques> details = determinationDIsAEmettreProcessor.determineDetailsEnvoi(contribuable, periode.getAnnee(), null);
 		if (details == null) {
 			return;
 		}
 
-		for (PeriodeImposition d : details) {
+		for (PeriodeImpositionPersonnesPhysiques d : details) {
 			traiterDetails(d, contribuable, periode, dateTraitement, cache, r);
 		}
 	}
 
-	private void traiterDetails(PeriodeImposition details, Contribuable contribuable, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException {
+	private void traiterDetails(PeriodeImpositionPersonnesPhysiques details, ContribuableImpositionPersonnesPhysiques contribuable,
+	                            PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException {
 		
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 

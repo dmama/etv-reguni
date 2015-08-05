@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.di.view;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -41,7 +41,7 @@ public class ImprimerNouvelleDeclarationImpotView {
 		this.depuisTache = depuisTache;
 	}
 
-	public void setPeriode(PeriodeImposition periode) {
+	public void setPeriode(PeriodeImpositionPersonnesPhysiques periode) {
 		this.imprimable = true;
 		this.periodeFiscale = periode.getDateDebut().year();
 		this.dateDebutPeriodeImposition = periode.getDateDebut();

@@ -2,7 +2,10 @@ package ch.vd.uniregctb.metier.bouclement;
 
 import java.io.Serializable;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -15,6 +18,9 @@ public class ExerciceCommercial implements DateRange, Serializable {
 	private final RegDate dateFin;
 
 	public ExerciceCommercial(RegDate dateDebut, RegDate dateFin) {
+		if (dateDebut == null || dateFin == null) {
+			throw new IllegalArgumentException("Les exercices commerciaux sont forcément bornés : " + DateRangeHelper.toDisplayString(dateDebut, dateFin));
+		}
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}
@@ -24,11 +30,13 @@ public class ExerciceCommercial implements DateRange, Serializable {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
+	@NotNull
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
+	@NotNull
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;

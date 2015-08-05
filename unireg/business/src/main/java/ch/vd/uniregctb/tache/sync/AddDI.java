@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -14,9 +15,9 @@ import ch.vd.uniregctb.type.TypeEtatTache;
  */
 public class AddDI extends SynchronizeAction {
 
-	public final PeriodeImposition periodeImposition;
+	public final PeriodeImpositionPersonnesPhysiques periodeImposition;
 
-	public AddDI(PeriodeImposition periodeImposition) {
+	public AddDI(PeriodeImpositionPersonnesPhysiques periodeImposition) {
 		this.periodeImposition = periodeImposition;
 	}
 
@@ -25,7 +26,7 @@ public class AddDI extends SynchronizeAction {
 
 		final RegDate dateEcheance;
 		final CollectiviteAdministrative collectivite;
-		if (periodeImposition.isFermetureCauseDeces()) {
+		if (periodeImposition.getCauseFermeture() == PeriodeImposition.CauseFermeture.VEUVAGE_DECES) {
 			// [UNIREG-2305] En cas de décès, l'échéance de la tâche est poussée 30 jours plus tard et on assigne la tâche à l'office des successions
 			dateEcheance = periodeImposition.getDateFin().addDays(30);
 			collectivite = context.officeSuccessions;
@@ -50,8 +51,8 @@ public class AddDI extends SynchronizeAction {
 
 		final TacheEnvoiDeclarationImpot tache =
 				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
-						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getCodeSegment(),
-						periodeImposition.getAdresseRetour(), collectivite);
+				                               periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocumentDeclaration(), null, periodeImposition.getCodeSegment(),
+				                               periodeImposition.getAdresseRetour(), collectivite);
 		context.tacheDAO.save(tache);
 	}
 

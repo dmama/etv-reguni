@@ -63,6 +63,7 @@ import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 import ch.vd.uniregctb.editique.EditiqueResultatReroutageInbox;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -70,6 +71,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -341,7 +343,7 @@ public class DeclarationImpotController {
 			// [UNIREG-889] il y reste plusieurs DIs à créer : on demande à l'utilisateur de choisir
 			final ArrayList<ChoixDeclarationImpotView> views = new ArrayList<>(ranges.size());
 			for (PeriodeImposition r : ranges) {
-				views.add(new ChoixDeclarationImpotView(r, r.isOptionnelle()));
+				views.add(new ChoixDeclarationImpotView(r, r.isDeclarationOptionnelle()));
 			}
 			model.addAttribute("tiersId", tiersId);
 			model.addAttribute("ranges", views);
@@ -371,10 +373,10 @@ public class DeclarationImpotController {
 		if (tiers == null) {
 			throw new TiersNotFoundException(tiersId);
 		}
-		if (!(tiers instanceof Contribuable)) {
-			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");
+		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable soumis au régime des personnes physiques.");
 		}
-		final Contribuable ctb = (Contribuable) tiers;
+		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
 		final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView(tiersId, depuisTache, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP));
 		model.addAttribute("command", view);
@@ -382,7 +384,7 @@ public class DeclarationImpotController {
 		model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
 
 		// Vérifie que les paramètres reçus sont valides
-		final PeriodeImposition periode;
+		final PeriodeImpositionPersonnesPhysiques periode;
 		try {
 			periode = manager.checkRangeDi(ctb, new DateRangeHelper.Range(dateDebut, dateFin));
 		}
@@ -446,8 +448,8 @@ public class DeclarationImpotController {
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
 			try {
-				final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
-				                                                                  view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
+				final EditiqueResultat resultat = manager.envoieImpressionLocaleDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
+				                                                                   view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
 				final RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox> inbox =
 						new RetourEditiqueControllerHelper.TraitementRetourEditique<EditiqueResultatReroutageInbox>() {
@@ -736,7 +738,7 @@ public class DeclarationImpotController {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 				}
 
-				final Contribuable ctb = (Contribuable) di.getTiers();
+				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) di.getTiers();
 				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 				// Vérification de la période d'imposition du contribuable

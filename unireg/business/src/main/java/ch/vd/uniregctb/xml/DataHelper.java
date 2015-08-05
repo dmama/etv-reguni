@@ -33,6 +33,7 @@ import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -422,7 +423,7 @@ public abstract class DataHelper {
 	 * @param periodeImposition la période d'imposition considérée
 	 * @return l'id de déclaration associée; ou <b>null</b> si aucune déclaration n'est émise.
 	 */
-	public static Long getAssociatedDi(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periodeImposition) {
+	public static Long getAssociatedDi(PeriodeImposition periodeImposition) {
 
 		final Contribuable contribuable = periodeImposition.getContribuable();
 		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut().year(), false);

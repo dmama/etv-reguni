@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -26,9 +27,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.BatchWithResultsCallback;
 import ch.vd.shared.batchtemplate.Behavior;
@@ -50,6 +49,7 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
@@ -190,8 +190,6 @@ public class TacheServiceImpl implements TacheService {
 
     @Override
     public void annuleTachesObsoletes(final Collection<Long> ctbIds) {
-
-        final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
 
         final TransactionTemplate template = new TransactionTemplate(transactionManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -680,11 +678,17 @@ public class TacheServiceImpl implements TacheService {
 			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
-				if (isDeclarationMandatory(periode)) {
+				if (periode.isDeclarationMandatory()) {
 					// on ajoute une DI si elle est obligatoire
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
 					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
-						addActions.add(new AddDI(periode));
+						if (periode instanceof PeriodeImpositionPersonnesPhysiques) {
+							addActions.add(new AddDI((PeriodeImpositionPersonnesPhysiques) periode));
+						}
+						else {
+							// TODO [SIPM] et les PM ? on verra plus tard
+							throw new NotImplementedException("Pas implémenté pour les PM...");
+						}
 					}
 				}
 			}
@@ -745,7 +749,13 @@ public class TacheServiceImpl implements TacheService {
 				else if (toAdd != null) {
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
 					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
-						addActions.add(new AddDI(toAdd));
+						if (toAdd instanceof PeriodeImpositionPersonnesPhysiques) {
+							addActions.add(new AddDI((PeriodeImpositionPersonnesPhysiques) toAdd));
+						}
+						else {
+							// TODO [SIPM] et les PM ? on verra plus tard
+							throw new NotImplementedException("Pas implémenté pour les PM...");
+						}
 					}
 				}
 			}
@@ -756,7 +766,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = addActions.size() - 1; i >= 0; i--) {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
 				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
-				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocument()) {
+				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocumentDeclaration()) {
 					addActions.remove(i);
 				}
 			}
@@ -824,14 +834,6 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * @param periode une période d'imposition
-	 * @return <b>vrai</b> si une déclaration d'impôt doit obligatoirement être envoyée pour la période d'imposition spécifiée; <b>faux</b> dans tous les autres cas.
-	 */
-	private static boolean isDeclarationMandatory(PeriodeImposition periode) {
-		return !periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
-	}
-
-	/**
 	 * Détermine si la tâche d'envoi d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
 	 *
 	 * @param envoi         une tâche d'envoi
@@ -843,7 +845,7 @@ public class TacheServiceImpl implements TacheService {
 	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
-		if (periode == null || !isDeclarationMandatory(periode)) {
+		if (periode == null || !periode.isDeclarationMandatory()) {
 			// pas de période correspondante -> la tâche n'est plus valable
 			// [SIFISC-1653] déclaration d'impôt pas obligatoire -> la tâche n'est plus valable
 			return false;
@@ -854,7 +856,7 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
-		if (envoi.getTypeDocument() != periode.getTypeDocument()) {
+		if (envoi.getTypeDocument() != periode.getTypeDocumentDeclaration()) {
 			// il y a une période correspondante pour le bon type de contribuable, mais le type de document n'est plus le même -> la tâche n'est plus valable
 			return false;
 		}
@@ -971,8 +973,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @return <code>true</code> si la période est passée ou courante incomplète, <code>false</code> sinon (courante complète ou, pourquoi pas, future)
 	 */
 	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, int anneeCourante) {
-		final RegDate avantDernierJourAnnee = RegDate.get(anneeCourante, 12, 30);
-		return periode.getDateDebut().year() < anneeCourante || RegDateHelper.isBeforeOrEqual(periode.getDateFin(), avantDernierJourAnnee, NullDateBehavior.LATEST);
+		return periode.isPeriodePassee(anneeCourante) || (periode.getPeriodeFiscale() == anneeCourante && periode.isFermetureAnticipee());
 	}
 
 	/**
@@ -1027,19 +1028,8 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private List<PeriodeImposition> getPeriodesImpositionHisto(Contribuable contribuable) throws AssujettissementException {
-
-		final RegDate dateCourante = RegDate.get();
-		final int anneeCourante = dateCourante.year();
-		final int anneeDebut = getPremierePeriodeFiscale();
-
-		final List<PeriodeImposition> periodes = new ArrayList<>();
-		for (int annee = anneeDebut; annee <= anneeCourante; ++annee) {
-			final List<PeriodeImposition> list = periodeImpositionService.determine(contribuable, annee);
-			if (list != null) {
-				periodes.addAll(list);
-			}
-		}
-		return periodes;
+		final List<PeriodeImposition> pis = periodeImpositionService.determine(contribuable);
+		return pis == null ? Collections.<PeriodeImposition>emptyList() : pis;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -1170,10 +1160,6 @@ public class TacheServiceImpl implements TacheService {
 	public int getDossiersEnInstanceCount(Integer oid) {
 		final TacheStats stats = tacheStatsPerOid.get(oid);
 		return stats == null ? 0: stats.dossiersEnInstance;
-	}
-
-	private int getPremierePeriodeFiscale() {
-		return parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 
 	/**

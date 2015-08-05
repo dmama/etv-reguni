@@ -27,10 +27,12 @@ import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.E
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -283,7 +285,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertZeroDeclaration(service.determineDetailsEnvoi(johan, 2007, r), r);
 
 		// Un tiers avec un for secondaire bidon
-		Contribuable yvette = addNonHabitant("Yvette", "Jolie", date(1965, 4, 13), Sexe.FEMININ);
+		PersonnePhysique yvette = addNonHabitant("Yvette", "Jolie", date(1965, 4, 13), Sexe.FEMININ);
 		{
 			ForFiscalSecondaire f = new ForFiscalSecondaire() {
 
@@ -358,13 +360,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		 * Un tiers sans for principal mais avec immeuble et une adresse de résidence dans le canton (=> il devrait posséder un for
 		 * principal dans ce cas-là)
 		 */
-		final Contribuable jean = (Contribuable) tiersService.getTiers(10000001);
+		final PersonnePhysique jean = (PersonnePhysique) tiersService.getTiers(10000001);
 		assertNull(service.determineDetailsEnvoi(jean, 2007, r));
 
 		/*
 		 * Un tiers avec un for principal et un rattachement différent de DOMICILE ou DIPLOMATE sur le for principal (ce qui est interdit)
 		 */
-		Contribuable michel = addNonHabitant("Michel", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
+		PersonnePhysique michel = addNonHabitant("Michel", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
 		{
 			ForFiscalPrincipalPP f = new ForFiscalPrincipalPP() {
 
@@ -632,10 +634,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final Range activite1 = new Range(date(2007, 1, 18), date(2007, 3, 31));
 		final Range activite2 = new Range(date(2007, 8, 1), date(2007, 11, 15));
-		final Contribuable armand = createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(activite1, activite2);
+		final PersonnePhysique armand = createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(activite1, activite2);
 
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
-		final List<PeriodeImposition> details = service.determineDetailsEnvoi(armand, 2007, r);
+		final List<PeriodeImpositionPersonnesPhysiques> details = service.determineDetailsEnvoi(armand, 2007, r);
 		assertNotNull(details);
 		assertEquals(2, details.size());
 		assertDetails(CategorieEnvoiDI.HS_VAUDTAX, activite1.getDateDebut(), activite1.getDateFin(), details.get(0));
@@ -713,9 +715,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition periodeImposition = periodes.get(0);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
-			TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode, periodeImposition, r);
+			TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheEric);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
@@ -729,9 +732,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(john, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition periodeImposition = periodes.get(0);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
-			TacheEnvoiDeclarationImpot tacheJohn = service.traiterPeriodeImposition(john, periode, periodeImposition, r);
+			TacheEnvoiDeclarationImpot tacheJohn = service.traiterPeriodeImposition(john, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheJohn);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheJohn);
@@ -765,9 +769,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2009);
 		assertEquals(1, periodes.size());
 		final PeriodeImposition periodeImposition = periodes.get(0);
+		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 		final DeterminationDIsResults r = new DeterminationDIsResults(2009, RegDate.get(), tiersService, adresseService);
-		TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode2009, periodeImposition, r);
+		TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode2009, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 		assertNotNull(tacheEric);
 		assertTache(TypeEtatTache.EN_INSTANCE, date(2010, 1, 31), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
@@ -803,7 +808,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2007);
 			assertEquals(1, periodes.size());
 			final PeriodeImposition tout2007 = periodes.get(0);
-			assertNull(service.traiterPeriodeImposition(eric, periode, tout2007, r)); // null parce que la tâche d'envoi existe déjà
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, tout2007);
+			assertNull(service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) tout2007, r)); // null parce que la tâche d'envoi existe déjà
 		}
 
 		// Nouvelle tâches avec assujettissement sur un partie de l'année 2007 seulement
@@ -815,10 +821,11 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			assertEquals(1, periodes.size());
 
 			final PeriodeImposition partie2007 = periodes.get(0);
+			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, partie2007);
 			assertEquals(date(2007, 8, 10), partie2007.getDateFin());
 			// [UNIREG-1984] la tâche d'envoi pré-xistante devra être annulée (dans un post-processing) et une nouvelle tâche d'envoi de DI doit avoir été déterminée
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 8, 10), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.ACI, service.traiterPeriodeImposition(eric, periode, partie2007, r));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.ACI, service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) partie2007, r));
 		}
 	}
 
@@ -830,7 +837,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Contribuable vaudois sans aucun for
 		{
-			Contribuable ctb = addNonHabitant("Junior", "Bolomey", date(2004, 1, 1), Sexe.MASCULIN);
+			PersonnePhysique ctb = addNonHabitant("Junior", "Bolomey", date(2004, 1, 1), Sexe.MASCULIN);
 			assertNull(service.determineDetailsEnvoi(ctb, 2007, r));
 		}
 
@@ -1174,7 +1181,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante
-		Contribuable malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+		PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		hibernateTemplate.flush();
 
@@ -1213,7 +1220,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable non-assujetti, mais avec une déclaration d'impôt (invalide) pré-existante ainsi qu'une tâche d'annulation de cette déclaration non-traitée
-		Contribuable malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+		PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 		DeclarationImpotOrdinaire di = addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 3, 21), di, malko, colAdm);
 		hibernateTemplate.flush();
@@ -1244,7 +1251,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
@@ -1325,7 +1332,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante déjà traitée
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
@@ -1482,7 +1489,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws DeclarationException, AssujettissementException {
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2008, date(2009, 1, 15), tiersService, adresseService);
-		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, ctbId);
+		final ContribuableImpositionPersonnesPhysiques ctb = hibernateTemplate.get(ContribuableImpositionPersonnesPhysiques.class, ctbId);
 		assertNotNull(ctb);
 		service.traiterContribuable(ctb, periodeFiscale, rapport);
 		assertEquals(nbTraites, rapport.traites.size());
@@ -1490,22 +1497,22 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertEquals(nbIgnores, rapport.ignores.size());
 	}
 
-	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final List<PeriodeImposition> details) {
+	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final List<PeriodeImpositionPersonnesPhysiques> details) {
 		assertNotNull(details);
 		assertEquals(1, details.size());
 		assertDetails(categorie, dateDebut, dateFin, details.get(0));
 	}
 
-	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final PeriodeImposition details) {
+	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final PeriodeImpositionPersonnesPhysiques details) {
 		assertNotNull(details);
 		assertEquals(categorie, details.getCategorieEnvoiDI());
 		assertEquals(dateDebut, details.getDateDebut());
 		assertEquals(dateFin, details.getDateFin());
 	}
 
-	private void assertZeroDeclaration(List<PeriodeImposition> periodes, DeterminationDIsResults r) {
+	private void assertZeroDeclaration(List<PeriodeImpositionPersonnesPhysiques> periodes, DeterminationDIsResults r) {
 		if (periodes != null) {
-			for (PeriodeImposition p : periodes) {
+			for (PeriodeImpositionPersonnesPhysiques p : periodes) {
 				assertFalse(service.needsDeclaration(p, r));
 			}
 		}

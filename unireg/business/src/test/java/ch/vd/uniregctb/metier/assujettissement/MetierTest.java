@@ -902,17 +902,22 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscalePrincipale());
 	}
 
-	protected void assertPeriodeImposition(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
-	                                       boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
+	protected void assertPeriodeImpositionPersonnesPhysiques(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, @Nullable TypeAdresseRetour adresseRetour, boolean optionnelle,
+	                                                         boolean remplaceParNote, boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
+
 		assertNotNull(periode);
-		assertEquals(debut, periode.getDateDebut());
-		assertEquals(fin, periode.getDateFin());
-		assertEquals(categorie, periode.getCategorieEnvoiDI());
-		assertEquals(adresseRetour, periode.getAdresseRetour());
-		assertEquals(optionnelle, periode.isOptionnelle());
-		assertEquals(remplaceParNote, periode.isRemplaceeParNote());
-		assertEquals(fermetureCauseDeces, periode.isFermetureCauseDeces());
-		assertEquals(fermetureCauseFinAssujettissementHS, periode.isFermetureCauseFinAssujettissementHorsSuisse());
+		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periode);
+
+		final PeriodeImpositionPersonnesPhysiques pipp = (PeriodeImpositionPersonnesPhysiques) periode;
+
+		assertEquals(debut, pipp.getDateDebut());
+		assertEquals(fin, pipp.getDateFin());
+		assertEquals(categorie, pipp.getCategorieEnvoiDI());
+		assertEquals(adresseRetour, pipp.getAdresseRetour());
+		assertEquals(optionnelle, pipp.isDeclarationOptionnelle());
+		assertEquals(remplaceParNote, pipp.isDeclarationRemplaceeParNote());
+		assertEquals(fermetureCauseDeces, pipp.getCauseFermeture() == PeriodeImposition.CauseFermeture.VEUVAGE_DECES);
+		assertEquals(fermetureCauseFinAssujettissementHS, pipp.getCauseFermeture() == PeriodeImposition.CauseFermeture.FIN_ASSUJETTISSEMENT_HS);
 	}
 
 	protected PersonnePhysique createSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques_Invalide() throws Exception {

@@ -14,8 +14,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 
 public class EnvoiAnnexeImmeubleResults extends JobResults<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> {
 
-	public static enum ErreurType {
-		EXCEPTION(EXCEPTION_DESCRIPTION);
+	public enum ErreurType {
+		EXCEPTION(EXCEPTION_DESCRIPTION),
+		ERREUR_NUMERO_INVALIDE("Le numéro de contribuable est invalide");
 		// --------------------------------------------------------------
 
 
@@ -30,7 +31,7 @@ public class EnvoiAnnexeImmeubleResults extends JobResults<ContribuableAvecImmeu
 		}
 	}
 
-	public static enum IgnoreType {
+	public enum IgnoreType {
 		CTB_NON_ASSUJETTI("Le contribuable n'est pas assujetti à la fin de la période fiscale");
 
 		private final String description;
@@ -130,6 +131,10 @@ public class EnvoiAnnexeImmeubleResults extends JobResults<ContribuableAvecImmeu
 
 	public void addErrorException(Contribuable ctb, Exception e) {
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, getExceptionMessage(e), getNom(ctb.getNumero())));
+	}
+
+	public void addErreurNoContribuableInvalide(ContribuableAvecImmeuble ctb, String msg) {
+		ctbsEnErrors.add(new Erreur(ctb.getNumeroContribuable(), null, ErreurType.ERREUR_NUMERO_INVALIDE, msg, getNom(ctb.getNumeroContribuable())));
 	}
 
 	public void addInfoCtbTraites(Contribuable ctb, int nbAnnexes) {

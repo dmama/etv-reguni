@@ -34,10 +34,13 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeleFeuille;
 import ch.vd.uniregctb.type.Qualification;
@@ -166,9 +169,18 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		initCache(anneePeriode);
 
 		for (ContribuableAvecImmeuble ctbImmeuble : listCtbImmeuble) {
-			final Contribuable ctb = (Contribuable) tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
+			final Tiers tiers = tiersService.getTiers(ctbImmeuble.getNumeroContribuable());
+			if (tiers == null) {
+				r.addErreurNoContribuableInvalide(ctbImmeuble, "Contribuable inexistant.");
+				continue;
+			}
+			else if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+				r.addErreurNoContribuableInvalide(ctbImmeuble, "Tiers non soumis au régime des personnes physiques.");
+				continue;
+			}
 
-			final PeriodeImposition pi = getPeriodeImpositionEnFinDePeriodeFiscale(ctb, anneePeriode, r);
+			final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
+			final PeriodeImpositionPersonnesPhysiques pi = getPeriodeImpositionEnFinDePeriodeFiscale(ctb, anneePeriode, r);
 			if (pi == null) {
 				r.addIgnoreCtbNonAssujetti(ctb, anneePeriode);
 			}
@@ -230,7 +242,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	 * @param r
 	 * @return la période d'imposition en fin de période fiscale s'il y en a une, <code>null</code> dans le cas contraire
 	 */
-	protected PeriodeImposition getPeriodeImpositionEnFinDePeriodeFiscale(Contribuable ctb, int periode, EnvoiAnnexeImmeubleResults r) {
+	protected PeriodeImpositionPersonnesPhysiques getPeriodeImpositionEnFinDePeriodeFiscale(ContribuableImpositionPersonnesPhysiques ctb, int periode, EnvoiAnnexeImmeubleResults r) {
 		List<PeriodeImposition> list = null;
 		try {
 			list = periodeImpositionService.determine(ctb, periode);
@@ -238,11 +250,12 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		catch (AssujettissementException e) {
 			r.addErrorException(ctb, e);
 		}
+
 		final RegDate date = RegDate.get(periode, 12, 31);
 		if (list != null) {
 			final PeriodeImposition periodeImposition = DateRangeHelper.rangeAt(list, date);
 			if (periodeImposition != null) {
-				return periodeImposition;
+				return (PeriodeImpositionPersonnesPhysiques) periodeImposition;
 			}
 		}
 

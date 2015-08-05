@@ -149,10 +149,12 @@ public class ImprimerDuplicataDeclarationImpotView {
 
 	public List<ModeleFeuilleDocumentEditique> getSelectedAnnexes() {
 		List<ModeleFeuilleDocumentEditique> annexes = null;
-		for (ModeleDocumentView modeleView : modelesDocumentView) {
-			if (modeleView.getTypeDocument() == selectedTypeDocument) {
-				annexes = modeleView.getModelesFeuilles();
-				break;
+		if (modelesDocumentView != null) {
+			for (ModeleDocumentView modeleView : modelesDocumentView) {
+				if (modeleView.getTypeDocument() == selectedTypeDocument) {
+					annexes = modeleView.getModelesFeuilles();
+					break;
+				}
 			}
 		}
 		return annexes;

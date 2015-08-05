@@ -37,6 +37,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
+import ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -58,6 +59,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationServiceImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -78,7 +80,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private MockTiersDAO tiersDAO;
 
 	@Override
-	public void onSetUp() {
+	public void onSetUp() throws Exception {
 
 		serviceCivil = new ProxyServiceCivil(serviceInfra);
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -109,6 +111,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		warmer.setServiceCivilService(serviceCivil);
 		warmer.setTiersDAO(tiersDAO);
 
+		final AssujettissementServiceImpl assujettissementService = new AssujettissementServiceImpl();
+		assujettissementService.setBouclementService(new BouclementServiceImpl());
+		assujettissementService.setValidationService(new ValidationServiceImpl());
+		assujettissementService.afterPropertiesSet();
+
 		tiersService = new TiersServiceImpl();
 		serviceInfra = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService(), tiersDAO);
 		servicePM = new DefaultMockServicePM();
@@ -118,7 +125,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiersService.setTiersDAO(tiersDAO);
 		tiersService.setServicePM(servicePM);
 		tiersService.setValidationService(null);
-		tiersService.setAssujettissementService(new AssujettissementServiceImpl());
+		tiersService.setAssujettissementService(assujettissementService);
 
 		avatarService = new AvatarServiceImpl();
 		avatarService.setTiersService(tiersService);

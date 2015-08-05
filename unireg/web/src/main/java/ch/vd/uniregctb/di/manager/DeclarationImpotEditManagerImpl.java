@@ -54,17 +54,20 @@ import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionHelper;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -105,7 +108,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
 		// on charge le tiers
-		final Contribuable contribuable = (Contribuable) tiersDAO.get(numero);
+		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tiersDAO.get(numero);
 		if (contribuable == null) {
 			throw new TiersNotFoundException(numero);
 		}
@@ -113,7 +116,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return calculateRangesProchainesDIs(contribuable);
 	}
 
-	protected List<PeriodeImposition> calculateRangesProchainesDIs(final Contribuable contribuable) throws ValidationException {
+	protected List<PeriodeImposition> calculateRangesProchainesDIs(final ContribuableImpositionPersonnesPhysiques contribuable) throws ValidationException {
 
 		// le contribuable doit être valide
 		final ValidationResults results = validationService.validate(contribuable);
@@ -139,7 +142,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		CollectionUtils.filter(ranges, new Predicate<PeriodeImposition>() {
 			@Override
 			public boolean evaluate(PeriodeImposition periode) {
-				return (!periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isOptionnelle();
+				return (!periode.isDeclarationRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isDeclarationOptionnelle();
 			}
 		});
 
@@ -159,7 +162,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return une liste de ranges (dans 95% des cas, un seul range), ou <b>null</b> s'il n'y a pas de déclarations à envoyer
 	 * @throws ValidationException
 	 */
-	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final Contribuable contribuable, int annee) throws ValidationException {
+	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final ContribuableImpositionPersonnesPhysiques contribuable, int annee) throws ValidationException {
 
 		// on calcul les périodes d'imposition du contribuable
 		final List<PeriodeImposition> periodes;
@@ -190,7 +193,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				}
 			}
 			if (!match) {
-				periodesNonAssociees.add(a);
+				periodesNonAssociees.add((PeriodeImpositionPersonnesPhysiques) a);
 			}
 		}
 
@@ -198,7 +201,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	public PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException {
+	public PeriodeImpositionPersonnesPhysiques checkRangeDi(ContribuableImpositionPersonnesPhysiques contribuable, DateRange range) throws ValidationException {
 
 		if (range.getDateDebut().year() != range.getDateFin().year()) {
 			throw new ValidationException(contribuable, "La déclaration doit tenir dans une année complète.");
@@ -220,8 +223,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		// on vérifie que la range spécifié correspond parfaitement avec l'assujettissement calculé
 
-		DateRange elu = null;
-		for (DateRange a : ranges) {
+		PeriodeImposition elu = null;
+		for (PeriodeImposition a : ranges) {
 			if (DateRangeHelper.intersect(a, range)) {
 				elu = a;
 				break;
@@ -256,7 +259,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 					+ "].");
 		}
 
-		return (PeriodeImposition) elu;
+		return (PeriodeImpositionPersonnesPhysiques) elu;
 	}
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -291,13 +294,17 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
-	                                                TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
-		// Création et sauvegarde de la DI
-		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		if (ctb == null) {
+	public EditiqueResultat envoieImpressionLocaleDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
+	                                                 TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+		final Tiers tiers = tiersDAO.get(ctbId);
+		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
+		if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
+			throw new DeclarationException("Le tiers n'est pas soumis au régime des personnes physiques");
+		}
+
+		final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 		if (tiersService.getOfficeImpotId(ctb) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
@@ -331,7 +338,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	protected DeclarationImpotOrdinaire creerNouvelleDI(Contribuable ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
+	protected DeclarationImpotOrdinaire creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
 	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
 		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 
@@ -408,10 +415,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 		di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 
-		final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, di.getDateFin().year());
-		di.setQualification(derniereQualification);
-
-		final Integer codeSegment = PeriodeImposition.determineCodeSegment(ctb, di.getDateFin().year());
+		final Integer codeSegment = PeriodeImpositionHelper.determineCodeSegment(ctb, di.getDateFin().year());
 		if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
 		}

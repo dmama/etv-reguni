@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
@@ -15,6 +14,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -129,16 +129,11 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 	}
 
-	private static void initTaxationPeriods(Taxpayer left, ch.vd.uniregctb.tiers.Contribuable contribuable, Context context)
-			throws ServiceException {
+	private static void initTaxationPeriods(Taxpayer left, ch.vd.uniregctb.tiers.Contribuable contribuable, Context context) throws ServiceException {
 
-		// [UNIREG-913] On n'expose pas les périodes fiscales avant la première période définie dans les paramètres
-		final int premierePeriodeFiscale = context.parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
-		final DateRangeHelper.Range range = new DateRangeHelper.Range(RegDate.get(premierePeriodeFiscale, 1, 1), RegDate.get(RegDate.get().year(), 12, 31));
-
-		final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;
+		final List<PeriodeImposition> list;
 		try {
-			list = context.periodeImpositionService.determine(contribuable, range);
+			list = context.periodeImpositionService.determine(contribuable);
 		}
 		catch (AssujettissementException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -146,7 +141,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 		if (list != null) {
 			TaxationPeriod derniere = null;
-			for (ch.vd.uniregctb.metier.assujettissement.PeriodeImposition p : list) {
+			for (PeriodeImposition p : list) {
 				final TaxationPeriod periode = TaxationPeriodBuilder.newTaxationPeriod(p);
 				left.getTaxationPeriods().add(periode);
 				derniere = periode;

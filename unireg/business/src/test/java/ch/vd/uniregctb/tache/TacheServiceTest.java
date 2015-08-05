@@ -45,6 +45,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
@@ -2881,8 +2882,9 @@ public class TacheServiceTest extends BusinessTest {
 
 		final PeriodeImposition periode0 = periodes.get(0);
 		assertNotNull(periode0);
-		assertTrue(periode0.isOptionnelle());
-		assertFalse(periode0.isRemplaceeParNote());
+		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periode0);
+		assertTrue(periode0.isDeclarationOptionnelle());
+		assertFalse(periode0.isDeclarationRemplaceeParNote());
 		assertFalse(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque les déclarations sont toutes optionnelles)
@@ -2907,8 +2909,9 @@ public class TacheServiceTest extends BusinessTest {
 
 		final PeriodeImposition periode0 = periodes.get(0);
 		assertNotNull(periode0);
-		assertFalse(periode0.isOptionnelle());
-		assertTrue(periode0.isRemplaceeParNote());
+		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periode0);
+		assertFalse(periode0.isDeclarationOptionnelle());
+		assertTrue(periode0.isDeclarationRemplaceeParNote());
 		assertFalse(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration est remplacée par une note)
@@ -2932,8 +2935,9 @@ public class TacheServiceTest extends BusinessTest {
 
 		final PeriodeImposition periode0 = periodes.get(0);
 		assertNotNull(periode0);
-		assertFalse(periode0.isOptionnelle());
-		assertFalse(periode0.isRemplaceeParNote());
+		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periode0);
+		assertFalse(periode0.isDeclarationOptionnelle());
+		assertFalse(periode0.isDeclarationRemplaceeParNote());
 		assertTrue(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration ne doit pas être envoyée par le canton)
