@@ -1173,7 +1173,7 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private int getPremierePeriodeFiscale() {
-		return parametres.getPremierePeriodeFiscale();
+		return parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class ValidationJobThread extends Thread {
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
 
-		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscale();
+		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 
 	@Override

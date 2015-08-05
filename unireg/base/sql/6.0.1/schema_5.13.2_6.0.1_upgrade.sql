@@ -179,3 +179,6 @@ RENAME S_PM TO S_CAAC;
 
 -- La nouvelle séquence S_PM gère les entreprises
 CREATE SEQUENCE S_PM START WITH 80000 INCREMENT BY 1;
+
+-- Renommage du paramètre "premierePeriodeFiscale" pour distinguer entre le cas des personnes physiques et celui des personnes morales
+UPDATE PARAMETRE SET NOM='premierePeriodeFiscalePersonnesPhysiques', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='premierePeriodeFiscale';

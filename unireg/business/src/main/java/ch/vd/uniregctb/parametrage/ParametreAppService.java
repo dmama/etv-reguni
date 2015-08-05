@@ -42,7 +42,9 @@ public interface ParametreAppService {
 
 	Integer[] getNouvelAn();
 
-	Integer getPremierePeriodeFiscale();
+	Integer getPremierePeriodeFiscalePersonnesPhysiques();
+
+	Integer getPremierePeriodeFiscalePersonnesMorales();
 
 	Integer[] getDateExclusionDecedeEnvoiDI();
 
@@ -97,7 +99,9 @@ public interface ParametreAppService {
 
 	void setNouvelAn(Integer[] val);
 
-	void setPremierePeriodeFiscale(Integer val);
+	void setPremierePeriodeFiscalePersonnesPhysiques(Integer val);
+
+	void setPremierePeriodeFiscalePersonnesMorales(Integer val);
 
 	void setAnneeMinimaleForDebiteur(Integer val);
 

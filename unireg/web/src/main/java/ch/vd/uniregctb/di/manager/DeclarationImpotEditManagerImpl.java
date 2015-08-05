@@ -122,7 +122,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		// [UNIREG-879] on limite la plage de création des DIs online à la période 'première période fiscale' -> 'année fiscale courante'
-		final int premiereAnnee = parametres.getPremierePeriodeFiscale();
+		final int premiereAnnee = parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 		final int derniereAnnee = RegDate.get().year();
 
 		final List<PeriodeImposition> ranges = new ArrayList<>();

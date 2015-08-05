@@ -11,13 +11,10 @@ import ch.vd.uniregctb.common.HibernateEntity;
 @Table(name = "PARAMETRE")
 public class ParametreApp extends HibernateEntity {
 
-	private static final long serialVersionUID = -2169764241907205702L;
-
 	private String nom;
 	private String valeur;
 
 	public ParametreApp () {
-
 	}
 
 	public ParametreApp (String nom, String valeur) {

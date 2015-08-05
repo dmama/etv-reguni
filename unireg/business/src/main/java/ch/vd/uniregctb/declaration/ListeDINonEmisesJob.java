@@ -62,8 +62,8 @@ public class ListeDINonEmisesJob extends JobDefinition {
 		if (annee >= RegDate.get().year()) {
 			throw new RuntimeException("La période fiscale ne peut être postérieure ou égale à l'année en cours.");
 		}
-		if (annee < paramsApp.getPremierePeriodeFiscale()) {
-			throw new RuntimeException("La période fiscale ne peut être antérieure à l'année " + paramsApp.getPremierePeriodeFiscale());
+		if (annee < paramsApp.getPremierePeriodeFiscalePersonnesPhysiques()) {
+			throw new RuntimeException("La période fiscale ne peut être antérieure à l'année " + paramsApp.getPremierePeriodeFiscalePersonnesPhysiques());
 		}
 
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui

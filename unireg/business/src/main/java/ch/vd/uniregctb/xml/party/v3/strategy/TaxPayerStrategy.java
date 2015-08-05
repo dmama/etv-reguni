@@ -144,7 +144,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			throws ServiceException {
 
 		// [UNIREG-913] On n'expose pas les périodes fiscales avant la première période définie dans les paramètres
-		final int premierePeriodeFiscale = context.parametreService.getPremierePeriodeFiscale();
+		final int premierePeriodeFiscale = context.parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
 		final DateRangeHelper.Range range = new DateRangeHelper.Range(RegDate.get(premierePeriodeFiscale, 1, 1), RegDate.get(RegDate.get().year(), 12, 31));
 
 		final List<ch.vd.uniregctb.metier.assujettissement.PeriodeImposition> list;

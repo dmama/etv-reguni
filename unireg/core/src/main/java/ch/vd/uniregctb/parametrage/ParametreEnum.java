@@ -8,7 +8,8 @@ import java.util.Arrays;
  */
 public enum ParametreEnum {
 
-	premierePeriodeFiscale("2003", Type.annee, false),
+	premierePeriodeFiscalePersonnesPhysiques("2003", Type.annee, false),
+	premierePeriodeFiscalePersonnesMorales("2009", Type.annee, false),
 
 	noel("25.12", Type.jourDansAnnee, false),
 	nouvelAn("01.01", Type.jourDansAnnee, false),

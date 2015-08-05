@@ -141,7 +141,7 @@ public class DeterminationDIsAEmettreProcessor {
 	private void checkParams(final int anneePeriode, final RegDate dateTraitement) throws DeclarationException {
 
 		// La période fiscale ne doit pas être antérieure à la première période fiscale paramétrée
-		final int premierePeriodeFiscale = parametres.getPremierePeriodeFiscale();
+		final int premierePeriodeFiscale = parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 		if (anneePeriode < premierePeriodeFiscale) {
 			throw new DeclarationException("La période fiscale " + anneePeriode
 					+ " est antérieure à la première période fiscale paramétrée [" + premierePeriodeFiscale + ']');

@@ -181,8 +181,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public Integer getPremierePeriodeFiscale() {
-		return Integer.parseInt(parametres.get(premierePeriodeFiscale).getValeur());
+	public Integer getPremierePeriodeFiscalePersonnesPhysiques() {
+		return Integer.parseInt(parametres.get(premierePeriodeFiscalePersonnesPhysiques).getValeur());
+	}
+
+	@Override
+	public Integer getPremierePeriodeFiscalePersonnesMorales() {
+		return Integer.parseInt(parametres.get(premierePeriodeFiscalePersonnesMorales).getValeur());
 	}
 
 	@Override
@@ -330,8 +335,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public void setPremierePeriodeFiscale(Integer val) {
-		setValeur(premierePeriodeFiscale, val.toString());
+	public void setPremierePeriodeFiscalePersonnesPhysiques(Integer val) {
+		setValeur(premierePeriodeFiscalePersonnesPhysiques, val.toString());
+	}
+
+	@Override
+	public void setPremierePeriodeFiscalePersonnesMorales(Integer val) {
+		setValeur(premierePeriodeFiscalePersonnesMorales, val.toString());
 	}
 
 	@Override

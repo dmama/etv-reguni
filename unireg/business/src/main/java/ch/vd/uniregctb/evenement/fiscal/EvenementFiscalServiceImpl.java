@@ -84,7 +84,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	}
 
 	private int getAnneePremierePeriodeFiscale() {
-		return parametres.getPremierePeriodeFiscale();
+		return parametres.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 
 	private boolean peutPublierEvenementFiscal(RegDate dateEvenement) {

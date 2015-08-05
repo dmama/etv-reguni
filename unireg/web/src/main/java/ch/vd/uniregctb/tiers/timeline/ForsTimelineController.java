@@ -426,6 +426,6 @@ public class ForsTimelineController {
 	}
 
 	public void setParametreAppService(ParametreAppService params) {
-		this.bigBang = RegDate.get(params.getPremierePeriodeFiscale(), 1, 1);
+		this.bigBang = RegDate.get(params.getPremierePeriodeFiscalePersonnesPhysiques(), 1, 1);
 	}
 }
