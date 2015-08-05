@@ -1,107 +1,18 @@
 package ch.vd.uniregctb.parametrage;
 
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.transaction.TransactionTemplate;
-
 /**
- * Classe métier representant les paramètres de l'application.
- *
- * @author xsifnr
+ * Classe de mock pour le service des paramètres applicatifs
  */
-public class ParametreAppServiceImpl implements ParametreAppService, InitializingBean {
+public final class MockParameterAppService implements ParametreAppService {
 
-	/**
-	 * Un logger pour {@link ParametreAppServiceImpl}
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(ParametreAppServiceImpl.class);
-
-	private ParametreAppDAO dao;
-	private PlatformTransactionManager transactionManager;
-
-	/**
-	 * C'est là que sont rangées toutes les valeurs...
-	 */
 	private final ParametreAppContainer container = new ParametreAppContainer();
 
-	/**
-	 * Initialisation des parametres
-	 *
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		assert dao != null;
-		assert transactionManager != null;
-
-		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
-		try {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-
-					// chargement des paramètres existants
-					final List<ParametreApp> fromDb = dao.getAll();
-					try {
-						container.load(fromDb);
-					}
-					catch (RuntimeException e) {
-						LOGGER.error("Exception au chargement des paramètres applicatifs depuis la base de données", e);
-						throw e;
-					}
-
-					// ajout des paramètres nouvellement créés et pas encore en base
-					for (ParametreEnum p : ParametreEnum.values()) {
-						if (!container.isPresent(p)) {
-							final ParametreApp pa = new ParametreApp(p.name(), p.getDefaut());
-							container.put(p, pa);
-							dao.save(pa);
-
-							LOGGER.info("Nouveau paramètre applicatif ajouté : " + p.name() + " (" + p.getDefaut() + ")");
-						}
-					}
-					return null;
-				}
-			});
-		}
-		finally {
-			AuthenticationHelper.popPrincipal();
-		}
+	public MockParameterAppService() {
+		container.initDefaults();
 	}
 
 	@Override
-	public void reset() {
-		container.reset();
-		save();
-	}
 
-	@Override
-	public void save() {
-		for (Pair<String, String> pair : container.getValues()) {
-			final ParametreApp pa = dao.get(pair.getKey());
-			pa.setValeur(pair.getValue());
-		}
-	}
-
-	public void setDao(ParametreAppDAO dao) {
-		this.dao = dao;
-	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-
-	@Override
 	public String getDefaut(ParametreEnum param) {
 		return container.getDefaut(param);
 	}
@@ -229,6 +140,16 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public Integer getAgeRentierHomme() {
 		return container.getAgeRentierHomme();
+	}
+
+	@Override
+	public void reset() {
+		container.reset();
+	}
+
+	@Override
+	public void save() {
+		// on ne fait rien...
 	}
 
 	@Override
