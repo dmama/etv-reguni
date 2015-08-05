@@ -53,7 +53,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	/**
 	 * Collections des motifs d'ouverture de for qui ne donnent normalement pas lieu à un début d'assujettissement
 	 * ou qui doivent, le cas échéant, laisser la priorité au motif d'ouverture du for "économique" - si existant à la même date - dans la méthode
-	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, Set) fusionnerMotifs}
+	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, boolean, Set) fusionnerMotifs}
 	 */
 	@SuppressWarnings({"deprecation"})
 	private static final Set<MotifFor> MOTIFS_NON_PRIO_OUVERTURE = EnumSet.of(MotifFor.INDETERMINE,
@@ -65,7 +65,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	/**
 	 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
 	 * ou qui doivent, le cas échéant, laisser la priorité au motif de fermeture du for "économique" - si existant à la même date - dans la méthode
-	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, Set) fusionnerMotifs}
+	 * {@link #fusionnerMotifs(RegDate, MotifFor, RegDate, MotifFor, boolean, Set) fusionnerMotifs}
 	 */
 	@SuppressWarnings({"deprecation"})
 	private static final Set<MotifFor> MOTIFS_NON_PRIO_FERMETURE = EnumSet.of(MotifFor.INDETERMINE,
@@ -122,7 +122,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			throw new IllegalArgumentException("L'un des deux fors au moins doit être non-nul, non ?");
 		}
 
-		// si les deux fors sont présents, on compare les autorités fiscales (normalement correcte puisque calculées par la migration
+		// si les deux fors sont présents, on compare les autorités fiscales (normalement correctes puisque calculées par la migration
 		// puis gérées correctement, mais bon, on n'est que rarement trop prudent...)
 		if (before != null && after != null && before.getDateFin() == after.getDateDebut().getOneDayBefore()) {
 
@@ -146,7 +146,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			throw new IllegalArgumentException("L'un des deux fors au moins doit être non-nul, non ?");
 		}
 
-		// si les deux fors sont présents, on compare les autorités fiscales (normalement correcte puisque calculées par la migration
+		// si les deux fors sont présents, on compare les autorités fiscales (normalement correctes puisque calculées par la migration
 		// puis gérées correctement, mais bon, on n'est que rarement trop prudent...)
 		if (before != null && after != null && before.getDateFin() == after.getDateDebut().getOneDayBefore()) {
 
@@ -278,7 +278,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 						                                                  current.getMotifRattachement()));
 					}
 
-					// le cas général, assujettissmeent
+					// le cas général, assujettissement
 					data = new Data(debut, fin, Type.Vaudois, current.getMotifOuverture(), current.getMotifFermeture(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				}
 			}
@@ -349,28 +349,6 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	@NotNull
 	private static RegDate getProchaineFinExercice(List<ExerciceCommercial> exercicesCommerciaux, @NotNull RegDate reference) throws AssujettissementException {
 		return getExerciceCommercialAt(exercicesCommerciaux, reference).getDateFin();
-	}
-
-	/**
-	 * @param exercicesCommerciaux la liste des exercices commerciaux d'une personne morale
-	 * @param reference une date de référence
-	 * @return la date de début de l'exercice commercial suivant l'exercice commercial en cours à la date de référence
-	 * @throws AssujettissementException en cas de problème
-	 */
-	@NotNull
-	private static RegDate getProchainDebutExercice(List<ExerciceCommercial> exercicesCommerciaux, @NotNull RegDate reference) throws AssujettissementException {
-		return getProchaineFinExercice(exercicesCommerciaux, reference).getOneDayAfter();
-	}
-
-	/**
-	 * @param exercicesCommerciaux la liste des exercices commerciaux d'une personne morale
-	 * @param reference une date de référence
-	 * @return la date de fin de l'exercice commercial précédant l'exercice commercial en cours à la date de référence
-	 * @throws AssujettissementException en cas de problème
-	 */
-	@NotNull
-	private static RegDate getDerniereFinExercice(List<ExerciceCommercial> exercicesCommerciaux, RegDate reference) throws AssujettissementException {
-		return getDernierDebutExercice(exercicesCommerciaux, reference).getOneDayBefore();
 	}
 
 	/**
