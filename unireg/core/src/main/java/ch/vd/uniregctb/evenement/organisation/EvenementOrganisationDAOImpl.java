@@ -60,7 +60,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		//final String hql = "from EvenementOrganisation as ec where ec.annulationDate is null and ec.noOrganisation in (:nosOrganisation)" + (nonTraitesSeulement ? " and ec.etat in (:etats)" : StringUtils.EMPTY);
 		Criteria query = getCurrentSession().createCriteria(EvenementOrganisation.class, "eo");
 		query.add(Restrictions.isNull("annulationDate"));
-		query.add(Restrictions.in("nosOrganisation", nosOrganisation));
+		query.add(Restrictions.in("noOrganisation", nosOrganisation));
 		if (nonTraitesSeulement) {
 			query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
 		}

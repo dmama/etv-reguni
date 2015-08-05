@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
@@ -44,6 +46,8 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public class EvenementOrganisationEsbHandler implements EsbMessageHandler, InitializingBean, SmartLifecycle {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationEsbHandler.class);
+
+	private static final String DEFAULT_BUSINESS_USER = "JMSEvtOrganisation-SansVisa";
 
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
@@ -98,7 +102,15 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		}
 		final long start = System.nanoTime();
 		try {
-			onEvenementOrganisation(message.getBodyAsSource());
+			final Source content = message.getBodyAsSource();
+			final String visaMutation = getVisaCreation(message);
+			AuthenticationHelper.pushPrincipal(visaMutation);
+			try {
+				onEvenementOrganisation(content);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
 		}
 		catch (EvenementOrganisationEsbException e) {
 			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
@@ -119,6 +131,21 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 			}
 		}
 	}
+
+	/**
+	 * @param msg message reçu (= événement organisation)
+	 * @return La chaîne de caractères à utiliser pour le visa de création de l'événement organisation en base Unireg
+	 */
+	public static String getVisaCreation(EsbMessage msg) {
+
+		final String bu = StringUtils.trimToNull(msg.getBusinessUser());
+		if (bu != null) {
+			return bu;
+		}
+
+		return DEFAULT_BUSINESS_USER;
+	}
+
 
 	/**
 	 * Déroulement des opérations :
