@@ -23,7 +23,7 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 
 	@NotNull
 	@Override
-	public EvenementOrganisationInterne create(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		return new EvenementOrganisationInterne(event, organisation, context, options) {
 
 			@NotNull
@@ -37,10 +37,5 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 				erreurs.addErreur(MSG);
 			}
 		};
-	}
-
-	@Override
-	public EvenementOrganisationInterne match(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
-		return create(event, organisation, context, options);
 	}
 }

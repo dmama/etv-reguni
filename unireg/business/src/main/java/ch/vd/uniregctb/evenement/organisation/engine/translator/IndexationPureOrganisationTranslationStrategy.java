@@ -23,7 +23,7 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 
 	@NotNull
 	@Override
-	public EvenementOrganisationInterne create(final EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
+	public EvenementOrganisationInterne matchAndCreate(final EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
 			throws EvenementOrganisationException {
 
 		return new EvenementOrganisationInterne(event, organisation, context, options) {
@@ -47,11 +47,5 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 				// rien à valider
 			}
 		};
-	}
-
-	@Override
-	public EvenementOrganisationInterne match(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
-			EvenementOrganisationException {
-		return create(event, organisation, context, options);
 	}
 }

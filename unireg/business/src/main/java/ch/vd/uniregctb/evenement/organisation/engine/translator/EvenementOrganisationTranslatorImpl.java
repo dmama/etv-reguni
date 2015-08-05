@@ -88,7 +88,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		final List<EvenementOrganisationInterne> evenements = createEvents(event, organisation, strategies, context, options);
 		if (evenements.size() == 0) {
-			return INDEXATION_ONLY.create(event, organisation, context, options);
+			return INDEXATION_ONLY.matchAndCreate(event, organisation, context, options);
 		}
 		else if (evenements.size() == 1) {
 			return evenements.get(0);
@@ -100,9 +100,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	                                                        EvenementOrganisationContext context,
 	                                                        EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
+		// TODO: Recupérer le contenu de l'événement (historique ou double snapshot)
+
+		/*
+			Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données.
+		 */
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			// FIXME: D'abord reconnaitre si la stratégie s'applique à l'événement!
-			evenements.add(strategy.create(event, organisation, context, options));
+			evenements.add(strategy.matchAndCreate(event, organisation, context, options));
 		}
 		return evenements;
 	}
