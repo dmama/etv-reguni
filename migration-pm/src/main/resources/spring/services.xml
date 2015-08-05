@@ -5,12 +5,20 @@
 
 	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
 		<property name="validationService" ref="validationService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
 		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="bouclementService" ref="bouclementService"/>
+		<property name="parametreAppService" ref="parametreAppService"/>
+	</bean>
+
+	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl">
+		<property name="transactionManager" ref="uniregTransactionManager"/>
+		<property name="dao" ref="parametreAppDAO"/>
 	</bean>
 
 	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">

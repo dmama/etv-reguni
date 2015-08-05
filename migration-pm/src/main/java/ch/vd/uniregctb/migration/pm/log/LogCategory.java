@@ -44,6 +44,11 @@ public enum LogCategory {
 	/**
 	 * Erreurs/messages liés à la migration des coordonnées financières
 	 */
-	COORDONNEES_FINANCIERES
+	COORDONNEES_FINANCIERES,
+
+	/**
+	 * Erreurs/messages liés aux assujettissements
+	 */
+	ASSUJETTISSEMENTS
 
 }

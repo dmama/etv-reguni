@@ -84,6 +84,9 @@ public abstract class LogStructure {
 		// Dans le log de suivi, on met tout le contexte
 		map.put(LogCategory.SUIVI, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement, donneesIndividu));
 
+		// Dans le log des assujettissements, on met le contexte de l'entreprise
+		map.put(LogCategory.ASSUJETTISSEMENTS, Arrays.asList(donneesNiveau, donneesEntreprise));
+
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.emptyList());
 

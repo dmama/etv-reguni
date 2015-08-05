@@ -31,4 +31,9 @@ public abstract class MigrationConstants {
 	 * Le contrôle et mise à jour des fors principaux en fonction des fors secondaires (il y a parfois des zones non-couvertes de fors secondaires)
 	 */
 	public static final int PHASE_COUVERTURE_FORS = 40;
+
+	/**
+	 * Le contrôle et mise à jour des fors principaux en fonction des fors secondaires (il y a parfois des zones non-couvertes de fors secondaires)
+	 */
+	public static final int PHASE_COMPARAISON_ASSUJETTISSEMENTS = 50;
 }

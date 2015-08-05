@@ -85,6 +85,17 @@
 		<appender-ref ref="DECLARATIONS"/>
 	</logger>
 
+	<appender name="ASSUJETTISSEMENTS" class="ch.qos.logback.core.FileAppender">
+		<file>log/assujettissements.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.ASSUJETTISSEMENTS" additivity="false">
+		<appender-ref ref="ASSUJETTISSEMENTS"/>
+	</logger>
+
 	<appender name="COORDONNEES_FINANCIERES" class="ch.qos.logback.core.FileAppender">
 		<file>log/coordonnees-financieres.csv</file>
 		<append>true</append>

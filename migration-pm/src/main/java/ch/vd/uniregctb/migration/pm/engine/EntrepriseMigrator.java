@@ -54,6 +54,9 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
@@ -68,6 +71,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
@@ -82,6 +86,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
@@ -123,12 +128,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
 	private final BouclementService bouclementService;
+	private final AssujettissementService assujettissementService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
 
-	public EntrepriseMigrator(UniregStore uniregStore, ActivityManager activityManager, BouclementService bouclementService, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper) {
+	public EntrepriseMigrator(UniregStore uniregStore,
+	                          ActivityManager activityManager,
+	                          BouclementService bouclementService,
+	                          AssujettissementService assujettissementService,
+	                          RCEntAdapter rcEntAdapter,
+	                          AdresseHelper adresseHelper) {
 		super(uniregStore, activityManager);
 		this.bouclementService = bouclementService;
+		this.assujettissementService = assujettissementService;
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 	}
@@ -152,6 +164,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static class CouvertureForsData {
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 		public CouvertureForsData(KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static class ComparaisonAssujettissementsData {
+		private final SortedSet<RegpmAssujettissement> regpmAssujettissements;
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		public ComparaisonAssujettissementsData(SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.regpmAssujettissements = regpmAssujettissements;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -180,26 +201,33 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// callbacks avant la fin des transactions
 		//
 
-		// enregistrement de la consolidation pour la constitution des fors "immeuble"
+		// consolidation pour la constitution des fors "immeuble"
 		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Immeuble.class,
 		                                        MigrationConstants.PHASE_FORS_IMMEUBLES,
 		                                        k -> k.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Immeuble(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
 		                                        d -> createForsSecondairesImmeuble(d, mr));
 
-		// enregistrement d'un callback pour le contrôle des fors secondaires après création
+		// callback pour le contrôle des fors secondaires après création
 		mr.registerPreTransactionCommitCallback(ControleForsSecondairesData.class,
 		                                        MigrationConstants.PHASE_CONTROLE_FORS_SECONDAIRES,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleForsSecondaires(d, mr));
 
-		// enregistrement d'un callback pour le contrôle (et la correction) de la couverture des fors secondaires par des fors principaux
+		// callback pour le contrôle (et la correction) de la couverture des fors secondaires par des fors principaux
 		mr.registerPreTransactionCommitCallback(CouvertureForsData.class,
 		                                        MigrationConstants.PHASE_COUVERTURE_FORS,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleCouvertureFors(d, mr));
+
+		// callback pour le contrôle des données d'assujettissement
+		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
+		                                        MigrationConstants.PHASE_COMPARAISON_ASSUJETTISSEMENTS,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> comparaisonAssujettissements(d, mr));
 		
 		//
 		// données "cachées" sur les entreprises
@@ -416,6 +444,65 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param data données d'identification de l'entreprise dont on veut contrôler l'assujettissement
+	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
+	 */
+	private void comparaisonAssujettissements(ComparaisonAssujettissementsData data, MigrationResultContextManipulation mr) {
+		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
+		doInLogContext(keyEntreprise, mr, () -> {
+			final Entreprise entreprise = data.entrepriseSupplier.get();
+			try {
+				// assujettissements ICC dans RegPM
+				final List<DateRange> lilic = data.regpmAssujettissements.stream()
+						.filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
+						.map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
+						.collect(Collectors.toList());
+				final List<DateRange> lilicIntersectant = new ArrayList<>(lilic.size());
+
+				// assujettissements calculés par Unireg
+				final List<Assujettissement> calcules = Optional.ofNullable(assujettissementService.determine(entreprise)).orElse(Collections.emptyList());
+				final List<Assujettissement> calculesIntersectant = new ArrayList<>(calcules.size());
+
+				// assujettissements complètement apparus
+				for (Assujettissement apparu : calcules) {
+					if (DateRangeHelper.intersect(apparu, lilic)) {
+						calculesIntersectant.add(apparu);
+					}
+					else {
+						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+						              String.format("Nouvelle période d'assujettissement apparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(apparu)));
+					}
+				}
+
+				// assujettissements complètement disparus
+				for (DateRange disparu : lilic) {
+					if (DateRangeHelper.intersect(disparu, calcules)) {
+						lilicIntersectant.add(disparu);
+					}
+					else {
+						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+						              String.format("Ancienne période d'assujettissement disparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(disparu)));
+					}
+				}
+
+				// les cas qui s'intersectent
+				if (!lilicIntersectant.isEmpty() || !calculesIntersectant.isEmpty()) {
+					if (!sameDateRanges(lilicIntersectant, calculesIntersectant)) {
+						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+						              String.format("Période(s) d'assujettissement modifiée(s) : avant (%s) et après (%s).",
+						                            toDisplayString(lilicIntersectant),
+						                            toDisplayString(calculesIntersectant)));
+					}
+				}
+			}
+			catch (AssujettissementException e) {
+				mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR, "Erreur rencontrée lors du calcul de l'assujettissement de l'entreprise.");
+				LOGGER.error("Exception lancée lors du calcul de l'assujettissement de l'entreprise " + entreprise.getNumero(), e);
+			}
+		});
+	}
+
+	/**
 	 * @param data donnée d'identification de l'entreprise dont la couverture des fors est à contrôler
 	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
 	 */
@@ -616,10 +703,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param l2 une autre liste de ranges
 	 * @return <code>true</code> si les listes contiennent les mêmes plages de dates
 	 */
-	private static boolean sameDateRanges(List<DateRange> l1, List<DateRange> l2) {
+	private static boolean sameDateRanges(List<? extends DateRange> l1, List<? extends DateRange> l2) {
 		boolean same = l1.size() == l2.size();
 		if (same) {
-			for (Iterator<DateRange> i1 = l1.iterator(), i2 = l2.iterator(); i1.hasNext() && i2.hasNext() && same; ) {
+			for (Iterator<? extends DateRange> i1 = l1.iterator(), i2 = l2.iterator(); i1.hasNext() && i2.hasNext() && same; ) {
 				final DateRange r1 = i1.next();
 				final DateRange r2 = i2.next();
 				same = DateRangeHelper.equals(r1, r2);
@@ -711,7 +798,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour un contrôle final de la couverture des fors secondaires par les fors principaux
 		mr.addPreTransactionCommitData(new CouvertureForsData(moi));
 
-		// TODO migrer les bouclements, les adresses, les documents...
+		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
+		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm.getAssujettissements(), moi));
+
+		// TODO migrer les adresses, les documents...
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
 
@@ -978,7 +1068,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Stream.Builder<RegDate> additionalDatesStreamBuilder = Stream.builder();
 			if (dateBouclementFutur != null) {
 				if (dateFinDernierExercice.addYears(1).compareTo(dateBouclementFutur) < 0) {
-					additionalDatesStreamBuilder.accept(dateFinDernierExercice.addYears(1));
+					final RegDate dateEstimee = dateBouclementFutur.addYears(-1);
+					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+					              String.format("Prise en compte d'une date de bouclement estimée au %s (un an avant la date de bouclement futur).", RegDateHelper.dateToDisplayString(dateEstimee)));
+					additionalDatesStreamBuilder.accept(dateEstimee);
 				}
 				additionalDatesStreamBuilder.accept(dateBouclementFutur);
 			}
@@ -989,19 +1082,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.collect(Collectors.toList());
 		}
 		else if (dateBouclementFutur != null) {
-			// TODO aucun exercice commercial... comment trouver la date de début de l'exercice en cours ?
+			// aucun exercice commercial, mais une date de bouclement futur -> ce sera le premier bouclement connu
 			datesBouclements = Collections.singletonList(dateBouclementFutur);
 		}
 		else {
-			// TODO que faire pour les entreprises qui n'ont ni exercices commerciaux ni date de bouclement futur ?
+			// entreprise sans exercice commercial ni bouclement futur -> ça se log...
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise sans exercice commercial ni date de bouclement futur.");
 			datesBouclements = Collections.emptyList();
 		}
 
 		// calcul des périodicités...
 		final List<Bouclement> bouclements = bouclementService.extractBouclementsDepuisDates(datesBouclements, 12);
-
-		// TODO sauvegarder ces bouclements et les associer à l'entreprise dans Unireg
-
+		bouclements.stream()
+				.peek(b -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                         String.format("Cycle de bouclements créé, applicable dès le %s : tous les %d mois, à partir du premier %s.",
+				                                       StringRenderers.DATE_RENDERER.toString(b.getDateDebut()),
+				                                       b.getPeriodeMois(),
+				                                       StringRenderers.DAYMONTH_RENDERER.toString(b.getAncrage()))))
+				.forEach(unireg::addBouclement);
 	}
 
 	@NotNull

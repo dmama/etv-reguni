@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.type.DayMonth;
 
 /**
  * Quelques implémentation de {@link ch.vd.uniregctb.common.StringRenderer} bien pratiques
@@ -22,5 +23,10 @@ public abstract class StringRenderers {
 	 */
 	public static final StringRenderer<DateRange> DATE_RANGE_RENDERER =
 			range -> String.format("[%s -> %s]", DATE_RENDERER.toString(range.getDateDebut()), DATE_RENDERER.toString(range.getDateFin()));
+
+	/**
+	 * Entité qui permet de dumper des valeurs de {@link DayMonth}
+	 */
+	public static final StringRenderer<DayMonth> DAYMONTH_RENDERER = dm -> String.format("%02d.%02d", dm.day(), dm.month());
 
 }
