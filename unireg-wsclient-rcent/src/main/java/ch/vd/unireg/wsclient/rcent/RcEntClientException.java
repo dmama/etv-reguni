@@ -37,21 +37,21 @@ public class RcEntClientException extends RuntimeException {
 	private static String buildShortMessage(ServerWebApplicationException e) {
 		final StringBuilder s = new StringBuilder();
 		s.append("Status ").append(e.getStatus());
-		final String title = extractTitle(e.getMessage());
+		final String title = extractMessage(e.getMessage());
 		if (title != null) {
 			s.append(" (").append(title).append(")");
 		}
 		return s.toString();
 	}
 
-	private static final Pattern TITLE_PATTERN = Pattern.compile(".*?<title>(.*?)</title>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private static final Pattern MESSAGE_PATTERN = Pattern.compile(".*<(?:eVD-0004:)?message>([^<]+)</(?:eVD-0004:)?message>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-	protected static String extractTitle(String html) {
-		if (StringUtils.isBlank(html)) {
+	protected static String extractMessage(String xml) {
+		if (StringUtils.isBlank(xml)) {
 			return null;
 		}
 
-		final Matcher matcher = TITLE_PATTERN.matcher(html);
+		final Matcher matcher = MESSAGE_PATTERN.matcher(xml);
 		if (matcher.matches()) {
 			return matcher.group(1);
 		}
