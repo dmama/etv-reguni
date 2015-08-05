@@ -125,7 +125,7 @@ public class BouclementServiceImpl implements BouclementService {
 		}
 
 		// première date de bouclement dans la périodicité active
-		final RegDate premiereDate = active.getValue().getAncrage().nextAfter(active.getKey());
+		final RegDate premiereDate = active.getValue().getAncrage().nextAfterOrEqual(active.getKey());
 		if (premiereDate.isBeforeOrEqual(derniereDateAcceptable)) {
 			// tout se passe dans la périodicité active
 			final int periodeMois = active.getValue().getPeriodeMois();

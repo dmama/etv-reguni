@@ -24,6 +24,10 @@ import ch.vd.uniregctb.type.FormeJuridique;
 @DiscriminatorValue("AutreCommunaute")
 public class AutreCommunaute extends ContribuableImpositionPersonnesMorales {
 
+	// Numéros générés pour AutreCommunauté et CollectiviteAdministrative
+	public static final int CAAC_GEN_FIRST_ID = 2000000;
+	public static final int CAAC_GEN_LAST_ID = 2999999;
+
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -13,7 +13,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class FractionnementsRole extends FractionnementsAssujettissement {
+public class FractionnementsRole extends FractionnementsAssujettissementPP {
 
 	private static final int PREMIERE_ANNEE_DECALAGE_FIN_MOIS_POUR_MIXTE2_PARTI_HC = 2014;
 

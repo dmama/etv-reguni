@@ -8,7 +8,7 @@ import ch.vd.uniregctb.metier.common.FractionSimple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.type.MotifFor;
 
-public class FractionnementsSource extends FractionnementsAssujettissement {
+public class FractionnementsSource extends FractionnementsAssujettissementPP {
 
 	public FractionnementsSource(List<ForFiscalPrincipalPP> principaux) {
 		super(principaux);

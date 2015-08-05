@@ -27,13 +27,9 @@ import ch.vd.uniregctb.common.ComparisonHelper;
 @DiscriminatorValue("Entreprise")
 public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
-	// Numéros migrés depuis SIMPA-PM
+	// Numéros migrés depuis SIMPA-PM puis générés pour les Entreprises
 	public static final int FIRST_ID = 1;
 	public static final int LAST_ID = 999999;
-
-	// Numéros générés pour AutreCommunauté et CollectiviteAdministrative
-	public static final int PM_GEN_FIRST_ID = 2000000;
-	public static final int PM_GEN_LAST_ID = 2999999;
 
 	/**
 	 * Numéro cantonal (= dans RCEnt)
@@ -43,6 +39,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<RegimeFiscal> regimesFiscaux;
 	private Set<DonneesRegistreCommerce> donneesRC;
 	private Set<AllegementFiscal> allegementsFiscaux;
+	private Set<Bouclement> bouclements;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -143,6 +140,28 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 		this.allegementsFiscaux.add(af);
 		af.setEntreprise(this);
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<Bouclement> getBouclements() {
+		return bouclements;
+	}
+
+	public void setBouclements(Set<Bouclement> bouclements) {
+		this.bouclements = bouclements;
+	}
+
+	public void addBouclement(Bouclement bouclement) {
+		if (bouclement.getEntreprise() != null && bouclement.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ce bouclement est déjà associé à une autre entreprise");
+		}
+
+		if (this.bouclements == null) {
+			this.bouclements = new HashSet<>();
+		}
+		this.bouclements.add(bouclement);
+		bouclement.setEntreprise(this);
 	}
 
 	public Entreprise() {

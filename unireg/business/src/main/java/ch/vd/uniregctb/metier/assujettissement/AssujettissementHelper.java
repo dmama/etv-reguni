@@ -9,9 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Quelques méthodes pratiques pour la manipulation de listes d'assujettissements
@@ -71,7 +75,7 @@ public abstract class AssujettissementHelper {
 	/**
 	 * Extrait la partie de l'assujettissement liée à l'année donnée
 	 * @param list l'assujettissement "complet"
-	 * @param annee l'année à considérer
+	 * @param annee l'année (civile) à considérer
 	 * @return la liste des assujettissements de l'année considérée
 	 */
 	public static List<Assujettissement> extractYear(List<Assujettissement> list, int annee) {
@@ -151,5 +155,40 @@ public abstract class AssujettissementHelper {
 				return ranged.isEmpty() ? null : ranged;
 			}
 		};
+	}
+
+	/**
+	 * @param one une date
+	 * @param two une autre date
+	 * @return si l'année de <i>two</i> est la suivante de celle de <i>one</i>
+	 */
+	public static boolean isYearSwitch(RegDate one, RegDate two) {
+		return one != null && two != null && two.year() == one.year() + 1;
+	}
+
+	/**
+	 * Asserte que les ranges ne se chevauchent pas.
+	 * @param ranges les ranges à tester, supposés triés
+	 * @throws AssujettissementException si deux ranges se chevauchent
+	 */
+	public static <T extends DateRange> void assertCoherenceRanges(List<T> ranges) throws AssujettissementException {
+		final MovingWindow<T> wnd = new MovingWindow<>(ranges);
+		while (wnd.hasNext()) {
+			final MovingWindow.Snapshot<T> snapshot = wnd.next();
+			final T next = snapshot.getNext();
+			if (next != null && DateRangeHelper.intersect(snapshot.getCurrent(), next)) {
+				throw new AssujettissementException("Le range [" + snapshot.getCurrent() + "] entre en collision avec le suivant [" + next + ']');
+			}
+		}
+	}
+
+	/**
+	 * @param tiers un tiers (a priori un contribuable...)
+	 * @param date une date de référence
+	 * @return <code>true</code> si le tiers possède un for principal hors Suisse à la date de référence
+	 */
+	public static boolean isForPrincipalHorsSuisse(Tiers tiers, RegDate date) {
+		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(date);
+		return ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
 	}
 }

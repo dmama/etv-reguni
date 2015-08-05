@@ -89,13 +89,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 		final boolean departHSEtArriveeHC = (this.motifFin == MotifFor.DEPART_HS && ((Assujettissement) next).motifDebut == MotifFor.ARRIVEE_HC);
 
 		// vente du dernier immeuble une année et rachat d'un autre l'année suivante
-		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifFor.VENTE_IMMOBILIER && ((Assujettissement) next).motifDebut == MotifFor.ACHAT_IMMOBILIER && isYearSwitch(this.dateFin, next.getDateDebut());
+		final boolean venteDernierImmeubleEtRachatAnneeSuivante = this.motifFin == MotifFor.VENTE_IMMOBILIER && ((Assujettissement) next).motifDebut == MotifFor.ACHAT_IMMOBILIER && AssujettissementHelper.isYearSwitch(this.dateFin, next.getDateDebut());
 
 		return !departHSEtArriveeHC && !venteDernierImmeubleEtRachatAnneeSuivante && getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next);
-	}
-
-	private static boolean isYearSwitch(RegDate one, RegDate two) {
-		return one != null && two != null && two.year() == one.year() + 1;
 	}
 
 	protected void setMotifDebut(@Nullable MotifFor motifDebut) {

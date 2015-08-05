@@ -26,13 +26,11 @@ import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
-import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -139,7 +137,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		final List<SourcierPur> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
 		final List<Assujettissement> assujettissements = fusionneAssujettissements(role, source);
-		assertCoherenceRanges(assujettissements);
+		AssujettissementHelper.assertCoherenceRanges(assujettissements);
 
 		return assujettissements.isEmpty() ? null : assujettissements;
 	}
@@ -153,24 +151,6 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	 */
 	private static List<Assujettissement> fusionneAssujettissements(List<Assujettissement> role, List<SourcierPur> source) {
 		return DateRangeHelper.override(new ArrayList<Assujettissement>(source), role, new OverrideAssujettissementCallback<>());
-	}
-
-	/**
-	 * Asserte que les ranges ne se chevauchent pas.
-	 *
-	 * @param ranges les ranges à tester
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	private static void assertCoherenceRanges(List<? extends DateRange> ranges) throws AssujettissementException {
-		DateRange previous = null;
-		for (DateRange current : ranges) {
-			if (previous != null) {
-				if (DateRangeHelper.intersect(previous, current)) {
-					throw new AssujettissementException("Le range [" + previous + "] entre en collision avec le suivant [" + current + ']');
-				}
-			}
-			previous = current;
-		}
 	}
 
 	@NotNull
@@ -384,7 +364,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		final DataList domicile = determineAssujettissementDomicile(fors.principauxPP, fractionnements, casParticuliers, noOfsCommunesVaudoises);
 		domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
-		assertCoherenceRanges(domicile);
+		AssujettissementHelper.assertCoherenceRanges(domicile);
 
 		final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
 		fusionne(domicile, economique);
@@ -644,7 +624,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		RegDate fin = data.fin;
 
 		if (debut != null) {
-			final Limites limites = Limites.determine(debut, debut, fractions);
+			final LimitesAssujettissement limites = LimitesAssujettissement.determine(debut, debut, fractions);
 			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
 
 			if (casParticuliers.isMenageCommun() && casParticuliers.hasMariage(debut.year())) {
@@ -659,7 +639,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 		}
 
 		if (fin != null) {
-			final Limites limites = Limites.determine(fin, fin, fractions);
+			final LimitesAssujettissement limites = LimitesAssujettissement.determine(fin, fin, fractions);
 			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
 			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().getDate();
 
@@ -695,75 +675,6 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 	}
 
 	/**
-	 * Limites de fractionnement à gauche et à droite d'une range déterminé.
-	 */
-	private static class Limites {
-
-		private Fraction left;
-		private Fraction right;
-
-		private Limites(Fraction left, Fraction right) {
-			this.left = left;
-			this.right = right;
-		}
-
-		public Fraction getLeft() {
-			return left;
-		}
-
-		public Fraction getRight() {
-			return right;
-		}
-
-		/**
-		 * Détermine les fractionnements immédiatement à gauche (borne inclue) et droite (borne exclue) du range de dates spécifié. Par principe, les fractions à l'intérieur du range sont ignorées.
-		 *
-		 * @param range     un range de dates
-		 * @param fractions une liste de fractions
-		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
-		 */
-		public static Limites determine(DateRange range, Fractionnements<ForFiscalPrincipalPP> fractions) {
-			return determine(range.getDateDebut(), range.getDateFin(), fractions);
-		}
-
-		/**
-		 * Détermine les fractionnements immédiatement à gauche (borne inclue) et droite (borne exclue) du range de dates spécifié. Par principe, les fractions à l'intérieur du range sont ignorées.
-		 *
-		 * @param dateDebut la date de début du range
-		 * @param dateFin   la date de fin du range
-		 * @param fractions une liste de fractions
-		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
-		 */
-		public static Limites determine(RegDate dateDebut, RegDate dateFin, Fractionnements<ForFiscalPrincipalPP> fractions) {
-
-			if (fractions.isEmpty()) {
-				return null;
-			}
-
-			Fraction left = null;
-			Fraction right = null;
-			for (Fraction f : fractions) {
-				if (dateDebut != null && f.getDate().isBeforeOrEqual(dateDebut)) {
-					if (left == null || left.getDate().isBefore(f.getDate())) {
-						left = f;
-					}
-				}
-				if (dateFin != null && f.getDate().isAfter(dateFin)) {
-					if (right == null || right.getDate().isAfter(f.getDate())) {
-						right = f;
-					}
-				}
-			}
-
-			if (left == null && right == null) {
-				return null;
-			}
-
-			return new Limites(left, right);
-		}
-	}
-
-	/**
 	 * Applique les régles de fractionnement sur l'assujettissement spécifié.
 	 *
 	 * @param a         un assujettissement
@@ -779,7 +690,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 		// on détermine les fractionnements immédiatement à gauche et droite du for principal à la source
 		// de l'assujettissement (logiquement, il n'est pas possible d'avoir un fractionnement à l'intérieur du for)
-		final Limites limites = Limites.determine(ffp, fractions);
+		final LimitesAssujettissement limites = LimitesAssujettissement.determine(ffp, fractions);
 		final Fraction left = (limites == null ? null : limites.getLeft());
 		final Fraction right = (limites == null ? null : limites.getRight());
 
@@ -1485,7 +1396,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
 			adebut = getDernier1Janvier(debut);
 		}
-		else if (isHorsSuisse(ffs.getTiers(), debut)) {
+		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ffs.getTiers(), debut)) {
 			adebut = debut;
 		}
 		else {
@@ -1501,7 +1412,7 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
 			afin = getDernier31Decembre(fin);
 		}
-		else if (isHorsSuisse(ffs.getTiers(), fin)) {
+		else if (AssujettissementHelper.isForPrincipalHorsSuisse(ffs.getTiers(), fin)) {
 			afin = fin;
 		}
 		else {
@@ -1531,16 +1442,6 @@ public class AssujettissementPersonnesPhysiquesCalculator implements Assujettiss
 
 	private static boolean isMariageOuDivorce(MotifFor motif) {
 		return motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT || motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION;
-	}
-
-	private static boolean isHorsSuisse(Tiers tiers, RegDate date) {
-		Set<ForFiscal> fors = tiers.getForsFiscaux();
-		for (ForFiscal f : fors) {
-			if (f.isPrincipal() && f.isValidAt(date)) {
-				return f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
-			}
-		}
-		return false;
 	}
 
 	/**

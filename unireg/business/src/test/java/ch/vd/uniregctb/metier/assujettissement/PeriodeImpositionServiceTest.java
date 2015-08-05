@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1378,8 +1379,11 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	public void testNombreCalculsAssujettissementPourCalculDesPeriodesImposition() throws Exception {
 
 		final ValidationService vs = getBean(ValidationService.class, "validationService");
+		final BouclementService bs = getBean(BouclementService.class, "bouclementService");
 		final AssujettissementServiceImpl assImpl = new AssujettissementServiceImpl();
 		assImpl.setValidationService(vs);
+		assImpl.setBouclementService(bs);
+		assImpl.afterPropertiesSet();
 
 		// construction d'un service d'assujettissement qui compte le nombre d'appels effectués aux méthodes "determineXXX"
 		final MutableInt compteurAppels = new MutableInt(0);

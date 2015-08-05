@@ -7,9 +7,9 @@ import ch.vd.uniregctb.metier.common.Fraction;
 import ch.vd.uniregctb.metier.common.Fractionnements;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 
-public abstract class FractionnementsAssujettissement extends Fractionnements<ForFiscalPrincipalPP> {
+public abstract class FractionnementsAssujettissementPP extends Fractionnements<ForFiscalPrincipalPP> {
 
-	protected FractionnementsAssujettissement(List<ForFiscalPrincipalPP> principaux) {
+	protected FractionnementsAssujettissementPP(List<ForFiscalPrincipalPP> principaux) {
 		super(principaux);
 	}
 

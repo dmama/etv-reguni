@@ -69,5 +69,5 @@ public interface DatabaseService {
 	 * collision avec des valeurs existantes dans la base. Il est utile d'appeler cette méthode après le chargement d'un fichier DBUnit, par
 	 * exemple.
 	 */
-	void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence);
+	void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updateCAACSequence, boolean updateDPISequence, boolean updatePMSequence, boolean updateETBSequence);
 }

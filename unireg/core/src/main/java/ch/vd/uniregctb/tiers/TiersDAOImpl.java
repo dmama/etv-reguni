@@ -1349,6 +1349,30 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(entreprise, allegement, ALLEGEMENT_FISCAL_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Entreprise, Bouclement> BOUCLEMENT_ACCESSOR = new EntityAccessor<Entreprise, Bouclement>() {
+		@Override
+		public Collection<Bouclement> getEntities(Entreprise tiers) {
+			return tiers.getBouclements();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, Bouclement entity) {
+			tiers.addBouclement(entity);
+		}
+
+		@Override
+		public void assertSame(Bouclement entity1, Bouclement entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getAncrage(), entity2.getAncrage());
+			Assert.isSame(entity1.getPeriodeMois(), entity2.getPeriodeMois());
+		}
+	};
+
+	@Override
+	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
+		return addAndSave(entreprise, bouclement, BOUCLEMENT_ACCESSOR);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {

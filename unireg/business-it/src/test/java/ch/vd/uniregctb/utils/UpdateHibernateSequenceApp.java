@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.utils;
 
-import ch.vd.uniregctb.common.CoreTestingConstants;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import ch.vd.uniregctb.common.CoreTestingConstants;
 import ch.vd.uniregctb.database.DatabaseService;
 
 /**
@@ -30,7 +30,7 @@ public class UpdateHibernateSequenceApp {
 
 		System.out.println("=> mise-à-jour de la séquence...");
 		DatabaseService dbService = (DatabaseService) context.getBean("databaseService");
-		dbService.ensureSequencesUpToDate(true, true, true);
+		dbService.ensureSequencesUpToDate(true, true, true, true, true);
 
 		System.out.println("=> terminé.");
 	}

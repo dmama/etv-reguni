@@ -368,6 +368,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement);
 
 	/**
+	 * Ajoute une nouvelle donnée de bouclement à l'entreprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param bouclement la donnée de bouclement à ajouter
+	 * @return une nouvelle instance de bouclement avec son ID renseigné
+	 */
+	Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement);
+
+	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
 	 *
 	 *

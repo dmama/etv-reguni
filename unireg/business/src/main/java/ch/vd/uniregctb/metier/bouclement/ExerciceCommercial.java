@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class ExerciceCommercial implements DateRange, Serializable {
 
-	private static final long serialVersionUID = -3906110232667675796L;
+	private static final long serialVersionUID = 4684660603465556391L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -32,5 +32,13 @@ public class ExerciceCommercial implements DateRange, Serializable {
 	@Override
 	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	@Override
+	public String toString() {
+		return "ExerciceCommercial{" +
+				"dateDebut=" + dateDebut +
+				", dateFin=" + dateFin +
+				'}';
 	}
 }

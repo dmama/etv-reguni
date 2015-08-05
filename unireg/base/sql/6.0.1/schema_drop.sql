@@ -100,6 +100,8 @@ drop sequence S_MIGR_PM;
 
 drop sequence S_PM;
 
+drop sequence S_CAAC;
+
 drop sequence S_DPI;
 
 drop sequence S_CTB;

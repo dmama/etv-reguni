@@ -225,7 +225,8 @@
 	</bean>
 
 	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
-		<property name="validationService" ref="validationService" />
+		<property name="validationService" ref="validationService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
@@ -243,6 +244,8 @@
 	</bean>
 
 	<bean id="validationService" class="ch.vd.uniregctb.validation.ValidationServiceImpl" />
+
+	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
 
 	<bean id="entityValidator" class="ch.vd.uniregctb.validation.EntityValidatorImpl" abstract="true">
 		<property name="validationService" ref="validationService" />

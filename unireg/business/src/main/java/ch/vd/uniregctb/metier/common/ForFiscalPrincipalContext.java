@@ -93,6 +93,9 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		return previouses;
 	}
 
+	/**
+	 * @return une nouvelle instance de contexte (l'instance source n'est pas modifiée) correspondant à un glissement d'un for à droite (= vers le futur)
+	 */
 	public ForFiscalPrincipalContext<FFP> slideToNext() {
 		if (current == null) {
 			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");
@@ -105,6 +108,9 @@ public final class ForFiscalPrincipalContext<FFP extends ForFiscalPrincipal> {
 		return new ForFiscalPrincipalContext<>(newCurrent, newNext, newPrevious);
 	}
 
+	/**
+	 * @return une nouvelle instance de contexte (l'instance source n'est pas modifiée) correspondant à un glissement d'un for à gauche (= vers le passé)
+	 */
 	public ForFiscalPrincipalContext<FFP> slideToPrevious() {
 		if (current == null) {
 			throw new IllegalStateException("Je refuse de glisser vers l'abîme !");

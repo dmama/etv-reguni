@@ -17,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -206,10 +205,9 @@ public class TiersDAOTest extends CoreDAOTest {
 	/**
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
-	@ExpectedException(IllegalArgumentException.class)
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNumeroEntrepriseNOK() throws Exception {
+	public void testNumeroEntreprise() throws Exception {
 		insertAndTestNumeroTiers(new Entreprise(), Entreprise.FIRST_ID, Entreprise.LAST_ID);
 	}
 
@@ -218,23 +216,10 @@ public class TiersDAOTest extends CoreDAOTest {
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNumeroEntrepriseOK() throws Exception {
-
-		Entreprise ent = new Entreprise();
-		ent.setNumero(1004L);
-		insertAndTestNumeroTiers(ent, Entreprise.FIRST_ID, Entreprise.LAST_ID);
-	}
-
-	/**
-	 * Teste que les numéros générés pour les Tiers est dans le bon range
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroAutreCommunaute() throws Exception {
-
-		AutreCommunaute ac = new AutreCommunaute();
+		final AutreCommunaute ac = new AutreCommunaute();
 		ac.setNom("Une entreprise super");
-		insertAndTestNumeroTiers(ac, Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID);
+		insertAndTestNumeroTiers(ac, AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID);
 	}
 
 	/**
@@ -243,8 +228,16 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testNumeroCollectiviteAdministrative() throws Exception {
+		insertAndTestNumeroTiers(new CollectiviteAdministrative(), AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID);
+	}
 
-		insertAndTestNumeroTiers(new CollectiviteAdministrative(), Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID);
+	/**
+	 * Teste que les numéros générés pour les Tiers est dans le bon range
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNumeroEtablissement() throws Exception {
+		insertAndTestNumeroTiers(new Etablissement(), Etablissement.ETB_GEN_FIRST_ID, Etablissement.ETB_GEN_LAST_ID);
 	}
 
 	/**

@@ -154,7 +154,7 @@ public abstract class BusinessItTestApplication {
 		}
 		loadDataSet(file);
 
-		databaseService.ensureSequencesUpToDate(true, true, true);
+		databaseService.ensureSequencesUpToDate(true, true, true, true, true);
 	}
 
 	/**

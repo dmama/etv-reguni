@@ -150,6 +150,23 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		Assert.assertEquals(date(2016, 12, 31), service.getDateDernierBouclement(bouclements, date(2017, 6, 30), false));
 	}
 
+	@Test
+	public void testDateDernierBouclementAncrageOnDateDebut() throws Exception {
+		// dates des bouclements attendues 31.03.2013, 31.03.2014...
+		final List<Bouclement> bouclements = Collections.singletonList(buildTransientBouclement(date(2013, 3, 31), DayMonth.get(3, 31), 12));
+
+		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), true));
+		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 12), false));
+		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), true));
+		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 30), false));
+		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 3, 31), true));
+		Assert.assertNull(service.getDateDernierBouclement(bouclements, date(2013, 3, 31), false));
+		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), true));
+		Assert.assertEquals(date(2013, 3, 31), service.getDateDernierBouclement(bouclements, date(2013, 5, 12), false));
+		Assert.assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), true));
+		Assert.assertEquals(date(2014, 3, 31), service.getDateDernierBouclement(bouclements, date(2014, 5, 12), false));
+	}
+
 	/**
 	 * Un peu tordu = la période suivante a une date de début au beau milieu d'un cycle de la période précédente
 	 */

@@ -342,6 +342,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
+		return target.addAndSave(entreprise, bouclement);
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}

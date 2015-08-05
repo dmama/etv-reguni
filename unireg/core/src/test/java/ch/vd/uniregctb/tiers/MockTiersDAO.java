@@ -27,21 +27,21 @@ public class MockTiersDAO implements TiersDAO {
 
 	private static List<CollectiviteAdministrative> buildOidMap() {
 		final List<CollectiviteAdministrative> list = new ArrayList<>();
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID, 1, 1, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 4, 5, 2, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 5, 6, 3, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 6, 7, 4, 1));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 7, 8, 5, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 8, 9, 6, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 9, 10, 7, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 10, 11, 8, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 11, 12, 9, 2));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 12, 13, 10, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 14, 15, 11, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 15, 16, 12, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 16, 17, 13, null));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 17, 18, 14, 3));
-		list.add(new CollectiviteAdministrative((long) Entreprise.PM_GEN_FIRST_ID + 18, 19, 15, 4));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID, 1, 1, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 4, 5, 2, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 5, 6, 3, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 6, 7, 4, 1));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 7, 8, 5, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 8, 9, 6, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 9, 10, 7, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 10, 11, 8, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 11, 12, 9, 2));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 12, 13, 10, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 14, 15, 11, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 15, 16, 12, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 16, 17, 13, null));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 17, 18, 14, 3));
+		list.add(new CollectiviteAdministrative((long) AutreCommunaute.CAAC_GEN_FIRST_ID + 18, 19, 15, 4));
 		return Collections.unmodifiableList(list);
 	}
 
@@ -306,6 +306,11 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public AllegementFiscal addAndSave(Entreprise entreprise, AllegementFiscal allegement) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
 		throw new NotImplementedException();
 	}
 

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.hibernate.FillHoleGenerator;
  * @author xciabi
  *
  */
+@SuppressWarnings("unused")
 public class TiersMultiSequenceGenerator implements Configurable, PersistentIdentifierGenerator {
 
 	/**
@@ -31,11 +32,13 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 	private static final String CTB_SEQ_NAME = "S_CTB";
 	private static final String DPI_SEQ_NAME = "S_DPI";
+	private static final String CAAC_SEQ_NAME = "S_CAAC";
 	private static final String PM_SEQ_NAME = "S_PM";
 	private static final String ETB_SEQ_NAME = "S_ETB";
 
 	private FillHoleGenerator ctbGenerator;
 	private PersistentIdentifierGenerator dpiGenerator;
+	private PersistentIdentifierGenerator caacGenerator;
 	private PersistentIdentifierGenerator pmGenerator;
 	private PersistentIdentifierGenerator etbGenerator;
 
@@ -54,7 +57,8 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
 
 		dpiGenerator = createSequence(type, params, dialect, DebiteurPrestationImposable.FIRST_ID, DPI_SEQ_NAME);
-		pmGenerator = createSequence(type, params, dialect, Entreprise.PM_GEN_FIRST_ID, PM_SEQ_NAME);
+		caacGenerator = createSequence(type, params, dialect, AutreCommunaute.CAAC_GEN_FIRST_ID, CAAC_SEQ_NAME);
+		pmGenerator = createSequence(type, params, dialect, Entreprise.FIRST_ID, PM_SEQ_NAME);
 		etbGenerator = createSequence(type, params, dialect, Etablissement.ETB_GEN_FIRST_ID, ETB_SEQ_NAME);
 
 		ctbGenerator = new FillHoleGenerator("TIERS", CTB_SEQ_NAME, ContribuableImpositionPersonnesPhysiques.CTB_GEN_FIRST_ID, ContribuableImpositionPersonnesPhysiques.CTB_GEN_LAST_ID);
@@ -96,7 +100,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 			}
 			// De 2'000'000 à 2'999'999
 			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute) {
-				assertIdBetween(Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID, numeroTiers, object);
+				assertIdBetween(AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID, numeroTiers, object);
 			}
 			// De 3'000'000 à 3'999'999
 			else if (object instanceof Etablissement) {
@@ -113,10 +117,8 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 		}
 		else {
 			// Les Entreprise migrées ont un numéro de 1 à 999'999
-			// Ce numéro vient de SIMPA-PM
 			if (object instanceof Entreprise) {
-				Assert.fail("Pas de génération de numéros pour les Entreprise");
-				sequenceNumber = null;
+				sequenceNumber = pmGenerator.generate(session, object);
 			}
 			//
 			// Les DPI migrés ont des numéros de 1'000'000 à 1'500'000
@@ -127,7 +129,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 			}
 			// De 2'000'000 à 2'999'999
 			else if (object instanceof CollectiviteAdministrative || object instanceof AutreCommunaute) {
-				sequenceNumber = pmGenerator.generate(session, object);
+				sequenceNumber = caacGenerator.generate(session, object);
 			}
 			// De 3'000'000 à 3'999'999
 			else if (object instanceof Etablissement) {
@@ -167,6 +169,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 		final List<String> sqlDropStrings = new ArrayList<>();
 		sqlDropStrings.addAll(Arrays.asList(pmGenerator.sqlDropStrings(dialect)));
+		sqlDropStrings.addAll(Arrays.asList(caacGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(dpiGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(ctbGenerator.sqlDropStrings(dialect)));
 		sqlDropStrings.addAll(Arrays.asList(etbGenerator.sqlDropStrings(dialect)));
@@ -186,6 +189,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 
 		List<String> sqlCreateStrings = new ArrayList<>();
 		sqlCreateStrings.addAll(Arrays.asList(pmGenerator.sqlCreateStrings(dialect)));
+		sqlCreateStrings.addAll(Arrays.asList(caacGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(dpiGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(ctbGenerator.sqlCreateStrings(dialect)));
 		sqlCreateStrings.addAll(Arrays.asList(etbGenerator.sqlCreateStrings(dialect)));

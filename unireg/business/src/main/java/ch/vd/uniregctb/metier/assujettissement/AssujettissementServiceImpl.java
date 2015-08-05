@@ -8,9 +8,11 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -24,21 +26,26 @@ import ch.vd.uniregctb.validation.ValidationService;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class AssujettissementServiceImpl implements AssujettissementService {
+public class AssujettissementServiceImpl implements AssujettissementService, InitializingBean {
 
 	private ValidationService validationService = null;
+	private BouclementService bouclementService;
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
 	}
 
+	public void setBouclementService(BouclementService bouclementService) {
+		this.bouclementService = bouclementService;
+	}
+
 	/**
 	 * Map des calculateurs d'assujettissement disponibles, indexée par la classe (concrète) de contribuable à laquelle ils se rapportent
 	 */
-	private static final Map<Class<? extends Contribuable>, AssujettissementCalculator<?>> CALCULATORS = buildAssujettissementCalculators();
+	private Map<Class<? extends Contribuable>, AssujettissementCalculator<?>> calculators;
 
 	/**
-	 * Méthode intermédiaire qui sert juste à s'assurer que ce qui est inséré dans la map des {@link #CALCULATORS} est correct
+	 * Méthode intermédiaire qui sert juste à s'assurer que ce qui est inséré dans la map des {@link #calculators} est correct
 	 * (notamment le lien entre la clé et la valeur, pour ce qui est des types)
 	 * @param map map à remplir
 	 * @param clazz classe (concrete) de contribuable
@@ -59,7 +66,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * Construction initiale de la map des calculateurs d'assujettissement
 	 * @return la map qui lie les classes de contribuables à leur calculateur d'assujettissement attitré
 	 */
-	private static Map<Class<? extends Contribuable>, AssujettissementCalculator<?>> buildAssujettissementCalculators() {
+	private Map<Class<? extends Contribuable>, AssujettissementCalculator<?>> buildAssujettissementCalculators() {
 		final Map<Class<? extends Contribuable>, AssujettissementCalculator<?>> map = new HashMap<>();
 
 		//
@@ -74,10 +81,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// les entreprises sont assujetties selon le régime des personnes morales
 		//
 
-		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator();
+		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator(bouclementService);
 		addAssujettissementCalculator(map, Entreprise.class, pmCalculator);
 
 		return map;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.calculators = buildAssujettissementCalculators();
 	}
 
 	@Override
@@ -136,9 +148,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	@Nullable
-	private static <T extends Contribuable> AssujettissementCalculator<? super T> findCalculator(T ctb) {
+	private <T extends Contribuable> AssujettissementCalculator<? super T> findCalculator(T ctb) {
 		//noinspection unchecked
-		return (AssujettissementCalculator<? super T>) CALCULATORS.get(ctb.getClass());
+		return (AssujettissementCalculator<? super T>) calculators.get(ctb.getClass());
 	}
 
 	/**

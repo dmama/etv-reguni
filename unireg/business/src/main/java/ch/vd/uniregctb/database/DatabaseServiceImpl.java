@@ -51,8 +51,10 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DatabaseServiceImpl implements DatabaseService {
@@ -71,18 +73,29 @@ public class DatabaseServiceImpl implements DatabaseService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence) {
+	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updateCAACSequence, boolean updateDPISequence, boolean updatePMSequence, boolean updateETBSequence) {
 
 		if (updateHibernateSequence) {
 			final long maxIdAllEntities = getMaxIdOfAllHibernateEntities();
 			updateSequence("hibernate_sequence", maxIdAllEntities);
 		}
 
+		if (updateCAACSequence) {
+			final long maxIdS_CAAC = Math.max(AutreCommunaute.CAAC_GEN_FIRST_ID, getMaxIdOfTiers("'AutreCommunaute','CollectiviteAdministrative'"));
+			assertMaxId("S_CAAC", AutreCommunaute.CAAC_GEN_FIRST_ID, AutreCommunaute.CAAC_GEN_LAST_ID, maxIdS_CAAC);
+			updateSequence("S_CAAC", maxIdS_CAAC);
+		}
+
 		if (updatePMSequence) {
-			final long maxIdS_PM = Math.max(Entreprise.PM_GEN_FIRST_ID,
-					getMaxIdOfTiers("'Entreprise','Etablissement','AutreCommunaute','CollectiviteAdministrative'"));
-			assertMaxId("S_PM", Entreprise.PM_GEN_FIRST_ID, Entreprise.PM_GEN_LAST_ID, maxIdS_PM);
+			final long maxIdS_PM = Math.max(Entreprise.FIRST_ID, getMaxIdOfTiers("'Entreprise'"));
+			assertMaxId("S_PM", Entreprise.FIRST_ID, Entreprise.FIRST_ID, maxIdS_PM);
 			updateSequence("S_PM", maxIdS_PM);
+		}
+
+		if (updateETBSequence) {
+			final long maxIdS_ETB = Math.max(Etablissement.ETB_GEN_FIRST_ID, getMaxIdOfTiers("'Etablissement'"));
+			assertMaxId("S_ETB", Etablissement.ETB_GEN_FIRST_ID, Etablissement.ETB_GEN_LAST_ID, maxIdS_ETB);
+			updateSequence("S_ETB", maxIdS_ETB);
 		}
 
 		if (updateDPISequence) {

@@ -72,10 +72,12 @@ import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ConseilLegal;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -86,6 +88,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -101,6 +104,7 @@ import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1007,6 +1011,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ent;
 	}
 
+	protected Entreprise addEntrepriseConnueAuCivil(long idCantonal) {
+		final Entreprise ent = new Entreprise();
+		ent.setNumeroEntreprise(idCantonal);
+		return merge(ent);
+	}
+
+	protected Entreprise addEntrepriseInconnueAuCivil() {
+		final Entreprise ent = new Entreprise();
+		return merge(ent);
+	}
+
 	protected CollectiviteAdministrative addCollAdm(int numero) {
 		final CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(numero);
@@ -1191,6 +1206,29 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		decision.setRemarque(remarque);
 		decision = tiersDAO.addAndSave(contribuable, decision);
 		return decision;
+	}
+
+	protected Bouclement addBouclement(Entreprise e, RegDate dateDebut, DayMonth ancrage, int periodeEnMois) {
+		final Bouclement bouclement = new Bouclement();
+		bouclement.setAncrage(ancrage);
+		bouclement.setDateDebut(dateDebut);
+		bouclement.setPeriodeMois(periodeEnMois);
+		return tiersDAO.addAndSave(e, bouclement);
+	}
+
+	protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales ctb, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
+	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif) {
+
+		final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+		ffp.setDateDebut(ouverture);
+		ffp.setMotifOuverture(motifOuverture);
+		ffp.setDateFin(fermeture);
+		ffp.setMotifFermeture(motifFermeture);
+		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp.setTypeAutoriteFiscale(type);
+		ffp.setNumeroOfsAutoriteFiscale(noOFS);
+		ffp.setMotifRattachement(motif);
+		return tiersDAO.addAndSave(ctb, ffp);
 	}
 
 	/**

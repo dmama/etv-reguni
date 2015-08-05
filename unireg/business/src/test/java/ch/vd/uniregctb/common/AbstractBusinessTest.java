@@ -50,11 +50,13 @@ import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
@@ -353,11 +355,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      */
     protected <T> T doInNewTransactionAndSessionWithoutValidation(final TransactionCallback<T> action) throws Exception {
 	    return doWithoutValidation(new ExecuteCallback<T>() {
-		    @Override
-		    public T execute() throws Exception {
-			    return doInNewTransactionAndSession(action);
-		    }
-	    });
+            @Override
+            public T execute() throws Exception {
+                return doInNewTransactionAndSession(action);
+            }
+        });
     }
 
 	protected <T> T doInNewTransactionAndSessionUnderSwitch(Switchable switchable, boolean switchValue, final TransactionCallback<T> action) throws Exception {
@@ -567,6 +569,71 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected ForFiscalPrincipalPP addForPrincipal(ContribuableImpositionPersonnesPhysiques contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
                                                    MotifRattachement motifRattachement) {
         final ForFiscalPrincipalPP ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
+        ffp.setMotifRattachement(motifRattachement);
+        return ffp;
+    }
+
+    /**
+     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
+        TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, MotifRattachement.DOMICILE);
+    }
+
+    /**
+     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune, MotifRattachement motifRattachement) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, motifRattachement);
+    }
+
+    /**
+     * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture,
+                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE);
+    }
+
+    /**
+     * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture,
+                                                   @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement) {
+        final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement);
+    }
+
+    /**
+     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockPays pays) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, pays, MotifRattachement.DOMICILE);
+    }
+
+    /**
+     * Ajoute un for principal ouvert à l'étranger sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, MockPays pays, MotifRattachement motifRattachement) {
+        assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, motifRattachement);
+    }
+
+    /**
+     * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture, MockPays pays) {
+        assertFalse("Il faut spécifier la commune pour les fors en Suisse", "CH".equals(pays.getSigleOFS()));
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
+    }
+
+	/**
+     * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode de rattachement spécifié
+     */
+    protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,
+                                                   MotifRattachement motifRattachement) {
+        final ForFiscalPrincipalPM ffp = addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays);
         ffp.setMotifRattachement(motifRattachement);
         return ffp;
     }
