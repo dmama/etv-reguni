@@ -274,6 +274,19 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	}
 
 	@Test
+	public void testExtractionExercicesCommerciauxEnAbsenceDeBouclement() throws Exception {
+		final DateRange range = new DateRangeHelper.Range(date(2003, 6, 12), date(2006, 2, 14));
+		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range);
+		Assert.assertNotNull(exs);
+		Assert.assertEquals(1, exs.size());
+
+		final ExerciceCommercial ex = exs.get(0);
+		Assert.assertNotNull(ex);
+		Assert.assertEquals(range.getDateDebut(), ex.getDateDebut());
+		Assert.assertEquals(range.getDateFin(), ex.getDateFin());
+	}
+
+	@Test
 	public void testExtractionExercicesCommerciaux() throws Exception {
 		// exercices commerciaux attendus : ... -> 31.03.2015, 01.04.2015 -> 30.09.2016, 01.10.2016 -> 30.09.2017, ...
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),

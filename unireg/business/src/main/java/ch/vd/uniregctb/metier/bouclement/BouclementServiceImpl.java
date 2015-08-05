@@ -163,6 +163,10 @@ public class BouclementServiceImpl implements BouclementService {
 		while (fin.isBefore(range.getDateFin())) {
 			final RegDate debut = fin.getOneDayAfter();
 			fin = getDateProchainBouclement(map, debut, true);
+			if (fin == null) {
+				// cela signifie en fait qu'il n'y a aucun bouclement... le range retourné est donc assez arbitraire !
+				fin = range.getDateFin();
+			}
 			liste.add(new ExerciceCommercial(debut, fin));
 		}
 
