@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
@@ -21,11 +22,11 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
-import ch.vd.evd0001.v5.ObjectFactory;
 import ch.vd.evd0022.v1.Header;
 import ch.vd.evd0022.v1.Notice;
 import ch.vd.evd0022.v1.NoticeOrganisation;
 import ch.vd.evd0022.v1.NoticeRoot;
+import ch.vd.evd0024.v1.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
@@ -43,11 +44,6 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public class EvenementOrganisationEsbHandler implements EsbMessageHandler, InitializingBean, SmartLifecycle {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationEsbHandler.class);
-
-	/*
-		Configuration des schémas applicables pour le décodage des annonces RCEnt
-	 */
-	private static final String[] RCENT_XSDS = new String[]{"eVD-0021-1-0.xsd", "eVD-0022-1-0.xsd", "eVD-0023-1-0.xsd", "eVD-0024-1-0.xsd"};
 
 	private Schema schemaCache;
 	private JAXBContext jaxbContext;
@@ -290,7 +286,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 	private NoticeRoot parse(Source xml) throws JAXBException, SAXException, IOException {
 		final Unmarshaller u = jaxbContext.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		return (NoticeRoot) u.unmarshal(xml);
+		return (NoticeRoot) ((JAXBElement) u.unmarshal(xml)).getValue();
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {
@@ -304,7 +300,7 @@ public class EvenementOrganisationEsbHandler implements EsbMessageHandler, Initi
 		if (schemaCache == null) {
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
-			final Source[] source = getClasspathSources(RCENT_XSDS);
+			final Source[] source = getClasspathSources(EvenementOrganisationConversionHelper.RCENT_SCHEMA);
 			schemaCache = sf.newSchema(source);
 		}
 	}

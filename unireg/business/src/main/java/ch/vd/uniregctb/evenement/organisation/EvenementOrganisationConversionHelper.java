@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 import ch.vd.evd0022.v1.Header;
 import ch.vd.evd0022.v1.Notice;
 import ch.vd.evd0022.v1.SenderIdentification;
@@ -11,15 +14,35 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 /**
  * Classe utilitaire aidant à la prise en charge directe des données au format RCEnt.
  * <p>
- * En effet, il se trouve qu'on effectue le décodage des événements dans le package "business", alors que le format de données exposé par RCEnt ne devrait en principe pas sortir du package
- * "interface". Seulement, décoder ces données au niveau de "interface" implique: - soit convertir dans un format intermédiaire converti ensuite par "business" en donnée de persistence - soit
- * convertir directement dans le format de persistence, ce qui aurait l'effet de lier "interface" à business. Ce que l'on veut éviter à tout prix.
+ * En effet, il se trouve qu'on effectue le décodage des événements dans le package "business", alors que le format de données exposé par RCEnt ne devrait
+ * en principe pas sortir du package "interface". Seulement, décoder ces données au niveau de "interface" implique:
+ * - soit convertir dans un format intermédiaire converti ensuite par "business" en donnée de persistence
+ * - soit convertir directement dans le format de persistence, ce qui aurait l'effet de lier "interface" à business. Ce que l'on veut éviter à tout prix
  * <p>
  * Le plus simple est encore de faire une petite entorse à nos principes et s'occupper de la conversion directe dans "business". C'est à ca que sert ce helper.
  *
  * @author Raphaël Marmier, 2015-08-03
  */
 public class EvenementOrganisationConversionHelper {
+
+	/*
+		Configuration des schémas applicables pour le décodage des annonces RCEnt
+    */
+	public static final String[] RCENT_SCHEMA = new String[]{
+			"eVD-0004-3-0.xsd",
+			"eVD-0021-1-0.xsd",
+			"eVD-0022-1-0.xsd",
+			"eVD-0023-1-0.xsd",
+			"eVD-0024-1-0.xsd"
+	};
+
+	public static Resource[] getRCEntSchemaClassPathResource() {
+		Resource[] ar = new Resource[EvenementOrganisationConversionHelper.RCENT_SCHEMA.length];
+		for (int i = 0; i < EvenementOrganisationConversionHelper.RCENT_SCHEMA.length; i++) {
+			ar[i] = new ClassPathResource(EvenementOrganisationConversionHelper.RCENT_SCHEMA[i]);
+		}
+		return ar;
+	}
 
 	public static EvenementOrganisation createEvenement(ch.vd.evd0022.v1.NoticeRoot message) {
 		Header header = message.getHeader();
