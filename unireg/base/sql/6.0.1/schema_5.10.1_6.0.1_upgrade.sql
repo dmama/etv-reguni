@@ -176,12 +176,3 @@ ALTER TABLE EVENEMENT_ORGANISATION_ERREUR ADD CONSTRAINT FK_EV_ERR_EV_ORGA_ID FO
 ALTER TABLE RAPPORT_ENTRE_TIERS ADD TYPE_MANDAT NVARCHAR2(15);
 ALTER TABLE RAPPORT_ENTRE_TIERS ADD IBAN_MANDAT NVARCHAR2(34);
 ALTER TABLE RAPPORT_ENTRE_TIERS ADD BIC_SWIFT_MANDAT NVARCHAR2(15);
-
--- La séquence S_PM devient S_CAAC (elle gère en fait les Collectivités Administratives et les Autres Communautés...)
-RENAME S_PM TO S_CAAC;
-
--- La nouvelle séquence S_PM gère les entreprises
-CREATE SEQUENCE S_PM START WITH 80000 INCREMENT BY 1;
-
--- Renommage du paramètre "premierePeriodeFiscale" pour distinguer entre le cas des personnes physiques et celui des personnes morales
-UPDATE PARAMETRE SET NOM='premierePeriodeFiscalePersonnesPhysiques', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='premierePeriodeFiscale';
