@@ -231,6 +231,7 @@
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="bouclementService" ref="bouclementService" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -32,7 +33,9 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 	protected boolean isCompatibleWith(PeriodeImposition next) {
 		if (next instanceof PeriodeImpositionPersonnesMorales) {
 			final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
-			return typeDocument == nextPeriode.typeDocument && typeContribuable == nextPeriode.typeContribuable;
+			return typeDocument == nextPeriode.typeDocument
+					&& typeContribuable == nextPeriode.typeContribuable
+					&& DateRangeHelper.indexAt(exercicesCommerciaux, getDateFin(), NullDateBehavior.EARLIEST) == DateRangeHelper.indexAt(exercicesCommerciaux, next.getDateDebut(), NullDateBehavior.EARLIEST);
 		}
 		return false;
 	}

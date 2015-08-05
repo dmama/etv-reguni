@@ -119,7 +119,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	public void testVaudoisExercicesNonCalesSurAnneeCivile() throws Exception {
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addForPrincipal(e, date(2013, 1, 15), MotifFor.INDETERMINE, MockCommune.Aigle);
-		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 31.03 depuis le 31.03.2013
+		addBouclement(e, date(2013, 1, 1), DayMonth.get(6, 30), 12);    // bouclements tous les 30.06 depuis le 31.03.2013
 
 		final List<Assujettissement> assujettissements = determine(e);
 		Assert.assertNotNull(assujettissements);
@@ -263,7 +263,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testHorsCantonActiviteAchatSynchroneAvecExercice() throws Exception {
+	public void testHorsCantonActiviteSynchroneAvecExercice() throws Exception {
 
 		final RegDate dateDebutExploitation = date(2013, 4, 1);
 
@@ -280,7 +280,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testHorsCantonActiviteAchatNonSynchroneAvecExercice() throws Exception {
+	public void testHorsCantonActiviteNonSynchroneAvecExercice() throws Exception {
 
 		final RegDate dateDebutExploitation = date(2013, 4, 1);
 
@@ -331,7 +331,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testHorsSuisseActiviteAchatSynchroneAvecExercice() throws Exception {
+	public void testHorsSuisseActiviteSynchroneAvecExercice() throws Exception {
 
 		final RegDate dateDebutExploitation = date(2013, 4, 1);
 
@@ -348,7 +348,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testHorsSuisseActiviteAchatNonSynchroneAvecExercice() throws Exception {
+	public void testHorsSuisseActiviteNonSynchroneAvecExercice() throws Exception {
 
 		final RegDate dateDebutExploitation = date(2013, 4, 1);
 
@@ -471,13 +471,13 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	public void testVaudoisActiviteTransfertSiegeVersHorsCanton() throws Exception {
 
 		final RegDate dateCreationEntreprise = date(2013, 2, 1);
-		final RegDate dateAchat = date(2013, 4, 15);
+		final RegDate dateDebutActivite = date(2013, 4, 15);
 		final RegDate dateDepartSiege = date(2014, 5, 21);
 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
 		addForPrincipal(e, dateCreationEntreprise, MotifFor.INDETERMINE, dateDepartSiege, MotifFor.DEPART_HC, MockCommune.Echallens);
 		addForPrincipal(e, dateDepartSiege.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Geneve);
-		addForSecondaire(e, dateAchat, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForSecondaire(e, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addBouclement(e, date(2012, 3, 31), DayMonth.get(3, 31), 12);       // bouclements tous les 31.03 depuis le 31.03.2012
 		addBouclement(e, date(2014, 4, 1), DayMonth.get(9, 30), 12);       // bouclements tous les 30.09 depuis le 30.09.2014
 

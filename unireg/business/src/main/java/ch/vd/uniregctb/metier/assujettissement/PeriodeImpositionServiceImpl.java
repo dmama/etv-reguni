@@ -9,9 +9,11 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, InitializingBean {
 
 	private AssujettissementService assujettissementService;
+	private BouclementService bouclementService;
 	private ParametreAppService parametreAppService;
 
 	/**
@@ -38,6 +41,11 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setBouclementService(BouclementService bouclementService) {
+		this.bouclementService = bouclementService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -67,7 +75,8 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 	 * Construction initiale de la map des calculateurs de période d'imposition
 	 * @return la map qui lie les classes de contribuables à leur calculateur attitré
 	 */
-	private static Map<Class<? extends Contribuable>, PeriodeImpositionCalculator<?>> buildAssujettissementCalculators(PeriodeImpositionCalculator<ContribuableImpositionPersonnesPhysiques> ppCalculator) {
+	private static Map<Class<? extends Contribuable>, PeriodeImpositionCalculator<?>> buildAssujettissementCalculators(PeriodeImpositionCalculator<ContribuableImpositionPersonnesPhysiques> ppCalculator,
+	                                                                                                                   PeriodeImpositionCalculator<Entreprise> pmCalculator) {
 		final Map<Class<? extends Contribuable>, PeriodeImpositionCalculator<?>> map = new HashMap<>();
 
 		//
@@ -81,13 +90,16 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 		// les entreprises sont assujetties selon le régime des personnes morales
 		//
 
+		addCalculator(map, Entreprise.class, pmCalculator);
+
 		return map;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		final PeriodeImpositionCalculator<Entreprise> pmCalculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreAppService, bouclementService);
 		this.ppCalculator = new PeriodeImpositionPersonnesPhysiquesCalculator(parametreAppService);
-		this.calculators = buildAssujettissementCalculators(this.ppCalculator);
+		this.calculators = buildAssujettissementCalculators(this.ppCalculator, pmCalculator);
 	}
 
 	@Nullable

@@ -1367,6 +1367,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 
 		final PeriodeImpositionServiceImpl pis = new PeriodeImpositionServiceImpl();
 		pis.setAssujettissementService(assProxy);
+		pis.setBouclementService(getBean(BouclementService.class, "bouclementService"));
 		pis.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		pis.afterPropertiesSet();
 

@@ -153,8 +153,9 @@ public abstract class MetierTest extends BusinessTest {
 
 		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Fraction.LAbbaye.getNoOFS(),
-				MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+		                 MockCommune.Fraction.LAbbaye.getNoOFS(),
+		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
 		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
@@ -265,7 +266,7 @@ public abstract class MetierTest extends BusinessTest {
 		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
-				MotifRattachement.IMMEUBLE_PRIVE);
+		                 MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}
 
@@ -918,6 +919,23 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(remplaceParNote, pipp.isDeclarationRemplaceeParNote());
 		assertEquals(fermetureCauseDeces, pipp.getCauseFermeture() == PeriodeImposition.CauseFermeture.VEUVAGE_DECES);
 		assertEquals(fermetureCauseFinAssujettissementHS, pipp.getCauseFermeture() == PeriodeImposition.CauseFermeture.FIN_ASSUJETTISSEMENT_HS);
+	}
+
+	protected void assertPeriodeImpositionPersonnesMorales(RegDate debut, RegDate fin, boolean optionnelle, TypeContribuable typeContribuable,
+	                                                       boolean remplaceParNote, boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
+
+		assertNotNull(periode);
+		assertInstanceOf(PeriodeImpositionPersonnesMorales.class, periode);
+
+		final PeriodeImpositionPersonnesMorales pipm = (PeriodeImpositionPersonnesMorales) periode;
+
+		assertEquals(debut, pipm.getDateDebut());
+		assertEquals(fin, pipm.getDateFin());
+		assertEquals(optionnelle, pipm.isDeclarationOptionnelle());
+		assertEquals(typeContribuable, pipm.getTypeContribuable());
+		assertEquals(remplaceParNote, pipm.isDeclarationRemplaceeParNote());
+		assertEquals(fermetureCauseDeces, pipm.getCauseFermeture() == PeriodeImposition.CauseFermeture.VEUVAGE_DECES);
+		assertEquals(fermetureCauseFinAssujettissementHS, pipm.getCauseFermeture() == PeriodeImposition.CauseFermeture.FIN_ASSUJETTISSEMENT_HS);
 	}
 
 	protected PersonnePhysique createSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques_Invalide() throws Exception {
