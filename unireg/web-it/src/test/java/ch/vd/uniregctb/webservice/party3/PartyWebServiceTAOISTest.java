@@ -976,18 +976,18 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
 		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("1001 Lausanne", adresseEnvoi.getLine4());
-		assertNull(adresseEnvoi.getLine5());
-		assertNull(adresseEnvoi.getLine6());
+		assertEquals("Test ligne 2", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("Test ligne 3", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLine4()));
+		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLine5()));
+		assertEquals("1001 Lausanne", adresseEnvoi.getLine6());
 
 		final OrganisationMailAddressInfo organisation = courrier.getOrganisation();
 		assertNotNull(organisation);
 		assertEquals("Madame, Monsieur", organisation.getFormalGreeting());
 		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(organisation.getOrganisationName()));
-		assertNull(organisation.getOrganisationNameAddOn1());
-		assertNull(organisation.getOrganisationNameAddOn2());
+		assertEquals("Test ligne 2", trimValiPattern(organisation.getOrganisationNameAddOn1()));
+		assertEquals("Test ligne 3", trimValiPattern(organisation.getOrganisationNameAddOn2()));
 
 		final AddressInformation info = courrier.getAddressInformation();
 		assertEquals(TariffZone.SWITZERLAND, info.getTariffZone());
