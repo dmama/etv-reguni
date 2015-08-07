@@ -65,13 +65,12 @@ public class PeriodeImpositionPersonnesPhysiques extends PeriodeImposition {
 
 	/**
 	 * Pour les personnes physiques, les périodes fiscales sont des années civiles
-	 * @param dateReference date de référence pour la détermination de la période fiscale
-	 * @return le 31.12 de l'année de la date de référence
+	 * @return le 31.12 de l'année de la période d'imposition
 	 */
 	@NotNull
 	@Override
-	protected RegDate getDernierJourPourPeriodeFiscale(@NotNull RegDate dateReference) {
-		return RegDate.get(dateReference.year(), 12, 31);
+	protected RegDate getDernierJourPourPeriodeFiscale() {
+		return RegDate.get(getPeriodeFiscale(), 12, 31);
 	}
 
 	/**

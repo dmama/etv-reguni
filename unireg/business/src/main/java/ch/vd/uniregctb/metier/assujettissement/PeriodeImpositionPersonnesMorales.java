@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -35,7 +34,7 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 			final PeriodeImpositionPersonnesMorales nextPeriode = (PeriodeImpositionPersonnesMorales) next;
 			return typeDocument == nextPeriode.typeDocument
 					&& typeContribuable == nextPeriode.typeContribuable
-					&& DateRangeHelper.indexAt(exercicesCommerciaux, getDateFin(), NullDateBehavior.EARLIEST) == DateRangeHelper.indexAt(exercicesCommerciaux, next.getDateDebut(), NullDateBehavior.EARLIEST);
+					&& DateRangeHelper.rangeAt(exercicesCommerciaux, getDateFin()).isValidAt(next.getDateDebut());      // pas de changement d'exercice commercial
 		}
 		return false;
 	}
@@ -57,10 +56,10 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 
 	@NotNull
 	@Override
-	protected RegDate getDernierJourPourPeriodeFiscale(@NotNull RegDate dateReference) {
-		final ExerciceCommercial ex = DateRangeHelper.rangeAt(exercicesCommerciaux, dateReference);
+	protected RegDate getDernierJourPourPeriodeFiscale() {
+		final ExerciceCommercial ex = DateRangeHelper.rangeAt(exercicesCommerciaux, getDateFin());
 		if (ex == null) {
-			throw new IllegalArgumentException("Pas d'exercice commercial présent à la date de référence " + dateReference);
+			throw new IllegalArgumentException("Pas d'exercice commercial sous-jacent!");
 		}
 		return ex.getDateFin();
 	}

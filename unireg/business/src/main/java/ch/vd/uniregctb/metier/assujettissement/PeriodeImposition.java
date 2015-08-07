@@ -203,15 +203,14 @@ public abstract class PeriodeImposition implements CollatableDateRange {
 	 * @return <code>true</code> si la période d'imposition se termine avant la fin de la période fiscale
 	 */
 	public boolean isFermetureAnticipee() {
-		return fin.isBefore(getDernierJourPourPeriodeFiscale(fin));
+		return fin.isBefore(getDernierJourPourPeriodeFiscale());
 	}
 
 	/**
-	 * @param dateReference date de référence pour la détermination de la période fiscale
-	 * @return le dernier jour comptant pour la période fiscale donnée (31.12.pf pour les PP, fin de l'exercice commercial à la date de référence pour les PM)
+	 * @return le dernier jour comptant pour la période fiscale (31.12.pf pour les PP, fin de l'exercice commercial courant pour les PM)
 	 */
 	@NotNull
-	protected abstract RegDate getDernierJourPourPeriodeFiscale(@NotNull RegDate dateReference);
+	protected abstract RegDate getDernierJourPourPeriodeFiscale();
 
 	public CauseFermeture getCauseFermeture() {
 		return causeFermeture;
