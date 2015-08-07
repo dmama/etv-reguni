@@ -10,7 +10,7 @@
 
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.XaPooledConnectionFactory" init-method="start" destroy-method="stop">
 		<property name="connectionFactory">
-			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+			<bean class="org.apache.activemq.ActiveMQXAConnectionFactory">
 				<property name="brokerURL" value="vm://localhost" />
 				<property name="userName" value="smx" />
 				<property name="password" value="smx" />
