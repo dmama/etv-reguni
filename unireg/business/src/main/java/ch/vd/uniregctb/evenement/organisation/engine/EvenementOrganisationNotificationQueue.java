@@ -54,7 +54,7 @@ public interface EvenementOrganisationNotificationQueue {
 	void post(Long noOrganisation, EvenementOrganisationProcessingMode mode);
 
 	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue des traitements batch en bloc (le décalage sera forcément appliqué)
+	 * Méthode utilisée pour ajouter des éléments à la queue des traitements bulk en bloc (le décalage sera forcément appliqué)
 	 * @param nosOrganisation collections de numéros d'organisation à poster
 	 *
 	 */
@@ -75,19 +75,19 @@ public interface EvenementOrganisationNotificationQueue {
 	int getTotalCount();
 
 	/**
-	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "batch"
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "bulk"
 	 */
-	int getInBatchQueueCount();
+	int getInBulkQueueCount();
 
 	/**
-	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "batch" à la queue finale sur les 5 dernières minutes
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "bulk" à la queue finale sur les 5 dernières minutes
 	 */
-	Long getBatchQueueSlidingAverageAge();
+	Long getBulkQueueSlidingAverageAge();
 
 	/**
-	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "batch" à la queue finale depuis le démarrage du service
+	 * @return l'âge moyen (en millisecondes) d'un élément lorsqu'il passe de la queue interne "bulk" à la queue finale depuis le démarrage du service
 	 */
-	Long getBatchQueueGlobalAverageAge();
+	Long getBulkQueueGlobalAverageAge();
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "immediate"
@@ -111,7 +111,7 @@ public interface EvenementOrganisationNotificationQueue {
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement en transition entre
-	 * la queue manual ou batch et la queue finale
+	 * la queue manual ou bulk et la queue finale
 	 */
 	int getInHatchesCount();
 }

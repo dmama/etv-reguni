@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -19,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.organisation.mock.DefaultMockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationBuilder;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
@@ -43,54 +43,51 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 		return hibernateTemplate.merge(event);
 	}
 
-	// FIXME: Complete test !!!!
-	@Ignore
 	@Test(timeout = 10000L)
 	public void testBasics() throws Exception {
 		
-		final long noIndividuSans = 17385423L;
-		final long noIndividuAvecAttente = 16745234L;
-		final long noIndividuAvecErreur = 2367485247L;
-		final long noIndividuAvecAttenteEtErreur = 43784236L;
-		
-		serviceOrganisation.setUp(new DefaultMockServiceOrganisation());
+		final long noOrganisationSans = 17385423L;
+		final long noOrganisationAvecAttente = 16745234L;
+		final long noOrganisationAvecErreur = 2367485247L;
+		final long noOrganisationAvecAttenteEtErreur = 43784236L;
 
-/*
-		serviceOrganisation.setUp(new MockServiceOrganisation() {
+		serviceOrganisation.setUp(new DefaultMockServiceOrganisation() {
+
 			@Override
 			protected void init() {
-				addIndividu(noIndividuSans, null, "Sans", "Rien", true);
-				addIndividu(noIndividuAvecAttente, null, "Avec", "Attente", false);
-				addIndividu(noIndividuAvecErreur, null, "Avec", "Erreur", false);
-				addIndividu(noIndividuAvecAttenteEtErreur, null, "Avec", "Attente-Erreur", false);
+				super.init();
+				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationSans, "SansAttente", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecAttente, "AvecAttente", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecErreur, "AvecErreur", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecAttenteEtErreur, "AvecAttente-Erreur", RegDate.get(2015, 4, 29)));
 			}
 		});
-*/
+
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				long id = 0L;
 
 				final RegDate date = RegDate.get();
-/*
-				final TypeEvenementOrganisation type = TypeEvenementOrganisation.TESTING;
-				final ActionEvenementOrganisation action = ActionEvenementOrganisation.PREMIERE_LIVRAISON;
 
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementOrganisation.A_VERIFIER);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementOrganisation.FORCE);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementOrganisation.REDONDANT);
-				addEvent(noIndividuSans, ++id, type, action, date, EtatEvenementOrganisation.TRAITE);
+				final TypeEvenementOrganisation type = TypeEvenementOrganisation.FOSC_AUTRE_MUTATION;
 
-				addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementOrganisation.A_VERIFIER);
-				addEvent(noIndividuAvecAttente, ++id, type, action, date, EtatEvenementOrganisation.EN_ATTENTE);
+				final String refData = "";
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.FORCE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.REDONDANT, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationSans, ++id, type, date, EtatEvenementOrganisation.TRAITE, EmetteurEvenementOrganisation.FOSC, refData);
 
-				addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementOrganisation.FORCE);
-				addEvent(noIndividuAvecErreur, ++id, type, action, date, EtatEvenementOrganisation.EN_ERREUR);
+				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.A_VERIFIER, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecAttente, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE, EmetteurEvenementOrganisation.FOSC, refData);
 
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementOrganisation.TRAITE);
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementOrganisation.EN_ATTENTE);
-				addEvent(noIndividuAvecAttenteEtErreur, ++id, type, action, date, EtatEvenementOrganisation.EN_ERREUR);
-*/
+				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.FORCE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR, EmetteurEvenementOrganisation.FOSC, refData);
+
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.TRAITE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ATTENTE, EmetteurEvenementOrganisation.FOSC, refData);
+				addEvent(noOrganisationAvecAttenteEtErreur, ++id, type, date, EtatEvenementOrganisation.EN_ERREUR, EmetteurEvenementOrganisation.FOSC, refData);
+
 
 				return null;
 			}
@@ -134,16 +131,16 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public void post(Long noIndividu, EvenementOrganisationProcessingMode mode) {
+			public void post(Long noOrganisation, EvenementOrganisationProcessingMode mode) {
 				// traitement immédiat
-				notifyTraitement(noIndividu);
+				notifyTraitement(noOrganisation);
 			}
 
 			@Override
-			public void postAll(Collection<Long> nosIndividus) {
+			public void postAll(Collection<Long> nosOrganisations) {
 				// traitement immédiat
-				for (Long noIndividu : nosIndividus) {
-					notifyTraitement(noIndividu);
+				for (Long noOrganisation : nosOrganisations) {
+					notifyTraitement(noOrganisation);
 				}
 			}
 
@@ -158,17 +155,17 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public int getInBatchQueueCount() {
+			public int getInBulkQueueCount() {
 				throw new NotImplementedException();
 			}
 
 			@Override
-			public Long getBatchQueueSlidingAverageAge() {
+			public Long getBulkQueueSlidingAverageAge() {
 				throw new NotImplementedException();
 			}
 
 			@Override
-			public Long getBatchQueueGlobalAverageAge() {
+			public Long getBulkQueueGlobalAverageAge() {
 				throw new NotImplementedException();
 			}
 
@@ -196,9 +193,8 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 			public int getInHatchesCount() {
 				throw new NotImplementedException();
 			}
-
-
 		}
+
 		final IntegratedQueueAndProcessor queueProcessor = new IntegratedQueueAndProcessor();
 		final EvenementOrganisationRetryProcessorImpl retry = new EvenementOrganisationRetryProcessorImpl();
 		retry.setEvtOrganisationDAO(getBean(EvenementOrganisationDAO.class, "evenementOrganisationDAO"));
@@ -209,7 +205,7 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 		// et maintenant : le test !
 		
 		// Ca, c'est pour vérifier que l'on traite les bons individus
-		final Set<Long> remaining = new HashSet<>(Arrays.asList(noIndividuSans, noIndividuAvecAttente, noIndividuAvecErreur, noIndividuAvecAttenteEtErreur));
+		final Set<Long> remaining = new HashSet<>(Arrays.asList(noOrganisationSans, noOrganisationAvecAttente, noOrganisationAvecErreur, noOrganisationAvecAttenteEtErreur));
 		final EvenementOrganisationProcessor.ListenerHandle handleRemaining = queueProcessor.registerListener(new EvenementOrganisationProcessor.Listener() {
 			@Override
 			public void onOrganisationTraite(long noOrganisation) {
@@ -226,9 +222,9 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 		retry.retraiteEvenements(null);
 		queueProcessor.unregisterListener(handleRemaining);
 		
-		// au final : il ne doit plus rester que le noIndividuSans dans la liste remaining, et tous les listeners doivent avoir été dés-enregistrés
+		// au final : il ne doit plus rester que le noOrganisationSans dans la liste remaining, et tous les listeners doivent avoir été dés-enregistrés
 		Assert.assertEquals(1, remaining.size());
-		Assert.assertEquals((Long) noIndividuSans, remaining.iterator().next());
+		Assert.assertEquals((Long) noOrganisationSans, remaining.iterator().next());
 		Assert.assertEquals(0, listeners.size());
 	}
 }

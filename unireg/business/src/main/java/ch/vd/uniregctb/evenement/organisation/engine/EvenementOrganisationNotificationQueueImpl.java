@@ -286,17 +286,17 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 	}
 
 	@Override
-	public int getInBatchQueueCount() {
+	public int getInBulkQueueCount() {
 		return bulkQueue.size();
 	}
 
 	@Override
-	public Long getBatchQueueSlidingAverageAge() {
+	public Long getBulkQueueSlidingAverageAge() {
 		return mixer.getSlidingAverageAge(bulkQueue);
 	}
 
 	@Override
-	public Long getBatchQueueGlobalAverageAge() {
+	public Long getBulkQueueGlobalAverageAge() {
 		return mixer.getGlobalAverageAge(bulkQueue);
 	}
 

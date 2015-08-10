@@ -65,17 +65,17 @@ public class EvenementOrganisationReceptionHandlerImpl implements EvenementOrgan
 
 	@Override
 	public int getNombreOrganisationsEnAttenteDansLaQueueBatch() {
-		return notificationQueue.getInBatchQueueCount();
+		return notificationQueue.getInBulkQueueCount();
 	}
 
 	@Override
 	public Long getMoyenneGlissanteDureeAttenteDansLaQueueBatch() {
-		return notificationQueue.getBatchQueueSlidingAverageAge();
+		return notificationQueue.getBulkQueueSlidingAverageAge();
 	}
 
 	@Override
 	public Long getMoyenneTotaleDureeAttenteDansLaQueueBatch() {
-		return notificationQueue.getBatchQueueGlobalAverageAge();
+		return notificationQueue.getBulkQueueGlobalAverageAge();
 	}
 
 	@Override
