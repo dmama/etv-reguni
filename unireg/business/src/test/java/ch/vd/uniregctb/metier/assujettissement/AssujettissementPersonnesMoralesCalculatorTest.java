@@ -760,5 +760,24 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		assertOrdinaire(dateRetourSiege, null, MotifFor.ARRIVEE_HS, null, assujettissements.get(2));
 	}
 
+	/**
+	 * Vu pendant les tests de migration : il semble que quand on a un déménagement, une exception saute qui dit que deux assujettissements entrent en collision,,,
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAvecDemenagementVaudois() throws Exception {
 
+		final RegDate dateCreation = date(2011, 7, 12);
+		final RegDate dateDemenagement = date(2014, 4, 7);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addForPrincipal(e, dateCreation, MotifFor.INDETERMINE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+		addForPrincipal(e, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Prilly);
+		addBouclement(e, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les 31.12 depuis le 31.12.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNotNull(assujettissements);
+		Assert.assertEquals(1, assujettissements.size());
+		assertOrdinaire(dateCreation, null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
 }

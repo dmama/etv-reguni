@@ -538,16 +538,14 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			}
 		}
 
-		// si aucun non-assujettissement, on peut s'arrêter là
-		if (nonAssujettissements.isEmpty()) {
-			return data;
-		}
+		// fusion des assujettissements
+		final List<Data> assujettissementsFusionnes = fusionnerAssujettissements(assujettissementsPositifs);
 
 		// fusion des non-assujettissements
 		final List<Data> nonAssujettissementsFusionnes = fusionnerNonAssujettissements(nonAssujettissements, forRolesCommunes);
 
 		// on réduit la durée des non-assujettissement si nécessaire
-		return DateRangeHelper.override(nonAssujettissementsFusionnes, assujettissementsPositifs, new DateRangeHelper.AdapterCallbackExtended<Data>() {
+		return DateRangeHelper.override(nonAssujettissementsFusionnes, assujettissementsFusionnes, new DateRangeHelper.AdapterCallbackExtended<Data>() {
 			@Override
 			public Data adapt(Data range, RegDate debut, RegDate fin) {
 				throw new IllegalArgumentException("Ne devrait pas être appelé");
@@ -572,7 +570,48 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	}
 
 	/**
-	 * Fusionne les non-assujettissement qui s'intersectent. Des non-assujettissements peuvent s'intersecter lorsque - par exemple - un contribuable
+	 * Fusionne les assujettissements qui s'intersectent. Des assujettissements peuvent s'intersecter lorsque - par exemple - un contribuable
+	 * possède plusieurs fors fiscaux principaux vaudois dans un même exercice commercial (= déménagement)
+	 *
+	 * @param list  une liste de données qui doivent être des assujettisssments "positifs"
+	 * @return la liste fusionnée des assujettissments
+	 */
+	private List<Data> fusionnerAssujettissements(List<Data> list) {
+		if (list.isEmpty()) {
+			return list;
+		}
+
+		final List<Data> merged = DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
+			@Override
+			public Data merge(Data left, Data right) {
+				if (left.type != right.type) {
+					throw new IllegalArgumentException("Deux données d'assujettissements qui s'intersectent mais de types différents (" + left.type + " et " + right.type + ") !");
+				}
+				if (left.typeAutoriteFiscale != right.typeAutoriteFiscale) {
+					throw new IllegalArgumentException(
+							"Deux données d'assujettissements qui s'intersectent avec des autorités fiscales différentes (" + left.typeAutoriteFiscale + " et " + right.typeAutoriteFiscale + ") !");
+				}
+
+				return new Data(left.getDateDebut(),
+				                right.getDateFin(),
+				                left.type,
+				                left.motifDebut,
+				                right.motifFin,
+				                left.typeAutoriteFiscale);
+			}
+
+			@Override
+			public Data duplicate(Data range) {
+				// pas la peine de dupliquer quoi que ce soit, cette classe est immutable!
+				return range;
+			}
+		});
+
+		return DateRangeHelper.collate(merged);
+	}
+
+	/**
+	 * Fusionne les non-assujettissements qui s'intersectent. Des non-assujettissements peuvent s'intersecter lorsque - par exemple - un contribuable
 	 * possède plusieurs fors fiscaux principaux hors-canton dans une même année.
 	 *
 	 * @param list             une liste de données qui doivent être des non-assujettisssments
@@ -580,6 +619,10 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 	 * @return la liste fusionnée des non-assujettissments
 	 */
 	private List<Data> fusionnerNonAssujettissements(List<Data> list, final boolean forRolesCommunes) {
+		if (list.isEmpty()) {
+			return list;
+		}
+
 		final List<Data> merged = DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
 			@Override
 			public Data merge(Data left, Data right) {
