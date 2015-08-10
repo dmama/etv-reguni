@@ -292,7 +292,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			final Long idCantonal = e.getNumeroCantonal();
 			if (idCantonal == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
+				final LogLevel logLevel = activityManager.isActive(e) ? LogLevel.ERROR : LogLevel.INFO;
+				mr.addMessage(LogCategory.SUIVI, logLevel, "Pas de numéro cantonal assigné, pas de lien vers le civil.");
 				return null;
 			}
 
