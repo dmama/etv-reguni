@@ -100,13 +100,14 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	                                                        EvenementOrganisationContext context,
 	                                                        EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
-		// TODO: Recupérer le contenu de l'événement (historique ou double snapshot)
-
 		/*
 			Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données.
 		 */
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			evenements.add(strategy.matchAndCreate(event, organisation, context, options));
+			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, context, options);
+			if (e != null) {
+				evenements.add(e);
+			}
 		}
 		return evenements;
 	}
