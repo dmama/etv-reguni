@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -70,6 +72,7 @@ import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
+import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -806,6 +809,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// TODO migrer les adresses, les documents...
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
+		migratePersonneContact(regpm.getContact1(), unireg, mr);
 
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
@@ -820,6 +824,43 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Migration de la personne de contact d'une entreprise
+	 * @param regpm l'entreprise RegPM
+	 * @param unireg l'entreprise Unireg
+	 * @param mr collecteur de messages de migration
+	 */
+	private static void migratePersonneContact(ContactEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		if (regpm != null) {
+			final String noTelephone = canonizeTelephoneNumber(regpm.getNoTelephone(), "téléphone", mr);
+			final String noFax = canonizeTelephoneNumber(regpm.getNoFax(), "fax", mr);
+			unireg.setNumeroTelephoneProfessionnel(noTelephone);
+			unireg.setNumeroTelecopie(noFax);
+			unireg.setPersonneContact(StringUtils.trimToNull(new NomPrenom(regpm.getNom(), regpm.getPrenom()).getNomPrenom()));
+		}
+	}
+
+	@Nullable
+	private static String canonizeTelephoneNumber(String noTelephone, String type, MigrationResultProduction mr) {
+		if (StringUtils.isBlank(noTelephone)) {
+			return null;
+		}
+
+		// on enlève tous les non-chiffres
+		final String canonical = noTelephone.replaceAll("[^0-9]+", "");
+		if (StringUtils.isBlank(canonical)) {
+			// il n'y a plus rien ???
+			return null;
+		}
+
+		// si le numéro ne comporte pas exactement 10 chiffres, il faut le lister
+		if (canonical.length() != 10) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+			              String.format("Numéro de %s '%s' ne comportant pas exactement 10 chiffres (%d)...", type, noTelephone, canonical.length()));
+		}
+		return canonical;
 	}
 
 	/**
