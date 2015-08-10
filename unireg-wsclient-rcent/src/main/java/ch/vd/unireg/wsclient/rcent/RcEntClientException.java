@@ -44,7 +44,7 @@ public class RcEntClientException extends RuntimeException {
 		return s.toString();
 	}
 
-	private static final Pattern MESSAGE_PATTERN = Pattern.compile(".*<(?:eVD-0004:)?message>([^<]+)</(?:eVD-0004:)?message>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private static final Pattern MESSAGE_PATTERN = Pattern.compile(".*<(?:[^:>]+:)?message>([^<]+)</(?:[^:>]+:)?message>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	protected static String extractMessage(String xml) {
 		if (StringUtils.isBlank(xml)) {
