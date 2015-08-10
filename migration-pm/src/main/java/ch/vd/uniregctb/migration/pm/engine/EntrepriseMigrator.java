@@ -114,7 +114,6 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -197,6 +196,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static class DateBouclementFuturData {
+		@Nullable
+		private final RegDate date;
+		public DateBouclementFuturData(@Nullable RegDate date) {
+			this.date = date;
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
@@ -252,6 +259,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// les dossiers fiscaux non-ignorés
 		mr.registerDataExtractor(DossiersFiscauxData.class,
 		                         e -> extractDossiersFiscaux(e, mr),
+		                         null,
+		                         null);
+
+		// la date de bouclement futur
+		mr.registerDataExtractor(DateBouclementFuturData.class,
+		                         e -> extractDateBouclementFutur(e, mr),
 		                         null,
 		                         null);
 	}
@@ -1092,9 +1105,32 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		});
 	}
 
+	/**
+	 * Extraction de la date de bouclement futur, qui peut être ignorée si elle est avant la fin du dernier exercice commercial connu
+	 * @param regpm l'entreprise dans RegPM
+	 * @param mr le collecteur de messages de suivi
+	 * @return une structure de données (non-nulle) qui contient la date de bouclement futur retenue (potentiellement nulle)
+	 */
+	@NotNull
+	private static DateBouclementFuturData extractDateBouclementFutur(RegpmEntreprise regpm, MigrationResultProduction mr) {
+		final RegDate brutto = regpm.getDateBouclementFutur();
+		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
+		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+			final RegpmExerciceCommercial dernierExcerciceConnu = exercicesCommerciaux.last();
+			if (brutto != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+				              String.format("Date de bouclement futur (%s) ignorée car antérieure à la date de fin du dernier exercice commercial connu (%s).",
+				                            StringRenderers.DATE_RENDERER.toString(brutto),
+				                            StringRenderers.DATE_RENDERER.toString(dernierExcerciceConnu.getDateFin())));
+				return new DateBouclementFuturData(null);
+			}
+		}
+		return new DateBouclementFuturData(brutto);
+	}
+
 	private void migrateExercicesCommerciaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		final RegDate dateBouclementFutur = regpm.getDateBouclementFutur();
+		final RegDate dateBouclementFutur = mr.getExtractedData(DateBouclementFuturData.class, buildEntrepriseKey(regpm)).date;
 		final List<RegDate> datesBouclements;
 		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
 		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
@@ -1106,8 +1142,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// donc, si on trouve des trous dans les exercices commerciaux en base, cela correspond à une interruption de l'assujettissement, et il faut le combler
 			// (on va supposer des exercices commerciaux annuels, faute de mieux, dans la période non-mappée)
 
+			final RegpmExerciceCommercial dernierConnu = exercicesCommerciaux.last();
+			final RegDate dateFinDernierExercice = dernierConnu.getDateFin();
+
 			// période totale maximale couverte (potentiellement partiellement, c'est justement ce qui nous intéresse ici...) par des exercices commerciaux de regpm
-			final DateRange lifespan = new DateRangeHelper.Range(exercicesCommerciaux.first().getDateDebut(), exercicesCommerciaux.last().getDateFin());
+			final DateRange lifespan = new DateRangeHelper.Range(exercicesCommerciaux.first().getDateDebut(), dateFinDernierExercice);
 			final List<DateRange> mapped = exercicesCommerciaux.stream().map(ex -> new DateRangeHelper.Range(ex.getDateDebut(), ex.getDateFin())).collect(Collectors.toList());
 			final List<DateRange> notMapped = DateRangeHelper.subtract(lifespan, mapped);
 			if (!notMapped.isEmpty()) {
@@ -1115,33 +1154,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// il y a bien au moins une (peut-être plusieurs...) période qui n'est pas mappée...
 				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du dernier exercice avant le trou) pour combler
 				for (DateRange range : notMapped) {
-					final DayMonth previousDayMonth = DayMonth.get(range.getDateDebut().getOneDayBefore());
-					final DayMonth currentDayMonth = DayMonth.get(range.getDateFin());
 
-					// s'il y a un nombre entier d'années entre les deux, on va juste boucler sur les années
-					final RegDate startingDate;
-					if (previousDayMonth.isEndOfMonth() && currentDayMonth.isEndOfMonth() && previousDayMonth.month() == currentDayMonth.month()) {
-						startingDate = range.getDateDebut().getOneDayBefore().addYears(1);
-					}
-					// sinon, on se cale sur la fin et on boucle annuellement
-					else {
-						startingDate = currentDayMonth.nextAfter(range.getDateDebut());
-					}
-
-					// la boucle elle-même...
-					for (RegDate dateBouclement = startingDate ; dateBouclement.isBeforeOrEqual(range.getDateFin()) ; dateBouclement = dateBouclement.addYears(1)) {
-						additionalDatesStreamBuilder.accept(dateBouclement);
+					// on sait que la fin du range est forcément une date de bouclement (puisqu'un exercice commercial débute au lendemain)
+					// et ensuite on case autant d'années que nécessaire pour boucher le trou
+					for (RegDate bouclement = range.getDateFin(); bouclement.isAfterOrEqual(range.getDateDebut()); bouclement = bouclement.addYears(-1)) {
+						additionalDatesStreamBuilder.accept(bouclement);
 
 						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
 						              String.format("Ajout d'une date de bouclement estimée au %s pour combler l'absence d'exercice commercial dans RegPM sur la période %s.",
-						                            StringRenderers.DATE_RENDERER.toString(dateBouclement),
+						                            StringRenderers.DATE_RENDERER.toString(bouclement),
 						                            StringRenderers.DATE_RANGE_RENDERER.toString(range)));
 					}
 				}
 			}
-
-			final RegpmExerciceCommercial dernierConnu = exercicesCommerciaux.last();
-			final RegDate dateFinDernierExercice = dernierConnu.getDateFin();
 
 			// c'est apparemment le cas qui apparaît tout le temps :
 			// la déclaration (= dossier fiscal) de la PF précédente a déjà été envoyée, mais aucun exercice commercial
@@ -1228,8 +1253,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, buildEntrepriseKey(regpm)).liste;
+		final EntityKey moi = buildEntrepriseKey(regpm);
+		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, moi).liste;
 		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(dossiers.size());
+		final RegDate dateBouclementFutur = mr.getExtractedData(DateBouclementFuturData.class, moi).date;
 
 		// boucle sur chacun des exercices commerciaux
 		regpm.getExercicesCommerciaux().forEach(exercice -> {
@@ -1268,7 +1295,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.forEach(dossier -> {
 
 					// si la PF est celle de la prochaine date de bouclement, alors on peut la créer...
-					if (regpm.getDateBouclementFutur() != null && regpm.getDateBouclementFutur().year() == dossier.getPf()) {
+					if (dateBouclementFutur != null && dateBouclementFutur.year() == dossier.getPf()) {
 						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
 						              String.format("Dossier fiscal %d/%d sans exercice commercial associé sur la PF du bouclement futur -> quelle est la date de début de la déclaration ?",
 						                            dossier.getPf(), dossier.getNoParAnnee()));
