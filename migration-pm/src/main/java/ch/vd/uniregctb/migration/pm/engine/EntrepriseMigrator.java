@@ -111,6 +111,7 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -1055,6 +1056,48 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final List<RegDate> datesBouclements;
 		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
 		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+
+			final Stream.Builder<RegDate> additionalDatesStreamBuilder = Stream.builder();
+
+			// dans RegPM, les exercices commerciaux ne sont instanciés que quand une DI est retournée, ce qui a pour conséquence immédiate qu'en l'absence
+			// d'assujettissement, aucune DI n'est bien-sûr envoyée, encore moins retournée, et donc aucun exercice commercial n'est créé en base...
+			// donc, si on trouve des trous dans les exercices commerciaux en base, cela correspond à une interruption de l'assujettissement, et il faut le combler
+			// (on va supposer des exercices commerciaux annuels, faute de mieux, dans la période non-mappée)
+
+			// période totale maximale couverte (potentiellement partiellement, c'est justement ce qui nous intéresse ici...) par des exercices commerciaux de regpm
+			final DateRange lifespan = new DateRangeHelper.Range(exercicesCommerciaux.first().getDateDebut(), exercicesCommerciaux.last().getDateFin());
+			final List<DateRange> mapped = exercicesCommerciaux.stream().map(ex -> new DateRangeHelper.Range(ex.getDateDebut(), ex.getDateFin())).collect(Collectors.toList());
+			final List<DateRange> notMapped = DateRangeHelper.subtract(lifespan, mapped);
+			if (!notMapped.isEmpty()) {
+
+				// il y a bien au moins une (peut-être plusieurs...) période qui n'est pas mappée...
+				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du dernier exercice avant le trou) pour combler
+				for (DateRange range : notMapped) {
+					final DayMonth previousDayMonth = DayMonth.get(range.getDateDebut().getOneDayBefore());
+					final DayMonth currentDayMonth = DayMonth.get(range.getDateFin());
+
+					// s'il y a un nombre entier d'années entre les deux, on va juste boucler sur les années
+					final RegDate startingDate;
+					if (previousDayMonth.isEndOfMonth() && currentDayMonth.isEndOfMonth() && previousDayMonth.month() == currentDayMonth.month()) {
+						startingDate = range.getDateDebut().getOneDayBefore().addYears(1);
+					}
+					// sinon, on se cale sur la fin et on boucle annuellement
+					else {
+						startingDate = currentDayMonth.nextAfter(range.getDateDebut());
+					}
+
+					// la boucle elle-même...
+					for (RegDate dateBouclement = startingDate ; dateBouclement.isBeforeOrEqual(range.getDateFin()) ; dateBouclement = dateBouclement.addYears(1)) {
+						additionalDatesStreamBuilder.accept(dateBouclement);
+
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Ajout d'une date de bouclement estimée au %s pour combler l'absence d'exercice commercial dans RegPM sur la période %s.",
+						                            StringRenderers.DATE_RENDERER.toString(dateBouclement),
+						                            StringRenderers.DATE_RANGE_RENDERER.toString(range)));
+					}
+				}
+			}
+
 			final RegpmExerciceCommercial dernierConnu = exercicesCommerciaux.last();
 			final RegDate dateFinDernierExercice = dernierConnu.getDateFin();
 
@@ -1065,7 +1108,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// TODO que faire si la date de bouclement futur est nulle ?
 
-			final Stream.Builder<RegDate> additionalDatesStreamBuilder = Stream.builder();
 			if (dateBouclementFutur != null) {
 				if (dateFinDernierExercice.addYears(1).compareTo(dateBouclementFutur) < 0) {
 					final RegDate dateEstimee = dateBouclementFutur.addYears(-1);
