@@ -44,19 +44,23 @@ public class RcEntClientException extends RuntimeException {
 		return s.toString();
 	}
 
-	private static final Pattern MESSAGE_PATTERN = Pattern.compile(".*<(?:[^:>]+:)?message>([^<]+)</(?:[^:>]+:)?message>.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private static final Pattern MESSAGE_PATTERN = Pattern.compile("<(?:[^:>]+:)?message>([^<]+)</(?:[^:>]+:)?message>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	protected static String extractMessage(String xml) {
 		if (StringUtils.isBlank(xml)) {
 			return null;
 		}
 
-		final Matcher matcher = MESSAGE_PATTERN.matcher(xml);
-		if (matcher.matches()) {
-			return matcher.group(1);
-		}
+		StringBuilder message = new StringBuilder();
 
-		return null;
+		final Matcher matcher = MESSAGE_PATTERN.matcher(xml);
+		while (matcher.find()) {
+			if (message.length() > 0) {
+				message.append(" | ");
+			}
+			message.append(matcher.group(1));
+		}
+		return message.toString();
 	}
 
 	@Override
