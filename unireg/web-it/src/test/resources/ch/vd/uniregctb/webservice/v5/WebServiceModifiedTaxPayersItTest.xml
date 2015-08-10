@@ -1024,14 +1024,24 @@
 			<value>01.01</value>
 		</row>
 		<row>
-			<value>premierePeriodeFiscale</value>
-			<null />
-			<null />
-			<value><![CDATA[2011-05-27 10:25:58.62]]></value>
+			<value>premierePeriodeFiscalePersonnesPhysiques</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2009-07-08 17:37:23.271]]></value>
 			<value>[system]</value>
-			<value><![CDATA[2011-05-27 10:25:58.621]]></value>
+			<value><![CDATA[2009-07-08 17:37:23.271]]></value>
 			<value>[system]</value>
 			<value>2003</value>
+		</row>
+		<row>
+			<value>premierePeriodeFiscalePersonnesMorales</value>
+			<null/>
+			<null/>
+			<value><![CDATA[2015-08-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value><![CDATA[2015-08-08 17:37:23.271]]></value>
+			<value>[system]</value>
+			<value>2009</value>
 		</row>
 	</table>
 	<table name="MODELE_DOCUMENT">
