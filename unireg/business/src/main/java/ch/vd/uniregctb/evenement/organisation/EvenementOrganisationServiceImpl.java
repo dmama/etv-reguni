@@ -13,7 +13,6 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
@@ -102,7 +101,6 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 
     @Override
     public void forceEvenement(long id) {
-	    // FIXME: est-ce applicable pour les organisations?
 	    final EvenementOrganisation evt = evenementOrganisationDAO.get(id);
         if (evt == null) {
             throw new ObjectNotFoundException("Evénement organisation " + id);
@@ -113,17 +111,5 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
         evt.setEtat(EtatEvenementOrganisation.FORCE);
 
 	    Audit.info(id, String.format("Forçage manuel de l'événement organisation %d de type %s au %s sur l'organisation %d", id, evt.getType(), RegDateHelper.dateToDisplayString(evt.getDateEvenement()), evt.getNoOrganisation()));
-
-	    final long numeroOrganisation = evt.getNoOrganisation();
-	    try {
-		    // FIXME: Uniquement si Entreprise.id == Entreprise.numeroEntreprise
-		    final Tiers tiers = tiersDAO.get(numeroOrganisation);
-		    if (tiers != null) {
-			    // FIXME: On fait quelque chose?
-		    }
-	    }
-	    catch (Exception e) {
-		    LOGGER.error("Impossible de ... sur l'organisation n°" + numeroOrganisation, e);
-	    }
     }
 }

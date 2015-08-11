@@ -13,8 +13,6 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 
 /**
- * TODO: Est-ce vraiment applicable à RCEnt sous cette forme? On devrait avoir cette notion au niveau des evts interne, puisqu'il peut y en avoir plusieurs.
- *
  * Stratégie utilisable pour les événements organisation qui partent systématiquement en traitement manuel
  */
 public class TraitementManuelOrganisationTranslationStrategy implements EvenementOrganisationTranslationStrategy {
@@ -24,6 +22,9 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 	@NotNull
 	@Override
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+
+		// TODO: Implmementer la détection des cas nécessitant le départ en traitement manuel. P. ex. Décision ACI sur l'organisation.
+
 		return new EvenementOrganisationInterne(event, organisation, context, options) {
 
 			@NotNull

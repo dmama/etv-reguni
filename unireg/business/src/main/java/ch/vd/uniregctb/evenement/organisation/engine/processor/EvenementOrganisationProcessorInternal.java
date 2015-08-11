@@ -31,7 +31,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationMessageCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingIndexationPureStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
@@ -336,7 +335,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		else {
 			Audit.success(event.getId(), messageAudit);
 		}
-
 	}
 
 	private EtatEvenementOrganisation processEventAndCollectMessages(EvenementOrganisation event, EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -372,7 +370,6 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		postProcessingStrategies = new ArrayList<>();
-		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtOrganisationDAO, translator, this));
 		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtOrganisationDAO));
 	}
 
