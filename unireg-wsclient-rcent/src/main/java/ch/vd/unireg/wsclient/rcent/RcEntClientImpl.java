@@ -1,5 +1,7 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import java.util.List;
+
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,7 +17,7 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	private final WebClientPool wcPool = new WebClientPool();
 
-	private String organisationPath = "organisation/ct.vd.party";
+	private String organisationPath = "organisation/CT.VD.PARTY";
 	private String organisationsOfNoticePath = "organisationsOfNotice";
 
 	public void setBaseUrl(String url) {
@@ -36,6 +38,14 @@ public class RcEntClientImpl implements RcEntClient, InitializingBean {
 
 	public void setOrganisationsOfNoticePath(String organisationsOfNoticePath) {
 		this.organisationsOfNoticePath = organisationsOfNoticePath;
+	}
+
+	public void setValidationEnabled(boolean enableValidation) {
+		this.wcPool.setEnableValidation(enableValidation);
+	}
+
+	public void setSchemasLocations(List<String> schemasLocations) {
+		this.wcPool.setSchemasLocations(schemasLocations);
 	}
 
 	@Override

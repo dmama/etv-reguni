@@ -1,12 +1,20 @@
 package ch.vd.unireg.wsclient.rcent;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.apache.cxf.transport.http.HTTPConduit;
+
+import ch.vd.evd0022.v1.OrganisationData;
 
 public class WebClientPool {
 
@@ -14,10 +22,27 @@ public class WebClientPool {
 	private String username;
 	private String password;
 
+	private boolean enableValidation;
+	private List<String> schemasLocations = new ArrayList<>();
+
 	private final PooledObjectFactory<WebClient> factory = new BasePooledObjectFactory<WebClient>() {
 		@Override
 		public WebClient create() throws Exception {
-			return WebClient.create(baseUrl, username, password, null);
+			JAXBElementProvider<OrganisationData> prov = new JAXBElementProvider<>();
+
+			/*
+				Supporter l'absence de @XmlRootElement sur OrganisationData
+			 */
+			prov.setJaxbElementClassMap(Collections.singletonMap(OrganisationData.class.getName(), ""));
+
+			/*
+				Supporter la validation du xml entrant
+			 */
+			if (enableValidation) {
+				prov.setSchemaLocations(schemasLocations);
+			}
+
+			return WebClient.create(baseUrl, Collections.singletonList(prov), null);
 		}
 
 		@Override
@@ -63,6 +88,14 @@ public class WebClientPool {
 		this.pool.setMinIdle(minIdle);
 	}
 
+	public void setEnableValidation(boolean enableValidation) {
+		this.enableValidation = enableValidation;
+	}
+
+	public void setSchemasLocations(List<String> schemasLocations) {
+		this.schemasLocations = schemasLocations;
+	}
+
 	public WebClient borrowClient(int receiveTimeout) {
 		final WebClient wc;
 		try {
@@ -75,6 +108,10 @@ public class WebClientPool {
 		// set the timeout
 		wc.reset();
 		final HTTPConduit conduit = (HTTPConduit) WebClient.getConfig(wc).getConduit();
+		AuthorizationPolicy authorization = new AuthorizationPolicy();
+		authorization.setUserName(username);
+		authorization.setPassword(password);
+		conduit.setAuthorization(authorization);
 		conduit.getClient().setAutoRedirect(true);
 		conduit.getClient().setReceiveTimeout(receiveTimeout);
 
