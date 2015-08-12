@@ -1224,7 +1224,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		ffp.setMotifOuverture(motifOuverture);
 		ffp.setDateFin(fermeture);
 		ffp.setMotifFermeture(motifFermeture);
-		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 		ffp.setTypeAutoriteFiscale(type);
 		ffp.setNumeroOfsAutoriteFiscale(noOFS);
 		ffp.setMotifRattachement(motif);

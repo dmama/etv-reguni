@@ -1,11 +1,17 @@
 package ch.vd.uniregctb.validation.fors;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidator<ForFiscalSecondaire> {
+
+	private static final Set<GenreImpot> GENRES_IMPOT_AUTORISES = EnumSet.of(GenreImpot.BENEFICE_CAPITAL, GenreImpot.REVENU_FORTUNE);
 
 	@Override
 	protected Class<ForFiscalSecondaire> getValidatedClass() {
@@ -24,10 +30,16 @@ public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidato
 	}
 
 	@Override
+	protected boolean isGenreImpotCoherent(GenreImpot genreImpot) {
+		return GENRES_IMPOT_AUTORISES.contains(genreImpot);
+	}
+
+	@Override
 	protected boolean isRattachementCoherent(MotifRattachement motif) {
 		return MotifRattachement.ACTIVITE_INDEPENDANTE == motif
 				|| MotifRattachement.IMMEUBLE_PRIVE == motif
 				|| MotifRattachement.SEJOUR_SAISONNIER == motif
+				|| MotifRattachement.ETABLISSEMENT_STABLE == motif
 				|| MotifRattachement.DIRIGEANT_SOCIETE == motif;
 	}
 }

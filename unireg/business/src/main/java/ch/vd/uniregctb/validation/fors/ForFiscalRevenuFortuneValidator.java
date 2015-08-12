@@ -13,8 +13,9 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 		final ValidationResults vr = super.validate(ff);
 		if (!ff.isAnnule()) {
 
-			if (ff.getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
-				vr.addError("Par définition, le genre d'impôt d'un for fiscal 'revenu-fortune' doit être REVENU_FORTUNE.");
+			final GenreImpot genreImpot = ff.getGenreImpot();
+			if (!isGenreImpotCoherent(genreImpot)) {
+				vr.addError(String.format("Le for %s avec genre d'impôt '%s' est invalide.", getEntityDisplayString(ff), genreImpot));
 			}
 
 			final MotifRattachement motifRattachement = ff.getMotifRattachement();
@@ -32,6 +33,10 @@ public abstract class ForFiscalRevenuFortuneValidator<T extends ForFiscalRevenuF
 			}
 		}
 		return vr;
+	}
+
+	protected boolean isGenreImpotCoherent(GenreImpot genreImpot) {
+		return genreImpot == GenreImpot.REVENU_FORTUNE;
 	}
 
 	protected abstract boolean isRattachementCoherent(MotifRattachement motif);
