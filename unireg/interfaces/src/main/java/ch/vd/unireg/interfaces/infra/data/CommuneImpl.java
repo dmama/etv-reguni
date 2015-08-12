@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.data;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
@@ -12,6 +13,8 @@ import ch.vd.uniregctb.common.XmlUtils;
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
 	private static final long serialVersionUID = -5224553666590025447L;
+
+	private static final RegDate REFINF_ORIGINE_COMMUNES = RegDate.get(1960, 1, 1);
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -72,7 +75,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	public CommuneImpl(ch.vd.evd0012.v1.CommuneFiscale target) {
 		super(target.getNumeroOfs(), target.getNomCourt(), target.getNomOfficiel(), null);
-		this.dateDebut = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
+		this.dateDebut = getDateDebutValiditeCommune(target);
 		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.isEstUneFractionDeCommune() ? link2OfsId(target.getCommuneFaitiereLink()) : -1;
@@ -81,6 +84,20 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		this.principale = target.isEstUneCommuneFaitiere();
 		this.codeDistrict = link2OfsId(target.getDistrictFiscalLink());
 		this.codeRegion = link2OfsId(target.getRegionFiscaleLink());
+	}
+
+	@Nullable
+	private static RegDate getDateDebutValiditeCommune(ch.vd.evd0012.v1.CommuneFiscale target) {
+		final RegDate brutto = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
+
+		// RefInf nous dit que toutes les communes commencent au plus tôt le 01.01.1960 (parce que c'est ainsi qu'est fait le fichier OFS)
+		// Pour les besoins des PM (des fors suisses sont beaucoup plus vieux que ça...) on va supposer qu'une commune créée le 01.01.1960
+		// est en fait valide depuis les origines...
+		if (REFINF_ORIGINE_COMMUNES == brutto) {
+			return null;
+		}
+
+		return brutto;
 	}
 
 	public static Integer link2OfsId(String link) {
