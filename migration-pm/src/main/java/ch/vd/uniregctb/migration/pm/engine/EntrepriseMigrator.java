@@ -37,6 +37,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -1423,18 +1424,32 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				ffp.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 			}
 			else if (f.getOfsPays() != null) {
-				if (f.getOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-					mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %s sans commune mais sur Suisse", f.getId()));
+				final int noOfsPays;
+				final Pays pays = infraService.getPays(f.getOfsPays(), f.getDateValidite());
+				if (pays != null && !pays.isEtatSouverain()) {
+					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+					              String.format("Le pays %d du for principal %d n'est pas un état souverain, for déplacé sur l'état %d.",
+					                            f.getOfsPays(),
+					                            f.getId().getSeqNo(),
+					                            pays.getNoOfsEtatSouverain()));
+					noOfsPays = pays.getNoOfsEtatSouverain();
+				}
+				else {
+					noOfsPays = f.getOfsPays();
+				}
+
+				if (noOfsPays == ServiceInfrastructureService.noOfsSuisse) {
+					mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %d sans commune mais sur Suisse", f.getId().getSeqNo()));
 					return Optional.empty();
 				}
-				ffp.setNumeroOfsAutoriteFiscale(f.getOfsPays());
+
+				ffp.setNumeroOfsAutoriteFiscale(noOfsPays);
 				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 			}
 			else {
-				mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %s sans autorité fiscale", f.getId()));
+				mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %d sans autorité fiscale", f.getId().getSeqNo()));
 				return Optional.empty();
 			}
-			ffp.setTiers(unireg);
 			return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
 		};
 

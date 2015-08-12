@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -2373,6 +2374,64 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par DecisionAci [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(5));
 		Assert.assertEquals("Décision ACI COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] générée.", textes.get(6));
 		Assert.assertEquals("Décision ACI COMMUNE_HC/261 [01.01.1990 -> ?] générée.", textes.get(7));
+	}
+
+	@Test
+	public void testForPrincipalSurTerritoire() throws Exception {
+
+		final long noEntreprise = 53465L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalEtranger(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, MockPays.Gibraltar.getNoOFS());
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base de données
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(1, ffps.size());
+
+			final ForFiscalPrincipalPM ffp = ffps.get(0);
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(RegDate.get(1977, 4, 7), ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getMotifFermeture());
+
+			final List<DecisionAci> decisions = entreprise.getDecisionsSorted();
+			Assert.assertNotNull(decisions);
+			Assert.assertEquals(1, decisions.size());
+
+			final DecisionAci decision = decisions.get(0);
+			Assert.assertNotNull(decision);
+			Assert.assertFalse(decision.isAnnule());
+			Assert.assertEquals(RegDate.get(1977, 4, 7), decision.getDateDebut());
+			Assert.assertNull(decision.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, decision.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(3, textes.size());
+		Assert.assertEquals("Le pays 8213 du for principal 1 n'est pas un état souverain, for déplacé sur l'état 8215.", textes.get(0));
+		Assert.assertEquals("For principal PAYS_HS/8215 [07.04.1977 -> ?] généré.", textes.get(1));
+		Assert.assertEquals("Décision ACI PAYS_HS/8215 [07.04.1977 -> ?] générée.", textes.get(2));
 	}
 
 	// TODO il reste encore plein de tests à faire...
