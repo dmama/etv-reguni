@@ -455,6 +455,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
+					.filter(ff -> {
+						if (isFutureDate(ff.getDateValidite())) {
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("Le for principal %d est ignoré car il a une date de début dans le futur (%s).",
+							                            ff.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(ff.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
 					.collect(Collectors.toList());
 
 			return new ForsPrincipauxData(liste);

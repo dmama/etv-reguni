@@ -2141,5 +2141,70 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Entreprise migrée : 324.14.", textes.get(5));
 	}
 
+	@Test
+	public void testForPrincipalAvecDateDansLeFutur() throws Exception {
+
+		final long noEntreprise = 4815;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, RegDate.get(2010, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+		addForPrincipalSuisse(e, RegDate.get().addMonths(3), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(2010, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		final RegpmDossierFiscal df = addDossierFiscal(e, a, 2010, RegDate.get(2010, 12, 20), RegpmModeImposition.POST);
+		addExerciceCommercial(e, df, RegDate.get(2010, 1, 1), RegDate.get(2010, 12, 31));
+
+		// ajout des périodes fiscales dans Unireg
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2010);
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base de données
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Bouclement> bouclements = entreprise.getBouclements();
+			Assert.assertNotNull(bouclements);
+			Assert.assertEquals(1, bouclements.size());
+
+			final Bouclement bouclement = bouclements.iterator().next();
+			Assert.assertNotNull(bouclement);
+			Assert.assertFalse(bouclement.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+			Assert.assertEquals(RegDate.get(2010, 12, 1), bouclement.getDateDebut());
+			Assert.assertEquals(12, bouclement.getPeriodeMois());
+
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(1, ffps.size());       // l'autre doit avoir été ignoré (= date dans le futur) !
+
+			final ForFiscalPrincipalPM ffp = ffps.get(0);
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(RegDate.get(2010, 1, 1), ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.MORGES.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(2, textes.size());
+		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début dans le futur (" + RegDateHelper.dateToDisplayString(RegDate.get().addMonths(3)) + ").", textes.get(0));
+		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [01.01.2010 -> ?] généré.", textes.get(1));
+	}
+
+
 	// TODO il reste encore plein de tests à faire...
 }
