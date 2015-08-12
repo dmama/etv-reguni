@@ -2078,8 +2078,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		e.setDateBouclementFutur(dateBouclementFutur);
-		addForPrincipalSuisse(e, RegDate.get(1887, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
-		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(1900, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+		addForPrincipalSuisse(e, RegDate.get(1960, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+		final RegpmAssujettissement a = addAssujettissement(e, RegDate.get(1960, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df = addDossierFiscal(e, a, 2001, RegDate.get(2001, 12, 12), RegpmModeImposition.POST);
 		addExerciceCommercial(e, df, RegDate.get(2001, 1, 1), RegDate.get(2001, 12, 31));
 
@@ -2137,7 +2137,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Date de bouclement futur (31.12.1992) ignorée car antérieure à la date de fin du dernier exercice commercial connu (31.12.2001).", textes.get(1));
 		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.12.2001 : tous les 12 mois, à partir du premier 31.12.", textes.get(2));
 		Assert.assertEquals(String.format("Création de l'établissement principal %s.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(3));
-		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.1887 -> ?] sur COMMUNE_OU_FRACTION_VD/5642.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(4));
+		Assert.assertEquals(String.format("Domicile de l'établissement principal %s : [01.01.1960 -> ?] sur COMMUNE_OU_FRACTION_VD/5642.", FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue())), textes.get(4));
 		Assert.assertEquals("Entreprise migrée : 324.14.", textes.get(5));
 	}
 
