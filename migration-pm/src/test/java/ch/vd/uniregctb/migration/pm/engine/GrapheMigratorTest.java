@@ -1727,4 +1727,70 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final String texte = msg.get(0);
 		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Période(s) d'assujettissement modifiée(s) : avant ([01.01.1990 -> 31.12.2014]) et après ([01.01.1990 -> ?]).", texte);
 	}
+
+	/**
+	 * C'est le cas de l'entreprise 15486 : son for principal est à ZH (261) depuis 1991, mais en raison
+	 * de fors secondaires antérieurs, on doit ramener cette date à avant 1990 (= période où ZH n'a pas le même numéro OFS)
+	 */
+	@Test
+	public void testAdaptationCouvertureForsSecondairesAvecFusionCommunes() throws Exception {
+
+		final long idEntreprise = 15486;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1991, 3, 14), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1988, 1, 4), null, createImmeuble(Commune.ECHALLENS));
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final List<String> msg = messages.get(LogCategory.FORS);
+		Assert.assertNotNull(msg);
+		Assert.assertEquals(6, msg.size());
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/261 [14.03.1991 -> ?] généré.", msg.get(0));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'immeuble' [04.01.1988 -> ?] ajouté sur la commune 5518.", msg.get(1));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5518 (maintenant : [04.01.1988 -> ?]).", msg.get(2));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;La date de début du for fiscal principal [14.03.1991 -> ?] est adaptée (-> 04.01.1988) pour couvrir les fors secondaires.", msg.get(3));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [04.01.1988 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [04.01.1988 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", msg.get(4));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [04.01.1988 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", msg.get(5));
+
+		// on va regarder en base quand-même pour vérifier que les fors sont les bons (et qu'il n'y a qu'eux!!)
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);       // c'est le même identifiant dans RegPM et dans Unireg
+			Assert.assertNotNull(e);
+
+			final List<ForFiscalPrincipalPM> ffps = e.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(2, ffps.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1988, 1, 4), ffp.getDateDebut());
+				Assert.assertEquals(RegDate.get(1989, 12, 31), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 253, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1990, 1, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 261, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+			}
+		});
+	}
+
 }

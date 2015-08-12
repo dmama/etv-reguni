@@ -600,6 +600,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 								// il ne suffit pas de le dire, il faut le faire...
 								forApresTrou.setDateDebut(nonCouvert.getDateDebut());
+
+								// on enlève le for de la collections des fors fiscaux de l'entreprise avant de le remettre en compagnie de ses éventuels amis
+								// issus des fusions de communes
+								entreprise.getForsFiscaux().remove(forApresTrou);
+								adapterAutourFusionsCommunes(forApresTrou, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+										.forEach(entreprise::addForFiscal);
 							}
 							else {
 								// TODO il y a un souci, non ?
@@ -619,6 +625,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 									// là non plus, il ne suffit pas de le dire...
 									forAvantTrou.setDateFin(nonCouvert.getDateFin());
+
+									// on enlève le for de la collections des fors fiscaux de l'entreprise avant de le remettre en compagnie de ses éventuels amis
+									// issus des fusions de communes
+									entreprise.getForsFiscaux().remove(forAvantTrou);
+									adapterAutourFusionsCommunes(forAvantTrou, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+											.forEach(entreprise::addForFiscal);
 								}
 							}
 						}
