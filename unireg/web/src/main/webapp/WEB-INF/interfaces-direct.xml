@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<!-- Ce fichier permet de configurer les services civils, infrastructure et organisation en mode direct, c'est-à-dire sans passer par le cache centralisé Nexus.
 	 L'idée est de permettre aux développeurs de travailler en débug sans devoir démarrage deux applications Java. -->
@@ -47,8 +48,19 @@
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
-		<property name="organisationPath" value="organisation/ct.vd.party"/>
-		<property name="organisationsOfNoticePath" value="organisationsOfNotice"/>
+		<property name="organisationPath" value="/v1/organisation/CT.VD.PARTY"/>
+		<property name="organisationsOfNoticePath" value="/v1/organisationsOfNotice"/>
+		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
+		<property name="schemasLocations">
+			<util:list>
+				<value>eVD-0004-3-0.xsd</value>
+				<value>eVD-0021-1-0.xsd</value>
+				<value>eVD-0022-1-0.xsd</value>
+				<value>eVD-0023-1-0.xsd</value>
+				<value>eVD-0024-1-0.xsd</value>
+			</util:list>
+		</property>
+
 	</bean>
 
 	<!-- Adapteur RCEnt -->

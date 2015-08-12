@@ -49,6 +49,8 @@ de configuration supplémentaire.
 
 
 1.xx Connexion à RCEnt
+# Activation de la validation à la reception des données en provenance de RCEnt (Performances, désactivé par défaut)
+extprop.webservice.rcent.validate=false
 
 NEXUS : credentials.properties
 ------------------------------

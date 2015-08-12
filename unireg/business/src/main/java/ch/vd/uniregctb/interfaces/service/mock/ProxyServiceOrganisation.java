@@ -9,8 +9,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 
 /**
- * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
- * du service civil à utiliser.
+ * Proxy du service organisation à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
+ * du service organisation à utiliser.
  */
 public class ProxyServiceOrganisation implements ServiceOrganisationService, ServiceOrganisationServiceWrapper {
 
@@ -39,7 +39,7 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	}
 
 	private void assertTargetNotNull() {
-		Assert.notNull(target, "Le service civil n'a pas été défini !");
+		Assert.notNull(target, "Le service organisation n'a pas été défini !");
 	}
 
 	@Override

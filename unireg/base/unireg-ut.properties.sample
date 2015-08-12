@@ -111,3 +111,9 @@ testprop.webservice.rcpers.upiGetInfoPersonPath=upi/query/getInfoPerson
 testprop.localite.invalide.regexp.enabled = true
 testprop.localite.invalide.regexp.patterns = etranger,inconu,adrese,nonindique,parti,sdc
 testprop.localite.invalide.regexp.faux.positifs = particino,sainte-adresse
+
+# RCEnt WebService
+testprop.webservice.rcent.url=http://slv2737v.etat-de-vaud.ch:8040/services
+testprop.webservice.rcent.username=gvd0unireg
+testprop.webservice.rcent.password=Welc0me_
+testprop.webservice.rcent.validate=false
