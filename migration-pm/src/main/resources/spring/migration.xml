@@ -45,6 +45,8 @@
 	<bean id="entityMigrator" abstract="true" class="ch.vd.uniregctb.migration.pm.engine.AbstractEntityMigrator">
         <constructor-arg name="uniregStore" ref="uniregStore"/>
 		<constructor-arg name="activityManager" ref="activityManager"/>
+		<constructor-arg name="infraService" ref="serviceInfrastructureService"/>
+		<constructor-arg name="fusionCommunesProvider" ref="fusionCommunesProvider"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
@@ -71,6 +73,10 @@
 
 	<bean id="noOrdrePosteProvider" class="ch.vd.uniregctb.migration.pm.adresse.NoOrdrePosteProvider">
 		<constructor-arg value="${mapping.noOrdreP.file}"/>
+	</bean>
+
+	<bean id="fusionCommunesProvider" class="ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProviderImpl">
+		<property name="nomFichierSource" value="${fusions.communes.file}"/>
 	</bean>
 
 	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">

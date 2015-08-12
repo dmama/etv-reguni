@@ -17,6 +17,12 @@
 		<file>
 			<source>src/main/scripts/migration-pm.sh</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/bin</outputDirectory>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
+			<source>src/main/scripts/buildMunicipalityData.sh</source>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/bin</outputDirectory>
+			<fileMode>0755</fileMode>
 		</file>
 		<file>
 			<source>src/main/config/migration.properties</source>

@@ -10,8 +10,10 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
@@ -38,9 +40,12 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		migrator = new IndividuMigrator(
 				getBean(UniregStore.class, "uniregStore"),
 				activityManager,
+				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RcPersClient.class, "rcpersClient"),
-				nonHabitantIndex);
+				nonHabitantIndex,
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
+		);
 	}
 
 	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {

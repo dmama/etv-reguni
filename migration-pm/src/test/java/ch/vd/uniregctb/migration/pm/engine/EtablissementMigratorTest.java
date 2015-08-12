@@ -19,9 +19,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
@@ -56,8 +58,10 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		migrator = new EtablissementMigrator(
 				getBean(UniregStore.class, "uniregStore"),
 				activityManager,
+				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
-				getBean(AdresseHelper.class, "adresseHelper")
+				getBean(AdresseHelper.class, "adresseHelper"),
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
 		);
 	}
 

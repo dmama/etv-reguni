@@ -25,9 +25,11 @@ import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -45,8 +47,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	private final RcPersClient rcpersClient;
 	private final NonHabitantIndex nonHabitantIndex;
 
-	public IndividuMigrator(UniregStore uniregStore, ActivityManager activityManager, TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex) {
-		super(uniregStore, activityManager);
+	public IndividuMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
+	                        TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex, FusionCommunesProvider fusionCommunesProvider) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider);
 		this.tiersDAO = tiersDAO;
 		this.rcpersClient = rcpersClient;
 		this.nonHabitantIndex = nonHabitantIndex;

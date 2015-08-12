@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -21,13 +22,19 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
@@ -49,17 +56,25 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
+import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
 	protected final UniregStore uniregStore;
 	protected final ActivityManager activityManager;
+	protected final ServiceInfrastructureService infraService;
+	protected final FusionCommunesProvider fusionCommunesProvider;
 
-	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager) {
+	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService, FusionCommunesProvider fusionCommunesProvider) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
+		this.infraService = infraService;
+		this.fusionCommunesProvider = fusionCommunesProvider;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
@@ -480,5 +495,254 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 */
 	protected static boolean isFutureDate(@Nullable RegDate date) {
 		return NullDateBehavior.EARLIEST.compare(RegDate.get(), date) < 0;
+	}
+
+	/**
+	 * @param date date testée
+	 * @return <code>true</code> si la date est non nulle et postérieure ou égale à la date du jour
+	 */
+	protected static boolean isFutureDateOrToday(@Nullable RegDate date) {
+		return NullDateBehavior.EARLIEST.compare(RegDate.get(), date) <= 0;
+	}
+
+	/**
+	 * @param list une liste de ranges
+	 * @return une représentation String de cette liste
+	 */
+	protected static String toDisplayString(List<? extends DateRange> list) {
+		return toDisplayString(list, StringRenderers.DATE_RANGE_RENDERER);
+	}
+
+	/**
+	 * @param list une collection d'élément
+	 * @param renderer un renderer capable de fournir une chaîne de caractères pour chaque élément de la liste
+	 * @param <T> le type des éléments dans la liste
+	 * @return une représentation String de cette liste
+	 */
+	protected static <T> String toDisplayString(Collection<T> list, StringRenderer<? super T> renderer) {
+		return list.stream().map(renderer::toString).collect(Collectors.joining(", "));
+	}
+
+	/**
+	 * Adapteur des motifs d'ouverture/fermeture des fors fiscaux par rapports aux fusions de communes (peut-être utilisé dans {@link #adapterAutourFusionsCommunes(LocalisationDatee, MigrationResultProduction, LogCategory, BiConsumer)})
+	 * @param origine le for fiscal original
+	 * @param remplacant le for fiscal (a priori dupliqué du premier sauf peut-être pour les dates de début et de fin, ainsi que la commune visée) qui remplacera (au moins pour partie) le for original
+	 * @param <T> le type de for fiscal
+	 */
+	protected static <T extends ForFiscalAvecMotifs> void adapteMotifsForsFusionCommunes(T origine, T remplacant) {
+		if (origine.getDateDebut() != remplacant.getDateDebut()) {
+			remplacant.setMotifOuverture(MotifFor.FUSION_COMMUNES);
+		}
+		if (origine.getDateFin() != remplacant.getDateFin() && remplacant.getDateFin() != null) {
+			remplacant.setMotifFermeture(MotifFor.FUSION_COMMUNES);
+		}
+	}
+
+	/**
+	 * Découpe l'entité de localisation datée fournie en entrée en autant de localisations datées que
+	 * nécessaire pour tenir compte des fusions de communes suisses
+	 * @param source une localisation datée
+	 * @param mr collecteur de messages de suivi
+	 * @param logCategory catégorie à utiliser pour les messages de suivi
+	 * @param adaptator (optionel) consomateur qui recevra la source en premier paramètre, et chacun des nouveaux éléments créés (dupliqués) en second paramètre
+	 * @param <LD> le type de localisation datée (for fiscal, décision aci...)
+	 * @return la liste (triée par date de début) des entités après découpage
+	 */
+	@NotNull
+	protected <LD extends LocalisationDatee & Duplicable<? super LD>> List<LD> adapterAutourFusionsCommunes(LD source,
+	                                                                                                        MigrationResultProduction mr,
+	                                                                                                        LogCategory logCategory,
+	                                                                                                        @Nullable BiConsumer<LD, LD> adaptator) {
+		final Stream<LD> stream = adapterAutourFusionsCommunesStream(source, mr, logCategory, adaptator);
+
+		// reconstitution de la liste (triée) des localisations remplaçantes
+		return stream
+				.sorted(DateRangeComparator::compareRanges)
+				.peek(ld -> {
+					// on ne mets un log que si quelque chose a changé...
+					if (ld != source) {
+						mr.addMessage(logCategory, LogLevel.INFO,
+						              String.format("Entité %s partiellement remplacée par %s pour suivre les fusions de communes.",
+						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
+						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ld)));
+					}
+				})
+				.collect(Collectors.toList());
+	}
+
+
+	/**
+	 * Découpe l'entité de localisation datée fournie en entrée en autant de localisations datées que
+	 * nécessaire pour tenir compte des fusions de communes suisses
+	 * @param source une localisation datée
+	 * @param mr collecteur de messages de suivi
+	 * @param logCategory catégorie à utiliser pour les messages de suivi
+	 * @param adaptator (optionel) consomateur qui recevra la source en premier paramètre, et chacun des nouveaux éléments créés (dupliqués) en second paramètre
+	 * @param <LD> le type de localisation datée (for fiscal, décision aci...)
+	 * @return la liste des entités après découpage
+	 */
+	@NotNull
+	private <LD extends LocalisationDatee & Duplicable<? super LD>> Stream<LD> adapterAutourFusionsCommunesStream(LD source,
+	                                                                                                              MigrationResultProduction mr,
+	                                                                                                              LogCategory logCategory,
+	                                                                                                              @Nullable BiConsumer<LD, LD> adaptator) {
+
+		// seules les communes suisses sont gérables ici pour les fusions...
+		if (source.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			return Stream.of(source);
+		}
+
+		// donc c'est une commune... est-elle valide sur toute la durée de la localisation ?
+		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
+		if (communes == null || communes.isEmpty()) {
+			mr.addMessage(logCategory, LogLevel.ERROR,
+			              String.format("Commune %d inconnue dans l'infratructure fiscale (cas de %s).", source.getNumeroOfsAutoriteFiscale(), source));
+
+			// on la renvoie telle qu'elle, mais ça va pêter à la validation
+			return Stream.of(source);
+		}
+
+		// on ignore les communes dont la date de début est dans le futur, et on
+		// ignore la date de fin des communes si celle-ci est dans le futur (y compris aujourd'hui)
+		final List<DateRange> couverture = communes.stream()
+				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
+				.map(c -> new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite()))
+				.sorted(DateRangeComparator::compareRanges)
+				.collect(Collectors.toList());
+		if (DateRangeHelper.isFullyCovered(source, couverture)) {
+			// complètement couvert avec ce numéro OFS -> pas de souci
+			return Stream.of(source);
+		}
+
+		// ok, il y a un ou des bouts qui dépassent...
+
+		final Stream.Builder<LD> builder = Stream.builder();
+
+		// on regarde d'abord la ou les intersection(s) (= ce qui reste de l'ancienne donnée)
+		final List<DateRange> intersections = DateRangeHelper.intersections(source, couverture);
+		if (intersections != null) {
+			intersections.stream()
+					.map(i -> duplicate(source, i, source.getNumeroOfsAutoriteFiscale(), adaptator))
+					.forEach(builder);
+		}
+
+		// jusqu'à preuve que le cas contraire existe, on va supposer qu'un numéro OFS de commune est utilisée de manière continue
+		// (= sans interruption suivie d'une ré-utilisation), ce qui signifie que les dépassements sont soit avant la converture, soit après,
+		// mais en aucun cas dans un trou de cette couverture
+		final RegDate debutCouverture = couverture.get(0).getDateDebut();
+		final RegDate finCouverture = couverture.get(couverture.size() - 1).getDateFin();
+
+		// maintenant on regarde ce qui dépasse (= ce qui n'intersecte pas)
+		final List<DateRange> depassements = DateRangeHelper.subtract(source, couverture);
+		depassements.stream()
+				.map(d -> traiterDepassement(source, d, debutCouverture, finCouverture, mr, logCategory, adaptator))
+				.flatMap(Function.identity())
+				.forEach(builder);
+
+		// finalisation du stream
+		return builder.build();
+	}
+
+	/**
+	 * Traitement d'un dépassement de validité de la commune de la source
+	 * @param source une localisation datée
+	 * @param rangeNonValide range sur lequel la commune de la localisation source n'est pas valide (peut être ouvert à gauche et/ou à droite)
+	 * @param debutCouverture date de début de la validité de la commune de la source
+	 * @param finCouverture date de fin de la validité de la commune de la source
+	 * @param mr collecteur de messages de suivi
+	 * @param logCategory catégorie à utiliser pour les messages de suivi
+	 * @param adaptator (optionel) consomateur qui recevra la source en premier paramètre, et chacun des nouveaux éléments créés (dupliqués) en second paramètre
+	 * @param <LD> le type de localisation datée (for fiscal, décision aci...)
+	 * @return un stream des entités de remplissage du dépassement
+	 */
+	@NotNull
+	private <LD extends LocalisationDatee & Duplicable<? super LD>> Stream<LD> traiterDepassement(LD source, DateRange rangeNonValide,
+	                                                                                              @Nullable RegDate debutCouverture, @Nullable RegDate finCouverture,
+	                                                                                              MigrationResultProduction mr, LogCategory logCategory, @Nullable BiConsumer<LD, LD> adaptator) {
+
+		// avant la couverture ?
+		if (debutCouverture != null && rangeNonValide.getDateFin() == debutCouverture.getOneDayBefore()) {
+			final List<Integer> avant = fusionCommunesProvider.getCommunesAvant(source.getNumeroOfsAutoriteFiscale(), debutCouverture);
+			if (avant.isEmpty()) {
+				mr.addMessage(logCategory, LogLevel.ERROR,
+				              String.format("Entité %s : aucune commune connue à l'origine de la commune %d avant le %s.",
+				                            source,
+				                            source.getNumeroOfsAutoriteFiscale(),
+				                            StringRenderers.DATE_RENDERER.toString(debutCouverture)));
+				return Stream.empty();
+			}
+			else {
+				if (avant.size() > 1) {
+					mr.addMessage(logCategory, LogLevel.WARN,
+					              String.format("Entité %s : plusieurs communes connues à l'origine de la commune %d avant le %s (on prend la première) : %s.",
+					                            source,
+					                            source.getNumeroOfsAutoriteFiscale(),
+					                            StringRenderers.DATE_RENDERER.toString(debutCouverture),
+					                            toDisplayString(avant, String::valueOf)));
+
+				}
+
+				final LD duplicate = duplicate(source, rangeNonValide, avant.get(0), adaptator);
+				return adapterAutourFusionsCommunesStream(duplicate, mr, logCategory, adaptator);        // appel récursif
+			}
+		}
+
+		// après la couverture ?
+		else if (finCouverture != null && rangeNonValide.getDateDebut() == finCouverture.getOneDayAfter()) {
+			final List<Integer> apres = fusionCommunesProvider.getCommunesApres(source.getNumeroOfsAutoriteFiscale(), finCouverture);
+			if (apres.isEmpty()) {
+				mr.addMessage(logCategory, LogLevel.ERROR,
+				              String.format("Entité %s : aucune commune connue à la suite de la commune %d après le %s.",
+				                            source,
+				                            source.getNumeroOfsAutoriteFiscale(),
+				                            StringRenderers.DATE_RENDERER.toString(finCouverture)));
+				return Stream.empty();
+			}
+			else {
+				if (apres.size() > 1) {
+					mr.addMessage(logCategory, LogLevel.WARN,
+					              String.format("Entité %s : plusieurs communes connues à la suite de la commune %d après le %s (on prend la première) : %s.",
+					                            source,
+					                            source.getNumeroOfsAutoriteFiscale(),
+					                            StringRenderers.DATE_RENDERER.toString(finCouverture),
+					                            toDisplayString(apres, String::valueOf)));
+				}
+
+				final LD duplicate = duplicate(source, rangeNonValide, apres.get(0), adaptator);
+				return adapterAutourFusionsCommunesStream(duplicate, mr, logCategory, adaptator);        // appel récursif
+			}
+		}
+
+		// ni avant, ni après... c'est apparemment le cas où la supposition vue plus haut est invalide...
+		else {
+			throw new RuntimeException("Algorithme incomplet : il semble que certains numéros OFS ont des 'trous' d'utilisation...");
+		}
+	}
+
+	/**
+	 * Duplication d'une localisation moyennant quelques ajustements
+	 * @param source une localisation datée
+	 * @param range nouveau range de validité de la copie
+	 * @param noOfs numéro OFS de la commune à placer sur la copie
+	 * @param adaptator (optionel) consomateur qui recevra la source en premier paramètre, et chacun des nouveaux éléments créés (dupliqués) en second paramètre
+	 * @param <LD> le type de localisation datée (for fiscal, décision aci...)
+	 * @return une donnée équivalente à la donnée source moyennant les ajustements demandés
+	 */
+	@NotNull
+	private static <LD extends LocalisationDatee & Duplicable<? super LD>> LD duplicate(LD source, DateRange range, int noOfs, @Nullable BiConsumer<LD, LD> adaptator) {
+
+		// ce cast est assez moche, on est d'accord, mais c'est trop compliqué par rapport
+		// au gain (= seulement cette migration) de faire en sorte que ForFiscal devienne
+		// une classe générique afin de pouvoir implémenter la bonne flaveur de l'interface Duplicable...
+
+		//noinspection unchecked
+		final LD duplicate = (LD) source.duplicate();
+		duplicate.setDateDebut(range.getDateDebut());
+		duplicate.setDateFin(range.getDateFin());
+		duplicate.setNumeroOfsAutoriteFiscale(noOfs);
+		if (adaptator != null) {
+			adaptator.accept(source, duplicate);
+		}
+		return duplicate;
 	}
 }

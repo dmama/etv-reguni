@@ -27,11 +27,13 @@ import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
@@ -102,10 +104,12 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator = new EntrepriseMigrator(
 				uniregStore,
 				activityManager,
+				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
-				getBean(AdresseHelper.class, "adresseHelper")
+				getBean(AdresseHelper.class, "adresseHelper"),
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
 		);
 	}
 
@@ -2205,6 +2209,171 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [01.01.2010 -> ?] généré.", textes.get(1));
 	}
 
+	/**
+	 * La commune de Zürich n'a le numéro OFS 261 que depuis le 01.01.1990 (avant, c'était 253, c'est en tout cas ce que dit RefInf)
+	 * mais RegPM a toujours utilisé le numéro 261... même pour les fors d'avant 1990 -> c'est malheureusement invalide dans Unireg
+	 * (= for ouvert en dehors de la période de validité de la commune dans RefInf), donc un mapping doit être fait dans la migration
+	 * (= dans notre exemple : avant 1990 -> 253, après -> 261)
+	 */
+	@Test
+	public void testFusionCommuneLointaineInconnueDeRegpmSiege() throws Exception {
+
+		Assert.assertEquals((Integer) 261, Commune.ZURICH.getNoOfs());
+
+		final long noEntreprise = 53465L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base de données
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(2, ffps.size());       // avant et après la fusion ZH
+
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1977, 4, 7), ffp.getDateDebut());
+				Assert.assertEquals(RegDate.get(1989, 12, 31), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 253, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1990, 1, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 261, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+			}
+
+			final List<DecisionAci> decisions = entreprise.getDecisionsSorted();
+			Assert.assertNotNull(decisions);
+			Assert.assertEquals(0, decisions.size());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(4, textes.size());
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
+		Assert.assertEquals("For principal COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] généré.", textes.get(2));
+		Assert.assertEquals("For principal COMMUNE_HC/261 [01.01.1990 -> ?] généré.", textes.get(3));
+	}
+
+	/**
+	 * La commune de Zürich n'a le numéro OFS 261 que depuis le 01.01.1990 (avant, c'était 253, c'est en tout cas ce que dit RefInf)
+	 * mais RegPM a toujours utilisé le numéro 261... même pour les fors d'avant 1990 -> c'est malheureusement invalide dans Unireg
+	 * (= for ouvert en dehors de la période de validité de la commune dans RefInf), donc un mapping doit être fait dans la migration
+	 * (= dans notre exemple : avant 1990 -> 253, après -> 261)
+	 */
+	@Test
+	public void testFusionCommuneLointaineInconnueDeRegpmAdministrationEffective() throws Exception {
+
+		Assert.assertEquals((Integer) 261, Commune.ZURICH.getNoOfs());
+
+		final long noEntreprise = 53465L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, RegDate.get(1977, 4, 7), RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, Commune.ZURICH);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base de données
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(2, ffps.size());       // avant et après la fusion ZH
+
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1977, 4, 7), ffp.getDateDebut());
+				Assert.assertEquals(RegDate.get(1989, 12, 31), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 253, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1990, 1, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 261, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+			}
+
+			final List<DecisionAci> decisions = entreprise.getDecisionsSorted();
+			Assert.assertNotNull(decisions);
+			Assert.assertEquals(2, decisions.size());
+			{
+				final DecisionAci decision = decisions.get(0);
+				Assert.assertNotNull(decision);
+				Assert.assertFalse(decision.isAnnule());
+				Assert.assertEquals(RegDate.get(1977, 4, 7), decision.getDateDebut());
+				Assert.assertEquals(RegDate.get(1989, 12, 31), decision.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, decision.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 253, decision.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final DecisionAci decision = decisions.get(1);
+				Assert.assertNotNull(decision);
+				Assert.assertFalse(decision.isAnnule());
+				Assert.assertEquals(RegDate.get(1990, 1, 1), decision.getDateDebut());
+				Assert.assertNull(decision.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, decision.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 261, decision.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(8, textes.size());
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
+		Assert.assertEquals("For principal COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] généré.", textes.get(2));
+		Assert.assertEquals("For principal COMMUNE_HC/261 [01.01.1990 -> ?] généré.", textes.get(3));
+		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par DecisionAci [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(4));
+		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par DecisionAci [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(5));
+		Assert.assertEquals("Décision ACI COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] générée.", textes.get(6));
+		Assert.assertEquals("Décision ACI COMMUNE_HC/261 [01.01.1990 -> ?] générée.", textes.get(7));
+	}
 
 	// TODO il reste encore plein de tests à faire...
 }

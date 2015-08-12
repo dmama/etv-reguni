@@ -32,6 +32,7 @@ import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -68,8 +70,9 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
 
-	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper) {
-		super(uniregStore, activityManager);
+	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
+	                             RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider);
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 	}
@@ -316,23 +319,26 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				}
 				else {
 					final int noOfsCommune = NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
-					for (DateRange dates : communeData.getValue()) {
-						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-						ffs.setDateDebut(dates.getDateDebut());
-						ffs.setDateFin(dates.getDateFin());
-						ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-						ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-						ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
-						ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
-						ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-						ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
-						ffs.setTiers(entiteJuridique);
-						entiteJuridique.addForFiscal(ffs);
-
-						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
-						                                                             StringRenderers.DATE_RANGE_RENDERER.toString(dates),
-						                                                             noOfsCommune));
-					}
+					communeData.getValue().stream()
+							.map(range -> {
+								final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+								ffs.setDateDebut(range.getDateDebut());
+								ffs.setDateFin(range.getDateFin());
+								ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+								ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+								ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
+								ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
+								ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
+								return ffs;
+							})
+							.peek(ffs -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+							                           String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
+							                                         StringRenderers.DATE_RANGE_RENDERER.toString(ffs),
+							                                         noOfsCommune)))
+							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+							.flatMap(List::stream)
+							.forEach(entiteJuridique::addForFiscal);
 				}
 			}
 		});
@@ -522,6 +528,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				                                       pair.getKey().getTypeAutoriteFiscale(),
 				                                       pair.getKey().getNumeroOfsAutoriteFiscale(),
 				                                       null))
+				.map(dom -> adapterAutourFusionsCommunes(dom, mr, LogCategory.ETABLISSEMENTS, null))
+				.flatMap(List::stream)
 				.collect(Collectors.toList());
 
 		// log ou ajout des domiciles dans l'établissement...

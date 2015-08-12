@@ -35,6 +35,7 @@ import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
@@ -91,6 +92,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		uniregStore = getBean(UniregStore.class, "uniregStore");
 
 		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final RCEntAdapter rcEntAdapter = getBean(RCEntAdapter.class, "rcEntAdapter");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
@@ -98,12 +100,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final NonHabitantIndex nonHabitantIndex = getBean(NonHabitantIndex.class, "nonHabitantIndex");
 		final ValidationInterceptor validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		final FusionCommunesProvider fusionCommunesProvider = getBean(FusionCommunesProvider.class, "fusionCommunesProvider");
+
 		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, bouclementService, assujettissementService, rcEntAdapter, adresseHelper));
-		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, rcEntAdapter, adresseHelper));
-		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, tiersDAO, rcpersClient, nonHabitantIndex));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcEntAdapter, adresseHelper, fusionCommunesProvider));
+		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider));
+		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, fusionCommunesProvider));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());
 		grapheMigrator.setValidationInterceptor(validationInterceptor);

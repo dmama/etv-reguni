@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -45,7 +44,6 @@ import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -69,6 +67,7 @@ import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -137,11 +136,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	public EntrepriseMigrator(UniregStore uniregStore,
 	                          ActivityManager activityManager,
+	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
 	                          RCEntAdapter rcEntAdapter,
-	                          AdresseHelper adresseHelper) {
-		super(uniregStore, activityManager);
+	                          AdresseHelper adresseHelper,
+	                          FusionCommunesProvider fusionCommunesProvider) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
 		this.rcEntAdapter = rcEntAdapter;
@@ -687,24 +688,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * @param list une liste de ranges
-	 * @return une représentation String de cette liste
-	 */
-	private static String toDisplayString(List<? extends DateRange> list) {
-		return toDisplayString(list, StringRenderers.DATE_RANGE_RENDERER);
-	}
-
-	/**
-	 * @param list une collection d'élément
-	 * @param renderer un renderer capable de fournir une chaîne de caractère pour chaque élément de la liste
-	 * @param <T> le type des éléments dans la liste
-	 * @return une représentation String de cette liste
-	 */
-	private static <T> String toDisplayString(Collection<T> list, StringRenderer<? super T> renderer) {
-		return list.stream().map(renderer::toString).collect(Collectors.joining(", "));
-	}
-
-	/**
 	 * @param regpm une PM
 	 * @return la date de début de l'activité de la PM en question
 	 */
@@ -764,23 +747,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				}
 				else {
 					final Integer noOfsCommune = NO_OFS_COMMUNE_EXTRACTOR.apply(commune);
-					for (DateRange dates : communeData.getValue()) {
-						final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
-						ffs.setDateDebut(dates.getDateDebut());
-						ffs.setDateFin(dates.getDateFin());
-						ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-						ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-						ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
-						ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-						ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
-						ffs.setMotifFermeture(dates.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
-						ffs.setTiers(entiteJuridique);
-						entiteJuridique.addForFiscal(ffs);
-
-						mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
-						                                                             StringRenderers.DATE_RANGE_RENDERER.toString(dates),
-						                                                             noOfsCommune));
-					}
+					communeData.getValue().stream()
+							.map(range -> {
+								final ForFiscalSecondaire ffs = new ForFiscalSecondaire();
+								ffs.setDateDebut(range.getDateDebut());
+								ffs.setDateFin(range.getDateFin());
+								ffs.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+								ffs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+								ffs.setNumeroOfsAutoriteFiscale(noOfsCommune);
+								ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+								ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
+								return ffs;
+							})
+							.peek(ffs -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+							                           String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
+							                                         StringRenderers.DATE_RANGE_RENDERER.toString(ffs),
+							                                         noOfsCommune)))
+							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+							.flatMap(List::stream)
+							.forEach(entiteJuridique::addForFiscal);
 				}
 			}
 		});
@@ -1476,18 +1462,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// assignation des dates de fin
 		assigneDatesFin(getDateFinActivite(regpm), liste);
 
+		// corrections dues aux fusions de communes passées
+		final List<ForFiscalPrincipalPM> listeAvecTraitementFusions = liste.stream()
+				.map(ff -> adapterAutourFusionsCommunes(ff, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+
 		// assignation des motifs
-		calculeMotifsOuvertureFermeture(liste);
+		calculeMotifsOuvertureFermeture(listeAvecTraitementFusions);
 
 		// on les ajoute au tiers
-		liste.forEach(ff -> {
-			// un peu de traçabilité.
-			mr.addMessage(LogCategory.FORS, LogLevel.INFO,
-			              String.format("For principal %s/%d %s généré.", ff.getTypeAutoriteFiscale(), ff.getNumeroOfsAutoriteFiscale(), StringRenderers.DATE_RANGE_RENDERER.toString(ff)));
-
-			// ajout au tiers
-			unireg.addForFiscal(ff);
-		});
+		listeAvecTraitementFusions.stream()
+				.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+				                          String.format("For principal %s/%d %s généré.",
+				                                        ff.getTypeAutoriteFiscale(),
+				                                        ff.getNumeroOfsAutoriteFiscale(),
+				                                        StringRenderers.DATE_RANGE_RENDERER.toString(ff))))
+				.forEach(unireg::addForFiscal);
 
 		// ... et finalement on crée également les éventuelles décisions ACI
 		listeIssueDeDecisionAci.stream()
@@ -1500,6 +1491,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					decision.setRemarque(String.format("Selon décision OIPM du %s par %s.", StringRenderers.DATE_RENDERER.toString(RegDateHelper.get(ff.getLogCreationDate())), ff.getLogCreationUser()));
 					return decision;
 				})
+				.map(decision -> adapterAutourFusionsCommunes(decision, mr, LogCategory.FORS, null))
+				.flatMap(List::stream)
 				.peek(decision -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 				                                String.format("Décision ACI %s/%d %s générée.",
 				                                              decision.getTypeAutoriteFiscale(),
@@ -1538,7 +1531,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				final TypeAutoriteFiscale nextTAF = next.getTypeAutoriteFiscale();
 				final MotifFor motif;
 				if (currentTAF == nextTAF) {
-					// TODO il y a sans doute d'autres possibilités, comme une fusion de communes...
 					motif = MotifFor.DEMENAGEMENT_VD;
 				}
 				else if (nextTAF == TypeAutoriteFiscale.PAYS_HS) {
@@ -1554,8 +1546,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					motif = MotifFor.ARRIVEE_HC;
 				}
 
-				current.setMotifFermeture(motif);
-				next.setMotifOuverture(motif);
+				// on ne veut pas surcharger un motif "FUSION_COMMUNES" placé là par ailleurs
+				if (current.getMotifFermeture() != MotifFor.FUSION_COMMUNES) {
+					current.setMotifFermeture(motif);
+				}
+				if (next.getMotifOuverture() != MotifFor.FUSION_COMMUNES) {
+					next.setMotifOuverture(motif);
+				}
 			}
 		}
 	}
