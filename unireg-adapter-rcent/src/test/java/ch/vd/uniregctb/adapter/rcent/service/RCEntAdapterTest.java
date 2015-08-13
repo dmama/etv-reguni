@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adapter.rcent.service;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.List;
@@ -16,6 +17,7 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.OrganisationData;
+import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
@@ -24,6 +26,8 @@ import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -299,5 +303,18 @@ public class RCEntAdapterTest {
 		assertThat(postalAddress_period2.getTown(), equalTo("Roche VD"));
 		assertThat(postalAddress_period2.getSwissZipCode(), equalTo(1852L));
 		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
+	}
+
+	@Test
+	public void testGetOrganisationHistorySample100983251() throws JAXBException {
+		File xml = new File("src/test/resources/samples/organisationData/organisation-100983251-history.xml");
+		JAXBElement<OrganisationData> data = (JAXBElement<OrganisationData>) unmarshaller.unmarshal(xml);
+		when(client.getOrganisation(100983251L, null, true)).thenReturn(data.getValue());
+
+		Organisation organisation = service.getOrganisationHistory(100983251L);
+		assertThat(organisation.getCantonalId(), equalTo(100983251L));
+
+		assertNotNull(organisation.getLocationData().get(0).getUid().getStatus());
+		assertEquals(UidRegisterStatus.DEFINITIF, organisation.getLocationData().get(0).getUid().getStatus().get(0).getPayload());
 	}
 }

@@ -13,6 +13,7 @@ import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.Organisation;
 import ch.vd.evd0022.v1.OrganisationSnapshot;
+import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.builders.OrganisationBuilder;
@@ -41,6 +42,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationTransferFr
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationTransferToExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.RcStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.SeatExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidTypeOfOrganisationExtractor;
 
 public class OrganisationHistorizer {
@@ -127,6 +129,9 @@ public class OrganisationHistorizer {
 
 		// IDE
 
+		final IndexedDataCollector<Organisation, UidRegisterStatus, BigInteger> locationUidStatus = new SingleValueIndexedDataCollector<>(new UidStatusExtractor(),
+		                                                                                                                                  Equalator.DEFAULT
+		);
 		final IndexedDataCollector<Organisation, UidRegisterTypeOfOrganisation, BigInteger> locationUidTypeOfOrganisation = new SingleValueIndexedDataCollector<>(new UidTypeOfOrganisationExtractor(),
 		                                                                                                                                                          Equalator.DEFAULT
 		);
@@ -155,6 +160,7 @@ public class OrganisationHistorizer {
 		                                                    seatsCollector,
 		                                                    locationRcstatusCollector,
 		                                                    locationRcLegalAddressCollector,
+		                                                    locationUidStatus,
 		                                                    locationUidTypeOfOrganisation,
 		                                                    locationUidEffectiveAddressCollector,
 		                                                    locationPostalBoxUidAddressCollector
@@ -182,7 +188,7 @@ public class OrganisationHistorizer {
 //		private final List<DateRanged<Capital>> capital;
 				locationRcLegalAddressCollector.getCollectedData(),
 
-//		private final List<DateRanged<UidRegisterStatus>> status;
+				locationUidStatus.getCollectedData(),
 				locationUidTypeOfOrganisation.getCollectedData(),
 				locationUidEffectiveAddressCollector.getCollectedData(),
 				locationPostalBoxUidAddressCollector.getCollectedData()
