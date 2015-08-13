@@ -9,6 +9,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -17,11 +18,13 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Base64;
 
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ResourceUtils;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0022.v1.OrganisationData;
@@ -36,7 +39,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
-public class ServiceOrganisationServiceTest extends BusinessItTest {
+public class ServiceOrganisationRCEntTest extends BusinessItTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
@@ -46,12 +49,14 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 			"eVD-0024-1-0.xsd"
 	};
 
-	private static final String BASE_PATH_ORGANISATION = "/v1/organisation/CT.VD.PARTY";
+	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
 
 	// Organisation cible pour les tests. Une seule suffit.
 	private static final long NO100983251 = 100983251L;
 	private static final String BOMACO_SÀRL_EN_LIQUIDATION = "Bomaco Sàrl en liquidation";
-	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/v1/organisationsOfNotice";
+	private static final String BASE_PATH_ORGANISATIONS_OF_NOTICE = "/organisationsOfNotice";
+
+	private static final String FILE_SAMPLE_ORGANISATION_100983251_HISTORY = "classpath:ch/vd/uniregctb/interfaces/organisation-100983251-history.xml";
 
 	private String baseUrl;
 
@@ -123,7 +128,7 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 
 	@Test
 	public void testSampleOrganisationWithValidation() throws Exception {
-		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(getSample()))).getValue();
+		OrganisationData data = (OrganisationData) ((JAXBElement) createMarshaller(true).unmarshal(new StringReader(loadFile(FILE_SAMPLE_ORGANISATION_100983251_HISTORY)))).getValue();
 		Assert.assertNotNull(data);
 		Assert.assertEquals(NO100983251, data.getOrganisationSnapshot().get(0).getOrganisation().getCantonalId().longValue());
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
@@ -196,70 +201,9 @@ public class ServiceOrganisationServiceTest extends BusinessItTest {
 		return b.toString();
 	}
 
-	private String getSample() {
-		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<organisationData xmlns=\"http://evd.vd.ch/xmlns/eVD-0023/1\">\n" +
-				"\t<eVD-0022:organisationSnapshot xmlns:eVD-0022=\"http://evd.vd.ch/xmlns/eVD-0022/1\">\n" +
-				"\t\t<beginValidityDate xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">2015-08-05</beginValidityDate>\n" +
-				"\t\t<eVD-0022:organisation>\n" +
-				"\t\t\t<cantonalId xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">100983251</cantonalId>\n" +
-				"\t\t\t<eVD-0022:organisationIdentifier>\n" +
-				"\t\t\t\t<identifierCategory xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH.IDE</identifierCategory>\n" +
-				"\t\t\t\t<identifierValue xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CHE113570477</identifierValue>\n" +
-				"\t\t\t</eVD-0022:organisationIdentifier>\n" +
-				"\t\t\t<eVD-0022:organisationIdentifier>\n" +
-				"\t\t\t\t<identifierCategory xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH.RC</identifierCategory>\n" +
-				"\t\t\t\t<identifierValue xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH55010502284</identifierValue>\n" +
-				"\t\t\t</eVD-0022:organisationIdentifier>\n" +
-				"\t\t\t<organisationName xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">Bomaco Sàrl en liquidation</organisationName>\n" +
-				"\t\t\t<legalForm xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">0107</legalForm>\n" +
-				"\t\t\t<eVD-0022:organisationLocation>\n" +
-				"\t\t\t\t<cantonalId xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">100983252</cantonalId>\n" +
-				"\t\t\t\t<eVD-0022:identifier>\n" +
-				"\t\t\t\t\t<identifierCategory xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH.IDE</identifierCategory>\n" +
-				"\t\t\t\t\t<identifierValue xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CHE113570477</identifierValue>\n" +
-				"\t\t\t\t</eVD-0022:identifier>\n" +
-				"\t\t\t\t<eVD-0022:identifier>\n" +
-				"\t\t\t\t\t<identifierCategory xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH.RC</identifierCategory>\n" +
-				"\t\t\t\t\t<identifierValue xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">CH55010502284</identifierValue>\n" +
-				"\t\t\t\t</eVD-0022:identifier>\n" +
-				"\t\t\t\t<name xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">Bomaco Sàrl en liquidation</name>\n" +
-				"\t\t\t\t<kindOfLocation xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">1</kindOfLocation>\n" +
-				"\t\t\t\t<eVD-0022:seat>\n" +
-				"\t\t\t\t\t<municipalityId xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">5518</municipalityId>\n" +
-				"\t\t\t\t\t<municipalityName xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">Echallens</municipalityName>\n" +
-				"\t\t\t\t\t<cantonAbbreviation xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">VD</cantonAbbreviation>\n" +
-				"\t\t\t\t\t<historyMunicipalityId xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">14717</historyMunicipalityId>\n" +
-				"\t\t\t\t</eVD-0022:seat>\n" +
-				"\t\t\t\t<commercialRegisterData xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">\n" +
-				"\t\t\t\t\t<name>Bomaco Sàrl en liquidation</name>\n" +
-				"\t\t\t\t\t<status>2</status>\n" +
-				"\t\t\t\t\t<entryStatus>1</entryStatus>\n" +
-				"\t\t\t\t\t<entryDate>2007-04-16</entryDate>\n" +
-				"\t\t\t\t</commercialRegisterData>\n" +
-				"\t\t\t\t<nogaCode xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">469000</nogaCode>\n" +
-				"\t\t\t\t<uidRegisterData xmlns=\"http://evd.vd.ch/xmlns/eVD-0022/1\">\n" +
-				"\t\t\t\t\t<status>3</status>\n" +
-				"\t\t\t\t\t<typeOfOrganisation>1</typeOfOrganisation>\n" +
-				"\t\t\t\t\t<eVD-0022:effectiveAddress xmlns:eVD-0021=\"http://evd.vd.ch/xmlns/eVD-0021/1\">\n" +
-				"\t\t\t\t\t\t<eVD-0021:street>Chemin de l'Arzillier</eVD-0021:street>\n" +
-				"\t\t\t\t\t\t<eVD-0021:houseNumber>1</eVD-0021:houseNumber>\n" +
-				"\t\t\t\t\t\t<eVD-0021:town>Echallens</eVD-0021:town>\n" +
-				"\t\t\t\t\t\t<eVD-0021:swissZipCode>1040</eVD-0021:swissZipCode>\n" +
-				"\t\t\t\t\t\t<eVD-0021:country>\n" +
-				"\t\t\t\t\t\t\t<eVD-0021:countryIdISO2>CH</eVD-0021:countryIdISO2>\n" +
-				"\t\t\t\t\t\t\t<eVD-0021:countryName>CH</eVD-0021:countryName>\n" +
-				"\t\t\t\t\t\t</eVD-0021:country>\n" +
-				"\t\t\t\t\t\t<eVD-0021:federalBuildingId>868353</eVD-0021:federalBuildingId>\n" +
-				"\t\t\t\t\t\t<eVD-0021:xCoordinate>538587</eVD-0021:xCoordinate>\n" +
-				"\t\t\t\t\t\t<eVD-0021:yCoordinate>166384</eVD-0021:yCoordinate>\n" +
-				"\t\t\t\t\t</eVD-0022:effectiveAddress>\n" +
-				"\t\t\t\t\t<publicStatus>1</publicStatus>\n" +
-				"\t\t\t\t</uidRegisterData>\n" +
-				"\t\t\t</eVD-0022:organisationLocation>\n" +
-				"\t\t</eVD-0022:organisation>\n" +
-				"\t</eVD-0022:organisationSnapshot>\n" +
-				"</organisationData>\n";
+	private String loadFile(String filename) throws IOException {
+		final File file = ResourceUtils.getFile(filename);
+		return FileUtils.readFileToString(file);
 	}
 
 }

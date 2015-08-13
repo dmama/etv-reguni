@@ -79,8 +79,8 @@
 		<property name="baseUrl" value="${testprop.webservice.rcent.url}"/>
 		<property name="username" value="${testprop.webservice.rcent.username}"/>
 		<property name="password" value="${testprop.webservice.rcent.password}"/>
-		<property name="organisationPath" value="/v1/organisation/CT.VD.PARTY"/>
-		<property name="organisationsOfNoticePath" value="/v1/organisationsOfNotice"/>
+		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
+		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="validationEnabled" value="${testprop.webservice.rcent.validate}"/>
 		<property name="schemasLocations">
 			<util:list>
@@ -101,11 +101,5 @@
 		<constructor-arg ref="rcEntClientRaw"/>
 		<constructor-arg ref="organisationHistorizer"/>
 	</bean>
-
-	<bean id="serviceOrganisationServiceImpl" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
-		<property name="target" ref="serviceOrganisationRaw"/>
-	</bean>
-	<alias alias="serviceOrganisationService" name="serviceOrganisationServiceImpl"/>
-
 
 </beans>

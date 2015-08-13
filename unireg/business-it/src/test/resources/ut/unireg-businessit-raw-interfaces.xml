@@ -47,6 +47,12 @@
 
 	<alias alias="serviceOrganisationRaw" name="serviceOrganisationCache"/>
 
+	<bean id="serviceOrganisation" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
+		<property name="target" ref="serviceOrganisationRaw"/>
+	</bean>
+	<alias name="serviceOrganisation" alias="serviceOrganisationService"/>
+
+
 	<!-- Service UPI -->
 
 	<bean id="serviceUpiRcPers" class="ch.vd.unireg.interfaces.upi.rcpers.ServiceUpiRCPers">

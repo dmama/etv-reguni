@@ -27,8 +27,8 @@
 		<property name="baseUrl" value="${extprop.webservice.rcent.url}"/>
 		<property name="username" value="${extprop.webservice.rcent.username}"/>
 		<property name="password" value="${extprop.webservice.rcent.password}"/>
-		<property name="organisationPath" value="/v1/organisation/CT.VD.PARTY"/>
-		<property name="organisationsOfNoticePath" value="/v1/organisationsOfNotice"/>
+		<property name="organisationPath" value="/organisation/CT.VD.PARTY"/>
+		<property name="organisationsOfNoticePath" value="/organisationsOfNotice"/>
 		<property name="validationEnabled" value="${extprop.webservice.rcent.validate}"/>
 		<property name="schemasLocations">
 			<list>
