@@ -22,5 +22,10 @@ function formattage_csv {
 	sed -e '/created.*removed/ s/[^0-9-]\+/;/g' -e '/created/ { s/[^0-9-]\+/;/g;s/;*$/;;/ }' -e '/removed/ { s/ removed /;;;/g;s/[^0-9;-]/;/ }' -e '/^[0-9 ]\+$/ s/ *$/;;;;/' -e 's/ \+$//'
 }
 
+function fusions_2011 {
+	# déplacement des dates de fusion civiles (j'ai vérifié : elles sont toutes vaudoises...) de juillet 2011 vers janvier 2012 (= date fiscale)
+	sed -e 's/2011-06-30/2011-12-31/' -e 's/2011-07-01/2012-01-01/'
+}
+
 echo "NO_OFS;MUTATION_CREATION;DATE_MUTATION_CREATION;MUTATION_DISPARITION;DATE_MUTATION_DISPARITION"
-decoupage_balises "$@" | extraction_id_dates | regroupement_mutation_date | regroupement_ligne | formattage_csv
+decoupage_balises "$@" | extraction_id_dates | regroupement_mutation_date | regroupement_ligne | formattage_csv | fusions_2011
