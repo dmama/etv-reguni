@@ -21,7 +21,6 @@ import java.util.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ResourceUtils;
@@ -75,7 +74,6 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 		service = getBean(ServiceOrganisationService.class, "serviceOrganisationService");
 	}
 
-	// FIXME: Remove @Ignore as soon as RCEnt is complient with itself!
 	@Test
 	public void testGetOrganisation() throws Exception {
 		Organisation org = service.getOrganisationHistory(NO100983251);
@@ -92,7 +90,6 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
-	// FIXME: Remove @Ignore as soon as RCEnt is complient with itself!
 	@Test
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
@@ -112,8 +109,6 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 		Assert.assertEquals(BOMACO_SÀRL_EN_LIQUIDATION, data.getOrganisationSnapshot().get(0).getOrganisation().getOrganisationName());
 	}
 
-	// FIXME: Remove @Ignore as soon as RCEnt is complient with itself!
-	@Ignore
 	@Test
 	public void testDirectGetOrganisationWithValidation() throws Exception {
 		String url = baseUrl + BASE_PATH_ORGANISATION + "/" + NO100983251;
