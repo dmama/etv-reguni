@@ -12,8 +12,8 @@
 <!--																																											-->
 <!--																																											-->
 <xs:schema xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/3" xmlns:eVD-0022="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns="http://evd.vd.ch/xmlns/eVD-0024/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0024/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-0.xsd"/>
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-0.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-1.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0022/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-1.xsd"/>
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0004/3" schemaLocation="http://evd.vd.ch/xmlns/eVD-0004/3/eVD-0004-3-0.xsd"/>
 	<xs:complexType name="asynchronousExportRequestType">
 		<xs:sequence>

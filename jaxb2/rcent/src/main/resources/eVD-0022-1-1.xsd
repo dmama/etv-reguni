@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2012 rel. 2 sp1 (http://www.altova.com) by ACV (DIRECTION DES SYSTEMS D'INFORMATION) -->
 <!--																																											-->
-<!-- Evolution sur version 1-0 : 																																	-->
+<!-- Evolution sur version 1-1 : 																																	-->
 <!--      Modification de typeOfNotice : ajout des enum 50 à 54																						-->
 <!--      Nouveau type : dataLockType																															-->
 <!--      Modification de personType : ajout de l'attribut dataLock 																					-->
@@ -25,11 +25,11 @@
 <!--	   changement sur partyType : suppression du choice person/organisation remplacé par person uniquement				-->
 <!--	   correction sur noticeOrganisationType : element organisationIdentifiaction corrigé à organisationIdentification			-->
 <!--																																											-->
-<!-- Correction apportée sur la version 1-0 le 12/05/2015																								-->
+<!-- Correction apportée sur la version 1-1 le 12/05/2015																								-->
 <!--      noticeRequestStatusDate : type passe de date à dateTime																				-->
 <!--	   personType : l'attribut origin devient multi-valué (mise en conformité avec RCPers)												-->
 <xs:schema xmlns="http://evd.vd.ch/xmlns/eVD-0022/1" xmlns:eVD-0021="http://evd.vd.ch/xmlns/eVD-0021/1" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://evd.vd.ch/xmlns/eVD-0022/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-0.xsd"/>
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0021/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0021/1/eVD-0021-1-1.xsd"/>
 	<xs:simpleType name="noticeIdType">
 		<xs:restriction base="xs:nonNegativeInteger"/>
 	</xs:simpleType>
@@ -544,7 +544,7 @@
 		<xs:sequence>
 			<xs:element name="documentNumber" type="xs:string"/>
 			<xs:element name="publicationDate" type="xs:date"/>
-			<xs:element name="publicationText" type="xs:date" minOccurs="0"/>
+			<xs:element name="publicationText" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="commercialRegisterNameTranslationType">
@@ -615,7 +615,7 @@
 	</xs:complexType>
 	<xs:complexType name="commercialRegisterDataType">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string"/>
+			<xs:element name="name" type="xs:string" minOccurs="0"/>
 			<xs:element name="nameTranslation" type="commercialRegisterNameTranslationType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="status" type="commercialRegisterStatusType"/>
 			<xs:element name="entryStatus" type="commercialRegisterEntryStatusType" minOccurs="0"/>

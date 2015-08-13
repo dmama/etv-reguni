@@ -5,10 +5,10 @@
               xmlns:xs="http://www.w3.org/2001/XMLSchema"
               xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
 
-              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-0.xsd"
+              schemaLocation="http://evd.vd.ch/xmlns/eVD-0022/1/eVD-0022-1-1.xsd"
               >
 
-    <!-- Java enumeration bindings for eVD-0022-1-0.xsd -->
+    <!-- Java enumeration bindings for eVD-0022-1-1.xsd -->
 
     <jxb:bindings node="//xs:simpleType[@name='senderIdentificationType']">
         <jxb:typesafeEnumClass name="SenderIdentification">
