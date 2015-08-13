@@ -54,10 +54,10 @@
 		<property name="schemasLocations">
 			<util:list>
 				<value>eVD-0004-3-0.xsd</value>
-				<value>eVD-0021-1-0.xsd</value>
-				<value>eVD-0022-1-0.xsd</value>
-				<value>eVD-0023-1-0.xsd</value>
-				<value>eVD-0024-1-0.xsd</value>
+				<value>eVD-0021-1-1.xsd</value>
+				<value>eVD-0022-1-1.xsd</value>
+				<value>eVD-0023-1-1.xsd</value>
+				<value>eVD-0024-1-1.xsd</value>
 			</util:list>
 		</property>
 

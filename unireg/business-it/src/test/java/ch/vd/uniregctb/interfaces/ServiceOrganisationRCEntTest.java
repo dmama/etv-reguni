@@ -43,10 +43,10 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0021-1-0.xsd",
-			"eVD-0022-1-0.xsd",
-			"eVD-0023-1-0.xsd",
-			"eVD-0024-1-0.xsd"
+			"eVD-0021-1-1.xsd",
+			"eVD-0022-1-1.xsd",
+			"eVD-0023-1-1.xsd",
+			"eVD-0024-1-1.xsd"
 	};
 
 	private static final String BASE_PATH_ORGANISATION = "/organisation/CT.VD.PARTY";
@@ -76,7 +76,6 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 	}
 
 	// FIXME: Remove @Ignore as soon as RCEnt is complient with itself!
-	@Ignore
 	@Test
 	public void testGetOrganisation() throws Exception {
 		Organisation org = service.getOrganisationHistory(NO100983251);
@@ -94,7 +93,6 @@ public class ServiceOrganisationRCEntTest extends BusinessItTest {
 	}
 
 	// FIXME: Remove @Ignore as soon as RCEnt is complient with itself!
-	@Ignore
 	@Test
 	public void testRCEntClientGetOrganisationWithValidation() throws Exception {
 		final RcEntClient client = createRCEntClient(true);
