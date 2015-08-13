@@ -332,12 +332,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
 								return ffs;
 							})
+							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+							.flatMap(List::stream)
 							.peek(ffs -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 							                           String.format("For secondaire 'activité' %s ajouté sur la commune %d.",
 							                                         StringRenderers.DATE_RANGE_RENDERER.toString(ffs),
 							                                         noOfsCommune)))
-							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
-							.flatMap(List::stream)
 							.forEach(entiteJuridique::addForFiscal);
 				}
 			}

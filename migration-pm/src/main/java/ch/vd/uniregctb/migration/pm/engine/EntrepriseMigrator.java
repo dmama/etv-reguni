@@ -776,12 +776,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
 								return ffs;
 							})
+							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
+							.flatMap(List::stream)
 							.peek(ffs -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 							                           String.format("For secondaire 'immeuble' %s ajouté sur la commune %d.",
 							                                         StringRenderers.DATE_RANGE_RENDERER.toString(ffs),
 							                                         noOfsCommune)))
-							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
-							.flatMap(List::stream)
 							.forEach(entiteJuridique::addForFiscal);
 				}
 			}
