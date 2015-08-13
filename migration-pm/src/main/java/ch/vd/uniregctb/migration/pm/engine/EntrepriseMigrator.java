@@ -912,6 +912,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 		}
 
+		public CommuneOuPays(int noOfsPays) {
+			this.commune = null;
+			this.noOfsPays = noOfsPays;
+		}
+
 		/**
 		 * @return le type d'autorité fiscale représentée par l'entité
 		 */
@@ -1008,6 +1013,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final List<DomicileEtablissement> domiciles = localisations.entrySet().stream()
 				.map(entry -> {
 					final CommuneOuPays cop = entry.getValue();
+					if (cop.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+						// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
+						// Ici, on va faire comme si le pays vu était Gibraltar (8213)
+						final int noOfsPays;
+						final int noOfsPaysCorrigeGibraltar = cop.noOfsPays == 8997 ? 8213 : cop.noOfsPays;
+						final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, entry.getKey());
+						if (pays != null && !pays.isEtatSouverain()) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+							              String.format("Le pays %d du siège n'est pas un état souverain, déplacé sur l'état %d.",
+							                            cop.noOfsPays,
+							                            pays.getNoOfsEtatSouverain()));
+							noOfsPays = pays.getNoOfsEtatSouverain();
+						}
+						else {
+							noOfsPays = noOfsPaysCorrigeGibraltar;
+						}
+
+						if (noOfsPays != cop.noOfsPays) {
+							return Pair.of(entry.getKey(), new CommuneOuPays(noOfsPays));
+						}
+					}
+					return entry;
+				})
+				.map(entry -> {
+					final CommuneOuPays cop = entry.getValue();
 					return new DomicileEtablissement(entry.getKey(), null, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
 				})
 				.collect(Collectors.toList());
@@ -1017,6 +1047,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// liaison des domiciles à l'établissement
 		domiciles.stream()
+				.map(dom -> adapterAutourFusionsCommunes(dom, mr, LogCategory.SUIVI, null))
+				.flatMap(List::stream)
 				.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
 				                                                                                FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
 				                                                                                StringRenderers.DATE_RANGE_RENDERER.toString(domicile),

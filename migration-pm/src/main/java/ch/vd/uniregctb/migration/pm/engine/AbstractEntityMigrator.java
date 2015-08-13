@@ -22,6 +22,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -562,7 +563,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 					// on ne mets un log que si quelque chose a changé...
 					if (ld != source) {
 						mr.addMessage(logCategory, LogLevel.INFO,
-						              String.format("Entité %s partiellement remplacée par %s pour suivre les fusions de communes.",
+						              String.format("Entité %s au moins partiellement remplacée par %s pour suivre les fusions de communes.",
 						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
 						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ld)));
 					}
@@ -660,13 +661,14 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	                                                                                              @Nullable RegDate debutCouverture, @Nullable RegDate finCouverture,
 	                                                                                              MigrationResultProduction mr, LogCategory logCategory, @Nullable BiConsumer<LD, LD> adaptator) {
 
-		// avant la couverture ?
-		if (debutCouverture != null && rangeNonValide.getDateFin() == debutCouverture.getOneDayBefore()) {
+		// juste avant la couverture ?
+		// ou bien avant la couverture (cas des périodes de validité (couverture vs localisation datée) complètement disjointes) ?
+		if (debutCouverture != null && RegDateHelper.isBefore(rangeNonValide.getDateFin(), debutCouverture, NullDateBehavior.LATEST)) {
 			final List<Integer> avant = fusionCommunesProvider.getCommunesAvant(source.getNumeroOfsAutoriteFiscale(), debutCouverture);
 			if (avant.isEmpty()) {
 				mr.addMessage(logCategory, LogLevel.ERROR,
 				              String.format("Entité %s : aucune commune connue à l'origine de la commune %d avant le %s.",
-				                            source,
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
 				                            source.getNumeroOfsAutoriteFiscale(),
 				                            StringRenderers.DATE_RENDERER.toString(debutCouverture)));
 				return Stream.empty();
@@ -675,7 +677,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				if (avant.size() > 1) {
 					mr.addMessage(logCategory, LogLevel.WARN,
 					              String.format("Entité %s : plusieurs communes connues à l'origine de la commune %d avant le %s (on prend la première) : %s.",
-					                            source,
+					                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
 					                            source.getNumeroOfsAutoriteFiscale(),
 					                            StringRenderers.DATE_RENDERER.toString(debutCouverture),
 					                            toDisplayString(avant, String::valueOf)));
@@ -688,12 +690,13 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 
 		// après la couverture ?
-		else if (finCouverture != null && rangeNonValide.getDateDebut() == finCouverture.getOneDayAfter()) {
+		// ou bien après la couverture (cas des périodes de validité (couverture vs localisation datée) complètement disjointes) ?
+		else if (finCouverture != null && RegDateHelper.isAfter(rangeNonValide.getDateDebut(), finCouverture, NullDateBehavior.EARLIEST)) {
 			final List<Integer> apres = fusionCommunesProvider.getCommunesApres(source.getNumeroOfsAutoriteFiscale(), finCouverture);
 			if (apres.isEmpty()) {
 				mr.addMessage(logCategory, LogLevel.ERROR,
 				              String.format("Entité %s : aucune commune connue à la suite de la commune %d après le %s.",
-				                            source,
+				                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
 				                            source.getNumeroOfsAutoriteFiscale(),
 				                            StringRenderers.DATE_RENDERER.toString(finCouverture)));
 				return Stream.empty();
@@ -702,7 +705,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				if (apres.size() > 1) {
 					mr.addMessage(logCategory, LogLevel.WARN,
 					              String.format("Entité %s : plusieurs communes connues à la suite de la commune %d après le %s (on prend la première) : %s.",
-					                            source,
+					                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
 					                            source.getNumeroOfsAutoriteFiscale(),
 					                            StringRenderers.DATE_RENDERER.toString(finCouverture),
 					                            toDisplayString(apres, String::valueOf)));
@@ -715,7 +718,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 		// ni avant, ni après... c'est apparemment le cas où la supposition vue plus haut est invalide...
 		else {
-			throw new RuntimeException("Algorithme incomplet : il semble que certains numéros OFS ont des 'trous' d'utilisation...");
+			throw new RuntimeException("Algorithme incomplet : il semble que certains numéros OFS (" + source.getNumeroOfsAutoriteFiscale() + " ?) ont des 'trous' d'utilisation...");
 		}
 	}
 

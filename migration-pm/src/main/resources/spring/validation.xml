@@ -68,6 +68,8 @@
 
 	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="localisationDateeValidator"/>
 
+	<bean id="domicileEtablissementValidator" class="ch.vd.uniregctb.validation.tiers.DomicileEtablissementValidator" parent="localisationDateeValidator"/>
+
 
 	<!-- TODO mettre en place les validateurs nécessaires... -->
 

@@ -2276,8 +2276,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(4, textes.size());
-		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
-		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
 		Assert.assertEquals("For principal COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] généré.", textes.get(2));
 		Assert.assertEquals("For principal COMMUNE_HC/261 [01.01.1990 -> ?] généré.", textes.get(3));
 	}
@@ -2366,12 +2366,12 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(messages);
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(8, textes.size());
-		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
-		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(0));
+		Assert.assertEquals("Entité ForFiscalPrincipalPM [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(1));
 		Assert.assertEquals("For principal COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] généré.", textes.get(2));
 		Assert.assertEquals("For principal COMMUNE_HC/261 [01.01.1990 -> ?] généré.", textes.get(3));
-		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par DecisionAci [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(4));
-		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 partiellement remplacée par DecisionAci [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(5));
+		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par DecisionAci [07.04.1977 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", textes.get(4));
+		Assert.assertEquals("Entité DecisionAci [07.04.1977 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par DecisionAci [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", textes.get(5));
 		Assert.assertEquals("Décision ACI COMMUNE_HC/253 [07.04.1977 -> 31.12.1989] générée.", textes.get(6));
 		Assert.assertEquals("Décision ACI COMMUNE_HC/261 [01.01.1990 -> ?] générée.", textes.get(7));
 	}
@@ -2392,6 +2392,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
+		// récupération du numéro de l'établissement principal
+		final MutableLong noEtablissementPrincipal = new MutableLong();
+
 		// vérification du contenu de la base de données
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
@@ -2422,16 +2425,56 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(decision.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, decision.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
+
+			// établissement principal et son domicile
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+
+			final Etablissement etablissement = etablissements.get(0);
+			Assert.assertNotNull(etablissement);
+			Assert.assertFalse(etablissement.isAnnule());
+			Assert.assertTrue(etablissement.isPrincipal());
+			noEtablissementPrincipal.setValue(etablissement.getNumero());
+
+			final Set<DomicileEtablissement> domiciles = etablissement.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(RegDate.get(1977, 4, 7), domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 		});
+		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
 		// vérification des messages dans le contexte "FORS"
-		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
-		Assert.assertNotNull(messages);
-		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(3, textes.size());
-		Assert.assertEquals("Le pays 8213 du for principal 1 n'est pas un état souverain, for déplacé sur l'état 8215.", textes.get(0));
-		Assert.assertEquals("For principal PAYS_HS/8215 [07.04.1977 -> ?] généré.", textes.get(1));
-		Assert.assertEquals("Décision ACI PAYS_HS/8215 [07.04.1977 -> ?] générée.", textes.get(2));
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Le pays 8213 du for principal 1 n'est pas un état souverain, for déplacé sur l'état 8215.", textes.get(0));
+			Assert.assertEquals("For principal PAYS_HS/8215 [07.04.1977 -> ?] généré.", textes.get(1));
+			Assert.assertEquals("Décision ACI PAYS_HS/8215 [07.04.1977 -> ?] générée.", textes.get(2));
+		}
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(2));
+			Assert.assertEquals("Le pays 8213 du siège n'est pas un état souverain, déplacé sur l'état 8215.", textes.get(3));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [07.04.1977 -> ?] sur PAYS_HS/8215.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(5));
+		}
 	}
 
 	@Test
@@ -2450,6 +2493,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		migrator.initMigrationResult(mr);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
+		// récupération du numéro de l'établissement principal
+		final MutableLong noEtablissementPrincipal = new MutableLong();
+
 		// vérification du contenu de la base de données
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
@@ -2480,16 +2526,155 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(decision.getDateFin());
 			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, decision.getTypeAutoriteFiscale());
 			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), decision.getNumeroOfsAutoriteFiscale());
+
+			// établissement principal et son domicile
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+
+			final Etablissement etablissement = etablissements.get(0);
+			Assert.assertNotNull(etablissement);
+			Assert.assertFalse(etablissement.isAnnule());
+			Assert.assertTrue(etablissement.isPrincipal());
+			noEtablissementPrincipal.setValue(etablissement.getNumero());
+
+			final Set<DomicileEtablissement> domiciles = etablissement.getDomiciles();
+			Assert.assertNotNull(domiciles);
+			Assert.assertEquals(1, domiciles.size());
+
+			final DomicileEtablissement domicile = domiciles.iterator().next();
+			Assert.assertNotNull(domicile);
+			Assert.assertFalse(domicile.isAnnule());
+			Assert.assertEquals(RegDate.get(1977, 4, 7), domicile.getDateDebut());
+			Assert.assertNull(domicile.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, domicile.getTypeAutoriteFiscale());
+			Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), domicile.getNumeroOfsAutoriteFiscale());
 		});
+		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
 		// vérification des messages dans le contexte "FORS"
-		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
-		Assert.assertNotNull(messages);
-		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-		Assert.assertEquals(3, textes.size());
-		Assert.assertEquals("Le pays 8997 du for principal 1 n'est pas un état souverain, for déplacé sur l'état 8215.", textes.get(0));
-		Assert.assertEquals("For principal PAYS_HS/8215 [07.04.1977 -> ?] généré.", textes.get(1));
-		Assert.assertEquals("Décision ACI PAYS_HS/8215 [07.04.1977 -> ?] générée.", textes.get(2));
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Le pays 8997 du for principal 1 n'est pas un état souverain, for déplacé sur l'état 8215.", textes.get(0));
+			Assert.assertEquals("For principal PAYS_HS/8215 [07.04.1977 -> ?] généré.", textes.get(1));
+			Assert.assertEquals("Décision ACI PAYS_HS/8215 [07.04.1977 -> ?] générée.", textes.get(2));
+		}
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(2));
+			Assert.assertEquals("Le pays 8997 du siège n'est pas un état souverain, déplacé sur l'état 8215.", textes.get(3));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [07.04.1977 -> ?] sur PAYS_HS/8215.", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(5));
+		}
+	}
+
+	/**
+	 * Cas éventuellement problèmatique quand le for de RegPM est sur une commune qui n'est valide (= dans RefINF)
+	 * que sur un intervale sans intersection (ni même collé) avec les dates du for
+	 */
+	@Test
+	public void testAlgorithmeFusionsCommunesIncomplet() throws Exception {
+
+		final long noEntreprise = 68002;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, RegDate.get(1936, 4, 2), RegpmTypeForPrincipal.SIEGE, Commune.WIL);        // commune valide dans RefINF/FiDoR dès le 01.01.2013
+		addForPrincipalSuisse(e, RegDate.get(2001, 7, 1), RegpmTypeForPrincipal.SIEGE, Commune.ZURICH);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// récupération du numéro de l'établissement principal
+		final MutableLong noEtablissementPrincipal = new MutableLong();
+
+		// vérification du contenu de la base de données
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			// vérification des fors fiscaux principaux générés
+			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(2, ffps.size());
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1936, 4, 2), ffp.getDateDebut());
+				Assert.assertEquals(RegDate.get(2001, 6, 30), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) 3421, ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifFermeture());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(2001, 7, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ZURICH.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+			}
+
+			// récupération du numéro fiscal de l'établissement principal généré
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+
+			final Etablissement etablissementPrincipal = etablissements.get(0);
+			Assert.assertNotNull(etablissementPrincipal);
+			Assert.assertTrue(etablissementPrincipal.isPrincipal());
+			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
+		});
+		Assert.assertNotNull(noEtablissementPrincipal.getValue());
+
+		// analyse des logs
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(4, textes.size());
+			Assert.assertEquals("Entité ForFiscalPrincipalPM [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3427 : plusieurs communes connues à l'origine de la commune 3427 avant le 01.01.2013 (on prend la première) : 3421, 3425.", textes.get(0));
+			Assert.assertEquals("Entité ForFiscalPrincipalPM [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3427 au moins partiellement remplacée par ForFiscalPrincipalPM [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3421 pour suivre les fusions de communes.", textes.get(1));
+			Assert.assertEquals("For principal COMMUNE_HC/3421 [02.04.1936 -> 30.06.2001] généré.", textes.get(2));
+			Assert.assertEquals("For principal COMMUNE_HC/261 [01.07.2001 -> ?] généré.", textes.get(3));
+		}
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(8, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + ".", textes.get(2));
+			Assert.assertEquals("Entité DomicileEtablissement [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3427 : plusieurs communes connues à l'origine de la commune 3427 avant le 01.01.2013 (on prend la première) : 3421, 3425.", textes.get(3));
+			Assert.assertEquals("Entité DomicileEtablissement [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3427 au moins partiellement remplacée par DomicileEtablissement [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3421 pour suivre les fusions de communes.", textes.get(4));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3421.", textes.get(5));
+			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.07.2001 -> ?] sur COMMUNE_HC/261.", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(7));
+		}
 	}
 
 	// TODO il reste encore plein de tests à faire...

@@ -76,6 +76,7 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
 		public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
 		public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+		public static final RegpmCommune WIL = buildCommune(RegpmCanton.SG, "Wil (SG)", 3427);
 
 		public static final class Fraction {
 			public static final RegpmCommune LE_SENTIER = buildFractionCommune(RegpmCanton.VD, "Le Sentier", 8000);
