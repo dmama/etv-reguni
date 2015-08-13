@@ -1437,7 +1437,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			else if (f.getOfsPays() != null) {
 				final int noOfsPays;
-				final Pays pays = infraService.getPays(f.getOfsPays(), f.getDateValidite());
+
+				// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
+				// Ici, on va faire comme si le pays vu était Gibraltar (8213)
+				final int noOfsPaysCorrigeGibraltar = f.getOfsPays() == 8997 ? 8213 : f.getOfsPays();
+				final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, f.getDateValidite());
 				if (pays != null && !pays.isEtatSouverain()) {
 					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
 					              String.format("Le pays %d du for principal %d n'est pas un état souverain, for déplacé sur l'état %d.",
@@ -1447,7 +1451,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					noOfsPays = pays.getNoOfsEtatSouverain();
 				}
 				else {
-					noOfsPays = f.getOfsPays();
+					noOfsPays = noOfsPaysCorrigeGibraltar;
 				}
 
 				if (noOfsPays == ServiceInfrastructureService.noOfsSuisse) {
