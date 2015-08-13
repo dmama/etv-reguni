@@ -18,10 +18,10 @@ public class RcEntClientImplTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",
-			"eVD-0021-1-0.xsd",
-			"eVD-0022-1-0.xsd",
-			"eVD-0023-1-0.xsd",
-			"eVD-0024-1-0.xsd"
+			"eVD-0021-1-1.xsd",
+			"eVD-0022-1-1.xsd",
+			"eVD-0023-1-1.xsd",
+			"eVD-0024-1-1.xsd"
 	};
 
 	private static final String BASE_URL = "http://slv2737v.etat-de-vaud.ch:8040/services";
