@@ -625,6 +625,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 									// là non plus, il ne suffit pas de le dire...
 									forAvantTrou.setDateFin(nonCouvert.getDateFin());
+									if (nonCouvert.getDateFin() == null) {
+										forAvantTrou.setMotifFermeture(null);
+									}
 
 									// on enlève le for de la collections des fors fiscaux de l'entreprise avant de le remettre en compagnie de ses éventuels amis
 									// issus des fusions de communes
