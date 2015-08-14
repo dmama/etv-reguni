@@ -1709,6 +1709,32 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	@Test
+	public void testComparaisonAssujettissementsIdentiquesSiFusionnes() throws Exception {
+
+		final long idEntreprise = 42L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+		EntrepriseMigratorTest.addForPrincipalEtranger(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.France.getNoOFS());
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1995, 5, 12), null, createImmeuble(Commune.LAUSANNE));
+		EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(1990, 1, 1), null, RegpmTypeAssujettissement.LILIC);
+
+		// avec le calcul Unireg, cela donne un assujettissement VD puis un assujettissement HS (qui donnent tous les deux lieu à de l'ICC)
+		// alors que dans RegPM, il n'y avait qu'une seule période... si seuls les périodes couvertes nous intéressent, alors les deux doivent
+		// être vus comme équivalents
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
+		Assert.assertNull(msg);     // -> aucun message : pas de différence trouvée
+	}
+
+	@Test
 	public void testComparaisonAssujettissementDisparition() throws Exception {
 
 		final long idEntreprise = 42L;

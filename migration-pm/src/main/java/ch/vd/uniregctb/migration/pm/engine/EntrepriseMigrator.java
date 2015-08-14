@@ -55,7 +55,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -512,6 +511,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		});
 	}
 
+	@NotNull
+	private static <T> List<T> neverNull(@Nullable List<T> source) {
+		return Optional.ofNullable(source).orElse(Collections.emptyList());
+	}
+
+	@NotNull
+	private static <T> Set<T> neverNull(@Nullable Set<T> source) {
+		return Optional.ofNullable(source).orElse(Collections.emptySet());
+	}
+
 	/**
 	 * @param data données d'identification de l'entreprise dont on veut contrôler l'assujettissement
 	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
@@ -522,18 +531,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			try {
 				// assujettissements ICC dans RegPM
-				final List<DateRange> lilic = data.regpmAssujettissements.stream()
-						.filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
-						.map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
-						.collect(Collectors.toList());
+				final List<DateRange> lilic = neverNull(DateRangeHelper.merge(data.regpmAssujettissements.stream()
+						                                                              .filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
+						                                                              .map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
+						                                                              .collect(Collectors.toList())));
 				final List<DateRange> lilicIntersectant = new ArrayList<>(lilic.size());
 
 				// assujettissements calculés par Unireg
-				final List<Assujettissement> calcules = Optional.ofNullable(assujettissementService.determine(entreprise)).orElse(Collections.emptyList());
-				final List<Assujettissement> calculesIntersectant = new ArrayList<>(calcules.size());
+				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
+				final List<DateRange> calculesIntersectant = new ArrayList<>(calcules.size());
 
 				// assujettissements complètement apparus
-				for (Assujettissement apparu : calcules) {
+				for (DateRange apparu : calcules) {
 					if (DateRangeHelper.intersect(apparu, lilic)) {
 						calculesIntersectant.add(apparu);
 					}
@@ -709,7 +718,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					                          Collections::singletonList,
 					                          DATE_RANGE_LIST_MERGER,
 					                          TreeMap::new));
-			final Set<ForFiscal> forsFiscaux = Optional.ofNullable(entreprise.getForsFiscaux()).orElse(Collections.emptySet());    // en cas de nouvelle entreprise, la collection est nulle
+			final Set<ForFiscal> forsFiscaux = neverNull(entreprise.getForsFiscaux());      // en cas de nouvelle entreprise, la collection est nulle
 			final Map<Integer, List<DateRange>> apresMigration = forsFiscaux.stream()
 					.filter(f -> f instanceof ForFiscalSecondaire)
 					.collect(Collectors.toMap(ForFiscal::getNumeroOfsAutoriteFiscale, Collections::singletonList, DATE_RANGE_LIST_MERGER, TreeMap::new));
@@ -1350,7 +1359,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Map<String, Object> params = Collections.singletonMap("annee", year);
 
 		// récupération des données
-		final List<PeriodeFiscale> pfs = Optional.ofNullable(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params)).orElse(Collections.emptyList());
+		final List<PeriodeFiscale> pfs = neverNull(uniregStore.getEntitiesFromDb(PeriodeFiscale.class, params));
 		if (pfs.isEmpty()) {
 			throw new IllegalStateException("Aucune période fiscale trouvée dans Unireg pour l'année " + year);
 		}
