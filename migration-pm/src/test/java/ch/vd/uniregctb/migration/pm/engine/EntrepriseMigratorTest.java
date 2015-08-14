@@ -2717,5 +2717,78 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		}
 	}
 
+	@Test
+	public void testDetectionPositiveDoublon() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		e.setRaisonSociale1("*Chez-moi SA");
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le flag débiteur inactif doit avoir été mis
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.isDebiteurInactif());
+		});
+
+		// et dans les messages de suivi ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(5, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise identifiée comme un doublon.", textes.get(1));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(2));
+			Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(3));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(4));
+		}
+	}
+
+	@Test
+	public void testDetectionNegativeDoublon() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		e.setRaisonSociale1("Chez-moi SA");
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le flag débiteur inactif ne doit pas avoir été mis
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertFalse(entreprise.isDebiteurInactif());
+		});
+
+		// et dans les messages de suivi ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(4, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(2));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(3));
+		}
+	}
+
 	// TODO il reste encore plein de tests à faire...
 }

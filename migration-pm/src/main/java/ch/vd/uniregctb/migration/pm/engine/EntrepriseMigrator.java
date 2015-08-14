@@ -886,6 +886,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
+		migrateFlagDebiteurInactif(regpm, unireg, mr);
 
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
@@ -900,6 +901,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Assigne le flag "débiteur inactif" sur l'entreprise Unireg en fonction de critères internes à la données de RegPM
+	 * @param regpm entreprise à migrer
+	 * @param unireg entreprise destination de la migration dans Unireg
+	 * @param mr collecteur de messages de migration
+	 */
+	private static void migrateFlagDebiteurInactif(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		// la règle dit : la ligne 1 de la raison sociale commence par une étoile...
+		if (StringUtils.isNotBlank(regpm.getRaisonSociale1()) && regpm.getRaisonSociale1().startsWith("*")) {
+			unireg.setDebiteurInactif(true);
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise identifiée comme un doublon.");
+		}
 	}
 
 	/**
