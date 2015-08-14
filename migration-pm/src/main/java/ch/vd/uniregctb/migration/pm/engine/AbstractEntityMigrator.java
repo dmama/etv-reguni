@@ -571,6 +571,58 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * @param source une localisation datée
+	 * @param mr collecteur de messages de suivi
+	 * @param logCategory catégorie à utiliser pour les messages de suivi
+	 * @param <LD> le type de localisation datée (for fiscal, décision aci...)
+	 * @return <code>null</code> s'il n'y a pas de limitation à apporter à la source, sinon la 'meilleure' couverture non-totale de la source qui correspond à une commune avec le bon numéro OFS
+	 */
+	@Nullable
+	private <LD extends LocalisationDatee> DateRange getCouvertureLimitante(LD source, MigrationResultProduction mr, LogCategory logCategory) {
+
+		// on ne s'intéresse qu'aux communes suisses
+		if (source.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			return null;
+		}
+
+		// ok, c'est une commune... est-elle connue dans l'infrastructure ?
+		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
+		if (communes == null || communes.isEmpty()) {
+			mr.addMessage(logCategory, LogLevel.ERROR,
+			              String.format("Commune %d inconnue dans l'infratructure fiscale (cas de %s).",
+			                            source.getNumeroOfsAutoriteFiscale(),
+			                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source)));
+
+			// ca va être un problème plus tard, mais c'est la validation qui chopera le souci
+			return null;
+		}
+
+		// la commune est connue, est-elle valide sur la durée de la localisation ?
+		// on ignore les communes dont la date de début est dans le futur, et on
+		// ignore la date de fin des communes si celle-ci est dans le futur (y compris aujourd'hui)
+		final DateRange intersectante = communes.stream()
+				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
+				.map(c -> new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite()))
+				.filter(range -> DateRangeHelper.intersect(range, source))
+				.sorted(DateRangeComparator::compareRanges)
+				.findFirst()
+				.orElse(null);
+
+		// c'est possible, j'ai trouvé une intersection
+		if (intersectante != null) {
+			if (DateRangeHelper.within(source, intersectante)) {
+				// complètement incluse dans une instance de commune -> tout va bien, rien à faire
+				return null;
+			}
+
+			// c'est la seule portion de la localisation couverte pour le moment
+			return intersectante;
+		}
+
+		// pas d'intersection, on va prendre la première, au pif en fait...
+		return new DateRangeHelper.Range(communes.get(0).getDateDebutValidite(), communes.get(0).getDateFinValidite());
+	}
 
 	/**
 	 * Découpe l'entité de localisation datée fournie en entrée en autant de localisations datées que
@@ -588,30 +640,10 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	                                                                                                              LogCategory logCategory,
 	                                                                                                              @Nullable BiConsumer<LD, LD> adaptator) {
 
-		// seules les communes suisses sont gérables ici pour les fusions...
-		if (source.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-			return Stream.of(source);
-		}
-
-		// donc c'est une commune... est-elle valide sur toute la durée de la localisation ?
-		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
-		if (communes == null || communes.isEmpty()) {
-			mr.addMessage(logCategory, LogLevel.ERROR,
-			              String.format("Commune %d inconnue dans l'infratructure fiscale (cas de %s).", source.getNumeroOfsAutoriteFiscale(), source));
-
-			// on la renvoie telle qu'elle, mais ça va pêter à la validation
-			return Stream.of(source);
-		}
-
-		// on ignore les communes dont la date de début est dans le futur, et on
-		// ignore la date de fin des communes si celle-ci est dans le futur (y compris aujourd'hui)
-		final List<DateRange> couverture = communes.stream()
-				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
-				.map(c -> new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite()))
-				.sorted(DateRangeComparator::compareRanges)
-				.collect(Collectors.toList());
-		if (DateRangeHelper.isFullyCovered(source, couverture)) {
-			// complètement couvert avec ce numéro OFS -> pas de souci
+		// récupération de la couverture
+		final DateRange couverture = getCouvertureLimitante(source, mr, logCategory);
+		if (couverture == null) {
+			// ca joue comme ça
 			return Stream.of(source);
 		}
 
@@ -619,24 +651,20 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 		final Stream.Builder<LD> builder = Stream.builder();
 
-		// on regarde d'abord la ou les intersection(s) (= ce qui reste de l'ancienne donnée)
-		final List<DateRange> intersections = DateRangeHelper.intersections(source, couverture);
-		if (intersections != null) {
-			intersections.stream()
-					.map(i -> duplicate(source, i, source.getNumeroOfsAutoriteFiscale(), adaptator))
-					.forEach(builder);
+		// on regarde d'abord l'éventuelle intersection (= ce qui reste de l'ancienne donnée)
+		final DateRange intersection = DateRangeHelper.intersection(source, couverture);
+		if (intersection != null) {
+			builder.accept(duplicate(source, intersection, source.getNumeroOfsAutoriteFiscale(), adaptator));
 		}
 
 		// jusqu'à preuve que le cas contraire existe, on va supposer qu'un numéro OFS de commune est utilisée de manière continue
 		// (= sans interruption suivie d'une ré-utilisation), ce qui signifie que les dépassements sont soit avant la converture, soit après,
 		// mais en aucun cas dans un trou de cette couverture
-		final RegDate debutCouverture = couverture.get(0).getDateDebut();
-		final RegDate finCouverture = couverture.get(couverture.size() - 1).getDateFin();
 
 		// maintenant on regarde ce qui dépasse (= ce qui n'intersecte pas)
-		final List<DateRange> depassements = DateRangeHelper.subtract(source, couverture);
+		final List<DateRange> depassements = DateRangeHelper.subtract(source, Collections.singletonList(couverture));
 		depassements.stream()
-				.map(d -> traiterDepassement(source, d, debutCouverture, finCouverture, mr, logCategory, adaptator))
+				.map(d -> traiterDepassement(source, d, couverture.getDateDebut(), couverture.getDateFin(), mr, logCategory, adaptator))
 				.flatMap(Function.identity())
 				.forEach(builder);
 

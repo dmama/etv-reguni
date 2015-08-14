@@ -76,7 +76,16 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		public static final RegpmCommune BERN = buildCommune(RegpmCanton.BE, "Bern", MockCommune.Bern.getNoOFS());
 		public static final RegpmCommune BALE = buildCommune(RegpmCanton.BS, "Bâle", MockCommune.Bale.getNoOFS());
 		public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
+
+		/**
+		 * Commune qui n'a pas d'existence dans RefINF avant 01.01.2013
+		 */
 		public static final RegpmCommune WIL = buildCommune(RegpmCanton.SG, "Wil (SG)", 3427);
+
+		/**
+		 * Commune qui fusionne en gardant le même numéro mais pas le même nom au 01.01.2000 (elle change à nouveau - sans changement de nom - au 01.01.2004)
+		 */
+		public static final RegpmCommune MONTAGNY = buildCommune(RegpmCanton.FR, "Montagny (FR)", 2029);
 
 		public static final class Fraction {
 			public static final RegpmCommune LE_SENTIER = buildFractionCommune(RegpmCanton.VD, "Le Sentier", 8000);

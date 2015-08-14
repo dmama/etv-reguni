@@ -1792,4 +1792,62 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 	}
+
+	@Test
+	public void testForSurCommuneQuiFusionneEnGardantLeMemeNumeroOFS() throws Exception {
+
+		final long idEntreprise = 15781L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1998, 4, 12), RegpmTypeForPrincipal.SIEGE, Commune.MONTAGNY);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final List<String> msg = messages.get(LogCategory.FORS);
+		Assert.assertNotNull(msg);
+		Assert.assertEquals(4, msg.size());
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [12.04.1998 -> ?] sur COMMUNE_HC/2029 au moins partiellement remplacée par ForFiscalPrincipalPM [12.04.1998 -> 31.12.1999] sur COMMUNE_HC/2029 pour suivre les fusions de communes.", msg.get(0));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [12.04.1998 -> ?] sur COMMUNE_HC/2029 au moins partiellement remplacée par ForFiscalPrincipalPM [01.01.2000 -> ?] sur COMMUNE_HC/2029 pour suivre les fusions de communes.", msg.get(1));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [12.04.1998 -> 31.12.1999] généré.", msg.get(2));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [01.01.2000 -> ?] généré.", msg.get(3));
+
+		// on va regarder en base quand-même pour vérifier que les fors sont les bons (et qu'il n'y a qu'eux!!)
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);       // c'est le même identifiant dans RegPM et dans Unireg
+			Assert.assertNotNull(e);
+
+			final List<ForFiscalPrincipalPM> ffps = e.getForsFiscauxPrincipauxActifsSorted();
+			Assert.assertNotNull(ffps);
+			Assert.assertEquals(2, ffps.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(1998, 4, 12), ffp.getDateDebut());
+				Assert.assertEquals(RegDate.get(1999, 12, 31), ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MONTAGNY.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
+			}
+			{
+				final ForFiscalPrincipalPM ffp = ffps.get(1);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MONTAGNY.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+			}
+		});
+	}
 }
