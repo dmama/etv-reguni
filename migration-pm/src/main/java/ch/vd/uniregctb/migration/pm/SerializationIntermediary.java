@@ -107,13 +107,7 @@ public class SerializationIntermediary implements Worker, Feeder {
 
 		// on envoie chaque graphe dans le worker
 		for (File file : files) {
-			final Graphe graphe;
-			try (FileInputStream fis = new FileInputStream(file);
-			     BufferedInputStream bis = new BufferedInputStream(fis);
-			     ObjectInputStream ois = new ObjectInputStream(bis)) {
-
-				graphe = (Graphe) ois.readObject();
-			}
+			final Graphe graphe = deserialize(file);
 			worker.onGraphe(graphe);
 
 			// en cas de demande d'arrêt du programme, le thread de feed est interrompu
@@ -123,10 +117,27 @@ public class SerializationIntermediary implements Worker, Feeder {
 		}
 	}
 
-	@Override
-	public void onGraphe(Graphe graphe) throws IOException {
-		// sérialization du graphe dans un fichier local
-		final File file = buildNewFile();
+	/**
+	 * @param file un fichier sur le disque
+	 * @return le graphe contenu dans ce fichier sous forme sérialisée
+	 * @throws IOException en cas de souci lors de l'accès au fichier
+	 * @throws ClassNotFoundException si les données sérialisées ne sont pas récupérables...
+	 */
+	public static Graphe deserialize(File file) throws IOException, ClassNotFoundException {
+		try (FileInputStream fis = new FileInputStream(file);
+		     BufferedInputStream bis = new BufferedInputStream(fis);
+		     ObjectInputStream ois = new ObjectInputStream(bis)) {
+
+			return (Graphe) ois.readObject();
+		}
+	}
+
+	/**
+	 * @param graphe un graphe à sérialiser
+	 * @param file un fichier sur le disque (sera écrasé)
+	 * @throws IOException en cas de souci lors de l'accès au fichier
+	 */
+	public static void serialize(Graphe graphe, File file) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(file);
 		     BufferedOutputStream bos = new BufferedOutputStream(fos);
 		     ObjectOutputStream oos = new ObjectOutputStream(bos)) {
@@ -134,6 +145,13 @@ public class SerializationIntermediary implements Worker, Feeder {
 			oos.writeObject(graphe);
 			oos.flush();
 		}
+	}
+
+	@Override
+	public void onGraphe(Graphe graphe) throws IOException {
+		// sérialization du graphe dans un fichier local
+		final File file = buildNewFile();
+		serialize(graphe, file);
 
 		// on garde trace de tout ça
 		map.put(file, new Ids(graphe));

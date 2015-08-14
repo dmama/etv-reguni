@@ -33,7 +33,12 @@ public abstract class MigrationConstants {
 	public static final int PHASE_COUVERTURE_FORS = 40;
 
 	/**
-	 * Le contrôle et mise à jour des fors principaux en fonction des fors secondaires (il y a parfois des zones non-couvertes de fors secondaires)
+	 * Le nettoyage des fors fiscaux déjà annulés (lors des éventuelles modifications intervenue durant la migration)
+	 */
+	public static final int PHASE_EFFACEMENT_FORS_ANNULES = 45;
+
+	/**
+	 * Le contrôle des assujettissements avant/après la migration
 	 */
 	public static final int PHASE_COMPARAISON_ASSUJETTISSEMENTS = 50;
 }

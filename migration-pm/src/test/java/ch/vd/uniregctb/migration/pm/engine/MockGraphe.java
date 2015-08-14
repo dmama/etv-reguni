@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,6 +34,27 @@ public class MockGraphe implements Graphe {
 		this.entreprises = buildMap(entreprises);
 		this.etablissements = buildMap(etablissements);
 		this.individus = buildMap(individus);
+	}
+
+	@Override
+	public String toString() {
+		final List<String> array = new ArrayList<>(3);
+		if (!entreprises.isEmpty()) {
+			array.add(String.format("%d entreprise(s) (%s)", entreprises.size(), Arrays.toString(entreprises.keySet().toArray(new Long[entreprises.size()]))));
+		}
+		if (!etablissements.isEmpty()) {
+			array.add(String.format("%d établissement(s) (%s)", etablissements.size(), Arrays.toString(etablissements.keySet().toArray(new Long[etablissements.size()]))));
+		}
+		if (!individus.isEmpty()) {
+			array.add(String.format("%d individu(s) (%s)", individus.size(), Arrays.toString(individus.keySet().toArray(new Long[individus.size()]))));
+		}
+
+		if (array.isEmpty()) {
+			return "rien (???)";
+		}
+		else {
+			return array.stream().collect(Collectors.joining(", "));
+		}
 	}
 
 	@NotNull

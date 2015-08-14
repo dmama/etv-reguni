@@ -158,7 +158,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return unireg;
 	}
 
-	private static class ControleForsSecondairesData {
+	private static final class ControleForsSecondairesData {
 		private final Set<RegpmForSecondaire> regpm;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 
@@ -168,14 +168,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static class CouvertureForsData {
+	private static final class CouvertureForsData {
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 		public CouvertureForsData(KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
 
-	private static class ComparaisonAssujettissementsData {
+	private static final class EffacementForsAnnulesData {
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		public EffacementForsAnnulesData(KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static final class ComparaisonAssujettissementsData {
 		private final SortedSet<RegpmAssujettissement> regpmAssujettissements;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
 		public ComparaisonAssujettissementsData(SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
@@ -184,7 +191,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static class ForsPrincipauxData {
+	private static final class ForsPrincipauxData {
 		@NotNull
 		private final List<RegpmForPrincipal> liste;
 		public ForsPrincipauxData(@Nullable List<RegpmForPrincipal> liste) {
@@ -192,7 +199,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static class DossiersFiscauxData {
+	private static final class DossiersFiscauxData {
 		@NotNull
 		private final List<RegpmDossierFiscal> liste;
 		public DossiersFiscauxData(@Nullable List<RegpmDossierFiscal> liste) {
@@ -200,7 +207,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static class DateBouclementFuturData {
+	private static final class DateBouclementFuturData {
 		@Nullable
 		private final RegDate date;
 		public DateBouclementFuturData(@Nullable RegDate date) {
@@ -237,6 +244,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleCouvertureFors(d, mr));
 
+		// callback pour la destruction des fors annulés créés
+		mr.registerPreTransactionCommitCallback(EffacementForsAnnulesData.class,
+		                                        MigrationConstants.PHASE_EFFACEMENT_FORS_ANNULES,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        this::effacementForsAnnules);
+
 		// callback pour le contrôle des données d'assujettissement
 		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
 		                                        MigrationConstants.PHASE_COMPARAISON_ASSUJETTISSEMENTS,
@@ -271,6 +285,29 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractDateBouclementFutur(e, mr),
 		                         null,
 		                         null);
+	}
+
+	/**
+	 * Passe en revue les fors fiscaux générés pour l'entreprise et efface ceux qui sont déjà annulés
+	 * @param data la données de l'entreprise à traiter
+	 */
+	private void effacementForsAnnules(EffacementForsAnnulesData data) {
+		final Entreprise e = data.entrepriseSupplier.get();
+		final Set<ForFiscal> forsFiscaux = e.getForsFiscaux();
+		if (forsFiscaux != null) {
+			final Set<ForFiscal> sansAnnules = forsFiscaux.stream()
+					.filter(ff -> {
+						if (ff.isAnnule()) {
+							uniregStore.removeEntityFromDb(ff);
+							return false;
+						}
+						return true;
+					})
+					.collect(Collectors.toSet());
+			if (sansAnnules.size() != forsFiscaux.size()) {
+				e.setForsFiscaux(sansAnnules);
+			}
+		}
 	}
 
 	/**
@@ -600,13 +637,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								                            StringRenderers.DATE_RANGE_RENDERER.toString(forApresTrou),
 								                            StringRenderers.DATE_RENDERER.toString(nonCouvert.getDateDebut())));
 
-								// il ne suffit pas de le dire, il faut le faire...
-								forApresTrou.setDateDebut(nonCouvert.getDateDebut());
+								// on va maintenant travailler sur une copie du for
+								final ForFiscalPrincipalPM duplicate = duplicate(forApresTrou);
 
-								// on enlève le for de la collections des fors fiscaux de l'entreprise avant de le remettre en compagnie de ses éventuels amis
-								// issus des fusions de communes
-								entreprise.getForsFiscaux().remove(forApresTrou);
-								adapterAutourFusionsCommunes(forApresTrou, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+								// on annule le for trop court
+								forApresTrou.setAnnule(true);
+
+								// il ne suffit pas de le dire, il faut le faire...
+								duplicate.setDateDebut(nonCouvert.getDateDebut());
+
+								// on remet le ou les remplaçant(s) dans la liste des fors
+								adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
 										.forEach(entreprise::addForFiscal);
 							}
 							else {
@@ -625,16 +666,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									                            StringRenderers.DATE_RANGE_RENDERER.toString(forAvantTrou),
 									                            StringRenderers.DATE_RENDERER.toString(nonCouvert.getDateFin())));
 
+									// on va maintenant travailler sur une copie du for
+									final ForFiscalPrincipalPM duplicate = duplicate(forAvantTrou);
+
+									// on annule le for trop court
+									forAvantTrou.setAnnule(true);
+
 									// là non plus, il ne suffit pas de le dire...
-									forAvantTrou.setDateFin(nonCouvert.getDateFin());
+									duplicate.setDateFin(nonCouvert.getDateFin());
 									if (nonCouvert.getDateFin() == null) {
-										forAvantTrou.setMotifFermeture(null);
+										duplicate.setMotifFermeture(null);
 									}
 
-									// on enlève le for de la collections des fors fiscaux de l'entreprise avant de le remettre en compagnie de ses éventuels amis
-									// issus des fusions de communes
-									entreprise.getForsFiscaux().remove(forAvantTrou);
-									adapterAutourFusionsCommunes(forAvantTrou, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+									// on remet le ou les remplaçant(s) dans la liste des fors
+									adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
 											.forEach(entreprise::addForFiscal);
 								}
 							}
@@ -830,6 +875,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// enregistrement de cette entreprise pour un contrôle final de la couverture des fors secondaires par les fors principaux
 		mr.addPreTransactionCommitData(new CouvertureForsData(moi));
+
+		// enregistrement de cette entreprise pour la suppression finale des fors créés et déjà annulés
+		mr.addPreTransactionCommitData(new EffacementForsAnnulesData(moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm.getAssujettissements(), moi));

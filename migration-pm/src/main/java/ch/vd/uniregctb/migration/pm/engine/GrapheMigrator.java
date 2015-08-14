@@ -1,12 +1,8 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,7 +17,6 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
-import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -128,15 +123,9 @@ public class GrapheMigrator implements InitializingBean {
 			}
 		}
 		catch (Exception e) {
-			// un petit log pour voir l'avancement des travaux avant l'explosion (= les messages collectés jusque là).
-			final String summary = Stream.of(LogCategory.values())
-					.map(cat -> Pair.of(cat, mr.getMessages(cat)))
-					.filter(pair -> pair.getRight() != null && !pair.getRight().isEmpty())
-					.map(pair -> Pair.of(pair.getLeft(), pair.getRight().stream().map(LoggedElementRenderer.INSTANCE::toString).collect(Collectors.joining("\n- ", "- ", StringUtils.EMPTY))))
-					.map(pair -> String.format("Catégorie %s :\n%s", pair.getLeft(), pair.getRight()))
-					.collect(Collectors.joining("\n"));
-			LOGGER.error(String.format("Exception lancée dans le traitement du graphe %s\nMessages collectés jusque là :\n%s", graphe, summary), e);
-			throw e;
+			final MigrationException me = new MigrationException(e, graphe, mr);
+			LOGGER.error("", me);
+			throw me;
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();

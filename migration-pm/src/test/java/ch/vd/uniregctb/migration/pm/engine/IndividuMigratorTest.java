@@ -49,7 +49,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
 	}
 
-	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
+	static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {
 		final RegpmIndividu individu = new RegpmIndividu();
 		assignMutationVisa(individu, REGPM_VISA, REGPM_MODIF);
 		individu.setId(id);

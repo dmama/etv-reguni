@@ -31,6 +31,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -277,13 +278,13 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			final List<Long> idsPP = nonHabitantIndex.search(params, Integer.MAX_VALUE);
 			if (idsPP == null || idsPP.isEmpty()) {
 				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Aucun non-habitant trouvé dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
-				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance()));
+				                                                                     regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance())));
 				ppExistant = null;
 			}
 			else if (idsPP.size() > 1) {
 				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Plusieurs non-habitants trouvés dans Unireg avec ces nom (%s), prénom (%s), sexe (%s) et date de naissance (%s) : %s.",
-				                                                                                 regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(),
-				                                                                                 Arrays.toString(idsPP.toArray(new Long[idsPP.size()]))));
+				                                                                     regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), StringRenderers.DATE_RENDERER.toString(regpm.getDateNaissance()),
+				                                                                     Arrays.toString(idsPP.toArray(new Long[idsPP.size()]))));
 				ppExistant = null;
 			}
 			else {
@@ -347,7 +348,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		// aucun résultat
 		if (found == null || found.getNumberOfResults().equals(BigInteger.ZERO)) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Aucun résultat dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
-			                                                                                 nom, prenom, sexe, dateNaissance));
+			                                                                     nom, prenom, sexe, StringRenderers.DATE_RENDERER.toString(dateNaissance)));
 			return null;
 		}
 
@@ -360,8 +361,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 					.map(idExtractor)
 					.collect(Collectors.toList());
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Plusieurs (%d -> %s) résultats trouvés dans RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
-			                                                                                 found.getNumberOfResults(), Arrays.toString(ids.toArray(new Long[ids.size()])),
-			                                                                                 nom, prenom, sexe, dateNaissance));
+			                                                                     found.getNumberOfResults(), Arrays.toString(ids.toArray(new Long[ids.size()])),
+			                                                                     nom, prenom, sexe, StringRenderers.DATE_RENDERER.toString(dateNaissance)));
 			return null;
 		}
 
@@ -369,7 +370,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		final FoundPerson fp = found.getListOfResults().getFoundPerson().get(0);
 		final long id = idExtractor.apply(fp);
 		mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé un individu (%d) de RCPers pour le nom (%s), prénom (%s), sexe (%s) et date de naissance (%s).",
-		                                                                                 id, nom, prenom, sexe, dateNaissance));
+		                                                                     id, nom, prenom, sexe, StringRenderers.DATE_RENDERER.toString(dateNaissance)));
 
 		return Pair.of(id, fp.getResidence() != null);
 	}

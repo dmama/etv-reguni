@@ -766,13 +766,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 */
 	@NotNull
 	private static <LD extends LocalisationDatee & Duplicable<? super LD>> LD duplicate(LD source, DateRange range, int noOfs, @Nullable BiConsumer<LD, LD> adaptator) {
-
-		// ce cast est assez moche, on est d'accord, mais c'est trop compliqué par rapport
-		// au gain (= seulement cette migration) de faire en sorte que ForFiscal devienne
-		// une classe générique afin de pouvoir implémenter la bonne flaveur de l'interface Duplicable...
-
-		//noinspection unchecked
-		final LD duplicate = (LD) source.duplicate();
+		final LD duplicate = duplicate(source);
 		duplicate.setDateDebut(range.getDateDebut());
 		duplicate.setDateFin(range.getDateFin());
 		duplicate.setNumeroOfsAutoriteFiscale(noOfs);
@@ -780,6 +774,30 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			adaptator.accept(source, duplicate);
 		}
 		return duplicate;
+	}
+
+	/**
+	 * Duplication d'une entité. Les données suivantes ne sont pas recopiées :
+	 * <ul>
+	 *     <li>identifiant</li>
+	 *     <li>date et visa de dernière mutation</li>
+	 *     <li>éventuels date/visa d'annulation</li>
+	 * </ul>
+	 * @param source source des données
+	 * @param <HE> type de la donnée
+	 * @return nouvelle instance générée par un appel à {@link Duplicable#duplicate} sur la source, et à la recopie des LOG_MDATE, LOG_MUSER, LOG_CDATE, LOG_CUSER
+	 */
+	protected static <HE extends HibernateEntity & Duplicable<? super HE>> HE duplicate(HE source) {
+
+		// ce cast est assez moche, on est d'accord, mais c'est trop compliqué par rapport
+		// au gain (= seulement cette migration) de faire en sorte que ForFiscal devienne
+		// une classe générique afin de pouvoir implémenter la bonne flaveur de l'interface Duplicable...
+
+		//noinspection unchecked
+		final HE dest = (HE) source.duplicate();
+		dest.setLogCreationDate(source.getLogCreationDate());
+		dest.setLogCreationUser(source.getLogCreationUser());
+		return dest;
 	}
 
 	/**

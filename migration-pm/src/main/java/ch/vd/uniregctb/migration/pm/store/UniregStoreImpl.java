@@ -94,6 +94,14 @@ public class UniregStoreImpl implements UniregStore {
 	}
 
 	/**
+	 * @param entity l'entité à supprimer de la base (= à ne pas sauvegarder, en fait...)
+	 */
+	@Override
+	public void removeEntityFromDb(HibernateEntity entity) {
+		uniregSessionFactory.getCurrentSession().delete(entity);
+	}
+
+	/**
 	 * @param entity l'entité de mapping à sauvegarder
 	 * @return l'entité après sauvegarde (l'ID est renseigné, par exemple...)
 	 */

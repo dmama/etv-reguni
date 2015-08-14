@@ -57,6 +57,11 @@ public interface UniregStore {
 	<E extends HibernateEntity> E saveEntityToDb(E entity);
 
 	/**
+	 * @param entity l'entité à supprimer de la base (= à ne pas sauvegarder, en fait...)
+	 */
+	void removeEntityFromDb(HibernateEntity entity);
+
+	/**
 	 * Méthode qui permet de récupérer un à un les éléments de mapping persistés
 	 * @return un itérateur sur les éléments de mapping persistés
 	 */
