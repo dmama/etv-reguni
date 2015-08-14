@@ -43,6 +43,7 @@ import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
+import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -2019,9 +2020,19 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		// lancement de la migration du graphe
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
+		MigrationResultMessageProvider mr;
+		try {
+			mr = grapheMigrator.migrate(graphe);
+			Assert.assertNotNull(mr);
+		}
+		catch (MigrationException e) {
+			final MigrationResult res = new MigrationResult(graphe);
+			final Long[] idsEntreprises = graphe.getEntreprises().keySet().toArray(new Long[graphe.getEntreprises().size()]);
+			final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprises), MigrationWorker.dump(e));
+			res.addMessage(LogCategory.EXCEPTIONS, LogLevel.ERROR, msg);
+			mr = res;
+		}
 
 		// dump sur la sortie standard
 		final String summary = mr.summary();

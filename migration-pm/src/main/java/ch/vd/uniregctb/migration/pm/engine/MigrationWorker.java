@@ -111,8 +111,14 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		realLogger.accept(LoggedElementRenderer.INSTANCE.toString(elt));
 	}
 
-	private static String dump(Throwable t) {
-		return t.getClass().getName() + ": " + t.getMessage() + ExceptionUtils.getStackTrace(t);
+	/**
+	 * Dump la stack de l'exception passée en paramètre dans une chaîne de caractères
+	 * @param t l'exception utilisée
+	 * @return la chaîne de caractères contenant la stack
+	 */
+	static String dump(Throwable t) {
+		// pas la peine d'ajouter manuellement le t.getMessage() car il est déjà pris en compte dans ExceptionUtils.getStackTrace()
+		return t.getClass().getName() + ": " + ExceptionUtils.getStackTrace(t);
 	}
 
 	public void setMode(MigrationMode mode) {
