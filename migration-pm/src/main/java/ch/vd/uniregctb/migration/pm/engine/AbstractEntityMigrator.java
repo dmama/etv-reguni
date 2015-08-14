@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +33,11 @@ import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
@@ -70,12 +72,15 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected final ActivityManager activityManager;
 	protected final ServiceInfrastructureService infraService;
 	protected final FusionCommunesProvider fusionCommunesProvider;
+	protected final FractionsCommuneProvider fractionsCommuneProvider;
 
-	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService, FusionCommunesProvider fusionCommunesProvider) {
+	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
+	                              FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
 		this.infraService = infraService;
 		this.fusionCommunesProvider = fusionCommunesProvider;
+		this.fractionsCommuneProvider = fractionsCommuneProvider;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
@@ -590,7 +595,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
 		if (communes == null || communes.isEmpty()) {
 			mr.addMessage(logCategory, LogLevel.ERROR,
-			              String.format("Commune %d inconnue dans l'infratructure fiscale (cas de %s).",
+			              String.format("Commune %d inconnue dans l'infrastructure fiscale (cas de %s).",
 			                            source.getNumeroOfsAutoriteFiscale(),
 			                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source)));
 
@@ -775,5 +780,77 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			adaptator.accept(source, duplicate);
 		}
 		return duplicate;
+	}
+
+	/**
+	 * Si la localisation datée représente une commune faîtière de factions (vaudoises), on met un warning dans le log
+	 * et on place la localisation sur la première des fractions trouvées
+	 * @param source une localisation datée
+	 * @param mr collecteur de messages de suivi
+	 * @param logCategory catégorie à utiliser pour les messages de suivi
+	 * @return <code>true</code> si tout était déjà bon, <code>false</code> si une mise à jour a été nécessaire
+	 */
+	protected boolean checkFractionCommuneVaudoise(LocalisationDatee source, MigrationResultProduction mr, LogCategory logCategory) {
+
+		// seules les communes vaudoises ont des fractions
+		if (source.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return true;
+		}
+
+		// on va chercher la commune en question
+		final List<Commune> communes = infraService.getCommuneHistoByNumeroOfs(source.getNumeroOfsAutoriteFiscale());
+		if (communes == null || communes.isEmpty()) {
+			// on ne trouve pas de commune, ça râlera plus tard (mais ce n'est pas le moment, dans cette méthode sur les fractions,
+			// de lever l'erreur
+			return true;
+		}
+
+		// la commune du for
+		final Commune candidate;
+
+		// on trouve la première commune qui insersecte la localisation
+		final Commune intersectante = communes.stream()
+				.filter(commune -> !isFutureDate(commune.getDateDebutValidite()))
+				.map(c -> Pair.of(c, new DateRangeHelper.Range(c.getDateDebutValidite(), isFutureDateOrToday(c.getDateFinValidite()) ? null : c.getDateFinValidite())))
+				.filter(pair -> DateRangeHelper.intersect(pair.getRight(), source))
+				.sorted(Comparator.comparing(Pair::getRight, DateRangeComparator::compareRanges))
+				.findFirst()
+				.map(Pair::getLeft)
+				.orElse(null);
+
+		// si on a une intersection, on va tester avec
+		if (intersectante != null) {
+			candidate = intersectante;
+		}
+		else if (RegDateHelper.isBefore(source.getDateFin(), communes.get(0).getDateDebutValidite(), NullDateBehavior.LATEST)) {
+			candidate = communes.get(0);
+		}
+		else if (RegDateHelper.isAfter(source.getDateDebut(), communes.get(communes.size() - 1).getDateFinValidite(), NullDateBehavior.EARLIEST)) {
+			candidate = communes.get(communes.size() - 1);
+		}
+		else {
+			throw new IllegalArgumentException("Algorithme incomplet dans la recherche de la commune d'un for... il y aurait des discontinuités dans l'utilisation d'un numéro OFS (" + source.getNumeroOfsAutoriteFiscale() + ") ?");
+		}
+
+		// on a une commune avec laquelle tester -> allons-y !
+		if (!candidate.isPrincipale()) {
+			return true;
+		}
+
+		// quelles sont les fractions en questions ?
+		final List<Commune> fractions = fractionsCommuneProvider.getFractions(candidate);
+
+		// cette commune est donc principale... on change avec la première de ses fractions...
+		mr.addMessage(logCategory, LogLevel.ERROR,
+		              String.format("La commune de l'entité %s est une commune faîtière de fractions, elle sera déplacée sur la PREMIERE fraction correspondante : %s !",
+		                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(source),
+		                            toDisplayString(fractions, f -> String.valueOf(f.getNoOFS()))));
+
+		// la bonne fraction !
+		final Commune fraction = fractions.get(0);
+
+		// on change la localisation
+		source.setNumeroOfsAutoriteFiscale(fraction.getNoOFS());
+		return false;
 	}
 }

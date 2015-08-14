@@ -37,11 +37,12 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -71,8 +72,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	private final AdresseHelper adresseHelper;
 
 	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                             RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider);
+	                             RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider);
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 	}
@@ -330,6 +331,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 								ffs.setMotifRattachement(MotifRattachement.ETABLISSEMENT_STABLE);
 								ffs.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
 								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.FIN_EXPLOITATION : null);
+								checkFractionCommuneVaudoise(ffs, mr, LogCategory.FORS);
 								return ffs;
 							})
 							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
@@ -497,6 +499,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			final RegpmCommune commune = d.getCommune();
 			domicile.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
 			domicile.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
+			checkFractionCommuneVaudoise(domicile, mr, LogCategory.ETABLISSEMENTS);
 			return domicile;
 		};
 
@@ -538,10 +541,10 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 		else {
 			domicilesStables.stream()
-					.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile : %s sur %s/%d.",
-					                                                                                StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
-					                                                                                domicile.getTypeAutoriteFiscale(),
-					                                                                                domicile.getNumeroOfsAutoriteFiscale())))
+					.peek(domicile -> mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.INFO, String.format("Domicile : %s sur %s/%d.",
+					                                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
+					                                                                                         domicile.getTypeAutoriteFiscale(),
+					                                                                                         domicile.getNumeroOfsAutoriteFiscale())))
 					.forEach(unireg::addDomicile);
 		}
 	}

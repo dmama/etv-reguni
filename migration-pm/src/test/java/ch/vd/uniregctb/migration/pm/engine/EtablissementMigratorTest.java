@@ -21,9 +21,10 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
@@ -61,8 +62,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
 				getBean(AdresseHelper.class, "adresseHelper"),
-				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
-		);
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
@@ -774,7 +775,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI, LogCategory.ETABLISSEMENTS);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -782,6 +783,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bDomicile .* sur COMMUNE_OU_FRACTION_VD/5642\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -850,7 +852,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		}
 
 		// vérification des messages collectés
-		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ADRESSES, LogCategory.SUIVI, LogCategory.ETABLISSEMENTS);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -858,6 +860,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bDomicile .* sur COMMUNE_HC/2701\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {

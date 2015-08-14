@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.migration.pm.fusion;
+package ch.vd.uniregctb.migration.pm.communes;
 
 import java.util.List;
 

@@ -12,8 +12,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
@@ -44,8 +45,8 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RcPersClient.class, "rcpersClient"),
 				nonHabitantIndex,
-				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
-		);
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
 	}
 
 	private static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {

@@ -63,12 +63,13 @@ import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -142,8 +143,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          AssujettissementService assujettissementService,
 	                          RCEntAdapter rcEntAdapter,
 	                          AdresseHelper adresseHelper,
-	                          FusionCommunesProvider fusionCommunesProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider);
+	                          FusionCommunesProvider fusionCommunesProvider,
+	                          FractionsCommuneProvider fractionsCommuneProvider) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
 		this.rcEntAdapter = rcEntAdapter;
@@ -774,6 +776,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								ffs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 								ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 								ffs.setMotifFermeture(range.getDateFin() != null ? MotifFor.VENTE_IMMOBILIER : null);
+								checkFractionCommuneVaudoise(ffs, mr, LogCategory.FORS);
 								return ffs;
 							})
 							.map(ffs -> adapterAutourFusionsCommunes(ffs, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
@@ -1038,7 +1041,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				})
 				.map(entry -> {
 					final CommuneOuPays cop = entry.getValue();
-					return new DomicileEtablissement(entry.getKey(), null, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
+					final DomicileEtablissement domicile = new DomicileEtablissement(entry.getKey(), null, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
+					checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
+					return domicile;
 				})
 				.collect(Collectors.toList());
 
@@ -1501,6 +1506,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %d sans autorité fiscale", f.getId().getSeqNo()));
 				return Optional.empty();
 			}
+			checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
 			return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
 		};
 

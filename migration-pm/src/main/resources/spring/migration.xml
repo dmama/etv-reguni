@@ -47,6 +47,7 @@
 		<constructor-arg name="activityManager" ref="activityManager"/>
 		<constructor-arg name="infraService" ref="serviceInfrastructureService"/>
 		<constructor-arg name="fusionCommunesProvider" ref="fusionCommunesProvider"/>
+		<constructor-arg name="fractionsCommuneProvider" ref="fractionsCommuneProvider"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
@@ -75,8 +76,12 @@
 		<constructor-arg value="${mapping.noOrdreP.file}"/>
 	</bean>
 
-	<bean id="fusionCommunesProvider" class="ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProviderImpl">
+	<bean id="fusionCommunesProvider" class="ch.vd.uniregctb.migration.pm.communes.FusionCommunesProviderImpl">
 		<property name="nomFichierSource" value="${fusions.communes.file}"/>
+	</bean>
+
+	<bean id="fractionsCommuneProvider" class="ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProviderImpl">
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">

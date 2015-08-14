@@ -32,9 +32,10 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
+import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
+import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
-import ch.vd.uniregctb.migration.pm.fusion.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
@@ -51,6 +52,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
@@ -110,8 +112,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(AssujettissementService.class, "assujettissementService"),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
 				getBean(AdresseHelper.class, "adresseHelper"),
-				getBean(FusionCommunesProvider.class, "fusionCommunesProvider")
-		);
+				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
+				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
 	}
 
 	/**
@@ -304,6 +306,17 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 	static RegpmForPrincipal addForPrincipalEtranger(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeForPrincipal type, int noOfsPays) {
 		return addForPrincipal(entreprise, dateDebut, type, null, noOfsPays);
+	}
+
+	static RegpmForSecondaire addForSecondaire(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateFin, @NotNull RegpmCommune commune) {
+		final RegpmForSecondaire ffs = new RegpmForSecondaire();
+		ffs.setId(ID_GENERATOR.next());
+		assignMutationVisa(ffs, REGPM_VISA, REGPM_MODIF);
+		ffs.setCommune(commune);
+		ffs.setDateDebut(dateDebut);
+		ffs.setDateFin(dateFin);
+		entreprise.getForsSecondaires().add(ffs);
+		return ffs;
 	}
 
 	static RegpmAllegementFiscal addAllegementFiscal(RegpmEntreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, @NotNull BigDecimal pourcentage, @NotNull RegpmObjectImpot objectImpot) {
@@ -2674,6 +2687,33 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [02.04.1936 -> 30.06.2001] sur COMMUNE_HC/3421.", textes.get(5));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.07.2001 -> ?] sur COMMUNE_HC/261.", textes.get(6));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(7));
+		}
+	}
+
+	@Test
+	public void testForSurCommuneFaitiere() throws Exception {
+
+		final long noEntreprise = 4545;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LE_CHENIT);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("La commune de l'entité ForFiscalPrincipalPM [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5872 est une commune faîtière de fractions, elle sera déplacée sur la PREMIERE fraction correspondante : 8000, 8001, 8002, 8003 !", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/8000 [01.01.2000 -> ?] généré.", textes.get(1));
 		}
 	}
 

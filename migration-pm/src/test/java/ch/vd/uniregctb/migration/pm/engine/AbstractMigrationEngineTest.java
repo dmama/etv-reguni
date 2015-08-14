@@ -87,6 +87,11 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		 */
 		public static final RegpmCommune MONTAGNY = buildCommune(RegpmCanton.FR, "Montagny (FR)", 2029);
 
+		/**
+		 * Commune faîtière de fractions
+		 */
+		public static final RegpmCommune LE_CHENIT = buildCommune(RegpmCanton.VD, "Le Chenit", MockCommune.LeChenit.getNoOFS());
+
 		public static final class Fraction {
 			public static final RegpmCommune LE_SENTIER = buildFractionCommune(RegpmCanton.VD, "Le Sentier", 8000);
 			public static final RegpmCommune LE_BRASSUS = buildFractionCommune(RegpmCanton.VD, "Le Brassus", 8001);
