@@ -722,7 +722,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 			}
 		}
 
-		// après la couverture ?
+		// juste après la couverture ?
 		// ou bien après la couverture (cas des périodes de validité (couverture vs localisation datée) complètement disjointes) ?
 		else if (finCouverture != null && RegDateHelper.isAfter(rangeNonValide.getDateDebut(), finCouverture, NullDateBehavior.EARLIEST)) {
 			final List<Integer> apres = fusionCommunesProvider.getCommunesApres(source.getNumeroOfsAutoriteFiscale(), finCouverture);

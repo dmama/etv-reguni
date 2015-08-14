@@ -121,20 +121,28 @@ public class FusionCommunesProviderImpl implements FusionCommunesProvider, Initi
 	@Override
 	public List<Integer> getCommunesAvant(int noOfs, @NotNull RegDate dateFusion) {
 		final NavigableMap<RegDate, DonneesMutation> mapMutations = communes.get(noOfs);
-		if (mapMutations == null || !mapMutations.containsKey(dateFusion)) {
+		if (mapMutations == null) {
 			return Collections.emptyList();
 		}
-		return mapMutations.get(dateFusion).getOfsAvant();
+		final Map.Entry<RegDate, DonneesMutation> entry = mapMutations.ceilingEntry(dateFusion);
+		if (entry == null) {
+			return Collections.emptyList();
+		}
+		return entry.getValue().getOfsAvant();
 	}
 
 	@NotNull
 	@Override
 	public List<Integer> getCommunesApres(int noOfs, @NotNull RegDate dateDisparition) {
 		final NavigableMap<RegDate, DonneesMutation> mapMutations = communes.get(noOfs);
-		if (mapMutations == null || !mapMutations.containsKey(dateDisparition)) {
+		if (mapMutations == null) {
 			return Collections.emptyList();
 		}
-		return mapMutations.get(dateDisparition).getOfsApres();
+		final Map.Entry<RegDate, DonneesMutation> entry = mapMutations.floorEntry(dateDisparition);
+		if (entry == null) {
+			return Collections.emptyList();
+		}
+		return entry.getValue().getOfsApres();
 	}
 
 	/**

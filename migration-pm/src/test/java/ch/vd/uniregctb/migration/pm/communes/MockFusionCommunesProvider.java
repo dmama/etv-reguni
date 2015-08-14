@@ -54,19 +54,27 @@ public class MockFusionCommunesProvider implements FusionCommunesProvider {
 	@Override
 	public List<Integer> getCommunesAvant(int noOfs, @NotNull RegDate dateFusion) {
 		final NavigableMap<RegDate, FusionCommunesProviderImpl.DonneesMutation> mapReference = getReferenceMap(noOfs, false);
-		if (mapReference == null || !mapReference.containsKey(dateFusion)) {
+		if (mapReference == null) {
 			return Collections.emptyList();
 		}
-		return mapReference.get(dateFusion).getOfsAvant();
+		final Map.Entry<RegDate, FusionCommunesProviderImpl.DonneesMutation> entry = mapReference.ceilingEntry(dateFusion);
+		if (entry == null) {
+			return Collections.emptyList();
+		}
+		return entry.getValue().getOfsAvant();
 	}
 
 	@NotNull
 	@Override
 	public List<Integer> getCommunesApres(int noOfs, @NotNull RegDate dateDisparition) {
 		final NavigableMap<RegDate, FusionCommunesProviderImpl.DonneesMutation> mapReference = getReferenceMap(noOfs, false);
-		if (mapReference == null || !mapReference.containsKey(dateDisparition)) {
+		if (mapReference == null) {
 			return Collections.emptyList();
 		}
-		return mapReference.get(dateDisparition).getOfsApres();
+		final Map.Entry<RegDate, FusionCommunesProviderImpl.DonneesMutation> entry = mapReference.floorEntry(dateDisparition);
+		if (entry == null) {
+			return Collections.emptyList();
+		}
+		return entry.getValue().getOfsApres();
 	}
 }
