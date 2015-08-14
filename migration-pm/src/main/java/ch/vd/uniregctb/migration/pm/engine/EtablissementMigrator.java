@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
@@ -434,7 +436,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// coordonnées financières
-		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
+		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, () -> extraireRaisonSociale(regpm), unireg, mr);
 
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());
@@ -446,6 +448,21 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log de suivi à la fin des opérations pour cet établissement
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	@Nullable
+	private static String extraireRaisonSociale(RegpmEtablissement regpm) {
+
+		// TODO faut-il, ou ne faut-il pas, utiliser l'enseigne même si une donnée vient de l'entité juridique parente plutôt qu'en valeur par défaut seule ?
+
+		if (regpm.getEntreprise() != null) {
+			final String raisonSocialeEntreprise = EntrepriseMigrator.extraireRaisonSociale(regpm.getEntreprise());
+			return StringUtils.isBlank(raisonSocialeEntreprise) ? regpm.getEnseigne() : raisonSocialeEntreprise;
+		}
+		if (regpm.getIndividu() != null) {
+			return new NomPrenom(regpm.getIndividu().getNom(), regpm.getIndividu().getPrenom()).getNomPrenom();
+		}
+		return regpm.getEnseigne();
 	}
 
 	/**

@@ -38,12 +38,14 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissementStable;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TypeTiers;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
@@ -85,6 +87,26 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		// rattachement à l'entreprise depuis l'entreprise également
 		entreprise.getEtablissements().add(etablissement);
+
+		return etablissement;
+	}
+
+	static RegpmEtablissement buildEtablissement(long id, RegpmIndividu individu) {
+		final RegpmEtablissement etablissement = new RegpmEtablissement();
+		etablissement.setId(id);
+		etablissement.setIndividu(individu);
+		etablissement.setLastMutationOperator(REGPM_VISA);
+		etablissement.setLastMutationTimestamp(REGPM_MODIF);
+
+		// initialisation des collections à des collections vides tout comme on les trouverait avec une entité
+		// extraite de la base de données
+		etablissement.setAppartenancesGroupeProprietaire(new HashSet<>());
+		etablissement.setDomicilesEtablissements(new TreeSet<>());
+		etablissement.setEtablissementsStables(new HashSet<>());
+		etablissement.setInscriptionsRC(new TreeSet<>());
+		etablissement.setRadiationsRC(new TreeSet<>());
+		etablissement.setRattachementsProprietaires(new HashSet<>());
+		etablissement.setSuccursales(new HashSet<>());
 
 		return etablissement;
 	}
@@ -631,13 +653,16 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testCoordonneesFinancieres() throws Exception {
+	public void testCoordonneesFinancieresAvecRaisonSocialeEtEnseigne() throws Exception {
 
 		final long noEntreprise = 1234L;
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		entreprise.setRaisonSociale1("Ma petite");
+		entreprise.setRaisonSociale2("entreprise à moi");
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
 		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
+		etablissement.setEnseigne("Mon enseigne");
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         Collections.singletonList(etablissement),
@@ -665,11 +690,106 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
 			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
 			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertNull(etab.getTitulaireCompteBancaire());     // le jour où on saura quoi mettre là-dedans, ça pêtera ici...
+			Assert.assertEquals("Ma petite entreprise à moi", etab.getTitulaireCompteBancaire());     // utilisation de la raison sociale de l'entreprise liée
 
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
-			Assert.assertNull(etab.getEnseigne());
+			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
+			Assert.assertEquals(0, etab.getDomiciles().size());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testCoordonneesFinancieresAvecPersonnePhysique() throws Exception {
+
+		final long noIndividu = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Duplancher", "Philibert", null, Sexe.MASCULIN);
+
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, individu);
+		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
+		etablissement.setEnseigne("Mon enseigne");
+
+		final MockGraphe graphe = new MockGraphe(null,
+		                                         Collections.singletonList(etablissement),
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
+			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
+			Assert.assertEquals("Philibert Duplancher", etab.getTitulaireCompteBancaire());     // utilisation des noms et prénoms de la personne liée
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
+			Assert.assertEquals(0, etab.getDomiciles().size());
+
+			return null;
+		});
+	}
+
+	@Test
+	public void testCoordonneesFinancieresSansRaisonSocialeMaisEnseigne() throws Exception {
+
+		final long noEntreprise = 1234L;
+		final long noEtablissement = 43256475L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
+		etablissement.setEnseigne("Mon enseigne");
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
+		final long idEtablissement = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			return ids.get(0);
+		});
+
+		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
+		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+
+		// avec les coordonnées financières qui vont bien
+		doInUniregTransaction(true, status -> {
+			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
+			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
+			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
+			Assert.assertEquals("Mon enseigne", etab.getTitulaireCompteBancaire());     // utilisation l'enseigne en l'absence de raison sociale sur l'entreprise parente
+
+			Assert.assertNull(etab.getNumeroEtablissement());
+			Assert.assertFalse(etab.isPrincipal());
+			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
 			Assert.assertEquals(0, etab.getDomiciles().size());
 
 			return null;

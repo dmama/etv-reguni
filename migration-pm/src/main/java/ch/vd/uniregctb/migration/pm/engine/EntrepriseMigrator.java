@@ -884,7 +884,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// TODO migrer les adresses, les documents...
 
-		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, unireg, mr);
+		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, () -> extraireRaisonSociale(regpm), unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
 		migrateFlagDebiteurInactif(regpm, unireg, mr);
 
@@ -901,6 +901,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Concatène les trois champs de la raison sociale de l'entreprise en une seule
+	 * @param regpm entreprise de RegPM
+	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
+	 */
+	static String extraireRaisonSociale(RegpmEntreprise regpm) {
+		final Stream.Builder<String> builder = Stream.builder();
+		if (StringUtils.isNotBlank(regpm.getRaisonSociale1())) {
+			builder.accept(regpm.getRaisonSociale1());
+		}
+		if (StringUtils.isNotBlank(regpm.getRaisonSociale2())) {
+			builder.accept(regpm.getRaisonSociale2());
+		}
+		if (StringUtils.isNotBlank(regpm.getRaisonSociale3())) {
+			builder.accept(regpm.getRaisonSociale3());
+		}
+		return StringUtils.trimToNull(builder.build().collect(Collectors.joining(" ")));
 	}
 
 	/**
@@ -1181,6 +1200,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			String iban;
 			try {
 				iban = IbanExtractor.extractIban(mandat, mr);
+
+				// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
 			}
 			catch (IbanExtractor.IbanExtratorException e) {
 				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");

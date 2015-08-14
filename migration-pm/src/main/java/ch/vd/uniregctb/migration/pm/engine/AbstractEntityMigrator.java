@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -342,10 +343,14 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	/**
 	 * Méthode utilitaire de migration des coordonnées financières pour une entité
 	 * @param getter l'accesseur à la structure des coordonnées financières
+	 * @param titulaireCompte titulaire du compte bancaire
 	 * @param unireg la destination des données
 	 * @param mr le collecteur de messages de suivi
 	 */
-	protected static void migrateCoordonneesFinancieres(Supplier<RegpmCoordonneesFinancieres> getter, Tiers unireg, MigrationResultProduction mr) {
+	protected static void migrateCoordonneesFinancieres(Supplier<RegpmCoordonneesFinancieres> getter,
+	                                                    Supplier<String> titulaireCompte,
+	                                                    Tiers unireg,
+	                                                    MigrationResultProduction mr) {
 		final RegpmCoordonneesFinancieres cf = getter.get();
 		if (cf != null) {
 			try {
@@ -353,9 +358,14 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				final String bicSwift = cf.getBicSwift();
 				if (iban != null || bicSwift != null) {
 					unireg.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
+					if (titulaireCompte != null) {
+						final String nomTitulaire = titulaireCompte.get();
+						if (StringUtils.isNotBlank(nomTitulaire)) {
+							unireg.setTitulaireCompteBancaire(nomTitulaire);
+						}
+					}
 				}
 
-				// TODO le titulaire du compte ??
 				// TODO faut-il également introduire le POFICHBEXXX (= BIC de postfinance) ?
 			}
 			catch (IbanExtractor.IbanExtratorException e) {
