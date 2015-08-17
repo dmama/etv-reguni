@@ -53,6 +53,7 @@
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
+		<constructor-arg name="seuilActivite" ref="dateSeuilActivite"/>
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>

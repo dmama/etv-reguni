@@ -110,6 +110,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
+				RegDate.get(2015, 1, 1),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
 				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),

@@ -134,12 +134,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final AssujettissementService assujettissementService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
+	private final RegDate seuilActivite;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
 	                          ActivityManager activityManager,
 	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
+	                          RegDate seuilActivite,
 	                          RCEntAdapter rcEntAdapter,
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
@@ -147,6 +149,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
+		this.seuilActivite = seuilActivite;
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 	}
@@ -182,9 +185,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private static final class ComparaisonAssujettissementsData {
+		private final boolean active;
 		private final SortedSet<RegpmAssujettissement> regpmAssujettissements;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-		public ComparaisonAssujettissementsData(SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
+		public ComparaisonAssujettissementsData(boolean active, SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.active = active;
 			this.regpmAssujettissements = regpmAssujettissements;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
@@ -438,12 +443,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 										.flatMap(List::stream)
 										.map(ff -> Pair.of(ff.getId().getSeqNo(), new CommuneOuPays(ff)))
 										.forEach(pair -> mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-										                               String.format(
-												                               "For fiscal principal %d %s ignoré en raison de la présence à la même date (%s) d'un for fiscal principal différent de type %s.",
-												                               pair.getLeft(),
-												                               pair.getRight(),
-												                               StringRenderers.DATE_RENDERER.toString(entry.getKey()),
-												                               RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE)));
+										                               String.format("For fiscal principal %d %s ignoré en raison de la présence à la même date (%s) d'un for fiscal principal différent de type %s.",
+										                                             pair.getLeft(),
+										                                             pair.getRight(),
+										                                             StringRenderers.DATE_RENDERER.toString(entry.getKey()),
+										                                             RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE)));
 
 								final List<RegpmForPrincipal> forsAdministrationEffective = parType.get(RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE);
 								if (forsAdministrationEffective.size() > 1) {
@@ -540,6 +544,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// assujettissements calculés par Unireg
 				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
 				final List<DateRange> calculesIntersectant = new ArrayList<>(calcules.size());
+
+				// si la PM est déclarée "inactive" mais qu'Unireg lui calcule un assujettissement après la date seuil du 01.01.2015,
+				// c'est un problème, non ?
+				if (!data.active && DateRangeHelper.intersect(new DateRangeHelper.Range(seuilActivite, null), calcules)) {
+					mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
+					              String.format("Assujettissement calculé après le %s sur une entreprise considérée comme inactive.", StringRenderers.DATE_RENDERER.toString(seuilActivite)));
+				}
 
 				// assujettissements complètement apparus
 				for (DateRange apparu : calcules) {
@@ -889,7 +900,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new EffacementForsAnnulesData(moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
-		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(regpm.getAssujettissements(), moi));
+		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
 
 		// TODO migrer les adresses, les documents...
 

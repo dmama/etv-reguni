@@ -94,6 +94,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				                          () -> new EnumMap<>(LogCategory.class)));
 	}
 
+	private static final long INACTIVE_ENTREPRISE_ID = 1832L;
+
 	@Override
 	protected void onSetup() throws Exception {
 		super.onSetup();
@@ -112,10 +114,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final FusionCommunesProvider fusionCommunesProvider = getBean(FusionCommunesProvider.class, "fusionCommunesProvider");
 		final FractionsCommuneProvider fractionsCommuneProvider = getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider");
 
-		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
+		final ActivityManager activityManager = entreprise -> INACTIVE_ENTREPRISE_ID != entreprise.getId();         // tout le monde est actif dans ces tests, sauf la 1832
+		final RegDate seuilActivite = RegDate.get(2015, 1, 1);
 
 		grapheMigrator = new GrapheMigrator();
-		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider));
+		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, seuilActivite, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider));
 		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, fusionCommunesProvider, fractionsCommuneProvider));
 		grapheMigrator.setUniregStore(uniregStore);
@@ -1779,6 +1782,54 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(1, msg.size());
 		final String texte = msg.get(0);
 		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Période(s) d'assujettissement modifiée(s) : avant ([01.01.1990 -> 31.12.2014]) et après ([01.01.1990 -> ?]).", texte);
+	}
+
+	@Test
+	public void testAssujettissementApparuValideApresSeuilSurEntrepriseInactive() throws Exception {
+
+		final long idEntreprise = INACTIVE_ENTREPRISE_ID;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1991, 3, 14), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+
+		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
+		Assert.assertNotNull(msg);
+		Assert.assertEquals(2, msg.size());
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(0));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [14.03.1991 -> ?].", msg.get(1));
+	}
+
+	@Test
+	public void testAssujettissementApparuDebutApresSeuilSurEntrepriseInactive() throws Exception {
+
+		final long idEntreprise = INACTIVE_ENTREPRISE_ID;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2015, 5, 12), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+
+		// cette entreprise est inactive (à cause de cet identifiant "magique"), mais a un for principal vaudois ouvert après 2015... -> ERREUR
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
+		Assert.assertNotNull(msg);
+		Assert.assertEquals(2, msg.size());
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(0));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [12.05.2015 -> ?].", msg.get(1));
 	}
 
 	/**
