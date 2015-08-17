@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -130,6 +131,9 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			setLogicielView(tiersVisuView, dpi);
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
+			tiersVisuView.setTiers(tiers);
+		}
+		else if (tiers instanceof Etablissement) {
 			tiersVisuView.setTiers(tiers);
 		}
 

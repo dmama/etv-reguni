@@ -5,16 +5,16 @@
 <fieldset>
 	<legend><span><fmt:message key="label.regimes.fiscaux.VD"/></span></legend>
 
-	<c:if test="${empty command.entreprise.regimesFiscauxVD}">
+	<c:if test="${empty command.regimesFiscauxVD}">
 		<fmt:message key="no.data" />
 	</c:if>
 
-	<c:if test="${not empty command.entreprise.regimesFiscauxVD}">
+	<c:if test="${not empty command.regimesFiscauxVD}">
 	
 		<input class="noprint" id="showRegimesVDHisto" type="checkbox" onclick="refreshRegimesVDTable(this);" />
 		<label class="noprint" for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
 	
-		<display:table name="${command.entreprise.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display">
+		<display:table name="${command.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
@@ -22,7 +22,7 @@
 				<unireg:regdate regdate="${regimesVD.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				<c:out value="${regimesVD.libelle}"/>&nbsp;(<c:out value="${regimesVD.code}"/>)
+				<fmt:message key="option.regime.fiscal.${regimesVD.type}"/>
 			</display:column>
 		</display:table>
 
@@ -33,16 +33,16 @@
 <fieldset>
 	<legend><span><fmt:message key="label.regimes.fiscaux.CH"/></span></legend>
 
-	<c:if test="${empty command.entreprise.regimesFiscauxCH}">
+	<c:if test="${empty command.regimesFiscauxCH}">
 		<fmt:message key="no.data" />
 	</c:if>
 
-	<c:if test="${not empty command.entreprise.regimesFiscauxCH}">
+	<c:if test="${not empty command.regimesFiscauxCH}">
 	
 		<input class="noprint" id="showRegimesCHHisto" type="checkbox" onclick="refreshRegimesCHTable(this);" />
 		<label class="noprint" for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
 	
-		<display:table name="${command.entreprise.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display">
+		<display:table name="${command.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display">
 			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>
@@ -50,7 +50,7 @@
 				<unireg:regdate regdate="${regimesCH.dateFin}"/>
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
-				<c:out value="${regimesCH.libelle}"/>&nbsp;(<c:out value="${regimesCH.code}"/>)
+				<fmt:message key="option.regime.fiscal.${regimesCH.type}"/>
 			</display:column>
 		</display:table>
 

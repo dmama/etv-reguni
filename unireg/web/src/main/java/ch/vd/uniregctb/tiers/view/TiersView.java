@@ -89,7 +89,11 @@ public class TiersView {
 
 	private List<MouvementDetailView> mouvements;
 
+	@Deprecated
 	private EntrepriseView entreprise;
+
+	private List<RegimeFiscalView> regimesFiscauxVD;
+	private List<RegimeFiscalView> regimesFiscauxCH;
 
 	private boolean isAllowed;
 
@@ -272,8 +276,25 @@ public class TiersView {
 		return entreprise;
 	}
 
+	@Deprecated
 	public void setEntreprise(EntrepriseView entreprise) {
 		this.entreprise = entreprise;
+	}
+
+	public List<RegimeFiscalView> getRegimesFiscauxVD() {
+		return regimesFiscauxVD;
+	}
+
+	public void setRegimesFiscauxVD(List<RegimeFiscalView> regimesFiscauxVD) {
+		this.regimesFiscauxVD = regimesFiscauxVD;
+	}
+
+	public List<RegimeFiscalView> getRegimesFiscauxCH() {
+		return regimesFiscauxCH;
+	}
+
+	public void setRegimesFiscauxCH(List<RegimeFiscalView> regimesFiscauxCH) {
+		this.regimesFiscauxCH = regimesFiscauxCH;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {

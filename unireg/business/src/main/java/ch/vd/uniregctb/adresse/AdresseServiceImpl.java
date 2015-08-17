@@ -1525,8 +1525,8 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCiviles((CollectiviteAdministrative) tiers);
 		}
-		else if (tiers instanceof Entreprise) {
-			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
+		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -1599,8 +1599,8 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCivilesHisto((CollectiviteAdministrative) tiers);
 		}
-		else if (tiers instanceof Entreprise) {
-			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
+		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");

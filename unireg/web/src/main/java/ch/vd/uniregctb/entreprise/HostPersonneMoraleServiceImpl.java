@@ -163,10 +163,10 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 			final RegimeFiscalView v = new RegimeFiscalView();
 			v.setDateDebut(r.getDateDebut());
 			v.setDateFin(r.getDateFin());
-			v.setCode(r.getCode());
+//			v.setCode(r.getCode());
 			final TypeRegimeFiscal type = serviceInfra.getTypeRegimeFiscal(r.getCode());
 			if (type != null) {
-				v.setLibelle(type.getLibelle());
+//				v.setLibelle(type.getLibelle());
 			}
 			list.add(v);
 		}

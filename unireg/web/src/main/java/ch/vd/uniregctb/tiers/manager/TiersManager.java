@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -83,6 +84,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -101,6 +103,7 @@ import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
 import ch.vd.uniregctb.tiers.view.LogicielView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
+import ch.vd.uniregctb.tiers.view.RegimeFiscalView;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersView;
@@ -167,19 +170,6 @@ public class TiersManager implements MessageSourceAware {
 			individuView.setDateDernierChgtEtatCivil(habitant.getDateDeces());
 		}
 		return individuView;
-	}
-
-	/**
-	 * Recupere l'entreprise correspondant au tiers
-	 */
-	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
-
-		EntrepriseView entrepriseView = null;
-		Long noEntreprise = entreprise.getNumero();
-		if (noEntreprise != null) {
-			entrepriseView = getHostPersonneMoraleService().get(noEntreprise);
-		}
-		return entrepriseView;
 	}
 
 	/**
@@ -505,8 +495,37 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
-		EntrepriseView entrepriseView = getEntrepriseView(entreprise);
-		tiersView.setEntreprise(entrepriseView);
+
+		// les régimes fiscaux
+		final Set<RegimeFiscal> regimes = entreprise.getRegimesFiscaux();
+		if (regimes != null) {
+			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
+			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
+			for (RegimeFiscal regime : regimes) {
+				final RegimeFiscalView rfView = new RegimeFiscalView();
+				rfView.setDateDebut(regime.getDateDebut());
+				rfView.setDateFin(regime.getDateFin());
+				rfView.setType(regime.getType());
+				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
+					vd.add(rfView);
+				}
+				else if (regime.getPortee() == RegimeFiscal.Portee.CH) {
+					ch.add(rfView);
+				}
+				else {
+					throw new IllegalArgumentException("Portée inconnue sur un régime fiscal : " + regime.getPortee());
+				}
+			}
+			Collections.sort(vd, new DateRangeComparator<>());
+			Collections.sort(ch, new DateRangeComparator<>());
+
+			tiersView.setRegimesFiscauxVD(vd);
+			tiersView.setRegimesFiscauxCH(ch);
+		}
+
+		// c'est du pipeau pour que les écrans actuels ne cassent pas...
+		// mais ça va devoir partir
+		tiersView.setEntreprise(new EntrepriseView());
 	}
 
 	/**
