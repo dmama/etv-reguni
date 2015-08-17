@@ -31,9 +31,11 @@
                     </td>
                 </c:if>
                 <c:if test="${showMessagePresenceDecision}">
-                    <td id="messageDecision">
-                        <fmt:message key="label.presence.decision.aci"/>
-                    </td>
+	                <td>
+		                <div class="flash" id="messageDecision">
+			                <fmt:message key="label.presence.decision.aci"/>
+		                </div>
+	                </td>
             </c:if>
 			<c:if test="${showTimelineLink}">
 				<td id="timeline" align="right">
