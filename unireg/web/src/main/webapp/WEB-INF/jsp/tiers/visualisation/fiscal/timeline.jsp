@@ -74,11 +74,13 @@
 			<span id="timeline_header">Affichage des :
 				<input type="hidden" name="id" value="${command.tiersId}">
 
-				<input type="checkbox" id="checkForsGestion" onclick="$('#showForsGestion').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showForsGestion}"> checked</c:if>/>
-				<label for="checkForsGestion">Fors de gestion</label>
-				<input type="hidden" id="showForsGestion" name="showForsGestion" value="${command.showForsGestion}"/>
+				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+					<input type="checkbox" id="checkForsGestion" onclick="$('#showForsGestion').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showForsGestion}"> checked</c:if>/>
+					<label for="checkForsGestion">Fors de gestion</label>
+					<input type="hidden" id="showForsGestion" name="showForsGestion" value="${command.showForsGestion}"/>
+				</c:if>
 
-				<c:if test="${debugAssujettissement}">
+				<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 					<input type="checkbox" id="checkAssujettissementsSource" onclick="$('#showAssujettissementsSource').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showAssujettissementsSource}"> checked</c:if>/>
 					<label for="checkAssujettissementsSource">Assujettissements source</label>
 					<input type="hidden" id="showAssujettissementsSource" name="showAssujettissementsSource" value="${command.showAssujettissementsSource}"/>
@@ -89,7 +91,7 @@
 				</c:if>
 
 				<input type="checkbox" id="checkAssujettissements" onclick="$('#showAssujettissements').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showAssujettissements}"> checked</c:if>/>
-				<label for="checkAssujettissements">Assujettissements<c:if test="${debugAssujettissement}"> (combinés)</c:if></label>
+				<label for="checkAssujettissements">Assujettissements<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}"> (combinés)</c:if></label>
 				<input type="hidden" id="showAssujettissements" name="showAssujettissements" value="${command.showAssujettissements}"/>
 
 				<input type="checkbox" id="checkPeriodesImposition" onclick="$('#showPeriodesImposition').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImposition}"> checked</c:if>/>
@@ -110,12 +112,12 @@
 				<th colspan="2">Période</th>
 				<th colspan="2">Fors Principaux</th>
 				<th colspan="<c:out value="${command.table.forsSecondairesSize}"/>">Fors Secondaires</th>
-				<c:if test="${command.showForsGestion}"><th>Fors de Gestion</th></c:if>
-				<c:if test="${debugAssujettissement}">
+				<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}"><th>Fors de Gestion</th></c:if>
+				<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 					<c:if test="${command.showAssujettissementsSource}"><th>Assujettissements source</th></c:if>
 					<c:if test="${command.showAssujettissementsRole}"><th>Assujettissements rôle</th></c:if>
 				</c:if>
-				<c:if test="${command.showAssujettissements}"><th>Assujettissements<c:if test="${debugAssujettissement}"> (combinés)</c:if></th></c:if>
+				<c:if test="${command.showAssujettissements}"><th>Assujettissements<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}"> (combinés)</c:if></th></c:if>
 				<c:if test="${command.showPeriodesImposition}"><th>Périodes d'imposition</th></c:if>
 				<c:if test="${command.showPeriodesImpositionIS}"><th>Périodes d'imposition IS</th></c:if>
 			</tr>
@@ -184,7 +186,9 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
-										    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+												Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											</c:if>
 										</div>
 									</td>
 								</c:when>
@@ -197,7 +201,9 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
-										    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											</c:if>
 										</div>
 									</td>
 								</c:when>
@@ -209,7 +215,9 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
-										    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
+											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
+											</c:if>
 										</div>
 									</td>
 								</c:when>
@@ -244,7 +252,7 @@
 					</c:forEach>
 
 					<%-- fors de gestion --%>
-					<c:if test="${command.showForsGestion}">
+					<c:if test="${command.showForsGestion && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 						<c:choose>
 							<c:when test="${ligne.forGestion.filler}">
 								<td class="filler" />
@@ -266,7 +274,7 @@
 						</c:choose>
 					</c:if>
 
-					<c:if test="${debugAssujettissement}">
+					<c:if test="${debugAssujettissement && (command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun')}">
 
 						<%-- assujettissements source --%>
 						<c:if test="${command.showAssujettissementsSource}">
@@ -394,7 +402,7 @@
 	                                <div id="pi-<unireg:regdate regdate="${pi.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 	                                    Début : <b><unireg:date date="${pi.dateDebut}"/></b><br/>
 	                                    Fin : <b><unireg:date date="${pi.dateFin}"/></b><br/>
-		                                Période fiscale : <b>${pi.periodeFiscale}</b>
+		                                Période fiscale : <b>${pi.periodeFiscale}</b><br/>
 	                                    Type de contribuable : <b><fmt:message key="option.type.contribuable.${pi.typeContribuable}"/></b><br/>
 	                                    Type de document : <c:if test="${pi.typeDocumentDeclaration != null}"><b><fmt:message key="option.type.document.${pi.typeDocumentDeclaration}"/></b></c:if><br/>
 	                                    Optionnelle : <b><fmt:message key="option.ouinon.${pi.declarationOptionnelle}"/></b><br/>

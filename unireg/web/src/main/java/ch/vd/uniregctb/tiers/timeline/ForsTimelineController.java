@@ -155,6 +155,8 @@ public class ForsTimelineController {
 	 */
 	private void fillTimeline(ForsTimelineView bean, Tiers tiers, RegDate bigBang) {
 
+		bean.setTiersId(tiers.getNumero());
+
 		// [SIFISC-11149] on veut pouvoir masquer des trucs selon le type de tiers
 		final NatureTiers natureTiers = tiers.getNatureTiers();
 		bean.setNatureTiers(natureTiers);

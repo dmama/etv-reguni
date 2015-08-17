@@ -60,7 +60,9 @@ public class DeclarationView implements Annulable {
 			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
 			this.codeControle = di.getCodeControle();
 			this.typeDocument = di.getTypeDeclaration();
-			this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
+			if (this.typeDocument != null) {
+				this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
+			}
 		}
 
 		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai());

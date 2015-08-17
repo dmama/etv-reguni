@@ -47,6 +47,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -466,6 +467,16 @@ public class AdresseServiceImpl implements AdresseService {
 			final List<String> raisonComplete = getRaisonSocialeLongue(entreprise);
 			for (String ligne : raisonComplete) {
 				adresse.addRaisonSociale(ligne);
+			}
+		}
+		else if (tiers instanceof Etablissement) {
+			final Etablissement etb = (Etablissement) tiers;
+			if (StringUtils.isNotBlank(etb.getEnseigne())) {
+				adresse.addRaisonSociale(etb.getEnseigne());
+			}
+			else {
+				// TODO [SIPM] il va falloir faire mieux...
+				adresse.addRaisonSociale("###voir entreprise###");
 			}
 		}
 		else {
