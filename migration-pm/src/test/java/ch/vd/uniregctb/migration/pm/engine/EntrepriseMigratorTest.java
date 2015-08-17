@@ -53,6 +53,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
@@ -355,6 +356,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		entreprise.getAllegementsFiscaux().add(a);
 		return a;
+	}
+
+	static RegpmFusion addFusion(RegpmEntreprise avant, RegpmEntreprise apres, RegDate dateBilan) {
+		final RegpmFusion fusion = new RegpmFusion();
+		fusion.setEntrepriseAvant(avant);
+		fusion.setEntrepriseApres(apres);
+		fusion.setDateBilan(dateBilan);
+		avant.getFusionsApres().add(fusion);
+		apres.getFusionsAvant().add(fusion);
+		return fusion;
 	}
 
 	@Test
@@ -2778,7 +2789,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
-			Assert.assertTrue(entreprise.isDebiteurInactif());
+			Assert.assertTrue(entreprise.isDebiteurInactif());          // une étoile au début de la raison sociale -> débiteur inactif
 		});
 
 		// et dans les messages de suivi ?
@@ -2815,7 +2826,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
-			Assert.assertFalse(entreprise.isDebiteurInactif());
+			Assert.assertFalse(entreprise.isDebiteurInactif());     // pas d'étoile dans la raison sociale -> actif!
 		});
 
 		// et dans les messages de suivi ?
@@ -2829,6 +2840,216 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Pas de commune ni de for principal associé, pas d'établissement principal créé.", textes.get(2));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(3));
 		}
+	}
+
+	@Test
+	public void testDateFinActiviteRadiationRC() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final long noEntrepriseApresFusion = 42632L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateRadiationRC = RegDate.get(2006, 4, 21);
+		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
+		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
+		final RegDate dateFusion = RegDate.get(2007, 3, 12);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		e.setDateRadiationRC(dateRadiationRC);
+		e.setDateDissolution(dateDissolution);
+		e.setDateFinFiscale(dateFinFiscale);
+		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateRadiationRC, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+	}
+
+	@Test
+	public void testDateFinActiviteDissolution() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final long noEntrepriseApresFusion = 42632L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
+		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
+		final RegDate dateFusion = RegDate.get(2007, 3, 12);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
+		e.setDateDissolution(dateDissolution);
+		e.setDateFinFiscale(dateFinFiscale);
+		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateDissolution, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+	}
+
+	@Test
+	public void testDateFinActiviteDateFinFiscale() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final long noEntrepriseApresFusion = 42632L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
+		final RegDate dateFusion = RegDate.get(2007, 3, 12);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
+//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
+		e.setDateFinFiscale(dateFinFiscale);
+		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateFinFiscale, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+	}
+
+	@Test
+	public void testDateFinActiviteDateBilanFusion() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final long noEntrepriseApresFusion = 42632L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateFusion = RegDate.get(2007, 3, 12);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
+//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
+//		e.setDateFinFiscale(dateFinFiscale);        pas de date de fin fiscale non plus -> il reste la date de fusion
+		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateFusion, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+	}
+
+	@Test
+	public void testDateFinActiviteVide() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final long noEntrepriseApresFusion = 42632L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
+//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
+//		e.setDateFinFiscale(dateFinFiscale);        pas de date de fin fiscale non plus -> il reste la date de fusion
+//		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getMotifFermeture());
+		});
 	}
 
 	// TODO il reste encore plein de tests à faire...

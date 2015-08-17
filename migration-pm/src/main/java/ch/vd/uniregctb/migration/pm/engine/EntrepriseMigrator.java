@@ -86,6 +86,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
@@ -787,8 +788,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return la date de fin de l'activité de la PM en question (<code>null</code> si la PM est toujours active...)
 	 */
 	private static RegDate getDateFinActivite(RegpmEntreprise regpm) {
-		// TODO est-ce vraiment la date de fin d'activité de la PM (opionnelle, évidemment) ?
-		return regpm.getDateFinFiscale();
+		if (regpm.getDateRadiationRC() != null) {
+			return regpm.getDateRadiationRC();
+		}
+		if (regpm.getDateDissolution() != null) {
+			return regpm.getDateDissolution();
+		}
+		if (regpm.getDateFinFiscale() != null) {
+			return regpm.getDateFinFiscale();
+		}
+
+		// le bilan de fusion ?
+		return regpm.getFusionsApres().stream()
+				.filter(fusion -> !fusion.isRectifiee())
+				.map(RegpmFusion::getDateBilan)
+				.sorted(Comparator.reverseOrder())
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**
