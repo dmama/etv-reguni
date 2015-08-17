@@ -57,19 +57,16 @@
 		
 		<jsp:include page="for-debiteur.jsp"/>
 	</c:when>
-	<c:when test="${command.natureTiers == 'Entreprise'}">
-		<jsp:include page="../pm/fors.jsp"/>
-	</c:when>
-	<c:when test="${command.natureTiers != 'DebiteurPrestationImposable' && command.natureTiers != 'Entreprise'}">
-        <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-            <jsp:include page="decision-aci.jsp"/>
-        </authz:authorize>
+	<c:otherwise>
+		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+			<jsp:include page="decision-aci.jsp"/>
+		</authz:authorize>
 		<jsp:include page="for.jsp"/>
 		<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<jsp:include page="situation-famille.jsp"/>
 		</authz:authorize>
-	</c:when>
+	</c:otherwise>
 </c:choose>
 
 <!-- Fin Fiscal -->

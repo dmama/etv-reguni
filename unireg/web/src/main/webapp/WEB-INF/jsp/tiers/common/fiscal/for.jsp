@@ -36,11 +36,11 @@
 				<fmt:message key="option.rattachement.${forFiscal.motifRattachement}" />
 		</c:if>
 	</display:column>
-	<display:column sortable ="true" titleKey="label.mode.imposition">
-		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
+	<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
+		<display:column sortable ="true" titleKey="label.mode.imposition">
 				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
-		</c:if>
-	</display:column>
+		</display:column>
+	</c:if>
 	<display:column sortable ="true" titleKey="label.for.abrege">
 			<c:choose>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
