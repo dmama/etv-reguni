@@ -48,7 +48,6 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 	protected <T extends RegpmEntity> void migrate(T entity, EntityMigrator<T> migrator, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapper idMapper) {
 		doInUniregTransaction(status -> {
 			migrator.migrate(entity, mr, linkCollector, idMapper);
-			return null;
 		});
 	}
 

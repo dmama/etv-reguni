@@ -104,8 +104,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
-		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM,
-		                              "\\bAucun non-habitant trouvé dans Unireg avec ces nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun non-habitant trouvé dans Unireg avec ces nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "Individu migré : [0-9.]+\\.$");
 	}

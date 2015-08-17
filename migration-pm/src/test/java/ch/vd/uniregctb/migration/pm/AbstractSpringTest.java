@@ -117,7 +117,6 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	private void truncateDatabase() throws Exception {
 		doInUniregTransaction(status -> {
 			deleteFromTables(getTableNames(false));
-			return null;
 		});
 	}
 
