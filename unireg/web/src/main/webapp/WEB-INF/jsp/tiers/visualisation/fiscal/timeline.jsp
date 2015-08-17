@@ -186,6 +186,7 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
+											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
 											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
 												Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
@@ -201,6 +202,7 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
+											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
 											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
 											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
@@ -215,6 +217,7 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
+											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
 											<c:if test="${fp['class'].name == 'ch.vd.uniregctb.tiers.ForFiscalPrincipalPP'}">
 											    Mode d'imposition : <b><fmt:message key="option.mode.imposition.${fp.modeImposition}"/></b>
 											</c:if>
@@ -241,7 +244,8 @@
                                         For fiscal secondaire <b>#${fs.range.id}</b><br/>
                                         Ouverture : <b><unireg:date date="${fs.range.dateDebut}"/></b><c:if test="${fs.range.motifOuverture != null}"> - <b><fmt:message key="option.motif.ouverture.${fs.range.motifOuverture}"/></b></c:if><br/>
                                         Fermeture : <b><unireg:date date="${fs.range.dateFin}"/></b><c:if test="${fs.range.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fs.range.motifFermeture}"/></b></c:if><br/>
-                                        Motif de rattachement : <b><fmt:message key="option.rattachement.${fs.range.motifRattachement}"/></b><br/>
+	                                    Genre d'impôt : <b><fmt:message key="option.genre.impot.${fs.range.genreImpot}"/></b><br/>
+	                                    Motif de rattachement : <b><fmt:message key="option.rattachement.${fs.range.motifRattachement}"/></b><br/>
                                     </div>
 								</td>
 							</c:when>
