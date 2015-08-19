@@ -1804,8 +1804,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
-		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(0));
-		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [14.03.1991 -> ?].", msg.get(1));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [14.03.1991 -> ?].", msg.get(0));
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(1));
 	}
 
 	@Test
@@ -1828,8 +1828,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
-		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(0));
-		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [12.05.2015 -> ?].", msg.get(1));
+		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [12.05.2015 -> ?].", msg.get(0));
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(1));
 	}
 
 	/**

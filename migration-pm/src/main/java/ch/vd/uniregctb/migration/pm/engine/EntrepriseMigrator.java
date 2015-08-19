@@ -626,13 +626,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
 				final List<DateRange> calculesIntersectant = new ArrayList<>(calcules.size());
 
-				// si la PM est déclarée "inactive" mais qu'Unireg lui calcule un assujettissement après la date seuil du 01.01.2015,
-				// c'est un problème, non ?
-				if (!data.active && DateRangeHelper.intersect(new DateRangeHelper.Range(seuilActivite, null), calcules)) {
-					mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
-					              String.format("Assujettissement calculé après le %s sur une entreprise considérée comme inactive.", StringRenderers.DATE_RENDERER.toString(seuilActivite)));
-				}
-
 				// assujettissements complètement apparus
 				for (DateRange apparu : calcules) {
 					if (DateRangeHelper.intersect(apparu, lilic)) {
@@ -663,6 +656,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                            toDisplayString(lilicIntersectant),
 						                            toDisplayString(calculesIntersectant)));
 					}
+				}
+
+				// si la PM est déclarée "inactive" mais qu'Unireg lui calcule un assujettissement après la date seuil du 01.01.2015,
+				// c'est un problème, non ?
+				if (!data.active && DateRangeHelper.intersect(new DateRangeHelper.Range(seuilActivite, null), calcules)) {
+					mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
+					              String.format("Assujettissement calculé après le %s sur une entreprise considérée comme inactive.", StringRenderers.DATE_RENDERER.toString(seuilActivite)));
 				}
 			}
 			catch (AssujettissementException e) {
