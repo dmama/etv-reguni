@@ -220,6 +220,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static final class DateFinActiviteData {
+		@Nullable
+		private final RegDate date;
+		public DateFinActiviteData(@Nullable RegDate date) {
+			this.date = date;
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
@@ -290,6 +298,78 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractDateBouclementFutur(e, mr),
 		                         null,
 		                         null);
+
+		// date de fin d'activité
+		mr.registerDataExtractor(DateFinActiviteData.class,
+		                         e -> extractDateFinActivite(e, mr),
+		                         null,
+		                         null);
+	}
+
+	/**
+	 * Détermination de la date de fin d'activité d'une entreprise
+	 * @param e l'entreprise de RegPM
+	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return la date de fin d'activité prise en compte
+	 */
+	private DateFinActiviteData extractDateFinActivite(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(e);
+		return doInLogContext(entrepriseKey, mr, () -> {
+			final RegDate finActivite;
+
+			if (e.getDateRadiationRC() != null) {
+				finActivite = e.getDateRadiationRC();
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Date de fin d'activité proposée (date de radiation au RC) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
+			}
+			else if (e.getDateDissolution() != null) {
+				finActivite = e.getDateDissolution();
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Date de fin d'activité proposée (date de dissolution) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
+			}
+			else if (e.getDateFinFiscale() != null) {
+				finActivite = e.getDateFinFiscale();
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Date de fin d'activité proposée (date de fin fiscale) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
+			}
+			else {
+				// le bilan de fusion ?
+				finActivite = e.getFusionsApres().stream()
+						.filter(fusion -> !fusion.isRectifiee())
+						.map(RegpmFusion::getDateBilan)
+						.sorted(Comparator.reverseOrder())
+						.findFirst()
+						.orElse(null);
+
+				if (finActivite != null) {
+					mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+					              String.format("Date de fin d'activité proposée (date du bilan de fusion) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
+
+				}
+			}
+
+			// si la date est fixée, on ne la prend en compte que si elle
+			// est postérieure à la date de début du dernier for fiscal principal existant
+			if (finActivite != null) {
+				final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(e)).liste;
+				final RegpmForPrincipal apresFin = forsPrincipaux.stream()
+						.filter(fp -> RegDateHelper.isAfter(fp.getDateValidite(), finActivite, NullDateBehavior.EARLIEST))
+						.findFirst()
+						.orElse(null);
+				if (apresFin != null) {
+					// il existe au moins un for principal qui commence après la date de fin calculée -> on ignore donc cette date de fin...
+					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+					              String.format("La date de fin d'activité proposée (%s) est antérieure à la date de début du for principal %d (%s), cette date de fin d'activité sera donc ignorée.",
+					                            StringRenderers.DATE_RENDERER.toString(finActivite),
+					                            apresFin.getId().getSeqNo(),
+					                            StringRenderers.DATE_RENDERER.toString(apresFin.getDateValidite())));
+					return new DateFinActiviteData(null);
+				}
+			}
+
+			// ça y est, on s'est tous mis d'accord sur une date
+			return new DateFinActiviteData(finActivite);
+		});
 	}
 
 	/**
@@ -790,30 +870,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * @param regpm une PM
-	 * @return la date de fin de l'activité de la PM en question (<code>null</code> si la PM est toujours active...)
-	 */
-	private static RegDate getDateFinActivite(RegpmEntreprise regpm) {
-		if (regpm.getDateRadiationRC() != null) {
-			return regpm.getDateRadiationRC();
-		}
-		if (regpm.getDateDissolution() != null) {
-			return regpm.getDateDissolution();
-		}
-		if (regpm.getDateFinFiscale() != null) {
-			return regpm.getDateFinFiscale();
-		}
-
-		// le bilan de fusion ?
-		return regpm.getFusionsApres().stream()
-				.filter(fusion -> !fusion.isRectifiee())
-				.map(RegpmFusion::getDateBilan)
-				.sorted(Comparator.reverseOrder())
-				.findFirst()
-				.orElse(null);
-	}
-
-	/**
 	 * Les listes de ranges en entrée sont supposés triés
 	 * @param l1 une liste de ranges
 	 * @param l2 une autre liste de ranges
@@ -1134,7 +1190,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// lien entre l'établissement principal et son entreprise
 		final Supplier<Entreprise> entrepriseSupplier = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, localisations.firstKey(), getDateFinActivite(regpm)));
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, localisations.firstKey(), dateFinActivite));
 
 		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
 		final List<DomicileEtablissement> domiciles = localisations.entrySet().stream()
@@ -1172,7 +1229,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 
 		// assignation des dates de fin
-		assigneDatesFin(getDateFinActivite(regpm), domiciles);
+		assigneDatesFin(dateFinActivite, domiciles);
 
 		// liaison des domiciles à l'établissement
 		domiciles.stream()
@@ -1638,6 +1695,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// récupération des fors principaux valides
 		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
 
 		// puis la migration, justement
 
@@ -1658,7 +1716,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 
 		// assignation des dates de fin
-		assigneDatesFin(getDateFinActivite(regpm), liste);
+		assigneDatesFin(dateFinActivite, liste);
 
 		// corrections dues aux fusions de communes passées
 		final List<ForFiscalPrincipalPM> listeAvecTraitementFusions = liste.stream()
@@ -1831,16 +1889,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateRegimesFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
+
 		// collecte des régimes fiscaux CH...
 		final List<RegimeFiscal> listeCH = mapRegimesFiscaux(RegimeFiscal.Portee.CH,
 		                                                     regpm.getRegimesFiscauxCH(),
-		                                                     getDateFinActivite(regpm),
+		                                                     dateFinActivite,
 		                                                     mr);
 
 		// ... puis des règimes fiscaux VD
 		final List<RegimeFiscal> listeVD = mapRegimesFiscaux(RegimeFiscal.Portee.VD,
 		                                                     regpm.getRegimesFiscauxVD(),
-		                                                     getDateFinActivite(regpm),
+		                                                     dateFinActivite,
 		                                                     mr);
 
 		// et finalement on ajoute tout ça dans l'entreprise
