@@ -2086,7 +2086,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	@Test
 	public void testMigrationGrapheSerialise() throws Exception {
 
-		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00065833.data";
+		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00004600.data";
 		final File file = new File(grapheFilename);
 		final Graphe graphe = SerializationIntermediary.deserialize(file);
 

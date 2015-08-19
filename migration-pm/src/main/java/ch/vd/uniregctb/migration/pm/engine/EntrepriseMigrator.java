@@ -650,7 +650,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						for (DateRange nonCouvert : rangesNonCouverts) {
 
 							final RegDate dateFinTrou = nonCouvert.getDateFin();
-							final ForFiscalPrincipalPM forApresTrou = dateFinTrou == null ? null : forsPrincipaux.higherEntry(dateFinTrou).getValue();
+							final ForFiscalPrincipalPM forApresTrou = Optional.ofNullable(dateFinTrou)
+									.map(forsPrincipaux::higherEntry)
+									.map(Map.Entry::getValue)
+									.orElse(null);
 							if (forApresTrou != null) {
 								// on change la date de début pour couvrir le trou
 								mr.addMessage(LogCategory.FORS, LogLevel.WARN,
@@ -679,7 +682,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 								// il n'y a pas de for après, on regarde avant...
 								final RegDate dateDebutTrou = nonCouvert.getDateDebut();
-								final ForFiscalPrincipalPM forAvantTrou = dateDebutTrou == null ? null : forsPrincipaux.lowerEntry(dateDebutTrou).getValue();
+								final ForFiscalPrincipalPM forAvantTrou = Optional.ofNullable(dateDebutTrou)
+										.map(forsPrincipaux::lowerEntry)
+										.map(Map.Entry::getValue)
+										.orElse(null);
 								if (forAvantTrou != null) {
 									// on change la date de fin pour couvrir le trou
 									mr.addMessage(LogCategory.FORS, LogLevel.WARN,
