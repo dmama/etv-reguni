@@ -115,10 +115,12 @@
 						<a href="#tabContent_dossiersApparentesTab"><fmt:message key="label.dossiers.apparentes" /></a>
 					</li>
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-						<c:if test="${command.natureTiers != 'Entreprise'}">
+						<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
 							<li id="diTab">
 								<a href="#tabContent_diTab"><fmt:message key="label.di" /></a>
 							</li>
+						</c:if>
+						<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
 							<li id="mouvementTab">
 								<a href="#tabContent_mouvementTab"><fmt:message key="label.mouvement" /></a>
 							</li>
@@ -194,10 +196,12 @@
 					<jsp:include page="dossiers-apparentes.jsp"/>
 				</div>
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-					<c:if test="${command.natureTiers != 'Entreprise'}">
+					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun' || command.natureTiers == 'Entreprise'}">
 						<div id="tabContent_diTab" class="visuTiers">
 							<jsp:include page="di/dis.jsp"/>
 						</div>
+					</c:if>
+					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
 						<div id="tabContent_mouvementTab" class="visuTiers">
 							<jsp:include page="mouvement/mouvements.jsp"/>
 						</div>
