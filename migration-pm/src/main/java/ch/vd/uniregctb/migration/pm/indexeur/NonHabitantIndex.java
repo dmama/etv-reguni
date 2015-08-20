@@ -12,7 +12,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -28,41 +27,36 @@ public class NonHabitantIndex {
 
 	public static class NonHabitantSearchParameters implements SearchParameter<PersonnePhysique> {
 
-		final Long idRegPM;
 		final String nom;
 		final String prenom;
 		final Sexe sexe;
 		final RegDate dateNaissance;
 
-		public NonHabitantSearchParameters(String nom, String prenom, Sexe sexe, RegDate dateNaissance, Long idRegPM) {
+		public NonHabitantSearchParameters(String nom, String prenom, Sexe sexe, RegDate dateNaissance) {
 			this.nom = nom;
 			this.prenom = prenom;
 			this.sexe = sexe;
 			this.dateNaissance = dateNaissance;
-			this.idRegPM = idRegPM;
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return StringUtils.isBlank(nom) && StringUtils.isBlank(prenom) && sexe == null && dateNaissance == null && idRegPM == null;
+			return StringUtils.isBlank(nom) && StringUtils.isBlank(prenom) && sexe == null && dateNaissance == null;
 		}
 	}
 
 	private static class NonHabitantData extends IndexableData {
 
-		public static final String ID_REGPM = "S_ID_REGPM";
 		public static final String NOM = "S_NOM";
 		public static final String DATE_NAISSANCE = "S_DATE_NAISSANCE";
 		public static final String SEXE = "S_SEXE";
 
-		private final Long idRegPM;
 		private final String noms;
 		private final RegDate dateNaissance;       // valeurs utilisées pour la recherche (calculées à partir de la date connue)
 		private final String sexe;
 
-		NonHabitantData(PersonnePhysique pp, @Nullable Long idRegPM) {
+		NonHabitantData(PersonnePhysique pp) {
 			super(pp.getNumero(), "PersonnePhysique", "NonHabitant");
-			this.idRegPM = idRegPM;
 			this.noms = buildNoms(pp);
 			this.dateNaissance = pp.getDateNaissance();
 			this.sexe = IndexerFormatHelper.enumToString(pp.getSexe());
@@ -83,7 +77,6 @@ public class NonHabitantIndex {
 			addAnalyzedValue(d, NOM, noms);
 			addAnalyzedValue(d, DATE_NAISSANCE, IndexerFormatHelper.dateToString(dateNaissance, IndexerFormatHelper.DateStringMode.INDEXATION));
 			addAnalyzedValue(d, SEXE, sexe);
-			addAnalyzedValue(d, ID_REGPM, IndexerFormatHelper.numberToString(idRegPM));
 			return d;
 		}
 	}
@@ -98,12 +91,8 @@ public class NonHabitantIndex {
 		this.index.overwriteIndex();
 	}
 
-	public void index(PersonnePhysique entity, @Nullable Long idRegPM) {
-		this.index.indexEntity(new NonHabitantData(entity, idRegPM));
-	}
-
-	public void reindex(PersonnePhysique entity, @Nullable Long idRegPM) {
-		this.index.removeThenIndexEntity(new NonHabitantData(entity, idRegPM));
+	public void index(PersonnePhysique entity) {
+		this.index.indexEntity(new NonHabitantData(entity));
 	}
 
 	public List<Long> search(NonHabitantSearchParameters params, int maxHits) {
@@ -146,12 +135,6 @@ public class NonHabitantIndex {
 		}
 		if (params.dateNaissance != null) {
 			final Query query = LuceneHelper.getTermsCommence(NonHabitantData.DATE_NAISSANCE, RegDateHelper.toIndexString(params.dateNaissance), 0);
-			if (query != null) {
-				fullQuery.add(query, BooleanClause.Occur.MUST);
-			}
-		}
-		if (params.idRegPM != null) {
-			final Query query = LuceneHelper.getTermsExact(NonHabitantData.ID_REGPM, Long.toString(params.idRegPM));
 			if (query != null) {
 				fullQuery.add(query, BooleanClause.Occur.MUST);
 			}

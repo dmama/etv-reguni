@@ -294,7 +294,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		// indexation du non-habitant...
 		doInUniregTransaction(true, status -> {
 			final PersonnePhysique pp = (PersonnePhysique) getTiersDAO().get(ppId);
-			nonHabitantIndex.index(pp, null);
+			nonHabitantIndex.index(pp);
 			return null;
 		});
 

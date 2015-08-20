@@ -235,7 +235,7 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 			// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
 			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
-			mr.addPostTransactionCallback(() -> nonHabitantIndex.index(saved, regpm.getId()));
+			mr.addPostTransactionCallback(() -> nonHabitantIndex.index(saved));
 		}
 		else {
 			idMapper.addIndividu(regpm, ppExistant);
@@ -243,10 +243,6 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 			// capture du numéro de contribuable utilisé
 			noCtbPersonnePhysique = ppExistant.getId();
-
-			// enregistrement d'un callback appelé une fois la transaction committée, afin d'associer personne physique existante avec le numéro RegPM dans l'indexeur ad'hoc
-			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
-			mr.addPostTransactionCallback(() -> nonHabitantIndex.reindex(ppExistant, regpm.getId()));
 		}
 
 		// log de suivi à la fin des opérations pour cet individu
@@ -256,20 +252,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 	@Nullable
 	private PersonnePhysique rechercheNonHabitantExistant(RegpmIndividu regpm, MigrationResultProduction mr) {
 
-		// on recherche éventuellement d'abord par idRegPM
-		final NonHabitantIndex.NonHabitantSearchParameters paramsIdRegPm = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, null, regpm.getId());
-		if (!paramsIdRegPm.isEmpty()) {
-			final List<Long> idsPP = nonHabitantIndex.search(paramsIdRegPm, Integer.MAX_VALUE);
-			if (idsPP != null && idsPP.size() == 1) {
-				final long id = idsPP.get(0);
-				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Non-habitant %s déjà mappé sur le même individu PM dans une transaction précédente.", FormatNumeroHelper.numeroCTBToDisplay(id)));
-				return (PersonnePhysique) tiersDAO.get(id);
-			}
-		}
-
-		// rien trouvé directement par idRegPM -> on recherche par les autres critères
 		final PersonnePhysique ppExistant;
-		final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance(), null);
+		final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(regpm.getNom(), regpm.getPrenom(), regpm.getSexe(), regpm.getDateNaissance());
 		if (params.isEmpty()) {
 			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu RegPM sans nom, prenom, sexe ni date de naissance.");
 			ppExistant = null;

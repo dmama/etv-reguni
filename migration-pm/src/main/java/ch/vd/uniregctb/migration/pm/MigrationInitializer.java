@@ -83,7 +83,7 @@ public class MigrationInitializer implements InitializingBean {
 				int cursor = 0;
 				while (iterator.hasNext()) {
 					final PersonnePhysique pp = iterator.next();
-					nonHabitantIndex.index(pp, null);
+					nonHabitantIndex.index(pp);
 					currentSession.evict(pp);       // ne pas bouffer toute la RAM...
 
 					if (++ cursor % 10000 == 0) {

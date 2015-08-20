@@ -70,99 +70,99 @@ public class NonHabitantIndexTest {
 		pp.setPrenomUsuel("Micha");
 		pp.setTousPrenoms("Michaïl Sergeï");
 
-		this.nhIndex.index(pp, null);
+		this.nhIndex.index(pp);
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Raskolnikov", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Raskolnikov", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Ivanovitch", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Ivanovitch", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Micha", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Micha", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Michail", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Michail", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Michaïl", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Michaïl", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Sergeï", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Sergeï", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Youri", null, null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters("Youri", null, null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.size());
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Raskolnikov", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Raskolnikov", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Ivanovitch", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Ivanovitch", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Micha", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Micha", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Michail", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Michail", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Michaïl", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Michaïl", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Sergeï", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Sergeï", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Youri", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Youri", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.size());
@@ -179,7 +179,7 @@ public class NonHabitantIndexTest {
 			pp.setPrenomUsuel("Micha");
 			pp.setTousPrenoms("Michaïl Sergeï Babouchka");
 			pp.setSexe(Sexe.MASCULIN);
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 		{
 			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
@@ -189,7 +189,7 @@ public class NonHabitantIndexTest {
 			pp.setPrenomUsuel("Tanja");
 			pp.setTousPrenoms("Tanja Katarina Babouchka");
 			pp.setSexe(Sexe.FEMININ);
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 		{
 			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
@@ -199,25 +199,25 @@ public class NonHabitantIndexTest {
 			pp.setPrenomUsuel("Anton");
 			pp.setTousPrenoms("Anton Grigori Babouchka");
 			pp.setSexe(null);
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, Sexe.MASCULIN, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, Sexe.MASCULIN, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, Sexe.FEMININ, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, Sexe.FEMININ, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 87654321L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Babouchka", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Babouchka", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(3, results.size());
@@ -239,7 +239,7 @@ public class NonHabitantIndexTest {
 			pp.setPrenomUsuel("Micha");
 			pp.setTousPrenoms("Michaïl Sergeï Babouchka");
 			pp.setDateNaissance(RegDate.get(1954, 1, 8));
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 		{
 			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
@@ -250,7 +250,7 @@ public class NonHabitantIndexTest {
 			pp.setTousPrenoms("Tanja Katarina Babouchka");
 			pp.setSexe(Sexe.FEMININ);
 			pp.setDateNaissance(RegDate.get(1954, 2, 25));
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 		{
 			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
@@ -261,25 +261,25 @@ public class NonHabitantIndexTest {
 			pp.setTousPrenoms("Anton Grigori Babouchka");
 			pp.setSexe(null);
 			pp.setDateNaissance(null);
-			this.nhIndex.index(pp, null);
+			this.nhIndex.index(pp);
 		}
 
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954, 1, 8), null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954, 1, 8));
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 12345678L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954, 2, 25), null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954, 2, 25));
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(1, results.size());
 			Assert.assertEquals((Long) 87654321L, results.get(0));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954), null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, RegDate.get(1954));
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(2, results.size());
@@ -289,75 +289,7 @@ public class NonHabitantIndexTest {
 			Assert.assertEquals((Long) 87654321L, results.get(1));
 		}
 		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Babouchka", null, null, null);
-			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
-			Assert.assertNotNull(results);
-			Assert.assertEquals(3, results.size());
-
-			Collections.sort(results);
-			Assert.assertEquals((Long) 12345678L, results.get(0));
-			Assert.assertEquals((Long) 12348765L, results.get(1));
-			Assert.assertEquals((Long) 87654321L, results.get(2));
-		}
-	}
-
-	@Test
-	public void testIdRegPM() throws Exception {
-		{
-			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
-			pp.setNumero(12345678L);
-			pp.setNom("Raskolnikov");
-			pp.setNomNaissance("Ivanovitch");
-			pp.setPrenomUsuel("Micha");
-			pp.setTousPrenoms("Michaïl Sergeï Babouchka");
-			pp.setDateNaissance(RegDate.get(1954, 1, 8));
-			this.nhIndex.index(pp, 1234L);
-		}
-		{
-			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
-			pp.setNumero(87654321L);
-			pp.setNom("Raskolnikova");
-			pp.setNomNaissance("Ivanovna");
-			pp.setPrenomUsuel("Tanja");
-			pp.setTousPrenoms("Tanja Katarina Babouchka");
-			pp.setSexe(Sexe.FEMININ);
-			pp.setDateNaissance(RegDate.get(1954, 2, 25));
-			this.nhIndex.index(pp, 4567L);
-		}
-		{
-			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
-			pp.setNumero(12348765L);
-			pp.setNom("Dourakine");
-			pp.setNomNaissance("Dourakine");
-			pp.setPrenomUsuel("Anton");
-			pp.setTousPrenoms("Anton Grigori Babouchka");
-			pp.setSexe(null);
-			pp.setDateNaissance(null);
-			this.nhIndex.index(pp, null);
-		}
-
-		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, null, 1234L);
-			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
-			Assert.assertNotNull(results);
-			Assert.assertEquals(1, results.size());
-			Assert.assertEquals((Long) 12345678L, results.get(0));
-		}
-		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, null, 4567L);
-			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
-			Assert.assertNotNull(results);
-			Assert.assertEquals(1, results.size());
-			Assert.assertEquals((Long) 87654321L, results.get(0));
-		}
-		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, null, null, null, 12L);
-			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
-			Assert.assertNotNull(results);
-			Assert.assertEquals(0, results.size());
-		}
-		{
-			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Babouchka", null, null, null);
+			final NonHabitantIndex.NonHabitantSearchParameters params = new NonHabitantIndex.NonHabitantSearchParameters(null, "Babouchka", null, null);
 			final List<Long> results = this.nhIndex.search(params, Integer.MAX_VALUE);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(3, results.size());
