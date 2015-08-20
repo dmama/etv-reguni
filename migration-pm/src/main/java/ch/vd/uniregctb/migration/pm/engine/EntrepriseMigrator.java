@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -90,6 +89,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
@@ -1079,25 +1079,25 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		private final RegpmCommune commune;
 		private final Integer noOfsPays;
 
-		public CommuneOuPays(@NotNull RegpmCommune commune) {
-			this.commune = commune;
-			this.noOfsPays = null;
+		public CommuneOuPays(int noOfsPays) {
+			this.commune = null;
+			this.noOfsPays = noOfsPays;
 		}
 
-		public CommuneOuPays(@NotNull RegpmForPrincipal ffp) {
-			if (ffp.getCommune() != null) {
-				this.commune = ffp.getCommune();
+		public CommuneOuPays(@NotNull Supplier<RegpmCommune> communeSupplier, @NotNull Supplier<Integer> noOfsPaysSupplier) {
+			final RegpmCommune commune = communeSupplier.get();
+			if (commune != null) {
+				this.commune = commune;
 				this.noOfsPays = null;
 			}
 			else {
 				this.commune = null;
-				this.noOfsPays = ffp.getOfsPays();
+				this.noOfsPays = noOfsPaysSupplier.get();
 			}
 		}
 
-		public CommuneOuPays(int noOfsPays) {
-			this.commune = null;
-			this.noOfsPays = noOfsPays;
+		public CommuneOuPays(@NotNull RegpmForPrincipal ffp) {
+			this(ffp::getCommune, ffp::getOfsPays);
 		}
 
 		/**
@@ -1144,6 +1144,47 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * Construit une instance de {@link CommuneOuPays} en remplaçant éventuellement les territoires par l'état souverain correspond
+	 * @param dateReference date de référence pour les données du pays éventuel
+	 * @param communeSupplier accesseur à une commune (qui peut être absente)
+	 * @param noOfsPaysSupplier accesseur à un numéro OFS de pays (qui peut être vide)
+	 * @param mr collecteur de messages de suivi
+	 * @return l'instance de {@link CommuneOuPays} à utiliser
+	 */
+	@NotNull
+	private CommuneOuPays buildCommuneOuPays(@NotNull RegDate dateReference,
+	                                         @NotNull Supplier<RegpmCommune> communeSupplier,
+	                                         @NotNull Supplier<Integer> noOfsPaysSupplier,
+	                                         @Nullable String contexte,
+	                                         MigrationResultProduction mr,
+	                                         LogCategory logCategory) {
+		final CommuneOuPays cop = new CommuneOuPays(communeSupplier, noOfsPaysSupplier);
+		if (cop.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
+			// Ici, on va faire comme si le pays vu était Gibraltar (8213)
+			final int noOfsPays;
+			final int noOfsPaysCorrigeGibraltar = cop.noOfsPays == 8997 ? 8213 : cop.noOfsPays;
+			final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, dateReference);
+			if (pays != null && !pays.isEtatSouverain()) {
+				mr.addMessage(logCategory, LogLevel.WARN,
+				              String.format("Le pays %d%s n'est pas un état souverain, remplacé par l'état %d.",
+				                            cop.noOfsPays,
+				                            StringUtils.isBlank(contexte) ? StringUtils.EMPTY : String.format(" (%s)", contexte),
+				                            pays.getNoOfsEtatSouverain()));
+				noOfsPays = pays.getNoOfsEtatSouverain();
+			}
+			else {
+				noOfsPays = noOfsPaysCorrigeGibraltar;
+			}
+
+			if (noOfsPays != cop.noOfsPays) {
+				return new CommuneOuPays(noOfsPays);
+			}
+		}
+		return cop;
+	}
+
+	/**
 	 * Génération de l'établissement principal dont le domicile est placé sur la commune de l'entreprise (ou sur les fors fiscaux principaux si la commune n'est pas indiquée)
 	 * @param regpm l'entreprise de RegPM
 	 * @param unireg l'entreprise dans Unireg
@@ -1155,30 +1196,41 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// TODO peut-être pourra-t-on faire mieux avec les données de RCEnt, mais pour le moment, on suppose l'existence d'UN SEUL établissement principal avec, au besoin, plusieurs domiciles successifs
 
-		final SortedMap<RegDate, CommuneOuPays> localisations;
-		final RegpmCommune commune = regpm.getCommune();
-		if (commune != null) {
-			localisations = new TreeMap<>(Collections.singletonMap(getDateDebutActivite(regpm, mr), new CommuneOuPays(commune)));
-		}
-		else {
-			// pas de commune (cas le plus fréquent...) on va donc regarder les fors principaux...
-			final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
-			if (!forsPrincipaux.isEmpty()) {
+		// la spécification ne parle pas de l'attribut commune ni des fors principaux pour la génération de l'établissement principal
+		// mais seulement de la récupération du dernier siège depuis la table SIEGE_ENTREPRISE
 
-				// pas besoin de faire de merge (voir l'exception lancée plus bas) car la liste extraite est, par construction, fiable
-				// (en tout cas au niveau des dates...)
-				localisations = forsPrincipaux.stream()
-						.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
-						                          CommuneOuPays::new,
-						                          (cop1, cop2) -> { throw new IllegalStateException("Map construite pour n'avoir qu'un seul for par date... pas besoin d'appeler le merger..."); },
-						                          TreeMap::new));
-			}
-			else {
-				// pas de commune, pas de for principal... -> pas d'établissement principal
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de commune ni de for principal associé, pas d'établissement principal créé.");
-				return;
-			}
+		// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence)
+		final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> siegesEffectifs = regpm.getSieges().stream()
+				.filter(s -> !s.isRectifiee())
+				.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+				                          TreeMap::new));
+
+		// pas de donnée de siège -> pas d'établissement principal créé
+		if (siegesEffectifs.isEmpty()) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé, pas d'établissement principal créé.");
+			return;
 		}
+
+		// on ne prend en compte que le dernier (on loggue les autres...)
+		final Map.Entry<RegDate, List<RegpmSiegeEntreprise>> donneesDateReference = siegesEffectifs.lastEntry();
+		siegesEffectifs.headMap(donneesDateReference.getKey(), false).values().stream()
+				.flatMap(List::stream)
+				.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
+
+		// si la dernière date fait référence à plusieurs sièges, on prend le dernier (= en fonction de son numéro de séquence, cette fois)
+		final NavigableMap<Integer, RegpmSiegeEntreprise> siegesDateReference = donneesDateReference.getValue().stream()
+				.collect(Collectors.toMap(s -> s.getId().getSeqNo(),
+				                          Function.identity(),
+				                          (s1, s2) -> { throw new IllegalArgumentException("Plusieurs sièges avec le même numéro de séquence " + s1.getId().getSeqNo() + " sur l'entreprise " + regpm.getId()); },
+				                          TreeMap::new));
+
+		final Map.Entry<Integer, RegpmSiegeEntreprise> donneesSiegeReference = siegesDateReference.lastEntry();
+		siegesDateReference.headMap(donneesSiegeReference.getKey(), false).values().stream()
+				.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
 
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
 		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
@@ -1186,60 +1238,30 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, "Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()) + ".");
+		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s d'après le siège %d.",
+		                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+		                                                              donneesSiegeReference.getKey()));
 
 		// lien entre l'établissement principal et son entreprise
 		final Supplier<Entreprise> entrepriseSupplier = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, localisations.firstKey(), dateFinActivite));
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesDateReference.getKey(), dateFinActivite));
 
 		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
-		final List<DomicileEtablissement> domiciles = localisations.entrySet().stream()
-				.map(entry -> {
-					final CommuneOuPays cop = entry.getValue();
-					if (cop.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-						// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
-						// Ici, on va faire comme si le pays vu était Gibraltar (8213)
-						final int noOfsPays;
-						final int noOfsPaysCorrigeGibraltar = cop.noOfsPays == 8997 ? 8213 : cop.noOfsPays;
-						final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, entry.getKey());
-						if (pays != null && !pays.isEtatSouverain()) {
-							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-							              String.format("Le pays %d du siège n'est pas un état souverain, déplacé sur l'état %d.",
-							                            cop.noOfsPays,
-							                            pays.getNoOfsEtatSouverain()));
-							noOfsPays = pays.getNoOfsEtatSouverain();
-						}
-						else {
-							noOfsPays = noOfsPaysCorrigeGibraltar;
-						}
-
-						if (noOfsPays != cop.noOfsPays) {
-							return Pair.of(entry.getKey(), new CommuneOuPays(noOfsPays));
-						}
-					}
-					return entry;
-				})
-				.map(entry -> {
-					final CommuneOuPays cop = entry.getValue();
-					final DomicileEtablissement domicile = new DomicileEtablissement(entry.getKey(), null, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
-					checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
-					return domicile;
-				})
-				.collect(Collectors.toList());
-
-		// assignation des dates de fin
-		assigneDatesFin(dateFinActivite, domiciles);
+		final RegpmSiegeEntreprise siege = donneesSiegeReference.getValue();
+		final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, "siège", mr, LogCategory.SUIVI);
+		final DomicileEtablissement domicile = new DomicileEtablissement(siege.getDateValidite(), dateFinActivite, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
+		checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
 
 		// liaison des domiciles à l'établissement
-		domiciles.stream()
+		Stream.of(domicile)
 				.map(dom -> adapterAutourFusionsCommunes(dom, mr, LogCategory.SUIVI, null))
 				.flatMap(List::stream)
-				.peek(domicile -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
-				                                                                                FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-				                                                                                StringRenderers.DATE_RANGE_RENDERER.toString(domicile),
-				                                                                                domicile.getTypeAutoriteFiscale(),
-				                                                                                domicile.getNumeroOfsAutoriteFiscale())))
+				.peek(d -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
+				                                                                         FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
+				                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(d),
+				                                                                         d.getTypeAutoriteFiscale(),
+				                                                                         d.getNumeroOfsAutoriteFiscale())))
 				.forEach(etbPrincipal::addDomicile);
 
    		// TODO adresse ?
@@ -1653,42 +1675,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			ffp.setDateDebut(f.getDateValidite());
 			ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
-			if (f.getCommune() != null) {
-				final RegpmCommune commune = f.getCommune();
-				ffp.setNumeroOfsAutoriteFiscale(NO_OFS_COMMUNE_EXTRACTOR.apply(commune));
-				ffp.setTypeAutoriteFiscale(commune.getCanton() == RegpmCanton.VD ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-			}
-			else if (f.getOfsPays() != null) {
-				final int noOfsPays;
 
-				// Dans le mainframe, il y avait un pays (8997 nommé 'Ex Gibraltar (voir 8213)') qui n'a pas été repris dans FiDoR...
-				// Ici, on va faire comme si le pays vu était Gibraltar (8213)
-				final int noOfsPaysCorrigeGibraltar = f.getOfsPays() == 8997 ? 8213 : f.getOfsPays();
-				final Pays pays = infraService.getPays(noOfsPaysCorrigeGibraltar, f.getDateValidite());
-				if (pays != null && !pays.isEtatSouverain()) {
-					mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-					              String.format("Le pays %d du for principal %d n'est pas un état souverain, for déplacé sur l'état %d.",
-					                            f.getOfsPays(),
-					                            f.getId().getSeqNo(),
-					                            pays.getNoOfsEtatSouverain()));
-					noOfsPays = pays.getNoOfsEtatSouverain();
-				}
-				else {
-					noOfsPays = noOfsPaysCorrigeGibraltar;
-				}
+			final CommuneOuPays cop = buildCommuneOuPays(f.getDateValidite(), f::getCommune, f::getOfsPays, String.format("for principal %d", f.getId().getSeqNo()), mr, LogCategory.FORS);
+			ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
+			ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
 
-				if (noOfsPays == ServiceInfrastructureService.noOfsSuisse) {
-					mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %d sans commune mais sur Suisse", f.getId().getSeqNo()));
-					return Optional.empty();
-				}
-
-				ffp.setNumeroOfsAutoriteFiscale(noOfsPays);
-				ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-			}
-			else {
-				mr.addMessage(LogCategory.FORS, LogLevel.ERROR, String.format("For principal %d sans autorité fiscale", f.getId().getSeqNo()));
-				return Optional.empty();
-			}
 			checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
 			return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
 		};
