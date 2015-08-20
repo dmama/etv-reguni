@@ -202,7 +202,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(aucun lien créé\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
@@ -834,7 +834,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(aucun lien créé\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		// avec les coordonnées financières qui vont bien

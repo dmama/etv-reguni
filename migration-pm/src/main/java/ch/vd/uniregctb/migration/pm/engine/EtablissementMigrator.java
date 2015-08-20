@@ -416,7 +416,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
 			}
 			else {
-				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans aucune période de validité d'un établissement stable.");
+				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans aucune période de validité d'un établissement stable (aucun lien créé).");
 			}
 		}
 
