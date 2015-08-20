@@ -41,4 +41,10 @@ public abstract class MigrationConstants {
 	 * Le contrôle des assujettissements avant/après la migration
 	 */
 	public static final int PHASE_COMPARAISON_ASSUJETTISSEMENTS = 50;
+
+	/**
+	 * La destruction des entités Personnes Physiques créées qui n'ont finalement pas de lien avec le monde extérieur
+	 * (doit vraiment être à la fin de la migration, après que tous les liens, fors... aient été créés)
+	 */
+	public static final int PHASE_CONTROLE_PERSONNES_PHYSIQUES_CREEES = 60;
 }

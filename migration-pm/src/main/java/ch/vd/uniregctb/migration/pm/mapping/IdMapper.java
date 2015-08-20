@@ -177,6 +177,20 @@ public class IdMapper implements IdMapping {
 		addEntity(individus, regpm, unireg, INDIVIDU, oldValue -> buildMappingChangeErrorText(INDIVIDU, regpm.getId(), oldValue, unireg.getNumero()));
 	}
 
+	private void removeEntity(Map<Long, Long> mapLocale, long idRegpm, String categorie) throws NonExistentMappingException {
+		lock.doInWriteLock(() -> {
+			if (!mapLocale.containsKey(idRegpm)) {
+				throw new NonExistentMappingException("Pas de mapping connu pour une entité '" + categorie + "' dont l'ID dans RegPM est " + idRegpm);
+			}
+			mapLocale.remove(idRegpm);
+		});
+	}
+
+	@Override
+	public void removeIndividu(long idRegpm) throws NonExistentMappingException {
+		removeEntity(individus, idRegpm, INDIVIDU);
+	}
+
 	@Override
 	public long getIdUniregEntreprise(long idRegpm) throws NonExistentMappingException {
 		return getIdUnireg(entreprises, idRegpm, ENTREPRISE, reference != null ? reference::getIdUniregEntreprise : null);

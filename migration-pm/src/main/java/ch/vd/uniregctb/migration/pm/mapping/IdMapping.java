@@ -43,6 +43,13 @@ public interface IdMapping {
 	void addIndividu(RegpmIndividu regpm, PersonnePhysique unireg);
 
 	/**
+	 * Enlève un individu du mapping (à utiliser avec grande précaution... en particulier il ne faudrait pas que la personne physique soit tout de même sauvegardée en base !!!)
+	 * @param idRegpm identifiant RegPM de l'individu à enlever
+	 * @throws NonExistentMappingException si l'identifiant donné ne correspond à aucun mapping connu (au niveau local)
+	 */
+	void removeIndividu(long idRegpm) throws NonExistentMappingException;
+
+	/**
 	 * Récupération de l'identifiant Unireg à partir de l'identifiant RegPM d'une entreprise
 	 * @param idRegpm identifiant RegPM
 	 * @return l'identifiant de l'entreprise correspondante dans Unireg

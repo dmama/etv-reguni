@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -46,6 +49,7 @@ import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
+import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
@@ -1980,6 +1984,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BERN);
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(2000, 1, 1), Commune.BERN);
 		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(1986, 5, 12), null, createImmeuble(Commune.ECHALLENS));
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2006, 1, 1), RegDate.get(2006, 12, 31));  // je rajoute un lien vers l'individu pour que celui-ci soit conservé
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2214,6 +2219,87 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [17.05.1995 -> ?].", msgs.get(0));
+		}
+	}
+
+	/**
+	 * C'est le cas relativement classique d'un établissement (sans dates d'établissement stable) dont l'entité juridique est un
+	 * individu inconnu dans Unireg (qu'il faudrait donc créer)... Aucun lien sur l'individu n'est en fait généré, et on se demande
+	 * même si la personne physique a un sens dans Unireg (-> on l'enlève !)
+	 */
+	@Test
+	public void testCreationNouvellePersonnePhysiqueSansLien() throws Exception {
+
+		final long idEtablissement = 34564L;
+		final long idIndividu = Long.MAX_VALUE;
+
+		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(idIndividu, "Durant", "Wladimir", RegDate.get(1964, 5, 23), Sexe.MASCULIN);
+		final RegpmEtablissement etb = EtablissementMigratorTest.buildEtablissement(idEtablissement, individu);
+
+		final Graphe graphe = new MockGraphe(null,
+		                                     Collections.singletonList(etb),
+		                                     Collections.singletonList(individu));
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// récupération du numéro de tiers de l'établissement
+		final MutableLong noTiersEtablissement = new MutableLong();
+
+		// contrôle du contenu de la base : la personne physique ne doit pas être là !
+		doInUniregTransaction(true, status -> {
+
+			// un établissement, bien sûr
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(1, etablissements.size());
+			noTiersEtablissement.setValue(etablissements.get(0).getNumero());
+			Assert.assertNotNull(noTiersEtablissement.getValue());
+
+			// pas de personne physique puisque celle-ci a été finalement abandonnée
+			final List<PersonnePhysique> pps = uniregStore.getEntitiesFromDb(PersonnePhysique.class, null);
+			Assert.assertNotNull(pps);
+			Assert.assertEquals(0, pps.size());
+
+			// pas de mapping enregistré pour cette personne physique
+			final IdMapper idMapper = IdMapper.fromDatabase(uniregStore);
+			Assert.assertFalse(idMapper.hasMappingForIndividu(idIndividu));
+			Assert.assertTrue(idMapper.hasMappingForEtablissement(idEtablissement));
+			Assert.assertEquals(noTiersEtablissement.longValue(), idMapper.getIdUniregEtablissement(idEtablissement));
+		});
+
+		// récupération de l'identifiant de la personne physique créée puis oubliée
+		final long idPersonnePhysique;
+
+		// contrôle des messages : la personne physique aurait dû être là mais a été finalement effacée !
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ETABLISSEMENTS, LogCategory.INDIVIDUS_PM), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.INDIVIDUS_PM);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;L'individu RCPers " + idIndividu + " ne peut être renvoyé (Personne 'CT.VD.RCPERS/" + idIndividu + "' introuvable).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Aucun résultat dans RCPers pour le nom (Durant), prénom (Wladimir), sexe (MASCULIN) et date de naissance (23.05.1964).", msgs.get(1));
+			Assert.assertEquals("INFO;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Aucun non-habitant trouvé dans Unireg avec ces nom (Durant), prénom (Wladimir), sexe (MASCULIN) et date de naissance (23.05.1964).", msgs.get(2));
+			Assert.assertEquals("WARN;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Personne physique créée sans lien avec d'autres entités -> abandonnée.", msgs.get(4));
+
+			final Pattern pattern = Pattern.compile("Création de la personne physique ([0-9.]+) pour correspondre à l'individu RegPM");
+			final Matcher matcher = pattern.matcher(msgs.get(3));
+			Assert.assertTrue(msgs.get(3), matcher.find());
+			idPersonnePhysique = Long.parseLong(matcher.group(1).replaceAll("[^0-9]", StringUtils.EMPTY));
+
+			Assert.assertEquals("INFO;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Création de la personne physique " + FormatNumeroHelper.numeroCTBToDisplay(idPersonnePhysique) + " pour correspondre à l'individu RegPM.", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("ERROR;" + idEtablissement + ";;;;" + idIndividu + ";Etablissement sans aucune période de validité d'un établissement stable (aucun lien créé).", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEtablissement + ";;;;" + idIndividu + ";Etablissement sans domicile.", msgs.get(1));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;;;;;" + idEtablissement + ";;;;" + idIndividu + ";" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noTiersEtablissement.longValue()) + ".", msgs.get(0));
+			Assert.assertEquals("INFO;;;;;;;;;;" + idIndividu + ";Durant;Wladimir;MASCULIN;1964-05-23;Individu migré : " + FormatNumeroHelper.numeroCTBToDisplay(idPersonnePhysique) + ".", msgs.get(1));
 		}
 	}
 
