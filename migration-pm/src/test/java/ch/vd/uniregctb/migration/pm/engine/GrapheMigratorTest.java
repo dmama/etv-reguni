@@ -18,9 +18,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -2104,14 +2104,127 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * Cas qui apparait quelques fois : 5410, 40551...
+	 * L'entité est radiée au RC, mettons en 2010, mais possède encore des immeubles en 2011...
+	 */
+	@Test
+	public void testMultiplesZonesForsSecondairesNonCouvertesParForsPrincipaux() throws Exception {
+
+		final long idEntreprise = 5410L;
+		final RegDate dateRadiationRC = RegDate.get(2010, 9, 28);
+		final RegDate dateBouclementFutur = RegDate.get(2015, 12, 31);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		entreprise.setDateRadiationRC(dateRadiationRC);
+		entreprise.setDateBouclementFutur(dateBouclementFutur);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+
+		// attention, important : il y a un trou entre les deux immeubles (afin qu'on ait plusieurs zones non-couvertes distinctes après la fin du for principal)
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2003, 5, 7), RegDate.get(2010, 12, 30), createImmeuble(Commune.ECHALLENS));
+		EntrepriseMigratorTest.addRattachementProprietaire(entreprise, RegDate.get(2011, 1, 1), null, createImmeuble(Commune.MORGES));
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		doInUniregTransaction(true, status -> {
+
+			// contrôle des fors principaux sur la PM
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<ForFiscal> fors = e.getForsFiscaux();
+			Assert.assertEquals(3, fors.size());
+
+			final Map<Class<?>, List<ForFiscal>> mapFors = fors.stream()
+					.collect(Collectors.toMap(ForFiscal::getClass,
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(DateRangeComparator::compareRanges).collect(Collectors.toList()),
+					                          HashMap::new));
+			Assert.assertEquals(2, mapFors.size());
+
+			final List<ForFiscal> forsPrincipaux = mapFors.get(ForFiscalPrincipalPM.class);
+			Assert.assertNotNull(forsPrincipaux);
+			Assert.assertEquals(1, forsPrincipaux.size());
+			final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) forsPrincipaux.get(0);
+			Assert.assertNotNull(ffp);
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(RegDate.get(1995, 5, 17), ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getMotifFermeture());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+
+			final List<ForFiscal> forsSecondaires = mapFors.get(ForFiscalSecondaire.class);
+			Assert.assertNotNull(forsSecondaires);
+			Assert.assertEquals(2, forsSecondaires.size());
+
+			{
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) forsSecondaires.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(RegDate.get(2003, 5, 7), ffs.getDateDebut());
+				Assert.assertEquals(RegDate.get(2010, 12, 30), ffs.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalSecondaire ffs = (ForFiscalSecondaire) forsSecondaires.get(1);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(RegDate.get(2011, 1, 1), ffs.getDateDebut());
+				Assert.assertNull(ffs.getDateFin());
+				Assert.assertEquals(MotifFor.ACHAT_IMMOBILIER, ffs.getMotifOuverture());
+				Assert.assertNull(ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Date de fin d'activité proposée (date de radiation au RC) : 28.09.2010.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2015 : tous les 12 mois, à partir du premier 31.12.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(7, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5586 [17.05.1995 -> 28.09.2010] généré.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'immeuble' [07.05.2003 -> 30.12.2010] ajouté sur la commune 5518.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'immeuble' [01.01.2011 -> ?] ajouté sur la commune 5642.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5518 (maintenant : [07.05.2003 -> 30.12.2010]).", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5642 (maintenant : [01.01.2011 -> ?]).", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;La date de fin du for fiscal principal [17.05.1995 -> 28.09.2010] est adaptée (-> 30.12.2010) pour couvrir les fors secondaires.", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;La date de fin du for fiscal principal [17.05.1995 -> 30.12.2010] est adaptée (-> ?) pour couvrir les fors secondaires.", msgs.get(6));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [17.05.1995 -> ?].", msgs.get(0));
+		}
+	}
+
+	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
-	@Ignore
+//	@Ignore
 	@Test
 	public void testMigrationGrapheSerialise() throws Exception {
 
-		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00004600.data";
+		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00003205.data";
 		final File file = new File(grapheFilename);
 		final Graphe graphe = SerializationIntermediary.deserialize(file);
 

@@ -744,14 +744,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 								// on va maintenant travailler sur une copie du for
 								final ForFiscalPrincipalPM duplicate = duplicate(forApresTrou);
 
-								// on annule le for trop court
+								// on annule le for trop court et on l'enlève de la map (on remettra ensuite ce qu'il faut)
 								forApresTrou.setAnnule(true);
+								forsPrincipaux.remove(forApresTrou.getDateDebut());
 
 								// il ne suffit pas de le dire, il faut le faire...
 								duplicate.setDateDebut(nonCouvert.getDateDebut());
 
 								// on remet le ou les remplaçant(s) dans la liste des fors
-								adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+								adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes).stream()
+										.peek(ff -> forsPrincipaux.put(ff.getDateDebut(), ff))
 										.forEach(entreprise::addForFiscal);
 							}
 							else {
@@ -776,8 +778,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									// on va maintenant travailler sur une copie du for
 									final ForFiscalPrincipalPM duplicate = duplicate(forAvantTrou);
 
-									// on annule le for trop court
+									// on annule le for trop court et on l'enlève de la map (on remettra ensuite ce qu'il faut)
 									forAvantTrou.setAnnule(true);
+									forsPrincipaux.remove(forAvantTrou.getDateDebut());
 
 									// là non plus, il ne suffit pas de le dire...
 									duplicate.setDateFin(nonCouvert.getDateFin());
@@ -786,7 +789,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									}
 
 									// on remet le ou les remplaçant(s) dans la liste des fors
-									adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes)
+									adapterAutourFusionsCommunes(duplicate, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes).stream()
+											.peek(ff -> forsPrincipaux.put(ff.getDateDebut(), ff))
 											.forEach(entreprise::addForFiscal);
 								}
 							}
