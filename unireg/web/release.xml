@@ -35,6 +35,11 @@
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
+			<directory>config/sipm</directory>
+			<outputDirectory>unireg-web-${pom.version}/config/sipm</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
 			<directory>config/validation</directory>
 			<outputDirectory>unireg-web-${pom.version}/config/validation</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
@@ -60,6 +65,13 @@
 				<include>unireg-log4j.xml</include>
 			</includes>
 			<outputDirectory>unireg-web-${pom.version}/config/integration-te</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+			</includes>
+			<outputDirectory>unireg-web-${pom.version}/config/sipm</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>config/</directory>
