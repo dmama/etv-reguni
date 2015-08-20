@@ -1189,7 +1189,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Génération de l'établissement principal dont le domicile est placé sur la commune de l'entreprise (ou sur les fors fiscaux principaux si la commune n'est pas indiquée)
+	 * Génération de l'établissement principal à partir du dernier siège de l'entreprise
 	 * @param regpm l'entreprise de RegPM
 	 * @param unireg l'entreprise dans Unireg
 	 * @param linkCollector le collecteur de liens à créer entre les entités
@@ -1203,9 +1203,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// la spécification ne parle pas de l'attribut commune ni des fors principaux pour la génération de l'établissement principal
 		// mais seulement de la récupération du dernier siège depuis la table SIEGE_ENTREPRISE
 
-		// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence)
+		// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
 		final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> siegesEffectifs = regpm.getSieges().stream()
 				.filter(s -> !s.isRectifiee())
+				.filter(s -> {
+					if (s.getDateValidite() == null) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Le siège %d est ignoré car il a une date de début de validité nulle (ou avant 1291).", s.getId().getSeqNo()));
+						return false;
+					}
+					return true;
+				})
+				.filter(s -> {
+					if (isFutureDate(s.getDateValidite())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Le siège %d est ignoré car il a une date de début de validité dans le futur (%s).",
+						                            s.getId().getSeqNo(),
+						                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite())));
+						return false;
+					}
+					return true;
+				})
 				.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
 				                          Collections::singletonList,
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
@@ -1258,9 +1276,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
 
 		// liaison des domiciles à l'établissement
-		Stream.of(domicile)
-				.map(dom -> adapterAutourFusionsCommunes(dom, mr, LogCategory.SUIVI, null))
-				.flatMap(List::stream)
+		adapterAutourFusionsCommunes(domicile, mr, LogCategory.SUIVI, null).stream()
 				.peek(d -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Domicile de l'établissement principal %s : %s sur %s/%d.",
 				                                                                         FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
 				                                                                         StringRenderers.DATE_RANGE_RENDERER.toString(d),

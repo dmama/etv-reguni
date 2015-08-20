@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -2220,11 +2221,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
 	 */
-//	@Ignore
+	@Ignore
 	@Test
 	public void testMigrationGrapheSerialise() throws Exception {
 
-		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00003205.data";
+		final String grapheFilename = "/home/jacob/migration-pm/dump-regpm/00052898.data";
 		final File file = new File(grapheFilename);
 		final Graphe graphe = SerializationIntermediary.deserialize(file);
 
