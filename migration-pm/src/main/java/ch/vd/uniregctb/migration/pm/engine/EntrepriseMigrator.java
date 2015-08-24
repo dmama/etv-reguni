@@ -2281,6 +2281,36 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(a -> a.getDateAnnulation() == null)                 // on ne prend pas en compte les allègements annulés
 				.sorted(Comparator.comparing(a -> a.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
 				.filter(a -> {
+					if (isFutureDate(a.getDateDebut())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Allègement fiscal %d ignoré en raison de sa date de début dans le futur (%s).",
+						                            a.getId().getSeqNo(),
+						                            StringRenderers.DATE_RENDERER.toString(a.getDateDebut())));
+						return false;
+					}
+					return true;
+				})
+				.map(a -> {
+					if (isFutureDate(a.getDateFin())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Date de fin (%s) de l'allègement fiscal %d ignorée (date future).",
+						                            StringRenderers.DATE_RENDERER.toString(a.getDateFin()),
+						                            a.getId().getSeqNo()));
+						final RegpmAllegementFiscal raf = new RegpmAllegementFiscal();
+						raf.setCommune(a.getCommune());
+						raf.setDateDebut(a.getDateDebut());
+						raf.setDateFin(null);       // date de fin ignorée
+						raf.setId(a.getId());
+						raf.setLastMutationOperator(a.getLastMutationOperator());
+						raf.setLastMutationTimestamp(a.getLastMutationTimestamp());
+						raf.setObjectImpot(a.getObjectImpot());
+						raf.setPourcentage(a.getPourcentage());
+						raf.setTypeContribution(a.getTypeContribution());
+						return raf;
+					}
+					return a;
+				})
+				.filter(a -> {
 					if (a.getCommune() != null && a.getCommune().getCanton() != RegpmCanton.VD) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
 						              String.format("Allègement fiscal %d sur une commune hors-canton (%s/%d/%s) -> ignoré.",

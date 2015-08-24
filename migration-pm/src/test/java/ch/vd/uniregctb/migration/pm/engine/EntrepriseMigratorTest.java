@@ -1074,7 +1074,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Set<RegimeFiscal> regimesFiscauxBruts = entreprise.getRegimesFiscaux();
 			Assert.assertNotNull(regimesFiscauxBruts);
-			Assert.assertEquals(3, regimesFiscauxBruts.size());     // 1 VD + 2 CH (l'annulé n'est pas migré)
+			Assert.assertEquals(3, regimesFiscauxBruts.size());     // 1 VD (la date dans le futur n'est pas migrée) + 2 CH (l'annulé n'est pas migré)
 
 			final List<RegimeFiscal> regimesFiscauxTries = entreprise.getRegimesFiscauxNonAnnulesTries();
 			Assert.assertNotNull(regimesFiscauxTries);
@@ -1424,7 +1424,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(5, textesFors.size());
 		Assert.assertEquals("For fiscal principal 1 COMMUNE_OU_FRACTION_VD/5586 ignoré en raison de la présence à la même date (07.05.2005) d'un for fiscal principal différent de type ADMINISTRATION_EFFECTIVE.", textesFors.get(0));
 		Assert.assertEquals("For fiscal principal 4 COMMUNE_HC/2701 ignoré en raison de la présence à la même date (07.05.2005) d'un for fiscal principal différent de type ADMINISTRATION_EFFECTIVE.", textesFors.get(1));
-		Assert.assertEquals("Plusieurs (2) fors principaux de type ADMINISTRATION_EFFECTIVE sur des autorités fiscales différentes (COMMUNE_OU_FRACTION_VD/5518, COMMUNE_OU_FRACTION_VD/5642) ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(2));
+		Assert.assertEquals("Plusieurs (2) fors principaux de type ADMINISTRATION_EFFECTIVE sur des autorités fiscales différentes (COMMUNE_OU_FRACTION_VD/5518, COMMUNE_OU_FRACTION_VD/5642) ont une date de début identique au 07.05.2005 : seul le dernier sera pris en compte.", textesFors.get(
+				2));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(3));
 		Assert.assertEquals("Décision ACI COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] générée.", textesFors.get(4));
 	}
@@ -1739,6 +1740,61 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(6));
 		Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(7));
 		Assert.assertEquals("Entreprise migrée : 47.84.", textes.get(8));
+	}
+
+	@Test
+	public void testAllegementsFiscauxDatesFutures() throws Exception {
+
+		final long noEntreprise = 42613L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addAllegementFiscal(e, RegDate.get(1950, 1, 1), RegDate.get(2020, 3, 31), BigDecimal.valueOf(12L), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.COMMUNE, null);
+		addAllegementFiscal(e, RegDate.get(2020, 4, 1), null, BigDecimal.valueOf(10L), RegpmCodeContribution.CAPITAL, RegpmCodeCollectivite.COMMUNE, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
+			final List<AllegementFiscal> allegementsTries = allegements.stream()
+					.sorted(Comparator.comparing(AllegementFiscal::getDateDebut).thenComparing(AllegementFiscal::getTypeImpot))
+					.collect(Collectors.toList());
+			Assert.assertNotNull(allegementsTries);
+			Assert.assertEquals(1, allegementsTries.size());
+			{
+				final AllegementFiscal a = allegementsTries.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertNull(a.getAnnulationDate());
+				Assert.assertEquals(RegDate.get(1950, 1, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertNull(a.getNoOfsCommune());
+				Assert.assertEquals("Expected: 12, actual: " + a.getPourcentageAllegement(), 0, BigDecimal.valueOf(12L).compareTo(a.getPourcentageAllegement()));
+				Assert.assertEquals(AllegementFiscal.TypeCollectivite.COMMUNE, a.getTypeCollectivite());
+				Assert.assertEquals(AllegementFiscal.TypeImpot.CAPITAL, a.getTypeImpot());
+			}
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(7, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Date de fin (31.03.2020) de l'allègement fiscal 1 ignorée (date future).", textes.get(1));
+		Assert.assertEquals("Allègement fiscal généré [01.01.1950 -> ?], collectivité COMMUNE, type CAPITAL : 12%.", textes.get(2));
+		Assert.assertEquals("Allègement fiscal 2 ignoré en raison de sa date de début dans le futur (01.04.2020).", textes.get(3));
+		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
+		Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(5));
+		Assert.assertEquals("Entreprise migrée : 426.13.", textes.get(6));
 	}
 
 	@Test
