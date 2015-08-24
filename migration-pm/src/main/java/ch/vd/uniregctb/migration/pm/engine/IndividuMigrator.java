@@ -2,10 +2,8 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,9 +26,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
-import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
@@ -43,9 +39,7 @@ import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
-import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -64,92 +58,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 		this.nonHabitantIndex = nonHabitantIndex;
 	}
 
-	/**
-	 * Structure de données utilisée pour enregistrer une demande de contrôle de l'opportunité de conserver une personne physique nouvellement créée
-	 */
-	private static final class ControleLiensNouvellesPersonnesPhysiquesData {
-		@NotNull
-		private final KeyedSupplier<PersonnePhysique> individuSupplier;
-		@NotNull
-		private final IdMapping idMapper;
-
-		public ControleLiensNouvellesPersonnesPhysiquesData(@NotNull KeyedSupplier<PersonnePhysique> individuSupplier, @NotNull IdMapping idMapper) {
-			this.individuSupplier = individuSupplier;
-			this.idMapper = idMapper;
-		}
-	}
-
-	@Override
-	public void initMigrationResult(MigrationResultInitialization mr) {
-		super.initMigrationResult(mr);
-
-		//
-		// callbacks nécessaire avant la fin de la transaction
-		//
-
-		// contrôle des liens des personnes physiques nouvellement créées (si pas de lien à la fin de la transaction, pas la peine de garder la personne physique dans Unireg...)
-		mr.registerPreTransactionCommitCallback(ControleLiensNouvellesPersonnesPhysiquesData.class,
-		                                        MigrationConstants.PHASE_CONTROLE_PERSONNES_PHYSIQUES_CREEES,
-		                                        d -> d.individuSupplier,
-		                                        (d1, d2) -> { throw new IllegalArgumentException("Même individu traité plusieurs fois dans la même transaction ???"); },
-		                                        d -> controlePersonnesPhysiquesCreees(d, mr));
-	}
-
 	private static String extractPrenomUsuel(String tousPrenoms) {
 		return Arrays.stream(StringUtils.trimToEmpty(tousPrenoms).split("\\s+")).findFirst().orElse(null);
-	}
-
-	/**
-	 * @param collection une collection d'éléments
-	 * @return <code>true</code> si la collection est nulle ou vide
-	 */
-	private static boolean isNullOrEmpty(@Nullable Collection<?> collection) {
-		return collection == null || collection.isEmpty();
-	}
-
-	/**
-	 * Appelé en fin de migration de graphe pour vérifier si la création d'un nouveau contribuable personne physique était réellement nécessaire
-	 * @param data les données d'accès à la personne physique nouvellement créée dans le cadre de la migration
-	 * @param mr collecteur de messages de suivi et manipulateur de contextes de log
-	 */
-	private void controlePersonnesPhysiquesCreees(ControleLiensNouvellesPersonnesPhysiquesData data, MigrationResultContextManipulation mr) {
-		final EntityKey key = data.individuSupplier.getKey();
-		doInLogContext(key, mr, () -> {
-
-			// on va d'abord rechercher la PP
-			final PersonnePhysique pp = data.individuSupplier.get();
-			if (pp == null) {
-				// bizarre, normalement, on a créé une personne physique, justement... (problème algorithmique...
-				throw new IllegalArgumentException("Pas de personne physique retrouvée pour l'individu pm " + key.getId());
-			}
-
-			// nous voici donc avec une personne physique nouvellement créée
-			// si aucun rapport entre tiers ni aucun for fiscal n'a été créé sur cette entité, elle ne sert à rien et on peut l'oublier
-			final Set<ForFiscal> ffs = pp.getForsFiscaux();
-			final Set<RapportEntreTiers> objets = pp.getRapportsObjet();
-			final Set<RapportEntreTiers> sujets = pp.getRapportsSujet();
-
-			if (isNullOrEmpty(ffs) && isNullOrEmpty(objets) && isNullOrEmpty(sujets)) {
-				// pas la peine de garder cette nouvelle personne physique
-
-				// 1. l'enlever de la session hibernate
-				uniregStore.removeEntityFromDb(pp);
-
-				// 2. l'enlever de l'IdMapper
-				data.idMapper.removeIndividu(key.getId());
-
-				// logguer tout ça
-				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN,
-				              "Personne physique créée sans lien avec d'autres entités -> abandonnée.");
-			}
-			else {
-				// on la garde, il faut donc l'indexer
-
-				// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
-				// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
-				mr.addPostTransactionCallback(() -> nonHabitantIndex.index(pp));
-			}
-		});
 	}
 
 	/**
@@ -323,10 +233,9 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			// capture du nouveau numéro de contribuable
 			noCtbPersonnePhysique = saved.getId();
 
-			// c'est un nouveau contribuable... est-il vraiment nécessaire ?
-			// (il ne l'est pas vraiment si aucun lien n'a été tissé vers lui)
-			final KeyedSupplier<PersonnePhysique> moi = new KeyedSupplier<>(buildIndividuKey(regpm), getIndividuByRegpmIdSupplier(idMapper, regpm.getId()));
-			mr.addPreTransactionCommitData(new ControleLiensNouvellesPersonnesPhysiquesData(moi, idMapper));
+			// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
+			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
+			mr.addPostTransactionCallback(() -> nonHabitantIndex.index(saved));
 		}
 		else {
 			idMapper.addIndividu(regpm, ppExistant);
