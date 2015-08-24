@@ -1639,20 +1639,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return une structure de données (non-nulle) qui contient la date de bouclement futur retenue (potentiellement nulle)
 	 */
 	@NotNull
-	private static DateBouclementFuturData extractDateBouclementFutur(RegpmEntreprise regpm, MigrationResultProduction mr) {
-		final RegDate brutto = regpm.getDateBouclementFutur();
-		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
-		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
-			final RegpmExerciceCommercial dernierExcerciceConnu = exercicesCommerciaux.last();
-			if (brutto != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-				              String.format("Date de bouclement futur (%s) ignorée car antérieure à la date de fin du dernier exercice commercial connu (%s).",
-				                            StringRenderers.DATE_RENDERER.toString(brutto),
-				                            StringRenderers.DATE_RENDERER.toString(dernierExcerciceConnu.getDateFin())));
-				return new DateBouclementFuturData(null);
+	private DateBouclementFuturData extractDateBouclementFutur(RegpmEntreprise regpm, MigrationResultContextManipulation mr) {
+		final EntityKey key = buildEntityKey(regpm);
+		return doInLogContext(key, mr, () -> {
+			final RegDate brutto = regpm.getDateBouclementFutur();
+			final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
+			if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+				final RegpmExerciceCommercial dernierExcerciceConnu = exercicesCommerciaux.last();
+				if (brutto != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
+					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+					              String.format("Date de bouclement futur (%s) ignorée car antérieure à la date de fin du dernier exercice commercial connu (%s).",
+					                            StringRenderers.DATE_RENDERER.toString(brutto),
+					                            StringRenderers.DATE_RENDERER.toString(dernierExcerciceConnu.getDateFin())));
+					return new DateBouclementFuturData(null);
+				}
 			}
-		}
-		return new DateBouclementFuturData(brutto);
+			return new DateBouclementFuturData(brutto);
+		});
 	}
 
 	private void migrateExercicesCommerciaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
