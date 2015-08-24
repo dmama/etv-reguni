@@ -59,6 +59,7 @@ import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -230,8 +232,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idEntrepriseMandataire = 131L;
 		final long idEtablissementMandataire = 3562L;
 		final RegpmEntreprise mandant = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandante);
+		EntrepriseMigratorTest.addRaisonSociale(mandant, RegDate.get(1995, 1, 1), "Je suis", "le mandant", null, true);
+		EntrepriseMigratorTest.addFormeJuridique(mandant, RegDate.get(1995, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("ASS"));
 
 		final RegpmEntreprise entrepriseMandataire = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandataire);
+		EntrepriseMigratorTest.addRaisonSociale(entrepriseMandataire, RegDate.get(1990, 1, 1), "Je suis", "le mandataire", null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entrepriseMandataire, RegDate.get(1990, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
 		EntrepriseMigratorTest.addForPrincipalEtranger(entrepriseMandataire, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
 		EntrepriseMigratorTest.addSiegeEtranger(entrepriseMandataire, RegDate.get(1990, 2, 2), MockPays.RoyaumeUni.getNoOFS());
 
@@ -440,7 +446,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
@@ -476,6 +482,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + idEtablissementMandataire + ";;;" + idEntrepriseMandataire + ";;Domicile : [01.01.1995 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant), capital () et forme juridique (ASS).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1990 -> ?], raison sociale (Je suis le mandataire), capital () et forme juridique (SA).", msgs.get(1));
 		}
 	}
 
@@ -1123,7 +1135,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(4, msgs.size());
@@ -1145,6 +1157,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (dernières dates de raison sociale, de capitaux et de forme juridiques inexistantes).", msgs.get(0));
 		}
 	}
 
@@ -2214,6 +2231,168 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [17.05.1995 -> ?].", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testMigrationRaisonSocialeEtFormeJuridique() throws Exception {
+
+		final long idEntreprise = 48741L;
+		final RegDate dateDebut = RegDate.get(2010, 9, 28);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification de la présence de la raison sociale
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<DonneesRegistreCommerce> donneesRC = e.getDonneesRC();
+			Assert.assertNotNull(donneesRC);
+			Assert.assertEquals(1, donneesRC.size());
+
+			final DonneesRegistreCommerce rc = donneesRC.iterator().next();
+			Assert.assertNotNull(rc);
+			Assert.assertEquals(dateDebut, rc.getDateDebut());
+			Assert.assertNull(rc.getDateFin());
+			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
+			Assert.assertNull(rc.getCapital());
+			Assert.assertEquals(FormeJuridique.SA, rc.getFormeJuridique());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Billards & co), capital () et forme juridique (SA).", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testMigrationRaisonSocialeEtFormeJuridiqueAvecDateFin() throws Exception {
+
+		final long idEntreprise = 48741L;
+		final RegDate dateDebut = RegDate.get(2010, 9, 28);
+		final RegDate dateRadiation = RegDate.get(2014, 12, 27);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
+		entreprise.setDateRadiationRC(dateRadiation);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification de la présence de la raison sociale
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<DonneesRegistreCommerce> donneesRC = e.getDonneesRC();
+			Assert.assertNotNull(donneesRC);
+			Assert.assertEquals(1, donneesRC.size());
+
+			final DonneesRegistreCommerce rc = donneesRC.iterator().next();
+			Assert.assertNotNull(rc);
+			Assert.assertEquals(dateDebut, rc.getDateDebut());
+			Assert.assertEquals(dateRadiation, rc.getDateFin());
+			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
+			Assert.assertNull(rc.getCapital());
+			Assert.assertEquals(FormeJuridique.SA, rc.getFormeJuridique());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Date de fin d'activité proposée (date de radiation au RC) : 27.12.2014.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> 27.12.2014], raison sociale (Billards & co), capital () et forme juridique (SA).", msgs.get(0));
+		}
+	}
+
+	@Test
+	public void testMigrationCapital() throws Exception {
+
+		final long idEntreprise = 48741L;
+		final RegDate dateDebut = RegDate.get(2010, 9, 28);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+		EntrepriseMigratorTest.addCapital(entreprise, dateDebut, 45678134L);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification de la présence de la raison sociale
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final Set<DonneesRegistreCommerce> donneesRC = e.getDonneesRC();
+			Assert.assertNotNull(donneesRC);
+			Assert.assertEquals(1, donneesRC.size());
+
+			final DonneesRegistreCommerce rc = donneesRC.iterator().next();
+			Assert.assertNotNull(rc);
+			Assert.assertEquals(dateDebut, rc.getDateDebut());
+			Assert.assertNull(rc.getDateFin());
+			Assert.assertEquals("Markus und Söhne", rc.getRaisonSociale());
+			Assert.assertNotNull(rc.getCapital());
+			Assert.assertEquals((Long) 45678134L, rc.getCapital().getMontant());
+			Assert.assertEquals("CHF", rc.getCapital().getMonnaie());
+			Assert.assertEquals(FormeJuridique.SARL, rc.getFormeJuridique());
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Markus und Söhne), capital (45678134 CHF) et forme juridique (SARL).", msgs.get(0));
 		}
 	}
 

@@ -49,6 +49,11 @@ public enum LogCategory {
 	/**
 	 * Erreurs/messages liés aux assujettissements
 	 */
-	ASSUJETTISSEMENTS
+	ASSUJETTISSEMENTS,
+
+	/**
+	 * Erreurs/messages liées aux données civiles migrées (ou abandonnées) de RegPM
+	 */
+	DONNEES_CIVILES_REGPM
 
 }

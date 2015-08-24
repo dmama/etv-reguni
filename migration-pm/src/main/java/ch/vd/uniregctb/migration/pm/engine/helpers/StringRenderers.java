@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.StringRenderer;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.DayMonth;
 
 /**
@@ -39,4 +40,8 @@ public abstract class StringRenderers {
 	                                                                                                        ld.getTypeAutoriteFiscale(),
 	                                                                                                        ld.getNumeroOfsAutoriteFiscale());
 
+	/**
+	 * Entité qui permet de dumper des valeurs de {@link MontantMonetaire}
+	 */
+	public static final StringRenderer<MontantMonetaire> MONTANT_MONETAIRE_RENDERER = mm -> String.format("%d %s", mm.getMontant(), mm.getMonnaie());
 }

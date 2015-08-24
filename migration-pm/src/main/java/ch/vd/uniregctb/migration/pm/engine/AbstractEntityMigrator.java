@@ -348,7 +348,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * @param mr le collecteur de messages de suivi
 	 */
 	protected static void migrateCoordonneesFinancieres(Supplier<RegpmCoordonneesFinancieres> getter,
-	                                                    Supplier<String> titulaireCompte,
+	                                                    String titulaireCompte,
 	                                                    Tiers unireg,
 	                                                    MigrationResultProduction mr) {
 		final RegpmCoordonneesFinancieres cf = getter.get();
@@ -358,11 +358,8 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 				final String bicSwift = cf.getBicSwift();
 				if (iban != null || bicSwift != null) {
 					unireg.setCoordonneesFinancieres(new CoordonneesFinancieres(iban, bicSwift));
-					if (titulaireCompte != null) {
-						final String nomTitulaire = titulaireCompte.get();
-						if (StringUtils.isNotBlank(nomTitulaire)) {
-							unireg.setTitulaireCompteBancaire(nomTitulaire);
-						}
+					if (StringUtils.isNotBlank(titulaireCompte)) {
+						unireg.setTitulaireCompteBancaire(titulaireCompte);
 					}
 				}
 

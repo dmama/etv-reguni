@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,6 +66,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
+import ch.vd.uniregctb.migration.pm.engine.data.RaisonSocialeData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
@@ -72,6 +74,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -97,6 +100,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
@@ -106,6 +110,7 @@ import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -113,8 +118,10 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -228,6 +235,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static final class CapitalData {
+		private final BigDecimal capital;
+		private final RegDate dateValidite;
+
+		public CapitalData(BigDecimal capital, RegDate dateValidite) {
+			this.capital = capital;
+			this.dateValidite = dateValidite;
+		}
+	}
+
+	private static final class FormeJuridiqueData {
+		private final RegpmTypeFormeJuridique type;
+		private final RegDate dateValidite;
+
+		public FormeJuridiqueData(RegpmTypeFormeJuridique type, RegDate dateValidite) {
+			this.type = type;
+			this.dateValidite = dateValidite;
+		}
+	}
+
 	@Override
 	public void initMigrationResult(MigrationResultInitialization mr) {
 		super.initMigrationResult(mr);
@@ -304,6 +331,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractDateFinActivite(e, mr),
 		                         null,
 		                         null);
+		
+		// données de la dernière raison sociale
+		mr.registerDataExtractor(RaisonSocialeData.class,
+		                         e -> extraireRaisonSociale(e, mr),
+		                         null,
+		                         null);
+
+		// données de la dernière modification de capital
+		mr.registerDataExtractor(CapitalData.class,
+		                         e -> extraireCapital(e, mr),
+		                         null,
+		                         null);
+
+		// données de la dernière forme juridique de l'entreprise
+		mr.registerDataExtractor(FormeJuridiqueData.class,
+		                         e -> extraireFormeJuridique(e, mr),
+		                         null,
+		                         null);
 	}
 
 	/**
@@ -370,6 +415,117 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// ça y est, on s'est tous mis d'accord sur une date
 			return new DateFinActiviteData(finActivite);
 		});
+	}
+
+	/**
+	 * Concatène les trois champs de la raison sociale de l'entreprise en une seule
+	 * @param raisonSociale entreprise de RegPM
+	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
+	 */
+	static String extraireRaisonSociale(RaisonSociale raisonSociale) {
+		return extraireRaisonSociale(raisonSociale.getLigne1(), raisonSociale.getLigne2(), raisonSociale.getLigne3());
+	}
+
+	/**
+	 * Concatène les trois champs de la raison sociale de l'entreprise en une seule
+	 * @param ligne1 première ligne
+	 * @param ligne2 deuxième ligne
+	 * @param ligne3 troisième ligne
+	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
+	 */
+	private static String extraireRaisonSociale(String ligne1, String ligne2, String ligne3) {
+		final Stream.Builder<String> builder = Stream.builder();
+		if (StringUtils.isNotBlank(ligne1)) {
+			builder.accept(ligne1);
+		}
+		if (StringUtils.isNotBlank(ligne2)) {
+			builder.accept(ligne2);
+		}
+		if (StringUtils.isNotBlank(ligne3)) {
+			builder.accept(ligne3);
+		}
+		return StringUtils.trimToNull(builder.build().collect(Collectors.joining(" ")));
+	}
+
+	/**
+	 * Retrouve les données valides de la raison sociale d'une entreprise
+	 * @param entreprise entreprise dont on veut extraire la raison sociale courante
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return un structure (qui peut être vide) contenant les données de la raison sociale courante de l'entreprise
+	 */
+	@NotNull
+	private RaisonSocialeData extraireRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
+		return doInLogContext(entrepriseKey, mr, () -> entreprise.getRaisonsSociales().stream()
+				.filter(rs -> !rs.getRectifiee())
+				.filter(rs -> {
+					if (isFutureDate(rs.getDateValidite())) {
+						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+						              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
+						                            rs.getId(),
+						                            extraireRaisonSociale(rs),
+						                            StringRenderers.DATE_RENDERER.toString(rs.getDateValidite())));
+						return false;
+					}
+					return true;
+				})
+				.max(Comparator.naturalOrder())
+				.map(rs -> new RaisonSocialeData(extraireRaisonSociale(rs), rs.getDateValidite()))
+				.orElseGet(() -> new RaisonSocialeData(null, null)));
+	}
+
+	/**
+	 * Retrouve les dernières données valides du capital d'une entreprise
+	 * @param entreprise entreprise dont on veut extraire le capital courant
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return un structure (qui peut être vide) contenant les données du capital courant de l'entreprise
+	 */
+	@NotNull
+	private CapitalData extraireCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
+		return doInLogContext(entrepriseKey, mr, () -> entreprise.getCapitaux().stream()
+				.filter(c -> !c.isRectifiee())
+				.filter(c -> {
+					if (isFutureDate(c.getDateEvolutionCapital())) {
+						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+						              String.format("Capital %d (%s) ignoré car sa date de début de validité est dans le futur (%s).",
+						                            c.getId().getSeqNo(),
+						                            c.getCapitalLibere(),
+						                            StringRenderers.DATE_RENDERER.toString(c.getDateEvolutionCapital())));
+						return false;
+					}
+					return true;
+				})
+				.max(Comparator.naturalOrder())
+				.map(c -> new CapitalData(c.getCapitalLibere(), c.getDateEvolutionCapital()))
+				.orElseGet(() -> new CapitalData(null, null)));
+	}
+
+	/**
+	 * Retrouve les données valides de la forme juridique d'une entreprise
+	 * @param entreprise entreprise dont on veut extraire forme juridique courante
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
+	 */
+	@NotNull
+	private FormeJuridiqueData extraireFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
+		return doInLogContext(entrepriseKey, mr, () -> entreprise.getFormesJuridiques().stream()
+				.filter(fj -> !fj.isRectifiee())
+				.filter(fj -> {
+					if (isFutureDate(fj.getDateValidite())) {
+						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+						              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
+						                            fj.getPk().getSeqNo(),
+						                            fj.getType(),
+						                            StringRenderers.DATE_RENDERER.toString(fj.getDateValidite())));
+						return false;
+					}
+					return true;
+				})
+				.max(Comparator.naturalOrder())
+				.map(c -> new FormeJuridiqueData(c.getType(), c.getDateValidite()))
+				.orElseGet(() -> new FormeJuridiqueData(null, null)));
 	}
 
 	/**
@@ -986,9 +1142,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// TODO migrer les adresses, les documents...
 
-		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, () -> extraireRaisonSociale(regpm), unireg, mr);
+		final String raisonSociale = mr.getExtractedData(RaisonSocialeData.class, moi.getKey()).getRaisonSociale();
+		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
 		migrateFlagDebiteurInactif(regpm, unireg, mr);
+		migrateDonneesRegistreCommerce(regpm, unireg, mr);
 
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
@@ -1006,22 +1164,117 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Concatène les trois champs de la raison sociale de l'entreprise en une seule
-	 * @param regpm entreprise de RegPM
-	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
+	 * Reconstitution des données du registre du commerce
+	 * @param regpm entreprise à migrer
+	 * @param unireg entreprise destination de la migration dans Unireg
+	 * @param mr collecteur de messages de migration
 	 */
-	static String extraireRaisonSociale(RegpmEntreprise regpm) {
-		final Stream.Builder<String> builder = Stream.builder();
-		if (StringUtils.isNotBlank(regpm.getRaisonSociale1())) {
-			builder.accept(regpm.getRaisonSociale1());
+	private static void migrateDonneesRegistreCommerce(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		final EntityKey key = buildEntrepriseKey(regpm);
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, key).date;
+
+		// raison sociale (= la dernière)
+		final RaisonSocialeData rsData = mr.getExtractedData(RaisonSocialeData.class, key);
+
+		// capital (= le dernier en date)
+		final CapitalData capitalData = mr.getExtractedData(CapitalData.class, key);
+
+		// forme juridique (= la dernière en date)
+		final FormeJuridiqueData formeJuridiqueData = mr.getExtractedData(FormeJuridiqueData.class, key);
+
+		// on cherche ensuite la dernière date à partir de laquelle les éléments ci-dessus avaient leur dernière valeur
+		final RegDate dateDebut = Stream.of(rsData.getDateValidite(), capitalData.dateValidite, formeJuridiqueData.dateValidite)
+				.filter(date -> date != null)
+				.max(Comparator.naturalOrder())
+				.orElse(getDateDebutActivite(regpm, mr));
+
+		final RegDate dateFin;
+		if (dateDebut == null) {
+			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+			              "Impossible de déterminer la date de début des données du registre du commerce (dernières dates de raison sociale, de capitaux et de forme juridiques inexistantes).");
+			return;
 		}
-		if (StringUtils.isNotBlank(regpm.getRaisonSociale2())) {
-			builder.accept(regpm.getRaisonSociale2());
+		else if (RegDateHelper.isAfter(dateDebut, dateFinActivite, NullDateBehavior.LATEST)) {
+			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+			              String.format("Date de début des données du registre du commerce (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
+			                            StringRenderers.DATE_RENDERER.toString(dateDebut),
+			                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+			dateFin = null;
 		}
-		if (StringUtils.isNotBlank(regpm.getRaisonSociale3())) {
-			builder.accept(regpm.getRaisonSociale3());
+		else {
+			dateFin = dateFinActivite;
 		}
-		return StringUtils.trimToNull(builder.build().collect(Collectors.joining(" ")));
+
+		// capital à prendre en compte
+		final MontantMonetaire capital;
+		if (capitalData.capital != null) {
+			capital = new MontantMonetaire(capitalData.capital.longValue(), "CHF");     // tous les montants dans RegPM sont en CHF
+		}
+		else {
+			capital = null;
+		}
+
+		// forme juridique
+		final FormeJuridique formeJuridique;
+		if (formeJuridiqueData.type != null) {
+			formeJuridique = toFormeJuridique(formeJuridiqueData.type.getCode());
+		}
+		else {
+			formeJuridique = null;
+		}
+
+		// si on n'a rien, pas la peine de générer une donnée
+		if (StringUtils.isNotBlank(rsData.getRaisonSociale()) || capital != null || formeJuridique != null) {
+			final DonneesRegistreCommerce rc = new DonneesRegistreCommerce(dateDebut, dateFin,
+			                                                               rsData.getRaisonSociale(),
+			                                                               capital,
+			                                                               formeJuridique);
+			unireg.addDonneesRC(rc);
+
+			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+			              String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s), capital (%s) et forme juridique (%s).",
+			                            StringRenderers.DATE_RANGE_RENDERER.toString(rc),
+			                            rc.getRaisonSociale(),
+			                            rc.getCapital() != null ? StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(rc.getCapital()) : StringUtils.EMPTY,
+			                            rc.getFormeJuridique()));
+		}
+	}
+
+	private static FormeJuridique toFormeJuridique(String codeRegpm) {
+
+		// TODO mapping à valider...
+
+		if (StringUtils.isBlank(codeRegpm)) {
+			return null;
+		}
+
+		switch (codeRegpm) {
+		case "ASS":
+			return FormeJuridique.ASS;
+		case "DP":
+			return FormeJuridique.EDP;
+		case "DP/PM":
+			return FormeJuridique.EDP;
+		case "FDS. PLAC.":
+			return FormeJuridique.FOND;
+		case "FOND":
+			return FormeJuridique.FOND;
+		case "S. COMM.":
+			return FormeJuridique.SC;
+		case "S. COOP.":
+			return FormeJuridique.COOP;
+		case "S.A.":
+			return FormeJuridique.SA;
+		case "S.A.R.L.":
+			return FormeJuridique.SARL;
+		case "S.COMM.ACT":
+			return FormeJuridique.SCA;
+		case "S.N.C.":
+			return FormeJuridique.SNC;
+		default:
+			throw new IllegalArgumentException("Code de forme juridique non-supporté : " + codeRegpm);
+		}
 	}
 
 	/**

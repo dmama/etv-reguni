@@ -107,6 +107,17 @@
 		<appender-ref ref="COORDONNEES_FINANCIERES"/>
 	</logger>
 
+	<appender name="DONNEES_CIVILES_REGPM" class="ch.qos.logback.core.FileAppender">
+		<file>log/donnees-civiles-regpm.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.DONNEES_CIVILES_REGPM" additivity="false">
+		<appender-ref ref="DONNEES_CIVILES_REGPM"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

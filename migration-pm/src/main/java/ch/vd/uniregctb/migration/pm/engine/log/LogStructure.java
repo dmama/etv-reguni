@@ -87,6 +87,9 @@ public abstract class LogStructure {
 		// Dans le log des assujettissements, on met le contexte de l'entreprise
 		map.put(LogCategory.ASSUJETTISSEMENTS, Arrays.asList(donneesNiveau, donneesEntreprise));
 
+		// Dans le log des données civiles de regpm, on met le contexte de l'entreprise et de l'établissement
+		map.put(LogCategory.DONNEES_CIVILES_REGPM, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement));
+
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.emptyList());
 

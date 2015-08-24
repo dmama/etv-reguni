@@ -70,6 +70,17 @@
 
 	<bean id="domicileEtablissementValidator" class="ch.vd.uniregctb.validation.tiers.DomicileEtablissementValidator" parent="localisationDateeValidator"/>
 
+	<!-- -->
+	<!-- Validateurs des données spécifiques PM -->
+
+	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="dateRangeEntityValidator"/>
+
+	<bean id="donneesRegistreCommerceValidator" class="ch.vd.uniregctb.validation.tiers.DonneesRegistreCommerceValidator" parent="dateRangeEntityValidator"/>
+
+	<bean id="allegementFiscalValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalValidator" parent="dateRangeEntityValidator">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
 
 	<!-- TODO mettre en place les validateurs nécessaires... -->
 

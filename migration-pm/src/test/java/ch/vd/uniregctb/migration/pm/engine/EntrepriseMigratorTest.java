@@ -38,9 +38,11 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCapital;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -53,6 +55,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
@@ -70,6 +73,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
@@ -157,6 +161,50 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		entreprise.setSieges(new TreeSet<>());
 
 		return entreprise;
+	}
+
+	static RaisonSociale addRaisonSociale(RegpmEntreprise entreprise, RegDate dateDebut, String ligne1, String ligne2, String ligne3, boolean last) {
+		final RaisonSociale data = new RaisonSociale();
+		data.setId(ID_GENERATOR.next());
+		assignMutationVisa(data, REGPM_VISA, REGPM_MODIF);
+		data.setDateValidite(dateDebut);
+		data.setLigne1(ligne1);
+		data.setLigne2(ligne2);
+		data.setLigne3(ligne3);
+		entreprise.getRaisonsSociales().add(data);
+
+		if (last) {
+			entreprise.setRaisonSociale1(ligne1);
+			entreprise.setRaisonSociale2(ligne2);
+			entreprise.setRaisonSociale3(ligne3);
+		}
+		return data;
+	}
+
+	static RegpmTypeFormeJuridique createTypeFormeJuridique(String code) {
+		final RegpmTypeFormeJuridique forme = new RegpmTypeFormeJuridique();
+		forme.setCode(code);
+		return forme;
+	}
+
+	static RegpmFormeJuridique addFormeJuridique(RegpmEntreprise entreprise, RegDate dateDebut, RegpmTypeFormeJuridique type) {
+		final RegpmFormeJuridique data = new RegpmFormeJuridique();
+		data.setPk(new RegpmFormeJuridique.PK(computeNewSeqNo(entreprise.getFormesJuridiques(), x -> x.getPk().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(data, REGPM_VISA, REGPM_MODIF);
+		data.setDateValidite(dateDebut);
+		data.setType(type);
+		entreprise.getFormesJuridiques().add(data);
+		return data;
+	}
+
+	static RegpmCapital addCapital(RegpmEntreprise entreprise, RegDate dateDebut, long montant) {
+		final RegpmCapital capital = new RegpmCapital();
+		capital.setId(new RegpmCapital.PK(computeNewSeqNo(entreprise.getCapitaux(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(capital, REGPM_VISA, REGPM_MODIF);
+		capital.setDateEvolutionCapital(dateDebut);
+		capital.setCapitalLibere(BigDecimal.valueOf(montant));
+		entreprise.getCapitaux().add(capital);
+		return capital;
 	}
 
 	static RegpmAssujettissement addAssujettissement(RegpmEntreprise entreprise, RegDate dateDebut, RegDate dateFin, RegpmTypeAssujettissement type) {
@@ -760,9 +808,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		e.setRaisonSociale1("Ma");
-		e.setRaisonSociale2("petite");
-		e.setRaisonSociale3("entreprise");
+		addRaisonSociale(e, RegDate.get(2000, 1, 1), "Ma", "petite", "entreprise", true);
+		addFormeJuridique(e, RegDate.get(2000, 1, 1), createTypeFormeJuridique("S.A.R.L."));
 		e.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "POFICHBEXXX", null, "17-331-7", "Postfinance", null));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -2972,7 +3019,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 2623L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		e.setRaisonSociale1("*Chez-moi SA");
+		addRaisonSociale(e, null, "*Chez-moi SA", null, null, true);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3009,7 +3056,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 2623L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		e.setRaisonSociale1("Chez-moi SA");
+		addRaisonSociale(e, null, "Chez-moi SA", null, null, true);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
