@@ -9,3 +9,6 @@ CREATE SEQUENCE S_PM START WITH 80000 INCREMENT BY 1;
 
 -- Renommage du paramètre "premierePeriodeFiscale" pour distinguer entre le cas des personnes physiques et celui des personnes morales
 UPDATE PARAMETRE SET NOM='premierePeriodeFiscalePersonnesPhysiques', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='premierePeriodeFiscale';
+
+-- Ajout de la devise associée au capital de l'entreprise
+ALTER TABLE DONNEES_RC ADD MONNAIE_CAPITAL NVARCHAR2(3);

@@ -10,12 +10,15 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
+
+	private static final String CHF = "CHF";
 
 	@Override
 	protected String getValidatorBeanName() {
@@ -73,7 +76,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testChevauchementDonneesRegistreCommerce() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", 50000L, FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", new MontantMonetaire(50000L, CHF), FormeJuridique.SARL));
 
 		// aucun chevauchement (= 1 seule donnée, de toute façon...)
 		{
@@ -82,14 +85,14 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons une donnée qui ne chevauche pas -> pas de souci
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", 60000L, FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", new MontantMonetaire(60000L, CHF), FormeJuridique.SARL));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
 		}
 
 		// ajoutons une donnée qui chevauche -> rien ne va plus
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", 55000L, FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", new MontantMonetaire(55000L, CHF), FormeJuridique.SARL));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertTrue(vr.hasErrors());
@@ -105,7 +108,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testDonneesRegistreCommerceInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", 1000000L, FormeJuridique.SA));     // les dates sont à l'envers !
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", new MontantMonetaire(1000000L, CHF), FormeJuridique.SA));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -163,4 +166,70 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		Assert.assertEquals("L'allègement fiscal AllegementFiscal universel (01.01.2010 - 31.12.2005) possède une date de début qui est après la date de fin: début = 01.01.2010, fin = 31.12.2005", errors.get(0));
 	}
 
+	@Test
+	public void testCapitalSansMonnaie() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(1000000L, null), FormeJuridique.SA));     // pas de monnaie !
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le capital d'une entreprise doit être composé d'un montant (1000000 ici) et d'une monnaie ('' ici).", errors.get(0));
+	}
+
+	@Test
+	public void testCapitalSansMontant() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, CHF), FormeJuridique.SA));     // pas de montant !
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le capital d'une entreprise doit être composé d'un montant (vide ici) et d'une monnaie ('CHF' ici).", errors.get(0));
+	}
+
+	@Test
+	public void testCapitalSansMontantNiMonnaie() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, null), FormeJuridique.SA));
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le capital d'une entreprise doit être composé d'un montant (vide ici) et d'une monnaie ('' ici).", errors.get(0));
+	}
+
+	@Test
+	public void testSansCapital() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", null, FormeJuridique.SA));
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertEquals(0, vr.errorsCount());
+		Assert.assertEquals(0, vr.warningsCount());
+	}
+
+	@Test
+	public void testCapitalAvecMontantNegatif() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(-42L, CHF), FormeJuridique.SA));
+
+		final ValidationResults vr = validate(entreprise);
+		Assert.assertTrue(vr.hasErrors());
+		Assert.assertEquals(1, vr.errorsCount());
+
+		final List<String> errors = vr.getErrors();
+		Assert.assertEquals("Le capital d'une entreprise ne peut être négatif (-42).", errors.get(0));
+	}
 }

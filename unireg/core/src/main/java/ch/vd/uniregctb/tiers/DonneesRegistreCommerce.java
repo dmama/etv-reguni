@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,7 +29,7 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 	private Long id;
 	private Entreprise entreprise;
 	private String raisonSociale;
-	private Long capital;
+	private MontantMonetaire capital;
 	private FormeJuridique formeJuridique;
 
 	// TODO : code noga, ... ?
@@ -34,7 +37,7 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 	public DonneesRegistreCommerce() {
 	}
 
-	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, Long capital, FormeJuridique formeJuridique) {
+	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, MontantMonetaire capital, FormeJuridique formeJuridique) {
 		super(dateDebut, dateFin);
 		this.raisonSociale = raisonSociale;
 		this.capital = capital;
@@ -77,12 +80,16 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 		this.raisonSociale = raisonSociale;
 	}
 
-	@Column(name = "CAPITAL")
-	public Long getCapital() {
+	@Embedded
+	@AttributeOverrides({
+			@AttributeOverride(name = "montant", column = @Column(name = "CAPITAL", nullable = true)),
+			@AttributeOverride(name = "monnaie", column = @Column(name = "MONNAIE_CAPITAL", nullable = true, length = LengthConstants.MONNAIE_ISO))
+	})
+	public MontantMonetaire getCapital() {
 		return capital;
 	}
 
-	public void setCapital(Long capital) {
+	public void setCapital(MontantMonetaire capital) {
 		this.capital = capital;
 	}
 

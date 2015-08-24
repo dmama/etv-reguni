@@ -128,6 +128,8 @@ public abstract class LengthConstants {
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;
 
+	public static final int MONNAIE_ISO = 3;
+
 	public static final int MANDAT_TYPE = 15;
 
 	public static final int MAXLEN = 2000;
