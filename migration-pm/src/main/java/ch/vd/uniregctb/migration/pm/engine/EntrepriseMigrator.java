@@ -2143,6 +2143,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
+				.filter(rf -> {
+					if (isFutureDate(rf.getDateDebut())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début dans le futur (%s).",
+						                            portee,
+						                            rf.getType(),
+						                            StringRenderers.DATE_RENDERER.toString(rf.getDateDebut())));
+						return false;
+					}
+					return true;
+				})
 				.map(r -> mapRegimeFiscal(portee, r))
 				.collect(Collectors.toList());
 
