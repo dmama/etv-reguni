@@ -1549,6 +1549,44 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
+	public void testRegimesFiscauxDateDeDebutApresRadiationRC() throws Exception {
+		final long noEntreprise = 1234L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRegimeFiscalCH(e, RegDate.get(2010, 7, 23), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		addRegimeFiscalVD(e, RegDate.get(2010, 7, 23), null, RegpmTypeRegimeFiscal._01_ORDINAIRE);
+		e.setDateRadiationRC(RegDate.get(2010, 6, 30));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base (aucun régime fiscal migré car est commence trop tard)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertEquals(Collections.emptySet(), entreprise.getRegimesFiscaux());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(7, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Date de fin d'activité proposée (date de radiation au RC) : 30.06.2010.", textes.get(1));
+		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début (23.07.2010) postérieure à la date de fin d'activité de l'entreprise (30.06.2010).", textes.get(2));
+		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début (23.07.2010) postérieure à la date de fin d'activité de l'entreprise (30.06.2010).", textes.get(3));
+		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
+		Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(5));
+		Assert.assertEquals("Entreprise migrée : 12.34.", textes.get(6));
+	}
+
+	@Test
 	public void testAllegementsFiscauxObjectImpot() throws Exception {
 		final long noEntreprise = 4784L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);

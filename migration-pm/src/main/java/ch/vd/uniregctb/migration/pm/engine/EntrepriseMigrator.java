@@ -2154,6 +2154,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
+				.filter(rf -> {
+					if (dateFinRegimes != null && dateFinRegimes.isBefore(rf.getDateDebut())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début (%s) postérieure à la date de fin d'activité de l'entreprise (%s).",
+						                            portee,
+						                            rf.getType(),
+						                            StringRenderers.DATE_RENDERER.toString(rf.getDateDebut()),
+						                            StringRenderers.DATE_RENDERER.toString(dateFinRegimes)));
+						return false;
+					}
+					return true;
+				})
 				.map(r -> mapRegimeFiscal(portee, r))
 				.collect(Collectors.toList());
 
