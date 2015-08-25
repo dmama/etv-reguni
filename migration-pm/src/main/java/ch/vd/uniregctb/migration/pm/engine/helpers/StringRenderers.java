@@ -6,7 +6,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.StringRenderer;
-import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.DayMonth;
 
@@ -32,13 +33,14 @@ public abstract class StringRenderers {
 	public static final StringRenderer<DayMonth> DAYMONTH_RENDERER = dm -> String.format("%02d.%02d", dm.day(), dm.month());
 
 	/**
-	 * Entité qui permet de dumper des valeurs de {@link LocalisationDatee}
+	 * Entité qui permet de dumper des valeurs de {@link LocalizedDateRange}
 	 */
-	public static final StringRenderer<LocalisationDatee> LOCALISATION_DATEE_RENDERER = ld -> String.format("%s %s sur %s/%d",
-	                                                                                                        ld.getClass().getSimpleName(),
-	                                                                                                        DATE_RANGE_RENDERER.toString(ld),
-	                                                                                                        ld.getTypeAutoriteFiscale(),
-	                                                                                                        ld.getNumeroOfsAutoriteFiscale());
+	public static final StringRenderer<LocalizedDateRange> LOCALISATION_DATEE_RENDERER =
+			ld -> String.format("%s %s sur %s/%d",
+			                    (ld instanceof EntityWrapper ? ((EntityWrapper<?>) ld).getWrappedEntity() : ld).getClass().getSimpleName(),
+			                    DATE_RANGE_RENDERER.toString(ld),
+			                    ld.getTypeAutoriteFiscale(),
+			                    ld.getNumeroOfsAutoriteFiscale());
 
 	/**
 	 * Entité qui permet de dumper des valeurs de {@link MontantMonetaire}

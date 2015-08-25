@@ -78,6 +78,12 @@ public abstract class AbstractMigrationEngineTest extends AbstractSpringTest {
 		public static final RegpmCommune ZURICH = buildCommune(RegpmCanton.ZH, "Zürich", MockCommune.Zurich.getNoOFS());
 
 		/**
+		 * Commune vaudoise qui a fusionné (civilement) le 1.7.2011 avec d'autres pour donner la commune 5831 (Valbroye)
+		 */
+		public static final RegpmCommune GRANGES_PRES_MARNAND = buildCommune(RegpmCanton.VD, "Granges-près-Marnand", 5818);
+		public static final RegpmCommune VALBROYE = buildCommune(RegpmCanton.VD, "Valbroye", 5831);
+
+		/**
 		 * Commune qui n'a pas d'existence dans RefINF avant 01.01.2013
 		 */
 		public static final RegpmCommune WIL = buildCommune(RegpmCanton.SG, "Wil (SG)", 3427);

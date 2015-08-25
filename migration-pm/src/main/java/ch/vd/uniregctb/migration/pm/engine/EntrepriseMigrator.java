@@ -42,6 +42,7 @@ import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
@@ -105,6 +106,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -118,6 +120,8 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.LocalisationDatee;
+import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -2291,6 +2295,99 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return a.getTypeCollectivite().name();
 	}
 
+	private static final class LocalisationDateeFacade<T> extends LocalisationDatee implements Duplicable<LocalisationDateeFacade<T>>, EntityWrapper<T> {
+
+		private final T payload;
+
+		public LocalisationDateeFacade(LocalizedDateRange source, T payload) {
+			super(source.getDateDebut(), source.getDateFin(), source.getTypeAutoriteFiscale(), source.getNumeroOfsAutoriteFiscale());
+			this.payload = payload;
+		}
+
+		private LocalisationDateeFacade(LocalisationDateeFacade<T> source) {
+			this(source, source.payload);
+		}
+
+		@Override
+		public LocalisationDateeFacade<T> duplicate() {
+			return new LocalisationDateeFacade<>(this);
+		}
+
+		@Override
+		public Object getKey() {
+			// c'est bidon, de toute façon, car cela ne devrait jamais être inséré dans une session hibernate
+			return null;
+		}
+
+		@Override
+		public T getWrappedEntity() {
+			return payload;
+		}
+	}
+
+	/**
+	 * Classe interne qui permet de faire passer une instance de {@link AllegementFiscal} pour quelque
+	 * chose qui implémente l'interface {@link LocalizedDateRange} (les allègements fiscaux considérés
+	 * ici sont forcément sur des communes vaudoises...)
+	 */
+	private static final class LocalizedAllegementFiscal implements LocalizedDateRange {
+
+		private final AllegementFiscal allegement;
+
+		public LocalizedAllegementFiscal(AllegementFiscal allegement) {
+			this.allegement = allegement;
+			if (allegement.getTypeCollectivite() != AllegementFiscal.TypeCollectivite.COMMUNE || allegement.getNoOfsCommune() == null) {
+				throw new IllegalArgumentException("L'utilisation de cette classe est réservée aux allègements fiscaux communaux spécifiques...");
+			}
+		}
+
+		@Override
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+		}
+
+		@Override
+		public Integer getNumeroOfsAutoriteFiscale() {
+			return allegement.getNoOfsCommune();
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return allegement.isValidAt(date);
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return allegement.getDateDebut();
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return allegement.getDateFin();
+		}
+	}
+
+	@NotNull
+	private Stream<AllegementFiscal> adapterAllegementFiscalPourFusionsCommunes(final AllegementFiscal allegement, MigrationResultProduction mr, LogCategory logCategory) {
+		if (allegement.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE & allegement.getNoOfsCommune() != null) {
+			// calcul de la nouvelle répartition sur des communes en prenant en compte les fusions en passant par une structure
+			// temporaire de "localisation datée"
+			final LocalizedDateRange localizedRange = new LocalizedAllegementFiscal(allegement);
+			final LocalisationDateeFacade<AllegementFiscal> facade = new LocalisationDateeFacade<>(localizedRange, allegement);
+			return adapterAutourFusionsCommunes(facade, mr, logCategory, null).stream()
+					.map(f -> new AllegementFiscal(f.getDateDebut(),
+					                               f.getDateFin(),
+					                               allegement.getPourcentageAllegement(),
+					                               allegement.getTypeImpot(),
+					                               allegement.getTypeCollectivite(),
+					                               f.getNumeroOfsAutoriteFiscale()));
+		}
+		else {
+			// pas de changement nécessaire pour les fusions de communes (on n'est même pas sur une commune précise !)
+			return Stream.of(allegement);
+		}
+	}
+
 	private void migrateAllegementsFiscaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 		regpm.getAllegementsFiscaux().stream()
 				.filter(a -> a.getDateAnnulation() == null)                 // on ne prend pas en compte les allègements annulés
@@ -2338,6 +2435,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					return true;
 				})
 				.map(a -> mapAllegementFiscal(a, mr))
+				.flatMap(Function.identity())
+				.map(a -> adapterAllegementFiscalPourFusionsCommunes(a, mr, LogCategory.SUIVI))
 				.flatMap(Function.identity())
 				.peek(a -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
 				                         String.format("Allègement fiscal généré %s, collectivité %s, type %s : %s%%.",
