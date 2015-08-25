@@ -5,6 +5,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,20 +16,26 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import ch.vd.evd0021.v1.Address;
+import ch.vd.evd0022.v1.Authorisation;
+import ch.vd.evd0022.v1.Capital;
+import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.OrganisationData;
+import ch.vd.evd0022.v1.TypeOfCapital;
 import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
+import ch.vd.uniregctb.adapter.rcent.model.Function;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -314,7 +322,43 @@ public class RCEntAdapterTest {
 		Organisation organisation = service.getOrganisationHistory(100983251L);
 		assertThat(organisation.getCantonalId(), equalTo(100983251L));
 
-		assertNotNull(organisation.getLocationData().get(0).getUid().getStatus());
-		assertEquals(UidRegisterStatus.DEFINITIF, organisation.getLocationData().get(0).getUid().getStatus().get(0).getPayload());
+		List<DateRanged<UidRegisterStatus>> ideStatus = organisation.getLocationData().get(0).getUid().getStatus();
+		assertNotNull(ideStatus);
+		assertEquals(UidRegisterStatus.DEFINITIF, ideStatus.get(0).getPayload());
+
+		List<DateRanged<Capital>> capitalRanges = organisation.getLocationData().get(0).getRc().getCapital();
+		assertNotNull(capitalRanges);
+		Capital capital = capitalRanges.get(0).getPayload();
+		assertEquals("CHF", capital.getCurrency());
+		assertEquals(new BigDecimal(25000), capital.getCapitalAmount());
+		assertEquals(new BigDecimal(23000), capital.getCashedInAmount());
+		assertEquals(TypeOfCapital.CAPITAL_SOCIAL, capital.getTypeOfCapital());
+
+		List<DateRanged<String>> locationRcName = organisation.getLocationData().get(0).getRc().getName();
+		assertEquals("Bomaco Sàrl en liquidation", locationRcName.get(0).getPayload());
+
+		List<DateRanged<CommercialRegisterEntryStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getEntryStatus();
+		assertEquals(CommercialRegisterEntryStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
+
+		List<DateRanged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
+		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
+
+		List<DateRanged<Function>> locationFunctions = organisation.getLocationData().get(0).getFunction();
+		assertEquals(2, locationFunctions.size()); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
+		Map<String, DateRanged<Function>> functionMap = new HashMap<>();
+		DateRanged<Function> function0 = locationFunctions.get(0);
+		functionMap.put(function0.getPayload().getName(), function0);
+		DateRanged<Function> function1 = locationFunctions.get(1);
+		functionMap.put(function1.getPayload().getName(), function1);
+
+		assertEquals("Harrison Ford", function0.getPayload().getName());
+		assertEquals(RegDate.get(2015, 7, 7), functionMap.get("Harrison Ford").getDateDebut());
+		assertEquals("Président du Conseil d'Administration", functionMap.get("Harrison Ford").getPayload().getFunctionText());
+		assertEquals(Authorisation.SIG_INDIVIDUELLE, functionMap.get("Harrison Ford").getPayload().getAuthorisation());
+
+		assertNull(functionMap.get("Harrison Ford").getDateFin());
+		assertEquals("Keith Harring", functionMap.get("Keith Harring").getPayload().getName());
+		assertEquals(RegDate.get(2015, 8, 5), functionMap.get("Keith Harring").getDateDebut());
+		assertNull(functionMap.get("Keith Harring").getDateFin());
 	}
 }

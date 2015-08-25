@@ -9,12 +9,11 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Capital;
 import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
 import ch.vd.evd0022.v1.CommercialRegisterStatus;
-import ch.vd.evd0022.v1.Function;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.UidRegisterLiquidationReason;
-import ch.vd.evd0022.v1.UidRegisterPublicStatus;
 import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 public class OrganisationLocation {
@@ -34,14 +33,11 @@ public class OrganisationLocation {
 	private final List<DateRanged<KindOfLocation>> kindOfLocation;
 	private final List<DateRanged<Integer>> seat;
 	private final List<DateRanged<Function>> function;
-	private final List<DateRanged<Long>> replacedBy;
-	private final List<DateRanged<Long>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRanged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            Map<String,List<DateRanged<String>>> identifiers, List<DateRanged<String>> otherNames,
 	                            List<DateRanged<KindOfLocation>> kindOfLocation, List<DateRanged<Integer>> seat,
-	                            List<DateRanged<Function>> function,
-	                            List<DateRanged<Long>> replacedBy, List<DateRanged<Long>> inReplacementOf) {
+	                            List<DateRanged<Function>> function) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
@@ -51,8 +47,6 @@ public class OrganisationLocation {
 		this.kindOfLocation = kindOfLocation;
 		this.seat = seat;
 		this.function = function;
-		this.replacedBy = replacedBy;
-		this.inReplacementOf = inReplacementOf;
 	}
 
 	public long getCantonalId() {
@@ -65,10 +59,6 @@ public class OrganisationLocation {
 
 	public Map<String,List<DateRanged<String>>> getIdentifiers() {
 		return identifiers;
-	}
-
-	public List<DateRanged<Long>> getInReplacementOf() {
-		return inReplacementOf;
 	}
 
 	public List<DateRanged<KindOfLocation>> getKindOfLocation() {
@@ -88,10 +78,6 @@ public class OrganisationLocation {
 		return rc;
 	}
 
-	public List<DateRanged<Long>> getReplacedBy() {
-		return replacedBy;
-	}
-
 	public List<DateRanged<Integer>> getSeat() {
 		return seat;
 	}
@@ -106,15 +92,17 @@ public class OrganisationLocation {
 		private final List<DateRanged<CommercialRegisterEntryStatus>> entryStatus;
 		private final List<DateRanged<Capital>> capital;
 		private final List<DateRanged<Address>> legalAddress;
+		private final List<DateRanged<RegDate>> entryDate;
 
 		public RCEntRCData(List<DateRanged<CommercialRegisterStatus>> status,
 		                   List<DateRanged<String>> name, List<DateRanged<CommercialRegisterEntryStatus>> entryStatus,
-		                   List<DateRanged<Capital>> capital, List<DateRanged<Address>> legalAddress, List<DateRanged> entryDate) {
+		                   List<DateRanged<Capital>> capital, List<DateRanged<Address>> legalAddress, List<DateRanged<RegDate>> entryDate) {
 			this.status = status;
 			this.name = name;
 			this.entryStatus = entryStatus;
 			this.capital = capital;
 			this.legalAddress = legalAddress;
+			this.entryDate = entryDate;
 		}
 
 		public List<DateRanged<Capital>> getCapital() {
@@ -136,6 +124,10 @@ public class OrganisationLocation {
 		public List<DateRanged<CommercialRegisterStatus>> getStatus() {
 			return status;
 		}
+
+		public List<DateRanged<RegDate>> getEntryDate() {
+			return entryDate;
+		}
 	}
 
 	public static class RCEntUIDData {
@@ -143,18 +135,16 @@ public class OrganisationLocation {
 		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
 		private final List<DateRanged<Address>> effectiveAddress;
 		private final List<DateRanged<Address>> postOfficeBoxAddress;
-		private final List<DateRanged<UidRegisterPublicStatus>> publicStatus;
 		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
 
 		public RCEntUIDData(List<DateRanged<Address>> effectiveAddress, List<DateRanged<UidRegisterStatus>> status,
 		                    List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation,
-		                    List<DateRanged<Address>> postOfficeBoxAddress, List<DateRanged<UidRegisterPublicStatus>> publicStatus,
+		                    List<DateRanged<Address>> postOfficeBoxAddress,
 		                    List<DateRanged<UidRegisterLiquidationReason>> liquidationReason) {
 			this.effectiveAddress = effectiveAddress;
 			this.status = status;
 			this.typeOfOrganisation = typeOfOrganisation;
 			this.postOfficeBoxAddress = postOfficeBoxAddress;
-			this.publicStatus = publicStatus;
 			this.liquidationReason = liquidationReason;
 		}
 
@@ -168,10 +158,6 @@ public class OrganisationLocation {
 
 		public List<DateRanged<Address>> getPostOfficeBoxAddress() {
 			return postOfficeBoxAddress;
-		}
-
-		public List<DateRanged<UidRegisterPublicStatus>> getPublicStatus() {
-			return publicStatus;
 		}
 
 		public List<DateRanged<UidRegisterStatus>> getStatus() {
