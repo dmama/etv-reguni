@@ -129,6 +129,9 @@
 							<li id="regimesFiscauxTab">
 								<a href="#tabContent_regimesFiscauxTab"><fmt:message key="label.regimes.fiscaux" /></a>
 							</li>
+							<li id="allegementsFiscauxTab">
+								<a href="#tabContent_allegementsFiscauxTab"><fmt:message key="label.allegements.fiscaux" /></a>
+							</li>
 							<li id="etatsPMTab">
 								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
 							</li>
@@ -209,6 +212,9 @@
 					<c:if test="${command.natureTiers == 'Entreprise'}">
 						<div id="tabContent_regimesFiscauxTab" class="visuTiers">
 							<jsp:include page="pm/regimes-fiscaux.jsp"/>
+						</div>
+						<div id="tabContent_allegementsFiscauxTab" class="visuTiers">
+							<jsp:include page="pm/allegements-fiscaux.jsp"/>
 						</div>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
 							<jsp:include page="pm/etats.jsp"/>

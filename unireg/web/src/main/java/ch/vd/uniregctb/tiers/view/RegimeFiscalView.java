@@ -8,9 +8,15 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class RegimeFiscalView implements DateRange {
 	
-	public RegDate dateDebut;
-	public RegDate dateFin;
-	public TypeRegimeFiscal type;
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private TypeRegimeFiscal type;
+
+	public RegimeFiscalView(RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.type = type;
+	}
 
 	@Override
 	public RegDate getDateDebut() {

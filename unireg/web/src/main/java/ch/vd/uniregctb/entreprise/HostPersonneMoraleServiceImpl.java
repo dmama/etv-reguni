@@ -160,14 +160,12 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 		}
 		final List<RegimeFiscalView> list = new ArrayList<>(regimes.size());
 		for (RegimeFiscal r : regimes) {
-			final RegimeFiscalView v = new RegimeFiscalView();
-			v.setDateDebut(r.getDateDebut());
-			v.setDateFin(r.getDateFin());
 //			v.setCode(r.getCode());
 			final TypeRegimeFiscal type = serviceInfra.getTypeRegimeFiscal(r.getCode());
 			if (type != null) {
 //				v.setLibelle(type.getLibelle());
 			}
+			final RegimeFiscalView v = new RegimeFiscalView(r.getDateDebut(), r.getDateFin(), null);
 			list.add(v);
 		}
 		Collections.sort(list, new DateRangeComparator<RegimeFiscalView>());

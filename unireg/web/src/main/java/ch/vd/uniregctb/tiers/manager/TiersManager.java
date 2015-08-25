@@ -66,6 +66,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -95,6 +96,7 @@ import ch.vd.uniregctb.tiers.view.AdresseCivilView;
 import ch.vd.uniregctb.tiers.view.AdresseCivilViewComparator;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
+import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
@@ -502,10 +504,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
 			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
 			for (RegimeFiscal regime : regimes) {
-				final RegimeFiscalView rfView = new RegimeFiscalView();
-				rfView.setDateDebut(regime.getDateDebut());
-				rfView.setDateFin(regime.getDateFin());
-				rfView.setType(regime.getType());
+				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getDateDebut(), regime.getDateFin(), regime.getType());
 				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
 					vd.add(rfView);
 				}
@@ -521,6 +520,18 @@ public class TiersManager implements MessageSourceAware {
 
 			tiersView.setRegimesFiscauxVD(vd);
 			tiersView.setRegimesFiscauxCH(ch);
+		}
+
+		// les allègements fiscaux
+		final Set<AllegementFiscal> allegements = entreprise.getAllegementsFiscaux();
+		if (allegements != null) {
+			final List<AllegementFiscalView> views = new ArrayList<>(allegements.size());
+			for (AllegementFiscal af : allegements) {
+				final AllegementFiscalView afView = new AllegementFiscalView(af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
+				views.add(afView);
+			}
+			Collections.sort(views, new DateRangeComparator<>());
+			tiersView.setAllegementsFiscaux(views);
 		}
 
 		// c'est du pipeau pour que les écrans actuels ne cassent pas...

@@ -95,6 +95,8 @@ public class TiersView {
 	private List<RegimeFiscalView> regimesFiscauxVD;
 	private List<RegimeFiscalView> regimesFiscauxCH;
 
+	private List<AllegementFiscalView> allegementsFiscaux;
+
 	private boolean isAllowed;
 
 	private boolean addContactISAllowed;
@@ -295,6 +297,14 @@ public class TiersView {
 
 	public void setRegimesFiscauxCH(List<RegimeFiscalView> regimesFiscauxCH) {
 		this.regimesFiscauxCH = regimesFiscauxCH;
+	}
+
+	public List<AllegementFiscalView> getAllegementsFiscaux() {
+		return allegementsFiscaux;
+	}
+
+	public void setAllegementsFiscaux(List<AllegementFiscalView> allegementsFiscaux) {
+		this.allegementsFiscaux = allegementsFiscaux;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {
