@@ -24,7 +24,7 @@ public class MockSiteOrganisationBuilder extends SiteOrganisationBuilder {
 	public MockSiteOrganisation build() {
 		return new MockSiteOrganisation(super.getCantonalId(),
 		                                super.getNom(), super.getRc(), super.getIde(), super.getIdentifiants(), super.getNomsAdditionnels(), super.getTypeDeSite(),
-		                                super.getSiege(), super.getFonction(), super.getRemplacePar(), super.getEnRemplacementDe());
+		                                super.getSiege(), super.getFonction());
 	}
 
 }

@@ -25,15 +25,12 @@ public class SiteOrganisation {
 	 * municipalityId du SwissMunicipality
 	 */
 	private List<DateRanged<Integer>> siege;
-	private List<DateRanged<Fonction>> fonction;
-	private List<DateRanged<Long>> remplacePar;
-	private List<DateRanged<Long>> enRemplacementDe;
+	private List<DateRanged<FonctionOrganisation>> fonction;
 
 	public SiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
 	                        Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
 	                        List<DateRanged<TypeDeSite>> typeDeSite, List<DateRanged<Integer>> siege,
-	                        List<DateRanged<Fonction>> fonction, List<DateRanged<Long>> remplacePar,
-	                        List<DateRanged<Long>> enRemplacementDe) {
+	                        List<DateRanged<FonctionOrganisation>> fonction) {
 		this.no = no;
 		this.nom = nom;
 		this.rc = rc;
@@ -43,8 +40,6 @@ public class SiteOrganisation {
 		this.typeDeSite = typeDeSite;
 		this.siege = siege;
 		this.fonction = fonction;
-		this.remplacePar = remplacePar;
-		this.enRemplacementDe = enRemplacementDe;
 	}
 
 	/**
@@ -55,11 +50,7 @@ public class SiteOrganisation {
 		return no;
 	}
 
-	public List<DateRanged<Long>> getEnRemplacementDe() {
-		return enRemplacementDe;
-	}
-
-	public List<DateRanged<Fonction>> getFonction() {
+	public List<DateRanged<FonctionOrganisation>> getFonction() {
 		return fonction;
 	}
 
@@ -86,10 +77,6 @@ public class SiteOrganisation {
 		return rc;
 	}
 
-	public List<DateRanged<Long>> getRemplacePar() {
-		return remplacePar;
-	}
-
 	public List<DateRanged<Integer>> getSiege() {
 		return siege;
 	}
@@ -98,11 +85,7 @@ public class SiteOrganisation {
 		return typeDeSite;
 	}
 
-	protected void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
-		this.enRemplacementDe = enRemplacementDe;
-	}
-
-	protected void setFonction(List<DateRanged<Fonction>> fonction) {
+	protected void setFonction(List<DateRanged<FonctionOrganisation>> fonction) {
 		this.fonction = fonction;
 	}
 
@@ -124,10 +107,6 @@ public class SiteOrganisation {
 
 	protected void setRc(@NotNull DonneesRC rc) {
 		this.rc = rc;
-	}
-
-	protected void setRemplacePar(List<DateRanged<Long>> remplacePar) {
-		this.remplacePar = remplacePar;
 	}
 
 	protected void setSiege(List<DateRanged<Integer>> siege) {

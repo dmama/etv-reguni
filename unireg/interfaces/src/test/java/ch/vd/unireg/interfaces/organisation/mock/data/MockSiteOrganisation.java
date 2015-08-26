@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.Fonction;
+import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -26,19 +26,12 @@ public class MockSiteOrganisation extends SiteOrganisation {
 	                            List<DateRanged<String>> nomsAdditionnels,
 	                            List<DateRanged<TypeDeSite>> typeDeSite,
 	                            List<DateRanged<Integer>> siege,
-	                            List<DateRanged<Fonction>> fonction,
-	                            List<DateRanged<Long>> remplacePar,
-	                            List<DateRanged<Long>> enRemplacementDe) {
-		super(no, nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite, siege, fonction, remplacePar, enRemplacementDe);
+	                            List<DateRanged<FonctionOrganisation>> fonction) {
+		super(no, nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite, siege, fonction);
 	}
 
 	@Override
-	public void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
-		super.setEnRemplacementDe(enRemplacementDe);
-	}
-
-	@Override
-	public void setFonction(List<DateRanged<Fonction>> fonction) {
+	public void setFonction(List<DateRanged<FonctionOrganisation>> fonction) {
 		super.setFonction(fonction);
 	}
 
@@ -65,11 +58,6 @@ public class MockSiteOrganisation extends SiteOrganisation {
 	@Override
 	public void setRc(@NotNull DonneesRC rc) {
 		super.setRc(rc);
-	}
-
-	@Override
-	public void setRemplacePar(List<DateRanged<Long>> remplacePar) {
-		super.setRemplacePar(remplacePar);
 	}
 
 	@Override

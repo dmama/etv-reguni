@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.Fonction;
+import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -28,7 +28,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	 * municipalityId du SwissMunicipality
 	 */
 	private List<DateRanged<Integer>> siege;
-	private List<DateRanged<Fonction>> fonction;
+	private List<DateRanged<FonctionOrganisation>> fonction;
 	private List<DateRanged<Long>> remplacePar;
 	private List<DateRanged<Long>> enRemplacementDe;
 
@@ -44,7 +44,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	@Override
 	public SiteOrganisation build() {
 		return new SiteOrganisation(cantonalId, nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite,
-		                            siege, fonction, remplacePar, enRemplacementDe);
+		                            siege, fonction);
 	}
 
 	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -72,7 +72,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		return this;
 	}
 
-	public SiteOrganisationBuilder addFonction(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Fonction valeur) {
+	public SiteOrganisationBuilder addFonction(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FonctionOrganisation valeur) {
 		fonction = BuilderHelper.addValueToList(fonction, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
@@ -102,7 +102,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		return this;
 	}
 
-	public SiteOrganisationBuilder setFonction(List<DateRanged<Fonction>> fonction) {
+	public SiteOrganisationBuilder setFonction(List<DateRanged<FonctionOrganisation>> fonction) {
 		this.fonction = fonction;
 		return this;
 	}
@@ -144,7 +144,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		return enRemplacementDe;
 	}
 
-	protected List<DateRanged<Fonction>> getFonction() {
+	protected List<DateRanged<FonctionOrganisation>> getFonction() {
 		return fonction;
 	}
 

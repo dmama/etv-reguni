@@ -34,15 +34,13 @@ public class RCEntSiteOrganisationHelper {
 		return new SiteOrganisation(
 				rcEntLocation.getCantonalId(),
 				RCEntHelper.convert(rcEntLocation.getName()),
-				rc != null ? createDonneesRC(rc) : null,
-				uid != null ? createDonneesIDE(uid) : null,
+				createDonneesRC(rc),
+				createDonneesIDE(uid),
 				RCEntHelper.convert(rcEntLocation.getIdentifiers()),
 				RCEntHelper.convert(rcEntLocation.getOtherNames()),
 				RCEntHelper.convertAndMap(rcEntLocation.getKindOfLocation(), KIND_OF_LOCATION_CONVERTER),
 				RCEntHelper.convert(rcEntLocation.getSeat()),
-				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER),
-				RCEntHelper.convert(rcEntLocation.getReplacedBy()),
-				RCEntHelper.convert(rcEntLocation.getInReplacementOf())
+				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER)
 		);
 	}
 

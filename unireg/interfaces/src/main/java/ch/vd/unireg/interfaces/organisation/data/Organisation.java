@@ -1,10 +1,15 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 
 public class Organisation implements Serializable {
 
@@ -56,6 +61,44 @@ public class Organisation implements Serializable {
 	 */
 	public long getNo() {
 		return no;
+	}
+
+	public List<DateRanged<Integer>> getSiegesPrincipal() {
+		List<DateRanged<Integer>> sieges = new ArrayList<>();
+		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
+			SiteOrganisation site =	entry.getValue();
+			for (DateRanged<Integer> siege : site.getSiege()) {
+				if (DateRangeHelper.rangeAt(site.getTypeDeSite(), siege.getDateDebut()) ==
+						DateRangeHelper.rangeAt(site.getTypeDeSite(), siege.getDateFin())) {
+					sieges.add(siege);
+				}
+			}
+		}
+		Collections.sort(sieges, new DateRangeComparator<DateRanged<Integer>>());
+		return sieges;
+	}
+
+	public List<DateRanged<Capital>> getCapital() {
+		List<DateRanged<Capital>> capitalsValides = new ArrayList<>();
+		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
+			SiteOrganisation site =	entry.getValue();
+			List<DateRanged<Capital>> capitals = site.getRc().getCapital();
+			if (capitals != null) {
+				for (DateRanged<Capital> capital : capitals) {
+					// On controle si le site est principal pour cette plage de temps
+					if (DateRangeHelper.rangeAt(site.getTypeDeSite(), capital.getDateDebut()) ==
+							DateRangeHelper.rangeAt(site.getTypeDeSite(), capital.getDateFin())) {
+						capitalsValides.add(capital);
+					}
+				}
+			}
+		}
+		Collections.sort(capitalsValides, new DateRangeComparator<DateRanged<Capital>>());
+		return capitalsValides;
+	}
+
+	public List<DateRanged<String>> getNoIDE() {
+		return getIdentifiants().get("CH.IDE");
 	}
 
 	@NotNull
