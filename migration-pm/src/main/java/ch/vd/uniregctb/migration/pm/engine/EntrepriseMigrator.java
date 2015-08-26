@@ -338,19 +338,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		
 		// données de la dernière raison sociale
 		mr.registerDataExtractor(RaisonSocialeData.class,
-		                         e -> extraireRaisonSociale(e, mr),
+		                         e -> extractRaisonSociale(e, mr),
 		                         null,
 		                         null);
 
 		// données de la dernière modification de capital
 		mr.registerDataExtractor(CapitalData.class,
-		                         e -> extraireCapital(e, mr),
+		                         e -> extractCapital(e, mr),
 		                         null,
 		                         null);
 
 		// données de la dernière forme juridique de l'entreprise
 		mr.registerDataExtractor(FormeJuridiqueData.class,
-		                         e -> extraireFormeJuridique(e, mr),
+		                         e -> extractFormeJuridique(e, mr),
 		                         null,
 		                         null);
 	}
@@ -426,29 +426,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param raisonSociale entreprise de RegPM
 	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
 	 */
-	static String extraireRaisonSociale(RaisonSociale raisonSociale) {
-		return extraireRaisonSociale(raisonSociale.getLigne1(), raisonSociale.getLigne2(), raisonSociale.getLigne3());
-	}
-
-	/**
-	 * Concatène les trois champs de la raison sociale de l'entreprise en une seule
-	 * @param ligne1 première ligne
-	 * @param ligne2 deuxième ligne
-	 * @param ligne3 troisième ligne
-	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
-	 */
-	private static String extraireRaisonSociale(String ligne1, String ligne2, String ligne3) {
-		final Stream.Builder<String> builder = Stream.builder();
-		if (StringUtils.isNotBlank(ligne1)) {
-			builder.accept(ligne1);
-		}
-		if (StringUtils.isNotBlank(ligne2)) {
-			builder.accept(ligne2);
-		}
-		if (StringUtils.isNotBlank(ligne3)) {
-			builder.accept(ligne3);
-		}
-		return StringUtils.trimToNull(builder.build().collect(Collectors.joining(" ")));
+	static String extractRaisonSociale(RaisonSociale raisonSociale) {
+		return extractRaisonSociale(raisonSociale.getLigne1(), raisonSociale.getLigne2(), raisonSociale.getLigne3());
 	}
 
 	/**
@@ -458,7 +437,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return un structure (qui peut être vide) contenant les données de la raison sociale courante de l'entreprise
 	 */
 	@NotNull
-	private RaisonSocialeData extraireRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private RaisonSocialeData extractRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, () -> entreprise.getRaisonsSociales().stream()
 				.filter(rs -> !rs.getRectifiee())
@@ -467,14 +446,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
 						              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
 						                            rs.getId(),
-						                            extraireRaisonSociale(rs),
+						                            extractRaisonSociale(rs),
 						                            StringRenderers.DATE_RENDERER.toString(rs.getDateValidite())));
 						return false;
 					}
 					return true;
 				})
 				.max(Comparator.naturalOrder())
-				.map(rs -> new RaisonSocialeData(extraireRaisonSociale(rs), rs.getDateValidite()))
+				.map(rs -> new RaisonSocialeData(extractRaisonSociale(rs), rs.getDateValidite()))
 				.orElseGet(() -> new RaisonSocialeData(null, null)));
 	}
 
@@ -485,7 +464,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return un structure (qui peut être vide) contenant les données du capital courant de l'entreprise
 	 */
 	@NotNull
-	private CapitalData extraireCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private CapitalData extractCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, () -> entreprise.getCapitaux().stream()
 				.filter(c -> !c.isRectifiee())
@@ -512,7 +491,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
 	 */
 	@NotNull
-	private FormeJuridiqueData extraireFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, () -> entreprise.getFormesJuridiques().stream()
 				.filter(fj -> !fj.isRectifiee())
@@ -1514,6 +1493,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
 		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
 		etbPrincipal.setEnseigne(regpm.getEnseigne());
+		etbPrincipal.setRaisonSociale(mr.getExtractedData(RaisonSocialeData.class, buildEntrepriseKey(regpm)).getRaisonSociale());
 		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal

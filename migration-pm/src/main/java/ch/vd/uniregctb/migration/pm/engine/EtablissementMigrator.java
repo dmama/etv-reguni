@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
@@ -43,7 +42,6 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
-import ch.vd.uniregctb.migration.pm.engine.data.RaisonSocialeData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
@@ -156,52 +154,28 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                         null,
 		                         e -> extractDatesEtablissementsStables(e, mr),
 		                         null);
-
-		// la raison sociale
-		mr.registerDataExtractor(RaisonSocialeData.class,
-		                         null,
-		                         e -> extractRaisonSociale(e, mr),
-		                         null);
 	}
 
 	/**
-	 * Extraction de ce qui tiendra lieu de raison sociale pour l'établissement&nbsp;:
-	 * <ul>
-	 *     <li>l'enseigne s'il y en a une</li>
-	 *     <li>sinon, la raison sociale de l'entité juridique (si c'est une entreprise)</li>
-	 *     <li>sinon, les nom et prénom de l'entité juridique personne physique</li>
-	 *     <li>sinon, <code>null</code></li>
-	 * </ul>
+	 * Extraction de ce qui tiendra lieu de raison sociale pour l'établissement (= la concaténation des trois champs disponibles dans l'environnement pour ça)
 	 * @param regpm établissement dont on veut trouver la raison sociale
-	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
-	 * @return une structure (potentiellement vide) contenant la raison sociale à utiliser pour l'établissement
+	 * @return la raison sociale concaténée
 	 */
-	@NotNull
-	private RaisonSocialeData extractRaisonSociale(RegpmEtablissement regpm, MigrationResultContextManipulation mr) {
+	@Nullable
+	private static String extractRaisonSociale(RegpmEtablissement regpm) {
+		return extractRaisonSociale(regpm.getRaisonSociale1(), regpm.getRaisonSociale2(), regpm.getRaisonSociale3());
+	}
 
-		final EntityKey key = buildEtablissementKey(regpm);
-		return doInLogContext(key, mr, () -> {
-
-			// TODO l'enseigne prend-elle réellement le pas sur toutes les autres sources possibles (notamment l'entité juridique) ?
-
-			if (StringUtils.isNotBlank(regpm.getEnseigne())) {
-				return new RaisonSocialeData(regpm.getEnseigne(), null);
-			}
-
-			if (regpm.getEntreprise() != null) {
-				final EntityKey entrepriseKey = buildEntrepriseKey(regpm.getEntreprise());
-				return mr.getExtractedData(RaisonSocialeData.class, entrepriseKey);
-			}
-
-			final String nom;
-			if (regpm.getIndividu() != null) {
-				nom = new NomPrenom(regpm.getIndividu().getNom(), regpm.getIndividu().getPrenom()).getNomPrenom();
-			}
-			else {
-				nom = null;
-			}
-			return new RaisonSocialeData(nom, null);
-		});
+	/**
+	 * @param regpm un établissement
+	 * @return le nom d'enseigne s'il existe, ou la raison sociale
+	 */
+	@Nullable
+	private static String extractEnseigneOuRaisonSociale(RegpmEtablissement regpm) {
+		if (StringUtils.isNotBlank(regpm.getEnseigne())) {
+			return regpm.getEnseigne();
+		}
+		return extractRaisonSociale(regpm);
 	}
 
 	/**
@@ -483,11 +457,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// coordonnées financières
-		final String raisonSociale = mr.getExtractedData(RaisonSocialeData.class, buildEtablissementKey(regpm)).getRaisonSociale();
-		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
+		final String titulaireCompte = extractEnseigneOuRaisonSociale(regpm);
+		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, titulaireCompte, unireg, mr);
 
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());
+		unireg.setRaisonSociale(extractRaisonSociale(regpm));
 		unireg.setPrincipal(false);
 		unireg.setNumeroEtablissement(null);        // TODO à voir avec RCEnt
 

@@ -20,10 +20,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
-import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
@@ -48,12 +45,10 @@ import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.TypeTiers;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
-	private EntrepriseMigrator entrepriseMigrator;
 	private EtablissementMigrator migrator;
 
 	@Override
@@ -71,25 +66,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		migrator = new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider);
 
-		//
-		// on instancie aussi un migrateur d'entreprise car il peut y avoir des dépendances au niveau des données extraites
-		// (par exemple la donnée de la raison sociale d'un établissement peut faire appel à l'extraction de celle de l'entreprise parente)
-		//
-
-		entrepriseMigrator = new EntrepriseMigrator(uniregStore, activityManager, infraService,
-		                                            getBean(BouclementService.class, "bouclementService"),
-		                                            getBean(AssujettissementService.class, "assujettissementService"),
-		                                            RegDate.get(2015, 1, 1),
-		                                            rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider);
-	}
-
-	/**
-	 * Méthode à appeler dans tous les tests pour initialiser le contexte
-	 * @param mr contexte à utiliser pour l'initialisation (est passé tour à tour à la méthode {@link AbstractEntityMigrator#initMigrationResult(MigrationResultInitialization)} de chaque migrateur individuel)
-	 */
-	private void initMigrationResult(MigrationResultInitialization mr) {
-		migrator.initMigrationResult(mr);
-		entrepriseMigrator.initMigrationResult(mr);
 	}
 
 	static RegpmEtablissement buildEtablissement(long id, RegpmEntreprise entreprise) {
@@ -205,7 +181,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -250,7 +226,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -305,7 +281,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -360,7 +336,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -439,7 +415,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -520,7 +496,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -605,7 +581,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> un nouvel établissement
@@ -682,8 +658,10 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
-		EntrepriseMigratorTest.addRaisonSociale(entreprise, RegDate.get(2000, 1, 1), "Ma petite", "entreprise à moi", null, true);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setRaisonSociale1("Ma");
+		etablissement.setRaisonSociale2("Petite");
+		etablissement.setRaisonSociale3("Entreprise");
 		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
 		etablissement.setEnseigne("Mon enseigne");
 
@@ -693,7 +671,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -713,11 +691,12 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
 			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
 			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertEquals("Mon enseigne", etab.getTitulaireCompteBancaire());
+			Assert.assertEquals("Mon enseigne", etab.getTitulaireCompteBancaire());     // priorité au nom d'enseigne
 
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
+			Assert.assertEquals("Ma Petite Entreprise", etab.getRaisonSociale());
 			Assert.assertEquals(0, etab.getDomiciles().size());
 
 			return null;
@@ -725,107 +704,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testCoordonneesFinancieresAvecEnseigneEtPersonnePhysique() throws Exception {
-
-		final long noIndividu = 1234L;
-		final long noEtablissement = 43256475L;
-		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Duplancher", "Philibert", null, Sexe.MASCULIN);
-
-		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, individu);
-		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
-		etablissement.setEnseigne("Mon enseigne");
-
-		final MockGraphe graphe = new MockGraphe(null,
-		                                         Collections.singletonList(etablissement),
-		                                         Collections.singletonList(individu));
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
-		migrate(etablissement, migrator, mr, linkCollector, idMapper);
-
-		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
-		final long idEtablissement = doInUniregTransaction(true, status -> {
-			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
-			Assert.assertNotNull(ids);
-			Assert.assertEquals(1, ids.size());
-			return ids.get(0);
-		});
-
-		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
-		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
-
-		// avec les coordonnées financières qui vont bien
-		doInUniregTransaction(true, status -> {
-			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
-			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
-			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertEquals("Mon enseigne", etab.getTitulaireCompteBancaire());     // utilisation de l'enseigne
-
-			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
-			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
-			Assert.assertEquals(0, etab.getDomiciles().size());
-
-			return null;
-		});
-	}
-
-	@Test
-	public void testCoordonneesFinancieresAvecPersonnePhysiqueSansEnseigne() throws Exception {
-
-		final long noIndividu = 1234L;
-		final long noEtablissement = 43256475L;
-		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(noIndividu, "Duplancher", "Philibert", null, Sexe.MASCULIN);
-
-		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, individu);
-		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
-
-		final MockGraphe graphe = new MockGraphe(null,
-		                                         Collections.singletonList(etablissement),
-		                                         Collections.singletonList(individu));
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
-		migrate(etablissement, migrator, mr, linkCollector, idMapper);
-
-		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
-		final long idEtablissement = doInUniregTransaction(true, status -> {
-			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
-			Assert.assertNotNull(ids);
-			Assert.assertEquals(1, ids.size());
-			return ids.get(0);
-		});
-
-		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
-		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
-
-		// avec les coordonnées financières qui vont bien
-		doInUniregTransaction(true, status -> {
-			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
-			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
-			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertEquals("Philibert Duplancher", etab.getTitulaireCompteBancaire());     // utilisation des noms et prénoms de la personne liée
-
-			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
-			Assert.assertNull(etab.getEnseigne());
-			Assert.assertEquals(0, etab.getDomiciles().size());
-
-			return null;
-		});
-	}
-
-	@Test
-	public void testCoordonneesFinancieresSansEnseigneAvecEntrepriseSansRaisonSociale() throws Exception {
+	public void testCoordonneesFinancieresAvecRaisonSocialeSansEnseigne() throws Exception {
 
 		final long noEntreprise = 1234L;
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		etablissement.setRaisonSociale1("Ma");
+		etablissement.setRaisonSociale2("Petite");
+		etablissement.setRaisonSociale3("Entreprise");
 		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
@@ -834,7 +721,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -854,58 +741,12 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
 			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
 			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertNull(etab.getTitulaireCompteBancaire());     // rien trouvé
+			Assert.assertEquals("Ma Petite Entreprise", etab.getTitulaireCompteBancaire());     // utilisation de la raison sociale de l'établissement en absence d'enseigne
 
 			Assert.assertNull(etab.getNumeroEtablissement());
 			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertNull(etab.getEnseigne());
-			Assert.assertEquals(0, etab.getDomiciles().size());
-
-			return null;
-		});
-	}
-
-	@Test
-	public void testCoordonneesFinancieresSansEnseigneAvecEntrepriseAvecRaisonSociale() throws Exception {
-
-		final long noEntreprise = 1234L;
-		final long noEtablissement = 43256475L;
-		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
-		EntrepriseMigratorTest.addRaisonSociale(entreprise, null, "Une", "bonne", "idée", true);
-		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
-		etablissement.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "UBSWCHZH80A", "23050422318T", null, "UBS SA", "230"));
-
-		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
-		                                         Collections.singletonList(etablissement),
-		                                         null);
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
-		migrate(etablissement, migrator, mr, linkCollector, idMapper);
-
-		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
-		final long idEtablissement = doInUniregTransaction(true, status -> {
-			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
-			Assert.assertNotNull(ids);
-			Assert.assertEquals(1, ids.size());
-			return ids.get(0);
-		});
-
-		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
-		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
-
-		// avec les coordonnées financières qui vont bien
-		doInUniregTransaction(true, status -> {
-			final Etablissement etab = (Etablissement) getUniregSessionFactory().getCurrentSession().get(Etablissement.class, idEtablissement);
-			Assert.assertEquals("CH350023023050422318T", etab.getNumeroCompteBancaire());
-			Assert.assertEquals("UBSWCHZH80A", etab.getAdresseBicSwift());
-			Assert.assertEquals("Une bonne idée", etab.getTitulaireCompteBancaire());     // prise en compte de la raison sociale de l'entreprise parente
-
-			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
-			Assert.assertNull(etab.getEnseigne());
+			Assert.assertEquals("Ma Petite Entreprise", etab.getRaisonSociale());
 			Assert.assertEquals(0, etab.getDomiciles().size());
 
 			return null;
@@ -927,7 +768,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -987,7 +828,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -1064,7 +905,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -1141,7 +982,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise avec un établissement
@@ -1220,7 +1061,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// il y a eu un temps où la migration échouait sur un appel à RegpmEtablissement.Adresse.getDateFin()
@@ -1244,7 +1085,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		initMigrationResult(mr);
+		migrator.initMigrationResult(mr);
 		migrate(etablissement, migrator, mr, linkCollector, idMapper);
 
 		// extraction de l'identifiant de l'établissement

@@ -537,6 +537,27 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	}
 
 	/**
+	 * Concatène les trois champs de la raison sociale en une seule
+	 * @param ligne1 première ligne
+	 * @param ligne2 deuxième ligne
+	 * @param ligne3 troisième ligne
+	 * @return la chaîne de caractères (<code>null</code> si vide) représentant la raison sociale de l'entreprise
+	 */
+	protected static String extractRaisonSociale(String ligne1, String ligne2, String ligne3) {
+		final Stream.Builder<String> builder = Stream.builder();
+		if (StringUtils.isNotBlank(ligne1)) {
+			builder.accept(ligne1);
+		}
+		if (StringUtils.isNotBlank(ligne2)) {
+			builder.accept(ligne2);
+		}
+		if (StringUtils.isNotBlank(ligne3)) {
+			builder.accept(ligne3);
+		}
+		return StringUtils.trimToNull(builder.build().collect(Collectors.joining(" ")));
+	}
+
+	/**
 	 * Adapteur des motifs d'ouverture/fermeture des fors fiscaux par rapports aux fusions de communes (peut-être utilisé dans {@link #adapterAutourFusionsCommunes(LocalisationDatee, MigrationResultProduction, LogCategory, BiConsumer)})
 	 * @param origine le for fiscal original
 	 * @param remplacant le for fiscal (a priori dupliqué du premier sauf peut-être pour les dates de début et de fin, ainsi que la commune visée) qui remplacera (au moins pour partie) le for original
