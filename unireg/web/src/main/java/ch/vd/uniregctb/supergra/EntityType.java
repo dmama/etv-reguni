@@ -25,7 +25,8 @@ public enum EntityType {
 	DomicileEtablissement(ch.vd.uniregctb.tiers.DomicileEtablissement.class, "domicile", "le domicile", "du domicile"),
 	RegimeFiscal(ch.vd.uniregctb.tiers.RegimeFiscal.class, "régime fiscal", "le régime fiscal", "du régime fiscal"),
 	DonneesRegistreCommerce(ch.vd.uniregctb.tiers.DonneesRegistreCommerce.class, "donnée du registre du commerce", "la donnée du registre du commerce", "de la donnée du registre du commerce"),
-	AllegementFiscal(ch.vd.uniregctb.tiers.AllegementFiscal.class, "allègement fiscal", "l'allègement fiscal", "de l'allègement fiscal");
+	AllegementFiscal(ch.vd.uniregctb.tiers.AllegementFiscal.class, "allègement fiscal", "l'allègement fiscal", "de l'allègement fiscal"),
+	Bouclement(ch.vd.uniregctb.tiers.Bouclement.class, "bouclement", "le bouclement", "du bouclement");
 
 	private final Class<?> hibernateClass;
 	private final String displayName;   // "chat"

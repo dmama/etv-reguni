@@ -49,6 +49,8 @@ import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.supergra.view.Mc2PpView;
 import ch.vd.uniregctb.supergra.view.Pp2McView;
+import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.utils.DayMonthEditor;
 import ch.vd.uniregctb.utils.EnumEditor;
 import ch.vd.uniregctb.utils.IndividuNumberEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -99,6 +101,7 @@ public class SuperGraController {
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(true));
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+		binder.registerCustomEditor(DayMonth.class, new DayMonthEditor(true, false));
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 		binder.registerCustomEditor(URL.class, new URLEditor());
 

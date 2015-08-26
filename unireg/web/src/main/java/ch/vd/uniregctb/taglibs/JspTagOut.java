@@ -17,6 +17,8 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.DayMonthHelper;
 
 /**
  * Tag jsp qui permet d'afficher diverse valeurs spécifiques à Unireg.
@@ -42,6 +44,7 @@ public class JspTagOut extends BodyTagSupport {
 		editors.put(Boolean.class, new BooleanEditor());
 		editors.put(Date.class, new DateEditor());
 		editors.put(RegDate.class, new DateEditor());
+		editors.put(DayMonth.class, new DayMonthEditor());
 		editors.put(URL.class, new URLEditor());
 	}
 
@@ -172,6 +175,28 @@ public class JspTagOut extends BodyTagSupport {
 			}
 
 			return displayDate;
+		}
+	}
+
+	private static class DayMonthEditor implements Editor {
+		@Override
+		public String generate(String id, Class clazz, Object value, HttpServletRequest request) {
+			final String toDisplay;
+			if (value instanceof DayMonth) {
+				final DayMonth dm = (DayMonth) value;
+				toDisplay = DayMonthHelper.toDisplayString(dm);
+			}
+			else if (value instanceof String) {
+				toDisplay = (String) value;     // on assume que la donnée est déjà correctement formattée
+			}
+			else if (value == null) {
+				toDisplay = StringUtils.EMPTY;
+			}
+			else {
+				throw new IllegalArgumentException("Unknown DayMonth class = [" + value.getClass() + ']');
+			}
+
+			return toDisplay;
 		}
 	}
 

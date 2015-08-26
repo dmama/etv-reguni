@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.ReflexionUtils;
+import ch.vd.uniregctb.hibernate.DayMonthUserType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 import ch.vd.uniregctb.hibernate.TypeAdresseCivilLegacyUserType;
@@ -346,6 +347,9 @@ public class MetaEntity {
 		else if (userType != null) {
 			if (userType instanceof RegDateUserType) {
 				propertyType = new RegDatePropertyType((RegDateUserType) userType);
+			}
+			else if (userType instanceof DayMonthUserType) {
+				propertyType = new DayMonthPropertyType((DayMonthUserType) userType);
 			}
 			else if (userType instanceof EnumUserType) {
 				propertyType = new EnumUserTypePropertyType(returnType, (EnumUserType) userType);
