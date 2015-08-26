@@ -6,7 +6,7 @@ import ch.vd.unireg.interfaces.organisation.data.Autorisation;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
-public class FunctionConverter extends BaseConverter<OrganisationFunction, FonctionOrganisation> {
+public class OrganisationFunctionConverter extends BaseConverter<OrganisationFunction, FonctionOrganisation> {
 
 	private static final AutorisationConverter AUTORISATION_CONVERTER = new AutorisationConverter();
 

@@ -48,7 +48,8 @@
 				<eVD-0022:function>
 					<eVD-0022:party>
 						<eVD-0022:person>
-							<eVD-0022:name>Keith Harring</eVD-0022:name>
+							<eVD-0022:name>Harring</eVD-0022:name>
+							<eVD-0022:firstName>Keith</eVD-0022:firstName>
 						</eVD-0022:person>
 						<eVD-0022:placeOfResidence>
 							<eVD-0022:placeOfResidenceName>New York</eVD-0022:placeOfResidenceName>

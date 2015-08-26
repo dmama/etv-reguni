@@ -7,8 +7,8 @@ import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterEntryStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
-import ch.vd.unireg.interfaces.organisation.rcent.converters.FunctionConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.KindOfLocationConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.OrganisationFunctionConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterLiquidationReasonConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.UidRegisterTypeOfOrganisationConverter;
@@ -17,7 +17,7 @@ import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 public class RCEntSiteOrganisationHelper {
 
 	private static final KindOfLocationConverter KIND_OF_LOCATION_CONVERTER = new KindOfLocationConverter();
-	private static final FunctionConverter FUNCTION_CONVERTER = new FunctionConverter();
+	private static final OrganisationFunctionConverter FUNCTION_CONVERTER = new OrganisationFunctionConverter();
 	private static final AddressConverter ADDRESS_CONVERTER = new AddressConverter();
 	private static final CommercialRegisterStatusConverter COMMERCIAL_REGISTER_STATUS_CONVERTER = new CommercialRegisterStatusConverter();
 	private static final CommercialRegisterEntryStatusConverter COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER = new CommercialRegisterEntryStatusConverter();

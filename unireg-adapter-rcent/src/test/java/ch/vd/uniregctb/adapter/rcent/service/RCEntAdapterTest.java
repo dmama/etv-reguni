@@ -351,14 +351,14 @@ public class RCEntAdapterTest {
 		DateRanged<OrganisationFunction> function1 = locationFunctions.get(1);
 		functionMap.put(function1.getPayload().getName(), function1);
 
-		assertEquals("Harrison Ford", function0.getPayload().getName());
+		assertEquals("Harrison Ford", functionMap.get("Harrison Ford").getPayload().getName());
 		assertEquals(RegDate.get(2015, 7, 7), functionMap.get("Harrison Ford").getDateDebut());
 		assertEquals("Président du Conseil d'Administration", functionMap.get("Harrison Ford").getPayload().getFunctionText());
 		assertEquals(Authorisation.SIG_INDIVIDUELLE, functionMap.get("Harrison Ford").getPayload().getAuthorisation());
-
 		assertNull(functionMap.get("Harrison Ford").getDateFin());
-		assertEquals("Keith Harring", functionMap.get("Keith Harring").getPayload().getName());
-		assertEquals(RegDate.get(2015, 8, 5), functionMap.get("Keith Harring").getDateDebut());
-		assertNull(functionMap.get("Keith Harring").getDateFin());
+
+		assertEquals("Harring", functionMap.get("Harring").getPayload().getName());
+		assertEquals(RegDate.get(2015, 8, 5), functionMap.get("Harring").getDateDebut());
+		assertNull(functionMap.get("Harring").getDateFin());
 	}
 }
