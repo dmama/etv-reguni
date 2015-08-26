@@ -471,12 +471,13 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
+
+			// le nom d'enseigne en priorité, sinon la raison sociale
 			if (StringUtils.isNotBlank(etb.getEnseigne())) {
 				adresse.addRaisonSociale(etb.getEnseigne());
 			}
 			else {
-				// TODO [SIPM] il va falloir faire mieux...
-				adresse.addRaisonSociale("###voir entreprise###");
+				adresse.addRaisonSociale(etb.getRaisonSociale());
 			}
 		}
 		else {

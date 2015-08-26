@@ -39,6 +39,7 @@ public class Etablissement extends Contribuable {
 	 */
 	private Long numeroEtablissement;
 	private String enseigne;
+	private String raisonSociale;
 	private boolean principal;
 	private Set<DomicileEtablissement> domiciles;
 
@@ -59,6 +60,15 @@ public class Etablissement extends Contribuable {
 
 	public void setEnseigne(String enseigne) {
 		this.enseigne = enseigne;
+	}
+
+	@Column(name = "ETB_RAISON_SOCIALE", length = LengthConstants.ETB_RAISON_SOCIALE)
+	public String getRaisonSociale() {
+		return raisonSociale;
+	}
+
+	public void setRaisonSociale(String raisonSociale) {
+		this.raisonSociale = raisonSociale;
 	}
 
 	@Column(name = "ETB_PRINCIPAL")

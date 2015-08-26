@@ -121,6 +121,7 @@ public abstract class LengthConstants {
 	public static final int REQDES_LIBELLE_ORIGINE = 50;
 
 	public static final int ETB_ENSEIGNE = 250;
+	public static final int ETB_RAISON_SOCIALE = 250;
 
 	public static final int REGIME_FISCAL_PORTEE = 2;
 	public static final int REGIME_FISCAL_TYPE = 20;
