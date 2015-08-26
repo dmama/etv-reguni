@@ -143,9 +143,25 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		return results;
 	}
 
+	/**
+	 * Blindage contre les déclarations qui n'ont pas de modèle de document associé (elles ne passent normalement pas
+	 * la validation, mais si la données est ainsi en base, c'est dommage d'exploser avec une NPE
+	 * @param di la déclaration
+	 * @return une description de son type (en général fonction du modèle de document associé...)
+	 */
+	private static String getDescriptionDI(DeclarationImpotOrdinaire di) {
+		if (di.getModeleDocument() != null) {
+			final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+			return typeDocument.getDescription();
+		}
+		else {
+			return "déclaration d'impôt";
+		}
+	}
+
 	private static void validateDI(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
 		boolean intersect = false;
-		final TypeDocument typeDocument = di.getModeleDocument().getTypeDocument();
+		final String descriptionDI = getDescriptionDI(di);
 		if (periodes != null) {
 			for (PeriodeImposition p : periodes) {
 				if (DateRangeHelper.equals(di, p)) {
@@ -155,7 +171,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 				else if (DateRangeHelper.intersect(di, p)) {
 					intersect = true;
 					final String message = String.format("La %s qui va du %s au %s ne correspond pas à la période d'imposition théorique qui va du %s au %s",
-					                                     typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()),
+					                                     descriptionDI, RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()),
 					                                     RegDateHelper.dateToDisplayString(p.getDateDebut()), RegDateHelper.dateToDisplayString(p.getDateFin()));
 					results.addWarning(message);
 				}
@@ -163,7 +179,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		}
 		if (!intersect) {
 			final String message = String.format("La %s qui va du %s au %s ne correspond à aucune période d'imposition théorique",
-			                                     typeDocument.getDescription(), RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
+			                                     descriptionDI, RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
 			results.addWarning(message);
 		}
 	}
