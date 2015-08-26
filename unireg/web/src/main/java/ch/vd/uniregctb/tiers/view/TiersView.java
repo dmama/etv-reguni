@@ -5,11 +5,13 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
@@ -96,6 +98,8 @@ public class TiersView {
 	private List<RegimeFiscalView> regimesFiscauxCH;
 
 	private List<AllegementFiscalView> allegementsFiscaux;
+	private List<ExerciceCommercial> exercicesCommerciaux;
+	private RegDate dateBouclementFutur;
 
 	private boolean isAllowed;
 
@@ -305,6 +309,22 @@ public class TiersView {
 
 	public void setAllegementsFiscaux(List<AllegementFiscalView> allegementsFiscaux) {
 		this.allegementsFiscaux = allegementsFiscaux;
+	}
+
+	public List<ExerciceCommercial> getExercicesCommerciaux() {
+		return exercicesCommerciaux;
+	}
+
+	public void setExercicesCommerciaux(List<ExerciceCommercial> exercicesCommerciaux) {
+		this.exercicesCommerciaux = exercicesCommerciaux;
+	}
+
+	public RegDate getDateBouclementFutur() {
+		return dateBouclementFutur;
+	}
+
+	public void setDateBouclementFutur(RegDate dateBouclementFutur) {
+		this.dateBouclementFutur = dateBouclementFutur;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {

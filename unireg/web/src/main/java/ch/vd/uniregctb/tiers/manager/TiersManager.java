@@ -18,7 +18,9 @@ import org.springframework.context.MessageSourceAware;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -58,6 +60,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -67,6 +71,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -77,6 +82,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -150,6 +156,8 @@ public class TiersManager implements MessageSourceAware {
 	protected MessageSource messageSource;
 
 	protected SituationFamilleService situationFamilleService;
+
+	protected BouclementService bouclementService;
 
 	protected RapportEntreTiersDAO rapportEntreTiersDAO;
 	protected IbanValidator ibanValidator;
@@ -534,8 +542,29 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setAllegementsFiscaux(views);
 		}
 
-		// c'est du pipeau pour que les écrans actuels ne cassent pas...
-		// mais ça va devoir partir
+		// les exercices commerciaux et la date de bouclement futur
+		final Set<Bouclement> bouclements = entreprise.getBouclements();
+		if (bouclements != null && !bouclements.isEmpty()) {
+
+			final ForFiscalPrincipalPM premierForFiscal = entreprise.getPremierForFiscalPrincipal();
+			final ForFiscalPrincipal dernierForFiscal = entreprise.getDernierForFiscalPrincipal();
+
+			// exercices commerciaux
+			final RegDate today = RegDate.get();
+			final RegDate dateDebut = premierForFiscal != null ? premierForFiscal.getDateDebut() : null;
+			final RegDate dateFin = dernierForFiscal != null ? RegDateHelper.minimum(today, dernierForFiscal.getDateFin(), NullDateBehavior.LATEST) : today;
+			if (dateDebut != null) {
+				final List<ExerciceCommercial> exercices = bouclementService.getExercicesCommerciaux(bouclements, new DateRangeHelper.Range(dateDebut, dateFin));
+				tiersView.setExercicesCommerciaux(exercices);
+			}
+
+			// date de bouclement futur
+			if (dernierForFiscal != null && dernierForFiscal.isValidAt(RegDate.get())) {
+				tiersView.setDateBouclementFutur(bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true));
+			}
+		}
+
+		// TODO c'est du pipeau pour que les écrans actuels ne cassent pas... mais ça va devoir partir
 		tiersView.setEntreprise(new EntrepriseView());
 	}
 
@@ -1150,5 +1179,9 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setBouclementService(BouclementService bouclementService) {
+		this.bouclementService = bouclementService;
 	}
 }

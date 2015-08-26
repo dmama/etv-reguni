@@ -132,6 +132,9 @@
 							<li id="allegementsFiscauxTab">
 								<a href="#tabContent_allegementsFiscauxTab"><fmt:message key="label.allegements.fiscaux" /></a>
 							</li>
+							<li id="bouclementsTab">
+								<a href="#tabContent_bouclementsTab"><fmt:message key="label.bouclements" /></a>
+							</li>
 							<li id="etatsPMTab">
 								<a href="#tabContent_etatsPMTab"><fmt:message key="label.etats.pm" /></a>
 							</li>
@@ -216,6 +219,9 @@
 						<div id="tabContent_allegementsFiscauxTab" class="visuTiers">
 							<jsp:include page="pm/allegements-fiscaux.jsp"/>
 						</div>
+						<li id="tabContent_bouclementsTab" class="visuTiers">
+							<jsp:include page="pm/bouclements.jsp"/>
+						</li>
 						<div id="tabContent_etatsPMTab" class="visuTiers">
 							<jsp:include page="pm/etats.jsp"/>
 						</div>
