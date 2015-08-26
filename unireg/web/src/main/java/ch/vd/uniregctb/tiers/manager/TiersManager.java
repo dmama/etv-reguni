@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -506,6 +508,9 @@ public class TiersManager implements MessageSourceAware {
 	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
 
+		// comparateur qui mets les ranges les plus récents devant
+		final Comparator<DateRange> reverseComparator = new ReverseComparator<>(new DateRangeComparator<>());
+
 		// les régimes fiscaux
 		final Set<RegimeFiscal> regimes = entreprise.getRegimesFiscaux();
 		if (regimes != null) {
@@ -523,8 +528,8 @@ public class TiersManager implements MessageSourceAware {
 					throw new IllegalArgumentException("Portée inconnue sur un régime fiscal : " + regime.getPortee());
 				}
 			}
-			Collections.sort(vd, new DateRangeComparator<>());
-			Collections.sort(ch, new DateRangeComparator<>());
+			Collections.sort(vd, reverseComparator);
+			Collections.sort(ch, reverseComparator);
 
 			tiersView.setRegimesFiscauxVD(vd);
 			tiersView.setRegimesFiscauxCH(ch);
@@ -538,7 +543,7 @@ public class TiersManager implements MessageSourceAware {
 				final AllegementFiscalView afView = new AllegementFiscalView(af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
 				views.add(afView);
 			}
-			Collections.sort(views, new DateRangeComparator<>());
+			Collections.sort(views, reverseComparator);
 			tiersView.setAllegementsFiscaux(views);
 		}
 
@@ -555,6 +560,7 @@ public class TiersManager implements MessageSourceAware {
 			final RegDate dateFin = dernierForFiscal != null ? RegDateHelper.minimum(today, dernierForFiscal.getDateFin(), NullDateBehavior.LATEST) : today;
 			if (dateDebut != null) {
 				final List<ExerciceCommercial> exercices = bouclementService.getExercicesCommerciaux(bouclements, new DateRangeHelper.Range(dateDebut, dateFin));
+				Collections.sort(exercices, reverseComparator);
 				tiersView.setExercicesCommerciaux(exercices);
 			}
 
