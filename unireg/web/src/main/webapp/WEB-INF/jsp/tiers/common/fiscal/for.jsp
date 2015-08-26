@@ -75,13 +75,15 @@
 				</c:if>
 			</c:if>
 	</display:column>
-	<display:column sortable ="true" titleKey="label.for.gestion">
-		<c:if test="${!forFiscal.annule}">
-			<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
-				<input type="checkbox" <c:if test="${forFiscal.forGestion}">checked</c:if> disabled="disabled">
+	<c:if test="${command.natureTiers != 'Entreprise'}">
+		<display:column sortable ="true" titleKey="label.for.gestion">
+			<c:if test="${!forFiscal.annule}">
+				<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
+					<input type="checkbox" <c:if test="${forFiscal.forGestion}">checked</c:if> disabled="disabled">
+				</c:if>
 			</c:if>
-		</c:if>
-	</display:column>
+		</display:column>
+	</c:if>
 	<display:column class="action">
 		<c:if test="${page == 'visu' }">
 			<unireg:consulterLog entityNature="ForFiscal" entityId="${forFiscal.id}"/>
