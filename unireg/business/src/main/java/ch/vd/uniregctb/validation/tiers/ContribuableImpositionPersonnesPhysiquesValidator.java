@@ -5,6 +5,8 @@ import java.util.List;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -14,6 +16,12 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extends ContribuableImpositionPersonnesPhysiques> extends ContribuableValidator<T> {
+
+	private ParametreAppService parametreAppService;
+
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
+	}
 
 	@Override
 	public ValidationResults validate(T ctb) {
@@ -72,5 +80,12 @@ public abstract class ContribuableImpositionPersonnesPhysiquesValidator<T extend
 			vr.addError("Le for " + forPM + " n'est pas un type de for autorisé sur un contribuable de type PP.");
 		}
 		return vr;
+	}
+
+	@Override
+	protected boolean isPeriodeImpositionExpected(DeclarationImpotOrdinaire di) {
+		return super.isPeriodeImpositionExpected(di)
+				&& di.getPeriode() != null
+				&& di.getPeriode().getAnnee() >= parametreAppService.getPremierePeriodeFiscalePersonnesPhysiques();
 	}
 }

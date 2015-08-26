@@ -131,7 +131,10 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 						continue;
 					}
 					if (d instanceof DeclarationImpotOrdinaire) {
-						validateDI((DeclarationImpotOrdinaire) d, periodes, results);
+						final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+						if (isPeriodeImpositionExpected(di)) {
+							validateDeclarationVsPeriodeImposition(di, periodes, results);
+						}
 					}
 				}
 			}
@@ -141,6 +144,14 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		}
 
 		return results;
+	}
+
+	/**
+	 * @param di une déclaration d'impôt ordinaire
+	 * @return <code>true</code> s'il devrait y avoir une période d'imposition correspondant à la déclaration, <code>false</code> sinon (parce que la DI est trop vieille, par exemple...)
+	 */
+	protected boolean isPeriodeImpositionExpected(DeclarationImpotOrdinaire di) {
+		return true;
 	}
 
 	/**
@@ -159,7 +170,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 		}
 	}
 
-	private static void validateDI(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
+	private static void validateDeclarationVsPeriodeImposition(DeclarationImpotOrdinaire di, List<PeriodeImposition> periodes, ValidationResults results) {
 		boolean intersect = false;
 		final String descriptionDI = getDescriptionDI(di);
 		if (periodes != null) {
