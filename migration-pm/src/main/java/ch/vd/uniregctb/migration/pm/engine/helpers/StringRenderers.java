@@ -10,6 +10,7 @@ import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.DayMonthHelper;
 
 /**
  * Quelques implémentation de {@link ch.vd.uniregctb.common.StringRenderer} bien pratiques
@@ -30,7 +31,7 @@ public abstract class StringRenderers {
 	/**
 	 * Entité qui permet de dumper des valeurs de {@link DayMonth}
 	 */
-	public static final StringRenderer<DayMonth> DAYMONTH_RENDERER = dm -> String.format("%02d.%02d", dm.day(), dm.month());
+	public static final StringRenderer<DayMonth> DAYMONTH_RENDERER = dm -> StringUtils.defaultIfBlank(DayMonthHelper.toDisplayString(dm), "?");
 
 	/**
 	 * Entité qui permet de dumper des valeurs de {@link LocalizedDateRange}
