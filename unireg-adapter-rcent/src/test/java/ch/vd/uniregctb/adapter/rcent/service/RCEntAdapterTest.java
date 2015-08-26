@@ -28,8 +28,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
-import ch.vd.uniregctb.adapter.rcent.model.Function;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -343,12 +343,12 @@ public class RCEntAdapterTest {
 		List<DateRanged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
-		List<DateRanged<Function>> locationFunctions = organisation.getLocationData().get(0).getFunction();
+		List<DateRanged<OrganisationFunction>> locationFunctions = organisation.getLocationData().get(0).getFunction();
 		assertEquals(2, locationFunctions.size()); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
-		Map<String, DateRanged<Function>> functionMap = new HashMap<>();
-		DateRanged<Function> function0 = locationFunctions.get(0);
+		Map<String, DateRanged<OrganisationFunction>> functionMap = new HashMap<>();
+		DateRanged<OrganisationFunction> function0 = locationFunctions.get(0);
 		functionMap.put(function0.getPayload().getName(), function0);
-		DateRanged<Function> function1 = locationFunctions.get(1);
+		DateRanged<OrganisationFunction> function1 = locationFunctions.get(1);
 		functionMap.put(function1.getPayload().getName(), function1);
 
 		assertEquals("Harrison Ford", function0.getPayload().getName());

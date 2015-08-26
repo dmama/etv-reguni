@@ -32,12 +32,12 @@ public class OrganisationLocation {
 	private final List<DateRanged<String>> otherNames;
 	private final List<DateRanged<KindOfLocation>> kindOfLocation;
 	private final List<DateRanged<Integer>> seat;
-	private final List<DateRanged<Function>> function;
+	private final List<DateRanged<OrganisationFunction>> function;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRanged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            Map<String,List<DateRanged<String>>> identifiers, List<DateRanged<String>> otherNames,
 	                            List<DateRanged<KindOfLocation>> kindOfLocation, List<DateRanged<Integer>> seat,
-	                            List<DateRanged<Function>> function) {
+	                            List<DateRanged<OrganisationFunction>> function) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
@@ -53,7 +53,7 @@ public class OrganisationLocation {
 		return cantonalId;
 	}
 
-	public List<DateRanged<Function>> getFunction() {
+	public List<DateRanged<OrganisationFunction>> getFunction() {
 		return function;
 	}
 

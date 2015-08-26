@@ -20,6 +20,7 @@ import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.convertor.IdentifierListConverter;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
 public class OrganisationLocationBuilder {
@@ -101,17 +102,17 @@ public class OrganisationLocationBuilder {
 				                                   otherNames.get(e.getKey()),
 				                                   kindOfLocations.get(e.getKey()),
 				                                   seats.get(e.getKey()),
-				                                   convertFunction(function.get(e.getKey()))
+				                                   convertOrganisationFunction(function.get(e.getKey()))
 				     )
 				)
 				.collect(Collectors.toList());
 	}
 
-	private List<DateRanged<ch.vd.uniregctb.adapter.rcent.model.Function>> convertFunction(List<DateRanged<Function>> dateRangeds) {
+	private List<DateRanged<OrganisationFunction>> convertOrganisationFunction(List<DateRanged<Function>> dateRangeds) {
 		if (dateRangeds != null) {
-			List<DateRanged<ch.vd.uniregctb.adapter.rcent.model.Function>> functions = new ArrayList<>(dateRangeds.size());
+			List<DateRanged<OrganisationFunction>> functions = new ArrayList<>(dateRangeds.size());
 			for (DateRanged<Function> rf : dateRangeds) {
-				functions.add(new DateRanged<>(rf.getDateDebut(), rf.getDateFin(), new ch.vd.uniregctb.adapter.rcent.model.Function(rf.getPayload())));
+				functions.add(new DateRanged<>(rf.getDateDebut(), rf.getDateFin(), new OrganisationFunction(rf.getPayload())));
 			}
 			return functions;
 		}

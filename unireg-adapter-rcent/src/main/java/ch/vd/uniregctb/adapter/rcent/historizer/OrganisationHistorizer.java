@@ -10,6 +10,7 @@ import ch.vd.evd0021.v1.Address;
 import ch.vd.evd0022.v1.Capital;
 import ch.vd.evd0022.v1.CommercialRegisterEntryStatus;
 import ch.vd.evd0022.v1.CommercialRegisterStatus;
+import ch.vd.evd0022.v1.Function;
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.LegalForm;
@@ -31,8 +32,8 @@ import ch.vd.uniregctb.adapter.rcent.historizer.container.Keyed;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.AdresseEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.CapitalEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
-import ch.vd.uniregctb.adapter.rcent.historizer.equalator.FunctionEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.IdentifierEqualator;
+import ch.vd.uniregctb.adapter.rcent.historizer.equalator.OrganisationFunctionEqualator;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesCasePostaleIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesEffectivesIdeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.AdressesLegalesExtractor;
@@ -55,7 +56,7 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.SeatExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidRegisterLiquidationReasonExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidStatusExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.UidTypeOfOrganisationExtractor;
-import ch.vd.uniregctb.adapter.rcent.model.Function;
+import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
 public class OrganisationHistorizer {
 
@@ -132,9 +133,9 @@ public class OrganisationHistorizer {
 		/*
 			Ici il y a une feinte: on ne compare que sur les valeurs qui sont significatives. Voir en aval la conversion correspondante vers un type qui ne contient que ces valeurs.
 		 */
-		final IndexedDataCollector<Organisation, ch.vd.evd0022.v1.Function, BigInteger> locationFunctionCollector = new MultiValueIndexedDataCollector<>(new LocationFunctionsExtractor(),
-		                                                                                                                                                 new FunctionEqualator(),
-		                                                                                                                                                 k -> new Function(k.getValue())
+		final IndexedDataCollector<Organisation, Function, BigInteger> locationFunctionCollector = new MultiValueIndexedDataCollector<>(new LocationFunctionsExtractor(),
+		                                                                                                                                new OrganisationFunctionEqualator(),
+		                                                                                                                                k -> new OrganisationFunction(k.getValue())
 		);
 
 		// RC
