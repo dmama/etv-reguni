@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
+import ch.vd.uniregctb.tiers.dao.DomicileEtablissementDAO;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 
 @Controller
@@ -51,6 +52,7 @@ public class ConsultLogController {
 	private UniteTraitementDAO uniteTraitementDAO;
 	private RemarqueDAO remarqueDAO;
 	private DecisionAciDAO decisionAciDAO;
+	private DomicileEtablissementDAO domicileEtablissementDAO;
 
 	public static final String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
 	public static final String NATURE_SITUATION_PARAMETER_VALUE = "SituationFamille";
@@ -72,6 +74,7 @@ public class ConsultLogController {
 	public static final String NATURE_UNITE_TRAITEMENT_REQDES = "UniteTraitementReqDes";
 	public static final String NATURE_REMARQUE = "Remarque";
 	public static final String NATURE_DECISION_ACI = "DecisionAci";
+	public static final String NATURE_DOMICILE_ETABLISSEMENT = "DomicileEtablissement";
 
 	@ResponseBody
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -140,6 +143,9 @@ public class ConsultLogController {
 			break;
 		case NATURE_DECISION_ACI:
 			objet = decisionAciDAO.get(id);
+			break;
+		case NATURE_DOMICILE_ETABLISSEMENT:
+			objet = domicileEtablissementDAO.get(id);
 			break;
 		}
 
@@ -239,5 +245,9 @@ public class ConsultLogController {
 
 	public void setDecisionAciDAO(DecisionAciDAO decisionAciDAO) {
 		this.decisionAciDAO = decisionAciDAO;
+	}
+
+	public void setDomicileEtablissementDAO(DomicileEtablissementDAO domicileEtablissementDAO) {
+		this.domicileEtablissementDAO = domicileEtablissementDAO;
 	}
 }

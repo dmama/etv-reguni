@@ -80,8 +80,10 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DecisionAciView;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -107,6 +109,7 @@ import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
 import ch.vd.uniregctb.tiers.view.AllegementFiscalView;
 import ch.vd.uniregctb.tiers.view.ComplementView;
 import ch.vd.uniregctb.tiers.view.DebiteurView;
+import ch.vd.uniregctb.tiers.view.DomicileEtablissementView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
@@ -572,6 +575,24 @@ public class TiersManager implements MessageSourceAware {
 
 		// TODO c'est du pipeau pour que les écrans actuels ne cassent pas... mais ça va devoir partir
 		tiersView.setEntreprise(new EntrepriseView());
+	}
+
+	/**
+	 * Mise à jour en fonction des données de l'établissement
+	 */
+	protected void setEtablissement(TiersView tiersView, Etablissement etb) {
+		tiersView.setTiers(etb);
+
+		// les domiciles de l'établissement
+		final Set<DomicileEtablissement> domiciles = etb.getDomiciles();
+		if (domiciles != null && !domiciles.isEmpty()) {
+			final List<DomicileEtablissementView> views = new ArrayList<>(domiciles.size());
+			for (DomicileEtablissement dom : domiciles) {
+				views.add(new DomicileEtablissementView(dom));
+			}
+			Collections.sort(views, new ReverseComparator<>(new DateRangeComparator<>()));
+			tiersView.setDomicilesEtablissement(views);
+		}
 	}
 
 	/**

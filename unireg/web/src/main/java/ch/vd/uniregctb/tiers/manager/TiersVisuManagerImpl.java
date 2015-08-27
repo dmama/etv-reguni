@@ -134,7 +134,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			tiersVisuView.setTiers(tiers);
 		}
 		else if (tiers instanceof Etablissement) {
-			tiersVisuView.setTiers(tiers);
+			final Etablissement etb = (Etablissement) tiers;
+			setEtablissement(tiersVisuView, etb);
 		}
 
 		if (tiersVisuView.getTiers() != null) {

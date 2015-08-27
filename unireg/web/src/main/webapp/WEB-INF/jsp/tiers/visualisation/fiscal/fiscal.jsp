@@ -59,6 +59,9 @@
 		
 		<jsp:include page="for-debiteur.jsp"/>
 	</c:when>
+	<c:when test="${command.natureTiers == 'Etablissement'}">
+		<jsp:include page="domicile-etablissement.jsp"/>
+	</c:when>
 	<c:otherwise>
 		<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<jsp:include page="decision-aci.jsp"/>

@@ -164,6 +164,7 @@
 		<property name="uniteTraitementDAO" ref="reqdesUniteTraitementDAO"/>
 		<property name="remarqueDAO" ref="remarqueDAO"/>
 		<property name="decisionAciDAO" ref="decisionAciDAO"/>
+		<property name="domicileEtablissementDAO" ref="domicileEtablissementDAO"/>
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">

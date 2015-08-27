@@ -101,6 +101,8 @@ public class TiersView {
 	private List<ExerciceCommercial> exercicesCommerciaux;
 	private RegDate dateBouclementFutur;
 
+	private List<DomicileEtablissementView> domicilesEtablissement;
+
 	private boolean isAllowed;
 
 	private boolean addContactISAllowed;
@@ -325,6 +327,14 @@ public class TiersView {
 
 	public void setDateBouclementFutur(RegDate dateBouclementFutur) {
 		this.dateBouclementFutur = dateBouclementFutur;
+	}
+
+	public List<DomicileEtablissementView> getDomicilesEtablissement() {
+		return domicilesEtablissement;
+	}
+
+	public void setDomicilesEtablissement(List<DomicileEtablissementView> domicilesEtablissement) {
+		this.domicilesEtablissement = domicilesEtablissement;
 	}
 
 	public ForFiscalView getForsPrincipalActif() {
