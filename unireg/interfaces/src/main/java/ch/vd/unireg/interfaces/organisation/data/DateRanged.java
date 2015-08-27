@@ -15,11 +15,13 @@ import ch.vd.registre.base.date.RegDateHelper;
  */
 public class DateRanged<T> implements DateRange {
 
+	@NotNull
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
+	@NotNull
 	private final T payload;
 
-	public DateRanged(RegDate dateDebut, RegDate dateFin, T payload) {
+	public DateRanged(@NotNull RegDate dateDebut, RegDate dateFin, @NotNull T payload) {
 		ensureValidRange(dateDebut, dateFin);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
@@ -41,6 +43,7 @@ public class DateRanged<T> implements DateRange {
 	}
 
 	@Override
+	@NotNull
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -58,6 +61,7 @@ public class DateRanged<T> implements DateRange {
 	/**
 	 * @return la donnée valide entre les dates de la plage (dates de début et de fin incluses)
 	 */
+	@NotNull
 	public T getPayload() {
 		return payload;
 	}

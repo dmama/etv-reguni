@@ -41,4 +41,24 @@ public class Capital {
 	public TypeDeCapital getTypeOfCapital() {
 		return typeOfCapital;
 	}
+
+	protected void setDivision(String division) {
+		this.division = division;
+	}
+
+	protected void setCashedInAmount(BigDecimal cashedInAmount) {
+		this.cashedInAmount = cashedInAmount;
+	}
+
+	protected void setCapitalAmount(BigDecimal capitalAmount) {
+		this.capitalAmount = capitalAmount;
+	}
+
+	protected void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	protected void setTypeOfCapital(TypeDeCapital typeOfCapital) {
+		this.typeOfCapital = typeOfCapital;
+	}
 }

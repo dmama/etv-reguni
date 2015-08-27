@@ -29,8 +29,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	 */
 	private List<DateRanged<Integer>> siege;
 	private List<DateRanged<FonctionOrganisation>> fonction;
-	private List<DateRanged<Long>> remplacePar;
-	private List<DateRanged<Long>> enRemplacementDe;
 
 	public SiteOrganisationBuilder(long cantonalId, @NotNull List<DateRanged<String>> nom) {
 		this.cantonalId = cantonalId;
@@ -87,11 +85,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		return this;
 	}
 
-	public SiteOrganisationBuilder setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
-		this.enRemplacementDe = enRemplacementDe;
-		return this;
-	}
-
 	public SiteOrganisationBuilder setFonction(List<DateRanged<FonctionOrganisation>> fonction) {
 		this.fonction = fonction;
 		return this;
@@ -104,11 +97,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 
 	public SiteOrganisationBuilder setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
 		this.nomsAdditionnels = nomsAdditionnels;
-		return this;
-	}
-
-	public SiteOrganisationBuilder setRemplacePar(List<DateRanged<Long>> remplacePar) {
-		this.remplacePar = remplacePar;
 		return this;
 	}
 
@@ -128,10 +116,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 
 	protected long getCantonalId() {
 		return cantonalId;
-	}
-
-	protected List<DateRanged<Long>> getEnRemplacementDe() {
-		return enRemplacementDe;
 	}
 
 	protected List<DateRanged<FonctionOrganisation>> getFonction() {
@@ -156,10 +140,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 
 	protected DonneesRC getRc() {
 		return rc;
-	}
-
-	protected List<DateRanged<Long>> getRemplacePar() {
-		return remplacePar;
 	}
 
 	protected List<DateRanged<Integer>> getSiege() {
