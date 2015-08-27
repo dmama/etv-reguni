@@ -14,6 +14,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -62,6 +63,9 @@ public interface TiersService {
      * @return l'entreprise (tiers non-annulé) correspondante au numéro d'organisation passé en paramètre, ou <b>null</b>.
      */
     Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
+
+
+    List<DateRanged<Etablissement>> getEtablissementsForEntreprise(Entreprise entreprise);
 
     /**
      * Retourne un tiers en fonction de son numéro de tiers.

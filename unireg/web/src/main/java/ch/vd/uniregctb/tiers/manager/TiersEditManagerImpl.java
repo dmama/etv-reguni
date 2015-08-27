@@ -379,7 +379,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (ctbAssocie instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) ctbAssocie;
-			final EntrepriseView entrepriseView = getEntrepriseService().get(entreprise);
+			final EntrepriseView entrepriseView = getEntrepriseService().get(entreprise, tiersService.getEtablissementsForEntreprise(entreprise));
 			debiteur.setNom1(entrepriseView.getRaisonSociale());
 		}
 	

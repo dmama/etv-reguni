@@ -54,6 +54,7 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -254,6 +255,22 @@ public class TiersServiceImpl implements TiersService {
     public Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation) {
         return tiersDAO.getEntrepriseByNumeroOrganisation(numeroOrganisation);
     }
+
+	public List<DateRanged<Etablissement>> getEtablissementsForEntreprise(Entreprise entreprise) {
+		Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsObjet();
+		List<DateRanged<Etablissement>> etablissements = new ArrayList<>();
+		for (RapportEntreTiers rapport : rapportsSujet) {
+			if (rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
+				Etablissement tiers = (Etablissement) getTiers(rapport.getId());
+				if (tiers != null) {
+					etablissements.add(new DateRanged<>(rapport.getDateDebut(), rapport.getDateFin(), tiers));
+				} else {
+					LOGGER.warn(String.format("Etablissement tiers non trouvé: %s", rapport.getId()));
+				}
+			}
+		}
+		return etablissements;
+	}
 
     @Override
     public Tiers getTiers(long numeroTiers) {

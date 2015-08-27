@@ -194,7 +194,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Recupere l'entreprise correspondant au tiers
 	 */
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
-		return getEntrepriseService().get(entreprise);
+		return getEntrepriseService().get(entreprise, tiersService.getEtablissementsForEntreprise(entreprise));
 	}
 
 	/**

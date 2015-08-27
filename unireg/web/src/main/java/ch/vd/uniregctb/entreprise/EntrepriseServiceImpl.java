@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
@@ -18,7 +19,10 @@ import ch.vd.uniregctb.interfaces.model.EtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.view.EtatPMView;
 
 /**
@@ -47,7 +51,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	 * @return un objet EntrepriseView
 	 */
 	@Override
-	public EntrepriseView get(Entreprise entreprise) {
+	public EntrepriseView get(Entreprise entreprise, List<DateRanged<Etablissement>> etablissements) {
 
 		EntrepriseView entrepriseView = new EntrepriseView();
 
@@ -57,6 +61,9 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		//numeroEntreprise = 100980874L; // FIXME: Faire le ménage
 
 		if (numeroEntreprise != null) {
+			/*
+				L'entreprise a un identifiant cantonal et donc existe dans le registre civil cantonal.
+			 */
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 			//Organisation organisation = HorribleMockOrganisationService.getOrg(); // FIXME: Faire le ménage
@@ -75,9 +82,76 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 					entrepriseView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
 				}
 			}
+		} else {
+			/*
+				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
+			 */
+			List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
+			donneesRC.sort(new DateRangeComparator<DonneesRegistreCommerce>());
+			Collections.reverse(donneesRC);
+
+			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
+			entrepriseView.setSieges(extractSieges(etablissements));
+			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));
+			entrepriseView.setCapitaux(extractCapitaux(donneesRC));
 		}
 
 		return entrepriseView;
+	}
+
+	private List<DateRanged<Etablissement>> extractPrincipals(List<DateRanged<Etablissement>> etablissements) {
+		if (etablissements != null) {
+			List<DateRanged<Etablissement>> principals = new ArrayList<>();
+			for (DateRanged<Etablissement> etablissement : etablissements) {
+				if (etablissement.getPayload().isPrincipal()) {
+					principals.add(etablissement);
+				}
+			}
+			return principals;
+		}
+		return null;
+	}
+
+	private List<SiegeView> extractSieges(List<DateRanged<Etablissement>> etablissements) {
+		if (etablissements != null) {
+			List<DateRanged<Etablissement>> principals = extractPrincipals(etablissements);
+			List<DateRanged<Integer>> siegeIds = new ArrayList<>();
+			for (DateRanged<Etablissement> principal : principals) {
+				DomicileEtablissement domicile = DateRangeHelper.rangeAt(principal.getPayload().getSortedDomiciles(false), principal.getDateFin());
+				siegeIds.add(new DateRanged<>(domicile.getDateDebut(), domicile.getDateFin(), domicile.getNumeroOfsAutoriteFiscale()));
+			}
+			return getSieges(siegeIds);
+		}
+		return null;
+	}
+
+	private List<CapitalView> extractCapitaux(List<DonneesRegistreCommerce> donneesRC) {
+		if (donneesRC != null) {
+			List<CapitalView> capitaux = new ArrayList<>(donneesRC.size());
+			for (DonneesRegistreCommerce donnee : donneesRC) {
+				CapitalView capitalView = new CapitalView();
+				capitalView.setDateDebut(donnee.getDateDebut());
+				capitalView.setDateFin(donnee.getDateFin());
+				capitalView.setCapitalAction(donnee.getCapital().getMontant());
+			}
+			return capitaux;
+		}
+		return null;
+	}
+
+	private List<FormeJuridiqueView> extractFormesJuridiques(List<DonneesRegistreCommerce> donneesRC) {
+		if (donneesRC != null) {
+			List<FormeJuridiqueView> formes = new ArrayList<>(donneesRC.size());
+			for (DonneesRegistreCommerce donnee : donneesRC) {
+				FormeJuridiqueView formeJuridiqueView = new FormeJuridiqueView();
+				formeJuridiqueView.setDateDebut(donnee.getDateDebut());
+				formeJuridiqueView.setDateFin(donnee.getDateFin());
+				formeJuridiqueView.setCode(HorribleFormeJuridiqueMapper.map(donnee.getFormeJuridique()).name()); // FIXME: Faire le ménage
+				formes.add(formeJuridiqueView);
+			}
+			return formes;
+		}
+		return null;
 	}
 
 

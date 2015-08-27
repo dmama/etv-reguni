@@ -92,10 +92,6 @@
 		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere">
 			<unireg:currency value="${capitaux.capitalLibere}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.absence.capital.libere.normale" property="absenceCapitalLibereNormale"/>
-		<display:column sortable="true" titleKey="label.edition.fosc" sortProperty="editionFosc.dateParution">
-			N°<c:out value="${capitaux.editionFosc.numero}"/> du <unireg:regdate regdate="${capitaux.editionFosc.dateParution}"/>
-		</display:column>
 	</display:table>
 
 </fieldset>

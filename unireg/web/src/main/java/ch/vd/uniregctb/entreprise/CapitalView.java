@@ -12,8 +12,6 @@ public class CapitalView implements DateRange {
 	private RegDate dateFin;
 	private Long capitalAction;
 	private Long capitalLibere;
-	private Boolean absenceCapitalLibereNormale;
-	private EditionFoscView editionFosc;
 
 	public CapitalView() {
 	}
@@ -23,7 +21,6 @@ public class CapitalView implements DateRange {
 		this.dateFin = capital.getDateFin();
 		this.capitalAction = capital.getCapitalAction();
 		this.capitalLibere = capital.getCapitalLibere();
-		this.editionFosc = new EditionFoscView(capital.getEditionFosc());
 	}
 	
 	@Override
@@ -58,22 +55,6 @@ public class CapitalView implements DateRange {
 
 	public void setCapitalLibere(Long capitalLibere) {
 		this.capitalLibere = capitalLibere;
-	}
-
-	public Boolean getAbsenceCapitalLibereNormale() {
-		return absenceCapitalLibereNormale;
-	}
-
-	public void setAbsenceCapitalLibereNormale(Boolean absenceCapitalLibereNormale) {
-		this.absenceCapitalLibereNormale = absenceCapitalLibereNormale;
-	}
-
-	public EditionFoscView getEditionFosc() {
-		return editionFosc;
-	}
-
-	public void setEditionFosc(EditionFoscView editionFosc) {
-		this.editionFosc = editionFosc;
 	}
 
 	@Override
