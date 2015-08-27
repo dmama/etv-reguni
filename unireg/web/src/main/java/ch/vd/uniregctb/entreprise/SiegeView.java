@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.Siege;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 
 public class SiegeView implements DateRange {
@@ -17,11 +17,11 @@ public class SiegeView implements DateRange {
 	public SiegeView() {
 	}
 
-	public SiegeView(Siege siege) {
+	public SiegeView(DateRanged<Integer> siege, TypeNoOfs type) {
 		this.dateDebut = siege.getDateDebut();
 		this.dateFin = siege.getDateFin();
-		this.noOfsSiege = siege.getNoOfsSiege();
-		this.type = siege.getType();
+		this.noOfsSiege = siege.getPayload();
+		this.type = type;
 	}
 
 	@Override

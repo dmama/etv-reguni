@@ -4,7 +4,8 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.FormeJuridique;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 
 public class FormeJuridiqueView implements DateRange {
 
@@ -15,10 +16,10 @@ public class FormeJuridiqueView implements DateRange {
 	public FormeJuridiqueView() {
 	}
 
-	public FormeJuridiqueView(FormeJuridique forme) {
+	public FormeJuridiqueView(DateRanged<FormeLegale> forme) {
 		this.dateDebut = forme.getDateDebut();
 		this.dateFin = forme.getDateFin();
-		this.code = forme.getCode();
+		this.code = forme.getPayload().name();
 	}
 
 	@Override

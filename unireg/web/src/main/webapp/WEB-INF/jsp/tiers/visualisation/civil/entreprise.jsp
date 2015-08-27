@@ -15,41 +15,15 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.numero.ipmro"/>&nbsp;:</td>
-			<td><c:out value="${command.entreprise.numeroIPMRO}"/></td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.designation.abregee"/>&nbsp;:</td>
-			<td><c:out value="${command.entreprise.designationAbregee}"/></td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.raison.sociale.courte"/>&nbsp;:</td>
+			<td width="30%"><fmt:message key="label.raison.sociale"/>&nbsp;:</td>
 			<td><c:out value="${command.entreprise.raisonSociale}"/></td>
 		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.raison.sociale.complete"/>&nbsp;:</td>
-			<td><c:out value="${command.entreprise.raisonSociale1}"/></td>
-		</tr>
-		<c:if test="${command.entreprise.raisonSociale2 != null}">
+		<c:forEach items="${command.entreprise.autresRaisonsSociales}" var="autreRaisonSociale">
 			<tr class="<unireg:nextRowClass/>" >
-				<td width="30%"></td>
-				<td><c:out value="${command.entreprise.raisonSociale2}"/></td>
+				<td width="30%"><fmt:message key="label.raison.sociale.autre"/>&nbsp;:</td>
+				<td><c:out value="${autreRaisonSociale}"/></td>
 			</tr>
-		</c:if>
-		<c:if test="${command.entreprise.raisonSociale3 != null}">
-			<tr class="<unireg:nextRowClass/>" >
-				<td width="30%"></td>
-				<td><c:out value="${command.entreprise.raisonSociale3}"/></td>
-			</tr>
-		</c:if>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.date.fin.dernier.exercice.commercial"/>&nbsp;:</td>
-			<td><unireg:regdate regdate="${command.entreprise.dateFinDernierExerciceCommercial}"/></td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.date.bouclement.futur"/>&nbsp;:</td>
-			<td><unireg:regdate regdate="${command.entreprise.dateBouclementFuture}"/></td>
-		</tr>
+		</c:forEach>
 	</table>
 
 </fieldset>

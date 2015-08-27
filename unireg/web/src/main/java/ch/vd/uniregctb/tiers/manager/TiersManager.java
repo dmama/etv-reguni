@@ -48,8 +48,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.entreprise.EntrepriseService;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
-import ch.vd.uniregctb.entreprise.HostPersonneMoraleService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -59,6 +59,7 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
@@ -140,9 +141,11 @@ public class TiersManager implements MessageSourceAware {
 
 	private WebCivilService webCivilService;
 
-	private HostPersonneMoraleService hostPersonneMoraleService;
+	private EntrepriseService entrepriseService;
 
 	protected ServiceCivilService serviceCivilService;
+
+	protected ServiceOrganisationService serviceOrganisationService;
 
 	protected TiersDAO tiersDAO;
 
@@ -185,6 +188,13 @@ public class TiersManager implements MessageSourceAware {
 			individuView.setDateDernierChgtEtatCivil(habitant.getDateDeces());
 		}
 		return individuView;
+	}
+
+	/**
+	 * Recupere l'entreprise correspondant au tiers
+	 */
+	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
+		return getEntrepriseService().get(entreprise);
 	}
 
 	/**
@@ -573,8 +583,7 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 
-		// TODO c'est du pipeau pour que les écrans actuels ne cassent pas... mais ça va devoir partir
-		tiersView.setEntreprise(new EntrepriseView());
+		tiersView.setEntreprise(getEntrepriseView(entreprise)); // OrganisationView
 	}
 
 	/**
@@ -1141,13 +1150,13 @@ public class TiersManager implements MessageSourceAware {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
-	public HostPersonneMoraleService getHostPersonneMoraleService() {
-		return hostPersonneMoraleService;
+	public EntrepriseService getEntrepriseService() {
+		return entrepriseService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHostPersonneMoraleService(HostPersonneMoraleService hostPersonneMoraleService) {
-		this.hostPersonneMoraleService = hostPersonneMoraleService;
+	public void setEntrepriseService(EntrepriseService entrepriseService) {
+		this.entrepriseService = entrepriseService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -1211,4 +1220,9 @@ public class TiersManager implements MessageSourceAware {
 	public void setBouclementService(BouclementService bouclementService) {
 		this.bouclementService = bouclementService;
 	}
+
+	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
+		this.serviceOrganisationService = serviceOrganisationService;
+	}
 }
+

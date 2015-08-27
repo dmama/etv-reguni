@@ -15,7 +15,8 @@
 			<property name="autorisationManager" ref="autorisationManager" />
 			<property name="webCivilService" ref="webCivilService" />
 			<property name="serviceCivilService" ref="serviceCivilService" />
-			<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
+			<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+			<property name="entrepriseService" ref="entrepriseService" />
 			<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		 -->
 	</bean>

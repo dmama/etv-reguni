@@ -67,8 +67,8 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
-	<bean id="hostPersonneMoraleService" class="ch.vd.uniregctb.entreprise.HostPersonneMoraleServiceImpl">
-		<property name="servicePersonneMoraleService" ref="servicePersonneMoraleService" />
+	<bean id="entrepriseService" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
+		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>
 
