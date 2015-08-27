@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -22,6 +24,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		this.target = target;
 	}
 
+	@NotNull
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws DonneesOrganisationException {
 		Organisation org = target.getOrganisationHistory(noOrganisation);
@@ -31,6 +34,7 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		return org;
 	}
 
+	@NotNull
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		Long noOrganisation = target.getOrganisationPourSite(noSite);

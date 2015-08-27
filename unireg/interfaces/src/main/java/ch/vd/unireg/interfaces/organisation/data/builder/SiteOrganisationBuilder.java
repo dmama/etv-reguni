@@ -77,16 +77,6 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 		return this;
 	}
 
-	public SiteOrganisationBuilder addRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		remplacePar = BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
-		return this;
-	}
-
-	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		enRemplacementDe = BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
-		return this;
-	}
-
 	public SiteOrganisationBuilder withRC(@NotNull DonneesRC rc) {
 		this.rc = rc;
 		return this;
