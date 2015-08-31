@@ -13,6 +13,11 @@ public interface MessageEndpointManagerJmxInterface {
 	String getDestinationName();
 
 	/**
+	 * @return une description du but métier ou non de ce listener
+	 */
+	String getDescription();
+
+	/**
 	 * @return le nombre maximal configuré de consommateurs (= listeners) concurrents
 	 */
 	int getMaxConcurrentConsumers();

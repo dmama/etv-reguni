@@ -29,6 +29,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.reqdes.event.enabled}"/>
 		<property name="masterSwitch" value="${extprop.reqdes.enabled}"/>
+		<property name="description" value="Réception des évènements de l'application notaires eReqDes"/>
 	</bean>
 
 	<bean id="reqdesEventProcessor" class="ch.vd.uniregctb.evenement.reqdes.engine.EvenementReqDesProcessorImpl">

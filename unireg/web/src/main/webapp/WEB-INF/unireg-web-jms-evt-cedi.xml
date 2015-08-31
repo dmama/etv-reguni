@@ -42,6 +42,7 @@
 		<property name="messageListener" ref="evenementCediListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
+		<property name="description" value="Réception des messages JMS envoyé par le CEDI suite au scannage des DIs"/>
 	</bean>
 
 </beans>

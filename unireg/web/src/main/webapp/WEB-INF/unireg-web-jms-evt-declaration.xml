@@ -24,6 +24,7 @@
 		<property name="messageListener" ref="evenementDeclarationListener" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtDeclaration.input.enabled}" />
+		<property name="description" value="Réception des évènements de quittance des DI electroniques"/>
 	</bean>
 
 	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationSenderImpl">

@@ -21,6 +21,8 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 
 	private MonitorableMessageListener messageListener;
 
+	private String description;
+
 	@Override
 	public String getDestinationName() {
 		return ((MessageActivationSpec)getActivationSpec()).getDestination();
@@ -69,5 +71,14 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 	@Override
 	public int getMessagesWithBusinessError() {
 		return messageListener.getNombreMessagesRenvoyesEnErreur();
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

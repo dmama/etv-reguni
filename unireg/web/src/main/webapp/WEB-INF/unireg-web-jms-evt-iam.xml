@@ -24,6 +24,7 @@
 		<property name="messageListener" ref="evenementIamListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtIAM.enabled}" />
+		<property name="description" value="Réception des évènements IAM de mis à jour d’informations concernant les débiteurs."/>
 	</bean>
 
 </beans>

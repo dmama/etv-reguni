@@ -2762,3 +2762,28 @@ var Search = {
 		return table;
 	}
 };
+
+var gestionJMS = {
+
+	/*
+	 * Suspendre les messages
+	 */
+	confirmeArretQueue: function (identifiant,name) {
+		if (confirm('Voulez-vous arrêter la queue '+name +' ?')) {
+			var form = $("#formGestionQeues");
+			form.attr('action', 'stop.do?id='+identifiant);
+			form.submit();
+		}
+	},
+
+	confirmeDemarrageQueue: function (identifiant,name) {
+		if (confirm('Voulez-vous démarrer la queue '+name +' ?')) {
+			var form = $("#formGestionQeues");
+			form.attr('action', 'start.do?id='+identifiant);
+			form.submit();
+		}
+	}
+
+
+
+};

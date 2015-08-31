@@ -26,6 +26,7 @@
 		<property name="messageListener" ref="entrepriseEventListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.pm.event.enabled}" />
+		<property name="description" value="Réception des événements de modification des entreprises (personnes morales) de Reg-PM"/>
 	</bean>
 
 </beans>

@@ -265,6 +265,19 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	}
 
 	/**
+	 * Raccourci d' arrêt
+	 */
+	public static class Arreter extends JspTagRaccourci {
+
+		private static final long serialVersionUID = -7874210263009713387L;
+
+		@Override
+		protected String getCssClass() {
+			return "stop iepngfix";
+		}
+	}
+
+	/**
 	 * Raccourci d'identification
 	 */
 	public static class Identifier extends JspTagRaccourci {

@@ -38,6 +38,31 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
+	<bean id="queuesJmsController" class="ch.vd.uniregctb.admin.evenementExterne.QueuesJmsController">
+
+		<property name="securityProvider" ref="securityProviderCache" />
+
+		<property name="jmxManager">
+			<map>
+				<entry key="evenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
+				<entry key="evenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
+				<entry key="evenementsPM" value-ref="entrepriseEventEndpointManager"/>
+				<entry key="retourImpression" value-ref="evenementEditiqueEndpointManager"/>
+				<entry key="evenementsExternes" value-ref="evenementExterneEndpointManager"/>
+				<entry key="evenementsCedi" value-ref="evenementCediEndpointManager"/>
+				<entry key="identification" value-ref="jmsIdentCtbEndpointManager"/>
+				<entry key="identificationOnline" value-ref="jmsIdentCtbEndpointManagerOnline"/>
+				<entry key="evenementsIAM" value-ref="evenementIAMEndpointManager"/>
+				<entry key="partyRequests" value-ref="partyRequestEndpointManager"/>
+				<entry key="rapportTravailRequests" value-ref="rapportTravailRequestEndpointManager"/>
+				<entry key="evenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
+				<entry key="evenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
+				<entry key="evenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
+				<entry key="reqDes" value-ref="reqdesEventEndpointManager"/>
+			</map>
+		</property>
+	</bean>
+
 	<!-- Gestion de l'indexation  -->
 	<bean id="gestionIndexationController" class="ch.vd.uniregctb.admin.GestionIndexationController">
 		<property name="sessionForm" value="true" />

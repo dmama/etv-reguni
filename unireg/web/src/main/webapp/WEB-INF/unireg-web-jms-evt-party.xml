@@ -41,6 +41,7 @@
 		<property name="messageListener" ref="partyRequestListener" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
+		<property name="description" value="Réception des demandes de récupération des adresses de tiers"/>
 	</bean>
 
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">

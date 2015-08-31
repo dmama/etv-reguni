@@ -23,6 +23,7 @@
 		</property>
 		<property name="messageListener" ref="evenementEditiqueListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
+		<property name="description" value="Retour des demandes d'impression faites à l'éditique"/>
 	</bean>
 
 </beans>

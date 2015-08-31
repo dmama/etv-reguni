@@ -25,6 +25,7 @@
 
 	<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
 				<property name="destination" value="${extprop.jms.queue.evtCivilEchMasse}"/>
@@ -36,6 +37,7 @@
 		<property name="messageListener" ref="evtCivilEchMasseListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
+		<property name="description" value="Consommation en masse des evenements civils provenant de RcPers" />
 	</bean>
 
 	<!-- Traitements "manuels" -->
@@ -61,6 +63,7 @@
 		<property name="messageListener" ref="evtCivilEchIndividuelListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
+		<property name="description" value="Consommation  prioritaire et au goute à goute des evenements civils provenant de RcPers" />
 	</bean>
 
 	<!-- Parties communes -->

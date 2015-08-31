@@ -31,6 +31,7 @@
 		<property name="messageListener" ref="rapportTravailRequestListener" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.rapportTravail.service.enabled}" />
+		<property name="description" value="Réception des demandes de modification de rapport de travail"/>
 	</bean>
 
 </beans>

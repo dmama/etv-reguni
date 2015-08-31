@@ -24,6 +24,7 @@
 		<property name="messageListener" ref="evenementEfactureListener" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.input.enabled}" />
+		<property name="description" value="Réception des événements d’inscription/ de désinscription de contribuable à la e-Facture"/>
 	</bean>
 
 	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.EFactureMessageSenderImpl">
@@ -47,6 +48,7 @@
 		<property name="messageListener" ref="eFactureResponseListener" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
+		<property name="description" value="Réception d’événements de notification E-facture comme les réponses à une demande d'inscription"/>
 	</bean>
 
 	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
