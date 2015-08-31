@@ -1,7 +1,5 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
-import java.util.function.Function;
-
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -10,18 +8,47 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
 /**
- * Container de données historisées, i.e. avec des plages de validité
+ * Container de données historisées, i.e. avec des plages de validité. Brique de base permettant
+ * d'ajouter la dimension temporelle à une donnée.
+ *
+ * Une plage sans date de début indique une plage dont le commencement se situe
+ * à une date incertaine dans le passé. Elle peut être en cours ou terminée selon la date de
+ * fin.
+ *
+ * Une plage sans date de fin représente une plage en cours de validité ou non encore commencée, selon
+ * l'état de la date de début.
+ *
+ * Une plage sans date représente une plage aux contours incertains, en cours de validité.
+ *
+ * Une plage peut ne durer qu'un seul jour. Dans ce cas les dates de début et de fin coincident.
+ *
+ * Il faut noter les contraintes suivantes, imposée par cette implémentation:
+ * - La date de début ne peut en aucun cas se situer après la date de fin.
+ * - Une plage doit obligatoirement référencer une payload. On est ici dans une approche Decorator.
+ *   On représente une entité à laquelle on ajoute une caractéristique temporelle. Une instance n'a
+ *   pas donc de sens sans charge utile. L'absence de valeur est représentée par une absence de donnée,
+ *   et jamais par une plage vide (c'est un choix de conception).
+ *
  * @param <T> type de la donnée historisée
  */
 public class DateRanged<T> implements DateRange {
 
-	@NotNull
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	@NotNull
 	private final T payload;
 
-	public DateRanged(@NotNull RegDate dateDebut, RegDate dateFin, @NotNull T payload) {
+	/**
+	 * Crée une nouvelle instance immuable et valide.
+	 *
+	 * @param dateDebut La date de début. Facultative.
+	 * @param dateFin La date de fin. Facultative.
+	 * @param payload La données. Obligatoire.
+	 */
+	public DateRanged(RegDate dateDebut, RegDate dateFin, @NotNull T payload) {
+		if (payload == null) {
+			throw new NullPointerException("Tentative de créer une plage sans charge utile! Une plage temporelle doit obligatoirement porter sur une donnée.");
+		}
 		ensureValidRange(dateDebut, dateFin);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
@@ -31,19 +58,23 @@ public class DateRanged<T> implements DateRange {
 	private void ensureValidRange(RegDate dateDebut, RegDate dateFin) {
 		if (dateFin != null && dateDebut.isAfter(dateFin)) {
 			throw new IllegalArgumentException (
-					String.format("Tentative de créer une période dont le début [%s] commence après ou en même temps que la fin [%s].",
+					String.format("Tentative de créer une plage dont le début [%s] commence après la fin [%s].",
 								  RegDateHelper.dateToDisplayString(dateDebut),
 								  RegDateHelper.dateToDisplayString(dateFin)));
 		}
 	}
 
+	/**
+	 * Crée une nouvelle plage dotée de la date de fin précisée en paramètre.
+	 * @param dateFin La nouvelle date de fin.
+	 * @return La nouvelle plage.
+	 */
 	@NotNull
 	public DateRanged<T> withDateFin(RegDate dateFin) {
 		return new DateRanged<>(this.dateDebut, dateFin, this.payload);
 	}
 
 	@Override
-	@NotNull
 	public RegDate getDateDebut() {
 		return dateDebut;
 	}
@@ -64,15 +95,6 @@ public class DateRanged<T> implements DateRange {
 	@NotNull
 	public T getPayload() {
 		return payload;
-	}
-
-	/**
-	 * @param mapper transformation à appliquer à la payload
-	 * @param <U> type de la payload de l'objet retourné
-	 * @return un nouvel objet DateRanged, valide aux mêmes dates, et dont la payload est constuite à partir de la payload courante au travers de la fonction de mapping
-	 */
-	public <U> DateRanged<U> map(Function<? super T, ? extends U> mapper) {
-		return new DateRanged<>(dateDebut, dateFin, mapper.apply(payload));
 	}
 
 	@Override
