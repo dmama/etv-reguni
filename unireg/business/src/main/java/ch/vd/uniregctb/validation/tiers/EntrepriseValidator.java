@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -28,6 +29,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(validateRegimesFiscaux(entreprise));
 			vr.merge(validateDonneesRegistreCommerce(entreprise));
 			vr.merge(validateAllegementsFiscaux(entreprise));
+			vr.merge(validateBouclements(entreprise));
 		}
 		return vr;
 	}
@@ -217,6 +219,16 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			}
 		}
 
+		return vr;
+	}
+
+	protected ValidationResults validateBouclements(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+		if (entreprise.getBouclements() != null) {
+			for (Bouclement bouclement : entreprise.getBouclements()) {
+				vr.merge(getValidationService().validate(bouclement));
+			}
+		}
 		return vr;
 	}
 

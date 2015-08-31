@@ -356,4 +356,6 @@
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
+	<bean id="bouclementValidator" class="ch.vd.uniregctb.validation.bouclement.BouclementValidator" parent="entityValidator"/>
+
 </beans>
