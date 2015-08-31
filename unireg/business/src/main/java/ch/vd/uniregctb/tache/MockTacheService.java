@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -56,7 +57,7 @@ public class MockTacheService implements TacheService {
 	}
 
 	@Override
-	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) {
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(ContribuableImpositionPersonnesPhysiques contribuable) {
 		return null;
 	}
 

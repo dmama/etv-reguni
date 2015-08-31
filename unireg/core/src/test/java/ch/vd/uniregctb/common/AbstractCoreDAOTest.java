@@ -52,6 +52,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -534,11 +535,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
-	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
-		assertDI(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
+		assertDIPP(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
 	}
 
 	/**
@@ -553,10 +554,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
-	protected static void assertDI(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
+	protected static void assertDIPP(RegDate debut, RegDate fin, @Nullable TypeEtatDeclaration etat, TypeContribuable typeContribuable,
+	                                 TypeDocument typeDocument, Long idCollRetour, @Nullable RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
-		DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
+		DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
 		assertEquals(debut, di.getDateDebut());
 		assertEquals(fin, di.getDateFin());
 		final EtatDeclaration e = di.getDernierEtat();
@@ -722,23 +723,23 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
 	 */
-	protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
-	                                                        CollectiviteAdministrative retourCollectiviteAdministrative, TypeContribuable typeC, ModeleDocument modele) {
+	protected DeclarationImpotOrdinairePP addDeclarationImpot(ContribuableImpositionPersonnesPhysiques tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
+	                                                          CollectiviteAdministrative retourCollectiviteAdministrative, TypeContribuable typeC, ModeleDocument modele) {
 
-		final DeclarationImpotOrdinaire d = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d = new DeclarationImpotOrdinairePP();
 		d.setPeriode(periode);
 		d.setDateDebut(debut);
 		d.setDateFin(fin);
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
 		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
-		if (periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			d.setCodeSegment(0);
 		}
 		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
 	}
 
-	protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
+	protected DeclarationImpotOrdinairePP assignerNumeroSequenceEtSaveDeclarationImpot(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di) {
 
 		int numero = 0;
 		final int annee = di.getPeriode().getAnnee();

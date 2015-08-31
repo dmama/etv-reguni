@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
@@ -29,7 +30,7 @@ public interface EditiqueCompositionService {
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDIOnline(DeclarationImpotOrdinairePP declaration) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
@@ -42,7 +43,7 @@ public interface EditiqueCompositionService {
 	 * @param annexes       la liste des annexes
 	 * @return le document imprimé
 	 */
-	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -53,7 +54,7 @@ public interface EditiqueCompositionService {
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 */
-	void imprimeDIForBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException;
+	void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException;
 
 	/**
 	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
@@ -83,7 +84,7 @@ public interface EditiqueCompositionService {
 	 * @param declaration   la déclaration d'impôt ordinaire dont la sommation est à imprimer
 	 * @param dateEvenement la date d'impression
 	 */
-	void imprimeSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
+	void imprimeSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws EditiqueException;
 
 	/**
 	 * Imprime la sommation pour la LR spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique
@@ -103,7 +104,7 @@ public interface EditiqueCompositionService {
 	 * @return l'id du document
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la sommation pour la lr spécifiée on-line.
@@ -123,7 +124,7 @@ public interface EditiqueCompositionService {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException;
+	EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinairePP di, DelaiDeclaration delai) throws EditiqueException, JMSException;
 
 	/**
 	 * Imprime la liste récapitulative spécifiée on-line

@@ -41,7 +41,7 @@ public class ForDebiteurPrestationImposableValidator extends ForFiscalAvecMotifs
 	 * @return <code>true</code>
 	 */
 	@Override
-	protected boolean isDateFermetureFutureAllowed() {
+	protected boolean isDateFinFutureAllowed() {
 		return true;
 	}
 

@@ -14,8 +14,8 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -408,37 +408,37 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		return CategorieEnvoiDI.ordinaireFor(typeContribuable, formatDI);
 	}
 
-	private static Qualification getQualification(Contribuable contribuable, int anneePrecedente) {
+	private static Qualification getQualification(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {
 		Qualification qualification = null;
-		DeclarationImpotOrdinaire precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
+		DeclarationImpotOrdinairePP precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
 		if (precedente != null) {
 			qualification = precedente.getQualification();
 		}
 		return qualification;
 	}
 
-	private static Integer getCodeSegment(Contribuable contribuable, int anneePrecedente) {
+	private static Integer getCodeSegment(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {
 		Integer codeSegment = null;
-		final DeclarationImpotOrdinaire precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
+		final DeclarationImpotOrdinairePP precedente = getDeclarationPrecedente(contribuable, anneePrecedente);
 		if (precedente != null) {
 			codeSegment = precedente.getCodeSegment();
 		}
 		return codeSegment;
 	}
 
-	private static DeclarationImpotOrdinaire getDeclarationPrecedente(Contribuable contribuable, int anneePrecedente) {
-		DeclarationImpotOrdinaire precedenteDI = null;
+	private static DeclarationImpotOrdinairePP getDeclarationPrecedente(ContribuableImpositionPersonnesPhysiques contribuable, int anneePrecedente) {
+		DeclarationImpotOrdinairePP precedenteDI = null;
 		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(anneePrecedente, false);
 		if (declarations != null && !declarations.isEmpty()) {
 			Declaration precedenteDeclaration = declarations.get(declarations.size() - 1);
-			if (precedenteDeclaration instanceof DeclarationImpotOrdinaire) {
-				precedenteDI = (DeclarationImpotOrdinaire) precedenteDeclaration;
+			if (precedenteDeclaration instanceof DeclarationImpotOrdinairePP) {
+				precedenteDI = (DeclarationImpotOrdinairePP) precedenteDeclaration;
 			}
 		}
 		return precedenteDI;
 	}
 
-	public static Qualification determineQualification(Contribuable contribuable, int annee) {
+	public static Qualification determineQualification(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 
 		Qualification qualification = getQualification(contribuable, annee - 1);
 		if (qualification == null) {
@@ -448,7 +448,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculator implements PeriodeImp
 		return qualification;
 	}
 
-	public static Integer determineCodeSegment(Contribuable contribuable, int annee) {
+	public static Integer determineCodeSegment(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 		Integer codeSegment = getCodeSegment(contribuable, annee - 1);
 		if (codeSegment == null) {
 			codeSegment = getCodeSegment(contribuable, annee - 2);

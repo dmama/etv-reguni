@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
@@ -38,8 +38,8 @@ public class UNIREG1472 {
 	
 	@Test
 	public void isIndigent() {
-		
-		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire ();
+
+		DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.setDateDebut(RegDate.get(2008,1,1));
 		di.setDateFin(RegDate.get(2008,12,31));
 		

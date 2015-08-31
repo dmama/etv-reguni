@@ -33,6 +33,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.DelaiDeclarationDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -264,7 +265,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes, boolean saveModele) throws DeclarationException {
-		final DeclarationImpotOrdinaire declaration = diDAO.get(id);
+		final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(id);
 
 		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
@@ -309,7 +310,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 
-		final DeclarationImpotOrdinaire di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+		final DeclarationImpotOrdinairePP di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 		//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
 		return diService.envoiDIOnline(di, RegDate.get());
 	}
@@ -338,9 +339,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return di;
 	}
 
-	protected DeclarationImpotOrdinaire creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
+	protected DeclarationImpotOrdinairePP creerNouvelleDI(ContribuableImpositionPersonnesPhysiques ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
 	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
-		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 
 		// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
 		// di.setNumero(1);
@@ -416,7 +417,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 
 		final Integer codeSegment = PeriodeImpositionHelper.determineCodeSegment(ctb, di.getDateFin().year());
-		if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
 		}
 		else {
@@ -443,7 +444,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		di.addDelai(delai);
 
 		// persistence du lien entre le contribuable et la nouvelle DI
-		di = (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
+		di = (DeclarationImpotOrdinairePP) tiersDAO.addAndSave(ctb, di);
 
 		//Mise à jour de l'état de la tâche si il y en a une
 		final TacheCriteria criterion = new TacheCriteria();
@@ -523,7 +524,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException {
 
 		final RegDate dateDuJour = RegDate.get();
-		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(id);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour);
 		di.addEtat(etat);
 		diDAO.save(di);
@@ -546,7 +547,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException {
 		try {
 			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
-			final DeclarationImpotOrdinaire di = diDAO.get(idDI);
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(idDI);
 			return editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
 		}
 		catch (JMSException e) {

@@ -6,7 +6,7 @@ import noNamespace.TypFichierImpression;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -15,7 +15,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class MockImpressionDeclarationImpotOrdinaireHelper implements ImpressionDeclarationImpotOrdinaireHelper {
 	@Override
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
+	public String construitIdDocument(DeclarationImpotOrdinairePP declaration) {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
@@ -25,7 +25,7 @@ public class MockImpressionDeclarationImpotOrdinaireHelper implements Impression
 	}
 
 	@Override
-	public TypFichierImpression.Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
+	public TypFichierImpression.Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinairePP declaration, TypFichierImpression typeFichierImpression,
 	                                                                 @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}

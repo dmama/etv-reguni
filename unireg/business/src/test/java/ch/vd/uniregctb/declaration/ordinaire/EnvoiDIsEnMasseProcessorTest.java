@@ -37,6 +37,7 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -71,7 +72,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.EntityValidator;
 import ch.vd.uniregctb.validation.ValidationService;
 
-import static ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireTest.assertCodeControleIsValid;
+import static ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePPTest.assertCodeControleIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -310,27 +311,27 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
 
 				// Un tiers sans déclaration
-				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.marcId = marc.getNumero();
 
 				// Un tiers avec une déclaration sur toute l'année 2007
-				final Contribuable jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique jean = addNonHabitant("Jean", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jeanId = jean.getNumero();
 				addDeclarationImpot(jean, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
 				// Un tiers avec une déclaration sur une partie de l'année 2007
-				final Contribuable jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique jacques = addNonHabitant("Jacques", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.jacquesId = jacques.getNumero();
 				addDeclarationImpot(jacques, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
 				// Un tiers avec deux déclarations partielles dans l'année 2007
-				final Contribuable pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique pierre = addNonHabitant("Pierre", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.pierreId = pierre.getNumero();
 				addDeclarationImpot(pierre, periode2007, date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 				addDeclarationImpot(pierre, periode2007, date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 
 				// un tiers avec trois déclarations dont une annulée dans l'année 2007
-				final Contribuable alfred = addNonHabitant("Alfred", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique alfred = addNonHabitant("Alfred", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				ids.alfredId = alfred.getNumero();
 				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(alfred, periode2007, date(2007, 2, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, declarationComplete);
 				diAnnulee.setAnnule(true);
@@ -350,41 +351,41 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 			DeclarationsCache cache = processor.new DeclarationsCache(2007, idsList);
 
-			final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId);
+			final PersonnePhysique marc = hibernateTemplate.get(PersonnePhysique.class, ids.marcId);
 			assertNotNull(marc);
 			assertEmpty(cache.getDeclarationsInRange(marc, new Range(date(2007, 1, 1), date(2007, 12, 31)), true));
 
-			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId);
+			final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jeanId);
 			assertNotNull(jean);
-			final List<DeclarationImpotOrdinaire> jeanDIs = cache.getDeclarationsInRange(jean, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
+			final List<DeclarationImpotOrdinairePP> jeanDIs = cache.getDeclarationsInRange(jean, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(1, jeanDIs.size());
-			assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jeanDIs.get(0));
+			assertDIPP(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jeanDIs.get(0));
 
-			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId);
+			final PersonnePhysique jacques = hibernateTemplate.get(PersonnePhysique.class, ids.jacquesId);
 			assertNotNull(jacques);
-			final List<DeclarationImpotOrdinaire> jacquesDIs = cache.getDeclarationsInRange(jacques, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
+			final List<DeclarationImpotOrdinairePP> jacquesDIs = cache.getDeclarationsInRange(jacques, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(1, jacquesDIs.size());
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jacquesDIs.get(0));
+			assertDIPP(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jacquesDIs.get(0));
 
-			final Contribuable pierre = hibernateTemplate.get(Contribuable.class, ids.pierreId);
+			final PersonnePhysique pierre = hibernateTemplate.get(PersonnePhysique.class, ids.pierreId);
 			assertNotNull(pierre);
-			final List<DeclarationImpotOrdinaire> pierreDIs = cache.getDeclarationsInRange(pierre, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
+			final List<DeclarationImpotOrdinairePP> pierreDIs = cache.getDeclarationsInRange(pierre, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(2, pierreDIs.size());
-			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(0));
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(1));
+			assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(0));
+			assertDIPP(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(1));
 
-			final Contribuable alfred = hibernateTemplate.get(Contribuable.class, ids.alfredId);
+			final PersonnePhysique alfred = hibernateTemplate.get(PersonnePhysique.class, ids.alfredId);
 			assertNotNull(alfred);
-			final List<DeclarationImpotOrdinaire> alfredIdAvecAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
+			final List<DeclarationImpotOrdinairePP> alfredIdAvecAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), true);
 			assertEquals(3, alfredIdAvecAnnulees.size());
-			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(0));
-			assertDI(date(2007, 2, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(1));
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(2));
+			assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(0));
+			assertDIPP(date(2007, 2, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(1));
+			assertDIPP(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdAvecAnnulees.get(2));
 
-			final List<DeclarationImpotOrdinaire> alfredIdSansAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), false);
+			final List<DeclarationImpotOrdinairePP> alfredIdSansAnnulees = cache.getDeclarationsInRange(alfred, new Range(date(2007, 1, 1), date(2007, 12, 31)), false);
 			assertEquals(2, alfredIdSansAnnulees.size());
-			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(0));
-			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(1));
+			assertDIPP(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(0));
+			assertDIPP(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, alfredIdSansAnnulees.get(1));
 		}
 	}
 
@@ -447,12 +448,12 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// vérification des DIs
 		{
-			final List<DeclarationImpotOrdinaire> dis = hibernateTemplate.find("from DeclarationImpotOrdinaire", null);
+			final List<DeclarationImpotOrdinairePP> dis = hibernateTemplate.find("from DeclarationImpotOrdinairePP", null);
 			assertNotNull(dis);
 			assertEquals(2, dis.size());
 
 			// tri selon le numéro de séquence
-			final List<DeclarationImpotOrdinaire> diTriees = new ArrayList<>(dis);
+			final List<DeclarationImpotOrdinairePP> diTriees = new ArrayList<>(dis);
 			Collections.sort(diTriees, new Comparator<DeclarationImpotOrdinaire>() {
 				@Override
 				public int compare(DeclarationImpotOrdinaire o1, DeclarationImpotOrdinaire o2) {
@@ -645,8 +646,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
-				calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
+		           calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	private static RegDate calculerDateDelaiImprime(RegDate dateTraitement, int delaiExpedition, int delaiRetour) {
@@ -762,8 +763,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, date(2009, 3, 31), decl);
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	/**
@@ -822,8 +823,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// le délai de retour imprimé doit être dateTraitement + 60 jours
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, calculerDateDelaiImprime(dateTraitement, 3 , 60), decl);
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.oidCedi, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	/**
@@ -880,8 +881,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// le délai de retour imprimé est le délai réglementaire
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, date(2009, 3, 31), decl);
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	/**
@@ -914,14 +915,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Vaudois ordinaire - DI complète
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -931,14 +932,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Vaudois ordinaire - DI vaudtax
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -948,14 +949,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Vaudois dépense - DI dépense
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -965,14 +966,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Hors-canton immeuble - DI HC immeuble
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -982,14 +983,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Hors-canton activité indépendante - DI complète
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleComplete);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleComplete);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -999,14 +1000,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Hors-canton activité indépendante - DI vaudtax
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -1016,14 +1017,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Hors-Suisse - DI complète
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -1033,14 +1034,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Hors-Suisse - DI vaudtax
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -1050,14 +1051,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Diplomate Suisse - DI complète
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -1067,14 +1068,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// Diplomate Suisse - DI vaudtax
 		{
 			// période complète
-			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
 			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
 			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
 			di0.setAnnule(true);
 
 			// [UNIREG-1740] [UNIREG-1861] période incomplète
-			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
+			final DeclarationImpotOrdinairePP di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
 			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
@@ -1139,8 +1140,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// [UNIREG-1852] la déclaration doit être émise (et non-retournée immédiatement comme pour les indigents non-décédés) avec la cellule registre comme adresse de retour
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	/**
@@ -1259,8 +1260,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-		         ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+		assertDIPP(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	/**
@@ -1335,8 +1336,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(dateTraitement, retour1.getDateObtention());
 		assertEquals("INDIGENT", retour1.getSource());
 
-		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, date(2009, 3, 31), decl);
+		assertDIPP(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		           ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	@Test
@@ -1422,7 +1423,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 				assertNotNull(di);
 				assertNull(di.getCodeControle());
 				return null;
@@ -1467,7 +1468,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decls.get(0);
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decls.get(0);
 				assertNotNull(di);
 				assertCodeControleIsValid(di.getCodeControle());
 				return null;
@@ -1483,7 +1484,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void testGenerationCodeControleAvecDeclarationPreexistante() throws Exception {
 
 		final int annee = 2011;
-		final String codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+		final String codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
 
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -1496,7 +1497,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				final DeclarationImpotOrdinaire decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinairePP decl = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				decl.setCodeControle(codeControle);
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(annee + 1, 1, 1), date(annee, 9, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, colAdm);
@@ -1518,12 +1519,12 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				assertNotNull(decls);
 				assertEquals(2, decls.size());
 
-				final DeclarationImpotOrdinaire di0 = (DeclarationImpotOrdinaire) decls.get(0);
+				final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
 				assertNotNull(di0);
 				assertEquals(codeControle, di0.getCodeControle());
 
 				// on vérifie que le code de contrôle de la deuxième DI est le même que celui de la première
-				final DeclarationImpotOrdinaire di1 = (DeclarationImpotOrdinaire) decls.get(1);
+				final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
 				assertNotNull(di1);
 				assertEquals(codeControle, di1.getCodeControle());
 				return null;
@@ -1573,12 +1574,12 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				assertNotNull(decls);
 				assertEquals(2, decls.size());
 
-				final DeclarationImpotOrdinaire di0 = (DeclarationImpotOrdinaire) decls.get(0);
+				final DeclarationImpotOrdinairePP di0 = (DeclarationImpotOrdinairePP) decls.get(0);
 				assertNotNull(di0);
 				final String codeControle = di0.getCodeControle();
 				assertCodeControleIsValid(codeControle);
 
-				final DeclarationImpotOrdinaire di1 = (DeclarationImpotOrdinaire) decls.get(1);
+				final DeclarationImpotOrdinairePP di1 = (DeclarationImpotOrdinairePP) decls.get(1);
 				assertNotNull(di1);
 				assertEquals(codeControle, di1.getCodeControle());
 				return null;

@@ -21,7 +21,7 @@ import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire declaration, @Nullable Set<PartyPart> parts) {
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 
 		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
@@ -40,7 +40,7 @@ public class TaxDeclarationBuilder {
 
 		Integer cs = declaration.getCodeSegment();
 		// SIFISC-3873 : Code segment 0 par défaut pour les DI >= 2011
-		if (cs == null && declaration.getPeriode().getAnnee() >= ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (cs == null && declaration.getPeriode().getAnnee() >= ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			cs = DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT;
 		}
 		d.setSegmentationCode(cs); // SIFISC-2528

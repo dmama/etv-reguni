@@ -21,7 +21,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -95,8 +95,8 @@ public class ImportCodesSegmentProcessor {
 						// contribuable sans déclaration -> comment a-t-on fait pour assigner un code de segmentation (sensé être basé sur la taxation de l'année dernière...) ?
 						rapport.addErrorCtbSansDeclaration(ctb.getNoContribuable());
 					}
-					else if (derniereDeclaration instanceof DeclarationImpotOrdinaire) {
-							final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) derniereDeclaration;
+					else if (derniereDeclaration instanceof DeclarationImpotOrdinairePP) {
+							final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) derniereDeclaration;
 							final Integer ancienCodeSegment = di.getCodeSegment();
 							if (ancienCodeSegment == null || ancienCodeSegment != ctb.getCodeSegment()) {
 								setNewCodeSegment(di, ctb.getCodeSegment());
@@ -115,7 +115,7 @@ public class ImportCodesSegmentProcessor {
 		}
 	}
 
-	private void setNewCodeSegment(final DeclarationImpotOrdinaire di, final int codeSegment) {
+	private void setNewCodeSegment(final DeclarationImpotOrdinairePP di, final int codeSegment) {
 		hibernateTemplate.execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {

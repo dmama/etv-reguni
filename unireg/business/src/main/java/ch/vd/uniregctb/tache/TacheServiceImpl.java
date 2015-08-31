@@ -40,6 +40,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -60,6 +61,7 @@ import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -634,10 +636,10 @@ public class TacheServiceImpl implements TacheService {
 		final Map<Long, List<SynchronizeAction>> map = new HashMap<>();
 		for (Long id : ctbIds) {
 			final Tiers tiers = tiersService.getTiers(id);
-			if (tiers instanceof Contribuable) {
+			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
 				List<SynchronizeAction> actions;
 				try {
-					actions = determineSynchronizeActionsForDIs((Contribuable) tiers);
+					actions = determineSynchronizeActionsForDIs((ContribuableImpositionPersonnesPhysiques) tiers);
 				}
 				catch (AssujettissementException e) {
 					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
@@ -655,11 +657,11 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@Override
-	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(ContribuableImpositionPersonnesPhysiques contribuable) throws AssujettissementException {
 
 		// On récupère les données brutes
 		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
-		final List<DeclarationImpotOrdinaire> declarations = getDeclarationsActives(contribuable);
+		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsActives(contribuable);
 		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
 		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
@@ -675,7 +677,7 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (PeriodeImposition periode : periodes) {
-			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
+			final List<DeclarationImpotOrdinairePP> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
 				if (periode.isDeclarationMandatory()) {
@@ -694,10 +696,10 @@ public class TacheServiceImpl implements TacheService {
 			}
 			else {
 				Assert.isFalse(dis.isEmpty());
-				DeclarationImpotOrdinaire toUpdate = null;
+				DeclarationImpotOrdinairePP toUpdate = null;
 				PeriodeImposition toAdd = null;
 
-				for (DeclarationImpotOrdinaire di : dis) {
+				for (DeclarationImpotOrdinairePP di : dis) {
 					if (DateRangeHelper.equals(di, periode)) {
 						// la durée de la déclaration et de la période d'imposition correspondent parfaitement
 						if (di.getTypeContribuable() == periode.getTypeContribuable()) {
@@ -776,7 +778,7 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
 		//
 
-		for (DeclarationImpotOrdinaire declaration : declarations) {
+		for (DeclarationImpotOrdinairePP declaration : declarations) {
 			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
 			if (ps == null) {
 				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
@@ -842,7 +844,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
+	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinairePP> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
 		if (periode == null || !periode.isDeclarationMandatory()) {
@@ -861,7 +863,7 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
-		final DeclarationImpotOrdinaire declaration = getMatchingRangeAt(declarations, periode);
+		final DeclarationImpotOrdinairePP declaration = getMatchingRangeAt(declarations, periode);
 		if (declaration == null) {
 			// il n'y a pas de déclaration, la tâche est donc valide
 			return true;
@@ -892,7 +894,7 @@ public class TacheServiceImpl implements TacheService {
 	 */
 	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, int anneeCourante) {
 
-		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) annulation.getDeclarationImpotOrdinaire();
 		if (declaration.isAnnule()) {
 			// la déclaration est déjà annulée
 			return false;
@@ -1033,19 +1035,19 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<DeclarationImpotOrdinaire> getDeclarationsActives(Contribuable contribuable) {
+	private List<DeclarationImpotOrdinairePP> getDeclarationsActives(ContribuableImpositionPersonnesPhysiques contribuable) {
 		final Set<Declaration> declarations = contribuable.getDeclarations();
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DeclarationImpotOrdinaire> list = new ArrayList<>(declarations.size());
+		final List<DeclarationImpotOrdinairePP> list = new ArrayList<>(declarations.size());
 		for (Declaration d : declarations) {
 			if (d.isAnnule()) {
 				continue;
 			}
-			list.add((DeclarationImpotOrdinaire) d);
+			list.add((DeclarationImpotOrdinairePP) d);
 		}
-		Collections.sort(list, new DateRangeComparator<DeclarationImpotOrdinaire>());
+		Collections.sort(list, new DateRangeComparator<>());
 		return list;
 	}
 

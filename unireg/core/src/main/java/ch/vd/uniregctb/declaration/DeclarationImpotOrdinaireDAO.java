@@ -37,5 +37,5 @@ public interface DeclarationImpotOrdinaireDAO extends GenericDAO<DeclarationImpo
 	/**
 	 * @return un ensemble de DIs avec les délais et les états préinitialisés.
 	 */
-	public Set<DeclarationImpotOrdinaire> getDIsForSommation(Collection<Long> idsDI);
+	public Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(Collection<Long> idsDI);
 }

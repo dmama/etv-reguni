@@ -20,6 +20,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
@@ -143,7 +144,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable alfred = createHorsSuisseAvecVenteImmeuble(date(2007, 8, 30));
 
 		// [UNIREG-1742] Un non-assujetti avec une déclaration d'impôt
-		Contribuable malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
+		PersonnePhysique malko = addNonHabitant("Malko", "Totor", date(1955, 2, 11), Sexe.MASCULIN);
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance
@@ -1570,7 +1571,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 				final PersonnePhysique ppAvecDeclarationEtCodeAssigne = addNonHabitant("Torlo", "Toto", null, Sexe.MASCULIN);
 				addForPrincipal(ppAvecDeclarationEtCodeAssigne, date(2010, 11, 7), MotifFor.ARRIVEE_HC, MockCommune.Bussigny);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(ppAvecDeclarationEtCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(ppAvecDeclarationEtCodeAssigne, pf2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setCodeSegment(2);
 
 				addPeriodeFiscale(2011);

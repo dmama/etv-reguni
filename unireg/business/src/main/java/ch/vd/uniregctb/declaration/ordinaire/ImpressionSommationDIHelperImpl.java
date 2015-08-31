@@ -30,6 +30,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -274,7 +275,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			periode.setHorsSuisse("");
 			periode.setHorsCanton("");
 
-			final DeclarationImpotOrdinaire di = params.getDi();
+			final DeclarationImpotOrdinairePP di = params.getDi();
 			final PeriodeFiscale pf = di.getPeriode();
 			final String pfStr = pf.getAnnee().toString();
 			periode.setAnneeFiscale(pfStr);

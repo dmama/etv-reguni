@@ -26,7 +26,6 @@ import ch.vd.uniregctb.evenement.cedi.V1Handler;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -109,7 +108,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Contribuable ralf = hibernateTemplate.get(Contribuable.class, CTB_ID);
+				final PersonnePhysique ralf = hibernateTemplate.get(PersonnePhysique.class, CTB_ID);
 				assertNotNull(ralf);
 				try {
 					final List<SynchronizeAction> list = tacheService.determineSynchronizeActionsForDIs(ralf);

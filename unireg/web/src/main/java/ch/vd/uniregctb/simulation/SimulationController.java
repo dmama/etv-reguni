@@ -20,7 +20,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
@@ -144,10 +143,10 @@ public class SimulationController {
 
 				final ForFiscal ff = forFiscalDAO.get(idFor);
 				final Tiers tiers = ff.getTiers();
-				if (!(tiers instanceof Contribuable)) {
+				if (!(tiers instanceof ContribuableImpositionPersonnesPhysiques)) {
 					return null;
 				}
-				final Contribuable ctb = (Contribuable) tiers;
+				final ContribuableImpositionPersonnesPhysiques ctb = (ContribuableImpositionPersonnesPhysiques) tiers;
 
 				SimulationResults table;
 				try {
@@ -180,7 +179,7 @@ public class SimulationController {
 		});
 	}
 
-	private SimulationResults buildSynchronizeActionsTable(Contribuable ctb) {
+	private SimulationResults buildSynchronizeActionsTable(ContribuableImpositionPersonnesPhysiques ctb) {
 
 		final SimulationResults table;
 

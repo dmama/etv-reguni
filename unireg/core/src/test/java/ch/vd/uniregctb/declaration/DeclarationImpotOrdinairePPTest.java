@@ -7,7 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class DeclarationImpotOrdinaireTest {
+public class DeclarationImpotOrdinairePPTest {
 
 	// [SIFISC-1368][SIFISC-4453] Vérifie que les codes de contrôles générés correspondent bien à la spécification suivante :
 	// Spécification du format du NIP (vu le 05.07 avec D. Radelfinger) : 6 caractères
@@ -16,7 +16,7 @@ public class DeclarationImpotOrdinaireTest {
 	@Test
 	public void testGenerateCodeControle() throws Exception {
 		for (int i = 0; i < 200 ; ++i) {
-			final String codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+			final String codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
 			try {
 				assertCodeControleIsValid(codeControle);
 			}

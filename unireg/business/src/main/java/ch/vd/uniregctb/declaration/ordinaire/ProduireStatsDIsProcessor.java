@@ -25,8 +25,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -104,7 +104,7 @@ public class ProduireStatsDIsProcessor {
 						status.setMessage(String.format("Traitement de la DI n°%d (%d/%d)", id, rapportFinal.nbDIsTotal, listeComplete.size()), progressMonitor.getProgressInPercent());
 					}
 
-					final DeclarationImpotOrdinaire di = diDAO.get(id);
+					final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) diDAO.get(id);
 					try {
 						if (di != null) {
 							traiterDI(di, rapport);
@@ -129,7 +129,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * Ajoute les statistiques de la DI et des détails spécifiés au rapport.
 	 */
-	private void traiterDI(DeclarationImpotOrdinaire di, StatistiquesDIs rapport) throws Exception {
+	private void traiterDI(DeclarationImpotOrdinairePP di, StatistiquesDIs rapport) throws Exception {
 		final int oid = getOID(di);
 		final TypeContribuable type = getType(di);
 		final TypeEtatDeclaration etat = getEtat(di);
@@ -140,7 +140,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'id de l'office d'impôt responsable de la DI spécifiée.
 	 */
-	private int getOID(DeclarationImpotOrdinaire di) throws ServiceInfrastructureException {
+	private int getOID(DeclarationImpotOrdinairePP di) throws ServiceInfrastructureException {
 		int oid = 0;
 		final Integer noCommune = di.getNumeroOfsForGestion();
 		if (noCommune != null) {
@@ -155,7 +155,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return le type de contribuable stocké sur la DI ou déterminé à partir de son assujettissement
 	 */
-	private TypeContribuable getType(DeclarationImpotOrdinaire di) {
+	private TypeContribuable getType(DeclarationImpotOrdinairePP di) {
 
 		TypeContribuable type = di.getTypeContribuable();
 		if (type == null) {
@@ -180,9 +180,9 @@ public class ProduireStatsDIsProcessor {
 	 *            le déclaration dont on cherche le type de contribuable associé
 	 * @return le type de contribuable ou <b>null</b> s'il n'est pas possible de retrouver cette information pour une raison ou une autre.
 	 */
-	private TypeContribuable determineType(DeclarationImpotOrdinaire di) {
+	private TypeContribuable determineType(DeclarationImpotOrdinairePP di) {
 
-		final Contribuable contribuable = (Contribuable) di.getTiers();
+		final Contribuable contribuable = di.getTiers();
 		if (contribuable == null) {
 			return null;
 		}
@@ -242,7 +242,7 @@ public class ProduireStatsDIsProcessor {
 	/**
 	 * @return l'état courant de la DI spécifiée
 	 */
-	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinaire di) {
+	private TypeEtatDeclaration getEtat(DeclarationImpotOrdinairePP di) {
 		TypeEtatDeclaration etat = di.getDernierEtat().getEtat();
 		return etat;
 	}
@@ -251,7 +251,7 @@ public class ProduireStatsDIsProcessor {
 	"SELECT DISTINCT                                       " // --------------------------------
 			+ "    di.id                                   " // --------------------------------
 			+ "FROM                                        " // --------------------------------
-			+ "    DeclarationImpotOrdinaire AS di         " // --------------------------------
+			+ "    DeclarationImpotOrdinairePP AS di       " // --------------------------------
 			+ "WHERE                                       " // --------------------------------
 			+ "    di.annulationDate IS null               " // --------------------------------
 			+ "    AND di.periode.annulationDate IS null   " // --------------------------------

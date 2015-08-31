@@ -47,7 +47,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -242,7 +242,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 * Alimente un objet Document pour l'impression des DI
 	 */
 	@Override
-	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
+	public Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinairePP declaration, TypFichierImpression typeFichierImpression,
 	                                            @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException {
 
 		// SIFISC-8417 / SIFISC-9875 : l'appelant peut imposer un type de document spécifique qui n'est pas nécessairement sauvegardé en base
@@ -357,7 +357,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		if (di instanceof DIRetourCivil) {
 			remplitContribuables(infoAdapter, (DIRetourCivil) di);
 		}
-		if (di instanceof DIRetourCivilEnfant && infoAdapter.annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (di instanceof DIRetourCivilEnfant && infoAdapter.annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			remplitEnfants(infoAdapter, (DIRetourCivilEnfant) di);
 
 		}
@@ -460,7 +460,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final CollectiviteAdministrative col = getRetourCollectiviteAdministrative(informationsDocument);
 
 		//[SIFISC-1412] L'oid Region n'est à utiliser que pour les periode fiscale postérieurs à 2010 et pour le CEDI comme collectivité administrative de retour
-		if (annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) {
+		if (annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && col.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) {
 			final CollectiviteAdministrative officeImpot = tiersService.getOfficeImpotRegionAt(tiers, dateRecherche);
 			if (officeImpot != null) {
 				return officeImpot.getNumeroCollectiviteAdministrative();
@@ -668,7 +668,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final Tiers tiers = informationsDocument.getTiers();
 
 		// SIFISC-1389 Pour les DI avant 2011 le nom de la commune doit encore être affiché
-		if (anneeFiscale < DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (anneeFiscale < DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 
 			// [UNIREG-1655] Il faut recalculer la commune du for de gestion
 			try {
@@ -711,14 +711,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 
 		infoDI.setCODBARR(codbarr);
 		//[SIFISC-2619] Le code de controle /NIP est transmis lorsqu'il est présent sur la DI pour les périodes fiscales postérieurs à 2010
-		if (anneeFiscale >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && informationsDocument.codeControle != null) {
+		if (anneeFiscale >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && informationsDocument.codeControle != null) {
 			infoDI.setNIP(informationsDocument.codeControle);
 		}
 
 		// [SIFISC-2100] Le code trame doit être déduit du code "segment" de TAO et du type de la DI
 		final String codeTrame;
 		//[SIFISC-2626] le code trame n'a de valeur que pour les périodes fiscales  >= à 2011
-		if (anneeFiscale >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (anneeFiscale >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			switch (informationsDocument.getTypeDocument()) {
 			case DECLARATION_IMPOT_HC_IMMEUBLE:
 				codeTrame = "H";
@@ -772,7 +772,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 
 		// [SIFISC-2100] Dès la DI 2011, la chaîne ne doit plus être déduite de la qualification, mais d'un code "segment" directement fourni par TAO
 		final int suffixe;
-		if (infoAdapter.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (infoAdapter.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			suffixe = infoAdapter.codeSegment != null ? infoAdapter.codeSegment : DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT;
 		}
 		else {
@@ -899,7 +899,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 * Construit le champ idDocument
 	 */
 	@Override
-	public String construitIdDocument(DeclarationImpotOrdinaire declaration) {
+	public String construitIdDocument(DeclarationImpotOrdinairePP declaration) {
 		final Integer annee = declaration.getPeriode().getAnnee();
 		final Integer numeroDoc = declaration.getNumero();
 		final Tiers tiers = declaration.getTiers();

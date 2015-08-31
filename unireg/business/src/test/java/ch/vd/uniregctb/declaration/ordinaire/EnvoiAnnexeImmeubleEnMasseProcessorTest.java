@@ -165,7 +165,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
 				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(maxwell, pf, anneeComplete.getDateDebut(), anneeComplete.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setAnnule(true);
 				assertEquals(1, (int) di.getNumero());
@@ -179,7 +179,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
 				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final Contribuable arthur = addNonHabitant("Arthur", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique arthur = addNonHabitant("Arthur", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(arthur, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di1.setAnnule(true);
 				assertEquals(1, (int) di1.getNumero());
@@ -196,7 +196,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
 				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final Contribuable felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(felicien, pf, moitieAnnee1.getDateDebut(), moitieAnnee1.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				assertEquals(1, (int) di.getNumero());
 				assertEquals(2, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(felicien, anneeComplete));
@@ -209,7 +209,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
 				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final Contribuable bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(bernard, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				assertEquals(1, (int) di.getNumero());
 				assertEquals(1, EnvoiAnnexeImmeubleEnMasseProcessor.getNoSequenceAnnexeImmeuble(bernard, anneeComplete));
@@ -222,7 +222,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final PeriodeFiscale pf = hibernateTemplate.get(PeriodeFiscale.class, ids.pfId);
 				final ModeleDocument md = hibernateTemplate.get(ModeleDocument.class, ids.mdId);
-				final Contribuable albert = addNonHabitant("Albert", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique albert = addNonHabitant("Albert", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(albert, pf, moitieAnnee2.getDateDebut(), moitieAnnee2.getDateFin(), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumero(12);
 				assertEquals(12, (int) di.getNumero());

@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -196,7 +197,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
 				di.setCodeSegment(4);
 				return pp.getNumero();
 			}
@@ -223,7 +224,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -247,7 +248,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
 				di.setCodeSegment(null);
 				return pp.getNumero();
 			}
@@ -274,7 +275,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -298,7 +299,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, md);
 				di.setCodeSegment(2);
 				return pp.getNumero();
 			}
@@ -325,7 +326,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;
 			}
@@ -394,7 +395,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 				final DeclarationImpotOrdinaire diAnnulee = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON, mdHc);
 				diAnnulee.setAnnule(true);
 
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 10, 31), TypeContribuable.VAUDOIS_DEPENSE, mdDepense);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 10, 31), TypeContribuable.VAUDOIS_DEPENSE, mdDepense);
 				di.setCodeSegment(3);
 				return pp.getNumero();
 			}
@@ -421,7 +422,7 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noTiers);
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) pp.getDerniereDeclaration();
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) pp.getDerniereDeclaration();
 				Assert.assertEquals(date(2009, 10, 31), di.getDateFin());
 				Assert.assertEquals(4, (int) di.getCodeSegment());
 				return null;

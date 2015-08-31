@@ -38,6 +38,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -852,8 +853,8 @@ public class TacheServiceTest extends BusinessTest {
 
 			// la déclaration 2005 doit avoir une période inchangée
 			Declaration declaration = jeanDaniel.getDeclarationActive(date(2005, 6, 30));
-			assertDI(date(2005, 1, 1), date(2005, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, declaration);
+			assertDIPP(date(2005, 1, 1), date(2005, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
+			           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, declaration);
 		}
 	}
 
@@ -1059,7 +1060,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(declarations2006);
 		assertEquals(1, declarations2006.size());
 
-		final DeclarationImpotOrdinaire declaration2006 = (DeclarationImpotOrdinaire)declarations2006.get(0);
+		final DeclarationImpotOrdinairePP declaration2006 = (DeclarationImpotOrdinairePP)declarations2006.get(0);
 		assertNotNull(declaration2006);
 		assertEquals(date(2006, 1, 1), declaration2006.getDateDebut());
 		assertEquals(date(2006, 6, 11), declaration2006.getDateFin());
@@ -1941,8 +1942,8 @@ public class TacheServiceTest extends BusinessTest {
 			final List<Declaration> declarations = simon.getDeclarationsForPeriode(i, false);
 			assertNotNull(declarations);
 			assertEquals(1, declarations.size());
-			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-					ids.oidCedi, null, declarations.get(0));
+			assertDIPP(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+			           ids.oidCedi, null, declarations.get(0));
 		}
 	}
 
@@ -3632,10 +3633,10 @@ public class TacheServiceTest extends BusinessTest {
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(2, dis.size());
 				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
-				assertDI(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						cedi.getNumero(), null, dis.get(0));
-				assertDI(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						cedi.getNumero(), null, dis.get(1));
+				assertDIPP(date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				           cedi.getNumero(), null, dis.get(0));
+				assertDIPP(date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				           cedi.getNumero(), null, dis.get(1));
 				return null;
 			}
 		});
@@ -3774,12 +3775,12 @@ public class TacheServiceTest extends BusinessTest {
 				final List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(ids.ctb);
 				assertEquals(anneeCourante - 2004, dis.size());
 				Collections.sort(dis, new DateRangeComparator<DeclarationImpotOrdinaire>());
-				assertDI(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
-						dis.get(0));
+				assertDIPP(date(2004, 3, 1), date(2004, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+				           dis.get(0));
 
 				for (int annee = 2005; annee < anneeCourante - 1; ++annee) {
-					assertDI(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
-							dis.get(annee - 2004));
+					assertDIPP(date(annee, 1, 1), date(annee, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, cedi.getNumero(), null,
+					           dis.get(annee - 2004));
 				}
 				return null;
 			}
@@ -3916,7 +3917,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(1, declarations.size());
 
 				// le type de contribuable doit être maintenant renseigné
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declarations.get(0);
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declarations.get(0);
 				assertEquals(TypeContribuable.HORS_CANTON, di.getTypeContribuable());
 
 				// la tâche d'annulation doit être annulée

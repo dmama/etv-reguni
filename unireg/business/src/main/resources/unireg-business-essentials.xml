@@ -293,7 +293,9 @@
 	<bean id="periodiciteValidator" class="ch.vd.uniregctb.validation.periodicite.PeriodiciteValidator" parent="entityValidator" />
 
 	<bean id="declarationValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationValidator" abstract="true" parent="dateRangeEntityValidator" />
-	<bean id="declarationImpotOrdinaireValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinaireValidator" parent="declarationValidator" />
+	<bean id="declarationImpotOrdinaireValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinaireValidator" abstract="true" parent="declarationValidator" />
+	<bean id="declarationImpotOrdinairePMValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinairePMValidator" parent="declarationImpotOrdinaireValidator" />
+	<bean id="declarationImpotOrdinairePPValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotOrdinairePPValidator" parent="declarationImpotOrdinaireValidator" />
 	<bean id="declarationImpotSourceValidator" class="ch.vd.uniregctb.validation.declaration.DeclarationImpotSourceValidator" parent="declarationValidator" />
 
 	<bean id="remarqueValidator" class="ch.vd.uniregctb.validation.remarque.RemarqueValidator" parent="entityValidator"/>

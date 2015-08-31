@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ListeNoteResults;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface DeclarationImpotService {
@@ -100,7 +102,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement la date d'impression
 	 * @return l'ID du document d'impression
 	 */
-	EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
+	EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression le duplicata de la déclaration spécifiée pour une visualisation on-line. Cette méthode retourne  directement le document d'impression ou, s'il est trop long à venir, re-route
@@ -111,7 +113,7 @@ public interface DeclarationImpotService {
 	 * @param annexes       la liste des annexes
 	 * @return l'ID du document d'impression
 	 */
-	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, TypeDocument typeDocument,
+	EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument,
 	                                        List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 	/**
@@ -121,7 +123,7 @@ public interface DeclarationImpotService {
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @param dateEvenement la date d'impression
 	 */
-	void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
+	void envoiDIForBatch(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,
@@ -131,7 +133,7 @@ public interface DeclarationImpotService {
 	 * @param miseSousPliImpossible true si la mise sous pli automatique est impossible pour des raisons techniques
 	 * @param dateEvenement         la date d'impression
 	 */
-	void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
+	void envoiSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Fait passer la déclaration à l'état <i>échu</i>, et envoie un événement fiscal correspondant.
@@ -139,7 +141,7 @@ public interface DeclarationImpotService {
 	 * @param declaration    la déclaration d'impôt ordinaire à échoir
 	 * @param dateTraitement la date de passage à l'état échu de la déclaration.
 	 */
-	void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement);
+	void echoirDI(DeclarationImpotOrdinairePP declaration, RegDate dateTraitement);
 
 	/**
 	 * Quittance une déclaration d'impôt ordinaire. C'est-à-dire : ajoute un état 'retourné' sur la déclaration et envoi un événement fiscal.
@@ -166,7 +168,7 @@ public interface DeclarationImpotService {
 	 * @param dateEvenement
 	 * @return
 	 */
-	DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, @Nullable Long tacheId, RegDate dateEvenement);
+	DeclarationImpotOrdinairePP annulationDI(ContribuableImpositionPersonnesPhysiques contribuable, DeclarationImpotOrdinairePP di, @Nullable Long tacheId, RegDate dateEvenement);
 
 	/**
 	 * Désannule une déclaration d'impôt qui est annulée. Cette opération, outre de désannuler la déclaration, émet les événements fiscaux et DI qui vont bien.
@@ -175,7 +177,7 @@ public interface DeclarationImpotService {
 	 * @param di            la déclaration du contribuable à désannuler
 	 * @param dateEvenement la date de désannulation
 	 */
-	void desannulationDI(Contribuable ctb, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	void desannulationDI(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di, RegDate dateEvenement);
 
 	/**
 	 * Envoye des sommations à la date donnée

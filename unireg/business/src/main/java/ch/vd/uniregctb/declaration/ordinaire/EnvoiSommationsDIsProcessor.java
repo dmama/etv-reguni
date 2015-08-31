@@ -26,6 +26,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -134,10 +135,10 @@ public class EnvoiSommationsDIsProcessor  {
 			@Override
 			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsResults r) {
 				final List<Long> numerosDis = getListNumerosDis(batch);
-				final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(numerosDis);
-				final Iterator<DeclarationImpotOrdinaire> iter = declarations.iterator();
+				final Set<DeclarationImpotOrdinairePP> declarations = declarationImpotOrdinaireDAO.getDeclarationsImpotPPForSommation(numerosDis);
+				final Iterator<DeclarationImpotOrdinairePP> iter = declarations.iterator();
 				while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
-					final DeclarationImpotOrdinaire di = iter.next();
+					final DeclarationImpotOrdinairePP di = iter.next();
 					traiterDI(di, r, dateTraitement, miseSousPliImpossible);
 				}
 				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
@@ -174,14 +175,14 @@ public class EnvoiSommationsDIsProcessor  {
 		return ids;
 	}
 
-	protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+	protected void traiterDI(DeclarationImpotOrdinairePP di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 		// Verification des pré-requis avant la sommation
 		if (checkEtat(di, r) && checkDateDelai(di, r) && checkContribuable(di, r)) {
 
 			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
 			if (finDelai.isBefore(dateTraitement)) {
 				try {
-					final List<Assujettissement> assujettissements = assujettissementService.determine((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
+					final List<Assujettissement> assujettissements = assujettissementService.determine(di.getTiers(), di.getPeriode().getAnnee());
 					if (assujettissements == null || assujettissements.isEmpty()) {
 						final String msg = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
 						                                 di.getId(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
@@ -276,7 +277,7 @@ public class EnvoiSommationsDIsProcessor  {
 		return true;
 	}
 
-	private void sommerDI(final DeclarationImpotOrdinaire di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
+	private void sommerDI(final DeclarationImpotOrdinairePP di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
 
 		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(dateTraitement);
 		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateTraitement,dateExpedition);
@@ -360,7 +361,7 @@ public class EnvoiSommationsDIsProcessor  {
 					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
-						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinaire AS di");
+						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinairePP AS di");
 						b.append(" WHERE di.annulationDate IS NULL");
 						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class = EtatDeclarationEmise)");
 						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.class IN (EtatDeclarationRetournee, EtatDeclarationSommee))");

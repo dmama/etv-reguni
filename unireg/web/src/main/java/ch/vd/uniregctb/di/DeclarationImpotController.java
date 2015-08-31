@@ -45,6 +45,7 @@ import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -249,18 +250,18 @@ public class DeclarationImpotController {
 			throw new IllegalArgumentException("La déclaration n°" + id + " n'existe pas.");
 		}
 
-		if (!(decl instanceof DeclarationImpotOrdinaire)) {
-			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire.");
+		if (!(decl instanceof DeclarationImpotOrdinairePP)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP.");
 		}
 
-		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
+		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decl;
 
 		// vérification des droits en écriture
 		final Long tiersId = di.getTiers().getId();
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// annulation de la déclaration
-		final Contribuable tiers = (Contribuable) di.getTiers();
+		final ContribuableImpositionPersonnesPhysiques tiers = di.getTiers();
 		diService.annulationDI(tiers, di, tacheId, RegDate.get());
 
 		if (tacheId != null) {
@@ -289,11 +290,11 @@ public class DeclarationImpotController {
 			throw new IllegalArgumentException("La déclaration n°" + id + " n'existe pas.");
 		}
 
-		if (!(decl instanceof DeclarationImpotOrdinaire)) {
-			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire.");
+		if (!(decl instanceof DeclarationImpotOrdinairePP)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP.");
 		}
 
-		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
+		final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decl;
 		if (!di.isAnnule()) {
 			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas annulée.");
 		}
@@ -303,7 +304,7 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// désannulation de la déclaration
-		final Contribuable tiers = (Contribuable) di.getTiers();
+		final ContribuableImpositionPersonnesPhysiques tiers = di.getTiers();
 		diService.desannulationDI(tiers, di, RegDate.get());
 
 		return "redirect:/di/list.do?tiersId=" + tiersId;
@@ -570,7 +571,7 @@ public class DeclarationImpotController {
 			return "di/etat/ajouter";
 		}
 
-		final Contribuable ctb = (Contribuable) di.getTiers();
+		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On quittance la DI
@@ -608,7 +609,7 @@ public class DeclarationImpotController {
 
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
 
-		final Contribuable ctb = (Contribuable) di.getTiers();
+		final Contribuable ctb = di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On annule le quittancement
@@ -637,11 +638,20 @@ public class DeclarationImpotController {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		final Contribuable ctb = (Contribuable) di.getTiers();
+		if (!(di instanceof DeclarationImpotOrdinairePP)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire PP.");
+		}
+
+		final DeclarationImpotOrdinairePP dipp = (DeclarationImpotOrdinairePP) di;
+
+		final ContribuableImpositionPersonnesPhysiques ctb = dipp.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
-				SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP), SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP), SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
+		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(dipp, tacheId, messageSource,
+		                                                                       SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
+		                                                                       SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP),
+		                                                                       SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP),
+		                                                                       SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
 		model.addAttribute("command", view);
 
 		return "di/editer";

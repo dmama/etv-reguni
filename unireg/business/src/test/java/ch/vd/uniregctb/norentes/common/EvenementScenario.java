@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
@@ -219,7 +220,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Tiers tiers, RegDate debut, RegDate fin, RegDate dateEmission, int delaiEnJours) {
 		assertEquals(debut.year(), fin.year(), "Début et fin devraient être sur la même période fiscale");
 
-		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.setDateDebut(debut);
 		di.setDateFin(fin);
 		di.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);

@@ -47,6 +47,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -908,7 +909,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			declarations = new HashSet<>();
 		}
 
-		if (declaration instanceof DeclarationImpotOrdinaire) {
+		if (declaration instanceof DeclarationImpotOrdinairePP) {
 
 			final int annee = declaration.getPeriode().getAnnee();
 
@@ -916,7 +917,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			 * Les déclarations d'impôt ordinaires possèdent un numéro de séquence (unique par année) qui doit être calculé au moment de
 			 * l'insertion.
 			 */
-			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
+			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
 			if (di.getNumero() == null) {
 				int numero = 0;
 				for (Declaration d : declarations) {
@@ -929,14 +930,14 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 			// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
 			// être générée/assigné au moment de l'insertion
-			if (annee >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null) {
+			if (annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null) {
 				final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
 
 				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
 				String codeControle = null;
 				if (declsPeriode != null) {
 					for (Declaration d : declsPeriode) {
-						final DeclarationImpotOrdinaire dio = (DeclarationImpotOrdinaire) d;
+						final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
 						if (dio.getCodeControle() != null) {
 							codeControle = dio.getCodeControle();
 							break;
@@ -946,11 +947,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 				if (codeControle == null) {
 					// pas de code déjà généré : on en génère un nouveau
-					codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+					codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
 					if (declsPeriode != null) {
 						// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
 						for (Declaration d : declsPeriode) {
-							final DeclarationImpotOrdinaire dio = (DeclarationImpotOrdinaire) d;
+							final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
 							dio.setCodeControle(codeControle);
 						}
 					}

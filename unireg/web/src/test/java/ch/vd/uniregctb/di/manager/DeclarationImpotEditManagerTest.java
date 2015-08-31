@@ -18,6 +18,7 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -608,7 +609,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final PeriodeFiscale pfAnneeDerniere = addPeriodeFiscale(anneeDerniere);
 				final PeriodeFiscale pfAnneeCourante = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleAnneeDerniere = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pfAnneeDerniere);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(pp, pfAnneeDerniere, debutAnneeDerniere, finAnneeDerniere, cedi, TypeContribuable.VAUDOIS_ORDINAIRE, modeleAnneeDerniere);
 				di.setCodeSegment(6);
 
 				// pour la DI que l'on créera à la main plus bas
@@ -632,9 +633,9 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final Declaration d = pp.getDeclarationActive(finAnneeCourante);
-				assertInstanceOf(DeclarationImpotOrdinaire.class, d);
+				assertInstanceOf(DeclarationImpotOrdinairePP.class, d);
 
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+				final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) d;
 				assertEquals(Integer.valueOf(6), di.getCodeSegment());
 				return null;
 			}
@@ -694,7 +695,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				final List<Declaration> decls = pp.getDeclarationsForPeriode(2009, false);
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
-				assertDI(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
+				assertDIPP(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
 				return null;
 			}
 		});

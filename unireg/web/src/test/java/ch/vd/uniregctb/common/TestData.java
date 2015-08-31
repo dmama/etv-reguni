@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -1408,7 +1408,7 @@ public class TestData {
 		dpi0.addDeclaration(dis1);
 		dpi0 = hibernateTemplate.merge(dpi0);
 
-		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP dio0 = new DeclarationImpotOrdinairePP();
 		dio0.setId(2L);
 		dio0.setDateDebut(RegDate.get(2005, 1, 1));
 		dio0.setDateFin(RegDate.get(2005, 12, 31));
@@ -1425,7 +1425,7 @@ public class TestData {
 		mc1.addDeclaration(dio0);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		DeclarationImpotOrdinaire dio1 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP dio1 = new DeclarationImpotOrdinairePP();
 		dio1.setId(3L);
 		dio1.setDateDebut(RegDate.get(2006, 1, 1));
 		dio1.setDateFin(RegDate.get(2006, 12, 31));
@@ -1442,7 +1442,7 @@ public class TestData {
 		mc1.addDeclaration(dio1);
 		mc1 = hibernateTemplate.merge(mc1);
 
-		DeclarationImpotOrdinaire dio2 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP dio2 = new DeclarationImpotOrdinairePP();
 		dio2.setId(4L);
 		dio2.setDateDebut(RegDate.get(2007, 1, 1));
 		dio2.setDateFin(RegDate.get(2007, 12, 31));

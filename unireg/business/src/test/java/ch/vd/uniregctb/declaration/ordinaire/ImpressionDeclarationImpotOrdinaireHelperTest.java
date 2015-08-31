@@ -44,6 +44,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -107,7 +108,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				DeclarationImpotOrdinaire declaration = diDAO.get(2L);
+				DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(2L);
 				InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
 				Expediteur expediteur = infoEnteteDocument.getExpediteur();
 				Adresse adresseExpediteur = expediteur.getAdresse();
@@ -140,7 +141,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
 		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2010);
-		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+		final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 		declaration2010.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
 		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
 		{
@@ -190,9 +191,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
 		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
 		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
-		final DeclarationImpotOrdinaire declarationCourante =
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinairePP declarationCourante =
 				addDeclarationImpot(pp, periodeCourante, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleCourant);
 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
@@ -309,9 +310,9 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
 		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
 		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
-		final DeclarationImpotOrdinaire declarationCourante =
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinairePP declarationCourante =
 				addDeclarationImpot(pp, periodeCourante, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleCourant);
 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
@@ -368,8 +369,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
 		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
 		final ModeleDocument modeleCourant = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periodeCourante);
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
-		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
 
 		declaration2008.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
@@ -442,7 +443,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 
 		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
-		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinairePP declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
 
 		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
@@ -479,7 +480,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 
 		final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2009);
-		final DeclarationImpotOrdinaire declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
+		final DeclarationImpotOrdinairePP declaration2009 = addDeclarationImpot(pp, periode2009, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2009);
 
 		declaration2009.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
 		declaration2009.setRetourCollectiviteAdministrativeId(cedi.getId());
@@ -519,10 +520,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2007);
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
-		final DeclarationImpotOrdinaire declaration2007 = addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+		final DeclarationImpotOrdinairePP declaration2007 = addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 		declaration2007.setNumeroOfsForGestion(MockCommune.Vallorbe.getNoOFS());
 		declaration2007.setRetourCollectiviteAdministrativeId(cedi.getId());
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Bex.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
 
@@ -616,7 +617,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2008);
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(vevey.getId());
 
@@ -647,7 +648,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2008);
-		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 4, 23), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
+		final DeclarationImpotOrdinairePP declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 4, 23), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 		declaration2008.setRetourCollectiviteAdministrativeId(aci.getId());
 
@@ -674,7 +675,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		LOGGER.debug("EditiqueHelperTest - testRemplitDestinataire");
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		DeclarationImpotOrdinaire declaration = diDAO.get(Long.valueOf(2));
+		DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(Long.valueOf(2));
 		InfoEnteteDocument infoEnteteDocument = impressionDIHelper.remplitEnteteDocument(new InformationsDocumentAdapter(declaration, null));
 		Destinataire destinataire = infoEnteteDocument.getDestinataire();
 		Adresse adresseDestinataire = destinataire.getAdresse();
@@ -728,7 +729,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addModeleFeuilleDocument("Intitulé 230", "230", md);
 				addModeleFeuilleDocument("Intitulé 240", "240", md);
 
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
 				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
 				return di.getId();
@@ -739,7 +740,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration = diDAO.get(diId);
+				final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
 
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
 
@@ -803,7 +804,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 				addModeleFeuilleDocument("Intitulé 320", "320", md);
 				addModeleFeuilleDocument("Intitulé 330", "330", md);
 
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinairePP di = addDeclarationImpot(mc, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
 				di.setNumeroOfsForGestion(MockCommune.VillarsSousYens.getNoOFS());
 				di.setDelaiRetourImprime(date(annee + 1, 7, 31));
 				return di.getId();
@@ -813,7 +814,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration = diDAO.get(diId);
+				final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) diDAO.get(diId);
 				{
 					final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration, null), buildDefaultAnnexes(declaration), false);
 					assertEquals(1, di.getAnnexes().getAnnexe320().getNombre());
@@ -847,7 +848,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
 				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2011.getId();
@@ -857,7 +858,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
 				assertNotNull(di);
 				//Aucune structure enfants ne devrait apparaitre pour les ctb sans enfants
@@ -921,7 +922,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
 				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pere, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pere, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
 
@@ -932,7 +933,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
 				assertNotNull(di);
 
@@ -956,7 +957,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
 				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2010.getId();
@@ -966,7 +967,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final TypFichierImpression.Document document =
 						impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), TypFichierImpression.Factory.newInstance(),
 						                                               null, false);
@@ -990,7 +991,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
 				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2011);
-				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 4, 23), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 				declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2011.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2011.getId();
@@ -1000,7 +1001,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2011, null), null, false);
 				assertNotNull(di);
 				//le NIP doit être présent
@@ -1024,7 +1025,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
 				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2010.getId();
@@ -1034,7 +1035,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2010 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(declaration2010, null), null, false);
 				assertNotNull(di);
 				//le NIP ne doit pas être présent
@@ -1097,7 +1098,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
 				final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
-				final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pere, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+				final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(pere, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 				declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 				declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
 
@@ -1108,7 +1109,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di2011 = diDAO.get(idDi2011);
+				final DeclarationImpotOrdinairePP di2011 = (DeclarationImpotOrdinairePP) diDAO.get(idDi2011);
 				final DI di = impressionDIHelper.remplitSpecifiqueDI(new InformationsDocumentAdapter(di2011, null), null, false);
 				assertNotNull(di);
 				assertNull(di.getEnfants());
@@ -1130,7 +1131,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2011 = addPeriodeFiscale(2011);
 				final ModeleDocument modele2011 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2011);
-				final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+				final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(pp, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 				declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 				declaration2011.setRetourCollectiviteAdministrativeId(cedi.getId());
 				return declaration2011.getId();
@@ -1145,7 +1146,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2011 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final Tiers tiers = declaration2011.getTiers();
 
 				// ... sur l'entête
@@ -1229,14 +1230,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Aigle);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(1, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 			CollectiviteAdministrative oidAigle = tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(MockOfficeImpot.OID_AIGLE.getNoColAdm());
 			declaration2011.setRetourCollectiviteAdministrativeId(oidAigle.getId());
@@ -1254,14 +1255,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Aigle);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(1, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Aigle.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1275,14 +1276,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Echallens);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Echallens.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(5, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Echallens.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1296,13 +1297,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Grandson);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Grandson.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(6, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Grandson.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1316,13 +1317,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Lausanne);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Lausanne.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(7, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Lausanne.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1335,13 +1336,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Fraction.LAbbaye);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Fraction.LAbbaye.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(8, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Fraction.LAbbaye.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1355,13 +1356,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Pully);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Pully.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(9, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Pully.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1375,14 +1376,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Morges);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(10, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1396,13 +1397,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Moudon);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Moudon.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(11, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Moudon.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1416,13 +1417,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Nyon);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(12, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Nyon.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1436,13 +1437,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Orbe);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Orbe.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(13, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Orbe.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1456,13 +1457,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.GrangesMarnand);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.GrangesMarnand.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(15, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.GrangesMarnand.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1476,13 +1477,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.ChateauDoex);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.ChateauDoex.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(16, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.ChateauDoex.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1496,13 +1497,13 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Aubonne);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Aubonne.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(17, codeOid2010.intValue());
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Aubonne.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1517,14 +1518,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
 
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(18, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1538,14 +1539,14 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final PersonnePhysique personnePhysique = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(personnePhysique, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.YverdonLesBains);
 
-			final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+			final DeclarationImpotOrdinairePP declaration2010 = addDeclarationImpot(personnePhysique, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
 			declaration2010.setNumeroOfsForGestion(MockCommune.YverdonLesBains.getNoOFS());
 			declaration2010.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2010 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2010, null));
 			assertEquals(19, codeOid2010.intValue());
 
 
-			final DeclarationImpotOrdinaire declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
+			final DeclarationImpotOrdinairePP declaration2011 = addDeclarationImpot(personnePhysique, periode2011, date(2011, 1, 1), date(2011, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2011);
 			declaration2011.setNumeroOfsForGestion(MockCommune.YverdonLesBains.getNoOFS());
 			declaration2011.setRetourCollectiviteAdministrativeId(idCedi);
 			final Integer codeOid2011 = impressionDIHelper.getNumeroOfficeImpotRetour(new InformationsDocumentAdapter(declaration2011, null));
@@ -1573,7 +1574,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
 				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-				final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
 				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
 				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2012.getId();
@@ -1583,7 +1584,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
 				                                                                                             null, false);
 				assertNotNull(document);
@@ -1611,7 +1612,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 				final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
 				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
-				final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				final DeclarationImpotOrdinairePP declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
 				declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFS());
 				declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
 				return declaration2012.getId();
@@ -1621,7 +1622,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
 			public void execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				final DeclarationImpotOrdinairePP declaration2012 = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, diId);
 				final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012, null),TypFichierImpression.Factory.newInstance(),
 				                                                                                             null, false);
 				assertNotNull(document);

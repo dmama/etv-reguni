@@ -24,17 +24,17 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 		final RegDate dateFin = entity.getDateFin();
 
 		// La date de début doit être renseignée
-		if (dateDebut == null && !isDateOuvertureNullAllowed()) {
+		if (dateDebut == null && !isDateDebutNullAllowed()) {
 			results.addError(String.format("%s %s possède une date de début nulle", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
-		else if (dateDebut != null && !isDateOuvertureFutureAllowed() && dateDebut.isAfter(getFutureBeginDate())) {
+		else if (dateDebut != null && !isDateDebutFutureAllowed() && dateDebut.isAfter(getFutureBeginDate())) {
 			// la date de début d'une entité ne doit en aucun cas être dans le futur !
 			results.addError(String.format("%s %s possède une date de début dans le futur", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
-		if (dateFin == null && !isDateFermetureNullAllowed()) {
+		if (dateFin == null && !isDateFinNullAllowed()) {
 			results.addError(String.format("%s %s possède une date de fin nulle", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
-		else if (dateFin != null && !isDateFermetureFutureAllowed() && dateFin.isAfter(getFutureBeginDate())) {
+		else if (dateFin != null && !isDateFinFutureAllowed() && dateFin.isAfter(getFutureBeginDate())) {
 			// la date de fin non plus, ne doit jamais être dans le futur !
 			results.addError(String.format("%s %s possède une date de fin dans le futur", getEntityCategoryName(), getEntityDisplayString(entity)));
 		}
@@ -101,14 +101,14 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 	/**
 	 * @return <code>true</code> si la date de début est autorisée dans le futur (faux par défaut)
 	 */
-	protected boolean isDateOuvertureFutureAllowed() {
+	protected boolean isDateDebutFutureAllowed() {
 		return false;
 	}
 
 	/**
 	 * @return <code>true</code> si la date de début peut être omise (faux par défaut)
 	 */
-	protected boolean isDateOuvertureNullAllowed() {
+	protected boolean isDateDebutNullAllowed() {
 		return false;
 	}
 
@@ -116,14 +116,14 @@ public abstract class DateRangeEntityValidator<T extends DateRange> extends Enti
 	 * [SIFISC-10141] Certains fors fiscaux (sur les DPI) peuvent avoir des dates de fermeture dans le futur
 	 * @return <code>false</code> par défaut, surchargeable
 	 */
-	protected boolean isDateFermetureFutureAllowed() {
+	protected boolean isDateFinFutureAllowed() {
 		return false;
 	}
 
 	/**
 	 * @return <code>true</code> si la date de fin peut être omise (vrai par défaut)
 	 */
-	protected boolean isDateFermetureNullAllowed() {
+	protected boolean isDateFinNullAllowed() {
 		return true;
 	}
 

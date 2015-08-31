@@ -23,7 +23,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -124,7 +124,7 @@ public class EchoirDIsProcessor {
 
 		Assert.notNull(ident, "L'id doit être spécifié.");
 
-		final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ident.getIdDeclaration());
+		final DeclarationImpotOrdinairePP di = hibernateTemplate.get(DeclarationImpotOrdinairePP.class, ident.getIdDeclaration());
 		Assert.notNull(di, "La déclaration n'existe pas.");
 
 		final EtatDeclaration etat = di.getDernierEtat();

@@ -16,12 +16,12 @@ public class DroitAccesValidator extends DateRangeEntityValidator<DroitAcces> {
 	}
 
 	@Override
-	protected boolean isDateOuvertureFutureAllowed() {
+	protected boolean isDateDebutFutureAllowed() {
 		return true;
 	}
 
 	@Override
-	protected boolean isDateFermetureFutureAllowed() {
+	protected boolean isDateFinFutureAllowed() {
 		return true;
 	}
 }

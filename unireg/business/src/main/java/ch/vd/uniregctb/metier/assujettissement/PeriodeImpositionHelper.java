@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 
@@ -41,7 +41,7 @@ public abstract class PeriodeImpositionHelper {
 	@Nullable
 	private static Integer getCodeSegment(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 		Integer codeSegment = null;
-		final DeclarationImpotOrdinaire di = getDerniereDeclaration(contribuable, annee);
+		final DeclarationImpotOrdinairePP di = getDerniereDeclaration(contribuable, annee);
 		if (di != null) {
 			codeSegment = di.getCodeSegment();
 		}
@@ -54,13 +54,13 @@ public abstract class PeriodeImpositionHelper {
 	 * @return la dernière déclaration d'impôt ordinaire de l'année en question
 	 */
 	@Nullable
-	private static DeclarationImpotOrdinaire getDerniereDeclaration(Contribuable contribuable, int annee) {
-		DeclarationImpotOrdinaire derniereDI = null;
+	private static DeclarationImpotOrdinairePP getDerniereDeclaration(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
+		DeclarationImpotOrdinairePP derniereDI = null;
 		final List<Declaration> declarations = contribuable.getDeclarationsForPeriode(annee, false);
 		if (declarations != null && !declarations.isEmpty()) {
 			final Declaration derniereDeclaration = declarations.get(declarations.size() - 1);
-			if (derniereDeclaration instanceof DeclarationImpotOrdinaire) {
-				derniereDI = (DeclarationImpotOrdinaire) derniereDeclaration;
+			if (derniereDeclaration instanceof DeclarationImpotOrdinairePP) {
+				derniereDI = (DeclarationImpotOrdinairePP) derniereDeclaration;
 			}
 		}
 		return derniereDI;

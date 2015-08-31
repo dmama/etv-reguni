@@ -3,13 +3,14 @@ package ch.vd.uniregctb.declaration;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class InformationsDocumentAdapter {
 
-	public final Tiers tiers;
+	public final ContribuableImpositionPersonnesPhysiques tiers;
 	public final Integer idDocument;
 	public final int annee;
 	public final RegDate delaiRetourImprime;
@@ -22,7 +23,7 @@ public class InformationsDocumentAdapter {
 	public final TypeDocument typeDocument;
 	public final String codeControle;
 
-	public InformationsDocumentAdapter(Tiers tiers, Integer idDocument, int annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
+	public InformationsDocumentAdapter(ContribuableImpositionPersonnesPhysiques tiers, Integer idDocument, int annee, RegDate delaiRetourImprime, RegDate delaiAccorde, RegDate dateReference, int noOfsCommune, Long collId,
 	                                   Qualification qualification, Integer codeSegment, TypeDocument typeDocument, String codeControle) {
 		this.tiers = tiers;
 		this.idDocument = idDocument;
@@ -39,7 +40,7 @@ public class InformationsDocumentAdapter {
 
 	}
 
-	public InformationsDocumentAdapter(DeclarationImpotOrdinaire declaration, @Nullable TypeDocument typeDocumentOverride) {
+	public InformationsDocumentAdapter(DeclarationImpotOrdinairePP declaration, @Nullable TypeDocument typeDocumentOverride) {
 		tiers = declaration.getTiers();
 		idDocument = declaration.getNumero();
 		annee = declaration.getPeriode().getAnnee();

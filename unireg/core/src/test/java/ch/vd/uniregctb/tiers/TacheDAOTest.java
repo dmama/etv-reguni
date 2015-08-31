@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -490,10 +491,10 @@ public class TacheDAOTest extends CoreDAOTest {
 		return modele;
 	}
 
-	private DeclarationImpotOrdinaire addDeclaration(RegDate debut, RegDate fin, TypeContribuable typeCtb, Qualification qualif, PeriodeFiscale periode, ModeleDocument modele, Tiers tiers) {
-		DeclarationImpotOrdinaire di = addDeclarationImpot((Contribuable)tiers, periode, debut, fin, null, typeCtb, modele);
+	private DeclarationImpotOrdinairePP addDeclaration(RegDate debut, RegDate fin, TypeContribuable typeCtb, Qualification qualif, PeriodeFiscale periode, ModeleDocument modele, ContribuableImpositionPersonnesPhysiques ctb) {
+		DeclarationImpotOrdinairePP di = addDeclarationImpot(ctb, periode, debut, fin, null, typeCtb, modele);
 		di.setQualification(qualif);
-		tiers.addDeclaration(di);
+		ctb.addDeclaration(di);
 		di = hibernateTemplate.merge(di);
 		return di;
 	}
@@ -619,7 +620,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp1.setRapportsSujet(new HashSet());
 		pp1 = hibernateTemplate.merge(pp1);
 
-		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP dio0 = new DeclarationImpotOrdinairePP();
 		dio0.setId(1L);
 		dio0.setDateDebut(RegDate.get(2008, 1, 1));
 		dio0.setDateFin(RegDate.get(2008, 12, 31));

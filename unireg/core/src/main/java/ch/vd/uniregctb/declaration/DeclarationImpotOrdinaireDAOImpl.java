@@ -32,7 +32,6 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl< DeclarationIm
 		super(DeclarationImpotOrdinaire.class);
 	}
 
-
 	/**
 	 * Recherche des declarations d'impot ordinaire selon des criteres
 	 *
@@ -157,10 +156,10 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl< DeclarationIm
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Set<DeclarationImpotOrdinaire> getDIsForSommation(final Collection<Long> idsDI) {
+	public Set<DeclarationImpotOrdinairePP> getDeclarationsImpotPPForSommation(final Collection<Long> idsDI) {
 
 		final Session session = getCurrentSession();
-		final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
+		final Criteria crit = session.createCriteria(DeclarationImpotOrdinairePP.class);
 		crit.add(Restrictions.in("id", idsDI));
 		crit.setFetchMode("etats", FetchMode.JOIN);
 		crit.setFetchMode("delais", FetchMode.JOIN);
@@ -169,7 +168,7 @@ public class DeclarationImpotOrdinaireDAOImpl extends BaseDAOImpl< DeclarationIm
 		final FlushMode mode = session.getFlushMode();
 		try {
 			session.setFlushMode(FlushMode.MANUAL);
-			return new HashSet<DeclarationImpotOrdinaire>(crit.list());
+			return new HashSet<>(crit.list());
 		}
 		finally {
 			session.setFlushMode(mode);

@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
@@ -243,30 +243,30 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2008
 
-		DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 		assertEquals(Integer.valueOf(1), d1.getNumero());
 
-		DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
 		d2.setPeriode(periode2008);
 		tiers.addDeclaration(d2);
 		assertEquals(Integer.valueOf(2), d2.getNumero());
 		d2.setAnnule(true);
 
-		DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
 		d3.setPeriode(periode2008);
 		tiers.addDeclaration(d3);
 		assertEquals(Integer.valueOf(3), d3.getNumero()); // le numéro 3, même si la déclaration précédente est annulée
 
 		// 2009
 
-		DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
 		d4.setPeriode(periode2009);
 		tiers.addDeclaration(d4);
 		assertEquals(Integer.valueOf(1), d4.getNumero()); // recommence à 1 en début d'année
 
-		DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
 		d5.setPeriode(periode2009);
 		tiers.addDeclaration(d5);
 		assertEquals(Integer.valueOf(2), d5.getNumero());
@@ -289,31 +289,30 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2009
 
-		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 		assertNull(d1.getCodeControle());
 
-		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
 		d2.setPeriode(periode2008);
 		tiers.addDeclaration(d2);
 		assertNull(d2.getCodeControle());
 		d2.setAnnule(true);
 
-		final DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
 		d3.setPeriode(periode2008);
 		tiers.addDeclaration(d3);
 		assertNull(d3.getCodeControle());
 
 		// 2010
 
-
-		final DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
 		d4.setPeriode(periode2010);
 		tiers.addDeclaration(d4);
 		assertNull(d4.getCodeControle());
 
-		final DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
 		d5.setPeriode(periode2010);
 		tiers.addDeclaration(d5);
 		assertNull(d5.getCodeControle());
@@ -339,21 +338,21 @@ public class TiersTest extends WithoutSpringTest {
 		final String codeControle2011;
 
 		// test la génération du code de contrôle
-		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode2011);
 		tiers.addDeclaration(d1);
 		codeControle2011 = d1.getCodeControle();
 		assertTrue(StringUtils.isNotBlank(codeControle2011));
 
 		// test la réutilisation du code contrôle dans la même année
-		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
 		d2.setPeriode(periode2011);
 		tiers.addDeclaration(d2);
 		assertEquals(codeControle2011, d2.getCodeControle());
 		d2.setAnnule(true);
 
 		// test la réutilisation du code contrôle dans la même année, même en cas de DI annulée
-		final DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
 		d3.setPeriode(periode2011);
 		tiers.addDeclaration(d3);
 		assertEquals(codeControle2011, d3.getCodeControle()); // le même code de contrôle, même si la déclaration précédente est annulée
@@ -363,13 +362,13 @@ public class TiersTest extends WithoutSpringTest {
 		final String codeControle2012;
 
 		// test la génération d'un autre code de contrôle
-		final DeclarationImpotOrdinaire d4 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d4 = new DeclarationImpotOrdinairePP();
 		d4.setPeriode(periode2012);
 		tiers.addDeclaration(d4);
 		codeControle2012 = d4.getCodeControle();
 		assertTrue(StringUtils.isNotBlank(codeControle2012));
 
-		final DeclarationImpotOrdinaire d5 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d5 = new DeclarationImpotOrdinairePP();
 		d5.setPeriode(periode2012);
 		tiers.addDeclaration(d5);
 		assertEquals(codeControle2012, d5.getCodeControle());
@@ -390,12 +389,12 @@ public class TiersTest extends WithoutSpringTest {
 
 		// Déclarations préexistantes SANS code de contrôle
 
-		final DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode);
 		declarations.add(d1);
 
 		// Ajout d'une seconde déclaration et test que le code de contrôle a bien été généré et assigné sur les DEUX déclarations
-		final DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
 		d2.setPeriode(periode);
 		tiers.addDeclaration(d2);
 		final String codeControle = d2.getCodeControle();
@@ -416,16 +415,16 @@ public class TiersTest extends WithoutSpringTest {
 
 		// 2008
 
-		DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d1 = new DeclarationImpotOrdinairePP();
 		d1.setPeriode(periode2008);
 		tiers.addDeclaration(d1);
 
 		 // 2009
-		DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d2 = new DeclarationImpotOrdinairePP();
 		d2.setPeriode(periode2009);
 		tiers.addDeclaration(d2);
 		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
-		DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP d3 = new DeclarationImpotOrdinairePP();
 		d3.setPeriode(periode2009);
 		tiers.addDeclaration(d3);
 		d3.setAnnule(true);

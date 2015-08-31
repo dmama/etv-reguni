@@ -7,7 +7,7 @@ import noNamespace.TypFichierImpression.Document;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -22,7 +22,7 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	 * @param declaration
 	 * @return
 	 */
-	String construitIdDocument(DeclarationImpotOrdinaire declaration);
+	String construitIdDocument(DeclarationImpotOrdinairePP declaration);
 
 
 	/**
@@ -42,7 +42,7 @@ public interface ImpressionDeclarationImpotOrdinaireHelper {
 	 * @param annexes
 	 * @return
 	 */
-	Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinaire declaration, TypFichierImpression typeFichierImpression,
+	Document remplitEditiqueSpecifiqueDI(DeclarationImpotOrdinairePP declaration, TypFichierImpression typeFichierImpression,
 	                                     @Nullable TypeDocument typeDocumentOverride, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException;
 
 

@@ -31,7 +31,7 @@ import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
@@ -873,8 +873,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     /**
      * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
      */
-    protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
-                                                            @Nullable TypeContribuable typeC, ModeleDocument modele) {
+    protected DeclarationImpotOrdinairePP addDeclarationImpot(ContribuableImpositionPersonnesPhysiques tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
+                                                              @Nullable TypeContribuable typeC, ModeleDocument modele) {
 
         final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
         assertNotNull("La collectivité administrative du CEDI n'a pas été définie", cedi);
@@ -883,9 +883,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     @Override
-    protected DeclarationImpotOrdinaire assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, DeclarationImpotOrdinaire di) {
+    protected DeclarationImpotOrdinairePP assignerNumeroSequenceEtSaveDeclarationImpot(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
-            return (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
+            return (DeclarationImpotOrdinairePP) tiersDAO.addAndSave(ctb, di);
         } else {
             return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);
         }

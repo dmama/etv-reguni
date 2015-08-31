@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 
 /**
  * Classe servant à stocker les paramètres à passer à {@link ImpressionSommationDIHelper#remplitSommationDI(ImpressionSommationDIHelperParams)}
@@ -12,7 +12,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 public class ImpressionSommationDIHelperParams {
 	
 	private boolean batch;
-	private DeclarationImpotOrdinaire di;
+	private DeclarationImpotOrdinairePP di;
 	private RegDate dateTraitement;
 	private boolean miseSousPliImpossible;
 	private String traitePar;
@@ -36,7 +36,7 @@ public class ImpressionSommationDIHelperParams {
 	/**
 	 * @return la di sur laquelle porte la sommation
 	 */
-	public DeclarationImpotOrdinaire getDi() {
+	public DeclarationImpotOrdinairePP getDi() {
 		return di;
 	}
 
@@ -88,7 +88,7 @@ public class ImpressionSommationDIHelperParams {
 	 * @param dateTraitement
 	 * @return
 	 */
-	public static ImpressionSommationDIHelperParams createOnlineParams(DeclarationImpotOrdinaire di, String traitePar, String adrMsg, String tel, RegDate dateTraitement) {
+	public static ImpressionSommationDIHelperParams createOnlineParams(DeclarationImpotOrdinairePP di, String traitePar, String adrMsg, String tel, RegDate dateTraitement) {
 		ImpressionSommationDIHelperParams params = new ImpressionSommationDIHelperParams();
 		params.batch = false;
 		params.di = di;
@@ -111,7 +111,7 @@ public class ImpressionSommationDIHelperParams {
 	 * @return
 	 */
 	public static ImpressionSommationDIHelperParams createBatchParams(
-			DeclarationImpotOrdinaire di, 
+			DeclarationImpotOrdinairePP di,
 			boolean miseSousPliImpossible,
 			RegDate dateTraitement
 	) {

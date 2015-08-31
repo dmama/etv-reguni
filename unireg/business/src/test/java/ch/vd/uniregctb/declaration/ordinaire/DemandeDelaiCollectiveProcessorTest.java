@@ -18,7 +18,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults.ErreurType;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -55,7 +55,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 
 		final List<Long> ids = Collections.emptyList();
-		final Contribuable mrKong = addNonHabitant("King", "Kong", date(1965, 4, 13), Sexe.MASCULIN);
+		final PersonnePhysique mrKong = addNonHabitant("King", "Kong", date(1965, 4, 13), Sexe.MASCULIN);
 
 		{
 			// TEST : un tiers sans déclaration pour 2009.

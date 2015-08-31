@@ -17,12 +17,12 @@ public abstract class DeclarationValidator<T extends Declaration> extends DateRa
 			final RegDate dateDebut = declaration.getDateDebut();
 			final RegDate dateFin = declaration.getDateFin();
 
-			if (dateDebut != null && periode != null && dateDebut.year() != periode.getAnnee()) {
+			if (dateDebut != null && periode != null && dateDebut.year() != periode.getAnnee() && isDateDebutForcementDansPeriode()) {
 				vr.addError(String.format("La date de début [%s] doit correspondre avec l'année de la période [%d].",
 				                          RegDateHelper.dateToDisplayString(dateDebut), periode.getAnnee()));
 			}
 
-			if (dateFin != null && periode != null && dateFin.year() != periode.getAnnee()) {
+			if (dateFin != null && periode != null && dateFin.year() != periode.getAnnee() && isDateFinForcementDansPeriode()) {
 				vr.addError(String.format("La date de fin [%s] doit correspondre avec l'année de la période [%d].",
 				                          RegDateHelper.dateToDisplayString(dateFin), periode.getAnnee()));
 			}
@@ -30,18 +30,26 @@ public abstract class DeclarationValidator<T extends Declaration> extends DateRa
 		return vr;
 	}
 
-	@Override
-	protected boolean isDateOuvertureFutureAllowed() {
+	protected boolean isDateDebutForcementDansPeriode() {
+		return true;
+	}
+
+	protected boolean isDateFinForcementDansPeriode() {
 		return true;
 	}
 
 	@Override
-	protected boolean isDateFermetureNullAllowed() {
+	protected boolean isDateDebutFutureAllowed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isDateFinNullAllowed() {
 		return false;
 	}
 
 	@Override
-	protected boolean isDateFermetureFutureAllowed() {
+	protected boolean isDateFinFutureAllowed() {
 		return true;
 	}
 }

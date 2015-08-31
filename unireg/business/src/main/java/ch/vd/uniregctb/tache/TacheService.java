@@ -11,6 +11,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -102,7 +103,7 @@ public interface TacheService {
 	 * @return une liste d'actions à entreprendre
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'incohérence des données sur les fors fiscaux qui empêche de calculer l'assujettissement.
 	 */
-	List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException;
+	List<SynchronizeAction> determineSynchronizeActionsForDIs(ContribuableImpositionPersonnesPhysiques contribuable) throws AssujettissementException;
 
 	/**
 	 * Synchronize les tâches d'envoi de DIs pour tous les contribuables spécifiés (UNIREG-2305) (SIFISC-3141).

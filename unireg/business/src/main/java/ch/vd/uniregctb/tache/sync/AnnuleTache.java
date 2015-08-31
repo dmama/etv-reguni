@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
@@ -43,8 +44,17 @@ public class AnnuleTache extends SynchronizeAction {
 		if (tache instanceof TacheAnnulationDeclarationImpot) {
 			final TacheAnnulationDeclarationImpot annule = (TacheAnnulationDeclarationImpot) tache;
 			final DeclarationImpotOrdinaire di = annule.getDeclarationImpotOrdinaire();
-			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s", toString(di.getTypeContribuable()),
-					RegDateHelper.dateToDisplayString(di.getDateDebut()), RegDateHelper.dateToDisplayString(di.getDateFin()));
+			if (di instanceof DeclarationImpotOrdinairePP) {
+				tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s",
+				                            toString(((DeclarationImpotOrdinairePP) di).getTypeContribuable()),
+				                            RegDateHelper.dateToDisplayString(di.getDateDebut()),
+				                            RegDateHelper.dateToDisplayString(di.getDateFin()));
+			}
+			else {
+				tacheDetail = String.format("d'annulation de la déclaration d'impôt couvrant la période du %s au %s",
+				                            RegDateHelper.dateToDisplayString(di.getDateDebut()),
+				                            RegDateHelper.dateToDisplayString(di.getDateFin()));
+			}
 		}
 		else if (tache instanceof TacheEnvoiDeclarationImpot) {
 			final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) tache;

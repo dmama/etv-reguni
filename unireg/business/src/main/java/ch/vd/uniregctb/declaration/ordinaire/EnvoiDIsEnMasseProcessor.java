@@ -41,6 +41,7 @@ import ch.vd.uniregctb.common.TicketTimeoutException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationGenerationOperation;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
@@ -389,6 +390,9 @@ public class EnvoiDIsEnMasseProcessor {
 	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
+		if (!(contribuable instanceof ContribuableImpositionPersonnesPhysiques)) {
+			return false;
+		}
 
 		// Voir le use-case "SCU-ExclureContribuablesEnvoiDI"
 		final RegDate dateLimiteExclusion = contribuable.getDateLimiteExclusionEnvoiDeclarationImpot();
@@ -403,7 +407,7 @@ public class EnvoiDIsEnMasseProcessor {
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
 			try {
-				return traiterTache(tache, contribuable, dateTraitement, rapport, cache, dcache, simul);
+				return traiterTache(tache, (ContribuableImpositionPersonnesPhysiques) contribuable, dateTraitement, rapport, cache, dcache, simul);
 			}
 			finally {
 				ticketService.releaseTicket(ticket);
@@ -417,11 +421,11 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 	}
 
-	private boolean traiterTache(TacheEnvoiDeclarationImpot tache, Contribuable contribuable, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache,
+	private boolean traiterTache(TacheEnvoiDeclarationImpot tache, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache,
 	                             DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Long numeroCtb = contribuable.getNumero();
-		final List<DeclarationImpotOrdinaire> list = dcache.getDeclarationsInRange(contribuable, tache, false);
+		final List<DeclarationImpotOrdinairePP> list = dcache.getDeclarationsInRange(contribuable, tache, false);
 		if (!list.isEmpty() && !simul) {
 
 			// Il existe déjà une (ou plusieurs) déclarations
@@ -504,7 +508,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 */
 	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		final DeclarationImpotOrdinaire di = creeDI(tache, rapport, cache, dcache, simul);
+		final DeclarationImpotOrdinairePP di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
 			return false;
 		}
@@ -526,9 +530,9 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Crée une nouvelle déclaration d'impôt sur le tiers
 	 */
-	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected DeclarationImpotOrdinairePP creeDI(TacheEnvoiDeclarationImpot tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		final Contribuable contribuable = tache.getContribuable();
+		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tache.getContribuable();
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, tache.getDateFin());
 		if (forGestion == null) {
 			String message = "Impossible de trouver un for de gestion pour le contribuable no [" + contribuable.getNumero()
@@ -541,19 +545,19 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		// calcul du nombre de déclarations déjà existantes pour l'année considérée
-		final List<DeclarationImpotOrdinaire> decls = dcache.getDeclarationsInRange(contribuable, dcache.baseRange, true);
+		final List<DeclarationImpotOrdinairePP> decls = dcache.getDeclarationsInRange(contribuable, dcache.baseRange, true);
 		final int nbDecls = decls != null ? decls.size() : 0;
 
 		// [SIFISC-1368] récupération ou génération du code de contrôle
 		String codeControle = null;
-		if (cache.periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (cache.periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			if (decls == null) {
 				// pas de déclaration : on génère un nouveau code de contrôle
-				codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+				codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
 			}
 			else {
 				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
-				for (DeclarationImpotOrdinaire d : decls) {
+				for (DeclarationImpotOrdinairePP d : decls) {
 					if (d.getCodeControle() != null) {
 						codeControle = d.getCodeControle();
 						break;
@@ -561,22 +565,22 @@ public class EnvoiDIsEnMasseProcessor {
 				}
 				if (codeControle == null) {
 					// pas de code déjà généré : on en génère un nouveau
-					codeControle = DeclarationImpotOrdinaire.generateCodeControle();
+					codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
 					// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
-					for (DeclarationImpotOrdinaire d : decls) {
+					for (DeclarationImpotOrdinairePP d : decls) {
 						d.setCodeControle(codeControle);
 					}
 				}
 			}
 		}
 
-		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP di = new DeclarationImpotOrdinairePP();
 		di.setDateDebut(tache.getDateDebut());
 		di.setDateFin(tache.getDateFin());
 		di.setPeriode(cache.periode);
 		di.setTypeContribuable(tache.getTypeContribuable());
 		di.setQualification(tache.getQualification());
-		if (cache.periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && tache.getCodeSegment() == null ) {
+		if (cache.periode.getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && tache.getCodeSegment() == null ) {
 			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
 		} else {
 			di.setCodeSegment(tache.getCodeSegment());
@@ -620,7 +624,7 @@ public class EnvoiDIsEnMasseProcessor {
 			return false;
 		}
 		// Création de la déclaration d'impôt, du délai de retour et de son état
-		final DeclarationImpotOrdinaire di = creeDI(tache, rapport, cache, dcache, simul);
+		final DeclarationImpotOrdinairePP di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
 			return false;
 		}
@@ -640,9 +644,9 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Détermine l'adresse d'envoi et envoie la déclaration spécifiée à éditique pour impression.
 	 */
-	private void imprimerDI(DeclarationImpotOrdinaire di, RegDate dateTraitement) throws DeclarationException {
+	private void imprimerDI(DeclarationImpotOrdinairePP di, RegDate dateTraitement) throws DeclarationException {
 
-		final Contribuable contribuable = (Contribuable) di.getTiers();
+		final Contribuable contribuable = di.getTiers();
 		Assert.notNull(contribuable);
 
 		diService.envoiDIForBatch(di, dateTraitement);
@@ -655,7 +659,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @param dateTraitement la date de traitement
 	 * @param dateExpedition la date d'expédition calculée (généralement dans le futur)
 	 */
-	protected void ajouterDelaisDeRetourInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement, RegDate dateExpedition) {
+	protected void ajouterDelaisDeRetourInitial(DeclarationImpotOrdinairePP di, RegDate dateTraitement, RegDate dateExpedition) {
 
 		final PeriodeFiscale periode = di.getPeriode();
 		final Contribuable contribuable = (Contribuable) di.getTiers();
@@ -752,9 +756,8 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Retourne vrai si la déclaration d'impôt et la tâches spécifiées correspondent parfaitement
 	 */
-	protected boolean correspondent(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpot tache) {
-		return (di.getTypeContribuable() == tache.getTypeContribuable() && di.getTypeDeclaration() == tache.getTypeDocument() && DateRangeHelper
-				.equals(di, tache));
+	protected boolean correspondent(DeclarationImpotOrdinairePP di, TacheEnvoiDeclarationImpot tache) {
+		return (di.getTypeContribuable() == tache.getTypeContribuable() && di.getTypeDeclaration() == tache.getTypeDocument() && DateRangeHelper.equals(di, tache));
 	}
 
 	/**
@@ -791,7 +794,7 @@ public class EnvoiDIsEnMasseProcessor {
 	protected class DeclarationsCache {
 
 		private final DateRange baseRange;
-		private final Map<Long, List<DeclarationImpotOrdinaire>> map = new HashMap<>();
+		private final Map<Long, List<DeclarationImpotOrdinairePP>> map = new HashMap<>();
 
 		public DeclarationsCache(int annee, List<Long> ids) {
 			this.baseRange = new Range(RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31));
@@ -811,7 +814,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 			final String declQuery = // --------------------------------------------------------------------------
 			"FROM                                                                                             "
-					+ "    DeclarationImpotOrdinaire AS di                                                    "
+					+ "    DeclarationImpotOrdinairePP AS di                                                  "
 					+ "WHERE                                                                                  "
 					+ "    di.tiers.id in (:ids) AND                                                          "
 					+ "    di.periode.id = :periodeId                                                         "
@@ -819,9 +822,9 @@ public class EnvoiDIsEnMasseProcessor {
 					+ "    di.dateDebut ASC                                                                   ";
 
 			// On récupère toutes les DIs correspondant au critères du cache
-			final List<DeclarationImpotOrdinaire> list = hibernateTemplate.execute(new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
+			final List<DeclarationImpotOrdinairePP> list = hibernateTemplate.execute(new HibernateCallback<List<DeclarationImpotOrdinairePP>>() {
 				@Override
-				public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
+				public List<DeclarationImpotOrdinairePP> doInHibernate(Session session) throws HibernateException {
 					final FlushMode mode = session.getFlushMode();
 					try {
 						/*
@@ -854,7 +857,7 @@ public class EnvoiDIsEnMasseProcessor {
 			});
 
 			// Initialisation de la map
-			for (DeclarationImpotOrdinaire di : list) {
+			for (DeclarationImpotOrdinairePP di : list) {
 				addDeclaration(di);
 			}
 		}
@@ -863,10 +866,10 @@ public class EnvoiDIsEnMasseProcessor {
 		 * Ajoute une déclaration dans le cache.
 		 * @param di une déclaration d'impôt à ajouter.
 		 */
-		public void addDeclaration(DeclarationImpotOrdinaire di) {
+		public void addDeclaration(DeclarationImpotOrdinairePP di) {
 			final Long numero = di.getTiers().getNumero();
 
-			List<DeclarationImpotOrdinaire> l = map.get(numero);
+			List<DeclarationImpotOrdinairePP> l = map.get(numero);
 			if (l == null) {
 				l = new ArrayList<>();
 				map.put(numero, l);
@@ -890,13 +893,13 @@ public class EnvoiDIsEnMasseProcessor {
 		 * @param annuleesIncluses si oui ou non les déclarations annulées doivent être renvoyées
 		 * @return une liste des déclarations trouvées
 		 */
-		public List<DeclarationImpotOrdinaire> getDeclarationsInRange(final Contribuable contribuable, final DateRange range, boolean annuleesIncluses) {
+		public List<DeclarationImpotOrdinairePP> getDeclarationsInRange(final ContribuableImpositionPersonnesPhysiques contribuable, final DateRange range, boolean annuleesIncluses) {
 
 			if (!DateRangeHelper.within(range, baseRange)) {
 				Assert.fail("Le range [" + range.getDateDebut() + ';' + range.getDateFin() + "] n'est pas compris dans le range de base ["
 						+ baseRange.getDateDebut() + ';' + baseRange.getDateFin() + ']');
 			}
-			List<DeclarationImpotOrdinaire> list = map.get(contribuable.getNumero());
+			List<DeclarationImpotOrdinairePP> list = map.get(contribuable.getNumero());
 
 			if (list == null) {
 				list = Collections.emptyList();
@@ -905,8 +908,8 @@ public class EnvoiDIsEnMasseProcessor {
 			// si le range spécifié ne corresponds pas à celui utilisé pour initialiser le cache, on retrie la liste en conséquence
 			final boolean sameRange = DateRangeHelper.equals(range, baseRange);
 			if (!list.isEmpty() && (!annuleesIncluses || !sameRange)) {
-				final List<DeclarationImpotOrdinaire> listeFiltree = new ArrayList<>(list.size());
-				for (DeclarationImpotOrdinaire di : list) {
+				final List<DeclarationImpotOrdinairePP> listeFiltree = new ArrayList<>(list.size());
+				for (DeclarationImpotOrdinairePP di : list) {
 					if ((annuleesIncluses || !di.isAnnule()) && (sameRange || DateRangeHelper.intersect(di, range))) {
 						listeFiltree.add(di);
 					}

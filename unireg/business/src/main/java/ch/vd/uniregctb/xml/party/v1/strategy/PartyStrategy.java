@@ -417,8 +417,11 @@ public abstract class PartyStrategy<T extends Party> {
 			if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotSource) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newWithholdingTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotSource) declaration, parts));
 			}
-			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) declaration, parts));
+			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) {
+				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) declaration, parts));
+			}
+			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
+				// TODO [SIPM] il y a sans doute quelque chose à faire, non ?
 			}
 		}
 	}

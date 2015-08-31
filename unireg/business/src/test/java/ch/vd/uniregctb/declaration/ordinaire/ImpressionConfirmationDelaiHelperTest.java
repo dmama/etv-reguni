@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 
@@ -32,7 +32,7 @@ public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
 		LOGGER.debug("ImpressionConfirmationDelaiHelperTest - testConstruitIdArchivageDocument");
 		String idArchivageAttendu = "325483 Confirmation Delai  0101123020000";
 
-		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
+		DeclarationImpotOrdinairePP declaration = new DeclarationImpotOrdinairePP();
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDeclaration(declaration);
 		delai.setDelaiAccordeAu(date(2011, 9, 21));
