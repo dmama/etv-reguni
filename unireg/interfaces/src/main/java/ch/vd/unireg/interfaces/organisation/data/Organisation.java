@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 
 public class Organisation implements Serializable {
 
@@ -63,14 +64,36 @@ public class Organisation implements Serializable {
 		return no;
 	}
 
+	/**
+	 * Prepare une liste de plages représantant la succession des sièges des établissements principaux
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche le siege qui lui est contemporain.
+	 *
+	 * On extraie ensuite toute les plages sièges correspondant à la plage type principal.
+	 *
+	 * TODO: Ecrire le test
+	 *
+	 * @return La succession de plage contenant l'information de siege.
+	 */
 	public List<DateRanged<Integer>> getSiegesPrincipal() {
 		List<DateRanged<Integer>> sieges = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
-			for (DateRanged<Integer> siege : site.getSiege()) {
-				if (DateRangeHelper.rangeAt(site.getTypeDeSite(), siege.getDateDebut()) ==
-						DateRangeHelper.rangeAt(site.getTypeDeSite(), siege.getDateFin())) {
-					sieges.add(siege);
+			for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
+				if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					List<DateRanged<Integer>> extractedSieges = DateRangeHelper.extract(site.getSiege(),
+					                                                                    type.getDateDebut(),
+					                                                                    type.getDateFin(),
+					                                                                    new DateRangeHelper.AdapterCallback<DateRanged<Integer>>() {
+						                                                                    @Override
+						                                                                    public DateRanged<Integer> adapt(DateRanged<Integer> range, RegDate debut, RegDate fin) {
+							                                                                    return new DateRanged<>(debut != null ? debut : range.getDateDebut(),
+							                                                                                            fin != null ? fin : range.getDateFin(),
+							                                                                                            range.getPayload());
+						                                                                    }
+					                                                                    });
+					sieges.addAll(extractedSieges);
 				}
 			}
 		}
@@ -78,18 +101,38 @@ public class Organisation implements Serializable {
 		return sieges;
 	}
 
+	/**
+	 * Retourne une liste représantant la succession des valeurs de capital de l'entreprise.
+	 *
+	 * Pour y arriver, pour chaque etablissement (site), on parcoure la liste des plages de type (principal ou secondaire)
+	 * et pour chaque plage principale on recherche la plage de capital qui lui est contemporaine.
+	 *
+	 * On recrée l'information du capital dans une nouvelle plage aux limites de la plage type principale qui a permis
+	 * de la trouver.
+	 *
+	 * TODO: Ecrire le test
+	 *
+	 * @return La succession de plage contenant l'information de capital.
+	 */
 	public List<DateRanged<Capital>> getCapital() {
 		List<DateRanged<Capital>> capitalsValides = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
 			List<DateRanged<Capital>> capitals = site.getRc().getCapital();
-			if (capitals != null) {
-				for (DateRanged<Capital> capital : capitals) {
-					// On controle si le site est principal pour cette plage de temps
-					if (DateRangeHelper.rangeAt(site.getTypeDeSite(), capital.getDateDebut()) ==
-							DateRangeHelper.rangeAt(site.getTypeDeSite(), capital.getDateFin())) {
-						capitalsValides.add(capital);
-					}
+			for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
+				if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					List<DateRanged<Capital>> extractedSieges = DateRangeHelper.extract(capitals,
+					                                                                    type.getDateDebut(),
+					                                                                    type.getDateFin(),
+					                                                                    new DateRangeHelper.AdapterCallback<DateRanged<Capital>>() {
+						                                                                    @Override
+						                                                                    public DateRanged<Capital> adapt(DateRanged<Capital> range, RegDate debut, RegDate fin) {
+							                                                                    return new DateRanged<>(debut != null ? debut : range.getDateDebut(),
+							                                                                                            fin != null ? fin : range.getDateFin(),
+							                                                                                            range.getPayload());
+						                                                                    }
+					                                                                    });
+					capitalsValides.addAll(extractedSieges);
 				}
 			}
 		}
