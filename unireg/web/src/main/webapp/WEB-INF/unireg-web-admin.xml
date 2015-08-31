@@ -59,6 +59,7 @@
 				<entry key="evenementsEfacture" value-ref="evenementEfactureEndpointManager"/>
 				<entry key="evenementsEfactureResponse" value-ref="evenementEfactureResponseEndpointManager"/>
 				<entry key="reqDes" value-ref="reqdesEventEndpointManager"/>
+				<entry key="evenementOrganisation" value-ref="evtOrganisationMasseEndpointManager"/>
 			</map>
 		</property>
 	</bean>

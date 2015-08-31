@@ -31,6 +31,7 @@
 		<property name="messageListener" ref="evtOrganisationListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
+		<property name="description" value="Réception des évènements en masse provenant du registre des entreprises"/>
 	</bean>
 
 	<bean id="evtOrganisationNotificationQueue" class="ch.vd.uniregctb.evenement.organisation.engine.EvenementOrganisationNotificationQueueImpl">
