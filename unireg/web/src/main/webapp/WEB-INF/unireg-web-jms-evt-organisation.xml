@@ -5,9 +5,7 @@
 
 	<!-- Evénements Organisation -->
 
-	<!-- Traitements de masse -->
-
-	<bean id="evtOrganisationMasseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+	<bean id="evtOrganisationListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
 		<property name="handler" ref="evtOrganisationEsbHandler"/>
 	</bean>
 
@@ -20,7 +18,7 @@
 		</property>
 	</bean>
 
-	<bean id="evtOrganisationMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+	<bean id="evtOrganisationEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
 		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
 		<property name="activationSpec">
 			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
@@ -30,7 +28,7 @@
 				<property name="maxMessagesPerSessions" value="100"/>
 			</bean>
 		</property>
-		<property name="messageListener" ref="evtOrganisationMasseListener"/>
+		<property name="messageListener" ref="evtOrganisationListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtOrganisation.enabled}" />
 	</bean>
@@ -68,4 +66,5 @@
 		<property name="evtOrganisationDAO" ref="evenementOrganisationDAO"/>
 		<property name="processor" ref="evtOrganisationProcessor"/>
 	</bean>
+
 </beans>
