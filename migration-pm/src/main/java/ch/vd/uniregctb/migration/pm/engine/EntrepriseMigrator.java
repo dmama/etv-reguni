@@ -47,7 +47,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -1746,7 +1746,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private Declaration migrateDeclaration(RegpmDossierFiscal dossier, RegDate dateDebut, RegDate dateFin, MigrationResultProduction mr) {
 		final PeriodeFiscale pf = getPeriodeFiscaleByYear(dossier.getPf());
 
-		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinairePM di = new DeclarationImpotOrdinairePM();
 		copyCreationMutation(dossier, di);
 		di.setDateDebut(dateDebut);
 		di.setDateFin(dateFin);

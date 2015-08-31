@@ -27,6 +27,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -511,6 +512,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Declaration declaration = declarations.iterator().next();
 			Assert.assertNotNull(declaration);
+			Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
@@ -582,6 +584,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Declaration declaration = declarations.iterator().next();
 			Assert.assertNotNull(declaration);
+			Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
@@ -677,6 +680,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Declaration declaration = declarations.iterator().next();
 			Assert.assertNotNull(declaration);
+			Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 			Assert.assertEquals(RegDate.get(pf, 7, 12), declaration.getDateExpedition());
 			Assert.assertEquals(RegDate.get(pf - 1, 7, 1), declaration.getDateDebut());
 			Assert.assertEquals(RegDate.get(pf, 6, 30), declaration.getDateFin());
