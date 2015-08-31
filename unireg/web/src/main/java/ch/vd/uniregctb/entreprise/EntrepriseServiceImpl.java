@@ -9,13 +9,11 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.interfaces.model.EtatPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -23,7 +21,8 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -65,6 +64,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			/*
 				L'entreprise a un identifiant cantonal et donc existe dans le registre civil cantonal.
 			 */
+			entrepriseView.setSource(EntrepriseView.SourceCivile.RCENT);
 
 			Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroEntreprise);
 			//Organisation organisation = HorribleMockOrganisationService.getOrg(); // FIXME: Faire le ménage
@@ -87,6 +87,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			/*
 				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
 			 */
+			entrepriseView.setSource(EntrepriseView.SourceCivile.UNIREG);
 			List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
 			Collections.sort(donneesRC, new DateRangeComparator<DonneesRegistreCommerce>());
 			Collections.reverse(donneesRC);
@@ -146,11 +147,14 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		if (donneesRC != null) {
 			List<CapitalView> capitaux = new ArrayList<>(donneesRC.size());
 			for (DonneesRegistreCommerce donnee : donneesRC) {
-				CapitalView capitalView = new CapitalView();
-				capitalView.setDateDebut(donnee.getDateDebut());
-				capitalView.setDateFin(donnee.getDateFin());
-				capitalView.setCapitalLibere(donnee.getCapital().getMontant());
-				capitaux.add(capitalView);
+				MontantMonetaire capital = donnee.getCapital();
+				if (capital != null) {
+					CapitalView capitalView = new CapitalView();
+					capitalView.setDateDebut(donnee.getDateDebut());
+					capitalView.setDateFin(donnee.getDateFin());
+					capitalView.setCapitalLibere(capital.getMontant());
+					capitaux.add(capitalView);
+				}
 			}
 			return capitaux;
 		}
@@ -161,11 +165,14 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		if (donneesRC != null) {
 			List<FormeJuridiqueView> formes = new ArrayList<>(donneesRC.size());
 			for (DonneesRegistreCommerce donnee : donneesRC) {
-				FormeJuridiqueView formeJuridiqueView = new FormeJuridiqueView();
-				formeJuridiqueView.setDateDebut(donnee.getDateDebut());
-				formeJuridiqueView.setDateFin(donnee.getDateFin());
-				formeJuridiqueView.setCode(HorribleFormeJuridiqueMapper.map(donnee.getFormeJuridique()).name()); // FIXME: Faire le ménage
-				formes.add(formeJuridiqueView);
+				FormeJuridique formeJuridique = donnee.getFormeJuridique();
+				if (formeJuridique != null) {
+					FormeJuridiqueView formeJuridiqueView = new FormeJuridiqueView();
+					formeJuridiqueView.setDateDebut(donnee.getDateDebut());
+					formeJuridiqueView.setDateFin(donnee.getDateFin());
+					formeJuridiqueView.setCode(HorribleFormeJuridiqueMapper.map(formeJuridique).name()); // FIXME: Faire le ménage
+					formes.add(formeJuridiqueView);
+				}
 			}
 			return formes;
 		}
@@ -266,27 +273,4 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		Collections.reverse(list);
 		return list;
 	}
-
-	private List<EtatPMView> getEtatsPM(List<EtatPM> etats) {
-		if (etats == null) {
-			return null;
-		}
-		final List<EtatPMView> list = new ArrayList<>(etats.size());
-		for (EtatPM r : etats) {
-			final EtatPMView v = new EtatPMView();
-			v.setDateDebut(r.getDateDebut());
-			v.setDateFin(r.getDateFin());
-			v.setCode(r.getCode());
-			final TypeEtatPM type = serviceInfra.getTypeEtatPM(r.getCode());
-			if (type != null) {
-				v.setLibelle(type.getLibelle());
-			}
-			list.add(v);
-		}
-		Collections.sort(list, new DateRangeComparator<EtatPMView>());
-		Collections.reverse(list);
-		return list;
-	}
-
-
 }
