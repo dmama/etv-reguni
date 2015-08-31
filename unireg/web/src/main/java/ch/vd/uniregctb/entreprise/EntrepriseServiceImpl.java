@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web
@@ -71,9 +72,9 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
 			entrepriseView.setAutresRaisonsSociales(getNomsAdditionnels(organisation));
 
-			entrepriseView.setSieges(getSieges(organisation.getSiegesPrincipal()));
+			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipal()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
-			entrepriseView.setCapitaux(getCapitaux(organisation));
+			entrepriseView.setCapitaux(extractCapitaux(organisation));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
 			List<DateRanged<String>> noIdeList = organisation.getNoIDE();
 			if (noIdeList != null && noIdeList.size() > 0) {
@@ -87,7 +88,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
 			 */
 			List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
-			donneesRC.sort(new DateRangeComparator<DonneesRegistreCommerce>());
+			Collections.sort(donneesRC, new DateRangeComparator<DonneesRegistreCommerce>());
 			Collections.reverse(donneesRC);
 
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
@@ -115,10 +116,26 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	private List<SiegeView> extractSieges(List<DateRanged<Etablissement>> etablissements) {
 		if (etablissements != null) {
 			List<DateRanged<Etablissement>> principals = extractPrincipals(etablissements);
-			List<DateRanged<Integer>> siegeIds = new ArrayList<>();
+			List<DomicileEtablissement> siegeIds = new ArrayList<>();
 			for (DateRanged<Etablissement> principal : principals) {
-				DomicileEtablissement domicile = DateRangeHelper.rangeAt(principal.getPayload().getSortedDomiciles(false), principal.getDateFin());
-				siegeIds.add(new DateRanged<>(domicile.getDateDebut(), domicile.getDateFin(), domicile.getNumeroOfsAutoriteFiscale()));
+				// FIXME: Extraire et trier spéciallement les domiciles annulés !!
+				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(false),
+				                                                                         principal.getDateDebut(),
+				                                                                         principal.getDateFin(),
+				                                                                         new DateRangeHelper.AdapterCallback<DomicileEtablissement>() {
+					                                                                         @Override
+					                                                                         public DomicileEtablissement adapt(DomicileEtablissement domicile, RegDate debut, RegDate fin) {
+						                                                                         return new DomicileEtablissement(debut != null ? debut : domicile.getDateDebut(),
+						                                                                                                          fin != null ? fin : domicile.getDateFin(),
+						                                                                                                          domicile.getTypeAutoriteFiscale(),
+						                                                                                                          domicile.getNumeroOfsAutoriteFiscale(),
+						                                                                                                          domicile.getEtablissement()
+
+						                                                                         );
+					                                                                         }
+				                                                                         });
+
+				siegeIds.addAll(extractedDomiciles);
 			}
 			return getSieges(siegeIds);
 		}
@@ -132,7 +149,8 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 				CapitalView capitalView = new CapitalView();
 				capitalView.setDateDebut(donnee.getDateDebut());
 				capitalView.setDateFin(donnee.getDateFin());
-				capitalView.setCapitalAction(donnee.getCapital().getMontant());
+				capitalView.setCapitalLibere(donnee.getCapital().getMontant());
+				capitaux.add(capitalView);
 			}
 			return capitaux;
 		}
@@ -168,14 +186,14 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return l;
 	}
 
-	private List<SiegeView> getSieges(List<DateRanged<Integer>> sieges) {
+	private List<SiegeView> getSiegesFromOrganisation(List<DateRanged<Integer>> sieges) {
 		if (sieges == null) {
 			return null;
 		}
 		final List<SiegeView> list = new ArrayList<>(sieges.size());
 		for (DateRanged<Integer> siege : sieges) {
 
-			final TypeNoOfs type;
+			final TypeNoOfs type; // FIXME: Si par malheur un pays se trouve avoir un numéro identique à une commune ... boom. Il faut qu'on obtienne l'information proprement.
 			Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getPayload(), siege.getDateFin());
 			if (commune != null) {
 				type = TypeNoOfs.COMMUNE_CH;
@@ -184,6 +202,27 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			}
 
 			list.add(new SiegeView(siege, type));
+		}
+		Collections.sort(list, new DateRangeComparator<SiegeView>());
+		Collections.reverse(list);
+		return list;
+	}
+
+	private List<SiegeView> getSieges(List<DomicileEtablissement> domiciles) {
+		if (domiciles == null) {
+			return null;
+		}
+		final List<SiegeView> list = new ArrayList<>(domiciles.size());
+
+		for (DomicileEtablissement domicile : domiciles) {
+			final TypeNoOfs type;
+
+			if (domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+				type = TypeNoOfs.PAYS_HS;
+			} else {
+				type = TypeNoOfs.COMMUNE_CH;
+			}
+			list.add(new SiegeView(new DateRanged<>(domicile.getDateDebut(), domicile.getDateFin(), domicile.getNumeroOfsAutoriteFiscale()), type));
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());
 		Collections.reverse(list);
@@ -203,7 +242,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return list;
 	}
 
-	private List<CapitalView> getCapitaux(Organisation organisation) {
+	private List<CapitalView> extractCapitaux(Organisation organisation) {
 		List<DateRanged<Capital>> capitaux = organisation.getCapital();
 		if (capitaux == null) {
 			return null;

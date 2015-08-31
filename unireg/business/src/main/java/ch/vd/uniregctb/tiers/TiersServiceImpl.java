@@ -256,12 +256,24 @@ public class TiersServiceImpl implements TiersService {
         return tiersDAO.getEntrepriseByNumeroOrganisation(numeroOrganisation);
     }
 
+
+	/**
+	 * Renvoie la liste des établissements d'une entreprise dont le rapport avec cette dernière
+	 * n'a pas été annulé.
+	 *
+	 * Un établissement peut être présent plus d'une fois dans la liste, s'il est devenu
+	 * l'établissement de l'entreprise à plusieurs reprise.
+	 *
+	 * @param entreprise L'entreprise dont il faut rechercher les établissements.
+	 * @return La liste des établissements sous forme de plages de temps.
+	 */
+	@Override
 	public List<DateRanged<Etablissement>> getEtablissementsForEntreprise(Entreprise entreprise) {
-		Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsObjet();
+		Set<RapportEntreTiers> rapportsSujet = entreprise.getRapportsSujet();
 		List<DateRanged<Etablissement>> etablissements = new ArrayList<>();
 		for (RapportEntreTiers rapport : rapportsSujet) {
-			if (rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE) {
-				Etablissement tiers = (Etablissement) getTiers(rapport.getId());
+			if (rapport.getType() == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && !rapport.isAnnule()) {
+				Etablissement tiers = (Etablissement) getTiers(rapport.getObjetId());
 				if (tiers != null) {
 					etablissements.add(new DateRanged<>(rapport.getDateDebut(), rapport.getDateFin(), tiers));
 				} else {
