@@ -12,7 +12,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
@@ -76,7 +76,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testChevauchementDonneesRegistreCommerce() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", new MontantMonetaire(50000L, CHF), FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 1, 1), date(2005, 12, 31), "Ma petite entreprise", new MontantMonetaire(50000L, CHF), FormeJuridiqueEntreprise.SARL));
 
 		// aucun chevauchement (= 1 seule donnée, de toute façon...)
 		{
@@ -85,14 +85,14 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons une donnée qui ne chevauche pas -> pas de souci
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", new MontantMonetaire(60000L, CHF), FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2007, 1, 1), date(2009, 12, 1), "Ma petite entreprise", new MontantMonetaire(60000L, CHF), FormeJuridiqueEntreprise.SARL));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
 		}
 
 		// ajoutons une donnée qui chevauche -> rien ne va plus
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", new MontantMonetaire(55000L, CHF), FormeJuridique.SARL));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2005, 1, 1), date(2007, 12, 31), "Ma petite entreprise", new MontantMonetaire(55000L, CHF), FormeJuridiqueEntreprise.SARL));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertTrue(vr.hasErrors());
@@ -108,7 +108,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testDonneesRegistreCommerceInvalides() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", new MontantMonetaire(1000000L, CHF), FormeJuridique.SA));     // les dates sont à l'envers !
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2005, 12, 31), "Ma grande entreprise", new MontantMonetaire(1000000L, CHF), FormeJuridiqueEntreprise.SA));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -170,7 +170,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMonnaie() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(1000000L, null), FormeJuridique.SA));     // pas de monnaie !
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(1000000L, null), FormeJuridiqueEntreprise.SA));     // pas de monnaie !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -184,7 +184,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMontant() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, CHF), FormeJuridique.SA));     // pas de montant !
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, CHF), FormeJuridiqueEntreprise.SA));     // pas de montant !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -198,7 +198,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalSansMontantNiMonnaie() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, null), FormeJuridique.SA));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(null, null), FormeJuridiqueEntreprise.SA));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());
@@ -212,7 +212,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testSansCapital() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", null, FormeJuridique.SA));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", null, FormeJuridiqueEntreprise.SA));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertEquals(0, vr.errorsCount());
@@ -223,7 +223,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testCapitalAvecMontantNegatif() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(-42L, CHF), FormeJuridique.SA));
+		entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), null, "Ma grande entreprise", new MontantMonetaire(-42L, CHF), FormeJuridiqueEntreprise.SA));
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());

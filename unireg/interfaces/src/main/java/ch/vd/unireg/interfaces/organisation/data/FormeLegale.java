@@ -1,4 +1,13 @@
 package ch.vd.unireg.interfaces.organisation.data;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Les différentes formes légale en provenance du registre des entreprises
+ */
 public enum FormeLegale {
 
 	N_00_AUTRE("00"),
@@ -43,11 +52,28 @@ public enum FormeLegale {
 
 	private final String code;
 
+	private static final Map<String, FormeLegale> byCode;
+
+	static {
+		byCode = new HashMap<>(FormeLegale.values().length);
+		for (FormeLegale fl : FormeLegale.values()) {
+			final FormeLegale old = byCode.put(fl.code, fl);
+			if (old != null) {
+				throw new IllegalArgumentException(String.format("Code %s utilisé plusieurs fois !", old.code));
+			}
+		}
+	}
+
 	FormeLegale(String code) {
 		this.code = code;
 	}
 
 	public String getCode() {
 		return this.code;
+	}
+
+	@Nullable
+	public static FormeLegale fromCode(String code) {
+		return byCode.get(code);
 	}
 }

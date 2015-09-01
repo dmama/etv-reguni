@@ -51,6 +51,7 @@ public abstract class LengthConstants {
 	public static final int DPI_MODECOM = 12;
 
 	public static final int AC_FORME = 5;
+	public static final int PM_FORME = 15;
 
 	public static final int MVTDOSSIER_ETAT = 15;
 

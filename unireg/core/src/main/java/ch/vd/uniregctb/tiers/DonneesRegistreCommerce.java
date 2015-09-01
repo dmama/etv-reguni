@@ -20,7 +20,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 @Entity
 @Table(name = "DONNEES_RC")
@@ -30,14 +30,14 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 	private Entreprise entreprise;
 	private String raisonSociale;
 	private MontantMonetaire capital;
-	private FormeJuridique formeJuridique;
+	private FormeJuridiqueEntreprise formeJuridique;
 
 	// TODO : code noga, ... ?
 
 	public DonneesRegistreCommerce() {
 	}
 
-	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, MontantMonetaire capital, FormeJuridique formeJuridique) {
+	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, MontantMonetaire capital, FormeJuridiqueEntreprise formeJuridique) {
 		super(dateDebut, dateFin);
 		this.raisonSociale = raisonSociale;
 		this.capital = capital;
@@ -93,13 +93,13 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 		this.capital = capital;
 	}
 
-	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.AC_FORME)
+	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.PM_FORME)
 	@Enumerated(EnumType.STRING)
-	public FormeJuridique getFormeJuridique() {
+	public FormeJuridiqueEntreprise getFormeJuridique() {
 		return formeJuridique;
 	}
 
-	public void setFormeJuridique(FormeJuridique formeJuridique) {
+	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
 		this.formeJuridique = formeJuridique;
 	}
 

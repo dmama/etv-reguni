@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.entreprise;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.vd.registre.base.date.CollatableDateRange;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -143,44 +143,66 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return null;
 	}
 
-	private List<CapitalView> extractCapitaux(List<DonneesRegistreCommerce> donneesRC) {
-		if (donneesRC != null) {
-			List<CapitalView> capitaux = new ArrayList<>(donneesRC.size());
-			for (DonneesRegistreCommerce donnee : donneesRC) {
-				MontantMonetaire capital = donnee.getCapital();
-				if (capital != null) {
-					CapitalView capitalView = new CapitalView();
-					capitalView.setDateDebut(donnee.getDateDebut());
-					capitalView.setDateFin(donnee.getDateFin());
-					capitalView.setCapitalLibere(capital.getMontant());
-					capitaux.add(capitalView);
-				}
-			}
-			return capitaux;
-		}
-		return null;
+	private interface ExtractorDonneesRegistreCommerce<T> {
+		T extract(DonneesRegistreCommerce source);
 	}
 
-	private List<FormeJuridiqueView> extractFormesJuridiques(List<DonneesRegistreCommerce> donneesRC) {
-		if (donneesRC != null) {
-			List<FormeJuridiqueView> formes = new ArrayList<>(donneesRC.size());
-			for (DonneesRegistreCommerce donnee : donneesRC) {
-				FormeJuridique formeJuridique = donnee.getFormeJuridique();
-				if (formeJuridique != null) {
-					FormeJuridiqueView formeJuridiqueView = new FormeJuridiqueView();
-					formeJuridiqueView.setDateDebut(donnee.getDateDebut());
-					formeJuridiqueView.setDateFin(donnee.getDateFin());
-					formeJuridiqueView.setCode(HorribleFormeJuridiqueMapper.map(formeJuridique).name()); // FIXME: Faire le ménage
-					formes.add(formeJuridiqueView);
-				}
+	private static <T extends DateRange> List<T> extractFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
+	                                                                                ExtractorDonneesRegistreCommerce<? extends T> extractor) {
+		final List<T> extractedData = new ArrayList<>(source.size());
+		for (DonneesRegistreCommerce data : source) {
+			final T extractedValue = extractor.extract(data);
+			if (extractedValue != null) {
+				extractedData.add(extractedValue);
 			}
-			return formes;
 		}
-		return null;
+		return extractedData;
 	}
 
+	private static <T extends CollatableDateRange> List<T> extractAndCollateFromDonneesRegistreCommerce(List<DonneesRegistreCommerce> source,
+	                                                                                                    ExtractorDonneesRegistreCommerce<? extends T> extractor) {
+		final List<T> nonCollatedData = extractFromDonneesRegistreCommerce(source, extractor);
+		return DateRangeHelper.collate(nonCollatedData);
+	}
 
-	private List<String> getNomsAdditionnels(Organisation organisation) {
+	private static List<CapitalView> extractCapitaux(List<DonneesRegistreCommerce> donneesRC) {
+		final List<CapitalView> views = extractAndCollateFromDonneesRegistreCommerce(donneesRC,
+		                                                                             new ExtractorDonneesRegistreCommerce<CapitalView>() {
+			                                                                             @Override
+			                                                                             public CapitalView extract(DonneesRegistreCommerce source) {
+				                                                                             final MontantMonetaire capitalLibere = source.getCapital();
+				                                                                             if (capitalLibere != null) {
+					                                                                             return new CapitalView(source.getDateDebut(), source.getDateFin(), null, capitalLibere);
+				                                                                             }
+				                                                                             else {
+					                                                                             return null;
+				                                                                             }
+			                                                                             }
+		                                                                             });
+		Collections.reverse(views);
+		return views;
+	}
+
+	private static List<FormeJuridiqueView> extractFormesJuridiques(List<DonneesRegistreCommerce> donneesRC) {
+		final List<FormeJuridiqueView> views = extractAndCollateFromDonneesRegistreCommerce(donneesRC,
+		                                                                                    new ExtractorDonneesRegistreCommerce<FormeJuridiqueView>() {
+			                                                                                    @Override
+			                                                                                    public FormeJuridiqueView extract(DonneesRegistreCommerce source) {
+				                                                                                    final FormeLegale fl = FormeLegale.fromCode(source.getFormeJuridique().getCodeECH());
+				                                                                                    if (fl != null) {
+					                                                                                    return new FormeJuridiqueView(source.getDateDebut(), source.getDateFin(), fl);
+				                                                                                    }
+				                                                                                    else {
+					                                                                                    // TODO ne faudrait-il pas plutôt lever une exception ??
+					                                                                                    return null;
+				                                                                                    }
+			                                                                                    }
+		                                                                                    });
+		Collections.reverse(views);
+		return views;
+	}
+
+	private static List<String> getNomsAdditionnels(Organisation organisation) {
 		List<String> l = new ArrayList<>();
 		List<DateRanged<String>> nomsAdditionels = organisation.getNomsAdditionels();
 		if (nomsAdditionels != null) {
@@ -236,7 +258,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return list;
 	}
 
-	private List<FormeJuridiqueView> getFormesJuridiques(List<DateRanged<FormeLegale>> formesLegale) {
+	private static List<FormeJuridiqueView> getFormesJuridiques(List<DateRanged<FormeLegale>> formesLegale) {
 		if (formesLegale == null) {
 			return null;
 		}
@@ -249,24 +271,14 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return list;
 	}
 
-	private List<CapitalView> extractCapitaux(Organisation organisation) {
-		List<DateRanged<Capital>> capitaux = organisation.getCapital();
+	private static List<CapitalView> extractCapitaux(Organisation organisation) {
+		final List<DateRanged<Capital>> capitaux = organisation.getCapital();
 		if (capitaux == null) {
 			return null;
 		}
 		final List<CapitalView> list = new ArrayList<>(capitaux.size());
 		for (DateRanged<Capital> capital : capitaux) {
-			CapitalView view = new CapitalView();
-			view.setDateDebut(capital.getDateDebut());
-			view.setDateFin(capital.getDateFin());
-			BigDecimal capitalAmount = capital.getPayload().getCapitalAmount();
-			if (capitalAmount != null) {
-				view.setCapitalAction(capitalAmount.longValue());
-			}
-			BigDecimal cashedInAmount = capital.getPayload().getCashedInAmount();
-			if (cashedInAmount != null) {
-				view.setCapitalLibere(cashedInAmount.longValue());
-			}
+			final CapitalView view = new CapitalView(capital);
 			list.add(view);
 		}
 		Collections.sort(list, new DateRangeComparator<CapitalView>());
