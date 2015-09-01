@@ -7,7 +7,7 @@ import ch.vd.uniregctb.tiers.view.EtatPMView;
 public class EntrepriseView {
 
 	enum SourceCivile {
-		RCENT("label.source.donnees.civiles.rcent"), UNIREG("application.name");
+		RCENT("label.source.donnees.rcent"), UNIREG("label.source.donnees.fiscal");
 
 		private String key;
 

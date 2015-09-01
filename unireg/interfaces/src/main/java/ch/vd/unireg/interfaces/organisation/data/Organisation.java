@@ -76,7 +76,7 @@ public class Organisation implements Serializable {
 	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
-	public List<DateRanged<Integer>> getSiegesPrincipal() {
+	public List<DateRanged<Integer>> getSiegesPrincipaux() {
 		List<DateRanged<Integer>> sieges = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
@@ -119,20 +119,22 @@ public class Organisation implements Serializable {
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
 			List<DateRanged<Capital>> capitals = site.getRc().getCapital();
-			for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
-				if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-					List<DateRanged<Capital>> extractedSieges = DateRangeHelper.extract(capitals,
-					                                                                    type.getDateDebut(),
-					                                                                    type.getDateFin(),
-					                                                                    new DateRangeHelper.AdapterCallback<DateRanged<Capital>>() {
-						                                                                    @Override
-						                                                                    public DateRanged<Capital> adapt(DateRanged<Capital> range, RegDate debut, RegDate fin) {
-							                                                                    return new DateRanged<>(debut != null ? debut : range.getDateDebut(),
-							                                                                                            fin != null ? fin : range.getDateFin(),
-							                                                                                            range.getPayload());
-						                                                                    }
-					                                                                    });
-					capitalsValides.addAll(extractedSieges);
+			if (capitals != null) {
+				for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
+					if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+						List<DateRanged<Capital>> extractedSieges = DateRangeHelper.extract(capitals,
+						                                                                    type.getDateDebut(),
+						                                                                    type.getDateFin(),
+						                                                                    new DateRangeHelper.AdapterCallback<DateRanged<Capital>>() {
+							                                                                    @Override
+							                                                                    public DateRanged<Capital> adapt(DateRanged<Capital> range, RegDate debut, RegDate fin) {
+								                                                                    return new DateRanged<>(debut != null ? debut : range.getDateDebut(),
+								                                                                                            fin != null ? fin : range.getDateFin(),
+								                                                                                            range.getPayload());
+							                                                                    }
+						                                                                    });
+						capitalsValides.addAll(extractedSieges);
+					}
 				}
 			}
 		}

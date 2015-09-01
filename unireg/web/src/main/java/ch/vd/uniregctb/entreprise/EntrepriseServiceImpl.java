@@ -72,7 +72,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
 			entrepriseView.setAutresRaisonsSociales(getNomsAdditionnels(organisation));
 
-			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipal()));
+			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
 			entrepriseView.setCapitaux(extractCapitaux(organisation));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));

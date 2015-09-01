@@ -1,11 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<table border="0">
-	<tr><td>
-		<p><fmt:message key="label.source.donnees.civiles"/> : <fmt:message key="${command.entreprise.sourceKey}"/></p>
-	</td></tr>
-</table>
+<fieldset>
+	<legend><span><fmt:message key="label.source.donnees"/></span></legend>
+
+	<unireg:nextRowClass reset="1"/>
+	<table>
+		<tr>
+			<td width="30%"><fmt:message key="label.source.donnees.provenance"/>&nbsp;:</td>
+			<td><fmt:message key="${command.entreprise.sourceKey}"/></td>
+		</tr>
+	</table>
+</fieldset>
 
 <fieldset>
 	<legend><span><fmt:message key="label.entreprise"/></span></legend>
