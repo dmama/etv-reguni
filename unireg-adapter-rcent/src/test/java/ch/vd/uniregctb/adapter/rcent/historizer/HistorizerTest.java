@@ -503,9 +503,9 @@ public class HistorizerTest {
 		                                                                   new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
 		                                                                   new SubsnapshotData(4L, Collections.singletonList(new Adresse("D", "Dans le fossé"))))));
 		input.put(RegDate.get(2003, 2, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac, Case postale"))),
-		                                                                   new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
-		                                                                   new SubsnapshotData(3L, Collections.singletonList(new Adresse("D", "Sur l'alpage"))),
-		                                                                   new SubsnapshotData(4L, Collections.singletonList(new Adresse("D", "Dans le fossé"))))));
+		                                                                  new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
+		                                                                  new SubsnapshotData(3L, Collections.singletonList(new Adresse("D", "Sur l'alpage"))),
+		                                                                  new SubsnapshotData(4L, Collections.singletonList(new Adresse("D", "Dans le fossé"))))));
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
@@ -605,6 +605,120 @@ public class HistorizerTest {
 				Assert.assertNull(a.getDateFin());
 				Assert.assertEquals("D", a.getPayload().type);
 				Assert.assertEquals("Dans le fossé", a.getPayload().adresse);
+			}
+		}
+	}
+
+	/**
+	 * Utilisation d'un extracteur qui renvoie des Keyed avec un chargement nul. Vérifie que le collecteur les ignore correctement.
+	 */
+	@Test
+	public void testSingleValueIndexedWithHolesAndFaultyExtracor() throws Exception {
+
+		final class SubsnapshotData {
+			final Long idSub;
+			final String dataValue;
+
+			public SubsnapshotData(Long idSub, String dataValue) {
+				this.idSub = idSub;
+				this.dataValue = dataValue;
+			}
+		}
+
+		final class SnapshotData {
+			final List<SubsnapshotData> subs;
+
+			public SnapshotData(List<SubsnapshotData> subs) {
+				this.subs = subs;
+			}
+		}
+
+		final Function<SnapshotData, Stream<Keyed<Long, String>>> dataExtractor = s ->
+				s.subs.stream()
+						.map(sub -> new Keyed<>(sub.idSub, sub.dataValue));
+
+
+		final IndexedDataCollector<SnapshotData, String, Long> collector = new SingleValueIndexedDataCollector<>(dataExtractor, Equalator.DEFAULT);
+
+		final Map<RegDate, SnapshotData> input = new HashMap<>();
+		input.put(RegDate.get(2000, 1, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, "Blah1"),
+		                                                                  new SubsnapshotData(2L, "Blah1"),
+		                                                                  new SubsnapshotData(3L, "Blah1")
+		)));
+		input.put(RegDate.get(2001, 6, 3), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, "Blah1"),
+		                                                                  new SubsnapshotData(2L, "Blah1"),
+		                                                                  new SubsnapshotData(3L, "Blah1")
+		)));
+		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(                                  // <-- Cas nominal d'absence
+																		   new SubsnapshotData(2L, null),    // <-- Cas toléré d'absence (un Keyed(id, null) est créé
+		                                                                   new SubsnapshotData(3L, "Blah1")
+		)));
+		input.put(RegDate.get(2003, 2, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, "Blah1"),
+		                                                                  new SubsnapshotData(2L, "Blah1"),
+		                                                                  new SubsnapshotData(3L, "Blah1")
+		)));
+
+		Historizer.historize(input, Collections.singletonList(collector));
+
+		final Map<Long, List<DateRanged<String>>> collected = collector.getCollectedData();
+		Assert.assertEquals(3, collected.size());
+		{
+			final List<DateRanged<String>> dataValues = collected.get(1L);
+			Assert.assertNotNull(dataValues);
+			Assert.assertEquals(2, dataValues.size());
+
+			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			{
+				final DateRanged<String> a = dataValues.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
+				Assert.assertEquals("Blah1", a.getPayload());
+			}
+			{
+				final DateRanged<String> a = dataValues.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("Blah1", a.getPayload());
+			}
+		}
+		{
+			final List<DateRanged<String>> dataValues = collected.get(2L);
+			Assert.assertNotNull(dataValues);
+			Assert.assertEquals(2, dataValues.size());
+
+			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			{
+				final DateRanged<String> a = dataValues.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
+				Assert.assertEquals("Blah1", a.getPayload());
+			}
+			{
+				final DateRanged<String> a = dataValues.get(1);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("Blah1", a.getPayload());
+			}
+		}
+		{
+			final List<DateRanged<String>> dataValues = collected.get(3L);
+			Assert.assertNotNull(dataValues);
+			Assert.assertEquals(1, dataValues.size());
+
+			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			{
+				final DateRanged<String> a = dataValues.get(0);
+				Assert.assertNotNull(a);
+				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
+				Assert.assertNull(a.getDateFin());
+				Assert.assertEquals("Blah1", a.getPayload());
 			}
 		}
 	}
