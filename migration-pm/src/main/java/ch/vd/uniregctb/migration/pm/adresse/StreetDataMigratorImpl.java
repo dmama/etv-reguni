@@ -144,8 +144,8 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			final RegDate refDate = RegDateHelper.maximum(aTester.getRight(), adresse.getDateFin(), NullDateBehavior.LATEST);
 			final FidorInfo info = askFidor(aTester.getLeft(), refDate, libelleCanoniqueRue);
 			if (info != null && info.street != null) {
-				mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO, String.format("Adresse '%s' à '%s' mappée sur l'estrid %d",
-				                                                                                                                libelleRue, localitePostale.getNomLong(), info.street.getEstrid()));
+				mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO, String.format("Adresse '%s' à '%s' mappée sur l'estrid %d.",
+				                                                                 libelleRue, localitePostale.getNomLong(), info.street.getEstrid()));
 				return new StreetData.AvecEstrid(info.street, info.numeroMaison, info.noOrdrePostal);
 			}
 		}
@@ -164,12 +164,15 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 					? String.format("fermée le %s", StringUtils.defaultIfBlank(RegDateHelper.dateToDisplayString(adresse.getDateFin()), "?"))
 					: "active";
 
-			final String msg = String.format("Adresse %s: données du mainframe {onrp=%s, rue=%s, noRue=%s}, onrp pris par défaut %d (%s)",
+			final String msg = String.format("Adresse %s: données du mainframe {onrp=%s, rue=%s, noRue=%s}, onrp pris par défaut %d (%s).",
 			                                  detailsFin,
 			                                  npaLocaliteMainframe, nomRue, noRue,
 			                                  mostProbableSwissZipCodeId, npaLocalitePrise);
 			mr.addMessage(LogCategory.ADRESSES, LogLevel.WARN, msg);
 		}
+
+		mr.addMessage(LogCategory.ADRESSES, LogLevel.WARN, String.format("Adresse '%s' à '%s' conservée en texte libre.",
+		                                                                 libelleRue, localitePostale.getNomLong()));
 		return result;
 	}
 
