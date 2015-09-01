@@ -12,10 +12,12 @@ public class LocationFunctionsExtractor implements Function<Organisation, Stream
 	@Override
 	public Stream<Keyed<BigInteger, ch.vd.evd0022.v1.Function>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
+				.filter(ol -> ol.getFunction() != null)
 				.flatMap(this::mapFunctions);
 	}
 
 	private Stream<Keyed<BigInteger, ch.vd.evd0022.v1.Function>> mapFunctions(OrganisationLocation ol) {
-		return ol.getFunction().stream().map(n -> new Keyed<>(ol.getCantonalId(), n));
+		return ol.getFunction().stream()
+				.map(n -> new Keyed<>(ol.getCantonalId(), n));
 	}
 }

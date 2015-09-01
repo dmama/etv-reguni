@@ -12,6 +12,7 @@ public class LocationRcEntryDateExtractor implements Function<Organisation, Stre
 	@Override
 	public Stream<Keyed<BigInteger, RegDate>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
+				.filter(ol -> ol.getCommercialRegisterData() != null && ol.getCommercialRegisterData().getEntryDate() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getCommercialRegisterData().getEntryDate()));
 	}
 }
