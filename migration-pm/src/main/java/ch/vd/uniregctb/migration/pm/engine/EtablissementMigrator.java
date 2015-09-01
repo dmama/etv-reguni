@@ -128,8 +128,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	}
 
 	@Override
-	public void initMigrationResult(MigrationResultInitialization mr) {
-		super.initMigrationResult(mr);
+	public void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper) {
+		super.initMigrationResult(mr, idMapper);
 
 		// on va regrouper les données (communes et dates) par entité juridique afin de créer,
 		// pour chacune d'entre elles, les fors secondaires "activité" qui vont bien
@@ -137,7 +137,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                                        MigrationConstants.PHASE_FORS_ACTIVITE,
 		                                        d -> d.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Activite(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
-		                                        d -> createForsSecondairesEtablissement(d, mr));
+		                                        d -> createForsSecondairesEtablissement(d, mr, idMapper));
 
 		//
 		// données "cachées" sur les établissements
@@ -146,13 +146,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// les données qui viennent du civil
 		mr.registerDataExtractor(DonneesCiviles.class,
 		                         null,
-		                         e -> extractDonneesCiviles(e, mr),
+		                         e -> extractDonneesCiviles(e, mr, idMapper),
 		                         null);
 
 		// les données des dates des établissements stables
 		mr.registerDataExtractor(DatesEtablissementsStables.class,
 		                         null,
-		                         e -> extractDatesEtablissementsStables(e, mr),
+		                         e -> extractDatesEtablissementsStables(e, mr, idMapper),
 		                         null);
 	}
 
@@ -182,12 +182,13 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * Calcul des dates des établissements stables en fusionnant les éventuels ranges qui se chevauchent
 	 * @param e établissement de RegPM
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return la structure contenant les ranges des dates des établissements stables
 	 */
 	@NotNull
-	private DatesEtablissementsStables extractDatesEtablissementsStables(RegpmEtablissement e, MigrationResultContextManipulation mr) {
+	private DatesEtablissementsStables extractDatesEtablissementsStables(RegpmEtablissement e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey key = buildEtablissementKey(e);
-		return doInLogContext(key, mr, () -> {
+		return doInLogContext(key, mr, idMapper, () -> {
 			final List<DateRange> dates = e.getEtablissementsStables().stream()
 					.map(DateRangeHelper.Range::new)
 					.map(range -> {
@@ -238,10 +239,10 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param <T> type de la donnée renvoyée par l'action
 	 * @return données renvoyée par l'action
 	 */
-	private <T> T doInCompleteLogContext(RegpmEtablissement etablissement, MigrationResultContextManipulation mr, Supplier<T> action) {
+	private <T> T doInCompleteLogContext(RegpmEtablissement etablissement, MigrationResultContextManipulation mr, IdMapping idMapper, Supplier<T> action) {
 		final EntityKey etbKey = buildEtablissementKey(etablissement);
 		final EntityKey entiteJuridiqueKey = getEntiteJuridiqueKey(etablissement);
-		return doInLogContext(etbKey, mr, () -> doInLogContext(entiteJuridiqueKey, mr, action));
+		return doInLogContext(etbKey, mr, idMapper, () -> doInLogContext(entiteJuridiqueKey, mr, idMapper, action));
 	}
 
 	/**
@@ -250,8 +251,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @return les données civiles collectées (peut être <code>null</code> si ni l'établissement ni son entreprise n'a pas de pendant civil)
 	 */
-	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr) {
-		return doInCompleteLogContext(etablissement, mr, () -> {
+	private DonneesCiviles extractDonneesCiviles(RegpmEtablissement etablissement, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		return doInCompleteLogContext(etablissement, mr, idMapper, () -> {
 
 			final Long idCantonal = etablissement.getNumeroCantonal();
 			if (idCantonal == null) {
@@ -323,10 +324,11 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 * Appelé pour la consolidation des données de fors secondaires par entité juridique
 	 * @param data les données collectées pour une entité juridique
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultContextManipulation mr) {
+	private void createForsSecondairesEtablissement(ForsSecondairesData.Activite data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		doInLogContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, idMapper, () -> {
 			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
@@ -390,7 +392,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	 */
 	@Override
 	protected void doMigrate(RegpmEtablissement regpm, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
-		doInLogContext(getEntiteJuridiqueKey(regpm), mr, () -> doMigrateEtablissement(regpm, mr, linkCollector, idMapper));
+		doInLogContext(getEntiteJuridiqueKey(regpm), mr, idMapper, () -> doMigrateEtablissement(regpm, mr, linkCollector, idMapper));
 	}
 
 	/**

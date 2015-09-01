@@ -73,7 +73,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce que l'on a créé en base
@@ -128,7 +128,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -178,7 +178,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -236,7 +236,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce qui s'est passé (ou pas) en base
@@ -305,7 +305,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(individu, migrator, mr, linkCollector, idMapper);
 
 		// vérification de ce que l'on a créé en base

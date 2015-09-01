@@ -449,7 +449,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -487,7 +487,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -559,7 +559,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -655,7 +655,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -749,7 +749,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> régimes fiscaux associés à l'entreprise (aucun, car ils doivent être ignorés en raison de leur date nulle)
@@ -783,7 +783,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -822,7 +822,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -861,7 +861,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -906,7 +906,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -952,7 +952,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -998,7 +998,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(mandataire, migrator, mr, linkCollector, idMapper);
 		migrate(mandant, migrator, mr, linkCollector, idMapper);
 
@@ -1057,7 +1057,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -1128,7 +1128,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
@@ -1179,7 +1179,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1221,7 +1221,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1279,7 +1279,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1341,7 +1341,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1389,7 +1389,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1449,7 +1449,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		doInUniregTransaction(true, status -> {
@@ -1490,7 +1490,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> pas d'établissement principal, mais quand-même une entreprise (sans for principal)
@@ -1529,7 +1529,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> régimes fiscaux associés à l'entreprise (aucun, car ils doivent être ignorés en raison de leur date nulle)
@@ -1566,7 +1566,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base (aucun régime fiscal migré car est commence trop tard)
@@ -1604,7 +1604,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base
@@ -1719,7 +1719,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base
@@ -1798,7 +1798,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base
@@ -1856,7 +1856,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base
@@ -1966,7 +1966,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2047,7 +2047,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données (surtout pour les bouclements..)
@@ -2127,7 +2127,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2223,7 +2223,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données (surtout pour les bouclements..)
@@ -2283,7 +2283,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données
@@ -2345,7 +2345,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données
@@ -2418,7 +2418,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données
@@ -2504,7 +2504,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données
@@ -2581,7 +2581,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2654,7 +2654,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2756,7 +2756,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base -> pas d'établissement principal, mais quand-même une entreprise avec for principal
@@ -2806,7 +2806,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2886,7 +2886,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -2964,7 +2964,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification du contenu de la base de données
@@ -3020,7 +3020,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -3104,7 +3104,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// récupération du numéro de l'établissement principal
@@ -3195,7 +3195,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// vérification des messages dans le contexte "FORS"
@@ -3222,7 +3222,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le flag débiteur inactif doit avoir été mis
@@ -3259,7 +3259,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le flag débiteur inactif ne doit pas avoir été mis
@@ -3306,7 +3306,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le for principal doit avoir été limité à la date de radiation RC
@@ -3349,7 +3349,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le for principal doit avoir été limité à la date de radiation RC
@@ -3391,7 +3391,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le for principal doit avoir été limité à la date de radiation RC
@@ -3432,7 +3432,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le for principal doit avoir été limité à la date de radiation RC
@@ -3472,7 +3472,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// en base : le for principal doit avoir été limité à la date de radiation RC
@@ -3513,7 +3513,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
 		final EntityLinkCollector linkCollector = new EntityLinkCollector();
 		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr);
+		migrator.initMigrationResult(mr, idMapper);
 		migrate(e, migrator, mr, linkCollector, idMapper);
 
 		// pour récupérer le numéro de tiers de l'établissement principal créé

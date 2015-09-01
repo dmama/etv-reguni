@@ -260,8 +260,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	@Override
-	public void initMigrationResult(MigrationResultInitialization mr) {
-		super.initMigrationResult(mr);
+	public void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper) {
+		super.initMigrationResult(mr, idMapper);
 		
 		//
 		// callbacks avant la fin des transactions
@@ -272,21 +272,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        MigrationConstants.PHASE_FORS_IMMEUBLES,
 		                                        k -> k.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Immeuble(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
-		                                        d -> createForsSecondairesImmeuble(d, mr));
+		                                        d -> createForsSecondairesImmeuble(d, mr, idMapper));
 
 		// callback pour le contrôle des fors secondaires après création
 		mr.registerPreTransactionCommitCallback(ControleForsSecondairesData.class,
 		                                        MigrationConstants.PHASE_CONTROLE_FORS_SECONDAIRES,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
-		                                        d -> controleForsSecondaires(d, mr));
+		                                        d -> controleForsSecondaires(d, mr, idMapper));
 
 		// callback pour le contrôle (et la correction) de la couverture des fors secondaires par des fors principaux
 		mr.registerPreTransactionCommitCallback(CouvertureForsData.class,
 		                                        MigrationConstants.PHASE_COUVERTURE_FORS,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
-		                                        d -> controleCouvertureFors(d, mr));
+		                                        d -> controleCouvertureFors(d, mr, idMapper));
 
 		// callback pour la destruction des fors annulés créés
 		mr.registerPreTransactionCommitCallback(EffacementForsAnnulesData.class,
@@ -300,7 +300,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        MigrationConstants.PHASE_COMPARAISON_ASSUJETTISSEMENTS,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
-		                                        d -> comparaisonAssujettissements(d, mr));
+		                                        d -> comparaisonAssujettissements(d, mr, idMapper));
 		
 		//
 		// données "cachées" sur les entreprises
@@ -308,49 +308,49 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		
 		// les fors principaux non-ignorés
 		mr.registerDataExtractor(ForsPrincipauxData.class,
-		                         e -> extractForsPrincipaux(e, mr),
+		                         e -> extractForsPrincipaux(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// les données qui viennent du civil
 		mr.registerDataExtractor(DonneesCiviles.class,
-		                         e -> extractDonneesCiviles(e, mr),
+		                         e -> extractDonneesCiviles(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// les dossiers fiscaux non-ignorés
 		mr.registerDataExtractor(DossiersFiscauxData.class,
-		                         e -> extractDossiersFiscaux(e, mr),
+		                         e -> extractDossiersFiscaux(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// la date de bouclement futur
 		mr.registerDataExtractor(DateBouclementFuturData.class,
-		                         e -> extractDateBouclementFutur(e, mr),
+		                         e -> extractDateBouclementFutur(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// date de fin d'activité
 		mr.registerDataExtractor(DateFinActiviteData.class,
-		                         e -> extractDateFinActivite(e, mr),
+		                         e -> extractDateFinActivite(e, mr, idMapper),
 		                         null,
 		                         null);
 		
 		// données de la dernière raison sociale
 		mr.registerDataExtractor(RaisonSocialeData.class,
-		                         e -> extractRaisonSociale(e, mr),
+		                         e -> extractRaisonSociale(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// données de la dernière modification de capital
 		mr.registerDataExtractor(CapitalData.class,
-		                         e -> extractCapital(e, mr),
+		                         e -> extractCapital(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// données de la dernière forme juridique de l'entreprise
 		mr.registerDataExtractor(FormeJuridiqueData.class,
-		                         e -> extractFormeJuridique(e, mr),
+		                         e -> extractFormeJuridique(e, mr, idMapper),
 		                         null,
 		                         null);
 	}
@@ -359,11 +359,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Détermination de la date de fin d'activité d'une entreprise
 	 * @param e l'entreprise de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return la date de fin d'activité prise en compte
 	 */
-	private DateFinActiviteData extractDateFinActivite(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+	private DateFinActiviteData extractDateFinActivite(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
-		return doInLogContext(entrepriseKey, mr, () -> {
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 			final RegDate finActivite;
 
 			if (e.getDateRadiationRC() != null) {
@@ -434,12 +435,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Retrouve les données valides de la raison sociale d'une entreprise
 	 * @param entreprise entreprise dont on veut extraire la raison sociale courante
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return un structure (qui peut être vide) contenant les données de la raison sociale courante de l'entreprise
 	 */
 	@NotNull
-	private RaisonSocialeData extractRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private RaisonSocialeData extractRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, () -> entreprise.getRaisonsSociales().stream()
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getRaisonsSociales().stream()
 				.filter(rs -> !rs.getRectifiee())
 				.filter(rs -> {
 					if (isFutureDate(rs.getDateValidite())) {
@@ -461,12 +463,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Retrouve les dernières données valides du capital d'une entreprise
 	 * @param entreprise entreprise dont on veut extraire le capital courant
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return un structure (qui peut être vide) contenant les données du capital courant de l'entreprise
 	 */
 	@NotNull
-	private CapitalData extractCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private CapitalData extractCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, () -> entreprise.getCapitaux().stream()
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getCapitaux().stream()
 				.filter(c -> !c.isRectifiee())
 				.filter(c -> {
 					if (isFutureDate(c.getDateEvolutionCapital())) {
@@ -488,12 +491,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Retrouve les données valides de la forme juridique d'une entreprise
 	 * @param entreprise entreprise dont on veut extraire forme juridique courante
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
 	 */
 	@NotNull
-	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr) {
+	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, () -> entreprise.getFormesJuridiques().stream()
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getFormesJuridiques().stream()
 				.filter(fj -> !fj.isRectifiee())
 				.filter(fj -> {
 					if (isFutureDate(fj.getDateValidite())) {
@@ -538,12 +542,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Extraction des dossiers fiscaux valides d'une entreprise
 	 * @param e entreprise de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return les dossiers fiscaux de l'entreprise
 	 */
 	@NotNull
-	private DossiersFiscauxData extractDossiersFiscaux(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+	private DossiersFiscauxData extractDossiersFiscaux(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
-		return doInLogContext(entrepriseKey, mr, () -> {
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
 			final List<RegpmDossierFiscal> liste = e.getDossiersFiscaux().stream()
 					.filter(df -> {
@@ -564,12 +569,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Appel de RCEnt pour les données de l'entreprise
 	 * @param e entreprise de RegPM
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return les données civiles collectées (peut être <code>null</code> si l'entreprise n'a pas de pendant civil)
 	 */
 	@Nullable
-	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultContextManipulation mr) {
+	private DonneesCiviles extractDonneesCiviles(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
-		return doInLogContext(entrepriseKey, mr, () -> {
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
 			final Long idCantonal = e.getNumeroCantonal();
 			if (idCantonal == null) {
@@ -601,12 +607,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * cas de fors multiples à la même date ete des fors sans date de début)
 	 * @param regpm l'entreprise cible
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return un container des fors principaux valides de l'entreprise
 	 */
 	@NotNull
-	private ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultContextManipulation mr) {
+	private ForsPrincipauxData extractForsPrincipaux(RegpmEntreprise regpm, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
-		return doInLogContext(entrepriseKey, mr, () -> {
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
 			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
 					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
@@ -748,10 +755,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * @param data données d'identification de l'entreprise dont on veut contrôler l'assujettissement
 	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	private void comparaisonAssujettissements(ComparaisonAssujettissementsData data, MigrationResultContextManipulation mr) {
+	private void comparaisonAssujettissements(ComparaisonAssujettissementsData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
-		doInLogContext(keyEntreprise, mr, () -> {
+		doInLogContext(keyEntreprise, mr, idMapper, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			try {
 				// assujettissements ICC dans RegPM
@@ -814,10 +822,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * @param data donnée d'identification de l'entreprise dont la couverture des fors est à contrôler
 	 * @param mr collecteur de message de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	private void controleCouvertureFors(CouvertureForsData data, MigrationResultContextManipulation mr) {
+	private void controleCouvertureFors(CouvertureForsData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntreprise = data.entrepriseSupplier.getKey();
-		doInLogContext(keyEntreprise, mr, () -> {
+		doInLogContext(keyEntreprise, mr, idMapper, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			final ForsParType fpt = entreprise.getForsParType(true);
 			if (!fpt.secondaires.isEmpty()) {
@@ -947,10 +956,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Consolidation de toutes les migrations de PM par rapport au contrôle final des fors secondaires
 	 * @param data données de l'entreprise
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultContextManipulation mr) {
+	private void controleForsSecondaires(ControleForsSecondairesData data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntiteJuridique = data.entrepriseSupplier.getKey();
-		doInLogContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, idMapper, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 
 			// on va construire des périodes par commune (no OFS), et vérifier qu'on a bien les mêmes des deux côtés
@@ -1034,10 +1044,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Consolidation de toutes les demandes de créations de fors secondaires "immeuble" pour une PM
 	 * @param data les données consolidées des communes/dates sur lesquels les fors doivent être créés
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultContextManipulation mr) {
+	private void createForsSecondairesImmeuble(ForsSecondairesData.Immeuble data, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey keyEntiteJuridique = data.entiteJuridiqueSupplier.getKey();
-		doInLogContext(keyEntiteJuridique, mr, () -> {
+		doInLogContext(keyEntiteJuridique, mr, idMapper, () -> {
 			final Tiers entiteJuridique = data.entiteJuridiqueSupplier.get();
 			for (Map.Entry<RegpmCommune, List<DateRange>> communeData : data.communes.entrySet()) {
 
@@ -1620,12 +1631,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Extraction de la date de bouclement futur, qui peut être ignorée si elle est avant la fin du dernier exercice commercial connu
 	 * @param regpm l'entreprise dans RegPM
 	 * @param mr le collecteur de messages de suivi
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 * @return une structure de données (non-nulle) qui contient la date de bouclement futur retenue (potentiellement nulle)
 	 */
 	@NotNull
-	private DateBouclementFuturData extractDateBouclementFutur(RegpmEntreprise regpm, MigrationResultContextManipulation mr) {
+	private DateBouclementFuturData extractDateBouclementFutur(RegpmEntreprise regpm, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey key = buildEntityKey(regpm);
-		return doInLogContext(key, mr, () -> {
+		return doInLogContext(key, mr, idMapper, () -> {
 			final RegDate brutto = regpm.getDateBouclementFutur();
 			final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
 			if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {

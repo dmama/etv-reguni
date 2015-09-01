@@ -36,6 +36,7 @@ public enum LoggedElementAttribute {
 	//
 
 	ETABLISSEMENT_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	ETABLISSEMENT_ID_UNIREG(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ETABLISSEMENT_ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ETABLISSEMENT_INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	ETABLISSEMENT_NO_IDE(NumeroIDE.class, no -> String.format("%s%d", no.getCategorie(), no.getNumero()), LoggedElementHelper.<NumeroIDE>exceptionThrowing()),
@@ -46,6 +47,7 @@ public enum LoggedElementAttribute {
 	//
 
 	INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	INDIVIDU_ID_UNIREG(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	INDIVIDU_NOM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	INDIVIDU_PRENOM(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	INDIVIDU_SEXE(Sexe.class, Enum::name, LoggedElementHelper.<Sexe>exceptionThrowing()),

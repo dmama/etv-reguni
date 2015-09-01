@@ -92,9 +92,9 @@ public class GrapheMigrator implements InitializingBean {
 		mr.addPostTransactionCallback(localIdMapper::pushToReference);
 
 		// initialisation des structures de resultats
-		entrepriseMigrator.initMigrationResult(mr);
-		etablissementMigrator.initMigrationResult(mr);
-		individuMigrator.initMigrationResult(mr);
+		entrepriseMigrator.initMigrationResult(mr, localIdMapper);
+		etablissementMigrator.initMigrationResult(mr, localIdMapper);
+		individuMigrator.initMigrationResult(mr, localIdMapper);
 
 		// tout le graphe sera migré dans une transaction globale
 		AuthenticationHelper.pushPrincipal(MigrationConstants.VISA_MIGRATION);

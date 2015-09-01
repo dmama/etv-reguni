@@ -15,8 +15,9 @@ public interface EntityMigrator<T extends RegpmEntity> {
 	/**
 	 * Permet d'initialiser des structures de données dans le résultat avant toute migration
 	 * @param mr structure à initialiser
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
-	void initMigrationResult(MigrationResultInitialization mr);
+	void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper);
 
 	/**
 	 * Migre l'entité donnée

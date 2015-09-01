@@ -192,9 +192,10 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	/**
 	 * Permet d'initialiser des structures de données dans le résultat
 	 * @param mr structure à initialiser
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
 	 */
 	@Override
-	public void initMigrationResult(MigrationResultInitialization mr) {
+	public void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper) {
 	}
 
 	@NotNull
@@ -381,7 +382,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	@Override
 	public final void migrate(T entity, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		final EntityKey entityKey = buildEntityKey(entity);
-		doInLogContext(entityKey, mr, () -> doMigrate(entity, mr, linkCollector, idMapper));
+		doInLogContext(entityKey, mr, idMapper, () -> doMigrate(entity, mr, linkCollector, idMapper));
 	}
 
 	/**
@@ -435,12 +436,13 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * Exécute l'action donnée dans un contexte de log contenant les données de l'entité (entreprise, établissement, individu) fournie
 	 * @param contextEntityKey entité dont les données doivent être temporairement poussées sur le contexte de log
 	 * @param mr collecteur de messages de suivis et manipulateur de contextes de log
+	 * @param idMapper container des mappings entres entités RegPM &lt;-&gt; Unireg
 	 * @param action action à lancer
 	 * @param <D> type de résultat retourné par l'action
 	 * @return la donnée retournée par l'action
 	 */
-	protected <D> D doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Supplier<D> action) {
-		pushEntityToLogContext(contextEntityKey, mr);
+	protected <D> D doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, IdMapping idMapper, Supplier<D> action) {
+		pushEntityToLogContext(contextEntityKey, mr, idMapper);
 		try {
 			return action.get();
 		}
@@ -453,16 +455,17 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	 * Exécute l'action donnée dans un contexte de log contenant les données de l'entité (entreprise, établissement, individu) fournie
 	 * @param contextEntityKey entité dont les données doivent être temporairement poussées sur le contexte de log
 	 * @param mr collecteur de messages de suivis et manipulateur de contextes de log
+	 * @param idMapper container des mappings entres entités RegPM &lt;-&gt; Unireg
 	 * @param action action à lancer
 	 */
-	protected void doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, Runnable action) {
-		doInLogContext(contextEntityKey, mr, () -> {
+	protected void doInLogContext(EntityKey contextEntityKey, MigrationResultContextManipulation mr, IdMapping idMapper, Runnable action) {
+		doInLogContext(contextEntityKey, mr, idMapper, () -> {
 			action.run();
 			return null;
 		});
 	}
 
-	private void pushEntityToLogContext(EntityKey key, MigrationResultContextManipulation mr) {
+	private void pushEntityToLogContext(EntityKey key, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final Graphe graphe = mr.getCurrentGraphe();
 
 		switch (key.getType()) {
@@ -473,12 +476,12 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		}
 		case ETABLISSEMENT: {
 			final RegpmEtablissement etablissement = graphe.getEtablissements().get(key.getId());
-			mr.pushContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(etablissement));
+			mr.pushContextValue(EtablissementLoggedElement.class, new EtablissementLoggedElement(etablissement, idMapper));
 			break;
 		}
 		case INDIVIDU: {
 			final RegpmIndividu individu = graphe.getIndividus().get(key.getId());
-			mr.pushContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(individu));
+			mr.pushContextValue(IndividuLoggedElement.class, new IndividuLoggedElement(individu, idMapper));
 			break;
 		}
 		default:
