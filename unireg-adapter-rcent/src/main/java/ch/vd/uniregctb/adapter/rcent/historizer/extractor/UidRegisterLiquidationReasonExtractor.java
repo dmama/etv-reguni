@@ -13,7 +13,7 @@ public class UidRegisterLiquidationReasonExtractor implements Function<Organisat
 	@Override
 	public Stream<Keyed<BigInteger, UidRegisterLiquidationReason>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> ol.getUidRegisterData() != null && ol.getUidRegisterData().getTypeOfOrganisation() != null)
+				.filter(ol -> ol.getUidRegisterData() != null && ol.getUidRegisterData().getLiquidationReason() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getUidRegisterData().getLiquidationReason()));
 	}
 }

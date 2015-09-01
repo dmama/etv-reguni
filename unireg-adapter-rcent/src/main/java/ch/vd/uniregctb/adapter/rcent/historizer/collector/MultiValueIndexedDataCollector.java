@@ -80,7 +80,8 @@ public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCol
 
 		// on consigne toutes les clés vues (pour identifier plus loin celles que l'on n'a pas vues) et on collecte leurs données
 		final Set<KS> usedKeys = new HashSet<>();
-		stream.map(Keyed::getKey)
+		stream.peek(this::assertNotNullValue)
+				.map(Keyed::getKey)
 				.peek(usedKeys::add)
 				.map(this::getOrCreateSpecificCollector)
 				.forEach(specificCollector -> specificCollector.collect(date, snapshot));
@@ -90,6 +91,12 @@ public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCol
 				.filter(entry -> !usedKeys.contains(entry.getKey()))
 				.map(Map.Entry::getValue)
 				.forEach(collector -> collector.collect(date, null));
+	}
+
+	private void assertNotNullValue(Keyed<KS, D> ksdKeyed) {
+		if (ksdKeyed.getValue() == null) {
+			throw new IllegalStateException(String.format("Valeure nulle trouvée dans l'objet Keyed<KS, D>>. Contrôler que l'extracteur %s filtre correctement les valeurs nulles.", dataExtractor.getClass()));
+		}
 	}
 
 	@NotNull
