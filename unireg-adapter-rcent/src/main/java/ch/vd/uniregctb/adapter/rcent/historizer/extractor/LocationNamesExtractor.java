@@ -11,7 +11,6 @@ public class LocationNamesExtractor implements Function<Organisation, Stream<Key
 	@Override
 	public Stream<Keyed<BigInteger, String>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> ol.getName() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getName()));
 	}
 }

@@ -11,7 +11,6 @@ public class LocationRcNameExtractor implements Function<Organisation, Stream<Ke
 	@Override
 	public Stream<Keyed<BigInteger, String>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> ol.getCommercialRegisterData() != null && ol.getCommercialRegisterData().getName() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getCommercialRegisterData().getName()));
 	}
 }

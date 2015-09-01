@@ -13,7 +13,6 @@ public class KindOfLocationExtractor implements java.util.function.Function<Orga
 	@Override
 	public Stream<Keyed<BigInteger, KindOfLocation>> apply(Organisation organisation) {
 		return organisation.getOrganisationLocation().stream()
-				.filter(ol -> ol.getKindOfLocation() != null)
 				.map(ol -> new Keyed<>(ol.getCantonalId(), ol.getKindOfLocation()));
 	}
 }

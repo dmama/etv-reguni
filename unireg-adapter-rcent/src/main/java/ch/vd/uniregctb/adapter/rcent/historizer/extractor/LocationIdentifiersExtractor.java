@@ -14,7 +14,6 @@ public class LocationIdentifiersExtractor implements Function<Organisation, Stre
 	@Override
 	public Stream<Keyed<BigInteger, Identifier>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> ol.getIdentifier() != null)
 				.flatMap(LocationIdentifiersExtractor::mapNames);
 	}
 

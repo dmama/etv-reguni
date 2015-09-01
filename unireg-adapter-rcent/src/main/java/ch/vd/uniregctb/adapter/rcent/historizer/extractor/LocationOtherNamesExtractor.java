@@ -12,7 +12,6 @@ public class LocationOtherNamesExtractor implements Function<Organisation, Strea
 	@Override
 	public Stream<Keyed<BigInteger, String>> apply(Organisation org) {
 		return org.getOrganisationLocation().stream()
-				.filter(ol -> ol.getOtherName() != null)
 				.flatMap(this::mapNames);
 	}
 

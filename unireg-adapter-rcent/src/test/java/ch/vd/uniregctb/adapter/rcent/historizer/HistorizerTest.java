@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adapter.rcent.historizer.Historizer;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.IndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.ListDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueDataCollector;
@@ -267,7 +268,8 @@ public class HistorizerTest {
 		                                                                  new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois"), new Adresse("D", "Dans les bois"))),
 		                                                                  new SubsnapshotData(3L, Arrays.asList(new Adresse("C", "Bahnhofstrasse 12"), new Adresse("D", "Torstrasse 1"))))));
 		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Arrays.asList(new Adresse("C", "Rue du Lac, Case postale"), new Adresse("D", "Rue du Lac"))),
-		                                                                   new SubsnapshotData(2L, Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
+		                                                                   new SubsnapshotData(2L,
+		                                                                                       Arrays.asList(new Adresse("C", "Dans les bois, Case postale"), new Adresse("D", "Dans les bois"))))));
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
@@ -502,7 +504,7 @@ public class HistorizerTest {
 		input.put(RegDate.get(2002, 12, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac, Case postale"))),
 		                                                                   new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
 		                                                                   new SubsnapshotData(4L, Collections.singletonList(new Adresse("D", "Dans le fossé"))))));
-		input.put(RegDate.get(2003, 2, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac, Case postale"))),
+		input.put(RegDate.get(2003, 02, 1), new SnapshotData(Arrays.asList(new SubsnapshotData(1L, Collections.singletonList(new Adresse("C", "Rue du Lac, Case postale"))),
 		                                                                   new SubsnapshotData(2L, Collections.singletonList(new Adresse("C", "Dans les bois, Case postale"))),
 		                                                                   new SubsnapshotData(3L, Collections.singletonList(new Adresse("D", "Sur l'alpage"))),
 		                                                                   new SubsnapshotData(4L, Collections.singletonList(new Adresse("D", "Dans le fossé"))))));
@@ -577,7 +579,7 @@ public class HistorizerTest {
 			{
 				final DateRanged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
-				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
+				Assert.assertEquals(RegDate.get(2003, 02, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
 				Assert.assertEquals("D", a.getPayload().type);
 				Assert.assertEquals("Sur l'alpage", a.getPayload().adresse);
