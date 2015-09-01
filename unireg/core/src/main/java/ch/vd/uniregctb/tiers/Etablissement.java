@@ -169,4 +169,9 @@ public class Etablissement extends Contribuable {
 				&& ComparisonHelper.areEqual(enseigne, other.enseigne)
 				&& ComparisonHelper.areEqual(principal, other.principal);
 	}
+
+	@Transient
+	public boolean isConnuAuCivil() {
+		return numeroEtablissement != null;
+	}
 }

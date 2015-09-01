@@ -195,4 +195,9 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final Entreprise other = (Entreprise) obj;
 		return ComparisonHelper.areEqual(numeroEntreprise, other.numeroEntreprise);
 	}
+
+	@Transient
+	public boolean isConnueAuCivil() {
+		return numeroEntreprise != null;
+	}
 }
