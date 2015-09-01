@@ -125,7 +125,7 @@ import ch.vd.uniregctb.tiers.LocalizedDateRange;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -1192,14 +1192,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// capital à prendre en compte
 		final MontantMonetaire capital;
 		if (capitalData.capital != null) {
-			capital = new MontantMonetaire(capitalData.capital.longValue(), "CHF");     // tous les montants dans RegPM sont en CHF
+			capital = new MontantMonetaire(capitalData.capital.longValue(), MontantMonetaire.CHF);     // tous les montants dans RegPM sont en CHF
 		}
 		else {
 			capital = null;
 		}
 
 		// forme juridique
-		final FormeJuridique formeJuridique;
+		final FormeJuridiqueEntreprise formeJuridique;
 		if (formeJuridiqueData.type != null) {
 			formeJuridique = toFormeJuridique(formeJuridiqueData.type.getCode());
 		}
@@ -1224,7 +1224,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static FormeJuridique toFormeJuridique(String codeRegpm) {
+	private static FormeJuridiqueEntreprise toFormeJuridique(String codeRegpm) {
 
 		// TODO mapping à valider...
 
@@ -1234,27 +1234,27 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		switch (codeRegpm) {
 		case "ASS":
-			return FormeJuridique.ASS;
+			return FormeJuridiqueEntreprise.ASSOCIATION;
 		case "DP":
-			return FormeJuridique.EDP;
+			return FormeJuridiqueEntreprise.CORP_DP_ADM;
 		case "DP/PM":
-			return FormeJuridique.EDP;
+			return FormeJuridiqueEntreprise.CORP_DP_ENT;
 		case "FDS. PLAC.":
-			return FormeJuridique.FOND;
+			return FormeJuridiqueEntreprise.SCPC;
 		case "FOND":
-			return FormeJuridique.FOND;
+			return FormeJuridiqueEntreprise.FONDATION;
 		case "S. COMM.":
-			return FormeJuridique.SC;
+			return FormeJuridiqueEntreprise.SC;
 		case "S. COOP.":
-			return FormeJuridique.COOP;
+			return FormeJuridiqueEntreprise.SCOOP;
 		case "S.A.":
-			return FormeJuridique.SA;
+			return FormeJuridiqueEntreprise.SA;
 		case "S.A.R.L.":
-			return FormeJuridique.SARL;
+			return FormeJuridiqueEntreprise.SARL;
 		case "S.COMM.ACT":
-			return FormeJuridique.SCA;
+			return FormeJuridiqueEntreprise.SCA;
 		case "S.N.C.":
-			return FormeJuridique.SNC;
+			return FormeJuridiqueEntreprise.SNC;
 		default:
 			throw new IllegalArgumentException("Code de forme juridique non-supporté : " + codeRegpm);
 		}

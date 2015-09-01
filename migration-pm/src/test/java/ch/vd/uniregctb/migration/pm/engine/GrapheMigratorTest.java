@@ -70,7 +70,7 @@ import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -486,7 +486,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant), capital () et forme juridique (ASS).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant), capital () et forme juridique (ASSOCIATION).", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1990 -> ?], raison sociale (Je suis le mandataire), capital () et forme juridique (SA).", msgs.get(1));
 		}
 	}
@@ -2266,7 +2266,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertNull(rc.getDateFin());
 			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
 			Assert.assertNull(rc.getCapital());
-			Assert.assertEquals(FormeJuridique.SA, rc.getFormeJuridique());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
@@ -2320,7 +2320,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(dateRadiation, rc.getDateFin());
 			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
 			Assert.assertNull(rc.getCapital());
-			Assert.assertEquals(FormeJuridique.SA, rc.getFormeJuridique());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
@@ -2376,7 +2376,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertNotNull(rc.getCapital());
 			Assert.assertEquals((Long) 45678134L, rc.getCapital().getMontant());
 			Assert.assertEquals("CHF", rc.getCapital().getMonnaie());
-			Assert.assertEquals(FormeJuridique.SARL, rc.getFormeJuridique());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SARL, rc.getFormeJuridique());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
