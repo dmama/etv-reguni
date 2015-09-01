@@ -49,7 +49,8 @@ import ch.vd.uniregctb.security.Role;
 		"classpath:WEB-INF/unireg-web-supergra.xml",
 		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
-		WebTestingConstants.UNIREG_WEBUT_SECURITY
+		WebTestingConstants.UNIREG_WEBUT_SECURITY,
+		WebTestingConstants.UNIREG_WEBUT_JMX
 })
 public abstract class WebTest extends AbstractBusinessTest {
 
