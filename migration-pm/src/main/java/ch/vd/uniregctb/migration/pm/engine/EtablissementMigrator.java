@@ -104,7 +104,8 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// s'il n'y a pas eu de changemenent de commune entre les deux dates, ces entrées sont normalement les mêmes
 		// (comme je ne sais pas si les Map.Entry sont des constructions pour l'extérieur ou des externalisations de données internes, je préfère juste comparer la clé)
 		if (domicileDebutEffectif.getKey() == domicileFin.getKey()) {
-			return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(domicileDebutEffectif.getKey(), range.getDateFin())));
+			final RegDate dateDebut = RegDateHelper.maximum(domicileDebutEffectif.getKey(), range.getDateDebut(), NullDateBehavior.EARLIEST);
+			return Collections.singletonList(Pair.<RegpmCommune, CollatableDateRange>of(domicileDebutEffectif.getValue().getCommune(), new DateRangeHelper.Range(dateDebut, range.getDateFin())));
 		}
 		else {
 			// il y a eu changement de communes... il faut donc préparer plusieurs cas

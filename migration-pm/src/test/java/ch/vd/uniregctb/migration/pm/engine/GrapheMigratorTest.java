@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -2393,6 +2394,205 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Markus und Söhne), capital (45678134 CHF) et forme juridique (SARL).", msgs.get(0));
+		}
+	}
+
+	/**
+	 * [SIFISC-16164] C'est le cas de l'entreprise 14657 dont un établissement (à Lausanne, identifiant regpm 3764) possède 4 périodes de validité d'établissements stables
+	 * mais une seule période (couvrante, pas de problème) de domicile
+	 */
+	@Test
+	public void testEtablissementAvecPlusieursPeriodesStablesEtUnSeulDomicile() throws Exception {
+
+		final long idEntreprise = 14657L;
+		final long idEtablissement = 3764L;
+		final RegDate dateDebut = RegDate.get(1998, 9, 28);
+		final RegDate dateFin1 = RegDate.get(2000, 6, 30);
+		final RegDate dateDebut2 = RegDate.get(2001, 1, 1);
+		final RegDate dateFin2 = RegDate.get(2005, 12, 31);
+		final RegDate dateDebut3 = RegDate.get(2007, 1, 1);
+		final RegDate dateFin3 = RegDate.get(2010, 12, 31);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addSiegeSuisse(entreprise, dateDebut, Commune.MORGES);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+
+		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(idEtablissement, entreprise);
+		EtablissementMigratorTest.addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut, dateFin1);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut2, dateFin2);
+		EtablissementMigratorTest.addEtablissementStable(etablissement, dateDebut3, dateFin3);
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     Collections.singletonList(etablissement),
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		final MutableLong noContribuableEtablissementPrincipal = new MutableLong();
+		final MutableLong noContribuableEtablissementSecondaire = new MutableLong();
+
+		// vérification des liens d'activité économique et des fors secondaires sur la PM migrée
+		doInUniregTransaction(true, status -> {
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(e);
+			Assert.assertEquals(2, etbs.size());
+			final Map<Boolean, Long> idsEtablissement = etbs.stream()
+					.collect(Collectors.toMap(Etablissement::isPrincipal, Etablissement::getId));
+			noContribuableEtablissementPrincipal.setValue(idsEtablissement.get(Boolean.TRUE));
+			noContribuableEtablissementSecondaire.setValue(idsEtablissement.get(Boolean.FALSE));
+			Assert.assertNotNull(noContribuableEtablissementPrincipal.getValue());
+			Assert.assertNotNull(noContribuableEtablissementSecondaire.getValue());
+
+			//
+			// les rapports entre tiers (entre l'entreprise et les établissements)
+			//
+
+			final List<ActiviteEconomique> aes = uniregStore.getEntitiesFromDb(ActiviteEconomique.class, null);
+			Assert.assertNotNull(aes);
+			Assert.assertEquals(4, aes.size());
+
+			final List<ActiviteEconomique> aesTries = new ArrayList<>(aes);
+			Collections.sort(aesTries, DateRangeComparator::compareRanges);
+			{
+				final ActiviteEconomique ae = aesTries.get(0);
+				Assert.assertNotNull(ae);
+				Assert.assertFalse(ae.isAnnule());
+				Assert.assertEquals(dateDebut, ae.getDateDebut());
+				Assert.assertEquals(dateFin1, ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+				Assert.assertEquals((Long) noContribuableEtablissementSecondaire.longValue(), ae.getObjetId());
+			}
+			{
+				final ActiviteEconomique ae = aesTries.get(1);
+				Assert.assertNotNull(ae);
+				Assert.assertFalse(ae.isAnnule());
+				Assert.assertEquals(dateDebut, ae.getDateDebut());
+				Assert.assertNull(ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+				Assert.assertEquals((Long) noContribuableEtablissementPrincipal.longValue(), ae.getObjetId());
+			}
+			{
+				final ActiviteEconomique ae = aesTries.get(2);
+				Assert.assertNotNull(ae);
+				Assert.assertFalse(ae.isAnnule());
+				Assert.assertEquals(dateDebut2, ae.getDateDebut());
+				Assert.assertEquals(dateFin2, ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+				Assert.assertEquals((Long) noContribuableEtablissementSecondaire.longValue(), ae.getObjetId());
+			}
+			{
+				final ActiviteEconomique ae = aesTries.get(3);
+				Assert.assertNotNull(ae);
+				Assert.assertFalse(ae.isAnnule());
+				Assert.assertEquals(dateDebut3, ae.getDateDebut());
+				Assert.assertEquals(dateFin3, ae.getDateFin());
+				Assert.assertEquals((Long) idEntreprise, ae.getSujetId());
+				Assert.assertEquals((Long) noContribuableEtablissementSecondaire.longValue(), ae.getObjetId());
+			}
+
+			//
+			// les fors secondaires sur la PM
+			//
+
+			final ForsParType fpt = e.getForsParType(true);
+			Assert.assertEquals(1, fpt.principauxPM.size());
+			Assert.assertEquals(3, fpt.secondaires.size());
+
+			{
+				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateDebut, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalSecondaire ffs = fpt.secondaires.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(dateDebut, ffs.getDateDebut());
+				Assert.assertEquals(dateFin1, ffs.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalSecondaire ffs = fpt.secondaires.get(1);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(dateDebut2, ffs.getDateDebut());
+				Assert.assertEquals(dateFin2, ffs.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalSecondaire ffs = fpt.secondaires.get(2);
+				Assert.assertNotNull(ffs);
+				Assert.assertFalse(ffs.isAnnule());
+				Assert.assertEquals(dateDebut3, ffs.getDateDebut());
+				Assert.assertEquals(dateFin3, ffs.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
+				Assert.assertEquals(MotifFor.FIN_EXPLOITATION, ffs.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS), messages.keySet());
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(6, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaire.longValue()) + ".", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipal.longValue()) +  " d'après le siège 1.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipal.longValue()) +  " : [28.09.1998 -> ?] sur COMMUNE_OU_FRACTION_VD/5642.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(5));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.1998 -> ?], raison sociale (Markus und Söhne), capital () et forme juridique (SARL).", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.ADRESSES);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5642 [28.09.1998 -> ?] généré.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'activité' [28.09.1998 -> 30.06.2000] ajouté sur la commune 5586.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'activité' [01.01.2001 -> 31.12.2005] ajouté sur la commune 5586.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'activité' [01.01.2007 -> 31.12.2010] ajouté sur la commune 5586.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5586 (maintenant : [28.09.1998 -> 30.06.2000], [01.01.2001 -> 31.12.2005], [01.01.2007 -> 31.12.2010]).", msgs.get(4));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [28.09.1998 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
+			Assert.assertEquals(3, msgs.size());
+			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [28.09.1998 -> 30.06.2000] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [01.01.2001 -> 31.12.2005] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [01.01.2007 -> 31.12.2010] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(2));
 		}
 	}
 
