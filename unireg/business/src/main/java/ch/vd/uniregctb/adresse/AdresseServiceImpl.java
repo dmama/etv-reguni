@@ -1526,8 +1526,25 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCiviles((CollectiviteAdministrative) tiers);
 		}
-		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
-			throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+		else if (tiers instanceof Entreprise) {
+			final Entreprise entreprise = (Entreprise) tiers;
+			if (entreprise.isConnueAuCivil()) {
+				// TODO [SIPM] récupérer les adresses de RCEnt
+				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+			}
+			else {
+				adressesCiviles = null;
+			}
+		}
+		else if (tiers instanceof Etablissement) {
+			final Etablissement etb = (Etablissement) tiers;
+			if (etb.isConnuAuCivil()) {
+				// TODO [SIPM] récupérer les adresses de RCEnt
+				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+			}
+			else {
+				adressesCiviles = null;
+			}
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -1600,8 +1617,25 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCivilesHisto((CollectiviteAdministrative) tiers);
 		}
-		else if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
-			throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+		else if (tiers instanceof Entreprise) {
+			final Entreprise entreprise = (Entreprise) tiers;
+			if (entreprise.isConnueAuCivil()) {
+				// TODO [SIPM] récupérer les adresses de RCEnt
+				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+			}
+			else {
+				adressesCiviles = new AdressesCivilesHisto();
+			}
+		}
+		else if (tiers instanceof Etablissement) {
+			final Etablissement etb = (Etablissement) tiers;
+			if (etb.isConnuAuCivil()) {
+				// TODO [SIPM] récupérer les adresses de RCEnt
+				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+			}
+			else {
+				adressesCiviles = new AdressesCivilesHisto();
+			}
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
