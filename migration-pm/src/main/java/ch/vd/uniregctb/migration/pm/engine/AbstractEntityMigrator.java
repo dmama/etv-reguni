@@ -69,6 +69,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
+	public static final RegDate DATE_LOUCHE = RegDate.get(1900, 1, 1);
+
 	protected final UniregStore uniregStore;
 	protected final ActivityManager activityManager;
 	protected final ServiceInfrastructureService infraService;
@@ -503,6 +505,14 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		default:
 			throw new IllegalArgumentException("Type de clé : " + key.getType() + " non supporté!");
 		}
+	}
+
+	/**
+	 * @param date date testée
+	 * @return <code>true</code> si la date est non-nulle est antérieure à {@link #DATE_LOUCHE}
+	 */
+	protected static boolean isDateLouche(@Nullable RegDate date) {
+		return date != null && NullDateBehavior.LATEST.compare(date, DATE_LOUCHE) < 0;
 	}
 
 	/**
