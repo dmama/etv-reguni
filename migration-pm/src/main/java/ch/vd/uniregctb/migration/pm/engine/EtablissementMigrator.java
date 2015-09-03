@@ -53,6 +53,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
@@ -429,6 +430,26 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			return;
 		}
 
+		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
+		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
+		if (entiteJuridique == null) {
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
+		}
+		else {
+			// les éventuels immeubles (à transférer sur l'entité juridique parente)
+			migrateImmeubles(regpm, entiteJuridique, mr);
+		}
+
+		// [SIFISC-16155] Un établissement sans dates de stabilité et qui n'est pas non plus mandataire n'est pas migré
+		final KeyedSupplier<Etablissement> moi = getEtablissementSupplier(idMapper, regpm);
+		final List<DateRange> datesEtablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, moi.getKey()).liste;
+		final DonneesMandats donneesMandats = mr.getExtractedData(DonneesMandats.class, moi.getKey());
+		final boolean isMandataire = donneesMandats.isMandataire();
+		if (datesEtablissementsStables.isEmpty() && !isMandataire) {
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement ignoré car sans établissement stable ni rôle de mandataire.");
+			return;
+		}
+
 		// on crée forcément un nouvel établissement
 		final Etablissement unireg = uniregStore.saveEntityToDb(createEtablissement(regpm));
 		idMapper.addEtablissement(regpm, unireg);
@@ -438,13 +459,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// pour eux-mêmes (-> on ne traite les activités indépendantes "PP" que dans le cas où elles sont mandatrices de quelque chose...)
 
 		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
-		final KeyedSupplier<? extends Contribuable> entiteJuridique = getPolymorphicSupplier(idMapper, regpm::getEntreprise, null, regpm::getIndividu);
-		if (entiteJuridique == null) {
-			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
-		}
-		else {
-			final KeyedSupplier<Etablissement> moi = getEtablissementSupplier(idMapper, regpm);
-			final List<DateRange> datesEtablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, buildEtablissementKey(regpm)).liste;
+		if (entiteJuridique != null) {
 			if (!datesEtablissementsStables.isEmpty()) {
 				// création des liens (= rapports entre tiers)
 				datesEtablissementsStables.stream()
@@ -455,14 +470,30 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
 			}
 			else {
-				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans aucune période de validité d'un établissement stable (aucun lien créé).");
+				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement sans aucune période de validité d'un établissement stable (lien créé selon rôles de mandataire).");
+
+				// un seul lien, avec les dates min et max des mandats (avec le rôle mandataire) repris
+
+				// pour les dates min et max, il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
+				// nous sommes ici, c'est qu'il n'y a pas d'établissements stables...)
+				// (la date min ne peut pas être nulle car de tels mandats sont ignorés)
+				final RegDate minMandat = donneesMandats.getRolesMandataire().stream()
+						.map(RegpmMandat::getDateAttribution)
+						.min(Comparator.naturalOrder())
+						.get();
+
+				// (la date max peut être nulle, elle, en revanche, pour les mandats encore ouverts
+				final RegDate maxMandat = donneesMandats.getRolesMandataire().stream()
+						.max((mandat1, mandat2) -> NullDateBehavior.LATEST.compare(mandat1.getDateResiliation(), mandat2.getDateResiliation()))
+						.get()
+						.getDateResiliation();
+
+				// et le lien, pour finir
+				linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, minMandat, maxMandat));
 			}
 		}
 
 		// on ne fait rien des "succursales" d'un établissement, car il n'y en a aucune dans le modèle RegPM
-
-		// les éventuels immeubles (à transférer sur l'entité juridique parente)
-		migrateImmeubles(regpm, entiteJuridique, mr);
 
 		// adresse
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?

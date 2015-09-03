@@ -57,8 +57,9 @@ public class CompositeLoggedElementTest {
 		final LoggedElement le2 = new SimpleLoggedElement<>(LoggedElementAttribute.ENTREPRISE_ID, 125L);
 		final LoggedElement le3 = new SimpleLoggedElement<>(LoggedElementAttribute.ENTREPRISE_ID, 42L);
 
+		final LoggedElement composite = new CompositeLoggedElement(le1, le2, le3);
 		try {
-			final LoggedElement composite = new CompositeLoggedElement(le1, le2, le3);
+			composite.getItemValues();
 			Assert.fail();
 		}
 		catch (LoggedElementHelper.IncompabibleValuesException e) {

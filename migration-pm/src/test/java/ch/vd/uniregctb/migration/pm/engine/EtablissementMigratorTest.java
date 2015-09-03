@@ -40,6 +40,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
@@ -86,6 +87,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setRadiationsRC(new TreeSet<>());
 		etablissement.setRattachementsProprietaires(new HashSet<>());
 		etablissement.setSuccursales(new HashSet<>());
+		etablissement.setMandants(new HashSet<>());
 
 		// rattachement à l'entreprise depuis l'entreprise également
 		entreprise.getEtablissements().add(etablissement);
@@ -169,13 +171,55 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testSansEtablissementStable() throws Exception {
+	public void testSansEtablissementStableNiRoleMandataire() throws Exception {
 
 		final long noEntreprise = 4346375L;
 		final long noEtablissement = 353645427L;
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base -> pas de un nouvel établissement (ni stable ni rôle mandataire -> pas migré)
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(0, ids.size());
+		});
+
+		Assert.assertFalse(idMapper.hasMappingForEtablissement(noEtablissement));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement ignoré car sans établissement stable ni rôle de mandataire\\.$");
+
+		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
+	}
+
+	@Test
+	public void testSansEtablissementStableMaisRoleMandataire() throws Exception {
+
+		final long noEntreprise = 4346375L;
+		final long noEntrepriseMandante = 45484L;
+		final long noEtablissement = 353645427L;
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		final RegpmEntreprise entrepriseMandante = EntrepriseMigratorTest.buildEntreprise(noEntrepriseMandante);
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		EntrepriseMigratorTest.addMandat(entrepriseMandante, etablissement, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), null);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         Collections.singletonList(etablissement),
@@ -196,7 +240,15 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());
+
+		final EntityLinkCollector.EntityLink link = linkCollector.getCollectedLinks().get(0);
+		Assert.assertNotNull(link);
+		Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, link.getType());
+		Assert.assertEquals(RegDate.get(2000, 1, 1), link.getDateDebut());
+		Assert.assertNull(link.getDateFin());
+		Assert.assertEquals(EntityKey.of(etablissement), link.getSourceKey());
+		Assert.assertEquals(EntityKey.of(entreprise), link.getDestinationKey());
 
 		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI);
 		mr.getMessages().keySet().stream()
@@ -204,7 +256,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(aucun lien créé\\)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(lien créé selon rôles de mandataire\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
@@ -661,6 +713,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		addEtablissementStable(etablissement, RegDate.get(2000, 7, 14), RegDate.get(2006, 7, 4));
 		etablissement.setRaisonSociale1("Ma");
 		etablissement.setRaisonSociale2("Petite");
 		etablissement.setRaisonSociale3("Entreprise");
@@ -686,7 +739,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());       // le lien entre l'entreprise et l'établissement stable
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -712,6 +765,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		addEtablissementStable(etablissement, RegDate.get(2000, 7, 14), RegDate.get(2006, 7, 4));
 		etablissement.setRaisonSociale1("Ma");
 		etablissement.setRaisonSociale2("Petite");
 		etablissement.setRaisonSociale3("Entreprise");
@@ -736,7 +790,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());       // lien entre l'entreprise et l'établissement
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {
@@ -762,6 +816,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		final long noEtablissement = 43256475L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
 		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		addEtablissementStable(etablissement, RegDate.get(2000, 1, 1), null);
 		etablissement.setEnseigne("La rouge musaraigne");
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
@@ -783,18 +838,18 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertTrue(Long.toString(idEtablissement), Etablissement.ETB_GEN_FIRST_ID <= idEtablissement && idEtablissement <= Etablissement.ETB_GEN_LAST_ID);
 		Assert.assertEquals(idEtablissement, idMapper.getIdUniregEtablissement(noEtablissement));
-		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());       // pas d'établissement stable -> pas de lien
+		Assert.assertEquals(1, linkCollector.getCollectedLinks().size());       // vers l'établissement stable
 
 		// vérification des messages collectés
-		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI, LogCategory.ADRESSES);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(aucun lien créé\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		// avec les coordonnées financières qui vont bien
 		doInUniregTransaction(true, status -> {

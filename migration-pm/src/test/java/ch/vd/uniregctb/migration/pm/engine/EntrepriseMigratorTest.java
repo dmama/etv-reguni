@@ -154,6 +154,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		entreprise.setFusionsAvant(new HashSet<>());
 		entreprise.setInscriptionsRC(new TreeSet<>());
 		entreprise.setMandataires(new HashSet<>());
+		entreprise.setMandants(new HashSet<>());
 		entreprise.setQuestionnairesSNC(new TreeSet<>());
 		entreprise.setRadiationsRC(new TreeSet<>());
 		entreprise.setRaisonsSociales(new TreeSet<>());
@@ -281,13 +282,19 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		mandat.setDateAttribution(dateDebut);
 		mandat.setDateResiliation(dateFin);
 		if (mandataire instanceof RegpmIndividu) {
-			mandat.setMandataireIndividu((RegpmIndividu) mandataire);
+			final RegpmIndividu individuMandataire = (RegpmIndividu) mandataire;
+			mandat.setMandataireIndividu(individuMandataire);
+			individuMandataire.getMandants().add(mandat);
 		}
 		else if (mandataire instanceof RegpmEtablissement) {
-			mandat.setMandataireEtablissement((RegpmEtablissement) mandataire);
+			final RegpmEtablissement etablissementMandataire = (RegpmEtablissement) mandataire;
+			mandat.setMandataireEtablissement(etablissementMandataire);
+			etablissementMandataire.getMandants().add(mandat);
 		}
 		else if (mandataire instanceof RegpmEntreprise) {
-			mandat.setMandataireEntreprise((RegpmEntreprise) mandataire);
+			final RegpmEntreprise entrepriseMandataire = (RegpmEntreprise) mandataire;
+			mandat.setMandataireEntreprise(entrepriseMandataire);
+			entrepriseMandataire.getMandants().add(mandat);
 		}
 		else if (mandataire != null) {
 			throw new IllegalArgumentException("Le mandataire doit être soit un individu, soit un établissement, soit une entreprise... (trouvé " + mandataire.getClass().getSimpleName() + ")");

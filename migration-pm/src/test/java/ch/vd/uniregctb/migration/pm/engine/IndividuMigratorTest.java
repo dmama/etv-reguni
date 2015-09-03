@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +60,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		individu.setNom(nom);
 		individu.setPrenom(prenom);
 		individu.setSexe(sexe);
+
+		// initialisation des collections à des collections vides tout comme on les trouverait avec une entité
+		// extraite de la base de données
+		individu.setMandants(new HashSet<>());
+
 		return individu;
 	}
 

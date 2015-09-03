@@ -64,6 +64,9 @@ public class EntityLinkCollector {
 		private final RegDate dateDebut;
 		private final RegDate dateFin;
 
+		private S resolvedSource = null;            // cache de la donnée initialisée à la première demande
+		private D resolvedDestination = null;       // cache de la donnée initialisée à la première demande
+
 		protected EntityLink(LinkType type, KeyedSupplier<S> source, KeyedSupplier<D> destination, RegDate dateDebut, RegDate dateFin) {
 			this(type, source, source.getKey(), destination, destination.getKey(), dateDebut, dateFin);
 		}
@@ -104,7 +107,10 @@ public class EntityLinkCollector {
 		}
 
 		public final S resolveSource() {
-			return source.get();
+			if (resolvedSource == null) {
+				resolvedSource = source.get();
+			}
+			return resolvedSource;
 		}
 
 		@Nullable
@@ -113,7 +119,10 @@ public class EntityLinkCollector {
 		}
 
 		public final D resolveDestination() {
-			return destination.get();
+			if (resolvedDestination == null) {
+				resolvedDestination = destination.get();
+			}
+			return resolvedDestination;
 		}
 
 		@Override

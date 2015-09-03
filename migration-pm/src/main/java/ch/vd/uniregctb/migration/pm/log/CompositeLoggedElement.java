@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +29,12 @@ public class CompositeLoggedElement implements LoggedElement {
 	private static final LoggedElement EMPTY = new EmptyValuedLoggedElement();
 
 	private final List<LoggedElementAttribute> items;
-	private final Map<LoggedElementAttribute, Object> values;
+
+	/**
+	 * La méthode de génération des valeurs (car certains éléments (ex : l'établissement) ont des champs
+	 * qui ne sont résolvables qu'au dernier moment)
+	 */
+	private final Supplier<Map<LoggedElementAttribute, Object>> values;
 
 	public CompositeLoggedElement(LoggedElement... elements) {
 		this(elements == null ? Collections.emptyList() : Arrays.asList(elements));
@@ -37,7 +43,7 @@ public class CompositeLoggedElement implements LoggedElement {
 	public CompositeLoggedElement(List<LoggedElement> elements) {
 		final LoggedElement elt = buildComposite(elements);
 		this.items = Collections.unmodifiableList(elt.getItems());
-		this.values = Collections.unmodifiableMap(elt.getItemValues());
+		this.values = () -> Collections.unmodifiableMap(elt.getItemValues());
 	}
 
 	@NotNull
@@ -49,7 +55,7 @@ public class CompositeLoggedElement implements LoggedElement {
 	@NotNull
 	@Override
 	public final Map<LoggedElementAttribute, Object> getItemValues() {
-		return values;
+		return values.get();
 	}
 
 	@NotNull

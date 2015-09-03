@@ -60,7 +60,7 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 	protected static void assertExistMessageWithContent(MigrationResultCollector mr, LogCategory cat, String regex) {
 		// s'il n'y a aucun message pour la catégorie, c'est forcément faux
 		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(cat);
-		Assert.assertNotNull(messages);
+		Assert.assertNotNull(cat.name(), messages);
 
 		final Pattern pattern = Pattern.compile(regex);
 		final MigrationResultCollector.Message candidate = messages.stream()
