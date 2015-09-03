@@ -547,7 +547,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 						              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est nulle.",
 						                            fj.getPk().getSeqNo(),
-						                            fj.getType()));
+						                            fj.getType().getCode()));
 						return false;
 					}
 					return true;
@@ -557,7 +557,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
 						              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
 						                            fj.getPk().getSeqNo(),
-						                            fj.getType(),
+						                            fj.getType().getCode(),
 						                            StringRenderers.DATE_RENDERER.toString(fj.getDateValidite())));
 						return false;
 					}
@@ -566,7 +566,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.peek(fj -> checkDateLouche(fj.getDateValidite(),
 				                            () -> String.format("Forme juridique %d (%s) avec date de début de validité",
 				                                                fj.getPk().getSeqNo(),
-				                                                fj.getType()),
+				                                                fj.getType().getCode()),
 				                            LogCategory.DONNEES_CIVILES_REGPM,
 				                            mr))
 				.max(Comparator.naturalOrder())
