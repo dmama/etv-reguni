@@ -20,6 +20,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
@@ -46,7 +47,8 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				getBean(RcPersClient.class, "rcpersClient"),
 				nonHabitantIndex,
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
-				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
+				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+				getBean(DatesParticulieres.class, "datesParticulieres"));
 	}
 
 	static RegpmIndividu buildBaseIndividu(long id, String nom, String prenom, RegDate dateNaissance, Sexe sexe) {

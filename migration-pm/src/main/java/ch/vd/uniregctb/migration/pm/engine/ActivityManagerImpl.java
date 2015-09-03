@@ -28,6 +28,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.utils.DataLoadHelper;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 
 /**
  * Entité qui maintient les flags d'activité pour les entreprises pendant la migration
@@ -49,10 +50,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	/**
 	 * @param filename le fichier qui contient, ligne par ligne, les numéros des entreprises dont la perception affirme qu'ils sont toujours actifs
-	 * @param seuilActivite si on trouve une activité de l'entreprise à cette date ou après, l'entreprise est considérée comme active
+	 * @param datesParticulieres bean qui permet d'accéder à la date du seuil d'activité (pour ce qui concerne l'assujettissement)
 	 * @throws IOException en cas de souci avec le fichier fourni
 	 */
-	public ActivityManagerImpl(String filename, RegDate seuilActivite) throws IOException {
+	public ActivityManagerImpl(String filename, DatesParticulieres datesParticulieres) throws IOException {
 
 		// récupération des données fournies par la perception
 		try (Reader reader = StringUtils.isNotBlank(filename) ? new FileReader(filename) : null) {
@@ -60,7 +61,7 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 
 		// stockage du seuil d'activité fourni
-		this.seuilActivite = seuilActivite;
+		this.seuilActivite = datesParticulieres.getSeuilActivite();
 
 		// un peu de log...
 		LOGGER.info("Nombre d'entreprises actives au niveau de la perception : " + this.numerosContribuablesActifsPerception.size());

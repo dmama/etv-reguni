@@ -49,12 +49,12 @@
 		<constructor-arg name="infraService" ref="serviceInfrastructureService"/>
 		<constructor-arg name="fusionCommunesProvider" ref="fusionCommunesProvider"/>
 		<constructor-arg name="fractionsCommuneProvider" ref="fractionsCommuneProvider"/>
+		<constructor-arg name="datesParticulieres" ref="datesParticulieres"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
-		<constructor-arg name="seuilActivite" ref="dateSeuilActivite"/>
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>
@@ -88,12 +88,28 @@
 
 	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">
 		<constructor-arg name="filename" value="${activite.flag.perception.file}"/>
-		<constructor-arg name="seuilActivite" ref="dateSeuilActivite"/>
+		<constructor-arg name="datesParticulieres" ref="datesParticulieres"/>
 	</bean>
 
-	<bean id="dateSeuilActivite" class="ch.vd.uniregctb.migration.pm.utils.RegDateFactory">
-		<constructor-arg name="format" value="DISPLAY"/>
-		<constructor-arg name="value" value="${activite.flag.seuil}"/>
+	<bean id="datesParticulieres" class="ch.vd.uniregctb.migration.pm.utils.DatesParticulieres">
+		<constructor-arg name="seuilActivite">
+			<bean class="ch.vd.uniregctb.migration.pm.utils.RegDateFactory">
+				<constructor-arg name="format" value="DISPLAY"/>
+				<constructor-arg name="value" value="${seuil.activite}"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="seuilDateNormale">
+			<bean class="ch.vd.uniregctb.migration.pm.utils.RegDateFactory">
+				<constructor-arg name="format" value="DISPLAY"/>
+				<constructor-arg name="value" value="${seuil.date.normale}"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="seuilRepriseMandats">
+			<bean class="ch.vd.uniregctb.migration.pm.utils.RegDateFactory">
+				<constructor-arg name="format" value="DISPLAY"/>
+				<constructor-arg name="value" value="${seuil.mandats.repris}"/>
+			</bean>
+		</constructor-arg>
 	</bean>
 
 	<bean id="streetDataMigrator" class="ch.vd.uniregctb.migration.pm.adresse.StreetDataMigratorImpl">

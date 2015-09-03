@@ -79,6 +79,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -117,11 +118,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(ServiceInfrastructureService.class, "serviceInfrastructureService"),
 				getBean(BouclementService.class, "bouclementService"),
 				getBean(AssujettissementService.class, "assujettissementService"),
-				RegDate.get(2015, 1, 1),
 				getBean(RCEntAdapter.class, "rcEntAdapter"),
 				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
-				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"));
+				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
+				getBean(DatesParticulieres.class, "datesParticulieres"));
 	}
 
 	/**

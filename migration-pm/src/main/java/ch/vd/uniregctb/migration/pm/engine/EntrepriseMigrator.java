@@ -105,6 +105,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
@@ -147,22 +148,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final AssujettissementService assujettissementService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
-	private final RegDate seuilActivite;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
 	                          ActivityManager activityManager,
 	                          ServiceInfrastructureService infraService,
 	                          BouclementService bouclementService,
 	                          AssujettissementService assujettissementService,
-	                          RegDate seuilActivite,
 	                          RCEntAdapter rcEntAdapter,
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
-	                          FractionsCommuneProvider fractionsCommuneProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider);
+	                          FractionsCommuneProvider fractionsCommuneProvider,
+	                          DatesParticulieres datesParticulieres) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
-		this.seuilActivite = seuilActivite;
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
 	}
@@ -406,13 +405,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft())));
 
 				// log en cas de valeur un peu louche
-				if (isDateLouche(finActivite.getLeft())) {
-					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-					              String.format("La date de fin d'activité (date de %s) est antérieure au %s (%s).",
-					                            finActivite.getRight(),
-					                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-					                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft())));
-				}
+				checkDateLouche(finActivite.getLeft(),
+				                () -> String.format("La date de fin d'activité (date de %s)", finActivite.getRight()),
+				                LogCategory.SUIVI,
+				                mr);
 
 				// si la date est fixée, on ne la prend en compte que si elle
 				// est postérieure à la date de début du dernier for fiscal principal existant
@@ -479,16 +475,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(rs -> {
-					if (isDateLouche(rs.getDateValidite())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
-						              String.format("Raison sociale %d (%s) avec une date de validité antérieure au %s (%s).",
-						                            rs.getId(),
-						                            extractRaisonSociale(rs),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(rs.getDateValidite())));
-					}
-				})
+				.peek(rs -> checkDateLouche(rs.getDateValidite(),
+				                            () -> String.format("Raison sociale %d (%s) avec une date de validité",
+				                                                rs.getId(),
+				                                                extractRaisonSociale(rs)),
+				                            LogCategory.DONNEES_CIVILES_REGPM,
+				                            mr))
 				.max(Comparator.naturalOrder())
 				.map(rs -> new RaisonSocialeData(extractRaisonSociale(rs), rs.getDateValidite()))
 				.orElseGet(() -> new RaisonSocialeData(null, null)));
@@ -527,16 +519,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(c -> {
-					if (isDateLouche(c.getDateEvolutionCapital())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
-						              String.format("Capital %d (%s) avec une date de début de validité antérieure au %s (%s).",
-						                            c.getId().getSeqNo(),
-						                            c.getCapitalLibere(),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(c.getDateEvolutionCapital())));
-					}
-				})
+				.peek(c -> checkDateLouche(c.getDateEvolutionCapital(),
+				                           () -> String.format("Capital %d (%s) avec une date de début de validité",
+				                                               c.getId().getSeqNo(),
+				                                               c.getCapitalLibere()),
+				                           LogCategory.DONNEES_CIVILES_REGPM,
+				                           mr))
 				.max(Comparator.naturalOrder())
 				.map(c -> new CapitalData(c.getCapitalLibere(), c.getDateEvolutionCapital()))
 				.orElseGet(() -> new CapitalData(null, null)));
@@ -575,16 +563,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(fj -> {
-					if (isDateLouche(fj.getDateValidite())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
-						              String.format("Forme juridique %d (%s) avec date de début de validité antérieure au %s (%s).",
-						                            fj.getPk().getSeqNo(),
-						                            fj.getType(),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(fj.getDateValidite())));
-					}
-				})
+				.peek(fj -> checkDateLouche(fj.getDateValidite(),
+				                            () -> String.format("Forme juridique %d (%s) avec date de début de validité",
+				                                                fj.getPk().getSeqNo(),
+				                                                fj.getType()),
+				                            LogCategory.DONNEES_CIVILES_REGPM,
+				                            mr))
 				.max(Comparator.naturalOrder())
 				.map(c -> new FormeJuridiqueData(c.getType(), c.getDateValidite()))
 				.orElseGet(() -> new FormeJuridiqueData(null, null)));
@@ -811,15 +795,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.peek(ff -> {
-						if (isDateLouche(ff.getDateValidite())) {
-							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
-							              String.format("Le for principal %d a une date de début antérieure au %s (%s).",
-							                            ff.getId().getSeqNo(),
-							                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-							                            StringRenderers.DATE_RENDERER.toString(ff.getDateValidite())));
-						}
-					})
+					.peek(ff -> checkDateLouche(ff.getDateValidite(),
+					                            () -> String.format("Le for principal %d a une date de début", ff.getId().getSeqNo()),
+					                            LogCategory.FORS,
+					                            mr))
 					.collect(Collectors.toList());
 
 			return new ForsPrincipauxData(liste);
@@ -891,6 +870,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 				// si la PM est déclarée "inactive" mais qu'Unireg lui calcule un assujettissement après la date seuil du 01.01.2015,
 				// c'est un problème, non ?
+				final RegDate seuilActivite = datesParticulieres.getSeuilActivite();
 				if (!data.active && DateRangeHelper.intersect(new DateRangeHelper.Range(seuilActivite, null), calcules)) {
 					mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
 					              String.format("Assujettissement calculé après le %s sur une entreprise considérée comme inactive.", StringRenderers.DATE_RENDERER.toString(seuilActivite)));
@@ -1555,15 +1535,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(s -> {
-					if (isDateLouche(s.getDateValidite())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Le siège %d a une date de validité antérieure au %s (%s).",
-						                            s.getId().getSeqNo(),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite())));
-					}
-				})
+				.peek(s -> checkDateLouche(s.getDateValidite(),
+				                           () -> String.format("Le siège %d a une date de validité", s.getId().getSeqNo()),
+				                           LogCategory.SUIVI,
+				                           mr))
 				.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
 				                          Collections::singletonList,
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
@@ -1706,12 +1681,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return;
 					}
 
-					if (isDateLouche(mandat.getDateAttribution())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est antérieure au %s (%s).",
-						                                                              mandat.getId(),
-						                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
-					}
+					checkDateLouche(mandat.getDateAttribution(),
+					                () -> String.format("La date d'attribution du mandat %s", mandat.getId()),
+					                LogCategory.SUIVI,
+					                mr);
 
 					// date de fin dans le futur -> on ignore la date de fin
 					final RegDate dateFin;
@@ -1722,13 +1695,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					else {
 						dateFin = mandat.getDateResiliation();
-					}
-
-					if (dateFin != null && isDateLouche(dateFin)) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date de résiliation du mandat %s est antérieure au %s (%s).",
-						                                                              mandat.getId(),
-						                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
+						checkDateLouche(dateFin,
+						                () -> String.format("La date de résiliation du mandat %s", mandat.getId()),
+						                LogCategory.SUIVI,
+						                mr);
 					}
 
 					// ajout du lien entre l'entreprise et son mandataire
@@ -2234,10 +2204,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return unireg;
 	}
 
-	private static <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee,
-	                                                                                  SortedSet<T> regimesRegpm,
-	                                                                                  @Nullable RegDate dateFinRegimes,
-	                                                                                  MigrationResultProduction mr) {
+	private <T extends RegpmRegimeFiscal> List<RegimeFiscal> mapRegimesFiscaux(RegimeFiscal.Portee portee,
+	                                                                           SortedSet<T> regimesRegpm,
+	                                                                           @Nullable RegDate dateFinRegimes,
+	                                                                           MigrationResultProduction mr) {
 		// collecte des régimes fiscaux CH sans date de fin d'abord...
 		final List<RegimeFiscal> liste = regimesRegpm.stream()
 				.filter(r -> r.getDateAnnulation() == null)         // on ne migre pas les régimes fiscaux annulés
@@ -2274,16 +2244,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(rf -> {
-					if (isDateLouche(rf.getDateDebut())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Régime fiscal %s %s avec une date de début de validité antérieure au %s (%s).",
-						                            portee,
-						                            rf.getType(),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(rf.getDateDebut())));
-					}
-				})
+				.peek(rf -> checkDateLouche(rf.getDateDebut(),
+				                            () -> String.format("Régime fiscal %s %s avec une date de début de validité",
+				                                                portee,
+				                                                rf.getType()),
+				                            LogCategory.SUIVI,
+				                            mr))
 				.map(r -> mapRegimeFiscal(portee, r))
 				.collect(Collectors.toList());
 
@@ -2545,15 +2511,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					}
 					return true;
 				})
-				.peek(a -> {
-					if (isDateLouche(a.getDateDebut())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Allègement fiscal %d avec une date de début de validité antérieure au %s (%s).",
-						                            a.getId().getSeqNo(),
-						                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-						                            StringRenderers.DATE_RENDERER.toString(a.getDateDebut())));
-					}
-				})
+				.peek(a -> checkDateLouche(a.getDateDebut(),
+				                           () -> String.format("Allègement fiscal %d avec une date de début de validité", a.getId().getSeqNo()),
+				                           LogCategory.SUIVI,
+				                           mr))
 				.map(a -> mapAllegementFiscal(a, mr))
 				.flatMap(Function.identity())
 				.map(a -> adapterAllegementFiscalPourFusionsCommunes(a, mr, LogCategory.SUIVI))

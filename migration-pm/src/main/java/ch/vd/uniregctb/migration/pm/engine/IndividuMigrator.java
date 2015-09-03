@@ -38,6 +38,7 @@ import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -51,8 +52,8 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	public IndividuMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
 	                        TiersDAO tiersDAO, RcPersClient rcpersClient, NonHabitantIndex nonHabitantIndex, FusionCommunesProvider fusionCommunesProvider,
-	                        FractionsCommuneProvider fractionsCommuneProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider);
+	                        FractionsCommuneProvider fractionsCommuneProvider, DatesParticulieres datesParticulieres) {
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
 		this.tiersDAO = tiersDAO;
 		this.rcpersClient = rcpersClient;
 		this.nonHabitantIndex = nonHabitantIndex;

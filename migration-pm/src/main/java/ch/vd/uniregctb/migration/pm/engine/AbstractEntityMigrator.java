@@ -55,6 +55,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
+import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -70,21 +71,22 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements EntityMigrator<T> {
 
-	public static final RegDate DATE_LOUCHE = RegDate.get(1900, 1, 1);
-
 	protected final UniregStore uniregStore;
 	protected final ActivityManager activityManager;
 	protected final ServiceInfrastructureService infraService;
 	protected final FusionCommunesProvider fusionCommunesProvider;
 	protected final FractionsCommuneProvider fractionsCommuneProvider;
+	protected final DatesParticulieres datesParticulieres;
 
 	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
-	                              FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider) {
+	                              FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
+	                              DatesParticulieres datesParticulieres) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
 		this.infraService = infraService;
 		this.fusionCommunesProvider = fusionCommunesProvider;
 		this.fractionsCommuneProvider = fractionsCommuneProvider;
+		this.datesParticulieres = datesParticulieres;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =
@@ -487,10 +489,24 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 	/**
 	 * @param date date testée
-	 * @return <code>true</code> si la date est non-nulle est antérieure à {@link #DATE_LOUCHE}
+	 * @param description description à placer dans le log (avant " est antérieure au...")
+	 * @param logCategory catégorie du log à utiliser
+	 * @param mr collecteur de messages de log
 	 */
-	protected static boolean isDateLouche(@Nullable RegDate date) {
-		return date != null && NullDateBehavior.LATEST.compare(date, DATE_LOUCHE) < 0;
+	protected void checkDateLouche(@Nullable RegDate date,
+	                               Supplier<String> description,
+	                               LogCategory logCategory,
+	                               MigrationResultProduction mr) {
+
+		// on loggue la date si elle est considérée comme anormale...
+		final RegDate seuilDateNormale = datesParticulieres.getSeuilDateNormale();
+		if (date != null && NullDateBehavior.LATEST.compare(date, seuilDateNormale) < 0) {
+			mr.addMessage(logCategory, LogLevel.WARN,
+			              String.format("%s est antérieure au %s (%s).",
+			                            description.get(),
+			                            StringRenderers.DATE_RENDERER.toString(seuilDateNormale),
+			                            StringRenderers.DATE_RENDERER.toString(date)));
+		}
 	}
 
 	/**
