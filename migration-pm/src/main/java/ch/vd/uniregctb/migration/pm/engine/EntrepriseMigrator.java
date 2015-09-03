@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -67,6 +68,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.data.RaisonSocialeData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
@@ -90,6 +92,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
@@ -353,6 +356,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractFormeJuridique(e, mr, idMapper),
 		                         null,
 		                         null);
+
+		// données des mandats
+		mr.registerDataExtractor(DonneesMandats.class,
+		                         e -> extractDonneesMandats(e, mr, idMapper),
+		                         null,
+		                         null);
+	}
+
+	@NotNull
+	private DonneesMandats extractDonneesMandats(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		return extractDonneesMandats(buildEntrepriseKey(e), e.getMandants(), e.getMandataires(), mr, LogCategory.SUIVI, idMapper);
 	}
 
 	/**
@@ -1634,27 +1648,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// un supplier qui va renvoyer l'entreprise en cours de migration
 		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
 
-		// migration des mandataires -> liens à créer par la suite (on les trie pour la reproductibilité en test)
-		regpm.getMandataires().stream()
-				.sorted(Comparator.comparing(mandat -> mandat.getId().getNoSequence()))
+		// on va chercher les mandats (rôle mandant -> les mandataires) reprise
+		final Collection<RegpmMandat> mandataires = mr.getExtractedData(DonneesMandats.class, moi.getKey()).getRolesMandant();
+
+		// migration des mandataires -> liens à créer par la suite
+		mandataires.stream()
 				.forEach(mandat -> {
 
 					// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
 					final KeyedSupplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
 					if (mandataire == null) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
-						return;
+						// cas normalement impossible, puisque le cas a dû être écarté déjà dans l'extracteur
+						throw new IllegalArgumentException("On ne devrait pas se trouver là...");
 					}
 
-					// TODO ne faut-il vraiment migrer que les mandats généraux ?
-
-					// on ne migre que les mandats généraux pour le moment
-					if (mandat.getType() != RegpmTypeMandat.GENERAL) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
-						return;
-					}
-
-					final TypeMandat typeMandat = TypeMandat.GENERAL;
 					final String bicSwift = mandat.getBicSwift();
 					String iban;
 					try {
@@ -1667,43 +1674,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						iban = null;
 					}
 
-					// une date de début nulle pose un grave problème (c'est peut-être une date trop lointaine dans le passé, i.e. avant 1291... -> vraissemblablement une erreur de saisie)
-					if (mandat.getDateAttribution() == null) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
-						return;
-					}
-
-					// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
-					if (isFutureDate(mandat.getDateAttribution())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
-						                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
-						return;
-					}
-
-					checkDateLouche(mandat.getDateAttribution(),
-					                () -> String.format("La date d'attribution du mandat %s", mandat.getId()),
-					                LogCategory.SUIVI,
-					                mr);
-
-					// date de fin dans le futur -> on ignore la date de fin
-					final RegDate dateFin;
-					if (isFutureDate(mandat.getDateResiliation())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date de résiliation du mandat %s est dans le futur (%s), le mandat sera donc laissé ouvert dans la migration.",
-						                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
-						dateFin = null;
-					}
-					else {
-						dateFin = mandat.getDateResiliation();
-						checkDateLouche(dateFin,
-						                () -> String.format("La date de résiliation du mandat %s", mandat.getId()),
-						                LogCategory.SUIVI,
-						                mr);
-					}
-
 					// ajout du lien entre l'entreprise et son mandataire
-					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), dateFin, typeMandat, iban, bicSwift));
+					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), mandat.getDateResiliation(), extractTypeMandat(mandat.getType()), iban, bicSwift));
 				});
+	}
+
+	private static TypeMandat extractTypeMandat(RegpmTypeMandat type) {
+		if (type == RegpmTypeMandat.GENERAL) {
+			return TypeMandat.GENERAL;
+		}
+
+		// TODO si on doit un jour migrer d'autres types, ça va sauter (doit être cohérent avec l'extraction des mandats)
+		throw new IllegalArgumentException("Type de mandat non-supporté : " + type);
 	}
 
 	/**

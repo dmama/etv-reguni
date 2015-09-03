@@ -148,7 +148,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmEntreprise entrepriseMandataire = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandataire);
 		final RegpmEtablissement mandataire = EtablissementMigratorTest.buildEtablissement(idEtablissementMandataire, entrepriseMandataire);
-		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2006, 12, 31));
+		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2008, 12, 31));
 		EntrepriseMigratorTest.addMandat(mandant, mandataire, RegpmTypeMandat.GENERAL, null, RegDate.get(2010, 1, 1), null);
 
 		final Graphe graphe = new MockGraphe(Arrays.asList(mandant, entrepriseMandataire),
@@ -203,7 +203,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				}
 				{
 					final ValidationMessage msg = errors.get(1);
-					Assert.assertEquals("Sujet : Mandat (01.01.2000 - 31.12.2006)", msg.getMessage());
+					Assert.assertEquals("Sujet : Mandat (01.01.2000 - 31.12.2008)", msg.getMessage());
 				}
 				{
 					final ValidationMessage msg = errors.get(2);
@@ -297,21 +297,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				{
 					final List<RapportEntreTiers> rapports = rapportsObjetMap.get(TypeRapportEntreTiers.MANDAT);
 					Assert.assertNotNull(rapports);
-					Assert.assertEquals(2, rapports.size());
+					Assert.assertEquals(1, rapports.size());        // le mandat fermé en 2006 a été ignoré car... fermé en 2006
 
-					// ils sont triés par construction (voir plus haut...)
 					{
 						final RapportEntreTiers ret = rapports.get(0);
-						Assert.assertNotNull(ret);
-						Assert.assertTrue(ret instanceof Mandat);
-						Assert.assertEquals(RegDate.get(2000, 1, 1), ret.getDateDebut());
-						Assert.assertEquals(RegDate.get(2006, 12, 31), ret.getDateFin());
-						Assert.assertEquals(etb.getId(), ret.getObjetId());
-						Assert.assertEquals((Long) idEntrepriseMandante, ret.getSujetId());
-						Assert.assertFalse(ret.isAnnule());
-					}
-					{
-						final RapportEntreTiers ret = rapports.get(1);
 						Assert.assertNotNull(ret);
 						Assert.assertTrue(ret instanceof Mandat);
 						Assert.assertEquals(RegDate.get(2010, 1, 1), ret.getDateDebut());
@@ -458,17 +447,18 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(10, msgs.size());
+			Assert.assertEquals(11, msgs.size());
 			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";" + noContribuableEtablissementSecondaireMandataire.longValue() + ";;;" + idEntrepriseMandataire + ";;;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaireMandataire.longValue()) + ".", msgs.get(0));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(1));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
-			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandante) + ".", msgs.get(4));
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(5));
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(6));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " d'après le siège 1.", msgs.get(7));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " : [02.02.1990 -> ?] sur PAYS_HS/8215.", msgs.get(8));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandataire) + ".", msgs.get(9));
+			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Le mandat 1 de l'entreprise mandante " + idEntrepriseMandante + " vers l'entité mandataire " + idEtablissementMandataire + " de type ETABLISSEMENT est ignoré car sa date de résiliation est antérieure au 01.01.2008 (31.12.2006).", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandante) + ".", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(7));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " d'après le siège 1.", msgs.get(8));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " : [02.02.1990 -> ?] sur PAYS_HS/8215.", msgs.get(9));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandataire) + ".", msgs.get(10));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
@@ -500,11 +490,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
-			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals(3, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1995-01-01;;;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(0));
-			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2000-01-01;2006-12-31;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(1));
-			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2010-01-01;;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(2));
-			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-02-02;;;;;" + noContribuableEtablissementPrincipalMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(3));
+			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2010-01-01;;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(1));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-02-02;;;;;" + noContribuableEtablissementPrincipalMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(2));
 		}
 	}
 

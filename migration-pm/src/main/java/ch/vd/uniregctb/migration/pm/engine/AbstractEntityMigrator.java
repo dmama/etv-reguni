@@ -37,6 +37,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -53,7 +54,9 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
@@ -905,5 +908,190 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		// on change la localisation
 		source.setNumeroOfsAutoriteFiscale(fraction.getNoOFS());
 		return false;
+	}
+
+	/**
+	 * @param mandat mandat dans RegPM
+	 * @param mr collecteur de messages de suivi (un message est loggué si le mandat n'est pas repris)
+	 * @return <code>true</code> si le mandat doit être repris, <code>false</code> sinon
+	 */
+	private boolean isMandatRepris(RegpmMandat mandat, MigrationResultProduction mr, LogCategory logCategory) {
+
+		// pas de mandataire identifié -> on oublie tout de suite
+		final EntityKey mandataire = getPolymorphicKey(mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
+		if (mandataire == null) {
+			mr.addMessage(logCategory, LogLevel.ERROR,
+			              String.format("Le mandat %d de l'entreprise mandante %d n'a pas de mandataire.",
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise()));
+			return false;
+		}
+
+		// on ne reprend que les mandats généraux
+		if (mandat.getType() != RegpmTypeMandat.GENERAL) {
+			mr.addMessage(logCategory, LogLevel.WARN,
+			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré à cause de son type (%s).",
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType(),
+			                            mandat.getType()));
+			return false;
+		}
+
+		// on ne reprend de toute façon que les mandats assez récents
+		if (RegDateHelper.isBefore(mandat.getDateResiliation(), datesParticulieres.getSeuilRepriseMandats(), NullDateBehavior.LATEST)) {
+			mr.addMessage(logCategory, LogLevel.WARN,
+			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date de résiliation est antérieure au %s (%s).",
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType(),
+			                            StringRenderers.DATE_RENDERER.toString(datesParticulieres.getSeuilRepriseMandats()),
+			                            StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
+			return false;
+		}
+
+		// pas de date d'attribution (ou beaucoup trop lointaine dans le passé) -> passe ton chemin, manant !
+		if (mandat.getDateAttribution() == null) {
+			mr.addMessage(logCategory, LogLevel.ERROR,
+			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date d'attribution est nulle.",
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType()));
+			return false;
+		}
+
+		// date d'attribution future -> ignoré
+		if (isFutureDate(mandat.getDateAttribution())) {
+			mr.addMessage(logCategory, LogLevel.ERROR,
+			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date d'attribution est dans le futur (%s).",
+			                            mandat.getId().getNoSequence(),
+			                            mandat.getId().getIdEntreprise(),
+			                            mandataire.getId(),
+			                            mandataire.getType(),
+			                            StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
+			return false;
+		}
+
+		// un petit log pour les dates louches
+		checkDateLouche(mandat.getDateAttribution(),
+		                () -> String.format("La date d'attribution du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
+		                                    mandat.getId().getNoSequence(),
+		                                    mandat.getId().getIdEntreprise(),
+		                                    mandataire.getId(),
+		                                    mandataire.getType()),
+		                logCategory,
+		                mr);
+		checkDateLouche(mandat.getDateResiliation(),
+		                () -> String.format("La date de résiliation du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s",
+		                                    mandat.getId().getNoSequence(),
+		                                    mandat.getId().getIdEntreprise(),
+		                                    mandataire.getId(),
+		                                    mandataire.getType()),
+		                logCategory,
+		                mr);
+
+		return true;
+	}
+
+	/**
+	 * @param mandat un mandat source
+	 * @param mr le collecteur de messages de suivi
+	 * @param logCategory la catégorie de log en cas de message généré
+	 * @return le mandat source si sa date de résiliation est absente ou passée, une autre instance sans date de résiliation si elle est future
+	 */
+	private RegpmMandat ignoreDateResiliationMandatSiFuture(RegpmMandat mandat, MigrationResultProduction mr, LogCategory logCategory) {
+		if (mandat.getDateResiliation() == null || !isFutureDate(mandat.getDateResiliation())) {
+			return mandat;
+		}
+
+		final EntityKey mandataire = getPolymorphicKey(mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
+		if (mandataire == null) {
+			// on ne devrait jamais passer ici, normalement ce cas a été écarté plus tôt
+			return mandat;
+		}
+
+		mr.addMessage(logCategory, LogLevel.ERROR,
+		              String.format("La date de résiliation du mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignorée (= mandat ouvert) car elle est dans le futur (%s).",
+		                            mandat.getId().getNoSequence(),
+		                            mandat.getId().getIdEntreprise(),
+		                            mandataire.getId(),
+		                            mandataire.getType(),
+		                            StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
+
+		final RegpmMandat copie = new RegpmMandat();
+		copie.setBicSwift(mandat.getBicSwift());
+		copie.setDateAttribution(mandat.getDateAttribution());
+		copie.setDateResiliation(null);         // c'est justement celle-là qu'on veut ignorer
+		copie.setIban(mandat.getIban());
+		copie.setId(mandat.getId());
+		copie.setInstitutionFinanciere(mandat.getInstitutionFinanciere());
+		copie.setLastMutationOperator(mandat.getLastMutationOperator());
+		copie.setLastMutationTimestamp(mandat.getLastMutationTimestamp());
+		copie.setMandataireEntreprise(mandat.getMandataireEntreprise());
+		copie.setMandataireEtablissement(mandat.getMandataireEtablissement());
+		copie.setMandataireIndividu(mandat.getMandataireIndividu());
+		copie.setMotif(mandat.getMotif());
+		copie.setNoCCP(mandat.getNoCCP());
+		copie.setNoCompteBancaire(mandat.getNoCompteBancaire());
+		copie.setNoFaxContact(mandat.getNoFaxContact());
+		copie.setNomContact(mandat.getNomContact());
+		copie.setNomInstitutionFinanciere(mandat.getNomInstitutionFinanciere());
+		copie.setNoTelContact(mandat.getNoTelContact());
+		copie.setPrenomContact(mandat.getPrenomContact());
+		copie.setType(mandat.getType());
+		return copie;
+	}
+
+	/**
+	 * Extrait les données des mandats d'une entité à partir de ses collections de mandants et et mandataires
+	 * @param entityKey clé associée à l'entité
+	 * @param mandants la collection des mandats représentant les mandants de l'entité
+	 * @param mandataires la collection des mandats représentant les mandataires de l'entité
+	 * @param mr collecteur de messages de suivi et manipulateur du contexte de log
+	 * @param logCategory catégorie de log pour les messages générés
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 * @return les données extraites
+	 */
+	@NotNull
+	protected DonneesMandats extractDonneesMandats(EntityKey entityKey,
+	                                               @Nullable Collection<RegpmMandat> mandants,
+	                                               @Nullable Collection<RegpmMandat> mandataires,
+	                                               MigrationResultContextManipulation mr,
+	                                               LogCategory logCategory,
+	                                               IdMapping idMapper) {
+
+		return doInLogContext(entityKey, mr, idMapper, () -> {
+
+			// l'entité est mandatrice de ses mandants
+			final List<RegpmMandat> rolesMandataire;
+			if (mandants != null && !mandants.isEmpty()) {
+				rolesMandataire = mandants.stream()
+						.sorted(Comparator.<RegpmMandat>comparingLong(mandat -> mandat.getId().getIdEntreprise()).thenComparingInt(mandat -> mandat.getId().getNoSequence()))   // tri pour déterminisme
+						.filter(mandat -> isMandatRepris(mandat, mr, logCategory))
+						.map(mandat -> ignoreDateResiliationMandatSiFuture(mandat, mr, logCategory))
+						.collect(Collectors.toList());
+			}
+			else {
+				rolesMandataire = null;
+			}
+
+			// l'entité est mandante de ses mandataires
+			final List<RegpmMandat> rolesMandant;
+			if (mandataires != null && !mandataires.isEmpty()) {
+				rolesMandant = mandataires.stream()
+						.sorted(Comparator.comparingLong(mandat -> mandat.getId().getNoSequence()))     // tri pour que les tests soient plus reproductibles...
+						.filter(mandat -> isMandatRepris(mandat, mr, logCategory))
+						.map(mandat -> ignoreDateResiliationMandatSiFuture(mandat, mr, logCategory))
+						.collect(Collectors.toList());
+			}
+			else {
+				rolesMandant = null;
+			}
+
+			return new DonneesMandats(rolesMandant, rolesMandataire);
+		});
 	}
 }

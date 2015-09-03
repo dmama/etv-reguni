@@ -27,10 +27,12 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
+import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
@@ -61,6 +63,22 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
 	private static String extractPrenomUsuel(String tousPrenoms) {
 		return Arrays.stream(StringUtils.trimToEmpty(tousPrenoms).split("\\s+")).findFirst().orElse(null);
+	}
+
+	@Override
+	public void initMigrationResult(MigrationResultInitialization mr, IdMapping idMapper) {
+		super.initMigrationResult(mr, idMapper);
+
+		// données des mandats
+		mr.registerDataExtractor(DonneesMandats.class,
+		                         null,
+		                         null,
+		                         i -> extractDonneesMandats(i, mr, idMapper));
+	}
+
+	@NotNull
+	private DonneesMandats extractDonneesMandats(RegpmIndividu i, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		return extractDonneesMandats(buildIndividuKey(i), i.getMandants(), null, mr, LogCategory.INDIVIDUS_PM, idMapper);
 	}
 
 	/**

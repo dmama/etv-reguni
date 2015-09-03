@@ -42,6 +42,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
+import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
@@ -158,6 +159,17 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		                         null,
 		                         e -> extractDatesEtablissementsStables(e, mr, idMapper),
 		                         null);
+
+		// données des mandats
+		mr.registerDataExtractor(DonneesMandats.class,
+		                         null,
+		                         e -> extractDonneesMandats(e, mr, idMapper),
+		                         null);
+	}
+
+	@NotNull
+	private DonneesMandats extractDonneesMandats(RegpmEtablissement e, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		return extractDonneesMandats(buildEtablissementKey(e), e.getMandants(), null, mr, LogCategory.ETABLISSEMENTS, idMapper);
 	}
 
 	/**

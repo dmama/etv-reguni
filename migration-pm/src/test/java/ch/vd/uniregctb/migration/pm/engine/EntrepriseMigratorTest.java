@@ -930,7 +930,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(msgSuivi);
 		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
 		final String messageMandatDateDebutFuture = messages.stream()
-				.filter(s -> s.matches("La date d'attribution du mandat .* est dans le futur \\(.*\\), le mandat sera donc ignoré dans la migration\\."))
+				.filter(s -> s.matches("Le mandat .* est ignoré car sa date d'attribution est dans le futur \\(.*\\)\\."))
 				.findAny()
 				.orElse(null);
 		if (messageMandatDateDebutFuture == null) {
@@ -976,7 +976,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(msgSuivi);
 		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
 		final String messageMandatDateDebutFuture = messages.stream()
-				.filter(s -> s.matches("Le mandat .* n'a pas de date d'attribution \\(ou cette date est très loin dans le passé\\), il sera donc ignoré dans la migration\\."))
+				.filter(s -> s.matches("Le mandat .* est ignoré car sa date d'attribution est nulle\\."))
 				.findAny()
 				.orElse(null);
 		if (messageMandatDateDebutFuture == null) {
@@ -1033,7 +1033,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertNotNull(msgSuivi);
 		final List<String> messages = msgSuivi.stream().map(msg -> msg.text).collect(Collectors.toList());
 		final String messageMandatDateDebutFuture = messages.stream()
-				.filter(s -> s.matches("La date de résiliation du mandat .* est dans le futur \\(.*\\), le mandat sera donc laissé ouvert dans la migration\\."))
+				.filter(s -> s.matches("La date de résiliation du mandat .* est ignorée \\(= mandat ouvert\\) car elle est dans le futur \\(.*\\)\\."))
 				.findAny()
 				.orElse(null);
 		if (messageMandatDateDebutFuture == null) {
