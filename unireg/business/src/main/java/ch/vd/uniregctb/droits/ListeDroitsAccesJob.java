@@ -30,11 +30,14 @@ import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -115,7 +118,9 @@ public class ListeDroitsAccesJob extends JobDefinition {
 					}
 					statusManager.setMessage("Traitement du contribuable n°" + da.getTiers().getNumero(), progressMonitor.getProgressInPercent());
 					final AdresseEnvoiDetaillee adresseEnvoi = getAdresseDomicile(da.getTiers());
-					final Integer oid = tiersService.getOfficeImpotIdAt(da.getTiers(), dateValeur);
+					final Contribuable porteurAssujettissement = findPorteurAssujettissement(da.getTiers(), dateValeur);
+					final Contribuable ctb = porteurAssujettissement != null ? porteurAssujettissement : da.getTiers();
+					final Integer oid = tiersService.getOfficeImpotIdAt(ctb, dateValeur);
 					final Operateur operateur = securiteService.getOperateur(da.getNoIndividuOperateur());
 					rapport.addDroitAcces(da.getTiers().getNumero(), oid, adresseEnvoi, da.getType(), da.getNiveau(), operateur);
 				}
@@ -143,6 +148,24 @@ public class ListeDroitsAccesJob extends JobDefinition {
 
 		setLastRunReport(rapport);
 		Audit.success("La production de la liste des droits d'accès au " + RegDateHelper.dateToDisplayString(dateValeur) + " est terminée.", rapport);
+	}
+
+	/**
+	 * Permet de retrouver le ctb assujetti pour le contribuable passé en paramètre
+	 * @param p le contribuable à analyser
+	 * @param dateValeur la fate de référence;
+	 * @return le contribuable assujetti ou null si aucun assujetissement n'a été trouvé
+	 */
+	private Contribuable findPorteurAssujettissement(PersonnePhysique p, RegDate dateValeur){
+		Assujettissement assujettissement = tiersService.getAssujettissement(p, dateValeur);
+		if (assujettissement == null) {
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(p, dateValeur);
+			if (ensembleTiersCouple != null) {
+				assujettissement = tiersService.getAssujettissement(ensembleTiersCouple.getMenage(),dateValeur);
+			}
+
+		}
+		return assujettissement!=null?assujettissement.getContribuable():null;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
