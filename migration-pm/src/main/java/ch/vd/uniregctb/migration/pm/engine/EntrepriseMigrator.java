@@ -365,52 +365,66 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private DateFinActiviteData extractDateFinActivite(RegpmEntreprise e, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
-			final RegDate finActivite;
 
-			if (e.getDateRadiationRC() != null) {
-				finActivite = e.getDateRadiationRC();
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Date de fin d'activité proposée (date de radiation au RC) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
-			}
-			else if (e.getDateDissolution() != null) {
-				finActivite = e.getDateDissolution();
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Date de fin d'activité proposée (date de dissolution) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
-			}
-			else if (e.getDateFinFiscale() != null) {
-				finActivite = e.getDateFinFiscale();
-				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				              String.format("Date de fin d'activité proposée (date de fin fiscale) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
-			}
-			else {
-				// le bilan de fusion ?
-				finActivite = e.getFusionsApres().stream()
-						.filter(fusion -> !fusion.isRectifiee())
-						.map(RegpmFusion::getDateBilan)
-						.sorted(Comparator.reverseOrder())
-						.findFirst()
-						.orElse(null);
+			// [SIFISC-16176] l'ordre des dates à prendre en compte est le suivant :
+			// - date de bilan de fusion (si elle existe, évidemment)
+			// - date de radiation
+			// - date de dissolution
 
-				if (finActivite != null) {
-					mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-					              String.format("Date de fin d'activité proposée (date du bilan de fusion) : %s.", StringRenderers.DATE_RENDERER.toString(finActivite)));
+			final RegDate dateBilanFusion = e.getFusionsApres().stream()
+					.filter(fusion -> !fusion.isRectifiee())
+					.map(RegpmFusion::getDateBilan)
+					.sorted(Comparator.reverseOrder())
+					.findFirst()
+					.orElse(null);
 
-				}
-			}
+			final Pair<RegDate, String> finActivite = Stream.of(Pair.of(dateBilanFusion, "bilan de fusion"),
+			                                                    Pair.of(e.getDateRadiationRC(), "radiation au RC"),
+			                                                    Pair.of(e.getDateDissolution(), "dissolution"))
+					.filter(pair -> pair.getLeft() != null)
+					.filter(pair -> {
+						if (isFutureDate(pair.getLeft())) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("La date de %s est ignorée elle est située dans le futur (%s).",
+							                            pair.getRight(),
+							                            StringRenderers.DATE_RENDERER.toString(pair.getLeft())));
+							return false;
+						}
+						return true;
+					})
+					.findFirst()
+					.orElse(null);
 
-			// si la date est fixée, on ne la prend en compte que si elle
-			// est postérieure à la date de début du dernier for fiscal principal existant
+			// on a quelque chose ?
 			if (finActivite != null) {
+
+				// log informatif sur la date choisie
+				mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				              String.format("Date de fin d'activité proposée (date de %s) : %s.",
+				                            finActivite.getRight(),
+				                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft())));
+
+				// log en cas de valeur un peu louche
+				if (isDateLouche(finActivite.getLeft())) {
+					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+					              String.format("La date de fin d'activité (date de %s) est antérieure au %s (%s).",
+					                            finActivite.getRight(),
+					                            StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
+					                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft())));
+				}
+
+				// si la date est fixée, on ne la prend en compte que si elle
+				// est postérieure à la date de début du dernier for fiscal principal existant
 				final List<RegpmForPrincipal> forsPrincipaux = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(e)).liste;
 				final RegpmForPrincipal apresFin = forsPrincipaux.stream()
-						.filter(fp -> RegDateHelper.isAfter(fp.getDateValidite(), finActivite, NullDateBehavior.EARLIEST))
+						.filter(fp -> RegDateHelper.isAfter(fp.getDateValidite(), finActivite.getLeft(), NullDateBehavior.EARLIEST))
 						.findFirst()
 						.orElse(null);
 				if (apresFin != null) {
 					// il existe au moins un for principal qui commence après la date de fin calculée -> on ignore donc cette date de fin...
 					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 					              String.format("La date de fin d'activité proposée (%s) est antérieure à la date de début du for principal %d (%s), cette date de fin d'activité sera donc ignorée.",
-					                            StringRenderers.DATE_RENDERER.toString(finActivite),
+					                            StringRenderers.DATE_RENDERER.toString(finActivite.getLeft()),
 					                            apresFin.getId().getSeqNo(),
 					                            StringRenderers.DATE_RENDERER.toString(apresFin.getDateValidite())));
 					return new DateFinActiviteData(null);
@@ -418,7 +432,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 
 			// ça y est, on s'est tous mis d'accord sur une date
-			return new DateFinActiviteData(finActivite);
+			return new DateFinActiviteData(finActivite != null ? finActivite.getLeft() : null);
 		});
 	}
 

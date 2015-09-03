@@ -3283,22 +3283,59 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testDateFinActiviteRadiationRC() throws Exception {
+	public void testDateFinActiviteDateBilanFusion() throws Exception {
 
 		final long noEntreprise = 2623L;
 		final long noEntrepriseApresFusion = 42632L;
 		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateBilanFusion = RegDate.get(2007, 3, 12);
 		final RegDate dateRadiationRC = RegDate.get(2006, 4, 21);
 		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
-		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
-		final RegDate dateFusion = RegDate.get(2007, 3, 12);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		e.setDateRadiationRC(dateRadiationRC);
 		e.setDateDissolution(dateDissolution);
-		e.setDateFinFiscale(dateFinFiscale);
-		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateBilanFusion);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// en base : le for principal doit avoir été limité à la date de radiation RC
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);
+			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
+			Assert.assertEquals(dateBilanFusion, ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
+		});
+	}
+
+	@Test
+	public void testDateFinActiviteRadiationRC() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
+		final RegDate dateRadiationRC = RegDate.get(2006, 4, 21);
+		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		e.setDateRadiationRC(dateRadiationRC);      // pas de date de bilan de fusion, c'est donc celle-ci qui prime
+		e.setDateDissolution(dateDissolution);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3330,18 +3367,13 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	public void testDateFinActiviteDissolution() throws Exception {
 
 		final long noEntreprise = 2623L;
-		final long noEntrepriseApresFusion = 42632L;
 		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
 		final RegDate dateDissolution = RegDate.get(2007, 3, 4);
-		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
-		final RegDate dateFusion = RegDate.get(2007, 3, 12);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 //		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
 		e.setDateDissolution(dateDissolution);
-		e.setDateFinFiscale(dateFinFiscale);
-		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3370,101 +3402,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testDateFinActiviteDateFinFiscale() throws Exception {
-
-		final long noEntreprise = 2623L;
-		final long noEntrepriseApresFusion = 42632L;
-		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
-		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
-		final RegDate dateFusion = RegDate.get(2007, 3, 12);
-
-		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
-//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
-//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
-		e.setDateFinFiscale(dateFinFiscale);
-		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
-
-		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
-		                                         null,
-		                                         null);
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr, idMapper);
-		migrate(e, migrator, mr, linkCollector, idMapper);
-
-		// en base : le for principal doit avoir été limité à la date de radiation RC
-		doInUniregTransaction(true, status -> {
-			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
-			Assert.assertNotNull(entreprise);
-
-			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-			Assert.assertNotNull(ffp);
-			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
-			Assert.assertEquals(dateFinFiscale, ffp.getDateFin());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
-			Assert.assertFalse(ffp.isAnnule());
-			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
-			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
-		});
-	}
-
-	@Test
-	public void testDateFinActiviteDateBilanFusion() throws Exception {
-
-		final long noEntreprise = 2623L;
-		final long noEntrepriseApresFusion = 42632L;
-		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
-		final RegDate dateFusion = RegDate.get(2007, 3, 12);
-
-		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
-//		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
-//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
-//		e.setDateFinFiscale(dateFinFiscale);        pas de date de fin fiscale non plus -> il reste la date de fusion
-		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
-
-		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
-		                                         null,
-		                                         null);
-		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
-		final EntityLinkCollector linkCollector = new EntityLinkCollector();
-		final IdMapper idMapper = new IdMapper();
-		migrator.initMigrationResult(mr, idMapper);
-		migrate(e, migrator, mr, linkCollector, idMapper);
-
-		// en base : le for principal doit avoir été limité à la date de radiation RC
-		doInUniregTransaction(true, status -> {
-			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
-			Assert.assertNotNull(entreprise);
-
-			final ForFiscalPrincipalPM ffp = entreprise.getDernierForFiscalPrincipal();
-			Assert.assertNotNull(ffp);
-			Assert.assertEquals(dateCreationFor, ffp.getDateDebut());
-			Assert.assertEquals(dateFusion, ffp.getDateFin());
-			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
-			Assert.assertFalse(ffp.isAnnule());
-			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
-			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifFermeture());
-		});
-	}
-
-	@Test
 	public void testDateFinActiviteVide() throws Exception {
 
 		final long noEntreprise = 2623L;
-		final long noEntrepriseApresFusion = 42632L;
 		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 //		e.setDateRadiationRC(dateRadiationRC);      pas de date de radiation -> c'est la date de dissolution qui prime, maintenant
-//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> c'est la date de fin fiscale qui prime
-//		e.setDateFinFiscale(dateFinFiscale);        pas de date de fin fiscale non plus -> il reste la date de fusion
-//		addFusion(e, buildEntreprise(noEntrepriseApresFusion), dateFusion);
+//		e.setDateDissolution(dateDissolution);      pas de date de dissolution -> il n'y a donc pas de date de fin d'activité qui tienne
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3497,15 +3443,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 2623L;
 		final RegDate dateCreationFor = RegDate.get(2005, 2, 1);
-		final RegDate dateFinFiscale = RegDate.get(2006, 6, 12);
-		final RegDate dateCreationDeuxiemeFor = dateFinFiscale.addDays(5);
+		final RegDate dateDissolution = RegDate.get(2006, 6, 12);
+		final RegDate dateCreationDeuxiemeFor = dateDissolution.addDays(5);
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addForPrincipalSuisse(e, dateCreationFor, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		addForPrincipalSuisse(e, dateCreationDeuxiemeFor, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
 		addSiegeSuisse(e, dateCreationFor, Commune.LAUSANNE);
 		addSiegeSuisse(e, dateCreationDeuxiemeFor, Commune.MORGES);
-		e.setDateFinFiscale(dateFinFiscale);
+		e.setDateDissolution(dateDissolution);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3583,7 +3529,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 			Assert.assertEquals(8, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-			Assert.assertEquals("Date de fin d'activité proposée (date de fin fiscale) : 12.06.2006.", textes.get(1));
+			Assert.assertEquals("Date de fin d'activité proposée (date de dissolution) : 12.06.2006.", textes.get(1));
 			Assert.assertEquals("La date de fin d'activité proposée (12.06.2006) est antérieure à la date de début du for principal 2 (17.06.2006), cette date de fin d'activité sera donc ignorée.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(4));
