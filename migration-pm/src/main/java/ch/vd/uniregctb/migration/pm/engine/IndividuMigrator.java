@@ -170,6 +170,13 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			return;
 		}
 
+		// si la personne physique n'est pas directement mandataire, on ne la migre pas
+		final DonneesMandats donneesMandats = mr.getExtractedData(DonneesMandats.class, buildIndividuKey(regpm));
+		if (!donneesMandats.isMandataire()) {
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "Individu PM ignoré car n'a pas le rôle de mandataire.");
+			return;
+		}
+
 		// individu migré à l'époque dans RCPers avec le numéro
 		final Person migreRCPers = getFromRCPersWithId(mr, regpm.getId());
 		final Pair<Long, Boolean> trouveRCPersId;       // long = ID, boolean = flag habitant

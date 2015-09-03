@@ -2167,6 +2167,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idIndividu = Long.MAX_VALUE;     // ne devrait pas exister dans RCPers, selon toute vraissemblance
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(idIndividu, "Deker", "Jacob", RegDate.get(1971, 10, 31), Sexe.MASCULIN);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2009, 6, 12), RegDate.get(2010, 7, 13));      // mandat ajouté pour déclencher la migration de l'individu
 
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BERN);
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, RegDate.get(2000, 1, 1), Commune.BERN);
@@ -2295,8 +2296,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
-			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2000-01-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2009-06-12;2010-07-13;" + idEntreprise + ";;;" + idEntreprise + ";;;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";", msgs.get(1));
 		}
 	}
 

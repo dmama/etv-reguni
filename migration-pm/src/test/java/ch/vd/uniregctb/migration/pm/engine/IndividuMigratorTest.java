@@ -19,7 +19,9 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -69,13 +71,53 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testNouvelIndividu() throws Exception {
+	public void testIndividuSansRoleMandataire() throws Exception {
 
 		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
 		final long noIndividuRegpm = 7484841141411857L;
 		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
 
 		final MockGraphe graphe = new MockGraphe(null,
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(individu, migrator, mr, linkCollector, idMapper);
+
+		// vérification de ce que l'on a créé en base (= rien !!)
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(0, ids.size());
+		});
+
+		Assert.assertNotNull(linkCollector.getCollectedLinks());
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bIndividu PM ignoré car n'a pas le rôle de mandataire\\.$");
+	}
+
+	@Test
+	public void testNouvelIndividu() throws Exception {
+
+		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
+		final long noIndividuRegpm = 7484841141411857L;
+		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         null,
 		                                         Collections.singletonList(individu));
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
@@ -123,6 +165,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final long noIndividu = 33153;
 		final RegpmIndividu individu = buildBaseIndividu(noIndividu, "Dusonchet", "Thérèse", RegDate.get(1953, 3, 12), Sexe.FEMININ);
 
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
 		// création de l'habitant correspondant dans Unireg
 		final long ppId = doInUniregTransaction(status -> {
 			final PersonnePhysique pp = new PersonnePhysique(noIndividu);
@@ -130,7 +177,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MockGraphe graphe = new MockGraphe(null,
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         null,
 		                                         Collections.singletonList(individu));
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
@@ -179,8 +226,13 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final long noIndividu = 33153;
 		final RegpmIndividu individu = buildBaseIndividu(noIndividu, "Dusonchet", "Thérèse", RegDate.get(1953, 3, 12), Sexe.FEMININ);
 
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
 		// migration de l'individu RepPM -> la personne physique doit être nouvellement créée et liée au civil
-		final MockGraphe graphe = new MockGraphe(null,
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         null,
 		                                         Collections.singletonList(individu));
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
@@ -231,6 +283,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dusonchet", "Thérèse", RegDate.get(1953, 3, 12), Sexe.FEMININ);
 
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
 		// création de l'habitant correspondant dans Unireg
 		final long ppId = doInUniregTransaction(status -> {
 			final PersonnePhysique pp = new PersonnePhysique(noIndividuRcpers);
@@ -238,7 +295,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MockGraphe graphe = new MockGraphe(null,
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         null,
 		                                         Collections.singletonList(individu));
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
@@ -288,6 +345,11 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		final long noIndividuRegpm = 7484841141411857L;
 		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
 
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
 		// création du non-habitant avec les mêmes données en base (il sera indexé et retrouvé lors de la migration)
 		final long ppId = doInUniregTransaction(status -> {
 			final PersonnePhysique pp = new PersonnePhysique(Boolean.FALSE);
@@ -307,7 +369,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		});
 
 		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
-		final MockGraphe graphe = new MockGraphe(null,
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         null,
 		                                         Collections.singletonList(individu));
 		final MigrationResultCollector mr = new MigrationResultCollector(graphe);

@@ -458,38 +458,50 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// en revanche, cela ne signifie pas que l'on doivent aller remplir les graphes de départ avec les établissements d'individus
 		// pour eux-mêmes (-> on ne traite les activités indépendantes "PP" que dans le cas où elles sont mandatrices de quelque chose...)
 
-		// on crée les liens vers l'entreprise ou l'individu avec les dates d'établissements stables
+		// on crée les liens vers l'entreprise seulement avec les dates d'établissements stables si on en a, sinon avec les dates des rôles mandataires
 		if (entiteJuridique != null) {
-			if (!datesEtablissementsStables.isEmpty()) {
-				// création des liens (= rapports entre tiers)
-				datesEtablissementsStables.stream()
-						.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin()))
-						.forEach(linkCollector::addLink);
 
-				// génération de l'information pour la création des fors secondaires associés à ces établissements stables
-				enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
+			// on ne crée un lien que vers les entreprises...
+			if (entiteJuridique.getKey().getType() == EntityKey.Type.ENTREPRISE) {
+
+				if (!datesEtablissementsStables.isEmpty()) {
+					// création des liens (= rapports entre tiers)
+					datesEtablissementsStables.stream()
+							.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin()))
+							.forEach(linkCollector::addLink);
+
+					// génération de l'information pour la création des fors secondaires associés à ces établissements stables
+					enregistrerDemandesForsSecondaires(entiteJuridique, regpm.getDomicilesEtablissements(), mr, datesEtablissementsStables);
+				}
+				else {
+					mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement sans aucune période de validité d'un établissement stable (lien créé selon rôles de mandataire).");
+
+					// un seul lien, avec les dates min et max des mandats (avec le rôle mandataire) repris (mais pas de for secondaire, du coup...)
+
+					// pour les dates min et max, il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
+					// nous sommes ici, c'est qu'il n'y a pas d'établissements stables...)
+					// (la date min ne peut pas être nulle car de tels mandats sont ignorés)
+					final RegDate minMandat = donneesMandats.getRolesMandataire().stream()
+							.map(RegpmMandat::getDateAttribution)
+							.min(Comparator.naturalOrder())
+							.get();
+
+					// (la date max peut être nulle, elle, en revanche, pour les mandats encore ouverts
+					final RegDate maxMandat = donneesMandats.getRolesMandataire().stream()
+							.max((mandat1, mandat2) -> NullDateBehavior.LATEST.compare(mandat1.getDateResiliation(), mandat2.getDateResiliation()))
+							.get()
+							.getDateResiliation();
+
+					// et le lien, pour finir
+					linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, minMandat, maxMandat));
+				}
 			}
 			else {
-				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN, "Etablissement sans aucune période de validité d'un établissement stable (lien créé selon rôles de mandataire).");
-
-				// un seul lien, avec les dates min et max des mandats (avec le rôle mandataire) repris
-
-				// pour les dates min et max, il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
-				// nous sommes ici, c'est qu'il n'y a pas d'établissements stables...)
-				// (la date min ne peut pas être nulle car de tels mandats sont ignorés)
-				final RegDate minMandat = donneesMandats.getRolesMandataire().stream()
-						.map(RegpmMandat::getDateAttribution)
-						.min(Comparator.naturalOrder())
-						.get();
-
-				// (la date max peut être nulle, elle, en revanche, pour les mandats encore ouverts
-				final RegDate maxMandat = donneesMandats.getRolesMandataire().stream()
-						.max((mandat1, mandat2) -> NullDateBehavior.LATEST.compare(mandat1.getDateResiliation(), mandat2.getDateResiliation()))
-						.get()
-						.getDateResiliation();
-
-				// et le lien, pour finir
-				linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, minMandat, maxMandat));
+				// l'entité juridique n'est pas une entreprise, on ne fait pas de lien (mais on le dit...)
+				mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
+				              String.format("Etablissement lié à l'entité %d de type %s : pas de lien créé.",
+				                            entiteJuridique.getKey().getId(),
+				                            entiteJuridique.getKey().getType()));
 			}
 		}
 
