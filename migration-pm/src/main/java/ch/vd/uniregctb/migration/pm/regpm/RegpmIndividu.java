@@ -32,6 +32,8 @@ import ch.vd.uniregctb.type.Sexe;
 })
 public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
+	private static final long serialVersionUID = 5699922874760523793L;
+
 	private Long id;
 	private Long navs13;
 	private String noContribuableIT;
@@ -42,6 +44,7 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 	private RegDate dateDeces;
 	private SortedSet<RegpmCaracteristiquesIndividu> caracteristiques;
 	private Set<RegpmAdresseIndividu> adresses;
+	private Set<RegpmMandat> mandants;
 
 	@Id
 	@Column(name = "NO_INDIVIDU")
@@ -141,5 +144,15 @@ public class RegpmIndividu extends RegpmEntity implements WithLongId {
 
 	public void setAdresses(Set<RegpmAdresseIndividu> adresses) {
 		this.adresses = adresses;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_INDNO")
+	public Set<RegpmMandat> getMandants() {
+		return mandants;
+	}
+
+	public void setMandants(Set<RegpmMandat> mandants) {
+		this.mandants = mandants;
 	}
 }

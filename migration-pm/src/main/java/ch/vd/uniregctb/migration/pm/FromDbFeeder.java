@@ -60,6 +60,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 	private SessionFactory sessionFactory;
 	private Set<Long> idsEntreprisesDejaMigrees;
 	private String nomFichierIdentifiantsAExtraire;
+	private MigrationMode mode;
 	private volatile boolean shutdownInProgress = false;
 
 	/**
@@ -239,6 +240,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		etablissement.getDomicilesEtablissements().size();
 		etablissement.getInscriptionsRC().size();
 		etablissement.getRadiationsRC().size();
+		etablissement.getMandants().size();
 
 		// chargement de l'entreprise/individu lié(e)
 		forceLoad(etablissement.getEntreprise(), graphe);
@@ -261,6 +263,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		// lazy init
 		individu.getCaracteristiques().size();
 		individu.getAdresses().size();
+		individu.getMandants().size();
 	}
 
 	private static void forceLoad(RegpmEntreprise pm, GrapheRecorder graphe) {
@@ -284,6 +287,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		pm.getAllegementsFiscaux().size();
 		pm.getQuestionnairesSNC().size();
 		pm.getCapitaux().size();
+		pm.getMandants().size();
 
 		// lazy init + éventuels liens vers d'autres entités
 		{
@@ -392,6 +396,10 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		this.nomFichierIdentifiantsAExtraire = StringUtils.trimToNull(nomFichierIdentifiantsAExtraire);
 	}
 
+	public void setMode(MigrationMode mode) {
+		this.mode = mode;
+	}
+
 	@Override
 	public void destroy() throws Exception {
 		this.shutdownInProgress = true;
@@ -406,7 +414,10 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 
 		// container des identifiants des entreprises déjà traitées (dans un graphe précédent ou même carrément déjà migrées)
 		final Set<Long> idsDejaTrouvees = new HashSet<>(ids.size());
-		idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
+		if (mode != MigrationMode.DUMP) {
+			// en mode DUMP, on ne fait pas attention à ce qu'il y a déja en base de destination...
+			idsDejaTrouvees.addAll(idsEntreprisesDejaMigrees);
+		}
 
 		// boucle sur les identifiants d'entreprise trouvés et envoi vers le worker
 		final GentilIterator<Long> idIterator = new GentilIterator<>(ids);

@@ -21,6 +21,7 @@
 		<property name="sessionFactory" ref="regpmSessionFactory"/>
 		<property name="idsEntreprisesDejaMigrees" ref="alreadyMigratedEntrepriseIds"/>
 		<property name="nomFichierIdentifiantsAExtraire" value="${migration.test.extracted.pm.file}"/>
+		<property name="mode" value="${migration.mode}"/>
 	</bean>
 
 	<bean id="serializationIntermediary" class="ch.vd.uniregctb.migration.pm.SerializationIntermediary">
