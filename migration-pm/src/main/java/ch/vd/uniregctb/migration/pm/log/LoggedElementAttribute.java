@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.StringRenderer;
+import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.regpm.NumeroIDE;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -62,6 +63,22 @@ public enum LoggedElementAttribute {
 	ADRESSE_LIEU(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	ADRESSE_LOCALITE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
 	ADRESSE_PAYS(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+
+	//
+	// spécifiques aux rapports entre tiers
+	//
+
+	RET_TYPE(EntityLinkCollector.LinkType.class, Enum::name, LoggedElementHelper.<EntityLinkCollector.LinkType>exceptionThrowing()),
+	RET_DATE_DEBUT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	RET_DATE_FIN(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	RET_SRC_ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_SRC_ETABLISSEMENT_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_SRC_INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_SRC_UNIREG_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_DEST_ENTREPRISE_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_DEST_ETABLISSEMENT_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_DEST_INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
+	RET_DEST_UNIREG_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 
 	;
 

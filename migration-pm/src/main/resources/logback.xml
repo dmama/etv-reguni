@@ -118,6 +118,17 @@
 		<appender-ref ref="DONNEES_CIVILES_REGPM"/>
 	</logger>
 
+	<appender name="RAPPORTS_ENTRE_TIERS" class="ch.qos.logback.core.FileAppender">
+		<file>log/rapports-entre-tiers.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.RAPPORTS_ENTRE_TIERS" additivity="false">
+		<appender-ref ref="RAPPORTS_ENTRE_TIERS"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

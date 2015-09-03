@@ -56,6 +56,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -225,6 +226,21 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		return () -> uniregStore.getEntityFromDb(PersonnePhysique.class, idMapper.getIdUniregIndividu(id));
 	}
 
+	@NotNull
+	protected final KeyedSupplier<Entreprise> getEntrepriseSupplier(IdMapping idMapper, RegpmEntreprise regpm) {
+		return new KeyedSupplier<>(buildEntrepriseKey(regpm), getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId()));
+	}
+
+	@NotNull
+	protected final KeyedSupplier<Etablissement> getEtablissementSupplier(IdMapping idMapper, RegpmEtablissement regpm) {
+		return new KeyedSupplier<>(buildEtablissementKey(regpm), getEtablissementByRegpmIdSupplier(idMapper, regpm.getId()));
+	}
+
+	@NotNull
+	protected final KeyedSupplier<PersonnePhysique> getIndividuSupplier(IdMapping idMapper, RegpmIndividu regpm) {
+		return new KeyedSupplier<>(buildIndividuKey(regpm), getIndividuByRegpmIdSupplier(idMapper, regpm.getId()));
+	}
+
 	/**
 	 * Le côté polymorphique d'une relation est en général exprimé dans RegPM par plusieurs liens distincts, dont un seul est non-vide. Dans Unireg,
 	 * il n'y a en général qu'un seul lien vers une entité à caractère polymorphique... Cette méthode permet donc de transcrire une façon de faire
@@ -245,17 +261,17 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 		final RegpmEntreprise entreprise = entrepriseSupplier != null ? entrepriseSupplier.get() : null;
 		if (entreprise != null) {
-			return new KeyedSupplier<>(buildEntrepriseKey(entreprise), getEntrepriseByRegpmIdSupplier(idMapper, entreprise.getId()));
+			return getEntrepriseSupplier(idMapper, entreprise);
 		}
 
 		final RegpmEtablissement etablissement = etablissementSupplier != null ? etablissementSupplier.get() : null;
 		if (etablissement != null) {
-			return new KeyedSupplier<>(buildEtablissementKey(etablissement), getEtablissementByRegpmIdSupplier(idMapper, etablissement.getId()));
+			return getEtablissementSupplier(idMapper, etablissement);
 		}
 
 		final RegpmIndividu individu = individuSupplier != null ? individuSupplier.get() : null;
 		if (individu != null) {
-			return new KeyedSupplier<>(buildIndividuKey(individu), getIndividuByRegpmIdSupplier(idMapper, individu.getId()));
+			return getIndividuSupplier(idMapper, individu);
 		}
 
 		return null;
@@ -303,44 +319,6 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		dest.setLogCreationDate(src.getLastMutationTimestamp());
 		dest.setLogModifUser(src.getLastMutationOperator());
 		dest.setLogModifDate(src.getLastMutationTimestamp());
-	}
-
-	/**
-	 * Supplier qui connaît aussi le type d'objet
-	 * @param <T> type d'objet fourni
-	 */
-	public static class KeyedSupplier<T> implements Supplier<T> {
-
-		private final EntityKey key;
-		private final Supplier<T> target;
-
-		public KeyedSupplier(@NotNull EntityKey key, @NotNull Supplier<T> target) {
-			this.key = key;
-			this.target = target;
-		}
-
-		@Override
-		public T get() {
-			return target.get();
-		}
-
-		public EntityKey getKey() {
-			return key;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final KeyedSupplier<?> that = (KeyedSupplier<?>) o;
-			return key.equals(that.key);
-		}
-
-		@Override
-		public int hashCode() {
-			return key.hashCode();
-		}
 	}
 
 	/**

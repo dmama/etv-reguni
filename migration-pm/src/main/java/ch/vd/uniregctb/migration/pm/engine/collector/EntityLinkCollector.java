@@ -4,10 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.CoordonneesFinancieres;
@@ -54,14 +58,30 @@ public class EntityLinkCollector {
 
 		private final LinkType type;
 		private final Supplier<S> source;
+		private final EntityKey sourceKey;
 		private final Supplier<D> destination;
+		private final EntityKey destinationKey;
 		private final RegDate dateDebut;
 		private final RegDate dateFin;
 
-		protected EntityLink(LinkType type, Supplier<S> source, Supplier<D> destination, RegDate dateDebut, RegDate dateFin) {
+		protected EntityLink(LinkType type, KeyedSupplier<S> source, KeyedSupplier<D> destination, RegDate dateDebut, RegDate dateFin) {
+			this(type, source, source.getKey(), destination, destination.getKey(), dateDebut, dateFin);
+		}
+
+		protected EntityLink(LinkType type, Supplier<S> source, KeyedSupplier<D> destination, RegDate dateDebut, RegDate dateFin) {
+			this(type, source, null, destination, destination.getKey(), dateDebut, dateFin);
+		}
+
+		protected EntityLink(LinkType type, KeyedSupplier<S> source, Supplier<D> destination, RegDate dateDebut, RegDate dateFin) {
+			this(type, source, source.getKey(), destination, null, dateDebut, dateFin);
+		}
+
+		private EntityLink(LinkType type, Supplier<S> source, EntityKey sourceKey, Supplier<D> destination, EntityKey destinationKey, RegDate dateDebut, RegDate dateFin) {
 			this.type = type;
 			this.source = source;
+			this.sourceKey = sourceKey;
 			this.destination = destination;
+			this.destinationKey = destinationKey;
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
 		}
@@ -78,11 +98,21 @@ public class EntityLinkCollector {
 			return destination;
 		}
 
-		protected final S resolveSource() {
+		@Nullable
+		public final EntityKey getSourceKey() {
+			return sourceKey;
+		}
+
+		public final S resolveSource() {
 			return source.get();
 		}
 
-		protected final D resolveDestination() {
+		@Nullable
+		public final EntityKey getDestinationKey() {
+			return destinationKey;
+		}
+
+		public final D resolveDestination() {
 			return destination.get();
 		}
 
@@ -109,7 +139,11 @@ public class EntityLinkCollector {
 
 	public static final class EtablissementEntiteJuridiqueLink<T extends Contribuable> extends EntityLink<Etablissement, T, RapportEntreTiers> {
 
-		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, Supplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
+		public EtablissementEntiteJuridiqueLink(KeyedSupplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
+			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
+		}
+
+		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
 			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
 		}
 
@@ -133,7 +167,7 @@ public class EntityLinkCollector {
 		private final String iban;
 		private final String bicSwift;
 
-		public MandantMandataireLink(Supplier<S> mandant, Supplier<D> mandataire, RegDate dateDebut, RegDate dateFin, TypeMandat typeMandat, String iban, String bicSwift) {
+		public MandantMandataireLink(KeyedSupplier<S> mandant, KeyedSupplier<D> mandataire, RegDate dateDebut, RegDate dateFin, TypeMandat typeMandat, String iban, String bicSwift) {
 			super(LinkType.MANDANT_MANDATAIRE, mandant, mandataire, dateDebut, dateFin);
 			this.typeMandat = typeMandat;
 			this.iban = iban;
@@ -159,7 +193,7 @@ public class EntityLinkCollector {
 
 	public static final class FusionEntreprisesLink extends EntityLink<Entreprise, Entreprise, RapportEntreTiers> {
 
-		public FusionEntreprisesLink(Supplier<Entreprise> avant, Supplier<Entreprise> apres, RegDate dateDebut, RegDate dateFin) {
+		public FusionEntreprisesLink(KeyedSupplier<Entreprise> avant, KeyedSupplier<Entreprise> apres, RegDate dateDebut, RegDate dateFin) {
 			super(LinkType.FUSION_ENTREPRISES, avant, apres, dateDebut, dateFin);
 		}
 

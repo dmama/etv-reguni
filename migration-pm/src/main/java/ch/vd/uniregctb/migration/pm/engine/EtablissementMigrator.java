@@ -54,6 +54,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
+import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -428,7 +429,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans lien vers une entreprise ou un individu.");
 		}
 		else {
-			final Supplier<Etablissement> moi = getEtablissementByRegpmIdSupplier(idMapper, regpm.getId());
+			final KeyedSupplier<Etablissement> moi = getEtablissementSupplier(idMapper, regpm);
 			final List<DateRange> datesEtablissementsStables = mr.getExtractedData(DatesEtablissementsStables.class, buildEtablissementKey(regpm)).liste;
 			if (!datesEtablissementsStables.isEmpty()) {
 				// création des liens (= rapports entre tiers)

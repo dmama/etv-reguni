@@ -447,7 +447,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.ADRESSES,
+		                               LogCategory.FORS,
+		                               LogCategory.ASSUJETTISSEMENTS,
+		                               LogCategory.ETABLISSEMENTS,
+		                               LogCategory.RAPPORTS_ENTRE_TIERS,
+		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(10, msgs.size());
@@ -489,6 +496,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant), capital () et forme juridique (ASSOCIATION).", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1990 -> ?], raison sociale (Je suis le mandataire), capital () et forme juridique (SA).", msgs.get(1));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1995-01-01;;;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(0));
+			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2000-01-01;2006-12-31;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(1));
+			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2010-01-01;;" + idEntrepriseMandante + ";;;" + idEntrepriseMandante + ";;" + idEtablissementMandataire + ";;" + noContribuableEtablissementSecondaireMandataire.longValue() + ";", msgs.get(2));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-02-02;;;;;" + noContribuableEtablissementPrincipalMandataire.longValue() + ";" + idEntrepriseMandataire + ";;;" + idEntrepriseMandataire + ";", msgs.get(3));
 		}
 	}
 
@@ -674,7 +689,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(7, msgs.size());
@@ -720,6 +735,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(3, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement1 + ";;" + noContribuableEtablissementSecondaire1.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2002-07-14;2010-11-25;;" + idEtablissement2 + ";;" + noContribuableEtablissementSecondaire2.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise+ ";;;" + idEntreprise + ";", msgs.get(2));
 		}
 	}
 
@@ -886,7 +908,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(7, msgs.size());
@@ -933,6 +955,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;Domicile : [27.01.2003 -> 31.10.2006] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;Domicile : [14.07.2002 -> 21.03.2004] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;Domicile : [22.03.2004 -> 25.11.2010] sur COMMUNE_OU_FRACTION_VD/5518.", msgs.get(3));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(3, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement1 + ";;" + noContribuableEtablissementSecondaire1.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2002-07-14;2010-11-25;;" + idEtablissement2 + ";;" + noContribuableEtablissementSecondaire2.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(2));
 		}
 	}
 
@@ -1265,7 +1294,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1289,6 +1318,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
 		}
 	}
 
@@ -1378,7 +1412,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1400,6 +1434,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
 		}
 	}
 
@@ -1465,7 +1504,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1484,6 +1523,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1987 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
 		}
 	}
 
@@ -1670,7 +1714,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1714,6 +1758,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
 			// l'ouverture du premier for de l'entreprise jusqu'à la date du jour)
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
 		}
 	}
 
@@ -2088,7 +2138,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertNotNull(noContribuableIndividu.getValue());
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -2119,6 +2169,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [12.05.1986 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2000-01-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 		}
 	}
 
@@ -2552,7 +2607,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.DONNEES_CIVILES_REGPM,
+		                               LogCategory.ADRESSES,
+		                               LogCategory.FORS,
+		                               LogCategory.ASSUJETTISSEMENTS,
+		                               LogCategory.ETABLISSEMENTS,
+		                               LogCategory.RAPPORTS_ENTRE_TIERS),
+		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -2593,6 +2655,14 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [28.09.1998 -> 30.06.2000] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [01.01.2001 -> 31.12.2005] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;Domicile : [01.01.2007 -> 31.12.2010] sur COMMUNE_OU_FRACTION_VD/5586.", msgs.get(2));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
+			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1998-09-28;2000-06-30;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2001-01-01;2005-12-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2007-01-01;2010-12-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(2));
+			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1998-09-28;;;;;" + noContribuableEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(3));
 		}
 	}
 

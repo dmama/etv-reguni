@@ -18,6 +18,7 @@ import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
+import ch.vd.uniregctb.migration.pm.log.RapportEntreTiersLoggedElement;
 
 public abstract class LogStructure {
 
@@ -60,6 +61,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesEtablissement = new FromContextInformationSource(EtablissementLoggedElement.class, EtablissementLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesIndividu = new FromContextInformationSource(IndividuLoggedElement.class, IndividuLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesAdresse = new FromContextInformationSource(AdresseLoggedElement.class, AdresseLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesRapportEntreTiers = new FromContextInformationSource(RapportEntreTiersLoggedElement.class, RapportEntreTiersLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -89,6 +91,9 @@ public abstract class LogStructure {
 
 		// Dans le log des données civiles de regpm, on met le contexte de l'entreprise et de l'établissement
 		map.put(LogCategory.DONNEES_CIVILES_REGPM, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement));
+
+		// Dans la liste des rapports entre tiers, on ne met que ce contexte-là
+		map.put(LogCategory.RAPPORTS_ENTRE_TIERS, Arrays.asList(donneesNiveau, donneesRapportEntreTiers));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.emptyList());

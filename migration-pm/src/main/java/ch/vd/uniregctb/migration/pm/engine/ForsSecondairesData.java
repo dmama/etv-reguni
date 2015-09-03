@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
@@ -14,10 +15,10 @@ import ch.vd.uniregctb.tiers.Tiers;
  */
 public abstract class ForsSecondairesData {
 
-	final AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier;
+	final KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier;
 	final Map<RegpmCommune, List<DateRange>> communes;
 
-	protected ForsSecondairesData(AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier,
+	protected ForsSecondairesData(KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier,
 	                              Map<RegpmCommune, List<DateRange>> communes) {
 		this.entiteJuridiqueSupplier = entiteJuridiqueSupplier;
 		this.communes = new TreeMap<>(Comparator.comparing(AbstractEntityMigrator.NO_OFS_COMMUNE_EXTRACTOR));
@@ -28,7 +29,7 @@ public abstract class ForsSecondairesData {
 	 * Classe des données collectées pour construire les fors "immeuble"
 	 */
 	public static final class Immeuble extends ForsSecondairesData {
-		public Immeuble(AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier, Map<RegpmCommune, List<DateRange>> communes) {
+		public Immeuble(KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier, Map<RegpmCommune, List<DateRange>> communes) {
 			super(entiteJuridiqueSupplier, communes);
 		}
 	}
@@ -37,7 +38,7 @@ public abstract class ForsSecondairesData {
 	 * Classe des données collectées pour construire les fors "activité" (= établissement)
 	 */
 	public static final class Activite extends ForsSecondairesData {
-		public Activite(AbstractEntityMigrator.KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier, Map<RegpmCommune, List<DateRange>> communes) {
+		public Activite(KeyedSupplier<? extends Tiers> entiteJuridiqueSupplier, Map<RegpmCommune, List<DateRange>> communes) {
 			super(entiteJuridiqueSupplier, communes);
 		}
 	}

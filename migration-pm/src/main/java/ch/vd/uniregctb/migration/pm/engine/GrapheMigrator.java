@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.RapportEntreTiersLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -150,7 +152,7 @@ public class GrapheMigrator implements InitializingBean {
 		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
 		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
-		addLinks(linkCollector.getCollectedLinks());
+		addLinks(linkCollector.getCollectedLinks(), mr);
 	}
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
@@ -165,8 +167,10 @@ public class GrapheMigrator implements InitializingBean {
 		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
 	}
 
-	private void addLinks(Collection<EntityLinkCollector.EntityLink> links) {
+	private void addLinks(Collection<EntityLinkCollector.EntityLink> links, MigrationResultContextManipulation mr) {
 		if (links != null && !links.isEmpty()) {
+
+			links.forEach(link -> logCreationRapportEntreTiers(link, mr));
 
 			// on désactive temporairement la validation (elle sera ré-activée une fois que TOUS les liens
 			// auront été générés, pour éviter de sauter sur les états incohérents intermédiaires)
@@ -183,6 +187,25 @@ public class GrapheMigrator implements InitializingBean {
 			finally {
 				validationInterceptor.setEnabled(wasEnabled);
 			}
+		}
+	}
+
+	/**
+	 * Génère un log dans la liste des rapports entre tiers générés
+	 * @param link le lien (source du rapport entre tiers)
+	 * @param mr le collecteur de résultats/remarques de migration et manipulateur de contexte de log
+	 * @param <S> type de tiers source dans le lien
+	 * @param <D> type de tiers destination dans le lien
+	 * @param <R> type du rapport entre tiers généré par le lien
+	 */
+	private <S extends Tiers, D extends Tiers, R extends RapportEntreTiers> void logCreationRapportEntreTiers(EntityLinkCollector.EntityLink<S, D, R> link,
+	                                                                                                          MigrationResultContextManipulation mr) {
+		mr.pushContextValue(RapportEntreTiersLoggedElement.class, new RapportEntreTiersLoggedElement<>(link));
+		try {
+			mr.addMessage(LogCategory.RAPPORTS_ENTRE_TIERS, LogLevel.INFO, StringUtils.EMPTY);
+		}
+		finally {
+			mr.popContexteValue(RapportEntreTiersLoggedElement.class);
 		}
 	}
 

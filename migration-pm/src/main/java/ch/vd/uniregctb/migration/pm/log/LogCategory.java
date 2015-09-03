@@ -54,6 +54,11 @@ public enum LogCategory {
 	/**
 	 * Erreurs/messages liées aux données civiles migrées (ou abandonnées) de RegPM
 	 */
-	DONNEES_CIVILES_REGPM
+	DONNEES_CIVILES_REGPM,
+
+	/**
+	 * Liste des rapports entre tiers générés
+	 */
+	RAPPORTS_ENTRE_TIERS
 
 }

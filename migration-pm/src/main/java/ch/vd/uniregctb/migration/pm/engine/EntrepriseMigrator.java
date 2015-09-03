@@ -107,6 +107,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
+import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -1605,7 +1606,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                                              donneesSiegeReference.getKey()));
 
 		// lien entre l'établissement principal et son entreprise
-		final Supplier<Entreprise> entrepriseSupplier = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
+		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
 		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesDateReference.getKey(), dateFinActivite));
 
@@ -1635,14 +1636,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void migrateFusionsApres(RegpmEntreprise regpm, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// un supplier qui va renvoyer l'entreprise en cours de migration
-		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
+		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
 
 		// migration des fusions (cette entreprise étant la source)
 		regpm.getFusionsApres().stream()
 				.filter(fusion -> !fusion.isRectifiee())
 				.forEach(apres -> {
 					// TODO et les autres informations de la fusion (forme, date d'inscription, date de contrat, date de bilan... ?)
-					final Supplier<Entreprise> apresFusion = getEntrepriseByRegpmIdSupplier(idMapper, apres.getEntrepriseApres().getId());
+					final KeyedSupplier<Entreprise> apresFusion = getEntrepriseSupplier(idMapper, apres.getEntrepriseApres());
 					linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateBilan().getOneDayAfter(), null));
 				});
 	}
@@ -1656,81 +1657,83 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void migrateMandataires(RegpmEntreprise regpm, MigrationResultProduction mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
 		// un supplier qui va renvoyer l'entreprise en cours de migration
-		final Supplier<Entreprise> moi = getEntrepriseByRegpmIdSupplier(idMapper, regpm.getId());
+		final KeyedSupplier<Entreprise> moi = getEntrepriseSupplier(idMapper, regpm);
 
-		// migration des mandataires -> liens à créer par la suite
-		regpm.getMandataires().forEach(mandat -> {
+		// migration des mandataires -> liens à créer par la suite (on les trie pour la reproductibilité en test)
+		regpm.getMandataires().stream()
+				.sorted(Comparator.comparing(mandat -> mandat.getId().getNoSequence()))
+				.forEach(mandat -> {
 
-			// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
-			final Supplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
-			if (mandataire == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
-				return;
-			}
+					// récupération du mandataire qui peut être une autre entreprise, un établissement ou un individu
+					final KeyedSupplier<? extends Contribuable> mandataire = getPolymorphicSupplier(idMapper, mandat::getMandataireEntreprise, mandat::getMandataireEtablissement, mandat::getMandataireIndividu);
+					if (mandataire == null) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " n'a pas de mandataire.");
+						return;
+					}
 
-			// TODO ne faut-il vraiment migrer que les mandats généraux ?
+					// TODO ne faut-il vraiment migrer que les mandats généraux ?
 
-			// on ne migre que les mandats généraux pour le moment
-			if (mandat.getType() != RegpmTypeMandat.GENERAL) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
-				return;
-			}
+					// on ne migre que les mandats généraux pour le moment
+					if (mandat.getType() != RegpmTypeMandat.GENERAL) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Le mandat " + mandat.getId() + " de type " + mandat.getType() + " est ignoré dans la migration.");
+						return;
+					}
 
-			final TypeMandat typeMandat = TypeMandat.GENERAL;
-			final String bicSwift = mandat.getBicSwift();
-			String iban;
-			try {
-				iban = IbanExtractor.extractIban(mandat, mr);
+					final TypeMandat typeMandat = TypeMandat.GENERAL;
+					final String bicSwift = mandat.getBicSwift();
+					String iban;
+					try {
+						iban = IbanExtractor.extractIban(mandat, mr);
 
-				// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
-			}
-			catch (IbanExtractor.IbanExtratorException e) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
-				iban = null;
-			}
+						// TODO ne manque-t-il pas le titulaire du compte pour les coordonnées financières ?
+					}
+					catch (IbanExtractor.IbanExtratorException e) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, "Impossible d'extraire un IBAN du mandat " + mandat.getId() + " (" + e.getMessage() + ")");
+						iban = null;
+					}
 
-			// une date de début nulle pose un grave problème (c'est peut-être une date trop lointaine dans le passé, i.e. avant 1291... -> vraissemblablement une erreur de saisie)
-			if (mandat.getDateAttribution() == null) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-				              "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
-				return;
-			}
+					// une date de début nulle pose un grave problème (c'est peut-être une date trop lointaine dans le passé, i.e. avant 1291... -> vraissemblablement une erreur de saisie)
+					if (mandat.getDateAttribution() == null) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              "Le mandat " + mandat.getId() + " n'a pas de date d'attribution (ou cette date est très loin dans le passé), il sera donc ignoré dans la migration.");
+						return;
+					}
 
-			// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
-			if (isFutureDate(mandat.getDateAttribution())) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
-				                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
-				return;
-			}
+					// une date de début dans le futur fait que le mandat est ignoré (Unireg n'aime pas ça...)
+					if (isFutureDate(mandat.getDateAttribution())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date d'attribution du mandat %s est dans le futur (%s), le mandat sera donc ignoré dans la migration.",
+						                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
+						return;
+					}
 
-			if (isDateLouche(mandat.getDateAttribution())) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est antérieure au %s (%s).",
-				                                                              mandat.getId(),
-				                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-				                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
-			}
+					if (isDateLouche(mandat.getDateAttribution())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date d'attribution du mandat %s est antérieure au %s (%s).",
+						                                                              mandat.getId(),
+						                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
+						                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateAttribution())));
+					}
 
-			// date de fin dans le futur -> on ignore la date de fin
-			final RegDate dateFin;
-			if (isFutureDate(mandat.getDateResiliation())) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date de résiliation du mandat %s est dans le futur (%s), le mandat sera donc laissé ouvert dans la migration.",
-				                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
-				dateFin = null;
-			}
-			else {
-				dateFin = mandat.getDateResiliation();
-			}
+					// date de fin dans le futur -> on ignore la date de fin
+					final RegDate dateFin;
+					if (isFutureDate(mandat.getDateResiliation())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("La date de résiliation du mandat %s est dans le futur (%s), le mandat sera donc laissé ouvert dans la migration.",
+						                                                               mandat.getId(), StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
+						dateFin = null;
+					}
+					else {
+						dateFin = mandat.getDateResiliation();
+					}
 
-			if (dateFin != null && isDateLouche(dateFin)) {
-				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date de résiliation du mandat %s est antérieure au %s (%s).",
-				                                                              mandat.getId(),
-				                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
-				                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
-			}
+					if (dateFin != null && isDateLouche(dateFin)) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, String.format("La date de résiliation du mandat %s est antérieure au %s (%s).",
+						                                                              mandat.getId(),
+						                                                              StringRenderers.DATE_RENDERER.toString(DATE_LOUCHE),
+						                                                              StringRenderers.DATE_RENDERER.toString(mandat.getDateResiliation())));
+					}
 
-			// ajout du lien entre l'entreprise et son mandataire
-			linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), dateFin, typeMandat, iban, bicSwift));
-		});
+					// ajout du lien entre l'entreprise et son mandataire
+					linkCollector.addLink(new EntityLinkCollector.MandantMandataireLink<>(moi, mandataire, mandat.getDateAttribution(), dateFin, typeMandat, iban, bicSwift));
+				});
 	}
 
 	/**
