@@ -62,6 +62,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
+import ch.vd.uniregctb.migration.pm.MigrationConstants;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
@@ -145,11 +146,6 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntrepriseMigrator.class);
-
-	/**
-	 * La valeur à mettre dans le champ "source" d'un état de DI retournée lors de la migration
-	 */
-	private static final String SOURCE_RETOUR_DI_MIGREE = "SDI";
 
 	private final BouclementService bouclementService;
 	private final AssujettissementService assujettissementService;
@@ -2165,7 +2161,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// retour
 		if (dossier.getDateRetour() != null) {
-			etats.add(new EtatDeclarationRetournee(dossier.getDateRetour(), SOURCE_RETOUR_DI_MIGREE));
+			etats.add(new EtatDeclarationRetournee(dossier.getDateRetour(), MigrationConstants.SOURCE_RETOUR_DI_MIGREE));
 		}
 
 		// un peu de traçabilité sur le travail accompli ici
