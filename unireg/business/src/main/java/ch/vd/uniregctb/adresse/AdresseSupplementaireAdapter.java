@@ -98,7 +98,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (adresseSuisse != null) {
 			nomLocalite = super.getLocalite();
 			if (nomLocalite == null) {
-				nomLocalite = getLocalite(adresseSuisse).getNomAbrege();
+				nomLocalite = getLocalite(adresseSuisse).getNom();
 			}
 			return nomLocalite;
 		}
@@ -114,7 +114,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		if (adresseSuisse != null) {
 			nomLocalite = super.getLocaliteComplete();
 			if (nomLocalite == null) {
-				nomLocalite = getLocalite(adresseSuisse).getNomComplet();
+				nomLocalite = getLocalite(adresseSuisse).getNom();
 			}
 			return nomLocalite;
 		}

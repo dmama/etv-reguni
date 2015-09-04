@@ -152,8 +152,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           "Place du château",
 		                                                                                                                           "1a",
 		                                                                                                                           null,
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNPA().longValue(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getComplementNPA().toString(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNoOrdre(),
@@ -261,7 +261,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 				Assert.assertEquals("Place du château", pp.getRue());
 				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNomComplet(), pp.getLocalite());
+				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
@@ -313,8 +313,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           "Place du château",
 		                                                                                                                           "1a",
 		                                                                                                                           null,
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNPA().longValue(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getComplementNPA().toString(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNoOrdre(),
@@ -436,7 +436,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 				Assert.assertEquals("Place du château", pp.getRue());
 				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNomComplet(), pp.getLocalite());
+				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());
@@ -489,8 +489,8 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 		                                                                                                                           "Place du château",
 		                                                                                                                           "1a",
 		                                                                                                                           null,
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
-		                                                                                                                           MockLocalite.Neuchatel1Cases.getNomComplet(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
+		                                                                                                                           MockLocalite.Neuchatel1Cases.getNom(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNPA().longValue(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getComplementNPA().toString(),
 		                                                                                                                           MockLocalite.Neuchatel1Cases.getNoOrdre(),
@@ -612,7 +612,7 @@ public class ReqDesEventHandlerITTest extends BusinessItTest {
 
 				Assert.assertEquals("Place du château", pp.getRue());
 				Assert.assertEquals("1a", pp.getNumeroMaison());
-				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNomComplet(), pp.getLocalite());
+				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNom(), pp.getLocalite());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNPA().toString(), pp.getNumeroPostal());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getComplementNPA(), pp.getNumeroPostalComplementaire());
 				Assert.assertEquals(MockLocalite.Neuchatel1Cases.getNoOrdre(), pp.getNumeroOrdrePostal());

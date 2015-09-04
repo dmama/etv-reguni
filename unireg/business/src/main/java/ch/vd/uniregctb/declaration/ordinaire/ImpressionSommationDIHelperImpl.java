@@ -208,7 +208,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 						if (localite != null) {
 							//SIFISC-3468: Exception pour la localité de La vallée, on prend le nom de la localité et non de la commune
 							if (OID_LA_VALLEE == oid) {
-								sLocalite = localite.getNomComplet();
+								sLocalite = localite.getNom();
 							}
 							else {
 								if (localite.getCommuneLocalite() != null) {

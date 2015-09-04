@@ -141,7 +141,7 @@ public class LocaliteImpl implements Localite, Serializable {
 	}
 
 	@Override
-	public String getNomComplet() {
+	public String getNom() {
 		return nomComplet;
 	}
 

@@ -1278,7 +1278,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 		for (Localite candidate : localites) {
 			if (candidate.isValidAt(dateReference)
 					&& (npa == null || npa.equals(candidate.getNPA()))
-					&& (candidate.getNomComplet().equalsIgnoreCase(localite) || candidate.getNomAbrege().equalsIgnoreCase(localite))
+					&& (candidate.getNom().equalsIgnoreCase(localite) || candidate.getNomAbrege().equalsIgnoreCase(localite))
 					&& (npaComplement == null || npaComplement.equals(candidate.getComplementNPA()))) {
 				candidates.add(candidate);
 			}
@@ -1295,7 +1295,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 			final StringBuilder b = new StringBuilder();
 			b.append("Plusieurs ONRP potentiels pour l'adresse suisse fournie dans la partie prenante ").append(idPartiePrenante).append(" : ");
 			for (Localite l : candidates) {
-				b.append(l.getNomComplet()).append(" (").append(l.getNoOrdre()).append(") ");
+				b.append(l.getNom()).append(" (").append(l.getNoOrdre()).append(") ");
 			}
 			LOGGER.warn(b.toString());
 

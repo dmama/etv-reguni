@@ -209,7 +209,7 @@ public class InfrastructureEditor implements Editor {
 			return pays == null ? "?" : pays.getNomCourt();
 		case LOCALITE:
 			final Localite localite = infraService.getLocaliteByONRP(id.intValue(), null);
-			return localite == null ? "?" : localite.getNomAbrege();
+			return localite == null ? "?" : localite.getNom();
 		case RUE:
 			final Rue rue = infraService.getRueByNumero(id.intValue());
 			return rue == null ? "?" : rue.getDesignationCourrier();

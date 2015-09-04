@@ -134,7 +134,7 @@ public class AutoCompleteInfraController {
 							}
 							else {
 								// [UNIREG-3293] on renseigne la localité entre parenthèses pour permettre de distinguer deux rues avec le même nom
-								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + ' ' + localite.getNomAbrege() + ')';
+								description = rue.getDesignationCourrier() + " (" + localite.getNPA() + ' ' + localite.getNom() + ')';
 							}
 							list.add(new Item(rue.getDesignationCourrier(), description, String.valueOf(rue.getNoRue()), String.valueOf(rue.getNoLocalite())));
 						}
@@ -147,10 +147,10 @@ public class AutoCompleteInfraController {
 			final List<Localite> localites = serviceInfrastructureService.getLocalites();
 			if (localites != null) {
 				for (Localite localite : localites) {
-					if (StringComparator.toLowerCaseWithoutAccent(localite.getNomAbrege()).startsWith(term) ||
+					if (StringComparator.toLowerCaseWithoutAccent(localite.getNom()).startsWith(term) ||
 							String.valueOf(localite.getNPA()).startsWith(term)) { // [UNIREG-3390] recherche par numéro de NPA
-						final String description = localite.getNomAbrege() + " (" + localite.getNPA() + ')';
-						list.add(new Item(localite.getNomAbrege(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
+						final String description = localite.getNom() + " (" + localite.getNPA() + ')';
+						list.add(new Item(localite.getNom(), description, String.valueOf(localite.getNoOrdre()), String.valueOf(localite.getNoCommune())));
 					}
 				}
 			}

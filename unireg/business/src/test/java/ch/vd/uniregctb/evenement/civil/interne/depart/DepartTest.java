@@ -146,7 +146,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
@@ -159,7 +159,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
@@ -171,7 +171,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse = new MockAdresse();
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
-				adresse.setLocalite(MockLocalite.Zurich.getNomComplet());
+				adresse.setLocalite(MockLocalite.Zurich.getNom());
 				adresse.setLieu(MockCommune.Zurich.getNomOfficiel());
 				adresse.setNumeroPostal("8001");
 				adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
@@ -187,7 +187,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
@@ -200,7 +200,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
@@ -218,7 +218,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
@@ -232,7 +232,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.SECONDAIRE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.Lausanne.getNomComplet());
+				adresse.setLocalite(MockLocalite.Lausanne.getNom());
 				adresse.setLieu(MockCommune.Lausanne.getNomOfficiel());
 				adresse.setNumeroPostal("1004");
 				adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
@@ -245,7 +245,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				if (residencePrincipaleHorsCanton) {
-					adresse.setLocalite(MockLocalite.Zurich.getNomComplet());
+					adresse.setLocalite(MockLocalite.Zurich.getNom());
 					adresse.setLieu(MockCommune.Zurich.getNomOfficiel());
 					adresse.setNumeroPostal("8001");
 					adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
@@ -253,7 +253,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 					adresse.setCommuneAdresse(MockCommune.Zurich);
 				}
 				else {
-					adresse.setLocalite(MockLocalite.Vevey.getNomComplet());
+					adresse.setLocalite(MockLocalite.Vevey.getNom());
 					adresse.setLieu(MockCommune.Vevey.getNomOfficiel());
 					adresse.setNumeroPostal("1043");
 					adresse.setNumeroOrdrePostal(MockLocalite.Vevey.getNoOrdre());
@@ -270,7 +270,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
-				adresse.setLocalite(MockLocalite.CossonayVille.getNomComplet());
+				adresse.setLocalite(MockLocalite.CossonayVille.getNom());
 				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());

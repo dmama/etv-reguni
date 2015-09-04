@@ -8,7 +8,7 @@ public interface Localite extends DateRange {
 
 	String getNomAbrege();
 
-	String getNomComplet();
+	String getNom();
 
 	Integer getNoOrdre();
 

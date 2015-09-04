@@ -150,7 +150,7 @@ public class ResolutionAdresseProcessor {
 
 		adresseSuisse.setRue(rue.getDesignationCourrier());
 		adresseSuisse.setNumeroOrdrePoste(localite.getNoOrdre());
-		r.addAdresseResolue(adresseSuisse, localite.getNomComplet());
+		r.addAdresseResolue(adresseSuisse, localite.getNom());
 
 		//SUppression de la référence vers la rue
 		adresseSuisse.setNumeroRue(null);

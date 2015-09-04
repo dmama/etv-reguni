@@ -122,7 +122,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 
 		final AdresseView view = new AdresseView();
 		view.setDateDebut(date(2010, 1, 1));
-		view.setLocaliteSuisse(MockLocalite.Echallens.getNomComplet());
+		view.setLocaliteSuisse(MockLocalite.Echallens.getNom());
 		view.setNumeroOrdrePoste(Integer.toString(MockLocalite.Echallens.getNoOrdre()));
 		view.setTypeLocalite("suisse");
 		view.setNumCTB(ids.idFred);
@@ -200,7 +200,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 
 		final AdresseView view = new AdresseView();
 		view.setDateDebut(date(2010, 1, 1));
-		view.setLocaliteSuisse(MockLocalite.Echallens.getNomComplet());
+		view.setLocaliteSuisse(MockLocalite.Echallens.getNom());
 		view.setNumeroOrdrePoste(Integer.toString(MockLocalite.Echallens.getNoOrdre()));
 		view.setTypeLocalite("suisse");
 		view.setNumCTB(ids.idFred);

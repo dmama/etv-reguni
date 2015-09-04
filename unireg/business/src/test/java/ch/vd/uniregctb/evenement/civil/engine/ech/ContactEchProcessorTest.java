@@ -62,7 +62,7 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// recherche sur Prilly
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setLocaliteOuPays(MockLocalite.Prilly.getNomComplet());
+		criteria.setLocaliteOuPays(MockLocalite.Prilly.getNom());
 		final List<TiersIndexedData> res = globalTiersSearcher.search(criteria);
 		Assert.assertEquals(0, res.size());
 
@@ -74,7 +74,7 @@ public class ContactEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				adr.setTypeAdresse(TypeAdresseCivil.COURRIER);
 				adr.setCommuneAdresse(MockCommune.Prilly);
 				adr.setDateDebutValidite(dateEvt);
-				adr.setLocalite(MockLocalite.Prilly.getNomComplet());
+				adr.setLocalite(MockLocalite.Prilly.getNom());
 				adr.setNoOfsPays(MockPays.Suisse.getNoOFS());
 				adr.setNpa(Integer.toString(MockLocalite.Prilly.getNPA()));
 				adr.setNumeroRue(MockRue.Prilly.CheminDeLaPossession.getNoRue());

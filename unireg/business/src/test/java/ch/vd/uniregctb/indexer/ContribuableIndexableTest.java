@@ -862,8 +862,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		assertEquals("1032", values.getNpaCourrier());
 		assertEquals("1032", values.getNpaTous());      // courrier, domicile (absent car défaut), poursuite (absent car défaut), représentation (absent car défaut)
-		assertEquals("Romanel-s-Lausanne", values.getLocaliteEtPays());
-		assertEquals("Romanel-s-Lausanne", values.getLocalite());
+		assertEquals("Romanel-sur-Lausanne", values.getLocaliteEtPays());
+		assertEquals("Romanel-sur-Lausanne", values.getLocalite());
 		assertEquals("Suisse", values.getPays());
 	}
 

@@ -23,7 +23,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
 			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
-			return localite.getNomAbrege();
+			return localite.getNom();
 		}
 		else {
 			return null;
@@ -35,7 +35,7 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		final Integer noOrdrePostal = getNumeroOrdrePostal();
 		if (noOrdrePostal != null) {
 			final Localite localite = getLocalite(noOrdrePostal, getDateFin());
-			return localite.getNomComplet();
+			return localite.getNom();
 		}
 		else {
 			return null;

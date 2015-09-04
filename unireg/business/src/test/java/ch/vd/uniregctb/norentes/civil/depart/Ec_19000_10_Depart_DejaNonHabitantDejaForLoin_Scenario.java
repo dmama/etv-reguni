@@ -125,7 +125,7 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 		assertEquals(communeArrivee.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 		// vérification que les adresses civiles sont au A Enney
-		assertEquals(MockLocalite.Enney.getNomComplet(),
+		assertEquals(MockLocalite.Enney.getNom(),
 				serviceCivilService.getAdresses(noIndCharles, dateArrivee, false).principale.getLocalite(),
 				"L'adresse principale n'est pas à Enney");
 	}

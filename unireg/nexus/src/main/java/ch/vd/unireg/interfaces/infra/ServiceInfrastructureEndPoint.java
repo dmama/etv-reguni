@@ -159,7 +159,7 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 
 	@Override
 	public List<Rue> getRues(Localite localite) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getRues", "localite", localite == null ? null : localite.getNomComplet()));
+		loadMeter.start(new MethodCallDescriptor("getRues", "localite", localite == null ? null : localite.getNom()));
 		try {
 			return target.getRues(localite);
 		}
@@ -214,7 +214,7 @@ public class ServiceInfrastructureEndPoint implements ServiceInfrastructureRaw, 
 
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
-		loadMeter.start(new MethodCallDescriptor("getCommuneByLocalite", "localite", localite == null ? null : localite.getNomComplet()));
+		loadMeter.start(new MethodCallDescriptor("getCommuneByLocalite", "localite", localite == null ? null : localite.getNom()));
 		try {
 			return target.getCommuneByLocalite(localite);
 		}

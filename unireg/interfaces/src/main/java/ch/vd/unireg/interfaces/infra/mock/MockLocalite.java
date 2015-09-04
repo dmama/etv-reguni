@@ -157,7 +157,7 @@ public class MockLocalite implements Localite {
 	}
 
 	@Override
-	public String getNomComplet() {
+	public String getNom() {
 		return nomComplet;
 	}
 
