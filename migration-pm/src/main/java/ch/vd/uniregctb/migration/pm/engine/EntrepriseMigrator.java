@@ -91,6 +91,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
@@ -466,38 +467,67 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	@NotNull
 	private RaisonSocialeData extractRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getRaisonsSociales().stream()
-				.filter(rs -> !rs.getRectifiee())
-				.filter(rs -> {
-					if (rs.getDateValidite() == null) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est nulle.",
-						                            rs.getId(),
-						                            extractRaisonSociale(rs)));
-						return false;
-					}
-					return true;
-				})
-				.filter(rs -> {
-					if (isFutureDate(rs.getDateValidite())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
-						                            rs.getId(),
-						                            extractRaisonSociale(rs),
-						                            StringRenderers.DATE_RENDERER.toString(rs.getDateValidite())));
-						return false;
-					}
-					return true;
-				})
-				.peek(rs -> checkDateLouche(rs.getDateValidite(),
-				                            () -> String.format("Raison sociale %d (%s) avec une date de validité",
-				                                                rs.getId(),
-				                                                extractRaisonSociale(rs)),
-				                            LogCategory.DONNEES_CIVILES_REGPM,
-				                            mr))
-				.max(Comparator.naturalOrder())
-				.map(rs -> new RaisonSocialeData(extractRaisonSociale(rs), rs.getDateValidite()))
-				.orElseGet(() -> new RaisonSocialeData(null, null)));
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// tout d'abord, on essaie d'être le plus strict possible
+			final RaisonSociale candidate = entreprise.getRaisonsSociales().stream()
+					.filter(rs -> !rs.getRectifiee())
+					.filter(rs -> {
+						if (rs.getDateValidite() == null) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est nulle.",
+							                            rs.getId(),
+							                            extractRaisonSociale(rs)));
+							return false;
+						}
+						return true;
+					})
+					.filter(rs -> {
+						if (isFutureDate(rs.getDateValidite())) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
+							                            rs.getId(),
+							                            extractRaisonSociale(rs),
+							                            StringRenderers.DATE_RENDERER.toString(rs.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
+					.max(Comparator.naturalOrder())
+					.orElse(null);
+
+			// si on a trouvé, c'est fini
+			if (candidate != null) {
+
+				final String texteRaisonSociale = extractRaisonSociale(candidate);
+
+				// date louche quand-même ?
+				checkDateLouche(candidate.getDateValidite(),
+				                () -> String.format("Raison sociale %d (%s) avec une date de validité",
+				                                    candidate.getId(),
+				                                    texteRaisonSociale),
+				                LogCategory.DONNEES_CIVILES_REGPM,
+				                mr);
+
+				return new RaisonSocialeData(texteRaisonSociale, candidate.getDateValidite());
+			}
+
+			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
+			final String derniereAvecDateNulle = entreprise.getRaisonsSociales().stream()
+					.filter(rs -> !rs.getRectifiee())
+					.filter(rs -> rs.getDateValidite() == null)
+					.max(Comparator.comparingLong(RaisonSociale::getId))
+					.map(EntrepriseMigrator::extractRaisonSociale)
+					.orElse(null);
+			if (derniereAvecDateNulle != null) {
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+				              String.format("En l'absence de donnée valide pour la raison sociale, repêchage de '%s'.", derniereAvecDateNulle));
+				return new RaisonSocialeData(derniereAvecDateNulle, null);
+			}
+
+			// c'est la fin, on ne sait plus trop quoi faire...
+			return new RaisonSocialeData(null, null);
+		});
 	}
 
 	/**
@@ -554,38 +584,65 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	@NotNull
 	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getFormesJuridiques().stream()
-				.filter(fj -> !fj.isRectifiee())
-				.filter(fj -> {
-					if (fj.getDateValidite() == null) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est nulle.",
-						                            fj.getPk().getSeqNo(),
-						                            fj.getType().getCode()));
-						return false;
-					}
-					return true;
-				})
-				.filter(fj -> {
-					if (isFutureDate(fj.getDateValidite())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
-						                            fj.getPk().getSeqNo(),
-						                            fj.getType().getCode(),
-						                            StringRenderers.DATE_RENDERER.toString(fj.getDateValidite())));
-						return false;
-					}
-					return true;
-				})
-				.peek(fj -> checkDateLouche(fj.getDateValidite(),
-				                            () -> String.format("Forme juridique %d (%s) avec date de début de validité",
-				                                                fj.getPk().getSeqNo(),
-				                                                fj.getType().getCode()),
-				                            LogCategory.DONNEES_CIVILES_REGPM,
-				                            mr))
-				.max(Comparator.naturalOrder())
-				.map(c -> new FormeJuridiqueData(c.getType(), c.getDateValidite()))
-				.orElseGet(() -> new FormeJuridiqueData(null, null)));
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// tout d'abord, on essaie d'être le plus strict possible
+			final RegpmFormeJuridique candidate = entreprise.getFormesJuridiques().stream()
+					.filter(fj -> !fj.isRectifiee())
+					.filter(fj -> {
+						if (fj.getDateValidite() == null) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est nulle.",
+							                            fj.getPk().getSeqNo(),
+							                            fj.getType().getCode()));
+							return false;
+						}
+						return true;
+					})
+					.filter(fj -> {
+						if (isFutureDate(fj.getDateValidite())) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est dans le futur (%s).",
+							                            fj.getPk().getSeqNo(),
+							                            fj.getType().getCode(),
+							                            StringRenderers.DATE_RENDERER.toString(fj.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
+					.max(Comparator.naturalOrder())
+					.orElse(null);
+
+			// si on a trouvé, c'est fini
+			if (candidate != null) {
+
+				// date louche quand-même ?
+				checkDateLouche(candidate.getDateValidite(),
+				                () -> String.format("Forme juridique %d (%s) avec date de début de validité",
+				                                    candidate.getPk().getSeqNo(),
+				                                    candidate.getType().getCode()),
+				                LogCategory.DONNEES_CIVILES_REGPM,
+				                mr);
+
+				return new FormeJuridiqueData(candidate.getType(), candidate.getDateValidite());
+			}
+
+			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
+			final RegpmTypeFormeJuridique derniereAvecDateNulle = entreprise.getFormesJuridiques().stream()
+					.filter(fj -> !fj.isRectifiee())
+					.filter(fj -> fj.getDateValidite() == null)
+					.max(Comparator.comparingInt(fj -> fj.getPk().getSeqNo()))
+					.map(RegpmFormeJuridique::getType)
+					.orElse(null);
+			if (derniereAvecDateNulle != null) {
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
+				              String.format("En l'absence de donnée valide pour la forme juridique, repêchage de '%s'.", derniereAvecDateNulle.getCode()));
+				return new FormeJuridiqueData(derniereAvecDateNulle, null);
+			}
+
+			// c'est la fin, on ne sait plus trop quoi faire...
+			return new FormeJuridiqueData(null, null);
+		});
 	}
 
 	/**

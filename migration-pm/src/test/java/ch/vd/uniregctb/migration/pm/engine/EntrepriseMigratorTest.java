@@ -84,6 +84,7 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -93,6 +94,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -3547,5 +3549,109 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		}
 	}
 
-	// TODO il reste encore plein de tests à faire...
+	@Test
+	public void testUniqueRaisonSocialeAvecDateNulle() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RaisonSociale raisonSociale = addRaisonSociale(e, null, "Ma société à moi", "tout seul", "vraiment", true);
+		addFormeJuridique(e, RegDate.get(2007, 6, 14), createTypeFormeJuridique("S.A.R.L."));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneesRegistreCommerce> donneesRC = entreprise.getDonneesRC();
+			Assert.assertNotNull(donneesRC);
+			Assert.assertEquals(1, donneesRC.size());
+
+			final DonneesRegistreCommerce drc = donneesRC.iterator().next();
+			Assert.assertNotNull(drc);
+			Assert.assertFalse(drc.isAnnule());
+			Assert.assertEquals(RegDate.get(2007, 6, 14), drc.getDateDebut());
+			Assert.assertNull(drc.getDateFin());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SARL, drc.getFormeJuridique());
+			Assert.assertEquals("Ma société à moi tout seul vraiment", drc.getRaisonSociale());
+
+			// pas d'établissement principal généré
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(0, etablissements.size());
+		});
+
+		// et dans les messages de migration des données civiles RegPM ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Raison sociale " + raisonSociale.getId() + " (Ma société à moi tout seul vraiment) ignorée car sa date de début de validité est nulle.", textes.get(0));
+			Assert.assertEquals("En l'absence de donnée valide pour la raison sociale, repêchage de 'Ma société à moi tout seul vraiment'.", textes.get(1));
+			Assert.assertEquals("Données 'civiles' migrées : sur la période [14.06.2007 -> ?], raison sociale (Ma société à moi tout seul vraiment), capital () et forme juridique (SARL).", textes.get(2));
+		}
+	}
+
+	@Test
+	public void testUniqueFormeJuridiqueAvecDateNulle() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<DonneesRegistreCommerce> donneesRC = entreprise.getDonneesRC();
+			Assert.assertNotNull(donneesRC);
+			Assert.assertEquals(1, donneesRC.size());
+
+			final DonneesRegistreCommerce drc = donneesRC.iterator().next();
+			Assert.assertNotNull(drc);
+			Assert.assertFalse(drc.isAnnule());
+			Assert.assertEquals(RegDate.get(2004, 8, 27), drc.getDateDebut());
+			Assert.assertNull(drc.getDateFin());
+			Assert.assertEquals(FormeJuridiqueEntreprise.SA, drc.getFormeJuridique());
+			Assert.assertEquals("Ma société à moi tout seul si si vraiment", drc.getRaisonSociale());
+
+			// pas d'établissement principal généré
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(0, etablissements.size());
+		});
+
+		// et dans les messages de migration des données civiles RegPM ?
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Forme juridique 1 (S.A.) ignorée car sa date de début de validité est nulle.", textes.get(0));
+			Assert.assertEquals("En l'absence de donnée valide pour la forme juridique, repêchage de 'S.A.'.", textes.get(1));
+			Assert.assertEquals("Données 'civiles' migrées : sur la période [27.08.2004 -> ?], raison sociale (Ma société à moi tout seul si si vraiment), capital () et forme juridique (SA).", textes.get(2));
+		}
+	}
 }
