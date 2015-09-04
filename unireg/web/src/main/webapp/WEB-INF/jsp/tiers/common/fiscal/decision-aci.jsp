@@ -10,7 +10,7 @@
 </c:if>
 <c:if test="${not empty command.decisionsAci}">
 <display:table
-		name="command.decisionsAci" id="decisionAci" pagesize="10"
+		name="command.decisionsAci" id="decisionAci" pagesize="${command.nombreElementsTable}"
 		requestURI="${url}"
 		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
