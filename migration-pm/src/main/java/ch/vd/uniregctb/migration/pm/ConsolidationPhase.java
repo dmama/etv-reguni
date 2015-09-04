@@ -32,6 +32,11 @@ public enum ConsolidationPhase {
 	EFFACEMENT_FORS_ANNULES,
 
 	/**
+	 * Le recalcul des motifs des fors principaux encore {@link ch.vd.uniregctb.type.MotifFor#INDETERMINE indéterminés}
+	 */
+	RECALCUL_MOTIFS_INDETERMINES,
+
+	/**
 	 * Le contrôle des assujettissements avant/après la migration
 	 */
 	COMPARAISON_ASSUJETTISSEMENTS

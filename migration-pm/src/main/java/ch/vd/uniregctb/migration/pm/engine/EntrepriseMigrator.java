@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -77,6 +78,8 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.InscriptionRC;
+import ch.vd.uniregctb.migration.pm.regpm.RadiationRC;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
@@ -200,6 +203,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static final class RecalculMotifsForsIndeterminesData {
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		private final RegpmEntreprise regpm;
+		public RecalculMotifsForsIndeterminesData(RegpmEntreprise regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.entrepriseSupplier = entrepriseSupplier;
+			this.regpm = regpm;
+		}
+	}
+
 	private static final class ComparaisonAssujettissementsData {
 		private final boolean active;
 		private final SortedSet<RegpmAssujettissement> regpmAssujettissements;
@@ -299,6 +311,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        this::effacementForsAnnules);
 
+		// callback pour le recalcul des motifs d'ouverture/fermeture des fors principaux qui seraient encore indéterminés
+		mr.registerPreTransactionCommitCallback(RecalculMotifsForsIndeterminesData.class,
+		                                        ConsolidationPhase.RECALCUL_MOTIFS_INDETERMINES,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        EntrepriseMigrator::recalculMotifsForsIndetermines);
+
 		// callback pour le contrôle des données d'assujettissement
 		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
 		                                        ConsolidationPhase.COMPARAISON_ASSUJETTISSEMENTS,
@@ -388,7 +407,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			final RegDate dateBilanFusion = e.getFusionsApres().stream()
 					.filter(fusion -> !fusion.isRectifiee())
-					.map(RegpmFusion::getDateBilan)
+					.map(EntrepriseMigrator::extractDateFermetureForAvantFusion)
 					.sorted(Comparator.reverseOrder())
 					.findFirst()
 					.orElse(null);
@@ -647,7 +666,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	/**
 	 * Passe en revue les fors fiscaux générés pour l'entreprise et efface ceux qui sont déjà annulés
-	 * @param data la données de l'entreprise à traiter
+	 * @param data la donnée de l'entreprise à traiter
 	 */
 	private void effacementForsAnnules(EffacementForsAnnulesData data) {
 		final Entreprise e = data.entrepriseSupplier.get();
@@ -664,6 +683,101 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.collect(Collectors.toSet());
 			if (sansAnnules.size() != forsFiscaux.size()) {
 				e.setForsFiscaux(sansAnnules);
+			}
+		}
+	}
+
+	/**
+	 * @param fusion indication de fusion
+	 * @return date à prendre en compte pour l'ouverture du for principal de l'entreprise après fusion
+	 */
+	private static RegDate extractDateOuvertureForApresFusion(RegpmFusion fusion) {
+		return fusion.getDateBilan().getOneDayAfter();
+	}
+
+	/**
+	 * @param fusion indication de fusion
+	 * @return date à prendre en compte pour la fermeture du for principal d'une entreprise qui disparaît dans une fusion
+	 */
+	private static RegDate extractDateFermetureForAvantFusion(RegpmFusion fusion) {
+		return fusion.getDateBilan();
+	}
+
+	/**
+	 * Repasse en revue les fors principaux générés pour l'entreprise et ré-évalue les motifs d'ouverture
+	 * et de fermeture qui sont à la valeur {@link MotifFor#INDETERMINE}
+	 * @param data la donnée de l'entreprise à traiter
+	 */
+	private static void recalculMotifsForsIndetermines(RecalculMotifsForsIndeterminesData data) {
+		final Entreprise unireg = data.entrepriseSupplier.get();
+		final List<ForFiscalPrincipalPM> ffps = unireg.getForsFiscauxPrincipauxActifsSorted();
+		if (ffps != null && !ffps.isEmpty()) {
+
+			// les dates assimilables à une inscription au RC / une constitution d'entreprise
+			final Set<RegDate> datesInscription = Stream.concat(Stream.of(data.regpm.getDateInscriptionRC(), data.regpm.getDateConstitution()),
+			                                                    data.regpm.getInscriptionsRC().stream()
+					                                                    .filter(inscription -> !inscription.isRectifiee())
+					                                                    .map(InscriptionRC::getDateInscription))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toSet());
+
+			// les dates assimilables à une radiation du RC / dissolution de l'entreprise / fusion (fermante)
+			final Set<RegDate> dateRadiationFusionFermante = Stream.concat(Stream.of(data.regpm.getDateRadiationRC(), data.regpm.getDateDissolution()),
+			                                                               Stream.concat(data.regpm.getRadiationsRC().stream()
+					                                                                             .filter(radiation -> !radiation.isRectifiee())
+					                                                                             .map(RadiationRC::getDateRadiation),
+			                                                                             data.regpm.getFusionsApres().stream()
+					                                                                             .filter(fusion -> !fusion.isRectifiee())
+					                                                                             .map(EntrepriseMigrator::extractDateFermetureForAvantFusion)))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toSet());
+
+			// les dates assimilables à une fusion qui s'ouvre
+			final Set<RegDate> datesFusionOuvrante = data.regpm.getFusionsAvant().stream()
+					.filter(fusion -> !fusion.isRectifiee())
+					.map(fusion -> Stream.of(extractDateFermetureForAvantFusion(fusion), extractDateOuvertureForApresFusion(fusion)))        // TODO régler la problématique de la date de bilan par rapport à la date d'ouverture du for sur l'entreprise après fusion
+					.flatMap(Function.identity())
+					.filter(Objects::nonNull)       // utile ?
+					.collect(Collectors.toSet());
+
+			boolean premierFor = true;
+			for (ForFiscalPrincipalPM ffp : ffps) {
+				// motif d'ouverture
+				if (ffp.getMotifOuverture() == MotifFor.INDETERMINE) {
+
+					// contexte : en général, c'est le premier for de l'entreprise...
+
+					// si c'est le cas, et que ce for est HC/HS, alors on peut laisser le motif "vide"
+					if (premierFor && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						ffp.setMotifOuverture(null);
+					}
+					else if (datesInscription.contains(ffp.getDateDebut())) {
+						ffp.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+					}
+					else if (datesFusionOuvrante.contains(ffp.getDateDebut())) {
+						ffp.setMotifOuverture(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE);
+					}
+					else {
+						// tant pis, on laisse INDETERMINE
+					}
+				}
+
+				// motif de fermeture
+				if (ffp.getMotifFermeture() == MotifFor.INDETERMINE) {
+
+					// contexte : en général, c'est le dernier for de l'entreprise
+
+					// radiation ou fusion fermante ?
+					if (dateRadiationFusionFermante.contains(ffp.getDateFin())) {
+						ffp.setMotifFermeture(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE);
+					}
+					else {
+						// tant pis, on laisse INDETERMINE
+					}
+				}
+
+				// le prochain ne sera de toute façon pas le premier for...
+				premierFor = false;
 			}
 		}
 	}
@@ -1266,6 +1380,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la suppression finale des fors créés et déjà annulés
 		mr.addPreTransactionCommitData(new EffacementForsAnnulesData(moi));
 
+		// enregistrement de ette entreprise pour le recalcul final des motifs des fors principaux
+		mr.addPreTransactionCommitData(new RecalculMotifsForsIndeterminesData(regpm, moi));
+
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
 
@@ -1690,7 +1807,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.forEach(apres -> {
 					// TODO et les autres informations de la fusion (forme, date d'inscription, date de contrat, date de bilan... ?)
 					final KeyedSupplier<Entreprise> apresFusion = getEntrepriseSupplier(idMapper, apres.getEntrepriseApres());
-					linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, apres.getDateBilan().getOneDayAfter(), null));
+					linkCollector.addLink(new EntityLinkCollector.FusionEntreprisesLink(moi, apresFusion, extractDateOuvertureForApresFusion(apres), null));
 				});
 	}
 

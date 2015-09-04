@@ -414,9 +414,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
 					Assert.assertEquals(RegDate.get(1990, 1, 1), ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
 
 					final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) ff;
-					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifOuverture());         // ouverture du premier for qui se trouve être à l'étranger
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 				}
@@ -427,6 +429,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 					Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
 					Assert.assertEquals(RegDate.get(1995, 1, 1), ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+					Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ff.getNumeroOfsAutoriteFiscale());
 
 					final ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
 					Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffs.getMotifOuverture());
@@ -822,7 +826,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertTrue(ff instanceof ForFiscalPrincipalPM);
 
 				final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) ff;
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());     // ouverture du premier for qui se trouve être hors canton
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 			}
@@ -1146,7 +1150,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 					Assert.assertNotNull(ffp);
 					Assert.assertEquals(dateAchatImmeuble1, ffp.getDateDebut());
 					Assert.assertNull(ffp.getDateFin());
-					Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+					Assert.assertNull(ffp.getMotifOuverture());         // le premier for principal qui se trouve être hors Suisse
 					Assert.assertNull(ffp.getMotifFermeture());
 					Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 					Assert.assertEquals((Integer) ServiceInfrastructureService.noPaysInconnu, ffp.getNumeroOfsAutoriteFiscale());
@@ -1442,6 +1446,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegDate dateDebutForPrincipal = RegDate.get(1987, 5, 1);
 
 		final RegpmEntreprise regpm = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		regpm.setDateInscriptionRC(dateDebutForPrincipal);
 		EntrepriseMigratorTest.addForPrincipalSuisse(regpm, dateDebutForPrincipal, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
 		EntrepriseMigratorTest.addSiegeSuisse(regpm, dateDebutForPrincipal, Commune.ECHALLENS);
 
@@ -1486,7 +1491,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertNotNull(ffp);
 				Assert.assertEquals(dateDebutForPrincipal, ffp.getDateDebut());
 				Assert.assertNull(ffp.getDateFin());
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
@@ -1646,7 +1651,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertTrue(ff instanceof ForFiscalPrincipalPM);
 
 				final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) ff;
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());         // le premier for principal qui se trouve être hors canton
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 			}
@@ -1824,7 +1829,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertTrue(ff instanceof ForFiscalPrincipalPM);
 
 				final ForFiscalPrincipalPM ffp = (ForFiscalPrincipalPM) ff;
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());         // premier for principal qui se trouve être hors canton
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(MotifRattachement.DOMICILE, ffp.getMotifRattachement());
 			}
@@ -1856,7 +1861,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " d'après le siège 1.", msgs.get(2));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> ?] sur COMMUNE_HC/2701.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalCree.longValue()) + " : [01.01.1990 -> ?] sur COMMUNE_HC/2701.", msgs.get(
+					3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
 		}
 		{
@@ -2058,7 +2064,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For secondaire 'immeuble' [04.01.1988 -> ?] ajouté sur la commune 5518.", msg.get(1));
 		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Il n'y avait pas de fors secondaires sur la commune OFS 5518 (maintenant : [04.01.1988 -> ?]).", msg.get(2));
 		Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;La date de début du for fiscal principal [14.03.1991 -> ?] est adaptée (-> 04.01.1988) pour couvrir les fors secondaires.", msg.get(3));
-		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [04.01.1988 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [04.01.1988 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", msg.get(4));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [04.01.1988 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [04.01.1988 -> 31.12.1989] sur COMMUNE_HC/253 pour suivre les fusions de communes.", msg.get(
+				4));
 		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [04.01.1988 -> ?] sur COMMUNE_HC/261 au moins partiellement remplacée par ForFiscalPrincipalPM [01.01.1990 -> ?] sur COMMUNE_HC/261 pour suivre les fusions de communes.", msg.get(5));
 
 		// on va regarder en base quand-même pour vérifier que les fors sont les bons (et qu'il n'y a qu'eux!!)
@@ -2079,7 +2086,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertEquals(RegDate.get(1989, 12, 31), ffp.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) 253, ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());             // le premier for principal qui se trouve être hors-canton
 				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
 			}
 			{
@@ -2137,7 +2144,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				Assert.assertEquals(RegDate.get(1999, 12, 31), ffp.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals(Commune.MONTAGNY.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
-				Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifOuverture());             // premier for principal qui se trouve être hors canton
 				Assert.assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture());
 			}
 			{
@@ -2240,7 +2247,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertFalse(ffp.isAnnule());
 			Assert.assertEquals(RegDate.get(1986, 5, 12), ffp.getDateDebut());
 			Assert.assertNull(ffp.getDateFin());
-			Assert.assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture());
+			Assert.assertNull(ffp.getMotifOuverture());         // premier for principal qui se trouve être hors canton
 			Assert.assertNull(ffp.getMotifFermeture());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.BERN.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
@@ -2789,6 +2796,131 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2007-01-01;2010-12-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(2));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1998-09-28;;;;;" + noContribuableEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(3));
 		}
+	}
+
+	@Test
+	public void testFusionEntreprises() throws Exception {
+
+		final long idEntrepriseAvantFusion1 = 43262L;
+		final long idEntrepriseAvantFusion2 = 54415L;
+		final long idEntrepriseApresFusion = 67233L;
+		final RegDate dateBilanFusion = RegDate.get(2012, 6, 23);
+
+		final RegpmEntreprise avant1 = EntrepriseMigratorTest.buildEntreprise(idEntrepriseAvantFusion1);
+		EntrepriseMigratorTest.addForPrincipalSuisse(avant1, RegDate.get(2000, 5, 7), RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
+		avant1.setDateInscriptionRC(RegDate.get(2000, 5, 7));
+
+		final RegpmEntreprise avant2 = EntrepriseMigratorTest.buildEntreprise(idEntrepriseAvantFusion2);
+		EntrepriseMigratorTest.addForPrincipalSuisse(avant2, RegDate.get(2003, 9, 24), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		avant2.setDateConstitution(RegDate.get(2003, 9, 24));
+
+		final RegpmEntreprise apres = EntrepriseMigratorTest.buildEntreprise(idEntrepriseApresFusion);
+		EntrepriseMigratorTest.addForPrincipalSuisse(apres, dateBilanFusion, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);   // dans RegPM, la commune résultante de la fusion a son for qui s'ouvre à la date du bilan de fusion
+
+		EntrepriseMigratorTest.addFusion(avant1, apres, dateBilanFusion);
+		EntrepriseMigratorTest.addFusion(avant2, apres, dateBilanFusion);
+
+		final Graphe graphe = new MockGraphe(Arrays.asList(avant1, avant2, apres),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification de ce qui a été mis en base
+		doInUniregTransaction(true, status -> {
+
+			// récupération des entreprises en base
+			final Map<Long, Entreprise> entreprisesCrees = uniregStore.getEntitiesFromDb(Entreprise.class, null).stream()
+					.collect(Collectors.toMap(Entreprise::getNumero, Function.identity()));
+
+			final Entreprise entrepriseAvant1 = entreprisesCrees.get(idEntrepriseAvantFusion1);
+			final Entreprise entrepriseAvant2 = entreprisesCrees.get(idEntrepriseAvantFusion2);
+			final Entreprise entrepriseApres = entreprisesCrees.get(idEntrepriseApresFusion);
+			Assert.assertNotNull(entrepriseAvant1);
+			Assert.assertNotNull(entrepriseAvant2);
+			Assert.assertNotNull(entrepriseApres);
+			Assert.assertEquals(3, entreprisesCrees.size());
+
+			// fors
+			{
+				final ForsParType fpt = entrepriseAvant1.getForsParType(true);
+				Assert.assertNotNull(fpt);
+				Assert.assertEquals(1, fpt.principauxPM.size());
+				Assert.assertEquals(0, fpt.secondaires.size());
+
+				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(2000, 5, 7), ffp.getDateDebut());
+				Assert.assertEquals(dateBilanFusion, ffp.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.MORGES.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForsParType fpt = entrepriseAvant2.getForsParType(true);
+				Assert.assertNotNull(fpt);
+				Assert.assertEquals(1, fpt.principauxPM.size());
+				Assert.assertEquals(0, fpt.secondaires.size());
+
+				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(RegDate.get(2003, 9, 24), ffp.getDateDebut());
+				Assert.assertEquals(dateBilanFusion, ffp.getDateFin());
+				Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, ffp.getMotifOuverture());
+				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForsParType fpt = entrepriseApres.getForsParType(true);
+				Assert.assertNotNull(fpt);
+				Assert.assertEquals(1, fpt.principauxPM.size());
+				Assert.assertEquals(0, fpt.secondaires.size());
+
+				final ForFiscalPrincipalPM ffp = fpt.principauxPM.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(dateBilanFusion, ffp.getDateDebut());           // date reprise du for du mainframe, même si je pense que l'on devrait trouver le lendemain...
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+
+			// rapports entre tiers
+			final Map<TypeRapportEntreTiers, List<RapportEntreTiers>> rapports = uniregStore.getEntitiesFromDb(RapportEntreTiers.class, null).stream()
+					.collect(Collectors.toMap(RapportEntreTiers::getType,
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(Comparator.comparingLong(RapportEntreTiers::getSujetId)).collect(Collectors.toList()),
+					                          () -> new EnumMap<>(TypeRapportEntreTiers.class)));
+
+			final List<RapportEntreTiers> fusions = rapports.get(TypeRapportEntreTiers.FUSION_ENTREPRISES);
+			Assert.assertNotNull(fusions);
+			Assert.assertEquals(1, rapports.size());
+
+			Assert.assertEquals(2, fusions.size());
+			{
+				final RapportEntreTiers fusion = fusions.get(0);
+				Assert.assertNotNull(fusion);
+				Assert.assertEquals(dateBilanFusion.getOneDayAfter(), fusion.getDateDebut());
+				Assert.assertNull(fusion.getDateFin());
+				Assert.assertEquals((Long) idEntrepriseAvantFusion1, fusion.getSujetId());
+				Assert.assertEquals((Long) idEntrepriseApresFusion, fusion.getObjetId());
+			}
+			{
+				final RapportEntreTiers fusion = fusions.get(1);
+				Assert.assertNotNull(fusion);
+				Assert.assertEquals(dateBilanFusion.getOneDayAfter(), fusion.getDateDebut());
+				Assert.assertNull(fusion.getDateFin());
+				Assert.assertEquals((Long) idEntrepriseAvantFusion2, fusion.getSujetId());
+				Assert.assertEquals((Long) idEntrepriseApresFusion, fusion.getObjetId());
+			}
+		});
 	}
 
 	/**
