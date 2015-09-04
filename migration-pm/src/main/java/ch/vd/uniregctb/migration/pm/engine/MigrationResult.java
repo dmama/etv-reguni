@@ -7,8 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,6 +17,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -62,15 +62,15 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	/**
 	 * Données maintenues pour les enregistrements de structures de données à consolider
 	 * pendant la transaction
-	 * @see #registerPreTransactionCommitCallback(Class, int, Function, BinaryOperator, Consumer)
+	 * @see #registerPreTransactionCommitCallback(Class, ConsolidationPhase, Function, BinaryOperator, Consumer)
 	 * @see #addPreTransactionCommitData(Object)
 	 */
 	private final Map<Class<?>, PreTransactionCommitRegistration<?>> preCommitRegistrations = new HashMap<>();
 
 	/**
-	 * Ordonnancement des traitements de consolidation des données pendant la transaction
+	 * Phasage des traitements de consolidation des données pendant la transaction
 	 */
-	private final SortedMap<Integer, Class<?>> preCommitRegistrationSortingOrder = new TreeMap<>();
+	private final Map<ConsolidationPhase, Class<?>> preCommitRegistrationPhases = new EnumMap<>(ConsolidationPhase.class);
 
 	/**
 	 * Graphe pour lequel la migration est en cours
@@ -162,14 +162,14 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	/**
 	 * Enregistre un traitement a effectuer avant la fin de la transaction
 	 * @param dataClass classe de la donnée postée (on n'acceptera qu'un seul enregistrement par classe !)
-	 * @param consolidationPhaseIndicator indicateur de l'emplacement de cette consolidation dans la grande liste des consolidations
+	 * @param consolidationPhase indicateur de l'emplacement de cette consolidation dans la grande liste des consolidations
 	 * @param keyExtractor extracteur de la clé de regroupement pour les données postées
 	 * @param dataMerger fusionneur des données associées à une clé postée plusieurs fois
 	 * @param consolidator opération finale à effectuer sur les données consolidées
 	 * @param <D> type des données postées et traitées
 	 */
 	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
-	                                                     int consolidationPhaseIndicator,
+	                                                     ConsolidationPhase consolidationPhase,
 	                                                     Function<? super D, ?> keyExtractor,
 	                                                     BinaryOperator<D> dataMerger,
 	                                                     Consumer<? super D> consolidator) {
@@ -177,11 +177,11 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 		if (preCommitRegistrations.containsKey(dataClass)) {
 			throw new IllegalArgumentException("Un enregistrement a déjà été fait pour la classe " + dataClass.getName());
 		}
-		if (preCommitRegistrationSortingOrder.containsKey(consolidationPhaseIndicator)) {
-			throw new IllegalArgumentException("Le numéro de phase " + consolidationPhaseIndicator + " a déjà été utilisé.");
+		if (preCommitRegistrationPhases.containsKey(consolidationPhase)) {
+			throw new IllegalArgumentException("La phase " + consolidationPhase + " a déjà été utilisée.");
 		}
 		preCommitRegistrations.put(dataClass, new PreTransactionCommitRegistration<>(keyExtractor, dataMerger, consolidator));
-		preCommitRegistrationSortingOrder.put(consolidationPhaseIndicator, dataClass);
+		preCommitRegistrationPhases.put(consolidationPhase, dataClass);
 	}
 
 	/**
@@ -206,7 +206,9 @@ public class MigrationResult implements MigrationResultProduction, MigrationResu
 	 * entre les différentes consolidations
 	 */
 	public void consolidatePreTransactionCommitRegistrations() {
-		preCommitRegistrationSortingOrder.values().stream()
+		Stream.of(ConsolidationPhase.values())
+				.map(preCommitRegistrationPhases::get)
+				.filter(Objects::nonNull)
 				.map(preCommitRegistrations::get)
 				.forEach(registration -> {
 					final Map<Object, ?> dataMap = registration.data;

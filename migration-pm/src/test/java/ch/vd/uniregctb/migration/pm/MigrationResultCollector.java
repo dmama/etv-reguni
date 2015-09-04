@@ -121,7 +121,7 @@ public class MigrationResultCollector implements MigrationResultContextManipulat
 
 	@Override
 	public <D> void registerPreTransactionCommitCallback(Class<D> dataClass,
-	                                                     int consolidationPhaseIndicator,
+	                                                     ConsolidationPhase consolidationPhaseIndicator,
 	                                                     Function<? super D, ?> keyExtractor,
 	                                                     BinaryOperator<D> dataMerger,
 	                                                     Consumer<? super D> consolidator) {

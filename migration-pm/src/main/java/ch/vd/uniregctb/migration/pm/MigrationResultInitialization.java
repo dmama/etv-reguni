@@ -23,7 +23,7 @@ public interface MigrationResultInitialization extends MigrationResultContextMan
 	 * @param <D> type des données postées et traitées
 	 */
 	<D> void registerPreTransactionCommitCallback(Class<D> dataClass,
-	                                              int consolidationPhaseIndicator,
+	                                              ConsolidationPhase consolidationPhaseIndicator,
 	                                              Function<? super D, ?> keyExtractor,
 	                                              BinaryOperator<D> dataMerger,
 	                                              Consumer<? super D> consolidator);

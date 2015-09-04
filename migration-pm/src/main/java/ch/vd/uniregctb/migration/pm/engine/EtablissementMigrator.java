@@ -34,7 +34,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.migration.pm.MigrationConstants;
+import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
@@ -140,7 +140,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on va regrouper les données (communes et dates) par entité juridique afin de créer,
 		// pour chacune d'entre elles, les fors secondaires "activité" qui vont bien
 		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Activite.class,
-		                                        MigrationConstants.PHASE_FORS_ACTIVITE,
+		                                        ConsolidationPhase.FORS_ACTIVITE,
 		                                        d -> d.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Activite(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
 		                                        d -> createForsSecondairesEtablissement(d, mr, idMapper));

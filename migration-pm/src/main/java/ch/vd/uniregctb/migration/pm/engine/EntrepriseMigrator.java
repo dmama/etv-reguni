@@ -60,7 +60,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
-import ch.vd.uniregctb.migration.pm.MigrationConstants;
+import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
 import ch.vd.uniregctb.migration.pm.MigrationResultProduction;
@@ -273,35 +273,35 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// consolidation pour la constitution des fors "immeuble"
 		mr.registerPreTransactionCommitCallback(ForsSecondairesData.Immeuble.class,
-		                                        MigrationConstants.PHASE_FORS_IMMEUBLES,
+		                                        ConsolidationPhase.FORS_IMMEUBLES,
 		                                        k -> k.entiteJuridiqueSupplier,
 		                                        (d1, d2) -> new ForsSecondairesData.Immeuble(d1.entiteJuridiqueSupplier, DATE_RANGE_MAP_MERGER.apply(d1.communes, d2.communes)),
 		                                        d -> createForsSecondairesImmeuble(d, mr, idMapper));
 
 		// callback pour le contrôle des fors secondaires après création
 		mr.registerPreTransactionCommitCallback(ControleForsSecondairesData.class,
-		                                        MigrationConstants.PHASE_CONTROLE_FORS_SECONDAIRES,
+		                                        ConsolidationPhase.CONTROLE_FORS_SECONDAIRES,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleForsSecondaires(d, mr, idMapper));
 
 		// callback pour le contrôle (et la correction) de la couverture des fors secondaires par des fors principaux
 		mr.registerPreTransactionCommitCallback(CouvertureForsData.class,
-		                                        MigrationConstants.PHASE_COUVERTURE_FORS,
+		                                        ConsolidationPhase.COUVERTURE_FORS,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> controleCouvertureFors(d, mr, idMapper));
 
 		// callback pour la destruction des fors annulés créés
 		mr.registerPreTransactionCommitCallback(EffacementForsAnnulesData.class,
-		                                        MigrationConstants.PHASE_EFFACEMENT_FORS_ANNULES,
+		                                        ConsolidationPhase.EFFACEMENT_FORS_ANNULES,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        this::effacementForsAnnules);
 
 		// callback pour le contrôle des données d'assujettissement
 		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
-		                                        MigrationConstants.PHASE_COMPARAISON_ASSUJETTISSEMENTS,
+		                                        ConsolidationPhase.COMPARAISON_ASSUJETTISSEMENTS,
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> comparaisonAssujettissements(d, mr, idMapper));

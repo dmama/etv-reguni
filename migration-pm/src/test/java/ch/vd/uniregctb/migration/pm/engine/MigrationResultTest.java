@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
@@ -31,7 +32,7 @@ public class MigrationResultTest {
 		// enregistrement de la structure
 
 		mr.registerPreTransactionCommitCallback(MyDataToConsolidate.class,
-		                                        1,
+		                                        ConsolidationPhase.COMPARAISON_ASSUJETTISSEMENTS,    // peu importe la phase, de toute façon il n'y en a qu'une
 		                                        d -> d.key,
 		                                        (d1, d2) -> new MyDataToConsolidate(d1.key, String.format("%s,%s", d1.msg, d2.msg)),
 		                                        d -> mr.addMessage(LogCategory.EXCEPTIONS, LogLevel.INFO, String.format("%d -> %s", d.key, d.msg)));
