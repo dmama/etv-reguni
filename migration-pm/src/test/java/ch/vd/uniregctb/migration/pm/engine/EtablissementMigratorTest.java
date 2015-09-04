@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
-import ch.vd.uniregctb.migration.pm.regpm.AdresseAvecRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
@@ -52,6 +52,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 	private EtablissementMigrator migrator;
+	private UniregStore uniregStore;
 
 	@Override
 	protected void onSetup() throws Exception {
@@ -59,7 +60,8 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		final ActivityManager activityManager = entreprise -> true;         // tout le monde est actif dans ces tests
 
-		final UniregStore uniregStore = getBean(UniregStore.class, "uniregStore");
+		uniregStore = getBean(UniregStore.class, "uniregStore");
+
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final RCEntAdapter rcEntAdapter = getBean(RCEntAdapter.class, "rcEntAdapter");
 		final AdresseHelper adresseHelper = getBean(AdresseHelper.class, "adresseHelper");
@@ -250,7 +252,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		Assert.assertEquals(EntityKey.of(etablissement), link.getSourceKey());
 		Assert.assertEquals(EntityKey.of(entreprise), link.getDestinationKey());
 
-		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI);
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.ETABLISSEMENTS, LogCategory.SUIVI, LogCategory.ADRESSES);
 		mr.getMessages().keySet().stream()
 				.filter(cat -> !expectedCategories.contains(cat))
 				.findAny()
@@ -258,6 +260,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans aucune période de validité d'un établissement stable \\(lien créé selon rôles de mandataire\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
 		Assert.assertEquals(0, mr.getPreTransactionCommitData().size());
 	}
@@ -1106,7 +1109,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	@Test
-	public void testAdresseEnAbsenceDEtablissementStable() throws Exception {
+	public void testAdresseSansEtablissementStableNiRoleMandataire() throws Exception {
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
 		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
 		etablissement.setNomRue("Avenue de Longemalle");
@@ -1124,8 +1127,99 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		// il y a eu un temps où la migration échouait sur un appel à RegpmEtablissement.Adresse.getDateFin()
 		// en absence d'établissement stable
 
-		final AdresseAvecRue adresse = etablissement.getAdresse();
-		Assert.assertNull(adresse);
+		doInUniregTransaction(true, status -> {
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(0, etbs.size());            // même pas migré, si pas de rôle de mandataire ni établissement stable
+		});
+	}
+
+	@Test
+	public void testAdresseSansEtablissementStableMaisRoleMandataire() throws Exception {
+		final RegpmEntreprise mandant = EntrepriseMigratorTest.buildEntreprise(2L);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
+		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
+		etablissement.setNomRue("Avenue de Longemalle");
+		etablissement.setLocalitePostale(LocalitePostale.RENENS);
+
+		EntrepriseMigratorTest.addMandat(mandant, etablissement, RegpmTypeMandat.GENERAL, null, RegDate.get(2014, 1, 1), RegDate.get(2015, 4, 7));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(1, etbs.size());
+
+			final Etablissement etb = etbs.get(0);
+			Assert.assertNotNull(etb);
+
+			final List<AdresseTiers> adresses = etb.getAdressesTiersSorted();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.get(0);
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+
+			// dates tirées des rôles mandataires
+			Assert.assertEquals(RegDate.get(2014, 1, 1), adresse.getDateDebut());
+			Assert.assertEquals(RegDate.get(2015, 4, 7), adresse.getDateFin());
+		});
+	}
+
+	@Test
+	public void testAdresseAvecEtablissementStableEtRoleMandataire() throws Exception {
+		final RegpmEntreprise mandant = EntrepriseMigratorTest.buildEntreprise(2L);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
+		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
+		etablissement.setNomRue("Avenue de Longemalle");
+		etablissement.setLocalitePostale(LocalitePostale.RENENS);
+		addEtablissementStable(etablissement, RegDate.get(2014, 5, 30), RegDate.get(2014, 12, 31));
+
+		EntrepriseMigratorTest.addMandat(mandant, etablissement, RegpmTypeMandat.GENERAL, null, RegDate.get(2014, 1, 1), RegDate.get(2015, 4, 7));
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// il y a eu un temps où la migration échouait sur un appel à RegpmEtablissement.Adresse.getDateFin()
+		// en absence d'établissement stable
+
+		doInUniregTransaction(true, status -> {
+			final List<Etablissement> etbs = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etbs);
+			Assert.assertEquals(1, etbs.size());
+
+			final Etablissement etb = etbs.get(0);
+			Assert.assertNotNull(etb);
+
+			final List<AdresseTiers> adresses = etb.getAdressesTiersSorted();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.get(0);
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+
+			// dates tirées des dates d'établissement stable
+			Assert.assertEquals(RegDate.get(2014, 5, 30), adresse.getDateDebut());
+			Assert.assertEquals(RegDate.get(2014, 12, 31), adresse.getDateFin());
+		});
 	}
 
 	@Test

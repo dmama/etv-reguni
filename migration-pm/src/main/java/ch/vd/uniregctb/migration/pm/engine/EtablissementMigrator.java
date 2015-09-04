@@ -478,22 +478,15 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 					// un seul lien, avec les dates min et max des mandats (avec le rôle mandataire) repris (mais pas de for secondaire, du coup...)
 
-					// pour les dates min et max, il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
+					// il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
 					// nous sommes ici, c'est qu'il n'y a pas d'établissements stables...)
-					// (la date min ne peut pas être nulle car de tels mandats sont ignorés)
-					final RegDate minMandat = donneesMandats.getRolesMandataire().stream()
-							.map(RegpmMandat::getDateAttribution)
-							.min(Comparator.naturalOrder())
-							.get();
-
-					// (la date max peut être nulle, elle, en revanche, pour les mandats encore ouverts
-					final RegDate maxMandat = donneesMandats.getRolesMandataire().stream()
-							.max((mandat1, mandat2) -> NullDateBehavior.LATEST.compare(mandat1.getDateResiliation(), mandat2.getDateResiliation()))
-							.get()
-							.getDateResiliation();
+					final DateRange rangeMandats = extractMinMaxMandats(donneesMandats);
+					if (rangeMandats == null) {
+						throw new RuntimeException("Pourquoi n'y a-t-il pas de range ?");
+					}
 
 					// et le lien, pour finir
-					linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, minMandat, maxMandat));
+					linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, rangeMandats.getDateDebut(), rangeMandats.getDateFin()));
 				}
 			}
 			else {
@@ -508,14 +501,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// on ne fait rien des "succursales" d'un établissement, car il n'y en a aucune dans le modèle RegPM
 
 		// adresse
-		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
-		// TODO adresse permanente ou pas ?
-		// TODO enseigne dans le complément d'adresse ?
-		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(), mr, regpm::getEnseigne, false);
-		if (adresse != null) {
-			adresse.setUsage(TypeAdresseTiers.COURRIER);
-			unireg.addAdresseTiers(adresse);
-		}
+		migrateAdresse(regpm, unireg, datesEtablissementsStables, donneesMandats, mr);
 
 		// coordonnées financières
 		final String titulaireCompte = extractEnseigneOuRaisonSociale(regpm);
@@ -532,6 +518,65 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log de suivi à la fin des opérations pour cet établissement
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Etablissement migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	@Nullable
+	private static DateRange extractMinMaxMandats(DonneesMandats donneesMandats) {
+
+		// pour les dates min et max, il y a forcément des données (voir booléen isMandataire plus haut, qui est forcément "vrai" puisque si
+		// nous sommes ici, c'est qu'il n'y a pas d'établissements stables...)
+		// (la date min ne peut pas être nulle car de tels mandats sont ignorés -> un null signifie donc ici 'y en a pas!')
+		final RegDate minMandat = donneesMandats.getRolesMandataire().stream()
+				.map(RegpmMandat::getDateAttribution)
+				.min(Comparator.naturalOrder())
+				.orElse(null);
+
+		// la date max peut être nulle, elle, en revanche, pour les mandats encore ouverts
+		final RegDate maxMandat = donneesMandats.getRolesMandataire().stream()
+				.max((mandat1, mandat2) -> NullDateBehavior.LATEST.compare(mandat1.getDateResiliation(), mandat2.getDateResiliation()))
+				.get()
+				.getDateResiliation();
+
+		return minMandat == null ? null : new DateRangeHelper.Range(minMandat, maxMandat);
+	}
+
+	/**
+	 * Migration de l'adresse de l'établissement
+	 * @param regpm établissement de RegPM
+	 * @param unireg établissement dans Unireg
+	 * @param datesEtablissementsStables dates des établissements stables de l'établissement de RegPM
+	 * @param donneesMandats données des mandats repris autour de l'établissement
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 */
+	private void migrateAdresse(RegpmEtablissement regpm, Etablissement unireg,
+	                            @NotNull List<DateRange> datesEtablissementsStables,
+	                            @NotNull DonneesMandats donneesMandats,
+	                            MigrationResultContextManipulation mr) {
+
+		// d'abord, on détermine les dates auxquelles l'adresse est valide
+		// 1. s'il y a des dates d'établissement stable, on prend le min et le max
+		// 2. sinon, on prend les dates des mandats (min et max, pareil), rôle mandataire, s'ils existent
+		// 3. sinon, pas d'adresse
+		final DateRange rangeAdresse;
+
+		if (datesEtablissementsStables.isEmpty()) {
+			// extraction des dates depuis les mandats
+			rangeAdresse = extractMinMaxMandats(donneesMandats);
+		}
+		else {
+			// extraction des dates min et max
+			final RegDate min = datesEtablissementsStables.get(0).getDateDebut();
+			final RegDate max = datesEtablissementsStables.get(datesEtablissementsStables.size() - 1).getDateFin();
+			rangeAdresse = new DateRangeHelper.Range(min, max);
+		}
+
+		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
+		// TODO enseigne dans le complément d'adresse ?
+		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm::getEnseigne, false);
+		if (adresse != null) {
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			unireg.addAdresseTiers(adresse);
+		}
 	}
 
 	/**

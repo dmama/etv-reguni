@@ -23,8 +23,9 @@ import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
+import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.regpm.usertype.BooleanYesNoUserType;
@@ -80,30 +81,20 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	 */
 	private class Adresse implements AdresseAvecRue {
 
+		private final DateRange range;
+
+		public Adresse(@NotNull DateRange range) {
+			this.range = range;
+		}
+
 		@Override
 		public RegDate getDateDebut() {
-			return etablissementsStables.stream()
-					.map(RegpmEtablissementStable::getDateDebut)
-					.min(NullDateBehavior.EARLIEST::compare)
-					.orElse(null);
+			return range.getDateDebut();
 		}
 
 		@Override
 		public RegDate getDateFin() {
-			// si l'un des établissements stables a une date de fin vide, la date de fin est vide
-			final boolean finVideExiste = etablissementsStables.stream()
-					.filter(e -> e.getDateFin() == null)
-					.findAny()
-					.isPresent();
-			if (finVideExiste) {
-				return null;
-			}
-
-			// aucune date de fin vide -> on prend la plus récente
-			return etablissementsStables.stream()
-					.map(RegpmEtablissementStable::getDateFin)
-					.max(NullDateBehavior.LATEST::compare)
-					.get();
+			return range.getDateFin();
 		}
 
 		@Override
@@ -138,9 +129,8 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	}
 
 	@Transient
-	public AdresseAvecRue getAdresse() {
-		// l'adresse est valide aux dates des établissements stables... donc pas d'établissement stable = pas d'adresse !
-		return etablissementsStables.isEmpty() ? null : new Adresse();
+	public AdresseAvecRue getAdresse(DateRange range) {
+		return range == null ? null : new Adresse(range);
 	}
 
 	@Id
