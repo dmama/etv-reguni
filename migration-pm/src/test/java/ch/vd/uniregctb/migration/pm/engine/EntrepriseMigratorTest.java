@@ -25,6 +25,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
@@ -40,6 +42,7 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
@@ -61,6 +64,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMotifEnvoi;
@@ -68,7 +72,9 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalCH;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscalVD;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmRue;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
@@ -98,6 +104,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
@@ -445,6 +452,28 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		avant.getFusionsApres().add(fusion);
 		apres.getFusionsAvant().add(fusion);
 		return fusion;
+	}
+
+	static RegpmAdresseEntreprise addAdresse(RegpmEntreprise entreprise, RegpmTypeAdresseEntreprise type,
+	                                         RegDate dateDebut, String lieu, RegpmLocalitePostale localitePostale, String nomRue, String noPolice, RegpmRue rue, Integer ofsPays) {
+		if (entreprise.getAdressesTypees().containsKey(type)) {
+			throw new IllegalArgumentException("Le type d'adresse " + type + " existe déjà sur cette entreprise.");
+		}
+
+		final RegpmAdresseEntreprise a = new RegpmAdresseEntreprise();
+		a.setId(new RegpmAdresseEntreprise.PK(type, entreprise.getId()));
+		assignMutationVisa(a, REGPM_VISA, REGPM_MODIF);
+		a.setChez(null);
+		a.setDateValidite(dateDebut);
+		a.setLieu(lieu);
+		a.setLocalitePostale(localitePostale);
+		a.setNomRue(nomRue);
+		a.setNoPolice(noPolice);
+		a.setOfsPays(ofsPays);
+		a.setRue(rue);
+
+		entreprise.getAdresses().add(a);
+		return a;
 	}
 
 	@Test
@@ -3653,5 +3682,138 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("En l'absence de donnée valide pour la forme juridique, repêchage de 'S.A.'.", textes.get(1));
 			Assert.assertEquals("Données 'civiles' migrées : sur la période [27.08.2004 -> ?], raison sociale (Ma société à moi tout seul si si vraiment), capital () et forme juridique (SA).", textes.get(2));
 		}
+	}
+
+	@Test
+	public void testMigrationAdresseCourrierEntreprise() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(RegDate.get(2004, 8, 27), adresse.getDateDebut());
+			Assert.assertNull(adresse.getDateFin());
+			Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+			Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+			Assert.assertEquals("Rue des champs", adresseSuisse.getRue());
+			Assert.assertNull(adresseSuisse.getNumeroRue());
+			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+		});
+	}
+
+	@Test
+	public void testMigrationAdresseSiegeEntrepriseSansAdresseCourrier() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(RegDate.get(2004, 8, 27), adresse.getDateDebut());
+			Assert.assertNull(adresse.getDateFin());
+			Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+			Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+			Assert.assertEquals("Rue des champs", adresseSuisse.getRue());
+			Assert.assertNull(adresseSuisse.getNumeroRue());
+			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+		});
+	}
+
+	@Test
+	public void testMigrationAdresseEntrepriseAvecAdresseCourrierEtSiege() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<AdresseTiers> adresses = entreprise.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseTiers adresse = adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(RegDate.get(2010, 7, 22), adresse.getDateDebut());
+			Assert.assertNull(adresse.getDateFin());
+			Assert.assertEquals(AdresseSuisse.class, adresse.getClass());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+
+			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
+			Assert.assertEquals("24", adresseSuisse.getNumeroMaison());
+			Assert.assertEquals("Rue des étangs", adresseSuisse.getRue());
+			Assert.assertNull(adresseSuisse.getNumeroRue());
+			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+		});
 	}
 }

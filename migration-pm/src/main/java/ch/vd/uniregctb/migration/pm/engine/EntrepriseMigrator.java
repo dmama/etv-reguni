@@ -42,6 +42,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.Duplicable;
@@ -82,6 +83,7 @@ import ch.vd.uniregctb.migration.pm.regpm.ContactEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.InscriptionRC;
 import ch.vd.uniregctb.migration.pm.regpm.RadiationRC;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
@@ -102,6 +104,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
@@ -139,6 +142,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
@@ -1382,7 +1386,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
 
-		// TODO migrer les adresses, les documents...
+		// TODO migrer les documents...
 
 		final String raisonSociale = mr.getExtractedData(RaisonSocialeData.class, moi.getKey()).getRaisonSociale();
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
@@ -1390,6 +1394,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateFlagDebiteurInactif(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, unireg, mr);
 
+		migrateAdresses(regpm, unireg, mr);
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
@@ -1403,6 +1408,52 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Migration des adresses de l'entreprise
+	 * @param regpm entreprise de RegPM
+	 * @param unireg entreprise dans Unireg
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 */
+	private void migrateAdresses(RegpmEntreprise regpm, Entreprise unireg, MigrationResultContextManipulation mr) {
+
+		final Map<RegpmTypeAdresseEntreprise, RegpmAdresseEntreprise> adresses = regpm.getAdressesTypees();
+
+		// on prend l'adresse courrier et, à défaut, l'adresse siège
+		Stream.of(RegpmTypeAdresseEntreprise.COURRIER, RegpmTypeAdresseEntreprise.SIEGE)
+				.map(adresses::get)
+				.filter(Objects::nonNull)
+				.filter(a -> {
+					if (a.getDateDebut() == null) {
+						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
+						              String.format("Adresse %s ignorée car sa date de début de validité est nulle.", a.getTypeAdresse()));
+						return false;
+					}
+					return true;
+				})
+				.filter(a -> {
+					if (isFutureDate(a.getDateDebut())) {
+						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
+						              String.format("Adresse %s ignorée car sa date de début de validité est dans le futur (%s).",
+						                            a.getTypeAdresse(),
+						                            StringRenderers.DATE_RENDERER.toString(a.getDateDebut())));
+						return false;
+					}
+					return true;
+				})
+				.peek(a -> checkDateLouche(a.getDateDebut(),
+				                           () -> String.format("La date de début de validité de l'adresse %s", a.getTypeAdresse()),
+				                           LogCategory.ADRESSES,
+				                           mr))
+				.findFirst()
+				.ifPresent(a -> {
+					final AdresseTiers adresse = adresseHelper.buildAdresse(a, mr, regpm::getEnseigne, false);
+					if (adresse != null) {
+						adresse.setUsage(TypeAdresseTiers.COURRIER);
+						unireg.addAdresseTiers(adresse);
+					}
+				});
 	}
 
 	/**
