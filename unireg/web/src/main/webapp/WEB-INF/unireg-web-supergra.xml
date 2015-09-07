@@ -27,6 +27,7 @@
 		<property name="validationInterceptor" ref="validationInterceptor"/>
 		<property name="globalTiersIndexer"	ref="globalTiersIndexer"/>
 		<property name="dialect" ref="hibernateDialect"/>
+		<property name="autorisationCache" ref="autorisationCache"/>
 	</bean>
 
 </beans>

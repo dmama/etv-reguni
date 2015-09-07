@@ -36,6 +36,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
+import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -92,6 +93,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private ValidationInterceptor validationInterceptor;
 	private GlobalTiersIndexer globalTiersIndexer;
 	private Dialect dialect;
+	private DataEventListener autorisationCache;
 
 
 	private List<String> annotatedClass;
@@ -217,6 +219,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	public void setDialect(Dialect dialect) {
 		this.dialect = dialect;
+	}
+
+	public void setAutorisationCache(DataEventListener autorisationCache) {
+		this.autorisationCache = autorisationCache;
 	}
 
 	@Override
@@ -748,6 +754,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
 		globalTiersIndexer.schedule(ppId);
+		//On invalide les caches de sécurité
+		autorisationCache.onTiersChange(ppId);
 	}
 
 	@Override
@@ -789,6 +797,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
 		globalTiersIndexer.schedule(mcId);
+		//On invalide les caches de sécurité
+		autorisationCache.onTiersChange(mcId);
 	}
 
 	private static String getSuperGraPrincipalName() {
