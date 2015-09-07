@@ -57,6 +57,8 @@
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
+		<constructor-arg name="periodeImpositionService" ref="periodeImpositionService"/>
+		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">

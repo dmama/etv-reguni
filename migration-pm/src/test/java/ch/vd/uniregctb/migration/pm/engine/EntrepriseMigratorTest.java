@@ -33,6 +33,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
@@ -86,6 +87,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeNatureDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DecisionAci;
@@ -131,7 +133,9 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
-				getBean(DatesParticulieres.class, "datesParticulieres"));
+				getBean(DatesParticulieres.class, "datesParticulieres"),
+				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
+				getBean(ParametreAppService.class, "parametreAppService"));
 	}
 
 	/**

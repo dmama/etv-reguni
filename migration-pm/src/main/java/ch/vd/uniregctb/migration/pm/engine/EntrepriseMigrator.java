@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -61,6 +63,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.ConsolidationPhase;
 import ch.vd.uniregctb.migration.pm.MigrationConstants;
@@ -120,6 +124,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.migration.pm.utils.EntityWrapper;
 import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -153,6 +158,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private final BouclementService bouclementService;
 	private final AssujettissementService assujettissementService;
+	private final PeriodeImpositionService periodeImpositionService;
+	private final ParametreAppService parametreAppService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
 
@@ -165,12 +172,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          AdresseHelper adresseHelper,
 	                          FusionCommunesProvider fusionCommunesProvider,
 	                          FractionsCommuneProvider fractionsCommuneProvider,
-	                          DatesParticulieres datesParticulieres) {
+	                          DatesParticulieres datesParticulieres,
+	                          PeriodeImpositionService periodeImpositionService,
+	                          ParametreAppService parametreAppService) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
 		this.rcEntAdapter = rcEntAdapter;
 		this.adresseHelper = adresseHelper;
+		this.periodeImpositionService = periodeImpositionService;
+		this.parametreAppService = parametreAppService;
 	}
 
 	private static Entreprise createEntreprise(RegpmEntreprise regpm) {
@@ -219,6 +230,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		public ComparaisonAssujettissementsData(boolean active, SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.active = active;
 			this.regpmAssujettissements = regpmAssujettissements;
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static final class DeclarationsSansExerciceCommercialRegpmData {
+		private final List<RegpmDossierFiscal> dossiersFiscauxNonAssignes;
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		public DeclarationsSansExerciceCommercialRegpmData(List<RegpmDossierFiscal> dossiersFiscauxNonAssignes, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.dossiersFiscauxNonAssignes = dossiersFiscauxNonAssignes;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -324,11 +344,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> comparaisonAssujettissements(d, mr, idMapper));
-		
+
+		// callback pour la migration des déclarations d'impôt (= dossiers fiscaux) non-liées à un exercice commercial
+		// (en gros, les déclarations encore à l'état "EMISE")
+		mr.registerPreTransactionCommitCallback(DeclarationsSansExerciceCommercialRegpmData.class,
+		                                        ConsolidationPhase.DECLARATIONS_SANS_EXERCICE_COMMERCIAL_REGPM,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> migrateDossiersFiscauxNonAttribues(d, mr, idMapper));
+
 		//
 		// données "cachées" sur les entreprises
 		//
-		
+
 		// les fors principaux non-ignorés
 		mr.registerDataExtractor(ForsPrincipauxData.class,
 		                         e -> extractForsPrincipaux(e, mr, idMapper),
@@ -1398,7 +1426,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
-		migrateDeclarations(regpm, unireg, mr);
+		migrateDeclarations(regpm, unireg, mr, idMapper);
 		migrateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
@@ -2059,12 +2087,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Migration des déclarations d'impôts, de leurs états, délais...
 	 */
-	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
 
 		final EntityKey moi = buildEntrepriseKey(regpm);
 		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, moi).liste;
 		final Set<RegpmDossierFiscal> dossiersFiscauxAttribuesAuxExercicesCommerciaux = new HashSet<>(dossiers.size());
-		final RegDate dateBouclementFutur = mr.getExtractedData(DateBouclementFuturData.class, moi).date;
 
 		// boucle sur chacun des exercices commerciaux
 		regpm.getExercicesCommerciaux().forEach(exercice -> {
@@ -2099,27 +2126,98 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// ensuite, il faut éventuellement trouver une déclaration envoyée mais pour laquelle je n'ai pas encore
 		// d'entrée dans la table des exercices commerciaux
-		dossiers.stream()
+
+		// on va essayer de reconstituer ces entrées d'après les périodes d'imposition calculées
+		// (sauf que celles-ci ne sont pas disponibles avant la génération de tous les fors qui viennent potentiellement d'immeubles, d'établissements...)
+		// -> il faut donc demander un calcul pour la fin de la transaction, au moment où toutes les informations seront disponibles
+
+		final List<RegpmDossierFiscal> dossiersFiscauxNonAttribues = dossiers.stream()
 				.filter(dossier -> !dossiersFiscauxAttribuesAuxExercicesCommerciaux.contains(dossier))
-				.forEach(dossier -> {
+				.sorted(Comparator.comparingInt(RegpmDossierFiscal::getPf).thenComparingInt(RegpmDossierFiscal::getNoParAnnee))
+				.collect(Collectors.toList());
+		if (!dossiersFiscauxNonAttribues.isEmpty()) {
+			// demande de calcul pour la fin de la transaction avec toutes les données nécessaires
+			mr.addPreTransactionCommitData(new DeclarationsSansExerciceCommercialRegpmData(dossiersFiscauxNonAttribues, getEntrepriseSupplier(idMapper, regpm)));
+		}
+	}
 
-					// si la PF est celle de la prochaine date de bouclement, alors on peut la créer...
-					if (dateBouclementFutur != null && dateBouclementFutur.year() == dossier.getPf()) {
-						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Dossier fiscal %d/%d sans exercice commercial associé sur la PF du bouclement futur -> quelle est la date de début de la déclaration ?",
-						                            dossier.getPf(), dossier.getNoParAnnee()));
+	/**
+	 * Méthode de callback pour finaliser la migration des déclarations d'impôt (= celle qui ne sont associées à aucun exercice commercial dans RegPM, a priori donc
+	 * celles qui ont juste été émises)
+	 * @param data données collectées dans la première passe de la migration des dossiers fiscaux
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapping des identifiants RegPM -> Unireg
+	 */
+	private void migrateDossiersFiscauxNonAttribues(DeclarationsSansExerciceCommercialRegpmData data,
+	                                                MigrationResultContextManipulation mr,
+	                                                IdMapping idMapper) {
+		final EntityKey key = data.entrepriseSupplier.getKey();
+		doInLogContext(key, mr, idMapper, () -> {
 
-						// TODO comment évaluer la date de début ?
-//						final RegDate dateDebut = null;
-//						final Declaration di = migrateDeclaration(dossier, dateDebut, regpm.getDateBouclementFutur());
-//						unireg.addDeclaration(di);
+			// de toute façon, il faut calculer les périodes d'imposition de la PM...
+			final Entreprise entreprise = data.entrepriseSupplier.get();
+			try {
+				final List<PeriodeImposition> pis = neverNull(periodeImpositionService.determine(entreprise));
+				final int premierePeriodeFiscalePersonnesMorales = parametreAppService.getPremierePeriodeFiscalePersonnesMorales();
+
+				// par période fiscale, cherchons les périodes d'imposition non-encore couvertes
+				// 1. on commence par retrouver les déclarations par période fiscale
+				final Map<Integer, List<DeclarationImpotOrdinairePM>> diExistantes = neverNull(entreprise.getDeclarations()).stream()
+						.map(d -> (DeclarationImpotOrdinairePM) d)
+						.collect(Collectors.toMap(di -> di.getPeriode().getAnnee(),
+						                          Collections::singletonList,
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).sorted(DateRangeComparator::compareRanges).collect(Collectors.toList())));
+
+				// et 2. on regarde les périodes d'imposition pour ne garder celles qui ne matchent pas
+				final Map<Integer, List<PeriodeImposition>> periodesNonCouvertes = pis.stream()
+						.filter(pi -> {
+							final int pf = pi.getPeriodeFiscale();
+							final List<DeclarationImpotOrdinairePM> declarations = diExistantes.get(pf);
+							return !DateRangeHelper.isFullyCovered(pi, declarations);           // TODO est-ce vraiment !isFullyCovered() qu'il faut utiliser ?
+						})
+						.collect(Collectors.toMap(PeriodeImposition::getPeriodeFiscale,
+						                          pi -> new LinkedList<>(Collections.singletonList(pi)),                                                        // LinkedList pour pouvoir enlever les éléments facilement
+						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(LinkedList::new)),        // LinkedList pour pouvoir enlever les éléments facilement
+						                          TreeMap::new));
+
+				// pour chaque dossier fiscal non-assigné, on va essayer de générer une déclaration
+				for (RegpmDossierFiscal dossier : data.dossiersFiscauxNonAssignes) {
+					// dans quelle pf, déjà ?
+					final Integer pf = dossier.getPf();
+					final List<PeriodeImposition> periodesNonCouvertesPourPf = periodesNonCouvertes.get(pf);
+					if (periodesNonCouvertesPourPf == null || periodesNonCouvertesPourPf.isEmpty()) {
+						if (pf < premierePeriodeFiscalePersonnesMorales) {
+							// il est normal qu'aucune période d'imposition ne soit trouvée, puisqu'elles ne sont pas calculées avant cette année-là
+							mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+							              String.format("Dossier fiscal %d/%d sans exercice commercial lié ignoré car antérieur à la PF %d.",
+							                            pf, dossier.getNoParAnnee(), premierePeriodeFiscalePersonnesMorales));
+						}
+						else {
+							mr.addMessage(LogCategory.DECLARATIONS, LogLevel.ERROR,
+							              String.format("Impossible de faire correspondre le dossier fiscal %d/%d (sans exercice commercial lié) avec une période d'imposition de la PF %d.",
+							                            pf, dossier.getNoParAnnee(), pf));
+						}
 					}
 					else {
-						// TODO que faire avec ces dossiers ? Ils correspondent pourtant à une déclaration envoyée, mais pourquoi n'y a-t-il pas d'exercice commercial associé ?
-						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-						              String.format("Dossier fiscal %d/%d passé sans exercice commercial associé.", dossier.getPf(), dossier.getNoParAnnee()));
+						// on prend la première (les autres, s'il y en a, restent à disposition des dossier non-assignés suivants...)
+						final PeriodeImposition pi = periodesNonCouvertesPourPf.remove(0);
+
+						// un peu de log pour le suivi
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+						              String.format("Génération d'une déclaration sur la PF %d à partir des dates %s de la période d'imposition calculée et du dossier fiscal %d/%d sans exercice commercial lié.",
+						                            pf, StringRenderers.DATE_RANGE_RENDERER.toString(pi), pf, dossier.getNoParAnnee()));
+
+						final Declaration di = migrateDeclaration(dossier, pi.getDateDebut(), pi.getDateFin(), mr);
+						entreprise.addDeclaration(di);
 					}
-				});
+				}
+			}
+			catch (AssujettissementException e) {
+				// problème lors du calcul... on ne pourra pas rattrapper les DI...
+				mr.addMessage(LogCategory.DECLARATIONS, LogLevel.ERROR, "Erreur rencontrée lors du calcul des périodes d'imposition de l'entreprise -> les DI non liées à un exercice commercial de RegPM ne sont pas migrées.");
+				LOGGER.error("Exception lancée lors du calcul des périodes d'imposition de l'entreprise " + entreprise.getNumero(), e);
+			}
+		});
 	}
 
 	/**

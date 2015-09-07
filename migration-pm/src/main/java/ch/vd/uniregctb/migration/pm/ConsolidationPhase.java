@@ -39,5 +39,11 @@ public enum ConsolidationPhase {
 	/**
 	 * Le contrôle des assujettissements avant/après la migration
 	 */
-	COMPARAISON_ASSUJETTISSEMENTS
+	COMPARAISON_ASSUJETTISSEMENTS,
+
+	/**
+	 * Le calcul des dates des déclarations d'impôt qui ne sont pas associées dans RegPM à un exercice commercial (= elle n'ont pas encore été retournées)
+	 * et dont on veut estimer les dates d'après les périodes d'imposition calculées
+	 */
+	DECLARATIONS_SANS_EXERCICE_COMMERCIAL_REGPM
 }
