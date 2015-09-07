@@ -25,6 +25,11 @@
 			<fileMode>0755</fileMode>
 		</file>
 		<file>
+			<source>src/main/scripts/postprocess-logs.sh</source>
+			<outputDirectory>unireg-batch-migration-pm-${pom.version}/bin</outputDirectory>
+			<fileMode>0755</fileMode>
+		</file>
+		<file>
 			<source>src/main/config/migration.properties</source>
 			<outputDirectory>unireg-batch-migration-pm-${pom.version}/conf</outputDirectory>
 		</file>
