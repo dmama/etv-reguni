@@ -804,7 +804,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(4, textes.size());
 		Assert.assertEquals("Génération d'une déclaration sur la PF 2014 à partir des dates [01.07.2012 -> 30.06.2013] de l'exercice commercial 1 et du dossier fiscal correspondant.", textes.get(0));
-		Assert.assertEquals("Dossier fiscal sur la PF 2014 alors que la fin de l'exercice commercial est en 2013... N'est-ce pas étrange ?", textes.get(1));
+		Assert.assertEquals("Dossier fiscal sur la PF 2014 alors que la fin de l'exercice commercial ([01.07.2012 -> 30.06.2013]) est en 2013... N'est-ce pas étrange ?", textes.get(1));
 		Assert.assertEquals("Délai initial de retour fixé au 22.02.2015.", textes.get(2));
 		Assert.assertEquals("Etat 'EMISE' migré au 12.07.2014.", textes.get(3));
 	}

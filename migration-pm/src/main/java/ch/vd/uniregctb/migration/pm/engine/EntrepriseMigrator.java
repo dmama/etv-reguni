@@ -2086,8 +2086,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// un petit warning sur des cas bizarres...
 				if (dossier.getPf() != exercice.getDateFin().year()) {
 					mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-					              String.format("Dossier fiscal sur la PF %d alors que la fin de l'exercice commercial est en %d... N'est-ce pas étrange ?",
+					              String.format("Dossier fiscal sur la PF %d alors que la fin de l'exercice commercial (%s) est en %d... N'est-ce pas étrange ?",
 					                            dossier.getPf(),
+					                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
 					                            exercice.getDateFin().year()));
 				}
 
