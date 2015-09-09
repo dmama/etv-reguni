@@ -4,7 +4,7 @@
 
 	<!-- HandlerAdapter qui enregistre les beans qui implémentent l'interface HttpRequestHandler
 	(dont les beans de remoting ci-dessous) dans le DispatcherServlet -->
-   <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
 	<bean name="serviceCivilRawExporterCallback" class="ch.vd.unireg.interfaces.civil.ServiceCivilRawExporterCallback">
 		<property name="serviceCivilLogger" ref="serviceCivilLogger"/>
@@ -15,6 +15,11 @@
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
 		<property name="callback" ref="serviceCivilRawExporterCallback" />
  	</bean>
+
+	<bean name="serviceOrganisationRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="serviceOrganisationRaw"/>
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw"/>
+	</bean>
 
 	<bean name="serviceUpiRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
 		<property name="service" ref="serviceUpiRaw"/>
@@ -39,6 +44,7 @@
 				<entry key="/serviceUpi.remoting" value-ref="serviceUpiRawExporter" />
 				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
 				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
+				<entry key="/serviceOrganisation.remoting" value-ref="serviceOrganisationRawExporter"/>
 			</map>
 		</property>
 	</bean>
