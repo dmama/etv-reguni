@@ -19,6 +19,8 @@ import ch.ech.ech0044.v2.PersonIdentificationPartner;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.vd.evd0001.v5.Contact;
 import ch.vd.evd0001.v5.FullName;
@@ -49,10 +51,12 @@ import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermisInvalideException;
 
 public class IndividuRCPers implements Individu, Serializable {
 
 	private static final long serialVersionUID = 9048462821163407226L;
+	protected final Logger LOGGER = LoggerFactory.getLogger(IndividuRCPers.class);
 
 	private long noTechnique;
 	private StatutIndividu statut;
@@ -138,13 +142,20 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.conjoints = initConjoints(this.deces, Arrays.asList(person.getCurrentMaritalStatus()));
 		}
 
-		if (history) {
-			this.permis = initPermis(person.getResidencePermitHistory());
-			this.nationalites = initNationalites(person.getNationalityHistory(), infraService);
+		try {
+
+			if (history) {
+				this.permis = initPermis(person.getResidencePermitHistory());
+				this.nationalites = initNationalites(person.getNationalityHistory(), infraService);
+			}
+			else { // [SIFISC-5181] prise en compte des valeurs courantes
+				this.permis = initPermis(person.getCurrentResidencePermit());
+				this.nationalites = initNationalites(person.getCurrentNationality(), infraService);
+			}
 		}
-		else { // [SIFISC-5181] prise en compte des valeurs courantes
-			this.permis = initPermis(person.getCurrentResidencePermit());
-			this.nationalites = initNationalites(person.getCurrentNationality(), infraService);
+		catch (TypePermisInvalideException e) {
+			LOGGER.error(String.format("Type de permis invalide détecté!! Detail de l'individu reçu : %s",person.toString()));
+			throw new TypePermisInvalideException(this.noTechnique,e.getMessage());
 		}
 
 		// avec RcPers, toutes les parts sont systématiquement retournées

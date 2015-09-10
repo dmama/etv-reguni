@@ -149,7 +149,8 @@ public enum TypePermis {
 		default:
 			// hors-catégorie
 			LOGGER.warn(String.format("Type de permis non reconnu : %d (%s)", categorie, nullableToString(evdPermisCode)));
-			return null;
+			throw new TypePermisInvalideException(String.format("Type de permis non reconnu: %s",nullableToString(evdPermisCode)));
+
 		}
 	}
 

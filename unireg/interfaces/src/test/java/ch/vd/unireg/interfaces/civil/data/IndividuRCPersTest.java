@@ -40,6 +40,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypePermisInvalideException;
 
 import static ch.vd.unireg.interfaces.InterfacesTestHelper.newLocalisation;
 import static org.junit.Assert.assertEquals;
@@ -827,6 +828,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return permit;
 	}
 
+	private static ResidencePermit newResidencePermitTypeInvalide(RegDate dateDebut, @Nullable RegDate dateFin) {
+		final ResidencePermit permit = new ResidencePermit();
+		permit.setResidencePermitValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
+		permit.setResidencePermitTill(XmlUtils.regdate2xmlcal(dateFin));
+		permit.setResidencePermit("23");
+		return permit;
+	}
+
 	private static Contact newContact(RegDate dateDebut, @Nullable RegDate dateFin, MockRue rue) {
 		final Contact contact = new Contact();
 		final MailAddress mailAddress = newMailAddress(rue);
@@ -1602,5 +1611,24 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 				assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getLocalisationSuivante().getNoOfs());
 			}
 		}
+	}
+
+	@Test
+	public void testGetPersonorWithTypePermisInvalide() throws Exception {
+
+		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
+
+		// les permis
+		person.getResidencePermitHistory().add(newResidencePermitTypeInvalide(date(1965, 3, 12), null));
+
+
+		// on vérifie que les valeurs historisées sont bien lues
+		try {
+			final Individu ind = IndividuRCPers.get(person, true, infraService);
+		}catch (TypePermisInvalideException e){
+			assertEquals(e.getMessage(),"Impossible d'interpréter le type de  permis pour l'individu n°123345, détails: Erreur détectée: °Type de permis non reconnu: '23'");
+		}
+
+
 	}
 }
