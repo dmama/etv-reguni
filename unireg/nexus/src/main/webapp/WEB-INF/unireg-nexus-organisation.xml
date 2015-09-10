@@ -31,7 +31,8 @@
 	</bean>
 
 	<bean id="serviceOrganisationEndPoint" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationEndPoint">
-		<property name="target" ref="serviceCivilOrganisationCache" />
+		<property name="target" ref="serviceOrganisationTracing" />
+		<!--<property name="target" ref="serviceCivilOrganisationCache" />-->
 	</bean>
 
 	<alias alias="serviceOrganisationRaw" name="serviceOrganisationEndPoint"/>
