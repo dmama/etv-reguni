@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -31,7 +33,9 @@ import ch.vd.registre.base.date.RegDateHelper;
  *
  * @param <T> type de la donnée historisée
  */
-public class DateRanged<T> implements DateRange {
+public class DateRanged<T> implements DateRange, Serializable {
+
+ 	private static final long serialVersionUID = 2491428497472988246L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

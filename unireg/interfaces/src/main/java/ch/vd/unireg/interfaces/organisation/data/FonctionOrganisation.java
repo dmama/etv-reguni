@@ -1,11 +1,15 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
+
 import org.jetbrains.annotations.NotNull;
 
-public class FonctionOrganisation {
+public class FonctionOrganisation implements Serializable {
 
-	/*
-		Le numéro cantonal de l'individu (RCPers)
+	private static final long serialVersionUID = 4996250856949474474L;
+
+	/**
+	 * Le numéro cantonal de l'individu (RCPers)
 	 */
 	private final Integer idCantonalIndividu;
 	@NotNull

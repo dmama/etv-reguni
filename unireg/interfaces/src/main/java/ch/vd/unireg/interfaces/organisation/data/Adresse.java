@@ -1,6 +1,10 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
-public class Adresse {
+import java.io.Serializable;
+
+public class Adresse implements Serializable {
+
+    private static final long serialVersionUID = -2285765002824210533L;
 
     private String addressLine1;
     private String addressLine2;

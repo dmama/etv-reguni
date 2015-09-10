@@ -1,10 +1,13 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Capital {
+public class Capital implements Serializable {
 
-    private TypeDeCapital typeOfCapital;
+    private static final long serialVersionUID = 7488505460809710055L;
+
+	private TypeDeCapital typeOfCapital;
     private String currency;
     private BigDecimal capitalAmount;
     private BigDecimal cashedInAmount;

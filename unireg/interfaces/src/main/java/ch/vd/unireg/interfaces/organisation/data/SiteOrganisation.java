@@ -1,11 +1,15 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-public class SiteOrganisation {
+public class SiteOrganisation implements Serializable {
+
+	private static final long serialVersionUID = -7085217960001155684L;
+
 	/**
 	 * Le numéro technique du site pour Unireg
 	 */

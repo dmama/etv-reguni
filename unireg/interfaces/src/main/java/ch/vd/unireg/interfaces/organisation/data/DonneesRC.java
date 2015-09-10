@@ -1,10 +1,14 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-public class DonneesRC {
+public class DonneesRC implements Serializable {
+
+	private static final long serialVersionUID = 1633547309615186996L;
+
 	@NotNull
 	private final List<DateRanged<StatusRC>> status;
 	private final List<DateRanged<String>> nom;

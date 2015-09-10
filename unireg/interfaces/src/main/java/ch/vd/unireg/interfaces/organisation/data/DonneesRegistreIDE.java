@@ -1,10 +1,14 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-public class DonneesRegistreIDE {
+public class DonneesRegistreIDE implements Serializable {
+
+	private static final long serialVersionUID = -6444917918127810542L;
+
 	@NotNull
 	private final List<DateRanged<StatusRegistreIDE>> status;
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;

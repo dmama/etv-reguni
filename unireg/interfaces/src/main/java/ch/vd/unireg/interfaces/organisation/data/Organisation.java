@@ -14,7 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 
 public class Organisation implements Serializable {
 
-	private static final long serialVersionUID = 7148376177681713313L;
+	private static final long serialVersionUID = 6382164139477542003L;
 
 	/**
 	 * Le numéro technique de l'organisation pour Unireg
