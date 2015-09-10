@@ -22,6 +22,7 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	public MockServiceOrganisation() {
 		this.init();
 	}
+
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 		return organisationMap.get(noOrganisation);
@@ -35,4 +36,10 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	protected void addOrganisation(Organisation organisation) {
 		organisationMap.put(organisation.getNo(), organisation);
 	}
+
+	@Override
+	public void ping() throws ServiceOrganisationException {
+		throw new UnsupportedOperationException();
+	}
+
 }

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
@@ -31,7 +30,7 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 	}
 
 	@Override
-	public Organisation build() {
+	public MockOrganisation build() {
 		return new MockOrganisation(
 				getCantonalId(),
 				getIdentifiants(),
@@ -48,12 +47,17 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 	}
 
 	public static MockOrganisation createDummySA(long cantonalId, String nom, RegDate dateDebut) {
+		FormeLegale formeLegale = FormeLegale.N_0106_SOCIETE_ANONYME;
+		return createSimpleEntrepriseRC(cantonalId, nom, dateDebut, formeLegale);
+	}
+
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, String nom, RegDate dateDebut, FormeLegale formeLegale) {
 		long siteCantonalId = cantonalId + 1111;
 		return (MockOrganisation) new MockOrganisationBuilder(cantonalId)
 				.addNom(dateDebut, null, nom)
 				.addIdentifiant("CT.VD.PARTY", dateDebut, null, String.valueOf(cantonalId))
 				.addSite(dateDebut, null, siteCantonalId)
-				.addFormeLegale(dateDebut, null, FormeLegale.N_0106_SOCIETE_ANONYME)
+				.addFormeLegale(dateDebut, null, formeLegale)
 				.addDonneesSite(
 						new MockSiteOrganisationBuilder(siteCantonalId)
 								.addNom(dateDebut, null, nom)
