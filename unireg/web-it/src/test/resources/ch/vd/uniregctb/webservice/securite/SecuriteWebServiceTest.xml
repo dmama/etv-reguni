@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>12300001</value>
+      <value>PersonnePhysique</value>
+      <value>333905</value>			<!-- Christine Schmid -->
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>12300002</value>
+      <value>PersonnePhysique</value>
+      <value>333908</value>			<!-- Laurent Schmid -->
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>86006202</value>
+      <value>MenageCommun</value>		<!-- Christine et Laurent Schmid -->
+      <null/>
+      <value>0</value>
+      <null/>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>10210315</value>
+      <value>PersonnePhysique</value>
+      <value>272819</value>			<!-- Daniel Di Lallo -->
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>61615502</value>
+      <value>PersonnePhysique</value>
+      <value>240002</value>			<!-- Jean-Philippe Maillefer -->
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>10149508</value>
+      <value>PersonnePhysique</value>
+      <value>171324</value>			<!-- Pascal Broulis -->
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>
+  <table name="RAPPORT_ENTRE_TIERS">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>RAPPORT_ENTRE_TIERS_TYPE</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>TIERS_SUJET_ID</column>
+    <column>TIERS_OBJET_ID</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>AppartenanceMenage</value>
+      <value>19850215</value>
+      <null/>
+      <value>12300001</value>		<!-- Christine Schmid -->
+	  <value>86006202</value>		<!-- Menage -->
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>2</value>
+      <value>AppartenanceMenage</value>
+      <value>19850215</value>
+      <null/>
+      <value>12300002</value>		<!-- Laurent Schmid -->
+	  <value>86006202</value>		<!-- Menage -->
+    </row>
+  </table>
+  <table name="DROIT_ACCES">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>NUMERO_IND_OPER</column>
+    <column>TYPE</column>
+    <column>NIVEAU</column>
+    <column>TIERS_ID</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>20000101</value>
+      <null/>
+      <value>1</value>  		<!-- Francis Perroset -->
+	  <value>AUTORISATION</value>
+	  <value>ECRITURE</value>
+	  <value>10149508</value>		<!-- Pascal Broulis -->
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>2</value>
+      <value>20000101</value>
+      <null/>
+      <value>272819</value>  		<!-- Daniel Di Lallo -->
+	  <value>INTERDICTION</value>
+	  <value>LECTURE</value>
+	  <value>12300002</value>		<!-- Laurent Schmid -->
+    </row>
+  </table>
+</dataset>

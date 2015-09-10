@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.8-SNAPSHOT - 17 janvier 2013 - première version -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-response/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-response/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:response="http://www.vd.ch/fiscalite/unireg/event/party/response/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
+		   xmlns:taxliab-common="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/1"
+			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd" />
+
+	<xs:complexType name="aperiodicTaxLiabilityResponseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Résultat de la détermination du contribuable assujetti dans le cas d'un d'un revenu extraordinaire apériodique soumis à l'impôt.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="response:responseType">
+				<xs:sequence>
+					<xs:element name="partyNumber" type="common:partyNumberType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le numéro de contribuable assujetti; ou nul si aucun contribuable assujetti n'a été trouvé (type de réponse = TAXPAYER_WITHOUT_TAX_LIABILITY).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="mainTaxResidence" type="taxresidence:taxResidenceType" minOccurs="0">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le for fiscal principal courant qui induit l'assujettissement (type de réponse = {OK_TAXPAYER_FOUND, OUT_OF_SCOPE_TAXPAYER}) ou le for fiscal
+										principal le plus récent qui a induit un assujettissement dans le passé (type de réponse = FORMER_TAXPAYER). Non renseigné dans les autres cas.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="type" type="taxliab-common:responseTypeType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le type de réponse.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>
