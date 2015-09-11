@@ -66,7 +66,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	}
 
 	public SiteOrganisationBuilder addSiege(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Integer valeur) {
-		siege =BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		siege = BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 

@@ -81,7 +81,7 @@ public class Organisation implements Serializable {
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
 			for (DateRanged<TypeDeSite> type : site.getTypeDeSite()) {
-				if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+				if (type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL && site.getSiege() != null) {
 					List<DateRanged<Integer>> extractedSieges = DateRangeHelper.extract(site.getSiege(),
 					                                                                    type.getDateDebut(),
 					                                                                    type.getDateFin(),
@@ -99,6 +99,34 @@ public class Organisation implements Serializable {
 		}
 		Collections.sort(sieges, new DateRangeComparator<DateRanged<Integer>>());
 		return sieges;
+	}
+
+	/**
+	 * Retourne l'identifiant OFS de la commune de siège à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return L'identifiant OFS, ou null si absent
+	 */
+	public Integer getSiegePrincipal(RegDate date) {
+		DateRanged<Integer> siegeRanged = DateRangeHelper.rangeAt(getSiegesPrincipaux(), date != null ? date : RegDate.get());
+		return siegeRanged != null ? siegeRanged.getPayload() : null;
+	}
+
+	/**
+	 * Retourne l'identifiant OFS de la commune de siège à la date donnée, ou à la date du jour.
+	 * si pas de date.
+	 *
+	 * @param date
+	 * @return La forme legale, ou null si absente
+	 */
+	public FormeLegale getFormeLegale(RegDate date) {
+		List<DateRanged<FormeLegale>> formeLegaleRanges = getFormeLegale();
+		if (formeLegaleRanges != null) {
+			DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(formeLegaleRanges, date != null ? date : RegDate.get());
+			return formeLegaleRange != null ? formeLegaleRange.getPayload() : null;
+		}
+		return null;
 	}
 
 	/**

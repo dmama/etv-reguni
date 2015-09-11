@@ -20,8 +20,8 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
  *   contexte de test.
  */
 public class MockSiteOrganisation extends SiteOrganisation {
-	public MockSiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc,
-	                            @NotNull DonneesRegistreIDE ide,
+	public MockSiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, DonneesRC rc,
+	                            DonneesRegistreIDE ide,
 	                            Map<String, List<DateRanged<String>>> identifiants,
 	                            List<DateRanged<String>> nomsAdditionnels,
 	                            List<DateRanged<TypeDeSite>> typeDeSite,
@@ -56,7 +56,7 @@ public class MockSiteOrganisation extends SiteOrganisation {
 	}
 
 	@Override
-	public void setRc(@NotNull DonneesRC rc) {
+	public void setRc(DonneesRC rc) {
 		super.setRc(rc);
 	}
 

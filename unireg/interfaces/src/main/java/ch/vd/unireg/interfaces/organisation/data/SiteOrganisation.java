@@ -17,9 +17,7 @@ public class SiteOrganisation implements Serializable {
 	@NotNull
 	private List<DateRanged<String>> nom;
 
-	@NotNull
 	public DonneesRC rc;
-	@NotNull
 	public DonneesRegistreIDE ide;
 
 	private Map<String,List<DateRanged<String>>> identifiants;
@@ -31,7 +29,7 @@ public class SiteOrganisation implements Serializable {
 	private List<DateRanged<Integer>> siege;
 	private List<DateRanged<FonctionOrganisation>> fonction;
 
-	public SiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, @NotNull DonneesRC rc, @NotNull DonneesRegistreIDE ide,
+	public SiteOrganisation(long no, @NotNull List<DateRanged<String>> nom, DonneesRC rc, DonneesRegistreIDE ide,
 	                        Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
 	                        List<DateRanged<TypeDeSite>> typeDeSite, List<DateRanged<Integer>> siege,
 	                        List<DateRanged<FonctionOrganisation>> fonction) {
@@ -76,7 +74,6 @@ public class SiteOrganisation implements Serializable {
 		return nomsAdditionnels;
 	}
 
-	@NotNull
 	public DonneesRC getRc() {
 		return rc;
 	}
@@ -109,7 +106,7 @@ public class SiteOrganisation implements Serializable {
 		this.nomsAdditionnels = nomsAdditionnels;
 	}
 
-	protected void setRc(@NotNull DonneesRC rc) {
+	protected void setRc(DonneesRC rc) {
 		this.rc = rc;
 	}
 

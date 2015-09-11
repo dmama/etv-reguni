@@ -3,17 +3,16 @@ package ch.vd.unireg.interfaces.organisation.mock.data.builder;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
-import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.OrganisationBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 
@@ -48,37 +47,106 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 
 	public static MockOrganisation createDummySA(long cantonalId, String nom, RegDate dateDebut) {
 		FormeLegale formeLegale = FormeLegale.N_0106_SOCIETE_ANONYME;
-		return createSimpleEntrepriseRC(cantonalId, nom, dateDebut, formeLegale);
+		return createSimpleEntrepriseRC(cantonalId, nom, dateDebut, formeLegale, MockCommune.Lausanne.getOfsCommuneMere());
 	}
 
-	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, String nom, RegDate dateDebut, FormeLegale formeLegale) {
-		long siteCantonalId = cantonalId + 1111;
-		return (MockOrganisation) new MockOrganisationBuilder(cantonalId)
-				.addNom(dateDebut, null, nom)
-				.addIdentifiant("CT.VD.PARTY", dateDebut, null, String.valueOf(cantonalId))
-				.addSite(dateDebut, null, siteCantonalId)
-				.addFormeLegale(dateDebut, null, formeLegale)
-				.addDonneesSite(
-						new MockSiteOrganisationBuilder(siteCantonalId)
-								.addNom(dateDebut, null, nom)
-								.addIdentifiant("CT.VD.PARTY", dateDebut, null, String.valueOf(siteCantonalId))
-								.addTypeDeSite(dateDebut, null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)
-								.withRC(
-										new DonneesRCBuilder()
-												.addNom(dateDebut, null, nom)
-												.addStatus(dateDebut, null, StatusRC.INSCRIT)
-												.addStatusInscription(dateDebut, null, StatusInscriptionRC.ACTIF)
-												.build()
-								)
-								.withIde(
-										new DonneesRegistreIDEBuilder()
-												.addTypeOrganisation(dateDebut, null, TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE)
-												.addStatus(dateDebut, null, StatusRegistreIDE.DEFINITIF)
-												.build()
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, String nom, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiegePrincipal) {
+		return createOrganisation(cantonalId,
+		                          nom,
+		                          dateDebut,
+		                          formeLegale,
+		                          noOfsSiegePrincipal,
+		                          StatusRC.INSCRIT,
+		                          StatusInscriptionRC.ACTIF,
+		                          StatusRegistreIDE.DEFINITIF,
+		                          TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE
+		);
+	}
 
-								)
-								.build()
-				)
-				.build();
+	public static MockOrganisation createOrganisation(long cantonalId,
+	                                                  String nom,
+	                                                  RegDate dateDebut,
+	                                                  @Nullable FormeLegale formeLegale,
+	                                                  @Nullable Integer noOfsSiegePrincipal,
+	                                                  @Nullable StatusRC statusRC,
+	                                                  @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                                  @Nullable StatusRegistreIDE statusIde,
+	                                                  @Nullable TypeOrganisationRegistreIDE typeIde) {
+
+		MockOrganisationBuilder mockOrg = createOrganisationBuilder(cantonalId, nom, dateDebut, formeLegale);
+
+		long siteCantonalId = cantonalId + + Double.valueOf(Math.random()).longValue();
+		MockSiteOrganisationBuilder mockSite = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalId,
+		                                                                                     dateDebut,
+		                                                                                     nom,
+		                                                                                     true,
+		                                                                                     noOfsSiegePrincipal,
+		                                                                                     statusRC,
+		                                                                                     statusInscriptionRC,
+		                                                                                     statusIde,
+		                                                                                     typeIde);
+
+		mockOrg.addSite(dateDebut, null, siteCantonalId);
+		mockOrg.addDonneesSite(mockSite.build());
+
+		return  mockOrg.build();
+	}
+
+	public static MockOrganisation createOrganisationAvecSiteSecondaire(long cantonalId,
+	                                                                    String nom,
+	                                                                    RegDate dateDebut,
+	                                                                    @Nullable FormeLegale formeLegale,
+	                                                                    @Nullable Integer noOfsSiegePrincipal,
+	                                                                    @Nullable Integer noOfsSiegeSecondaire,
+	                                                                    @Nullable StatusRC statusRCPrincipal,
+	                                                                    @Nullable StatusRC statusRCSecondaire,
+	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCPrincipal,
+	                                                                    @Nullable StatusInscriptionRC statusInscriptionRCSecondaire,
+	                                                                    @Nullable StatusRegistreIDE statusIdePrincipal,
+	                                                                    @Nullable StatusRegistreIDE statusIdeSecondaire,
+	                                                                    @Nullable TypeOrganisationRegistreIDE typeIdePrincipal,
+	                                                                    @Nullable TypeOrganisationRegistreIDE typeIdeSecondaire) {
+
+		MockOrganisationBuilder mockOrg = createOrganisationBuilder(cantonalId, nom, dateDebut, formeLegale);
+
+		long siteCantonalIdPrincipal = cantonalId + + Double.valueOf(Math.random()).longValue();
+		MockSiteOrganisationBuilder mockSitePrincipal = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalIdPrincipal,
+		                                                                                     dateDebut,
+		                                                                                     nom,
+		                                                                                     true,
+		                                                                                     noOfsSiegePrincipal,
+		                                                                                     statusRCPrincipal,
+		                                                                                     statusInscriptionRCPrincipal,
+		                                                                                     statusIdePrincipal,
+		                                                                                     typeIdePrincipal);
+
+		mockOrg.addSite(dateDebut, null, siteCantonalIdPrincipal);
+		mockOrg.addDonneesSite(mockSitePrincipal.build());
+
+		long siteCantonalIdSecondaire = cantonalId + + Double.valueOf(Math.random()).longValue();
+		MockSiteOrganisationBuilder mockSiteSecondaire = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalIdSecondaire,
+		                                                                                     dateDebut,
+		                                                                                     nom,
+		                                                                                     false,
+		                                                                                     noOfsSiegeSecondaire,
+		                                                                                     statusRCSecondaire,
+		                                                                                     statusInscriptionRCSecondaire,
+		                                                                                     statusIdeSecondaire,
+		                                                                                     typeIdeSecondaire);
+
+		mockOrg.addSite(dateDebut, null, siteCantonalIdSecondaire);
+		mockOrg.addDonneesSite(mockSiteSecondaire.build());
+
+		return  mockOrg.build();
+	}
+
+	public static MockOrganisationBuilder createOrganisationBuilder(long cantonalId, String nom, RegDate dateDebut, @Nullable FormeLegale formeLegale) {
+		final MockOrganisationBuilder mock = (MockOrganisationBuilder) new MockOrganisationBuilder(cantonalId)
+				.addNom(dateDebut, null, nom)
+				.addIdentifiant("CT.VD.PARTY", dateDebut, null, String.valueOf(cantonalId));
+		if (formeLegale != null) {
+			mock.addFormeLegale(dateDebut, null, formeLegale);
+		}
+		return mock;
 	}
 }
