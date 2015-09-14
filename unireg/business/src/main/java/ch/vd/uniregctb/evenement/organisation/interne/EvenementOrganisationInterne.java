@@ -36,16 +36,18 @@ public abstract class EvenementOrganisationInterne {
 	private final Long numeroEvenement;
 
 	protected final EvenementOrganisationContext context;
+	private final EvenementOrganisationOptions options;
 
-	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		this.context = context;
+		this.options = options;
 
 		/* récupération des informations liés à l'événement */
 		this.date = evenement.getDateEvenement();
 		this.numeroEvenement = evenement.getId();
 		this.noOrganisation = evenement.getNoOrganisation();
 		this.organisation = organisation;
-		this.entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(this.noOrganisation);
+		this.entreprise = entreprise;
 	}
 
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -111,6 +113,10 @@ public abstract class EvenementOrganisationInterne {
 
 	public EvenementOrganisationContext getContext() {
 		return context;
+	}
+
+	public EvenementOrganisationOptions getOptions() {
+		return options;
 	}
 
 	public Long getNumeroEvenement() {

@@ -98,6 +98,10 @@ public class EvenementOrganisationProcessorFacade implements EvenementOrganisati
 		return true;
 	}
 
+	public ProcessorInternal getInternalProcessor() {
+		return internalProcessor;
+	}
+
 	public void setInternalProcessor(ProcessorInternal internalProcessor) {
 		this.internalProcessor = internalProcessor;
 	}

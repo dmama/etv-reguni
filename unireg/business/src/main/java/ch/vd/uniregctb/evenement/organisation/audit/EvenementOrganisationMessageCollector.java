@@ -3,11 +3,11 @@ package ch.vd.uniregctb.evenement.organisation.audit;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.uniregctb.evenement.common.EvenementErreur;
 import ch.vd.uniregctb.evenement.common.EvenementRegistreErreurFactory;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationErreur;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
-public class EvenementOrganisationMessageCollector<T extends EvenementOrganisationErreur> implements EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector {
+public class EvenementOrganisationMessageCollector<T extends EvenementErreur> implements EvenementOrganisationErreurCollector, EvenementOrganisationWarningCollector {
 
 	private final EvenementRegistreErreurFactory<T> factory;
 	private final List<T> erreurs = new ArrayList<>();

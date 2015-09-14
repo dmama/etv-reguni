@@ -17,6 +17,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
+import ch.vd.uniregctb.evenement.organisation.interne.IndexationPureOrganisationTranslationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -67,6 +69,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 		// Construction des stratégies
 		strategies = new ArrayList<>();
+
+		/*
+			L'ordre des stratégies est important.
+		 */
+		strategies.add(new CreateOrganisationStrategy());
 		// TODO: elle viennent ces stratégies?
 	}
 
@@ -93,7 +100,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		else if (evenements.size() == 1) {
 			return evenements.get(0);
 		}
-		return new EvenementOrganisationInterneComposite(event, organisation, context, options, evenements);
+		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
 	private List<EvenementOrganisationInterne> createEvents(EvenementOrganisation event, Organisation organisation, List<EvenementOrganisationTranslationStrategy> strategies,

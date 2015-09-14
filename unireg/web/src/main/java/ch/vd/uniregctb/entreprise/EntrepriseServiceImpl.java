@@ -272,7 +272,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	}
 
 	private static List<CapitalView> extractCapitaux(Organisation organisation) {
-		final List<DateRanged<Capital>> capitaux = organisation.getCapital();
+		final List<DateRanged<Capital>> capitaux = organisation.getCapitaux();
 		if (capitaux == null) {
 			return null;
 		}

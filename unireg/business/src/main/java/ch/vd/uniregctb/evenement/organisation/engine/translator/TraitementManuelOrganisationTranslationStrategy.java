@@ -7,10 +7,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
-import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
  * Stratégie utilisable pour les événements organisation qui partent systématiquement en traitement manuel
@@ -25,18 +24,10 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 
 		// TODO: Implmementer la détection des cas nécessitant le départ en traitement manuel. P. ex. Décision ACI sur l'organisation.
 
-		return new EvenementOrganisationInterne(event, organisation, context, options) {
+		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 
-			@NotNull
-			@Override
-			public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-				throw new IllegalArgumentException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
-			}
+		options.setTraitementManuelMessage(MSG);
+		return new TraitementManuel(event, organisation, entreprise, context, options);
 
-			@Override
-			protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-				erreurs.addErreur(MSG);
-			}
-		};
 	}
 }

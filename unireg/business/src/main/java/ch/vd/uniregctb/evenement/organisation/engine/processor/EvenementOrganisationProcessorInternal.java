@@ -127,8 +127,8 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	}
 
 	/**
-	 * Lancement du processing de l'événement civil décrit dans la structure donnée
-	 * @param info description de l'événement civil à traiter maintenant
+	 * Lancement du processing de l'événement organisation décrit dans la structure donnée
+	 * @param info description de l'événement organisation à traiter maintenant
 	 * @return <code>true</code> si tout s'est bien passé et que l'on peut continuer sur les événements suivants, <code>false</code> si on ne doit pas continuer
 	 */
 	private boolean processEvent(final EvenementOrganisationBasicInfo info) {
@@ -168,9 +168,9 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 	}
 
 	/**
-	 * Récupère l'événement civil depuis la DB, et rattrappe éventuellement le numéro d'individu absent
-	 * @param info information sur l'événement civil à récupérer
-	 * @return événement civil tiré de la DB
+	 * Récupère l'événement organisation depuis la DB, et rattrappe éventuellement le numéro d'individu absent
+	 * @param info information sur l'événement organisation à récupérer
+	 * @return événement organisation tiré de la DB
 	 */
 	@NotNull
 	private EvenementOrganisation fetchDatabaseEvent(EvenementOrganisationBasicInfo info) {
@@ -372,6 +372,4 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		postProcessingStrategies = new ArrayList<>();
 		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtOrganisationDAO));
 	}
-
-
 }
