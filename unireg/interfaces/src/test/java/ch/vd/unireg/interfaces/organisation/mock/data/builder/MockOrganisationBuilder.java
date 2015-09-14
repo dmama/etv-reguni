@@ -47,11 +47,12 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 
 	public static MockOrganisation createDummySA(long cantonalId, String nom, RegDate dateDebut) {
 		FormeLegale formeLegale = FormeLegale.N_0106_SOCIETE_ANONYME;
-		return createSimpleEntrepriseRC(cantonalId, nom, dateDebut, formeLegale, MockCommune.Lausanne.getOfsCommuneMere());
+		return createSimpleEntrepriseRC(cantonalId, cantonalId + 999373737, nom, dateDebut, formeLegale, MockCommune.Lausanne.getOfsCommuneMere());
 	}
 
-	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, String nom, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiegePrincipal) {
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSite, String nom, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiegePrincipal) {
 		return createOrganisation(cantonalId,
+		                          cantonalIdSite,
 		                          nom,
 		                          dateDebut,
 		                          formeLegale,
@@ -64,6 +65,7 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 	}
 
 	public static MockOrganisation createOrganisation(long cantonalId,
+	                                                  long cantonalIdSite,
 	                                                  String nom,
 	                                                  RegDate dateDebut,
 	                                                  @Nullable FormeLegale formeLegale,
@@ -75,8 +77,7 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 
 		MockOrganisationBuilder mockOrg = createOrganisationBuilder(cantonalId, nom, dateDebut, formeLegale);
 
-		long siteCantonalId = cantonalId + + Double.valueOf(Math.random()).longValue();
-		MockSiteOrganisationBuilder mockSite = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalId,
+		MockSiteOrganisationBuilder mockSite = MockSiteOrganisationBuilder.createSiteBuilder(cantonalIdSite,
 		                                                                                     dateDebut,
 		                                                                                     nom,
 		                                                                                     true,
@@ -86,13 +87,15 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 		                                                                                     statusIde,
 		                                                                                     typeIde);
 
-		mockOrg.addSite(dateDebut, null, siteCantonalId);
+		mockOrg.addSite(dateDebut, null, cantonalIdSite);
 		mockOrg.addDonneesSite(mockSite.build());
 
 		return  mockOrg.build();
 	}
 
 	public static MockOrganisation createOrganisationAvecSiteSecondaire(long cantonalId,
+	                                                                    long siteCantonalIdPrincipal,
+	                                                                    long siteCantonalIdSecondaire,
 	                                                                    String nom,
 	                                                                    RegDate dateDebut,
 	                                                                    @Nullable FormeLegale formeLegale,
@@ -109,30 +112,28 @@ public class MockOrganisationBuilder extends OrganisationBuilder {
 
 		MockOrganisationBuilder mockOrg = createOrganisationBuilder(cantonalId, nom, dateDebut, formeLegale);
 
-		long siteCantonalIdPrincipal = cantonalId + + Double.valueOf(Math.random()).longValue();
 		MockSiteOrganisationBuilder mockSitePrincipal = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalIdPrincipal,
-		                                                                                     dateDebut,
-		                                                                                     nom,
-		                                                                                     true,
-		                                                                                     noOfsSiegePrincipal,
-		                                                                                     statusRCPrincipal,
-		                                                                                     statusInscriptionRCPrincipal,
-		                                                                                     statusIdePrincipal,
-		                                                                                     typeIdePrincipal);
+		                                                                                              dateDebut,
+		                                                                                              nom,
+		                                                                                              true,
+		                                                                                              noOfsSiegePrincipal,
+		                                                                                              statusRCPrincipal,
+		                                                                                              statusInscriptionRCPrincipal,
+		                                                                                              statusIdePrincipal,
+		                                                                                              typeIdePrincipal);
 
 		mockOrg.addSite(dateDebut, null, siteCantonalIdPrincipal);
 		mockOrg.addDonneesSite(mockSitePrincipal.build());
 
-		long siteCantonalIdSecondaire = cantonalId + + Double.valueOf(Math.random()).longValue();
 		MockSiteOrganisationBuilder mockSiteSecondaire = MockSiteOrganisationBuilder.createSiteBuilder(siteCantonalIdSecondaire,
-		                                                                                     dateDebut,
-		                                                                                     nom,
-		                                                                                     false,
-		                                                                                     noOfsSiegeSecondaire,
-		                                                                                     statusRCSecondaire,
-		                                                                                     statusInscriptionRCSecondaire,
-		                                                                                     statusIdeSecondaire,
-		                                                                                     typeIdeSecondaire);
+		                                                                                               dateDebut,
+		                                                                                               nom,
+		                                                                                               false,
+		                                                                                               noOfsSiegeSecondaire,
+		                                                                                               statusRCSecondaire,
+		                                                                                               statusInscriptionRCSecondaire,
+		                                                                                               statusIdeSecondaire,
+		                                                                                               typeIdeSecondaire);
 
 		mockOrg.addSite(dateDebut, null, siteCantonalIdSecondaire);
 		mockOrg.addDonneesSite(mockSiteSecondaire.build());

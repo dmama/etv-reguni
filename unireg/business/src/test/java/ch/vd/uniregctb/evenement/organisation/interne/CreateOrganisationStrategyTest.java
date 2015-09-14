@@ -205,7 +205,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	@Test
 	public void testCasEntrepriseHCAvecSiegeSecondaireVaud() throws EvenementOrganisationException {
 		// Cas hors Vaud avec un site secondaire sur Vaud
-		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(101220106L, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Lausanne.getNoOFS(), null, null,
+		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000,  "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Lausanne.getNoOFS(), null, null,
 		                                                                    null, null, null, null, null, null));
 		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
 	}
@@ -219,22 +219,22 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationAndExpectNull(222222001L);
 
 		// Avec commune forme juridique inconnue
-		addOrg(MockOrganisationBuilder.createOrganisation(222222003L, "abcdef", RegDate.get(2015, 9, 7), null, Lausanne.getNoOFS(), null, null, null, null));
+		addOrg(MockOrganisationBuilder.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, Lausanne.getNoOFS(), null, null, null, null));
 		tryCreationEventAndCheckResult(222222003L, TraitementManuel.class);
 
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)
-		addOrg(MockOrganisationBuilder.createOrganisation(222222002L, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, null, null, null, null, null));
+		addOrg(MockOrganisationBuilder.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, null, null, null, null, null));
 		tryCreationAndExpectNull(222222002L);
 
 		// Cas hors Vaud aucun site sur Vaud
-		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(222222004L, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Zurich.getNoOFS(), null, null, null, null, null, null, null, null));
+		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Zurich.getNoOFS(), null, null, null, null, null, null, null, null));
 		tryCreationAndExpectNull(222222004L);
 
 	}
 
 	private void createAddOrg(long cantonalId, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiege) {
-		addOrg(MockOrganisationBuilder.createSimpleEntrepriseRC(cantonalId, "XYZ", dateDebut, formeLegale, noOfsSiege));
+		addOrg(MockOrganisationBuilder.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, noOfsSiege));
 	}
 
 	private void addOrg(Organisation org) {
