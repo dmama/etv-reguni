@@ -72,8 +72,6 @@ public class Organisation implements Serializable {
 	 *
 	 * On extraie ensuite toute les plages sièges correspondant à la plage type principal.
 	 *
-	 * TODO: Ecrire le test
-	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
 	public List<DateRanged<Integer>> getSiegesPrincipaux() {
@@ -138,11 +136,9 @@ public class Organisation implements Serializable {
 	 * On recrée l'information du capital dans une nouvelle plage aux limites de la plage type principale qui a permis
 	 * de la trouver.
 	 *
-	 * TODO: Ecrire le test
-	 *
 	 * @return La succession de plage contenant l'information de capital.
 	 */
-	public List<DateRanged<Capital>> getCapital() {
+	public List<DateRanged<Capital>> getCapitaux() {
 		List<DateRanged<Capital>> capitalsValides = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
 			SiteOrganisation site =	entry.getValue();
@@ -205,6 +201,11 @@ public class Organisation implements Serializable {
 		return remplacePar;
 	}
 
+	/**
+	 * Permet de connaître les plages de "présence" des sites dans l'organisation.
+	 *
+	 * @return
+	 */
 	@NotNull
 	public List<DateRanged<Long>> getSites() {
 		return sites;

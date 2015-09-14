@@ -12,7 +12,7 @@ public class AdresseBuilder {
 	private Long postOfficeBoxNumber;
 	private String locality;
 	private String town;
-	private Long swissZipCode;
+	private Integer swissZipCode;
 	private String swissZipCodeAddOn;
 	private Integer swissZipCodeId;
 	private String foreignZipCode;
@@ -69,7 +69,7 @@ public class AdresseBuilder {
 		return this;
 	}
 
-	public AdresseBuilder withSwissZipCode(Long swissZipCode) {
+	public AdresseBuilder withSwissZipCode(Integer swissZipCode) {
 		this.swissZipCode = swissZipCode;
 		return this;
 	}

@@ -15,7 +15,7 @@ public class Adresse implements Serializable {
     private Long postOfficeBoxNumber;
     private String locality;
     private String town;
-    private Long swissZipCode;
+    private Integer swissZipCode;
     private String swissZipCodeAddOn;
     private Integer swissZipCodeId;
     private String foreignZipCode;
@@ -25,7 +25,7 @@ public class Adresse implements Serializable {
     private Long yCoordinate;
 
     public Adresse(final String addressLine1, final String addressLine2, final String street, final String houseNumber, final String dwellingNumber, final String postOfficeBoxText,
-                   final Long postOfficeBoxNumber, final String locality, final String town, final Long swissZipCode, final String swissZipCodeAddOn, final Integer swissZipCodeId,
+                   final Long postOfficeBoxNumber, final String locality, final String town, final Integer swissZipCode, final String swissZipCodeAddOn, final Integer swissZipCodeId,
                    final String foreignZipCode, final Integer pays, final Long federalBuildingId, final Long xCoordinate, final Long yCoordinate) {
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
@@ -90,7 +90,7 @@ public class Adresse implements Serializable {
         return street;
     }
 
-    public Long getSwissZipCode() {
+    public Integer getSwissZipCode() {
         return swissZipCode;
     }
 

@@ -7,6 +7,14 @@ import ch.vd.unireg.interfaces.organisation.data.Adresse;
 
 public class AddressConverter extends BaseConverter<Address, Adresse> {
 
+	/**
+	 * Convertisseur d'adresse
+	 *
+	 * NOTE: Réduction du champs SwissZipCode Long vers Integer
+	 *
+	 * @param address L'adresse à convertir
+	 * @return L'adresse convertie
+	 */
 	@Override
 	@NotNull
 	protected Adresse convert(@NotNull Address address) {
@@ -19,7 +27,7 @@ public class AddressConverter extends BaseConverter<Address, Adresse> {
 		                   address.getPostOfficeBoxNumber(),
 		                   address.getLocality(),
 		                   address.getTown(),
-		                   address.getSwissZipCode(),
+		                   address.getSwissZipCode().intValue(),
 		                   address.getSwissZipCodeAddOn(),
 		                   address.getSwissZipCodeId(),
 		                   address.getForeignZipCode(),

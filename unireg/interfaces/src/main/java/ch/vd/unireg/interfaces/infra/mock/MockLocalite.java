@@ -43,6 +43,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Gressy = new MockLocalite(5881, 1432, null, "Gressy", MockCommune.Gressy);
 	public static final MockLocalite YverdonLesBains = new MockLocalite(592, 1400, null, "Yverdon-les-Bains", MockCommune.YverdonLesBains);
 	public static final MockLocalite Aubonne = new MockLocalite(299, 1170, null, "Aubonne", MockCommune.Aubonne);
+	public static final MockLocalite Leysin = new MockLocalite(1096, 1854, null, "Leysin", MockCommune.Leysin);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);
