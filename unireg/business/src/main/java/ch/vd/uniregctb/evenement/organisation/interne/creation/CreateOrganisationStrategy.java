@@ -45,41 +45,51 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
 			EvenementOrganisationException {
 
-		/*
-		 * Si l'entreprise existe déjà, on ignore
-		 */
+		// On décide qu'on a affaire à une création uniquement selon la présence d'un tiers entreprise dans Unireg, et rien d'autre.
 		if (entreprise != null) {
 			return null;
 		}
 
+		// On doit connaître la catégorie pour continuer en mode automatique
 		CategorieEntreprise category = getCurrentCategorieEntreprise(event, organisation);
-
 		if (category != null) {
-			/*
-				Soit on ignore l'événement, soit on crée un événement interne
-			 */
+
+			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
 			if (hasSiteVD(organisation, event, context)) {
+
 				switch (category) {
+
+				// On ne crée pas d'entreprise pour les entreprises individuelles
 				case PP:
 					return null;
+
+				// Cas des sociétés de personnes
 				case SP:
-					return handleSP(event, organisation, context, options);
+					return new CreateEntrepriseSP(event, organisation, null, context, options);
+
+				// Personnes morales et associations personne morale
 				case PM:
 				case APM:
-					return handlePMAPM(event, organisation, context, options);
+					return new CreateEntreprisePMAPM(event, organisation, null, context, options);
+
+				// Fonds de placements
 				case FDS_PLAC:
 					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options);
+
+				// Personnes morales de droit public
 				case DP_PM:
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
+
+				// Catégories qu'on ne peut pas traiter manuellement, catégories éventuellement inconnues.
+				default:
+					return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
 				}
 			} else {
-				return null;
+				return null; // Pas de siège sur Vaud, pas de création
 			}
 		}
 
-		/*
-			On part en traitement manuel
-		 */
+		// Catchall traitement manuel
 		return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
 	}
 
@@ -104,18 +114,6 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 			}
 		}
 		return false;
-	}
-
-	@NotNull
-	private CreateEntreprisePMAPM handlePMAPM(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
-			EvenementOrganisationException {
-		return new CreateEntreprisePMAPM(event, organisation, null, context, options);
-	}
-
-	@NotNull
-	private CreateEntrepriseSP handleSP(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
-			EvenementOrganisationException {
-		return new CreateEntrepriseSP(event, organisation, null, context, options);
 	}
 
 	@Nullable

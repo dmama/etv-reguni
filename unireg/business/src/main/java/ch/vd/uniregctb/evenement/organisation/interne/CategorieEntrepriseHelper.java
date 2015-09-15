@@ -19,7 +19,7 @@ public class CategorieEntrepriseHelper {
 	 * Détermine la catégorie métier en fonction de la forme juridique.
 	 *
 	 * Renvoie null si la catégorie est indéterminée. C'est-à-dire si l'un ou l'autre de:
-	 * - La forme légale ne correspond à aucune catégorie
+	 * - La forme légale ne correspond à aucune catégorie (On accepte les catégories inconnues)
 	 * - La forme légale n'a pas été fournie en entrée (null)
 	 *
 	 * @param formeLegale
@@ -61,6 +61,8 @@ public class CategorieEntrepriseHelper {
 			/* APM de droit public */
 			case N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE:
 				return DP_PM;
+			default:
+				return null;
 			}
 		}
 		return null;
