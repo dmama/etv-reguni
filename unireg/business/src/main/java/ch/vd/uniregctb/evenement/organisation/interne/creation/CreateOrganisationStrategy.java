@@ -81,8 +81,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		/*
 			On part en traitement manuel
 		 */
-		options.setTraitementManuelMessage(createTraitementManuelMessage(event, organisation));
-		return new TraitementManuel(event, organisation, null, context, options);
+		return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
 	}
 
 	@NotNull

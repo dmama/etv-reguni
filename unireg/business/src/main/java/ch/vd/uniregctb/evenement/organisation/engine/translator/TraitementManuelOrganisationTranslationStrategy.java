@@ -26,8 +26,7 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 
 		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 
-		options.setTraitementManuelMessage(MSG);
-		return new TraitementManuel(event, organisation, entreprise, context, options);
+		return new TraitementManuel(event, organisation, entreprise, context, options, MSG);
 
 	}
 }

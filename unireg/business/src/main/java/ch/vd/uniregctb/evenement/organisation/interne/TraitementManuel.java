@@ -15,9 +15,12 @@ public class TraitementManuel extends EvenementOrganisationInterne {
 
 	private static final String DEFAULT_MSG = "Cette opération doit être effectuée manuellement.";
 
+	private String message = DEFAULT_MSG;
+
 	public TraitementManuel(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context,
-	                        EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	                        EvenementOrganisationOptions options, String message) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
+		this.message = message;
 	}
 
 	@NotNull
@@ -28,7 +31,6 @@ public class TraitementManuel extends EvenementOrganisationInterne {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		String message = getOptions().getTraitementManuelMessage();
-		erreurs.addErreur(message != null ? message : DEFAULT_MSG);
+		erreurs.addErreur(message);
 	}
 }
