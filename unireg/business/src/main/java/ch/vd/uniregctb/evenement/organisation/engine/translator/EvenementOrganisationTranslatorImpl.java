@@ -24,6 +24,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -92,31 +93,30 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 
-		final List<EvenementOrganisationInterne> evenements = createEvents(event, organisation, strategies, context, options);
-		if (evenements.size() == 0) {
-			return INDEXATION_ONLY.matchAndCreate(event, organisation, context, options);
-		}
-		else if (evenements.size() == 1) {
-			return evenements.get(0);
-		}
-		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
-	}
 
-	private List<EvenementOrganisationInterne> createEvents(EvenementOrganisation event, Organisation organisation, List<EvenementOrganisationTranslationStrategy> strategies,
-	                                                        EvenementOrganisationContext context,
-	                                                        EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
 		/*
 			Essayer chaque stratégie. Chacune est responsable de détecter l'événement dans les données.
 		 */
 		for (EvenementOrganisationTranslationStrategy strategy : strategies) {
-			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, context, options);
+			EvenementOrganisationInterne e = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 			if (e != null) {
 				evenements.add(e);
 			}
 		}
-		return evenements;
+
+		/*
+		 * Aucun événement n'est créé, indexation seule.
+		 */
+		if (evenements.size() == 0) {
+			return INDEXATION_ONLY.matchAndCreate(event, organisation, entreprise, context, options);
+		}
+		else if (evenements.size() == 1) {
+			return evenements.get(0);
+		}
+		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

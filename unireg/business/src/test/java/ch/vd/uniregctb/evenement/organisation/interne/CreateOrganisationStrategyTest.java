@@ -245,14 +245,22 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	private void tryCreationAndExpectNull(long noOrganisation) throws EvenementOrganisationException {
 		final long evtId = 12121212L;
 		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE, "abcdefg", IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
-		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, serviceOrganisation.getOrganisationHistory(noOrganisation), context, options);
+		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
+
+		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+
 		Assert.assertNull(interne);
 	}
 
 	private void tryCreationEventAndCheckResult(long noOrganisation, Class<? extends EvenementOrganisationInterne> resultClass) throws EvenementOrganisationException {
 		final long evtId = 12121212L;
 		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE, "abcdefg", IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
-		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, serviceOrganisation.getOrganisationHistory(noOrganisation), context, options);
+		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
+
+		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, organisation, entreprise, context, options);
+
 		Assert.assertNotNull(interne);
 		Assert.assertEquals(event.getId(), interne.getNumeroEvenement().longValue());
 		Assert.assertEquals(event.getNoOrganisation(), interne.getNoOrganisation());

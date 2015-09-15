@@ -42,13 +42,12 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
 			EvenementOrganisationException {
 
 		/*
 		 * Si l'entreprise existe déjà, on ignore
 		 */
-		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 		if (entreprise != null) {
 			return null;
 		}

@@ -17,10 +17,9 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 
 	@NotNull
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(final EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
+	public EvenementOrganisationInterne matchAndCreate(final EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options)
 			throws EvenementOrganisationException {
 
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 		return new IndexationPure(event, organisation, entreprise, context, options);
 	}
 }

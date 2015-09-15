@@ -20,11 +20,9 @@ public class TraitementManuelOrganisationTranslationStrategy implements Evenemen
 
 	@NotNull
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// TODO: Implmementer la détection des cas nécessitant le départ en traitement manuel. P. ex. Décision ACI sur l'organisation.
-
-		Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
 
 		return new TraitementManuel(event, organisation, entreprise, context, options, MSG);
 

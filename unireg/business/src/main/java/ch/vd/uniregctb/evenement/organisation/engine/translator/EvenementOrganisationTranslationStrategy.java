@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 public interface EvenementOrganisationTranslationStrategy {
 
@@ -19,6 +20,6 @@ public interface EvenementOrganisationTranslationStrategy {
 	 * @return L'événement interne qui correspond à l'événement externe reçu, ou null si pas applicable
 	 * @throws EvenementOrganisationException en cas de problème
 	 */
-	EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, EvenementOrganisationContext context, EvenementOrganisationOptions options)
+	EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options)
 			throws EvenementOrganisationException;
 }
