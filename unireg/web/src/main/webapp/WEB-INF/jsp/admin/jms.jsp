@@ -30,7 +30,7 @@
 						</c:if>
 					</display:column>
 					<display:column title="Nombre de messages consommés" style="width:10%;">${queue.nombreMessagesRecues}</display:column>
-					<display:column title="Nombre de consommateurs" style="width:10%;">${queue.nombreMessagesRecues}</display:column>
+					<display:column title="Nombre de consommateurs" style="width:10%;">${queue.nombreConsommateurs}</display:column>
 				</display:table>
 			</fieldset>
 		</form:form>
