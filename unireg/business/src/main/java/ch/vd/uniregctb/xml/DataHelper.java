@@ -23,6 +23,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
+import ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope;
+import ch.vd.unireg.xml.party.corporation.v4.TaxSystemType;
+import ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -38,6 +41,7 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -557,7 +561,6 @@ public abstract class DataHelper {
 		case ORG_INTERNAT:
 		case PARTICULIER:
 		case PNC:
-		case SCOOP_SARL_HS:
 		case SS:
 			return null;
 
@@ -567,9 +570,118 @@ public abstract class DataHelper {
 	}
 
 	@Nullable
+	public static FullLegalForm coreToXMLv4(FormeJuridiqueEntreprise fj) {
+		if (fj == null) {
+			return null;
+		}
+
+		switch (fj) {
+
+		case ASSOCIATION:
+			return FullLegalForm.ASSOCIATION;
+		case SCOOP:
+			return FullLegalForm.COOPERATIVE_SOCIETY;
+		case ADM_CH:
+			return FullLegalForm.FEDERAL_ADMINISTRATION;
+		case ADM_CT:
+			return FullLegalForm.CANTONAL_ADMINISTRATION;
+		case ADM_DI:
+			return FullLegalForm.DISTRICT_ADMINISTRATION;
+		case ADM_CO:
+			return FullLegalForm.MUNICIPALITY_ADMINISTRATION;
+		case CORP_DP_ADM:
+			return FullLegalForm.STATUTORY_ADMINISTATION;
+		case ENT_CH:
+			return FullLegalForm.FEDERAL_CORPORATION;
+		case ENT_CT:
+			return FullLegalForm.CANTONAL_CORPORATION;
+		case ENT_DI:
+			return FullLegalForm.DISTRICT_CORPORATION;
+		case ENT_CO:
+			return FullLegalForm.MUNICIPALITY_CORPORATION;
+		case CORP_DP_ENT:
+			return FullLegalForm.STATUTORY_CORPORATION;
+		case FONDATION:
+			return FullLegalForm.FOUNDATION;
+		case SA:
+			return FullLegalForm.LIMITED_COMPANY;
+		case SARL:
+			return FullLegalForm.LIMITED_LIABILITY_COMPANY;
+		case SC:
+			return FullLegalForm.LIMITED_PARTNERSHIP;
+		case SCA:
+			return FullLegalForm.LIMITED_JOINT_STOCK_PARTNERSHIP;
+		case SNC:
+			return FullLegalForm.GENERAL_PARTNERSHIP;
+		case SCPC:
+			return FullLegalForm.LIMITED_PARTNERSHIP_FOR_COLLECTIVE_INVESTMENTS;
+		case SICAV:
+			return FullLegalForm.OPEN_ENDED_INVESTMENT_TRUST;
+		case SICAF:
+			return FullLegalForm.CLOSED_END_INVESTMENT_TRUST;
+		case EI:
+			return FullLegalForm.SOLE_PROPRIETORSHIP;
+		case ADM_PUBLIQUE_HS:
+			return FullLegalForm.FOREIGN_STATUTORY_ADMINISTRATION;
+		case ENT_HS:
+			return FullLegalForm.FOREIGN_CORPORATION;
+		case ENT_PUBLIQUE_HS:
+			return FullLegalForm.FOREIGN_STATUTORY_CORPORATION;
+		case FILIALE_HS_NIRC:
+			return FullLegalForm.UNREGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case FILIALE_HS_RC:
+			return FullLegalForm.REGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case IDP:
+			return FullLegalForm.STATUTORY_INSTITUTE;
+		case INDIVISION:
+			return FullLegalForm.JOINT_POSSESSION;
+		case ORG_INTERNAT:
+			return FullLegalForm.INTERNATIONAL_ORGANIZATION;
+		case PARTICULIER:
+			return FullLegalForm.OTHER;
+		case PNC:
+			return FullLegalForm.NON_COMMERCIAL_PROXY;
+		case SS:
+			return FullLegalForm.SIMPLE_COMPANY;
+		default:
+			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
+		}
+	}
+
+	@Nullable
 	public static String coreToXMLv1v2v3(TypeRegimeFiscal rf) {
+		if (rf == null) {
+			return null;
+		}
+
 		// TODO [SIPM] mapping à coder...
 		return "01";
+	}
+
+	@Nullable
+	public static TaxSystemType coreToXMLv4(TypeRegimeFiscal rf) {
+		if (rf == null) {
+			return null;
+		}
+
+		// TODO [SIPM] mapping à coder
+		return TaxSystemType.ORDINARY;
+	}
+
+	@Nullable
+	public static TaxSystemScope coreToXMLv4(RegimeFiscal.Portee portee) {
+		if (portee == null) {
+			return null;
+		}
+
+		switch (portee) {
+		case CH:
+			return TaxSystemScope.CH;
+		case VD:
+			return TaxSystemScope.VD;
+		default:
+			throw new IllegalArgumentException("Portée de régime fiscal inconnue : " + portee);
+		}
 	}
 
 	@Nullable
@@ -618,6 +730,23 @@ public abstract class DataHelper {
 			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.SWISS_MUNICIPALITY;
 		case PAYS_HS:
 			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v4.LegalSeatType coreToXMLv4(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.FOREIGN_COUNTRY;
 		default:
 			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
 		}

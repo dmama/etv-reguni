@@ -56,8 +56,13 @@
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-ws-v6</artifactId>
+			<version>${ws.v6.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>unireg-jaxb2-party</artifactId>
-			<version>4.0</version>
+			<version>4.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>

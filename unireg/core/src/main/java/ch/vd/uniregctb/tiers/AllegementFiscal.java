@@ -25,8 +25,7 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 
 	public enum TypeImpot {
 		BENEFICE,
-		CAPITAL,
-		FORTUNE
+		CAPITAL
 	}
 
 	public enum TypeCollectivite {

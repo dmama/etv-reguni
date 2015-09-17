@@ -142,6 +142,34 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		af.setEntreprise(this);
 	}
 
+	@Transient
+	@NotNull
+	public List<AllegementFiscal> getAllegementsFiscauxNonAnnulesTries() {
+		final List<AllegementFiscal> nonAnnules = AnnulableHelper.sansElementsAnnules(allegementsFiscaux);
+		Collections.sort(nonAnnules, new DateRangeComparator<AllegementFiscal>() {
+			@Override
+			public int compare(AllegementFiscal o1, AllegementFiscal o2) {
+				int comparison = super.compare(o1, o2);
+				if (comparison == 0) {
+					comparison = o1.getTypeImpot().compareTo(o2.getTypeImpot());
+					if (comparison == 0) {
+						comparison = o1.getTypeCollectivite().compareTo(o2.getTypeCollectivite());
+						if (comparison == 0 && o1.getTypeCollectivite() == AllegementFiscal.TypeCollectivite.COMMUNE) {
+							if (o1.getNoOfsCommune() == null && o2.getNoOfsCommune() != null) {
+								comparison = -1;
+							}
+							else if (o1.getNoOfsCommune() != null) {
+								comparison = (o2.getNoOfsCommune() == null ? 1 : Integer.compare(o1.getNoOfsCommune(), o2.getNoOfsCommune()));
+							}
+						}
+					}
+				}
+				return comparison;
+			}
+		});
+		return nonAnnules;
+	}
+
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENTREPRISE_ID")
 	public Set<Bouclement> getBouclements() {

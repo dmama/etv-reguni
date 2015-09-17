@@ -36,7 +36,6 @@ public enum FormeJuridiqueEntreprise {
 
 	SS("Société simple", "0302", TypeFormeJuridique.NON_RC, false),
 	FILIALE_HS_NIRC("Filiale étrangère non-inscrite au registre du commerce", "0312", TypeFormeJuridique.NON_RC, false),
-	SCOOP_SARL_HS("Société coopérative ou SARL étrangère", "0312", TypeFormeJuridique.NON_RC, false),
 	ENT_PUBLIQUE_HS("Entreprise publique étrangère", "0327", TypeFormeJuridique.NON_RC, false),
 	ADM_PUBLIQUE_HS("Administration publique étrangère", "0328", TypeFormeJuridique.NON_RC, false),
 	ORG_INTERNAT("Organisation internationale", "0329", TypeFormeJuridique.NON_RC, false),

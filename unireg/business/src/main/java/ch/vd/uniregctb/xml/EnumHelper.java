@@ -7,6 +7,9 @@ import java.util.Set;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
+import ch.vd.unireg.xml.party.corporation.v4.LighteningTarget;
+import ch.vd.unireg.xml.party.corporation.v4.MunicipalityLighteningTarget;
+import ch.vd.unireg.xml.party.corporation.v4.TaxType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -14,6 +17,7 @@ import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -112,6 +116,37 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus.PARTNERSHIP_SEPARATED;
 		case VEUF:
 			return ch.vd.unireg.xml.party.taxpayer.v3.MaritalStatus.WIDOWED;
+		default:
+			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus coreToXMLv4(ch.vd.uniregctb.type.EtatCivil etatCivil) {
+		if (etatCivil == null) {
+			return null;
+		}
+
+		switch (etatCivil) {
+		case CELIBATAIRE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.SINGLE;
+		case DIVORCE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.DIVORCED;
+		case LIE_PARTENARIAT_ENREGISTRE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.REGISTERED_PARTNER;
+		case MARIE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.MARRIED;
+		case NON_MARIE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.NOT_MARRIED;
+		case PARTENARIAT_DISSOUS_DECES:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.PARTNERSHIP_ABOLISHED_BY_DEATH;
+		case PARTENARIAT_DISSOUS_JUDICIAIREMENT:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW;
+		case SEPARE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.SEPARATED;
+		case PARTENARIAT_SEPARE:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.PARTNERSHIP_SEPARATED;
+		case VEUF:
+			return ch.vd.unireg.xml.party.taxpayer.v4.MaritalStatus.WIDOWED;
 		default:
 			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
 		}
@@ -369,6 +404,25 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.SUMMONS_SENT;
 		case RETOURNEE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.TaxDeclarationStatusType.RETURNED;
+		default:
+			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType coreToXMLv4(ch.vd.uniregctb.type.TypeEtatDeclaration type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case ECHUE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.EXPIRED;
+		case EMISE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SENT;
+		case SOMMEE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SUMMONS_SENT;
+		case RETOURNEE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.RETURNED;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
 		}
@@ -884,6 +938,8 @@ public abstract class EnumHelper {
 		}
 
 		switch (categorie) {
+		case _01_SAISONNIER_A:
+			throw new IllegalArgumentException("Catégorie d'étranger illégale = [" + categorie + ']');
 		case _02_PERMIS_SEJOUR_B:
 			return ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory.C_02_B_PERMIT;
 		case _03_ETABLI_C:
@@ -919,6 +975,8 @@ public abstract class EnumHelper {
 		}
 
 		switch (categorie) {
+		case _01_SAISONNIER_A:
+			throw new IllegalArgumentException("Catégorie d'étranger illégale = [" + categorie + ']');
 		case _02_PERMIS_SEJOUR_B:
 			return ch.vd.unireg.xml.party.person.v2.NaturalPersonCategory.C_02_B_PERMIT;
 		case _03_ETABLI_C:
@@ -980,6 +1038,43 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType.C_12_INTERNATIONAL_CIVIL_SERVANT;
 		case _13_NON_ATTRIBUEE:
 			return ch.vd.unireg.xml.party.person.v3.NaturalPersonCategoryType.C_13_NOT_ASSIGNED;
+		default:
+			throw new IllegalArgumentException("Catégorie d'étranger inconnue = [" + categorie + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType coreToXMLv4(ch.vd.uniregctb.type.CategorieEtranger categorie) {
+		if (categorie == null) {
+			return null;
+		}
+
+		switch (categorie) {
+		case _01_SAISONNIER_A:
+			throw new IllegalArgumentException("Catégorie d'étranger illégale = [" + categorie + ']');
+		case _02_PERMIS_SEJOUR_B:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_02_B_PERMIT;
+		case _03_ETABLI_C:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_03_C_PERMIT;
+		case _04_CONJOINT_DIPLOMATE_CI:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_04_CI_PERMIT;
+		case _05_ETRANGER_ADMIS_PROVISOIREMENT_F:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_05_F_PERMIT;
+		case _06_FRONTALIER_G:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_06_G_PERMIT;
+		case _07_PERMIS_SEJOUR_COURTE_DUREE_L:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_07_L_PERMIT;
+		case _08_REQUERANT_ASILE_N:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_08_N_PERMIT;
+		case _09_A_PROTEGER_S:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_09_S_PERMIT;
+		case _10_TENUE_DE_S_ANNONCER:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_10_OBLIGED_TO_ANNOUNCE;
+		case _11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_11_DIPLOMAT;
+		case _12_FONCT_INTER_SANS_IMMUNITE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_12_INTERNATIONAL_CIVIL_SERVANT;
+		case _13_NON_ATTRIBUEE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_13_NOT_ASSIGNED;
 		default:
 			throw new IllegalArgumentException("Catégorie d'étranger inconnue = [" + categorie + ']');
 		}
@@ -1105,6 +1200,46 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType coreToXMLv4(TypePermis permis) {
+		if (permis == null) {
+			return null;
+		}
+		switch (permis) {
+		case SAISONNIER:
+			throw new IllegalArgumentException("Type de permis illégal = [" + permis + ']');
+		case SEJOUR:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_02_B_PERMIT;
+		case ETABLISSEMENT:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_03_C_PERMIT;
+		case CONJOINT_DIPLOMATE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_04_CI_PERMIT;
+		case ETRANGER_ADMIS_PROVISOIREMENT:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_05_F_PERMIT;
+		case FRONTALIER:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_06_G_PERMIT;
+		case COURTE_DUREE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_07_L_PERMIT;
+		case REQUERANT_ASILE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_08_N_PERMIT;
+		case PERSONNE_A_PROTEGER:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_09_S_PERMIT;
+		case PERSONNE_TENUE_DE_S_ANNONCER:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_10_OBLIGED_TO_ANNOUNCE;
+		case DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_11_DIPLOMAT;
+		case FONCT_INTER_SANS_IMMUNITE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_12_INTERNATIONAL_CIVIL_SERVANT;
+		case PAS_ATTRIBUE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_13_NOT_ASSIGNED;
+		case PROVISOIRE:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.C_13_NOT_ASSIGNED;
+		case SUISSE_SOURCIER:
+			return ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType.SWISS;
+		default:
+			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType coreToXMLv1(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
 		if (type == null) {
 			return null;
@@ -1167,6 +1302,43 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType coreToXMLv3(ch.vd.uniregctb.type.TypeRapportEntreTiers type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case APPARTENANCE_MENAGE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.HOUSEHOLD_MEMBER;
+		case ANNULE_ET_REMPLACE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.CANCELS_AND_REPLACES;
+		case CONSEIL_LEGAL:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.LEGAL_ADVISER;
+		case CONTACT_IMPOT_SOURCE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.WITHHOLDING_TAX_CONTACT;
+		case CURATELLE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.WELFARE_ADVOCATE;
+		case PRESTATION_IMPOSABLE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.TAXABLE_REVENUE;
+		case REPRESENTATION:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.REPRESENTATIVE;
+		case TUTELLE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.GUARDIAN;
+		case PARENTE:
+			// ce type ne devrait pas être utilisé tel quel, mais plutôt découpé en PARENT/CHILD
+			throw new IllegalArgumentException("Erreur de mapping?");
+		case ACTIVITE_ECONOMIQUE:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.ECONOMIC_ACTIVITY;
+		case FUSION_ENTREPRISES:
+			return ch.vd.unireg.xml.party.relation.v3.RelationBetweenPartiesType.MERGE;
+		case ASSUJETTISSEMENT_PAR_SUBSTITUTION:
+		case MANDAT:
+			throw new IllegalArgumentException("Erreur de mapping?");
+		default:
+			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + type + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff coreToXMLv1(ch.vd.uniregctb.type.TarifImpotSource tarif) {
 		if (tarif == null) {
 			return null;
@@ -1213,6 +1385,21 @@ public abstract class EnumHelper {
 		}
 	}
 
+
+	public static ch.vd.unireg.xml.party.taxpayer.v4.WithholdingTaxTariff coreToXMLv4(ch.vd.uniregctb.type.TarifImpotSource tarif) {
+		if (tarif == null) {
+			return null;
+		}
+
+		switch (tarif) {
+		case DOUBLE_GAIN:
+			return ch.vd.unireg.xml.party.taxpayer.v4.WithholdingTaxTariff.DOUBLE_REVENUE;
+		case NORMAL:
+			return ch.vd.unireg.xml.party.taxpayer.v4.WithholdingTaxTariff.NORMAL;
+		default:
+			throw new IllegalArgumentException("Type de tarif inconnu = [" + tarif + ']');
+		}
+	}
 
 
 	public static ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType coreToXMLv1(ch.vd.uniregctb.type.TypeDocument type) {
@@ -1270,6 +1457,26 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType.EXPENDITURE_BASED_TAX_DECLARATION;
 		case DECLARATION_IMPOT_HC_IMMEUBLE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v3.DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION;
+		default:
+			throw new IllegalArgumentException("Type de document inconnu = [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType coreToXMLv4(ch.vd.uniregctb.type.TypeDocument type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case DECLARATION_IMPOT_VAUDTAX:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.VAUDTAX_TAX_DECLARATION;
+		case DECLARATION_IMPOT_COMPLETE_BATCH:
+		case DECLARATION_IMPOT_COMPLETE_LOCAL:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.FULL_TAX_DECLARATION;
+		case DECLARATION_IMPOT_DEPENSE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.EXPENDITURE_BASED_TAX_DECLARATION;
+		case DECLARATION_IMPOT_HC_IMMEUBLE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.DocumentType.IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION;
 		default:
 			throw new IllegalArgumentException("Type de document inconnu = [" + type + ']');
 		}
@@ -1437,6 +1644,21 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.person.v3.Sex.FEMALE;
 		case MASCULIN:
 			return ch.vd.unireg.xml.party.person.v3.Sex.MALE;
+		default:
+			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']'); // certainement qu'il vient d'une autre dimension
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.person.v4.Sex coreToXMLv4(ch.vd.uniregctb.type.Sexe sexe) {
+		if (sexe == null) {
+			return null;
+		}
+
+		switch (sexe) {
+		case FEMININ:
+			return ch.vd.unireg.xml.party.person.v4.Sex.FEMALE;
+		case MASCULIN:
+			return ch.vd.unireg.xml.party.person.v4.Sex.MALE;
 		default:
 			throw new IllegalArgumentException("Type de sexe inconnu = [" + sexe + ']'); // certainement qu'il vient d'une autre dimension
 		}
@@ -2198,6 +2420,22 @@ public abstract class EnumHelper {
 		}
 	}
 
+	public static ch.vd.unireg.xml.party.person.v4.CommonHouseholdStatus coreToXMLv4(StatutMenageCommun setc) {
+		if (setc == null) {
+			return null;
+		}
+		switch (setc) {
+		case EN_VIGUEUR:
+			return ch.vd.unireg.xml.party.person.v4.CommonHouseholdStatus.ACTIVE;
+		case TERMINE_SUITE_DECES:
+			return ch.vd.unireg.xml.party.person.v4.CommonHouseholdStatus.ENDED_BY_DEATH;
+		case TERMINE_SUITE_SEPARATION:
+			return ch.vd.unireg.xml.party.person.v4.CommonHouseholdStatus.SEPARATED_DIVORCED;
+		default:
+			throw new IllegalArgumentException("unknown StatutMenageCommun = [" + setc + ']');
+		}
+	}
+
 	public static ch.vd.unireg.xml.party.taxresidence.v2.WithholdingTaxationPeriodType coreToXMLv2(PeriodeImpositionImpotSource.Type setc) {
 		if (setc == null) {
 			return null;
@@ -2211,8 +2449,6 @@ public abstract class EnumHelper {
 			throw new IllegalArgumentException("unknown PeriodeImpositionImpotSource.Type = [" + setc + ']');
 		}
 	}
-
-
 
 	public static ch.vd.unireg.xml.party.othercomm.v1.LegalForm coreToXMLv1(FormeJuridique formeJuridique) {
 		if (formeJuridique == null) {
@@ -2255,6 +2491,51 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.OPEN_ENDED_INVESTMENT_TRUST;
 		case SNC:
 			return ch.vd.unireg.xml.party.othercomm.v1.LegalForm.GENERAL_PARTNERSHIP;
+		default:
+			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
+		}
+	}
+	public static ch.vd.unireg.xml.party.othercomm.v2.LegalForm coreToXMLv2(FormeJuridique formeJuridique) {
+		if (formeJuridique == null) {
+			return null;
+		}
+		switch (formeJuridique) {
+		case ASS:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.ASSOCIATION;
+		case COOP:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.COOPERATIVE_SOCIETY;
+		case EDP:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.STATUTORY_CORPORATION;
+		case EI:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.SOLE_PROPRIETORSHIP;
+		case FOND:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.FOUNDATION;
+		case IND:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.JOINT_POSSESSION;
+		case PRO:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.CORPORATION_WITHOUT_COMPULSORY_REGISTRATION;
+		case SA:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.LIMITED_COMPANY;
+		case SAEDP:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.PUBLIC_LIMITED_COMPANY;
+		case SARL:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.LIMITED_LIABILITY_COMPANY;
+		case SC:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.LIMITED_PARTNERSHIP;
+		case SCA:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.LIMITED_JOINT_STOCK_PARTNERSHIP;
+		case SCPC:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.LIMITED_PARTNERSHIP_FOR_COLLECTIVE_INVESTMENTS;
+		case SEE:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case SES:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.BRANCH_OF_SWISS_COMPANY;
+		case SICAF:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.CLOSED_END_INVESTMENT_TRUST;
+		case SICAV:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.OPEN_ENDED_INVESTMENT_TRUST;
+		case SNC:
+			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.GENERAL_PARTNERSHIP;
 		default:
 			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
 		}
@@ -2311,6 +2592,38 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType.UNREGISTERED_SUSPENDED;
 		default:
 			throw new IllegalArgumentException("Type d'état de destinataire efacture inconnu = [" + etat + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v4.LighteningTarget coreToXMLv4(AllegementFiscal.TypeCollectivite type, Integer noOfsCommune) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case CONFEDERATION:
+			return new LighteningTarget(new LighteningTarget.SwissConfederation(), null, null);
+		case CANTON:
+			return new LighteningTarget(null, new LighteningTarget.Canton(), null);
+		case COMMUNE:
+			return new LighteningTarget(null, null, new MunicipalityLighteningTarget(noOfsCommune));
+		default:
+			throw new IllegalArgumentException("Type de collectivité concernée par un allègement fiscal inconnu = [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v4.TaxType coreToXMLv4(AllegementFiscal.TypeImpot type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case BENEFICE:
+			return TaxType.PROFIT;
+		case CAPITAL:
+			return TaxType.CAPITAL;
+		default:
+			throw new IllegalArgumentException("Type d'impôt concernée par un allègement fiscal inconnu = [" + type + ']');
 		}
 	}
 }
