@@ -39,7 +39,10 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.FormulePolitesse;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
@@ -491,6 +494,134 @@ public abstract class DataHelper {
 			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.NON_RESIDENT);
 		}
 	};
+
+	@Nullable
+	public static String coreToXMLv1v2v3(FormeJuridiqueEntreprise fj) {
+		if (fj == null) {
+			return null;
+		}
+
+		switch (fj) {
+
+		case ASSOCIATION:
+			return "ASS";
+
+		case SCOOP:
+			return "S. COOP.";
+
+		case ADM_CH:
+		case ADM_CT:
+		case ADM_DI:
+		case ADM_CO:
+		case CORP_DP_ADM:
+			return "DP";
+
+		case ENT_CH:
+		case ENT_CT:
+		case ENT_DI:
+		case ENT_CO:
+		case CORP_DP_ENT:
+			return "DP/PM";
+
+		case FONDATION:
+			return "FONDATION";
+
+		case SA:
+			return "S.A.";
+
+		case SARL:
+			return "S.A.R.L.";
+
+		case SC:
+			return "S. COMM.";
+
+		case SCA:
+			return "S.COMM.ACT";
+
+		case SNC:
+			return "S.N.C.";
+
+		case SCPC:
+			return "FDS. PLAC.";
+
+		case SICAV:
+		case SICAF:
+		case EI:
+		case ADM_PUBLIQUE_HS:
+		case ENT_HS:
+		case ENT_PUBLIQUE_HS:
+		case FILIALE_HS_NIRC:
+		case FILIALE_HS_RC:
+		case IDP:
+		case INDIVISION:
+		case ORG_INTERNAT:
+		case PARTICULIER:
+		case PNC:
+		case SCOOP_SARL_HS:
+		case SS:
+			return null;
+
+		default:
+			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
+		}
+	}
+
+	@Nullable
+	public static String coreToXMLv1v2v3(TypeRegimeFiscal rf) {
+		// TODO [SIPM] mapping à coder...
+		return "01";
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v1.LegalSeatType coreToXMLv1(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v2.LegalSeatType coreToXMLv2(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v3.LegalSeatType coreToXMLv3(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
 
 	/**
 	 * Détermine le type d'un tiers à partir de ses données indexées.

@@ -40,6 +40,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="wsThreadPoolParty3" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -83,6 +84,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="wsThreadPoolParty4" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
@@ -147,6 +149,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 		<property name="threadPool" ref="wsThreadPoolv5"/>
 		<property name="avatarService" ref="avatarService"/>
 	</bean>

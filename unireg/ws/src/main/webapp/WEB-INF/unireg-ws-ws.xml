@@ -60,6 +60,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
@@ -106,6 +107,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="partyService4Cache" class="ch.vd.uniregctb.webservices.party4.cache.PartyWebServiceCache">
@@ -216,6 +218,7 @@
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService"/>
 		<property name="EFactureService" ref="efactureService"/>
+		<property name="bouclementService" ref="bouclementService"/>
 		<property name="threadPool" ref="wsThreadPool"/>
 		<property name="avatarService" ref="avatarService"/>
 	</bean>

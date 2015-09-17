@@ -276,7 +276,8 @@ public class TiersServiceImpl implements TiersService {
 				Etablissement tiers = (Etablissement) getTiers(rapport.getObjetId());
 				if (tiers != null) {
 					etablissements.add(new DateRanged<>(rapport.getDateDebut(), rapport.getDateFin(), tiers));
-				} else {
+				}
+				else {
 					LOGGER.warn(String.format("Etablissement tiers non trouvé: %s", rapport.getId()));
 				}
 			}

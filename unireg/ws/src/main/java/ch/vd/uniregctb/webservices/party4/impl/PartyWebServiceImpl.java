@@ -82,6 +82,7 @@ import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -202,6 +203,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeImpositionService(PeriodeImpositionService service) {
 		context.periodeImpositionService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setBouclementService(BouclementService service) {
+		context.bouclementService = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

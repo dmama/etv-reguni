@@ -96,6 +96,7 @@ import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -218,6 +219,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setEFactureService(EFactureService eFactureService) {
 		context.eFactureService = eFactureService;
+	}
+
+	public void setBouclementService(BouclementService service) {
+		context.bouclementService = service;
 	}
 
 	public void setThreadPool(ExecutorService threadPool) {

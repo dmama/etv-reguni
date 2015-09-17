@@ -27,6 +27,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -127,6 +128,11 @@ public class PartyRequestHandlerV2 implements RequestHandler<PartyRequest> {
 		context.periodeImpositionService = service;
 	}
 
+	public void setBouclementService(BouclementService service) {
+		context.bouclementService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		context.securityProvider = securityProvider;
 	}
