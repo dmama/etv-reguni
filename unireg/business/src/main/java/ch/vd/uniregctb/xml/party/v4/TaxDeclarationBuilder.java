@@ -48,6 +48,15 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM declaration, @Nullable Set<PartyPart> parts) {
+		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
+		fillTaxDeclarationBase(d, declaration);
+		fillTaxDeclarationParts(d, declaration, parts);
+		d.setSequenceNumber(Long.valueOf(declaration.getNumero()));
+		d.setDocumentType(EnumHelper.coreToXMLv4(declaration.getTypeDeclaration()));
+		return d;
+	}
+
 	public static WithholdingTaxDeclaration newWithholdingTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotSource declaration, @Nullable Set<PartyPart> parts) {
 		final WithholdingTaxDeclaration d = new WithholdingTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
