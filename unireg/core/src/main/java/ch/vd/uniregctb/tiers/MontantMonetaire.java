@@ -45,4 +45,9 @@ public class MontantMonetaire {
 	public boolean isEnFrancsSuisses() {
 		return CHF.equals(monnaie);
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%d %s", montant, monnaie);
+	}
 }

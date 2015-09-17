@@ -513,6 +513,31 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			// on associe les immeubles avec les tiers à la main
 			associate(session, immeubles, tiers, getter, setter);
 		}
+
+		if (parts != null && parts.contains(Parts.ALLEGEMENTS_FISCAUX)) {
+			// on charge les allègements fiscaux en vrac
+			final List<AllegementFiscal> allegements = queryObjectsByIds("from AllegementFiscal as af where af.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<AllegementFiscal> getter = new TiersIdGetter<AllegementFiscal>() {
+				@Override
+				public Long getTiersId(AllegementFiscal entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<AllegementFiscal> setter = new EntitySetSetter<AllegementFiscal>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<AllegementFiscal> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setAllegementsFiscaux(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, allegements, tiers, getter, setter);
+		}
+
 		return tiers;
 	}
 

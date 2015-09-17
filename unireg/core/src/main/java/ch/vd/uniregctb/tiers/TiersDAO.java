@@ -50,14 +50,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * Liste des collections associées à un tiers.
 	 */
-	public enum Parts {
+	enum Parts {
 		FORS_FISCAUX,
 		RAPPORTS_ENTRE_TIERS,
 		ADRESSES,
 		SITUATIONS_FAMILLE,
 		DECLARATIONS,
 		PERIODICITES,
-		IMMEUBLES;
+		IMMEUBLES,
+		ALLEGEMENTS_FISCAUX;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);

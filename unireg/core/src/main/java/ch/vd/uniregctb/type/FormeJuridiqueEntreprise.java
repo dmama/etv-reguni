@@ -22,6 +22,7 @@ public enum FormeJuridiqueEntreprise {
 	IDP("Institut de droit public", "0117", TypeFormeJuridique.DROIT_PRIVE, false),
 	PNC("Procuration non-commerciale", "0118", TypeFormeJuridique.DROIT_PRIVE, false),
 	INDIVISION("Chef d'indivision", "0119", TypeFormeJuridique.DROIT_PRIVE, false),
+	FILIALE_CH_RC("Succursale suisse inscrite au registre du commerce", "0151", TypeFormeJuridique.DROIT_PRIVE, false),
 
 	ADM_CH("Administration fédérale", "0220", TypeFormeJuridique.DROIT_PUBLIC, false),
 	ADM_CT("Administration cantonale", "0221", TypeFormeJuridique.DROIT_PUBLIC, false),

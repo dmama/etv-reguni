@@ -27,10 +27,10 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.FormeJuridique;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
 public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
@@ -146,7 +146,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		for (DateRangeHelper.Ranged<Long> data : rcCapitaux) {
 			final Capital capital = new Capital();
 			capital.setDateFrom(DataHelper.coreToXMLv1(data.getDateDebut()));
-			capital.setDateFrom(DataHelper.coreToXMLv1(data.getDateFin()));
+			capital.setDateTo(DataHelper.coreToXMLv1(data.getDateFin()));
 			capital.setPaidInCapital(data.getPayload());
 			liste.add(capital);
 		}
@@ -173,7 +173,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				final LegalForm lf = new LegalForm();
 				lf.setDateFrom(DataHelper.coreToXMLv1(data.getDateDebut()));
 				lf.setDateTo(DataHelper.coreToXMLv1(data.getDateFin()));
-				lf.setCode(DataHelper.coreToXMLv1v2v3(data.getPayload()));
+				lf.setCode(EnumHelper.coreToXMLv1v2v3(data.getPayload()));
 				liste.add(lf);
 			}
 		}
@@ -188,7 +188,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				final TaxSystem ts = new TaxSystem();
 				ts.setDateFrom(DataHelper.coreToXMLv1(regime.getDateDebut()));
 				ts.setDateTo(DataHelper.coreToXMLv1(regime.getDateFin()));
-				ts.setCode(DataHelper.coreToXMLv1v2v3(regime.getType()));
+				ts.setCode(EnumHelper.coreToXMLv1v2v3(regime.getType()));
 				liste.add(ts);
 			}
 		}
@@ -215,7 +215,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 							seat.setDateFrom(DataHelper.coreToXMLv1(intersection.getDateDebut()));
 							seat.setDateTo(DataHelper.coreToXMLv1(intersection.getDateFin()));
 							seat.setFsoId(domicile.getNumeroOfsAutoriteFiscale());
-							seat.setType(DataHelper.coreToXMLv2(domicile.getTypeAutoriteFiscale()));
+							seat.setType(EnumHelper.coreToXMLLegalSeatv2(domicile.getTypeAutoriteFiscale()));
 							liste.add(seat);
 						}
 					}

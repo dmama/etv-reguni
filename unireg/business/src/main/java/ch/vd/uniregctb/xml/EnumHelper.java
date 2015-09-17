@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
@@ -18,15 +20,19 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public abstract class EnumHelper {
 
@@ -257,11 +263,18 @@ public abstract class EnumHelper {
 	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
 	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
 
+	public static final Set<CategorieImpotSource> CIS_SUPPORTEES_V4 = Collections.unmodifiableSet(EnumSet.of(CategorieImpotSource.ADMINISTRATEURS, CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS,
+	                                                                                                         CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, CategorieImpotSource.LOI_TRAVAIL_AU_NOIR,
+	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
+	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+
 	public static final Set<TypeAvatar> TA_IGNORES_V1 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
 
 	public static final Set<TypeAvatar> TA_IGNORES_V2 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
 
 	public static final Set<TypeAvatar> TA_IGNORES_V3 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
+
+	public static final Set<TypeAvatar> TA_IGNORES_V4 = Collections.unmodifiableSet(EnumSet.noneOf(TypeAvatar.class));
 
 	private static void checkCategorieImpotSourceSupportee(Set<CategorieImpotSource> allowed, CategorieImpotSource candidate) {
 		if (!allowed.contains(candidate)) {
@@ -574,7 +587,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType coreToXMLv1(ch.vd.uniregctb.type.TypeAutoriteFiscale typeForFiscal) {
+	public static ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType coreToXMLv1(TypeAutoriteFiscale typeForFiscal) {
 		if (typeForFiscal == null) {
 			return null;
 		}
@@ -591,7 +604,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType coreToXMLv2(ch.vd.uniregctb.type.TypeAutoriteFiscale typeForFiscal) {
+	public static ch.vd.unireg.xml.party.taxresidence.v2.TaxationAuthorityType coreToXMLv2(TypeAutoriteFiscale typeForFiscal) {
 		if (typeForFiscal == null) {
 			return null;
 		}
@@ -2495,6 +2508,7 @@ public abstract class EnumHelper {
 			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
 		}
 	}
+
 	public static ch.vd.unireg.xml.party.othercomm.v2.LegalForm coreToXMLv2(FormeJuridique formeJuridique) {
 		if (formeJuridique == null) {
 			return null;
@@ -2538,6 +2552,261 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.othercomm.v2.LegalForm.GENERAL_PARTNERSHIP;
 		default:
 			throw new IllegalArgumentException("unknown FormeJuridique = [" + formeJuridique + ']');
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm coreToXMLv4(FormeJuridiqueEntreprise fj) {
+		if (fj == null) {
+			return null;
+		}
+
+		switch (fj) {
+
+		case ASSOCIATION:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.ASSOCIATION;
+		case SCOOP:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.COOPERATIVE_SOCIETY;
+		case ADM_CH:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FEDERAL_ADMINISTRATION;
+		case ADM_CT:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.CANTONAL_ADMINISTRATION;
+		case ADM_DI:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.DISTRICT_ADMINISTRATION;
+		case ADM_CO:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.MUNICIPALITY_ADMINISTRATION;
+		case CORP_DP_ADM:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.STATUTORY_ADMINISTRATION;
+		case ENT_CH:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FEDERAL_CORPORATION;
+		case ENT_CT:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.CANTONAL_CORPORATION;
+		case ENT_DI:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.DISTRICT_CORPORATION;
+		case ENT_CO:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.MUNICIPALITY_CORPORATION;
+		case CORP_DP_ENT:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.STATUTORY_CORPORATION;
+		case FONDATION:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FOUNDATION;
+		case SA:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_COMPANY;
+		case SARL:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_LIABILITY_COMPANY;
+		case SC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_PARTNERSHIP;
+		case SCA:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_JOINT_STOCK_PARTNERSHIP;
+		case SNC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.GENERAL_PARTNERSHIP;
+		case SCPC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.LIMITED_PARTNERSHIP_FOR_COLLECTIVE_INVESTMENTS;
+		case SICAV:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.OPEN_ENDED_INVESTMENT_TRUST;
+		case SICAF:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.CLOSED_END_INVESTMENT_TRUST;
+		case EI:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.SOLE_PROPRIETORSHIP;
+		case ADM_PUBLIQUE_HS:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FOREIGN_STATUTORY_ADMINISTRATION;
+		case ENT_HS:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FOREIGN_CORPORATION;
+		case ENT_PUBLIQUE_HS:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.FOREIGN_STATUTORY_CORPORATION;
+		case FILIALE_HS_NIRC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.UNREGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case FILIALE_HS_RC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.REGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
+		case IDP:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.STATUTORY_INSTITUTE;
+		case INDIVISION:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.JOINT_POSSESSION;
+		case FILIALE_CH_RC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.BRANCH_OF_SWISS_COMPANY;
+		case ORG_INTERNAT:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.INTERNATIONAL_ORGANIZATION;
+		case PARTICULIER:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.OTHER;
+		case PNC:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.NON_COMMERCIAL_PROXY;
+		case SS:
+			return ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm.SIMPLE_COMPANY;
+		default:
+			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
+		}
+	}
+
+	@Nullable
+	public static String coreToXMLv1v2v3(FormeJuridiqueEntreprise fj) {
+		if (fj == null) {
+			return null;
+		}
+
+		switch (fj) {
+
+		case ASSOCIATION:
+			return "ASS";
+
+		case SCOOP:
+			return "S. COOP.";
+
+		case ADM_CH:
+		case ADM_CT:
+		case ADM_DI:
+		case ADM_CO:
+		case CORP_DP_ADM:
+			return "DP";
+
+		case ENT_CH:
+		case ENT_CT:
+		case ENT_DI:
+		case ENT_CO:
+		case CORP_DP_ENT:
+			return "DP/PM";
+
+		case FONDATION:
+			return "FONDATION";
+
+		case SA:
+			return "S.A.";
+
+		case SARL:
+			return "S.A.R.L.";
+
+		case SC:
+			return "S. COMM.";
+
+		case SCA:
+			return "S.COMM.ACT";
+
+		case SNC:
+			return "S.N.C.";
+
+		case SCPC:
+			return "FDS. PLAC.";
+
+		case SICAV:
+		case SICAF:
+		case EI:
+		case ADM_PUBLIQUE_HS:
+		case ENT_HS:
+		case ENT_PUBLIQUE_HS:
+		case FILIALE_HS_NIRC:
+		case FILIALE_HS_RC:
+		case IDP:
+		case INDIVISION:
+		case ORG_INTERNAT:
+		case PARTICULIER:
+		case PNC:
+		case SS:
+			return null;
+
+		default:
+			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
+		}
+	}
+
+	@Nullable
+	public static String coreToXMLv1v2v3(TypeRegimeFiscal rf) {
+		if (rf == null) {
+			return null;
+		}
+
+		// TODO [SIPM] mapping à coder...
+		return "01";
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v4.TaxSystemType coreToXMLv4(TypeRegimeFiscal rf) {
+		if (rf == null) {
+			return null;
+		}
+
+		// TODO [SIPM] mapping à coder
+		return ch.vd.unireg.xml.party.corporation.v4.TaxSystemType.ORDINARY;
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope coreToXMLv4(RegimeFiscal.Portee portee) {
+		if (portee == null) {
+			return null;
+		}
+
+		switch (portee) {
+		case CH:
+			return ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope.CH;
+		case VD:
+			return ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope.VD;
+		default:
+			throw new IllegalArgumentException("Portée de régime fiscal inconnue : " + portee);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v1.LegalSeatType coreToXMLLegalSeatv1(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v2.LegalSeatType coreToXMLLegalSeatv2(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v3.LegalSeatType coreToXMLLegalSeatv3(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
+	}
+
+	@Nullable
+	public static ch.vd.unireg.xml.party.corporation.v4.LegalSeatType coreToXMLLegalSeatv4(TypeAutoriteFiscale taf) {
+		if (taf == null) {
+			return null;
+		}
+
+		switch(taf) {
+		case COMMUNE_OU_FRACTION_VD:
+		case COMMUNE_HC:
+			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.SWISS_MUNICIPALITY;
+		case PAYS_HS:
+			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.FOREIGN_COUNTRY;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
 		}
 	}
 

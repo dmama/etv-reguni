@@ -23,9 +23,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope;
-import ch.vd.unireg.xml.party.corporation.v4.TaxSystemType;
-import ch.vd.unireg.xml.party.taxpayer.v4.FullLegalForm;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -41,12 +38,8 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.FormulePolitesse;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
@@ -414,12 +407,49 @@ public abstract class DataHelper {
 		}
 		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
 		if (i.getType() == ch.vd.unireg.xml.party.v3.PartyType.NATURAL_PERSON) {
-			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtype(value));
+			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV3(value));
 		}
 
 		final List<String> numerosIDE = value.getNumerosIDE();
 		if (!numerosIDE.isEmpty()) {
 			i.setUidNumbers(new ch.vd.unireg.xml.party.v3.UidNumberList(numerosIDE));
+		}
+		return i;
+	}
+
+	public static ch.vd.unireg.xml.party.v4.PartyInfo coreToXMLv4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
+		if (value == null) {
+			return null;
+		}
+
+		final ch.vd.unireg.xml.party.v4.PartyInfo i = new ch.vd.unireg.xml.party.v4.PartyInfo();
+		i.setNumber(value.getNumero().intValue());
+		i.setName1(value.getNom1());
+		i.setName2(value.getNom2());
+		i.setStreet(value.getRue());
+		i.setZipCode(value.getNpa());
+		i.setTown(value.getLocalite());
+		i.setCountry(value.getPays());
+		i.setDateOfBirth(DataHelper.coreToPartialDateXmlv2(value.getRegDateNaissance()));
+		i.setType(DataHelper.getPartyTypeV4(value));
+		i.setDebtorCategory(EnumHelper.coreToXMLv3(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXMLv3(value.getModeCommunication()));
+		i.setLastTaxResidenceBeginDate(DataHelper.coreToXMLv2(value.getDateOuvertureFor()));
+		i.setLastTaxResidenceEndDate(DataHelper.coreToXMLv2(value.getDateFermetureFor()));
+		if (StringUtils.isNotBlank(value.getNavs13_1())) {
+			i.setVn1(Long.valueOf(value.getNavs13_1()));
+		}
+		if (StringUtils.isNotBlank(value.getNavs13_2())) {
+			i.setVn2(Long.valueOf(value.getNavs13_2()));
+		}
+		i.setIndividualTaxLiability(EnumHelper.coreToXMLv2(value.getAssujettissementPP()));
+		if (i.getType() == ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON) {
+			i.setNaturalPersonSubtype(DataHelper.getNaturalPersonSubtypeV4(value));
+		}
+
+		final List<String> numerosIDE = value.getNumerosIDE();
+		if (!numerosIDE.isEmpty()) {
+			i.setUidNumbers(new ch.vd.unireg.xml.party.v4.UidNumberList(numerosIDE));
 		}
 		return i;
 	}
@@ -492,6 +522,19 @@ public abstract class DataHelper {
 		}
 	};
 
+	private static final Map<String, ch.vd.unireg.xml.party.v4.PartyType> indexedData2TypeV4 = new HashMap<String, ch.vd.unireg.xml.party.v4.PartyType>() {
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.NATURAL_PERSON);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
+			put(MenageCommunIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.HOUSEHOLD);
+			put(AutreCommunauteIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.OTHER_COMMUNITY);
+			put(EntrepriseIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.CORPORATION);
+			put(DebiteurPrestationImposableIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.DEBTOR);
+			put(CollectiviteAdministrativeIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.PartyType.ADMINISTRATIVE_AUTHORITY);
+		}
+	};
+
 	private static final Map<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV3 = new HashMap<String, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype>() {
 		{
 			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v3.NaturalPersonSubtype.RESIDENT);
@@ -499,258 +542,12 @@ public abstract class DataHelper {
 		}
 	};
 
-	@Nullable
-	public static String coreToXMLv1v2v3(FormeJuridiqueEntreprise fj) {
-		if (fj == null) {
-			return null;
+	private static final Map<String, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype> indexedData2NaturalPersonSubtypeV4 = new HashMap<String, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype>() {
+		{
+			put(HabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.RESIDENT);
+			put(NonHabitantIndexable.SUB_TYPE, ch.vd.unireg.xml.party.v4.NaturalPersonSubtype.NON_RESIDENT);
 		}
-
-		switch (fj) {
-
-		case ASSOCIATION:
-			return "ASS";
-
-		case SCOOP:
-			return "S. COOP.";
-
-		case ADM_CH:
-		case ADM_CT:
-		case ADM_DI:
-		case ADM_CO:
-		case CORP_DP_ADM:
-			return "DP";
-
-		case ENT_CH:
-		case ENT_CT:
-		case ENT_DI:
-		case ENT_CO:
-		case CORP_DP_ENT:
-			return "DP/PM";
-
-		case FONDATION:
-			return "FONDATION";
-
-		case SA:
-			return "S.A.";
-
-		case SARL:
-			return "S.A.R.L.";
-
-		case SC:
-			return "S. COMM.";
-
-		case SCA:
-			return "S.COMM.ACT";
-
-		case SNC:
-			return "S.N.C.";
-
-		case SCPC:
-			return "FDS. PLAC.";
-
-		case SICAV:
-		case SICAF:
-		case EI:
-		case ADM_PUBLIQUE_HS:
-		case ENT_HS:
-		case ENT_PUBLIQUE_HS:
-		case FILIALE_HS_NIRC:
-		case FILIALE_HS_RC:
-		case IDP:
-		case INDIVISION:
-		case ORG_INTERNAT:
-		case PARTICULIER:
-		case PNC:
-		case SS:
-			return null;
-
-		default:
-			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
-		}
-	}
-
-	@Nullable
-	public static FullLegalForm coreToXMLv4(FormeJuridiqueEntreprise fj) {
-		if (fj == null) {
-			return null;
-		}
-
-		switch (fj) {
-
-		case ASSOCIATION:
-			return FullLegalForm.ASSOCIATION;
-		case SCOOP:
-			return FullLegalForm.COOPERATIVE_SOCIETY;
-		case ADM_CH:
-			return FullLegalForm.FEDERAL_ADMINISTRATION;
-		case ADM_CT:
-			return FullLegalForm.CANTONAL_ADMINISTRATION;
-		case ADM_DI:
-			return FullLegalForm.DISTRICT_ADMINISTRATION;
-		case ADM_CO:
-			return FullLegalForm.MUNICIPALITY_ADMINISTRATION;
-		case CORP_DP_ADM:
-			return FullLegalForm.STATUTORY_ADMINISTATION;
-		case ENT_CH:
-			return FullLegalForm.FEDERAL_CORPORATION;
-		case ENT_CT:
-			return FullLegalForm.CANTONAL_CORPORATION;
-		case ENT_DI:
-			return FullLegalForm.DISTRICT_CORPORATION;
-		case ENT_CO:
-			return FullLegalForm.MUNICIPALITY_CORPORATION;
-		case CORP_DP_ENT:
-			return FullLegalForm.STATUTORY_CORPORATION;
-		case FONDATION:
-			return FullLegalForm.FOUNDATION;
-		case SA:
-			return FullLegalForm.LIMITED_COMPANY;
-		case SARL:
-			return FullLegalForm.LIMITED_LIABILITY_COMPANY;
-		case SC:
-			return FullLegalForm.LIMITED_PARTNERSHIP;
-		case SCA:
-			return FullLegalForm.LIMITED_JOINT_STOCK_PARTNERSHIP;
-		case SNC:
-			return FullLegalForm.GENERAL_PARTNERSHIP;
-		case SCPC:
-			return FullLegalForm.LIMITED_PARTNERSHIP_FOR_COLLECTIVE_INVESTMENTS;
-		case SICAV:
-			return FullLegalForm.OPEN_ENDED_INVESTMENT_TRUST;
-		case SICAF:
-			return FullLegalForm.CLOSED_END_INVESTMENT_TRUST;
-		case EI:
-			return FullLegalForm.SOLE_PROPRIETORSHIP;
-		case ADM_PUBLIQUE_HS:
-			return FullLegalForm.FOREIGN_STATUTORY_ADMINISTRATION;
-		case ENT_HS:
-			return FullLegalForm.FOREIGN_CORPORATION;
-		case ENT_PUBLIQUE_HS:
-			return FullLegalForm.FOREIGN_STATUTORY_CORPORATION;
-		case FILIALE_HS_NIRC:
-			return FullLegalForm.UNREGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
-		case FILIALE_HS_RC:
-			return FullLegalForm.REGISTERED_BRANCH_OF_FOREIGN_BASED_COMPANY;
-		case IDP:
-			return FullLegalForm.STATUTORY_INSTITUTE;
-		case INDIVISION:
-			return FullLegalForm.JOINT_POSSESSION;
-		case ORG_INTERNAT:
-			return FullLegalForm.INTERNATIONAL_ORGANIZATION;
-		case PARTICULIER:
-			return FullLegalForm.OTHER;
-		case PNC:
-			return FullLegalForm.NON_COMMERCIAL_PROXY;
-		case SS:
-			return FullLegalForm.SIMPLE_COMPANY;
-		default:
-			throw new IllegalArgumentException("Forme juridique inconnue : " + fj);
-		}
-	}
-
-	@Nullable
-	public static String coreToXMLv1v2v3(TypeRegimeFiscal rf) {
-		if (rf == null) {
-			return null;
-		}
-
-		// TODO [SIPM] mapping à coder...
-		return "01";
-	}
-
-	@Nullable
-	public static TaxSystemType coreToXMLv4(TypeRegimeFiscal rf) {
-		if (rf == null) {
-			return null;
-		}
-
-		// TODO [SIPM] mapping à coder
-		return TaxSystemType.ORDINARY;
-	}
-
-	@Nullable
-	public static TaxSystemScope coreToXMLv4(RegimeFiscal.Portee portee) {
-		if (portee == null) {
-			return null;
-		}
-
-		switch (portee) {
-		case CH:
-			return TaxSystemScope.CH;
-		case VD:
-			return TaxSystemScope.VD;
-		default:
-			throw new IllegalArgumentException("Portée de régime fiscal inconnue : " + portee);
-		}
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.corporation.v1.LegalSeatType coreToXMLv1(TypeAutoriteFiscale taf) {
-		if (taf == null) {
-			return null;
-		}
-
-		switch(taf) {
-		case COMMUNE_OU_FRACTION_VD:
-		case COMMUNE_HC:
-			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.SWISS_MUNICIPALITY;
-		case PAYS_HS:
-			return ch.vd.unireg.xml.party.corporation.v1.LegalSeatType.FOREIGN_COUNTRY;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
-		}
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.corporation.v2.LegalSeatType coreToXMLv2(TypeAutoriteFiscale taf) {
-		if (taf == null) {
-			return null;
-		}
-
-		switch(taf) {
-		case COMMUNE_OU_FRACTION_VD:
-		case COMMUNE_HC:
-			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.SWISS_MUNICIPALITY;
-		case PAYS_HS:
-			return ch.vd.unireg.xml.party.corporation.v2.LegalSeatType.FOREIGN_COUNTRY;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
-		}
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.corporation.v3.LegalSeatType coreToXMLv3(TypeAutoriteFiscale taf) {
-		if (taf == null) {
-			return null;
-		}
-
-		switch(taf) {
-		case COMMUNE_OU_FRACTION_VD:
-		case COMMUNE_HC:
-			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.SWISS_MUNICIPALITY;
-		case PAYS_HS:
-			return ch.vd.unireg.xml.party.corporation.v3.LegalSeatType.FOREIGN_COUNTRY;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
-		}
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.corporation.v4.LegalSeatType coreToXMLv4(TypeAutoriteFiscale taf) {
-		if (taf == null) {
-			return null;
-		}
-
-		switch(taf) {
-		case COMMUNE_OU_FRACTION_VD:
-		case COMMUNE_HC:
-			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.SWISS_MUNICIPALITY;
-		case PAYS_HS:
-			return ch.vd.unireg.xml.party.corporation.v4.LegalSeatType.FOREIGN_COUNTRY;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
-		}
-	}
+	};
 
 	/**
 	 * Détermine le type d'un tiers à partir de ses données indexées.
@@ -797,7 +594,18 @@ public abstract class DataHelper {
 		return indexedData2TypeV3.get(typeAsString);
 	}
 
-	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtype(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+	public static ch.vd.unireg.xml.party.v4.PartyType getPartyTypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2TypeV4.get(typeAsString);
+	}
+
+	public static ch.vd.unireg.xml.party.v3.NaturalPersonSubtype getNaturalPersonSubtypeV3(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
 		final String typeAsString = tiers.getTiersType();
 
 		if (StringUtils.isEmpty(typeAsString)) {
@@ -805,6 +613,16 @@ public abstract class DataHelper {
 		}
 
 		return indexedData2NaturalPersonSubtypeV3.get(typeAsString);
+	}
+
+	public static ch.vd.unireg.xml.party.v4.NaturalPersonSubtype getNaturalPersonSubtypeV4(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
+		final String typeAsString = tiers.getTiersType();
+
+		if (StringUtils.isEmpty(typeAsString)) {
+			return null;
+		}
+
+		return indexedData2NaturalPersonSubtypeV4.get(typeAsString);
 	}
 
 	public static Set<TiersDAO.Parts> xmlToCoreV1(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
@@ -969,6 +787,70 @@ public abstract class DataHelper {
 			case BANK_ACCOUNTS:
 			case CAPITALS:
 			case CORPORATION_STATUSES:
+			case LEGAL_FORMS:
+			case TAX_SYSTEMS:
+			case LEGAL_SEATS:
+			case EBILLING_STATUSES:
+				// rien à faire
+				break;
+			default:
+				throw new IllegalArgumentException("Type de parts inconnue = [" + p + ']');
+			}
+		}
+
+		return results;
+	}
+
+	public static Set<TiersDAO.Parts> xmlToCoreV4(Set<ch.vd.unireg.xml.party.v4.PartyPart> parts) {
+
+		if (parts == null) {
+			return null;
+		}
+
+		final Set<TiersDAO.Parts> results = EnumSet.noneOf(TiersDAO.Parts.class);
+		for (ch.vd.unireg.xml.party.v4.PartyPart p : parts) {
+			switch (p) {
+			case ADDRESSES:
+				results.add(TiersDAO.Parts.ADRESSES);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case TAX_DECLARATIONS:
+			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
+				results.add(TiersDAO.Parts.DECLARATIONS);
+				break;
+			case TAX_RESIDENCES:
+			case VIRTUAL_TAX_RESIDENCES:
+			case MANAGING_TAX_RESIDENCES:
+			case TAX_LIABILITIES:
+			case SIMPLIFIED_TAX_LIABILITIES:
+			case TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				break;
+			case WITHHOLDING_TAXATION_PERIODS:
+				results.add(TiersDAO.Parts.FORS_FISCAUX);
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case CHILDREN:
+			case PARENTS:
+			case RELATIONS_BETWEEN_PARTIES:
+			case HOUSEHOLD_MEMBERS:
+				results.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
+				break;
+			case FAMILY_STATUSES:
+				results.add(TiersDAO.Parts.SITUATIONS_FAMILLE);
+				break;
+			case DEBTOR_PERIODICITIES:
+				results.add(TiersDAO.Parts.PERIODICITES);
+				break;
+			case IMMOVABLE_PROPERTIES:
+				results.add(TiersDAO.Parts.IMMEUBLES);
+				break;
+			case TAX_LIGHTENINGS:
+				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
+				break;
+			case BANK_ACCOUNTS:
+			case CAPITALS:
 			case LEGAL_FORMS:
 			case TAX_SYSTEMS:
 			case LEGAL_SEATS:

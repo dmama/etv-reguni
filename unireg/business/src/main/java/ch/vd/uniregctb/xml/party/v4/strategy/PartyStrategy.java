@@ -227,7 +227,6 @@ public abstract class PartyStrategy<T extends Party> {
 	private static final Set<TypeRapportEntreTiers> EXPOSED_RELATIONS_BETWEEN_PARTIES = EnumSet.complementOf(EnumSet.of(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE,
 	                                                                                                                    TypeRapportEntreTiers.PARENTE,
 	                                                                                                                    TypeRapportEntreTiers.ASSUJETTISSEMENT_PAR_SUBSTITUTION,
-	                                                                                                                    TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE,
 	                                                                                                                    TypeRapportEntreTiers.MANDAT,
 	                                                                                                                    TypeRapportEntreTiers.FUSION_ENTREPRISES));
 
