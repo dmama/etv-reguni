@@ -120,6 +120,16 @@
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
+	<category name="ws.v6.read" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
+	<category name="ws.v6.write" additivity="false">
+	  <priority value="INFO"/>
+	  <appender-ref ref="WS_ACCESS"/>
+	</category>
+
 	<category name="ServiceTracing" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="SERVICE_TRACING"/>
