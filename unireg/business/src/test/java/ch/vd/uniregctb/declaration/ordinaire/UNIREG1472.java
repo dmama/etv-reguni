@@ -16,9 +16,8 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
-import ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl;
 import ch.vd.uniregctb.parametrage.MockParameterAppService;
+import ch.vd.uniregctb.tiers.TiersServiceImpl;
 
 public class UNIREG1472 {
 	
@@ -28,9 +27,8 @@ public class UNIREG1472 {
 	public void init () throws Exception {
 		final AssujettissementService assujettissementService = new AssujettissementServiceImpl();
 		final PeriodeImpositionServiceImpl periodeImpositionService = new PeriodeImpositionServiceImpl();
-		final BouclementService bouclementService = new BouclementServiceImpl();
 		periodeImpositionService.setAssujettissementService(assujettissementService);
-		periodeImpositionService.setBouclementService(bouclementService);
+		periodeImpositionService.setTiersService(new TiersServiceImpl());
 		periodeImpositionService.setParametreAppService(new MockParameterAppService());
 		periodeImpositionService.afterPropertiesSet();
 		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService, null);

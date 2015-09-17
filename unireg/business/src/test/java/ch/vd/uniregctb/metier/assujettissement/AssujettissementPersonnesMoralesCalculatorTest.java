@@ -13,7 +13,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.type.DayMonth;
@@ -28,9 +27,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
-		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
-		calculator = new AssujettissementPersonnesMoralesCalculator(bouclementService);
+		calculator = new AssujettissementPersonnesMoralesCalculator(tiersService);
 	}
 
 	@Nullable

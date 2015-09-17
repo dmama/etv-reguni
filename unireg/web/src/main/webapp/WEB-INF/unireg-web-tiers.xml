@@ -125,7 +125,6 @@
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="autorisationManager" ref="autorisationManager" />
 		<property name="securityProvider" ref="securityProviderInterface" />
-		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">

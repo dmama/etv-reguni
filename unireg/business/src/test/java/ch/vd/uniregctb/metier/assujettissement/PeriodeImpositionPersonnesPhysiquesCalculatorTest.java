@@ -17,7 +17,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -1347,10 +1346,9 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 	public void testNombreCalculsAssujettissementPourCalculDesPeriodesImposition() throws Exception {
 
 		final ValidationService vs = getBean(ValidationService.class, "validationService");
-		final BouclementService bs = getBean(BouclementService.class, "bouclementService");
 		final AssujettissementServiceImpl assImpl = new AssujettissementServiceImpl();
 		assImpl.setValidationService(vs);
-		assImpl.setBouclementService(bs);
+		assImpl.setTiersService(tiersService);
 		assImpl.afterPropertiesSet();
 
 		// construction d'un service d'assujettissement qui compte le nombre d'appels effectués aux méthodes "determineXXX"
@@ -1367,7 +1365,7 @@ public class PeriodeImpositionPersonnesPhysiquesCalculatorTest extends MetierTes
 
 		final PeriodeImpositionServiceImpl pis = new PeriodeImpositionServiceImpl();
 		pis.setAssujettissementService(assProxy);
-		pis.setBouclementService(getBean(BouclementService.class, "bouclementService"));
+		pis.setTiersService(tiersService);
 		pis.setParametreAppService(getBean(ParametreAppService.class, "parametreAppService"));
 		pis.afterPropertiesSet();
 

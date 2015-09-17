@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,15 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
 
@@ -27,11 +23,11 @@ import ch.vd.uniregctb.type.TypeContribuable;
 public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpositionCalculator<Entreprise> {
 
 	private final ParametreAppService parametreService;
-	private final BouclementService bouclementService;
+	private final TiersService tiersService;
 
-	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, BouclementService bouclementService) {
+	public PeriodeImpositionPersonnesMoralesCalculator(ParametreAppService parametreService, TiersService tiersService) {
 		this.parametreService = parametreService;
-		this.bouclementService = bouclementService;
+		this.tiersService = tiersService;
 	}
 
 	/**
@@ -56,8 +52,10 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		final List<PeriodeImposition> resultat = new LinkedList<>();
 
 		// il faut au moins découper l'assujettissement en périodes correspondants aux exercices commerciaux
-		final RegDate dateDebutRange = getDebutPremierePeriodeImposition(forsPrincipaux.get(0).getDateDebut(), entreprise.getBouclements());
-		final List<ExerciceCommercial> exercices = bouclementService.getExercicesCommerciaux(entreprise.getBouclements(), new DateRangeHelper.Range(dateDebutRange, RegDate.get()));
+		// (mais on ne calcule pas les périodes d'assujettissement depuis la nuit des temps, seulement depuis une année extraite des paramètres)
+		final int premiereAnneePeriodesImposition = parametreService.getPremierePeriodeFiscalePersonnesMorales();
+		final List<ExerciceCommercial> exercicesBruts = tiersService.getExercicesCommerciaux(entreprise);
+		final List<ExerciceCommercial> exercices = extraireDepuisPeriode(exercicesBruts, premiereAnneePeriodesImposition);
 		for (ExerciceCommercial exercice : exercices) {
 			for (Assujettissement assujettissement : assujettissements) {
 				final DateRange intersection = DateRangeHelper.intersection(exercice, assujettissement);
@@ -112,19 +110,21 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 	}
 
 	/**
-	 * Récupère la date de début de la première période d'imposition à calculer :
-	 * <ul>
-	 *     <li>on calcule d'abord la dernière date de bouclement de l'entreprise avant le 01.01.2009 (première année pour les périodes d'imposition PM)</li>
-	 *     <li>si la date de premier for principal est postérieure à cette date, c'est la date de début du for qui est renvoyée;</li>
-	 *     <li>sinon, c'est le lendemain de la date de dernier bouclement trouvé qui est renvoyée.</li>
-	 * </ul>
+	 * @param bruts une liste d'exercices commerciaux
+	 * @param premierePeriode une année
+	 * @return la sous-liste des exercices commerciaux fournis dont la date de fin est au plus tôt dans l'année fournie
 	 */
-	private RegDate getDebutPremierePeriodeImposition(@NotNull RegDate debutPremierForPrincipal, Collection<Bouclement> bouclements) {
-		final int premiereAnnee = parametreService.getPremierePeriodeFiscalePersonnesMorales();
-		final RegDate debutPremiereAnnee = RegDate.get(premiereAnnee, 1, 1);
-		final RegDate dernierBouclementOublie = bouclementService.getDateDernierBouclement(bouclements, debutPremiereAnnee, false);
-		return RegDateHelper.isAfter(debutPremierForPrincipal, dernierBouclementOublie, NullDateBehavior.EARLIEST)
-				? debutPremierForPrincipal
-				: dernierBouclementOublie.getOneDayAfter();
+	@NotNull
+	private static List<ExerciceCommercial> extraireDepuisPeriode(List<ExerciceCommercial> bruts, int premierePeriode) {
+		if (bruts == null || bruts.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<ExerciceCommercial> nets = new ArrayList<>(bruts.size());
+		for (ExerciceCommercial ex : bruts) {
+			if (ex.getDateFin().year() >= premierePeriode) {
+				nets.add(ex);
+			}
+		}
+		return nets;
 	}
 }

@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.DayMonth;
@@ -31,8 +30,7 @@ public class PeriodeImpositionPersonnesMoralesCalculatorTest extends MetierTest 
 		super.onSetUp();
 
 		final ParametreAppService parametreService = getBean(ParametreAppService.class, "parametreAppService");
-		final BouclementService bouclementService = getBean(BouclementService.class, "bouclementService");
-		this.calculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreService, bouclementService);
+		this.calculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreService, tiersService);
 		this.assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 	}
 

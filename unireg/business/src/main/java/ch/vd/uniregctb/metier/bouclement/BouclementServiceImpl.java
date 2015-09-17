@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
@@ -148,7 +149,7 @@ public class BouclementServiceImpl implements BouclementService {
 	}
 
 	@Override
-	public List<ExerciceCommercial> getExercicesCommerciaux(Collection<Bouclement> bouclements, @NotNull DateRange range) {
+	public List<ExerciceCommercial> getExercicesCommerciaux(Collection<Bouclement> bouclements, @NotNull DateRange range, boolean intersecting) {
 		final NavigableMap<RegDate, Bouclement> map = buildFilteredSortedMap(bouclements);
 		final List<ExerciceCommercial> liste = new LinkedList<>();
 
@@ -168,6 +169,23 @@ public class BouclementServiceImpl implements BouclementService {
 				fin = range.getDateFin();
 			}
 			liste.add(new ExerciceCommercial(debut, fin));
+		}
+
+		// et on ajoute le rognage si nécessaire
+		if (!liste.isEmpty() && !intersecting) {
+			// le commencement
+			final ListIterator<ExerciceCommercial> iterPremier = liste.listIterator();
+			final ExerciceCommercial premier = iterPremier.next();
+			if (range.getDateDebut().isAfter(premier.getDateDebut())) {
+				iterPremier.set(new ExerciceCommercial(range.getDateDebut(), premier.getDateFin()));
+			}
+
+			// la fin
+			final ListIterator<ExerciceCommercial> iterDernier = liste.listIterator(liste.size());
+			final ExerciceCommercial dernier = iterDernier.previous();
+			if (range.getDateFin().isBefore(dernier.getDateFin())) {
+				iterDernier.set(new ExerciceCommercial(dernier.getDateDebut(), range.getDateFin()));
+			}
 		}
 
 		// transformation en ArrayList maintenant que l'on connaît la taille

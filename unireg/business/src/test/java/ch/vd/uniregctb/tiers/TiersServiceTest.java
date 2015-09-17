@@ -64,8 +64,10 @@ import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -2543,7 +2545,7 @@ debut PF                                                                        
 				ModeImposition.ORDINAIRE);
 		addForPrincipal(c, date(2001, 1, 2), MotifFor.DEPART_HS, null, null, MockPays.CoreeSud);
 		addForSecondaire(c,date(2000, 1, 1),MotifFor.ACHAT_IMMOBILIER,date(2003, 12, 31), MotifFor.VENTE_IMMOBILIER,MockCommune.Bussigny.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c,date(2002, 1, 1),MotifFor.ACHAT_IMMOBILIER,null, null,MockCommune.Renens.getNoOFS(),MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(c, date(2002, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1989, 12, 31)));
@@ -3032,7 +3034,7 @@ debut PF                                                                        
 				tiersService.closeForFiscalPrincipal(mc, date(2001, 12, 31), MotifFor.DEMENAGEMENT_VD);
 				tiersService
 						.openForFiscalPrincipal(mc, date(2002, 1, 1), MotifRattachement.DOMICILE, MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE,
-								MotifFor.DEMENAGEMENT_VD);
+						                        MotifFor.DEMENAGEMENT_VD);
 				return null;
 			}
 		});
@@ -4164,7 +4166,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
-						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+				                                    MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -4193,7 +4195,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE,
-						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+				                                    MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -4323,8 +4325,7 @@ debut PF                                                                        
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
-						MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -4370,7 +4371,7 @@ debut PF                                                                        
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
-						MotifRattachement.IMMEUBLE_PRIVE);
+				                 MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
 			}
@@ -4551,7 +4552,7 @@ debut PF                                                                        
 
 				tiersService.closeForFiscalPrincipal(pp, date(2010, 5, 23), MotifFor.DEMENAGEMENT_VD);
 				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFS(),
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+				                             TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp);
@@ -8368,7 +8369,7 @@ debut PF                                                                        
 				assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HC, null, null, MotifRattachement.DOMICILE, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC,
-						ModeImposition.SOURCE);
+				                             ModeImposition.SOURCE);
 			}
 		});
 
@@ -8640,7 +8641,7 @@ debut PF                                                                        
 				// départ du couple vers l'étranger
 				tiersService.closeForFiscalPrincipal(mc, dateDepart, MotifFor.DEPART_HS);
 				tiersService.openForFiscalPrincipal(mc, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Allemagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.SOURCE,
-						MotifFor.DEPART_HS);
+				                                    MotifFor.DEPART_HS);
 			}
 		});
 
@@ -8928,7 +8929,7 @@ debut PF                                                                        
 				DecisionAci dOriginal = decisionAciDAO.get(idsDecision.idOriginal);
 				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
 				assertTrue(dOriginal.isAnnule());
-				assertEquals(MockCommune.Aubonne.getNoOFS(),dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MockCommune.Aubonne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
 
 			}
 		});
@@ -8975,7 +8976,7 @@ debut PF                                                                        
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				DecisionAci amodifier = decisionAciDAO.get(idsDecision.idOriginal);
-				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier,date(2013,5,6),"Ma remarque",null);
+				DecisionAci modifiee =tiersService.updateDecisionAci(amodifier, date(2013, 5, 6), "Ma remarque", null);
 				idsDecision.idNouvel = modifiee.getId();
 			}
 		});
@@ -9058,7 +9059,7 @@ debut PF                                                                        
 				DecisionAci dNouvelle = decisionAciDAO.get(idsDecision.idNouvel);
 				assertTrue(dOriginal.isAnnule());
 				assertEquals(MockCommune.Lausanne.getNoOFS(), dNouvelle.getNumeroOfsAutoriteFiscale().intValue());
-				assertEquals(date(2012,12,10),dNouvelle.getDateFin());
+				assertEquals(date(2012, 12, 10), dNouvelle.getDateFin());
 				assertEquals("finalement rien",dNouvelle.getRemarque());
 
 
@@ -9224,5 +9225,218 @@ debut PF                                                                        
 		});
 	}
 
+	@Test
+	public void testExercicesCommerciauxSansForNiBouclement() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : rien
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+				Assert.assertEquals(0, exercices.size());
+			}
+		});
+	}
+
+	@Test
+	public void testExercicesCommerciauxSansForMaisAvecBouclements() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addBouclement(entreprise, date(2000, 12, 1), DayMonth.get(12, 31), 12);
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : le premier exercice commercial commence au lendemain de la première date de bouclement connue, et se termine cette année
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+
+				final int nbExercicesAttendus = RegDate.get().year() - 2000;
+				Assert.assertEquals(nbExercicesAttendus, exercices.size());
+				for (int i = 0 ; i < nbExercicesAttendus ; ++ i) {
+					final ExerciceCommercial ex = exercices.get(i);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(i + 2001, 1, 1), ex.getDateDebut());
+					Assert.assertEquals(date(i + 2001, 12, 31), ex.getDateFin());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testExercicesCommerciauxAvecForOuvertMaisSansBouclements() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addForPrincipal(entreprise, date(2000, 1, 3), null, MockCommune.Bale);
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la fin de cette année (décision arbitraire)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+				Assert.assertEquals(1, exercices.size());
+
+				final ExerciceCommercial ex = exercices.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
+				Assert.assertEquals(date(RegDate.get().year(), 12, 31), ex.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testExercicesCommerciauxAvecForsFermesMaisSansBouclements() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addForPrincipal(entreprise, date(2000, 1, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : un seul exercice commercial qui couvre l'intervale maximal des fors principaux et se ferme à la date de fermeture du for
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+				Assert.assertEquals(1, exercices.size());
+
+				final ExerciceCommercial ex = exercices.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2000, 1, 3), ex.getDateDebut());
+				Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
+			}
+		});
+	}
+
+	@Test
+	public void testExercicesCommerciauxAvecForOuvertEtBouclements() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addForPrincipal(entreprise, date(2000, 5, 3), null, MockCommune.Bale);
+				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+
+				final int nbExercicesAttendus = RegDate.get().year() - 2000 + (DayMonth.get().compareTo(DayMonth.get(6, 30)) > 0 ? 1 : 0);
+				Assert.assertEquals(nbExercicesAttendus, exercices.size());
+				{
+					final ExerciceCommercial ex = exercices.get(0);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
+					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
+				}
+				for (int i = 1 ; i < nbExercicesAttendus ; ++ i) {
+					final ExerciceCommercial ex = exercices.get(i);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
+					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testExercicesCommerciauxAvecForsFermesEtBouclements() throws Exception {
+
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
+				addForPrincipal(entreprise, date(2000, 5, 3), null, date(2006, 12, 5), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Bale);
+				addBouclement(entreprise, date(2001, 6, 1), DayMonth.get(6, 30), 12);       // tous les ans depuis le 30.06.2001
+				return entreprise.getNumero();
+			}
+		});
+
+		// vérification du calcul : exercices commerciaux annuels 01.07 -> 30.06 (sauf le premier qui commence au 03.05, et le dernier qui se termine avec le for)
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(id);
+				Assert.assertNotNull(entreprise);
+
+				final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
+				Assert.assertNotNull(exercices);
+
+				Assert.assertEquals(7, exercices.size());
+				{
+					final ExerciceCommercial ex = exercices.get(0);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(2000, 5, 3), ex.getDateDebut());
+					Assert.assertEquals(date(2001, 6, 30), ex.getDateFin());
+				}
+				for (int i = 1 ; i < 6 ; ++ i) {
+					final ExerciceCommercial ex = exercices.get(i);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(i + 2000, 7, 1), ex.getDateDebut());
+					Assert.assertEquals(date(i + 2001, 6, 30), ex.getDateFin());
+				}
+				{
+					final ExerciceCommercial ex = exercices.get(6);
+					Assert.assertNotNull(ex);
+					Assert.assertEquals(date(2006, 7, 1), ex.getDateDebut());
+					Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
+				}
+			}
+		});
+	}
 }
 

@@ -21,6 +21,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
@@ -1038,6 +1039,13 @@ public interface TiersService {
 	 * @return l'assujettissement du contribuable valide à la date demandée (ou <code>null</code> si le contribuable n'est pas assujetti à la date en question)
 	 */
 	Assujettissement getAssujettissement(Contribuable contribuable, @Nullable RegDate date);
+
+    /**
+     * Ceci est la méthode officielle de calcul des exercices commerciaux d'une entreprise (notamment en ce qui concerne la toute première date et la toute dernière)
+     * @param entreprise une entreprise
+     * @return les exercices commerciaux de cette entreprise (jusqu'à au plus tard l'exercice courant ou, s'il n'y en a plus, le dernier exercice connu)
+     */
+    List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise);
 
     /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.

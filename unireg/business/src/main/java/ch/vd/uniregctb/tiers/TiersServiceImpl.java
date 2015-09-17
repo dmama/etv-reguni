@@ -93,6 +93,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
+import ch.vd.uniregctb.metier.bouclement.BouclementService;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.parentes.ParenteUpdateInfo;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -152,6 +154,7 @@ public class TiersServiceImpl implements TiersService {
 	private AssujettissementService assujettissementService;
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 	private FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale;
+	private BouclementService bouclementService;
 
     /**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -231,6 +234,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setFlagBlocageRembAutoCalculateurDecale(FlagBlocageRemboursementAutomatiqueCalculationRegister flagBlocageRembAutoCalculateurDecale) {
 		this.flagBlocageRembAutoCalculateurDecale = flagBlocageRembAutoCalculateurDecale;
+	}
+
+	public void setBouclementService(BouclementService bouclementService) {
+		this.bouclementService = bouclementService;
 	}
 
 	/**
@@ -4249,6 +4256,71 @@ public class TiersServiceImpl implements TiersService {
 
 		// non-assujetti...
 		return null;
+	}
+
+	@Override
+	public List<ExerciceCommercial> getExercicesCommerciaux(Entreprise entreprise) {
+		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
+		final Set<Bouclement> bouclements = entreprise.getBouclements();
+		final boolean noFors = forsPrincipaux.isEmpty();
+		final boolean noBouclements = bouclements.isEmpty();
+
+		if (noFors && noBouclements) {
+			// rien de rien...
+			return Collections.emptyList();
+		}
+
+		final RegDate dateDebutPremierExercice;
+		final RegDate dateFinDernierExercice;
+		if (noFors) {
+			// on va supposer une date de début au lendemain du premier bouclement connu
+			dateDebutPremierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDateHelper.getEarlyDate(), false).getOneDayAfter();
+
+			// la seule limite de fin sera celle de l'exercice courant
+			dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
+		}
+		else {
+			// ici, nous avons des fors principaux
+
+			// création à l'ouverture du premier for principal ? -> c'est la date de début du premier exercice
+			final ForFiscalPrincipalPM premierForPrincipal = forsPrincipaux.get(0);
+			final MotifFor premierMotif = premierForPrincipal.getMotifOuverture();
+			if (premierMotif == MotifFor.DEBUT_EXPLOITATION || noBouclements) {
+				// il s'agit donc de la création de la société, ou sinon, on n'a pas vraiment d'autre donnée de toute façon
+				dateDebutPremierExercice = premierForPrincipal.getDateDebut();
+			}
+			else {
+				// il s'agit donc d'un déménagement (ou de la création d'un établissement ou l'achat d'un immeuble...) par exemple, la PM existait
+				// déjà avant avec des données connues de bouclements
+				final RegDate dateBouclementConnueAvantDebutFor = bouclementService.getDateDernierBouclement(bouclements, premierForPrincipal.getDateDebut(), false);
+				if (dateBouclementConnueAvantDebutFor == null) {
+					// pas de bouclement connu avant le démarrage du for, on prend la date du for
+					// TODO [SIPM] date de début du for ou une année avant le premier bouclement connu après le début du for ?
+					dateDebutPremierExercice = premierForPrincipal.getDateDebut();
+				}
+				else {
+					dateDebutPremierExercice = dateBouclementConnueAvantDebutFor.getOneDayAfter();
+				}
+			}
+
+			// date de fin, maintenant ?
+
+			final ForFiscalPrincipalPM dernierForPrincipal = forsPrincipaux.get(forsPrincipaux.size() - 1);
+			if (dernierForPrincipal.getDateFin() != null) {
+				// si le dernier for principal est fermé, on s'arrête là
+				dateFinDernierExercice = dernierForPrincipal.getDateFin();
+			}
+			else if (noBouclements) {
+				// arbitrairement, fin de l'exercice à la fin de cette année
+				dateFinDernierExercice = RegDate.get(RegDate.get().year(), 12, 31);
+			}
+			else {
+				// for encore ouvert -> la seule limite de fin sera celle de l'exercice courant
+				dateFinDernierExercice = bouclementService.getDateProchainBouclement(bouclements, RegDate.get(), true);
+			}
+		}
+
+		return bouclementService.getExercicesCommerciaux(bouclements, new DateRangeHelper.Range(dateDebutPremierExercice, dateFinDernierExercice), false);
 	}
 
 	/**

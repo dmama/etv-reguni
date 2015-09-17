@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -24,11 +23,10 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		final AssujettissementService as = getBean(AssujettissementService.class, "assujettissementService");
-		final BouclementService bs = getBean(BouclementService.class, "bouclementService");
 		final ParametreAppService pas = getBean(ParametreAppService.class, "parametreAppService");
 		service = new PeriodeImpositionServiceImpl();
 		service.setAssujettissementService(as);
-		service.setBouclementService(bs);
+		service.setTiersService(tiersService);
 		service.setParametreAppService(pas);
 		service.afterPropertiesSet();
 	}

@@ -71,6 +71,7 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="flagBlocageRembAutoCalculateurDecale" ref="flagBlocageRemboursementAutoCalculateurDecale"/>
+		<property name="bouclementService" ref="bouclementService"/>
 	</bean>
 
 	<bean id="flagBlocageRemboursementAutoCalculateurDecale" class="ch.vd.uniregctb.tiers.FlagBlocageRemboursementAutomatiqueInterceptor">
@@ -226,12 +227,12 @@
 
 	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
 		<property name="validationService" ref="validationService"/>
-		<property name="bouclementService" ref="bouclementService"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
 		<property name="assujettissementService" ref="assujettissementService" />
-		<property name="bouclementService" ref="bouclementService" />
+		<property name="tiersService" ref="tiersService" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 

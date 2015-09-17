@@ -12,13 +12,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -29,14 +29,14 @@ import ch.vd.uniregctb.validation.ValidationService;
 public class AssujettissementServiceImpl implements AssujettissementService, InitializingBean {
 
 	private ValidationService validationService = null;
-	private BouclementService bouclementService;
+	private TiersService tiersService;
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
 	}
 
-	public void setBouclementService(BouclementService bouclementService) {
-		this.bouclementService = bouclementService;
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class AssujettissementServiceImpl implements AssujettissementService, Ini
 		// les entreprises sont assujetties selon le régime des personnes morales
 		//
 
-		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator(bouclementService);
+		final AssujettissementPersonnesMoralesCalculator pmCalculator = new AssujettissementPersonnesMoralesCalculator(tiersService);
 		addAssujettissementCalculator(map, Entreprise.class, pmCalculator);
 
 		return map;

@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Implémentation du service de détermination des périodes d'imposition à partir de l'assujettissement d'un contribuable.
@@ -25,8 +25,8 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, InitializingBean {
 
 	private AssujettissementService assujettissementService;
-	private BouclementService bouclementService;
 	private ParametreAppService parametreAppService;
+	private TiersService tiersService;
 
 	/**
 	 * Le calculateur utilisé pour les contribuables PP
@@ -44,8 +44,8 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setBouclementService(BouclementService bouclementService) {
-		this.bouclementService = bouclementService;
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -97,7 +97,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final PeriodeImpositionCalculator<Entreprise> pmCalculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreAppService, bouclementService);
+		final PeriodeImpositionCalculator<Entreprise> pmCalculator = new PeriodeImpositionPersonnesMoralesCalculator(parametreAppService, tiersService);
 		this.ppCalculator = new PeriodeImpositionPersonnesPhysiquesCalculator(parametreAppService);
 		this.calculators = buildAssujettissementCalculators(this.ppCalculator, pmCalculator);
 	}

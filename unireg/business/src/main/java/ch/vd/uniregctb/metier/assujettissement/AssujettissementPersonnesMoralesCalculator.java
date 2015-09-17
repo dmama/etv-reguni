@@ -18,7 +18,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.MovingWindow;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.metier.common.ForFiscalPrincipalContext;
 import ch.vd.uniregctb.metier.common.Fraction;
@@ -28,16 +27,17 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AssujettissementPersonnesMoralesCalculator implements AssujettissementCalculator<Entreprise> {
 
-	private final BouclementService bouclementService;
+	private final TiersService tiersService;
 
-	public AssujettissementPersonnesMoralesCalculator(BouclementService bouclementService) {
-		this.bouclementService = bouclementService;
+	public AssujettissementPersonnesMoralesCalculator(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	/**
@@ -90,8 +90,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			return null;
 		}
 
-		// première chose, recalculer les exercices commerciaux de l'entreprise, depuis l'ouverture du premier for principal jusque et y compris l'exercice courant
-		final List<ExerciceCommercial> exercices = bouclementService.getExercicesCommerciaux(entreprise.getBouclements(), new DateRangeHelper.Range(fpt.principauxPM.get(0).getDateDebut(), RegDate.get()));
+		// première chose, recalculer les exercices commerciaux de l'entreprise jusque et y compris l'exercice courant
+		final List<ExerciceCommercial> exercices = tiersService.getExercicesCommerciaux(entreprise);
 
 		// les fractionnements de principe de l'assujettissement (départs/arrivées HS, créations, dissolutions...)
 		final Fractionnements<ForFiscalPrincipalPM> fractionnements = new FractionnementsAssujettissementPM(fpt.principauxPM);

@@ -274,9 +274,9 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testExtractionExercicesCommerciauxEnAbsenceDeBouclement() throws Exception {
+	public void testExtractionExercicesCommerciauxSansRognageEnAbsenceDeBouclement() throws Exception {
 		final DateRange range = new DateRangeHelper.Range(date(2003, 6, 12), date(2006, 2, 14));
-		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range);
+		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range, true);
 		Assert.assertNotNull(exs);
 		Assert.assertEquals(1, exs.size());
 
@@ -287,7 +287,20 @@ public class BouclementServiceTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testExtractionExercicesCommerciaux() throws Exception {
+	public void testExtractionExercicesCommerciauxAvecRognageEnAbsenceDeBouclement() throws Exception {
+		final DateRange range = new DateRangeHelper.Range(date(2003, 6, 12), date(2006, 2, 14));
+		final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(null, range, false);
+		Assert.assertNotNull(exs);
+		Assert.assertEquals(1, exs.size());
+
+		final ExerciceCommercial ex = exs.get(0);
+		Assert.assertNotNull(ex);
+		Assert.assertEquals(range.getDateDebut(), ex.getDateDebut());
+		Assert.assertEquals(range.getDateFin(), ex.getDateFin());
+	}
+
+	@Test
+	public void testExtractionExercicesCommerciauxSansRognage() throws Exception {
 		// exercices commerciaux attendus : ... -> 31.03.2015, 01.04.2015 -> 30.09.2016, 01.10.2016 -> 30.09.2017, ...
 		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
 		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(6, 30), 12),
@@ -296,7 +309,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// période 2014-2017
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2017, 12, 31));
-			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range);
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
 			Assert.assertNotNull(exs);
 			Assert.assertEquals(4, exs.size());
 			{
@@ -328,7 +341,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// période 2014
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
-			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range);
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
 			Assert.assertNotNull(exs);
 			Assert.assertEquals(1, exs.size());
 			{
@@ -342,7 +355,7 @@ public class BouclementServiceTest extends WithoutSpringTest {
 		// période 2015
 		{
 			final DateRange range = new DateRangeHelper.Range(date(2015, 1, 1), date(2015, 12, 31));
-			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range);
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, true);
 			Assert.assertNotNull(exs);
 			Assert.assertEquals(2, exs.size());
 			{
@@ -356,6 +369,80 @@ public class BouclementServiceTest extends WithoutSpringTest {
 				Assert.assertNotNull(ex);
 				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
 				Assert.assertEquals(date(2016, 9, 30), ex.getDateFin());
+			}
+		}
+	}
+
+	@Test
+	public void testExtractionExercicesCommerciauxAvecRognage() throws Exception {
+		// exercices commerciaux attendus : ... -> 31.03.2015, 01.04.2015 -> 30.09.2016, 01.10.2016 -> 30.09.2017, ...
+		final List<Bouclement> bouclements = Arrays.asList(buildTransientBouclement(date(2015, 1, 1), DayMonth.get(3, 31), 12),
+		                                                   buildTransientBouclement(date(2015, 12, 1), DayMonth.get(6, 30), 12),
+		                                                   buildTransientBouclement(date(2016, 5, 1), DayMonth.get(9, 30), 12));
+
+		// période 2014-2017
+		{
+			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2017, 12, 31));
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
+			Assert.assertNotNull(exs);
+			Assert.assertEquals(4, exs.size());
+			{
+				final ExerciceCommercial ex = exs.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+			}
+			{
+				final ExerciceCommercial ex = exs.get(1);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2016, 9, 30), ex.getDateFin());
+			}
+			{
+				final ExerciceCommercial ex = exs.get(2);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2016, 10, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2017, 9, 30), ex.getDateFin());
+			}
+			{
+				final ExerciceCommercial ex = exs.get(3);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2017, 10, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2017, 12, 31), ex.getDateFin());
+			}
+		}
+
+		// période 2014
+		{
+			final DateRange range = new DateRangeHelper.Range(date(2014, 1, 1), date(2014, 12, 31));
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
+			Assert.assertNotNull(exs);
+			Assert.assertEquals(1, exs.size());
+			{
+				final ExerciceCommercial ex = exs.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2014, 1, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2014, 12, 31), ex.getDateFin());
+			}
+		}
+
+		// période 2015
+		{
+			final DateRange range = new DateRangeHelper.Range(date(2015, 1, 1), date(2015, 12, 31));
+			final List<ExerciceCommercial> exs = service.getExercicesCommerciaux(bouclements, range, false);
+			Assert.assertNotNull(exs);
+			Assert.assertEquals(2, exs.size());
+			{
+				final ExerciceCommercial ex = exs.get(0);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2015, 1, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2015, 3, 31), ex.getDateFin());
+			}
+			{
+				final ExerciceCommercial ex = exs.get(1);
+				Assert.assertNotNull(ex);
+				Assert.assertEquals(date(2015, 4, 1), ex.getDateDebut());
+				Assert.assertEquals(date(2015, 12, 31), ex.getDateFin());
 			}
 		}
 	}

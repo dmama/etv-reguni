@@ -40,7 +40,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl;
-import ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -126,7 +125,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		warmer.setTiersDAO(tiersDAO);
 
 		final AssujettissementServiceImpl assujettissementService = new AssujettissementServiceImpl();
-		assujettissementService.setBouclementService(new BouclementServiceImpl());
+		assujettissementService.setTiersService(tiersService);
 		assujettissementService.setValidationService(new ValidationServiceImpl());
 		assujettissementService.afterPropertiesSet();
 

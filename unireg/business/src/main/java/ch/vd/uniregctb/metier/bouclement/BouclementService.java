@@ -33,9 +33,10 @@ public interface BouclementService {
 	/**
 	 * @param bouclements liste des entités {@link ch.vd.uniregctb.tiers.Bouclement} d'une entreprise
 	 * @param range range de dates (<b>ne doit pas être ouvert ni à gauche ni à droite !</b>)
-	 * @return la liste ordonnée des exercices commerciaux qui <b>intersectent</b> (= au moins un jour en commun) le range donné
+	 * @param intersecting <code>true</code> si les exercices renvoyés sont ceux qui intersectent le range donné, sans rognage, <code>false</code> s'il faut rogner
+	 * @return la liste ordonnée des exercices commerciaux <b>bornés</b> avec le range donné
 	 */
-	List<ExerciceCommercial> getExercicesCommerciaux(Collection<Bouclement> bouclements, @NotNull DateRange range);
+	List<ExerciceCommercial> getExercicesCommerciaux(Collection<Bouclement> bouclements, @NotNull DateRange range, boolean intersecting);
 
 	/**
 	 * Utilisable dans la migration des PM du mainframe en tout cas, pour construire une liste de {@link Bouclement} à partir d'une série de dates
