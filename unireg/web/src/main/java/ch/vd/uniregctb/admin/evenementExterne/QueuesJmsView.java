@@ -7,7 +7,7 @@ public class QueuesJmsView {
 	private String nom;
 	private String description;
 	private int nombreMessagesRecues;
-	private int nombreConsommateur;
+	private int nombreConsommateurs;
 	private boolean running;
 
 	// dynamic
@@ -19,7 +19,7 @@ public class QueuesJmsView {
 		this.description = description;
 		this.nombreMessagesRecues = nombreMessagesRecues;
 		this.running = isRunning;
-		this.nombreConsommateur = nombreConsommateur;
+		this.nombreConsommateurs = nombreConsommateur;
 
 	}
 
@@ -55,12 +55,12 @@ public class QueuesJmsView {
 		this.running = isRunning;
 	}
 
-	public int getNombreConsommateur() {
-		return nombreConsommateur;
+	public int getNombreConsommateurs() {
+		return nombreConsommateurs;
 	}
 
-	public void setNombreConsommateur(int nombreConsommateur) {
-		this.nombreConsommateur = nombreConsommateur;
+	public void setNombreConsommateurs(int nombreConsommateurs) {
+		this.nombreConsommateurs = nombreConsommateurs;
 	}
 
 	public String getDescription() {
