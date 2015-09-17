@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSource;
@@ -220,6 +221,12 @@ public abstract class EnumHelper {
 	                                                                                                         CategorieImpotSource.CREANCIERS_HYPOTHECAIRES, CategorieImpotSource.LOI_TRAVAIL_AU_NOIR,
 	                                                                                                         CategorieImpotSource.PRESTATIONS_PREVOYANCE, CategorieImpotSource.REGULIERS,
 	                                                                                                         CategorieImpotSource.PARTICIPATIONS_HORS_SUISSE, CategorieImpotSource.EFFEUILLEUSES));
+
+	public static final Set<TypeAvatar> TA_IGNORES_V1 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
+
+	public static final Set<TypeAvatar> TA_IGNORES_V2 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
+
+	public static final Set<TypeAvatar> TA_IGNORES_V3 = Collections.unmodifiableSet(EnumSet.of(TypeAvatar.ETABLISSEMENT));
 
 	private static void checkCategorieImpotSourceSupportee(Set<CategorieImpotSource> allowed, CategorieImpotSource candidate) {
 		if (!allowed.contains(candidate)) {

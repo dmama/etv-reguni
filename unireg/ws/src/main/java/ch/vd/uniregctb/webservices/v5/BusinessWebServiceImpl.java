@@ -70,6 +70,7 @@ import ch.vd.unireg.xml.party.withholding.v1.DebtorInfo;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.avatar.AvatarService;
 import ch.vd.uniregctb.avatar.ImageData;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -106,6 +107,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -133,6 +135,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 	protected static final int MAX_BATCH_SIZE = 100;
 
 	private static final Set<CategorieImpotSource> CIS_SUPPORTEES = EnumHelper.getCategoriesImpotSourceAutorisees();
+
+	private static final Set<TypeAvatar> TA_IGNORES = EnumHelper.getTypesAvatarsIgnores();
 
 	private static final Map<Class<? extends Tiers>, PartyFactory<?>> PARTY_FACTORIES = buildPartyFactoryMap();
 
@@ -251,7 +255,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				if (tiers == null) {
+				// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
+				if (tiers == null || tiers instanceof Etablissement) {
 					throw new TiersNotFoundException(partyNo);
 				}
 				tiers.setBlocageRemboursementAutomatique(blocked);
@@ -265,7 +270,8 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 			@Override
 			public Boolean doInTransaction(TransactionStatus status) {
 				final Tiers tiers = context.tiersService.getTiers(partyNo);
-				if (tiers == null) {
+				// [SIPM] Les établissements étaient complètement ignorés avant la v6 (= en fait, il n'y en avait pas, mais maintenant, ils arrivent...)
+				if (tiers == null || tiers instanceof Etablissement) {
 					throw new TiersNotFoundException(partyNo);
 				}
 				return tiers.getBlocageRemboursementAutomatique() != null && tiers.getBlocageRemboursementAutomatique() ? Boolean.TRUE : Boolean.FALSE;
@@ -280,9 +286,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 		final OrdinaryTaxDeclarationAckBatchResult result = new OrdinaryTaxDeclarationAckBatchResult();
 		final BatchTransactionTemplateWithResults<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult> template = new BatchTransactionTemplateWithResults<>(request.getDeclaration(),
-		                                                                                                                                                                DECLARATION_ACK_BATCH_SIZE,
-		                                                                                                                                                                Behavior.REPRISE_AUTOMATIQUE,
-		                                                                                                                                                                context.transactionManager, null);
+		                                                                                                                                                        DECLARATION_ACK_BATCH_SIZE,
+		                                                                                                                                                        Behavior.REPRISE_AUTOMATIQUE,
+		                                                                                                                                                        context.transactionManager, null);
 		template.execute(result, new BatchWithResultsCallback<TaxDeclarationKey, OrdinaryTaxDeclarationAckBatchResult>() {
 			@Override
 			public boolean doInTransaction(List<TaxDeclarationKey> keys, OrdinaryTaxDeclarationAckBatchResult result) throws Exception {
@@ -546,7 +552,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 				final List<Long> longList = context.tiersDAO.getListeCtbModifies(since, until);
 				final List<Integer> intList = new ArrayList<>(longList.size());
 				for (Long id : longList) {
-					intList.add(id.intValue());
+					// [SIPM] il faut écarter les établissements (les identifiants ne sont pas utilisables avec GetParty/GetParties) et ils étaient de fait écartés auparavant car il n'y en avait pas...
+					if (id != null && (id < Etablissement.ETB_GEN_FIRST_ID || id > Etablissement.ETB_GEN_LAST_ID)) {
+						intList.add(id.intValue());
+					}
 				}
 				return new PartyNumberList(intList);
 			}
@@ -622,7 +631,9 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 		final List<TiersIndexedData> coreResult = tiersSearcher.search(criteria);
 		final List<PartyInfo> result = new ArrayList<>(coreResult.size());
 		for (TiersIndexedData data : coreResult) {
-			if (data != null && (data.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(data.getCategorieImpotSource()))) {
+			if (data != null
+					&& (data.getCategorieImpotSource() == null || CIS_SUPPORTEES.contains(data.getCategorieImpotSource()))
+					&& (data.getTypeAvatar() == null || !TA_IGNORES.contains(data.getTypeAvatar()))) {
 				final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXMLv3(data);
 				result.add(info);
 			}

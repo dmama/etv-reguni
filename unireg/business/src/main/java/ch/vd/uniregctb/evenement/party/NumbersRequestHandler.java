@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.party;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -97,13 +98,13 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 	private static List<TypeTiers> party2tiers(PartyType type) {
 		switch (type) {
 		case CORPORATION:
-			return Arrays.asList(TypeTiers.ENTREPRISE, TypeTiers.ETABLISSEMENT, TypeTiers.AUTRE_COMMUNAUTE, TypeTiers.COLLECTIVITE_ADMINISTRATIVE);
+			return Arrays.asList(TypeTiers.ENTREPRISE, TypeTiers.AUTRE_COMMUNAUTE, TypeTiers.COLLECTIVITE_ADMINISTRATIVE);
 		case DEBTOR:
-			return Arrays.asList(TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+			return Collections.singletonList(TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
 		case HOUSEHOLD:
-			return Arrays.asList(TypeTiers.MENAGE_COMMUN);
+			return Collections.singletonList(TypeTiers.MENAGE_COMMUN);
 		case NATURAL_PERSON:
-			return Arrays.asList(TypeTiers.PERSONNE_PHYSIQUE);
+			return Collections.singletonList(TypeTiers.PERSONNE_PHYSIQUE);
 		default:
 			throw new IllegalArgumentException("Type de party inconnu = [" + type + "]");
 		}

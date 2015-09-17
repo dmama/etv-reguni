@@ -26,6 +26,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationMethod;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.PartyType;
+import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
@@ -38,6 +39,10 @@ public abstract class EnumHelper {
 
 	public static Set<CategorieImpotSource> getCategoriesImpotSourceAutorisees() {
 		return ch.vd.uniregctb.xml.EnumHelper.CIS_SUPPORTEES_V1;
+	}
+
+	public static Set<TypeAvatar> getTypesAvatarsIgnores() {
+		return ch.vd.uniregctb.xml.EnumHelper.TA_IGNORES_V1;
 	}
 
 	public static MaritalStatus coreToWeb(ch.vd.uniregctb.type.EtatCivil etatCivil) {
