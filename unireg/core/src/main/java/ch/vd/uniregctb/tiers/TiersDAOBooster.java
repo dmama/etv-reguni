@@ -347,6 +347,11 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
+		return target.addAndSave(entreprise, regime);
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}

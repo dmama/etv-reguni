@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent;
 
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterEntryStatusConverter;
@@ -26,13 +26,12 @@ public class RCEntSiteOrganisationHelper {
 	private static final UidRegisterTypeOfOrganisationConverter UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER = new UidRegisterTypeOfOrganisationConverter();
 	private static final UidRegisterLiquidationReasonConverter UID_REGISTER_LIQUIDATION_REASON_CONVERTER = new UidRegisterLiquidationReasonConverter();
 
-	public static SiteOrganisation get(final OrganisationLocation rcEntLocation) {
+	public static SiteOrganisationRCEnt get(final OrganisationLocation rcEntLocation) {
 
 		final OrganisationLocation.RCEntRCData rc = rcEntLocation.getRc();
 		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();
 
-		return new SiteOrganisation(
-				rcEntLocation.getCantonalId(),
+		return new SiteOrganisationRCEnt(
 				RCEntHelper.convert(rcEntLocation.getName()),
 				createDonneesRC(rc),
 				createDonneesIDE(uid),

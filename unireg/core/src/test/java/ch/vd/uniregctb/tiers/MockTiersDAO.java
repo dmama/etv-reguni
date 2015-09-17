@@ -310,6 +310,11 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
 		throw new NotImplementedException();
 	}

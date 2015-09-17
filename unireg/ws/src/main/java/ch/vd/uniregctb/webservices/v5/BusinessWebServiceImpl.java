@@ -92,6 +92,7 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -199,6 +200,10 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setServiceCivil(ServiceCivilService service) {
 		context.serviceCivilService = service;
+	}
+
+	public void setServiceOrganisation(ServiceOrganisationService service) {
+		context.serviceOrganisationService = service;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate template) {

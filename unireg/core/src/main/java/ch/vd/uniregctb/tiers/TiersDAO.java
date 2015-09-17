@@ -377,6 +377,14 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement);
 
 	/**
+	 * Ajoute un nouveau régime fiscal à l'entreprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param regime le régime fiscal à ajouter
+	 * @return une nouvelle instance de régime fiscal avec son ID renseigné
+	 */
+	RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime);
+
+	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
 	 *
 	 *

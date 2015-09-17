@@ -8,9 +8,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
-import ch.vd.unireg.interfaces.organisation.mock.DefaultMockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationBuilder;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -68,7 +68,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationBuilder.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne.getNoOFS()));
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne.getNoOFS()));
 			}
 		});
 
@@ -137,15 +137,18 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
 
-		serviceOrganisation.setUp(new DefaultMockServiceOrganisation());
-
-		final Entreprise entreprise = new Entreprise();
-		entreprise.setNumeroEntreprise(noOrganisation);
-		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
-			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				tiersDAO.save(entreprise);
-				return entreprise;
+			protected void init() {
+				final MockOrganisation organisation = addOrganisation(noOrganisation, date(2015, 4, 29), "Springbok SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+			}
+		});
+
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				return entreprise.getNumero();
 			}
 		});
 
@@ -166,15 +169,13 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 
 		buildProcessor(translator);
 
-		// Création de l'événement
-		final Long evtId = 12344321L;
-
-		final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
-
 		// Persistence événement
-		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
+				// Création de l'événement
+				final Long evtId = 12344321L;
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, FOSC_COMMUNICATION_DANS_FAILLITE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
 				return hibernateTemplate.merge(event).getId();
 			}
 		});

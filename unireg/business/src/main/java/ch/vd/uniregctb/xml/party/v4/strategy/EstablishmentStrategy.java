@@ -38,8 +38,13 @@ public class EstablishmentStrategy extends TaxPayerStrategy<Establishment> {
 		super.initBase(to, from, context);
 
 		final Etablissement etb = (Etablissement) from;
-		to.setName(etb.getRaisonSociale());
-		to.setSign(etb.getEnseigne());
+		if (etb.isConnuAuCivil()) {
+			// TODO SIPM aller chercher les données dans RCEnt
+		}
+		else {
+			to.setName(etb.getRaisonSociale());
+			to.setSign(etb.getEnseigne());
+		}
 	}
 
 	@Override

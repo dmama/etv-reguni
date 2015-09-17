@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
@@ -48,11 +49,16 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
+import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
@@ -61,8 +67,10 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
@@ -70,6 +78,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -83,6 +92,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
@@ -951,4 +961,40 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		ie.setNumeroIde(numeroIDE);
 		return tiersDAO.addAndSave(ctb, ie);
 	}
+
+    protected DonneesRegistreCommerce addDonneesRegistreCommerce(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique, MontantMonetaire capital) {
+        final DonneesRegistreCommerce donneesRC = new DonneesRegistreCommerce(dateDebut, dateFin, raisonSociale, capital, formeJuridique);
+        e.addDonneesRC(donneesRC);
+        return donneesRC;
+    }
+
+    protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockCommune commune) {
+        final DomicileEtablissement domicile = new DomicileEtablissement(dateDebut, dateFin, commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC, commune.getNoOFS(), etb);
+        return tiersDAO.addAndSave(etb, domicile);
+    }
+
+    protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockPays pays) {
+        final DomicileEtablissement domicile = new DomicileEtablissement(dateDebut, dateFin, TypeAutoriteFiscale.PAYS_HS, pays.getNoOFS(), etb);
+        return tiersDAO.addAndSave(etb, domicile);
+    }
+
+    protected RegimeFiscal addRegimeFiscalVD(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
+        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.VD, type);
+        return tiersDAO.addAndSave(entreprise, rf);
+    }
+
+    protected AllegementFiscal addAllegementFiscalFederal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
+        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
+        return tiersDAO.addAndSave(entreprise, af);
+    }
+
+    protected AllegementFiscal addAllegementFiscalCantonal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
+        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CANTON, null);
+        return tiersDAO.addAndSave(entreprise, af);
+    }
+
+    protected AllegementFiscal addAllegementFiscalCommunal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement, @Nullable MockCommune commune) {
+        final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.COMMUNE, commune != null ? commune.getNoOFS() : null);
+        return tiersDAO.addAndSave(entreprise, af);
+    }
 }

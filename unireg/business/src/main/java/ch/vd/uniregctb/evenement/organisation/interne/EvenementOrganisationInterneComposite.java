@@ -21,8 +21,12 @@ public class EvenementOrganisationInterneComposite extends EvenementOrganisation
 
 	private List<EvenementOrganisationInterne> listEvtEch;
 
-	public EvenementOrganisationInterneComposite(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,  EvenementOrganisationContext context, EvenementOrganisationOptions options, List<EvenementOrganisationInterne> listEvtEch) throws
-			EvenementOrganisationException {
+	public EvenementOrganisationInterneComposite(EvenementOrganisation evenement,
+	                                             Organisation organisation,
+	                                             Entreprise entreprise, 
+	                                             EvenementOrganisationContext context,
+	                                             EvenementOrganisationOptions options,
+	                                             List<EvenementOrganisationInterne> listEvtEch) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 		if (listEvtEch == null) {
 			throw new NullPointerException("Impossible de construire un événement composite sans une liste d'événements le composant");

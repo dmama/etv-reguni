@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -26,7 +26,7 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvert() throws Exception {
-		DateRanged<String> range = new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA");
+		DateRangeHelper.Ranged<String> range = new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA");
 
 		ch.vd.unireg.interfaces.organisation.data.DateRanged<String> rangeResult = RCEntHelper.convert(range);
 		{
@@ -39,10 +39,10 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertList() throws Exception {
-		List<DateRanged<String>> ranges = Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3")
+		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3")
 		);
 
 		List<ch.vd.unireg.interfaces.organisation.data.DateRanged<String>> rangesResult = RCEntHelper.convert(ranges);
@@ -65,21 +65,21 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertMap() throws Exception {
-		Map<String, List<DateRanged<String>>> rangeMap = new HashMap<>();
+		Map<String, List<DateRangeHelper.Ranged<String>>> rangeMap = new HashMap<>();
 		rangeMap.put("KEY1", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA11"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA12"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA13")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA11"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA12"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA13")
 		));
 		rangeMap.put("KEY2", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA21"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA22"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA23")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA21"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA22"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA23")
 		));
 		rangeMap.put("KEY3", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA31"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA32"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA33")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA31"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA32"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA33")
 		));
 
 		Map<String, List<ch.vd.unireg.interfaces.organisation.data.DateRanged<String>>> rangeMapResult = RCEntHelper.convert(rangeMap);
@@ -138,7 +138,7 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertAndMap() throws Exception {
-		DateRanged<String> range = new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA");
+		DateRangeHelper.Ranged<String> range = new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA");
 
 		ch.vd.unireg.interfaces.organisation.data.DateRanged<String> rangeResult = RCEntHelper.convertAndMap(range, converter);
 		{
@@ -150,11 +150,11 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertAndMapList() throws Exception {
-		List<DateRanged<String>> ranges = Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3"),
-				new DateRanged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
+		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
 		);
 
 		List<ch.vd.unireg.interfaces.organisation.data.DateRanged<String>> rangesResult = RCEntHelper.convertAndMap(ranges, converter);
@@ -177,24 +177,24 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertAndMapMap() throws Exception {
-		Map<String, List<DateRanged<String>>> rangeMap = new HashMap<>();
+		Map<String, List<DateRangeHelper.Ranged<String>>> rangeMap = new HashMap<>();
 		rangeMap.put("KEY1", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA11"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA12"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA13"),
-				new DateRanged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA14")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA11"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA12"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA13"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA14")
 		));
 		rangeMap.put("KEY2", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA21"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA22"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA23"),
-				new DateRanged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA24")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA21"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA22"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA23"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA24")
 		));
 		rangeMap.put("KEY3", Arrays.asList(
-				new DateRanged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA31"),
-				new DateRanged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA32"),
-				new DateRanged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA33"),
-				new DateRanged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA34")
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA31"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA32"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA33"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA34")
 		));
 
 
@@ -254,9 +254,9 @@ public class RCEntHelperTest {
 
 	@Test
 	public void testConvertNullReturnNull() {
-		DateRanged<String> nullDr = null;
-		List<DateRanged<String>> nullDrList = null;
-		Map<String, List<DateRanged<String>>> nullDrMap = null;
+		DateRangeHelper.Ranged<String> nullDr = null;
+		List<DateRangeHelper.Ranged<String>> nullDrList = null;
+		Map<String, List<DateRangeHelper.Ranged<String>>> nullDrMap = null;
 
 		assertThat(RCEntHelper.convert(nullDr), nullValue());
 		assertThat(RCEntHelper.convert(nullDrList), nullValue());

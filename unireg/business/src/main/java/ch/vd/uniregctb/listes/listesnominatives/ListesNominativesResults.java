@@ -147,7 +147,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		}
 		else if (ctb instanceof Entreprise) {
 			final Entreprise pm = (Entreprise) ctb;
-			final String raisonSociale = tiersService.getRaisonSocialeAbregee(pm);
+			final String raisonSociale = tiersService.getRaisonSociale(pm);
 
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);

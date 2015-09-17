@@ -9,7 +9,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationBuilder;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -42,7 +43,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		@Override
 		protected void init() {}
 
-		public void addOrganisation(Organisation org) {
+		public void addOrganisation(MockOrganisation org) {
 			super.addOrganisation(org);
 		}
 	}
@@ -205,7 +206,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	@Test
 	public void testCasEntrepriseHCAvecSiegeSecondaireVaud() throws EvenementOrganisationException {
 		// Cas hors Vaud avec un site secondaire sur Vaud
-		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000,  "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Lausanne.getNoOFS(), null, null,
+		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Lausanne.getNoOFS(), null, null,
 		                                                                    null, null, null, null, null, null));
 		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
 	}
@@ -219,25 +220,25 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationAndExpectNull(222222001L);
 
 		// Avec commune forme juridique inconnue
-		addOrg(MockOrganisationBuilder.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, Lausanne.getNoOFS(), null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, Lausanne.getNoOFS(), null, null, null, null));
 		tryCreationEventAndCheckResult(222222003L, TraitementManuel.class);
 
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)
-		addOrg(MockOrganisationBuilder.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, null, null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, null, null, null, null, null));
 		tryCreationAndExpectNull(222222002L);
 
 		// Cas hors Vaud aucun site sur Vaud
-		addOrg(MockOrganisationBuilder.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Zurich.getNoOFS(), null, null, null, null, null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Zurich.getNoOFS(), null, null, null, null, null, null, null, null));
 		tryCreationAndExpectNull(222222004L);
 
 	}
 
 	private void createAddOrg(long cantonalId, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiege) {
-		addOrg(MockOrganisationBuilder.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, noOfsSiege));
+		addOrg(MockOrganisationFactory.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, noOfsSiege));
 	}
 
-	private void addOrg(Organisation org) {
+	private void addOrg(MockOrganisation org) {
 		((OpenMockServiceOrganisation) serviceOrganisation.getUltimateTarget())
 				.addOrganisation(org);
 	}
@@ -246,7 +247,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		final long evtId = 12121212L;
 		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE, "abcdefg", IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
 		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 
@@ -257,7 +258,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		final long evtId = 12121212L;
 		final EvenementOrganisation event = new EvenementOrganisation(evtId, IDE, "abcdefg", IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE, RegDate.get(2015, 9, 7), noOrganisation, A_TRAITER);
 		Organisation organisation = serviceOrganisation.getOrganisationHistory(noOrganisation);
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		EvenementOrganisationInterne interne = strategy.matchAndCreate(event, organisation, entreprise, context, options);
 

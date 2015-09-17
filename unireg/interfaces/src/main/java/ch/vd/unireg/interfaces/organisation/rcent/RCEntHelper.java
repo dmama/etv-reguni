@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
 
@@ -16,7 +17,7 @@ public class RCEntHelper {
 	 * @param <U> Le type de la donnée enveloppée dans le DateRanged.
 	 * @return Un nouveau DateRanged Unireg avec la donnée.
 	 */
-	public static <U> DateRanged<U> convert(ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> rcEntDr) {
+	public static <U> DateRanged<U> convert(DateRangeHelper.Ranged<U> rcEntDr) {
 		if (rcEntDr == null) {
 			return null;
 		}
@@ -29,12 +30,12 @@ public class RCEntHelper {
 	 * @param <U> Le type de la donnée enveloppée dans les DateRanged de la liste.
 	 * @return Une nouvelle liste de DateRanged Unireg, avec les données.
 	 */
-	public static <U> List<DateRanged<U>> convert(List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>> rcEntDrList) {
+	public static <U> List<DateRanged<U>> convert(List<DateRangeHelper.Ranged<U>> rcEntDrList) {
 		if (rcEntDrList == null) {
 			return null;
 		}
-		List<DateRanged<U>> drList = new ArrayList<>(rcEntDrList.size());
-		for (ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr : rcEntDrList) {
+		final List<DateRanged<U>> drList = new ArrayList<>(rcEntDrList.size());
+		for (DateRangeHelper.Ranged<U> dr : rcEntDrList) {
 			drList.add(convert(dr));
 		}
 		return drList;
@@ -48,12 +49,12 @@ public class RCEntHelper {
 	 * @param <U> Le type de la donnée enveloppée dans les DateRanged des listes.
 	 * @return Une nouvelle Map de listes de DateRanged Unireg, avec les données.
 	 */
-	public static <K, U> Map<K, List<DateRanged<U>>> convert(Map<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> rcEntDrListMap) {
+	public static <K, U> Map<K, List<DateRanged<U>>> convert(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap) {
 		if (rcEntDrListMap == null) {
 			return null;
 		}
-		HashMap<K, List<DateRanged<U>>> map = new HashMap<>(rcEntDrListMap.size());
-		for (Map.Entry<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> e : rcEntDrListMap.entrySet()) {
+		final Map<K, List<DateRanged<U>>> map = new HashMap<>(rcEntDrListMap.size());
+		for (Map.Entry<K, List<DateRangeHelper.Ranged<U>>> e : rcEntDrListMap.entrySet()) {
 			map.put(e.getKey(), convert(e.getValue()));
 		}
 		return map;
@@ -68,8 +69,8 @@ public class RCEntHelper {
 	 * @param <U> Le type de la donnée enveloppée dans le DateRanged RCEnt en entrée.
 	 * @return
 	 */
-	public static <R, U> DateRanged<R> convertAndMap(ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> rcEntDr,
-	                                                  Converter<U, R> mapper) {
+	public static <R, U> DateRanged<R> convertAndMap(DateRangeHelper.Ranged<U> rcEntDr,
+	                                                 Converter<? super U, ? extends R> mapper) {
 		if (rcEntDr == null) {
 			return null;
 		}
@@ -85,13 +86,13 @@ public class RCEntHelper {
 	 * @param <R> Le type des donnée enveloppée dans les DateRanged RCEnt en entrée.
 	 * @return Une nouvelle liste de DateRanged Unireg, avec les données transformées.
 	 */
-	public static <U, R> List<DateRanged<R>> convertAndMap(List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>> rcEntDrList,
-	                                                       Converter<U, R> mapper) {
+	public static <U, R> List<DateRanged<R>> convertAndMap(List<DateRangeHelper.Ranged<U>> rcEntDrList,
+	                                                       Converter<? super U, ? extends R> mapper) {
 		if (rcEntDrList == null) {
 			return null;
 		}
-		List<DateRanged<R>> drList = new ArrayList<>(rcEntDrList.size());
-		for (ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U> dr : rcEntDrList) {
+		final List<DateRanged<R>> drList = new ArrayList<>(rcEntDrList.size());
+		for (DateRangeHelper.Ranged<U> dr : rcEntDrList) {
 			drList.add(
 					convertAndMap(dr, mapper)
 			);
@@ -109,13 +110,13 @@ public class RCEntHelper {
 	 * @param <R> Le type des donnée enveloppée dans les DateRanged RCEnt en entrée.
 	 * @return Une nouvelle Map de listes de DateRanged Unireg, avec les données.
 	 */
-	public static <K, U, R> Map<K, List<DateRanged<R>>> convertAndMap(Map<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> rcEntDrListMap,
-	                                                            Converter<U, R> mapper) {
+	public static <K, U, R> Map<K, List<DateRanged<R>>> convertAndMap(Map<K, List<DateRangeHelper.Ranged<U>>> rcEntDrListMap,
+	                                                                  Converter<? super U, ? extends R> mapper) {
 		if (rcEntDrListMap == null) {
 			return null;
 		}
 		HashMap<K, List<DateRanged<R>>> map = new HashMap<>(rcEntDrListMap.size());
-		for (Map.Entry<K, List<ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged<U>>> e : rcEntDrListMap.entrySet()) {
+		for (Map.Entry<K, List<DateRangeHelper.Ranged<U>>> e : rcEntDrListMap.entrySet()) {
 			map.put(e.getKey(), convertAndMap(e.getValue(), mapper));
 		}
 		return map;

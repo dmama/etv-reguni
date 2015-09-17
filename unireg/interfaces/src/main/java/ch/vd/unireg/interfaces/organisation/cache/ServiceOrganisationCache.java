@@ -30,8 +30,7 @@ import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.LogLevel;
 
-public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean,
-		ServiceOrganisationServiceWrapper {
+public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregCacheInterface, KeyDumpableCache, DataEventListener, InitializingBean, DisposableBean, ServiceOrganisationServiceWrapper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationCache.class);
 
@@ -182,24 +181,22 @@ public class ServiceOrganisationCache implements ServiceOrganisationRaw, UniregC
 	@Override
 	public Organisation getOrganisationHistory(final long noOrganisation) throws ServiceOrganisationException {
 
-		final Organisation organisation;
-
 		final GetOrganisationKey key = new GetOrganisationKey(noOrganisation);
 		final Element element = cache.get(key);
 		if (element == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			organisation = target.getOrganisationHistory(noOrganisation);
+			final Organisation organisation = target.getOrganisationHistory(noOrganisation);
 			Objects.requireNonNull(organisation);
 			cache.put(new Element(key, organisation));
 			return organisation;
 		}
-		// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 		return (Organisation) element.getObjectValue();
 	}
 
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		return null;
+		// TODO faut-il cacher cet appel ?
+		return target.getOrganisationPourSite(noSite);
 	}
 
 	@Override

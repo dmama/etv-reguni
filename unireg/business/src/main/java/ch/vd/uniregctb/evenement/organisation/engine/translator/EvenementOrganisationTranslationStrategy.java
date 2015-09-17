@@ -20,6 +20,9 @@ public interface EvenementOrganisationTranslationStrategy {
 	 * @return L'événement interne qui correspond à l'événement externe reçu, ou null si pas applicable
 	 * @throws EvenementOrganisationException en cas de problème
 	 */
-	EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options)
-			throws EvenementOrganisationException;
+	EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
+	                                            Organisation organisation,
+	                                            Entreprise entreprise,
+	                                            EvenementOrganisationContext context,
+	                                            EvenementOrganisationOptions options) throws EvenementOrganisationException;
 }

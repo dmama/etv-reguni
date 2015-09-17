@@ -10,6 +10,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -42,6 +43,8 @@ public class Context {
 	public ParametreAppService parametreService;
 
 	public ServiceCivilService serviceCivilService;
+
+	public ServiceOrganisationService serviceOrganisationService;
 
 	public HibernateTemplate hibernateTemplate;
 

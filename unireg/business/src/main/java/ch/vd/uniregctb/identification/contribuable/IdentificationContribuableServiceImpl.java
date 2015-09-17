@@ -425,8 +425,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private String getRaisonSocialeEntreprise(Tiers tiers) {
 		if (tiers instanceof Entreprise) {
-			final List<String> multiLineRaisonSociale = tiersService.getRaisonSociale((Entreprise) tiers);
-			return CollectionsUtils.concat(multiLineRaisonSociale, " ");
+			return tiersService.getRaisonSociale((Entreprise) tiers);
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			return ((AutreCommunaute) tiers).getNom();

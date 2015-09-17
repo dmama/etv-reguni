@@ -1,7 +1,5 @@
 package ch.vd.unireg.interfaces.organisation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -16,8 +14,6 @@ import ch.vd.uniregctb.stats.StatsService;
  */
 public class ServiceOrganisationTracing implements ServiceOrganisationRaw, InitializingBean, DisposableBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationTracing.class);
-	
 	private ServiceOrganisationRaw target;
 	private StatsService statsService;
 

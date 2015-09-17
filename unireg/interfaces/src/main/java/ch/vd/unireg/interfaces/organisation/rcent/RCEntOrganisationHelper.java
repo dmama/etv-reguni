@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.LegalFormConverter;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
@@ -12,8 +13,7 @@ import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 public class RCEntOrganisationHelper {
 
 	public static Organisation get(ch.vd.uniregctb.adapter.rcent.model.Organisation organisation) {
-		return new Organisation(
-				organisation.getCantonalId(),
+		return new OrganisationRCEnt(
 				RCEntHelper.convert(organisation.getOrganisationIdentifiers()),
 				RCEntHelper.convert(organisation.getOrganisationName()),
 				RCEntHelper.convert(organisation.getOrganisationAdditionalName()),
@@ -28,7 +28,7 @@ public class RCEntOrganisationHelper {
 	}
 
 	private static Map<Long, SiteOrganisation> convertLocations(List<OrganisationLocation> locations) {
-		Map<Long, SiteOrganisation> sites = new HashMap<>();
+		final Map<Long, SiteOrganisation> sites = new HashMap<>();
 		for (OrganisationLocation loc : locations) {
 			sites.put(loc.getCantonalId(), RCEntSiteOrganisationHelper.get(loc));
 		}

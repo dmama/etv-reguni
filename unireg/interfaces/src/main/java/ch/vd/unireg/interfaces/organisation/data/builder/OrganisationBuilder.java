@@ -9,7 +9,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 
 /**
  * Classe de builder pour la construction facilité d'entités d'organisation. Les autres builders de
@@ -28,7 +30,6 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
  * Ainsi, on peut facilement créer des entités avec une notation naturelle et lisible.
  */
 public class OrganisationBuilder implements DataBuilder<Organisation> {
-	private final long cantonalId;
 
 	private Map<String, List<DateRanged<String>>> identifiants;
 
@@ -45,19 +46,10 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private List<DateRanged<Long>> enRemplacementDe;
 
 	@Override
-	public Organisation build() {
-		return new Organisation(cantonalId, identifiants, nom, nomsAdditionnels, formeLegale, sites,
+	public OrganisationRCEnt build() {
+		return new OrganisationRCEnt(identifiants, nom, nomsAdditionnels, formeLegale, sites,
 		                        donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe
 		);
-	}
-
-	public OrganisationBuilder(long cantonalId) {
-		this.cantonalId = cantonalId;
-	}
-
-	public OrganisationBuilder(long cantonalId, @NotNull List<DateRanged<String>> nom) {
-		this.cantonalId = cantonalId;
-		this.nom = nom;
 	}
 
 	public OrganisationBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -85,8 +77,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder addDonneesSite(@NotNull SiteOrganisation site) {
-		donneesSites = BuilderHelper.addValueToMap(donneesSites, site.getNo(), site);
+	public OrganisationBuilder addDonneesSite(@NotNull SiteOrganisationRCEnt site) {
+		donneesSites = BuilderHelper.addValueToMap(donneesSites, site.getNumeroSite(), site);
 		return this;
 	}
 
@@ -100,7 +92,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder AddRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+	public OrganisationBuilder addRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
 		remplacePar = BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
@@ -153,53 +145,5 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	public OrganisationBuilder withTransfereA(List<DateRanged<Long>> transfereA) {
 		this.transfereA = transfereA;
 		return this;
-	}
-
-	/*
-		Getters réservés au Mock
-	 */
-
-	protected long getCantonalId() {
-		return cantonalId;
-	}
-
-	protected Map<Long, SiteOrganisation> getDonneesSites() {
-		return donneesSites;
-	}
-
-	protected List<DateRanged<Long>> getEnRemplacementDe() {
-		return enRemplacementDe;
-	}
-
-	protected List<DateRanged<FormeLegale>> getFormeLegale() {
-		return formeLegale;
-	}
-
-	protected Map<String, List<DateRanged<String>>> getIdentifiants() {
-		return identifiants;
-	}
-
-	protected List<DateRanged<String>> getNom() {
-		return nom;
-	}
-
-	protected List<DateRanged<String>> getNomsAdditionnels() {
-		return nomsAdditionnels;
-	}
-
-	protected List<DateRanged<Long>> getRemplacePar() {
-		return remplacePar;
-	}
-
-	protected List<DateRanged<Long>> getSites() {
-		return sites;
-	}
-
-	protected List<DateRanged<Long>> getTransferDe() {
-		return transferDe;
-	}
-
-	protected List<DateRanged<Long>> getTransfereA() {
-		return transfereA;
 	}
 }

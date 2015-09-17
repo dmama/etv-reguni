@@ -4,13 +4,14 @@ package ch.vd.unireg.interfaces.organisation.cache;
 import net.sf.ehcache.CacheManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
+import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.mock.DefaultMockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.data.DataEventListener;
@@ -22,9 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationCacheTest.class);
-
-	private CacheMockServiceOrganisation target;
+	private CallCounterServiceOrganisation target;
 	private ServiceOrganisationCache cache;
 
 	private final DataEventService dataEventService = new DataEventService() {
@@ -74,29 +73,47 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 		}
 	};
 
-	public static class CacheMockServiceOrganisation extends DefaultMockServiceOrganisation {
+	private class CallCounterServiceOrganisation implements ServiceOrganisationRaw {
+
 		private int historyCounter = 0;
+		private final ServiceOrganisationRaw target;
+
+		public CallCounterServiceOrganisation(ServiceOrganisationRaw target) {
+			this.target = target;
+		}
+
 		@Override
 		public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 			historyCounter++;
-			return super.getOrganisationHistory(noOrganisation);
+			return target.getOrganisationHistory(noOrganisation);
 		}
 
-		/**
-		 * @return the number of time the History service was called.
-		 */
-		public int getHistoryCounter() {
-			return historyCounter;
+		@Override
+		public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
+			return target.getOrganisationPourSite(noSite);
+		}
+
+		@Override
+		public void ping() throws ServiceOrganisationException {
+			target.ping();
 		}
 	}
 
 	@Before
 	public void setup() throws Exception {
-		target = new CacheMockServiceOrganisation();
 
-		cache = new ServiceOrganisationCache();
+		target = new CallCounterServiceOrganisation(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				 addOrganisation(101202100L, RegDate.get(2000, 5, 14), "Les gentils joueurs de belotte", FormeLegale.N_0109_ASSOCIATION);
+				 addOrganisation(101202101L, RegDate.get(2004, 2, 4), "Le Tarot, c'est rigolo", FormeLegale.N_0109_ASSOCIATION);
+			}
+		});
+
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
 		manager.clearAll(); // Manager is a singleton, and may exist already
+
+		cache = new ServiceOrganisationCache();
 		cache.setCacheManager(manager);
 		cache.setCacheName("serviceOrganisation");
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
@@ -109,31 +126,39 @@ public class ServiceOrganisationCacheTest extends WithoutSpringTest {
 	@Test
 	public void testCacheReturnsCorrectOrganisation() {
 		long id = 101202100L;
-		Organisation organisationFromService = target.getOrganisationHistory(id);
-		Organisation organisationFromCache = cache.getOrganisationHistory(id);
-		assertEquals(organisationFromService.getNo(), organisationFromCache.getNo());
-		assertEquals(organisationFromService.getNom().get(0).getPayload(), organisationFromCache.getNom().get(0).getPayload());
+		final Organisation organisationFromService = target.getOrganisationHistory(id);
+		final Organisation organisationFromCache = cache.getOrganisationHistory(id);
+		assertEquals(organisationFromService.getNumeroOrganisation(), organisationFromCache.getNumeroOrganisation());
+		assertEquals("Les gentils joueurs de belotte", organisationFromCache.getNom().get(0).getPayload());
 	}
 
 	@Test
 	public void testCallTwiceHitServiceOnce() {
-		long id = 101202100L;
-		Organisation organisation = cache.getOrganisationHistory(id);
-		LOGGER.info(String.format("Target called once, return organisation %d.", organisation.getNo()));
-		organisation = cache.getOrganisationHistory(id);
-		LOGGER.info(String.format("Target called a second time, return organisation %d.", organisation.getNo()));
-		assertEquals(1, target.getHistoryCounter());
+		assertEquals(0, target.historyCounter);
+
+		cache.getOrganisationHistory(101202100L);
+		assertEquals(1, target.historyCounter);
+		cache.getOrganisationHistory(101202100L);
+		assertEquals(1, target.historyCounter);
+
+		cache.getOrganisationHistory(101202101L);
+		assertEquals(2, target.historyCounter);
+		cache.getOrganisationHistory(101202101L);
+		assertEquals(2, target.historyCounter);
+
+		cache.getOrganisationHistory(101202100L);
+		assertEquals(2, target.historyCounter);
 	}
 
 	@Test
 	public void testCallTwiceOrganisationChangesInBetween() {
 		long id = 101202100L;
-		Organisation organisation = cache.getOrganisationHistory(id);
-		LOGGER.info(String.format("Target called once, return organisation %d.", organisation.getNo()));
+		assertEquals(0, target.historyCounter);
+		cache.getOrganisationHistory(id);
+		assertEquals(1, target.historyCounter);
 		cache.onOrganisationChange(id);
-		organisation = cache.getOrganisationHistory(id);
-		LOGGER.info(String.format("Target called a second time, return organisation %d.", organisation.getNo()));
-		assertEquals(2, target.getHistoryCounter());
+		cache.getOrganisationHistory(id);
+		assertEquals(2, target.historyCounter);
 	}
 
 }

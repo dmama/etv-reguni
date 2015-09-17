@@ -10,12 +10,11 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
-public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
+public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEnt> {
 
-	private final long cantonalId;
 	private List<DateRanged<String>> nom;
 
 	public DonneesRC rc;
@@ -30,19 +29,9 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	private List<DateRanged<Integer>> siege;
 	private List<DateRanged<FonctionOrganisation>> fonction;
 
-	public SiteOrganisationBuilder(long cantonalId, @NotNull List<DateRanged<String>> nom) {
-		this.cantonalId = cantonalId;
-		this.nom = nom;
-	}
-
-	public SiteOrganisationBuilder(long cantonalId) {
-		this.cantonalId = cantonalId;
-	}
-
-	@Override
-	public SiteOrganisation build() {
-		return new SiteOrganisation(cantonalId, nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite,
-		                            siege, fonction);
+	@NotNull
+	public SiteOrganisationRCEnt build() {
+		return new SiteOrganisationRCEnt(nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite, siege, fonction);
 	}
 
 	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -108,45 +97,5 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisation> {
 	public SiteOrganisationBuilder setTypeDeSite(List<DateRanged<TypeDeSite>> typeDeSite) {
 		this.typeDeSite = typeDeSite;
 		return this;
-	}
-
-	/*
-		Getters réservés au Mock
-	 */
-
-	protected long getCantonalId() {
-		return cantonalId;
-	}
-
-	protected List<DateRanged<FonctionOrganisation>> getFonction() {
-		return fonction;
-	}
-
-	protected DonneesRegistreIDE getIde() {
-		return ide;
-	}
-
-	protected Map<String, List<DateRanged<String>>> getIdentifiants() {
-		return identifiants;
-	}
-
-	protected List<DateRanged<String>> getNom() {
-		return nom;
-	}
-
-	protected List<DateRanged<String>> getNomsAdditionnels() {
-		return nomsAdditionnels;
-	}
-
-	protected DonneesRC getRc() {
-		return rc;
-	}
-
-	protected List<DateRanged<Integer>> getSiege() {
-		return siege;
-	}
-
-	protected List<DateRanged<TypeDeSite>> getTypeDeSite() {
-		return typeDeSite;
 	}
 }

@@ -17,8 +17,8 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.unireg.interfaces.organisation.mock.DefaultMockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationBuilder;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
@@ -51,15 +51,13 @@ public class EvenementOrganisationRetryProcessorTest extends BusinessTest {
 		final long noOrganisationAvecErreur = 2367485247L;
 		final long noOrganisationAvecAttenteEtErreur = 43784236L;
 
-		serviceOrganisation.setUp(new DefaultMockServiceOrganisation() {
-
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				super.init();
-				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationSans, "SansAttente", RegDate.get(2015, 4, 29)));
-				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecAttente, "AvecAttente", RegDate.get(2015, 4, 29)));
-				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecErreur, "AvecErreur", RegDate.get(2015, 4, 29)));
-				addOrganisation(MockOrganisationBuilder.createDummySA(noOrganisationAvecAttenteEtErreur, "AvecAttente-Erreur", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationFactory.createDummySA(noOrganisationSans, "SansAttente", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationFactory.createDummySA(noOrganisationAvecAttente, "AvecAttente", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationFactory.createDummySA(noOrganisationAvecErreur, "AvecErreur", RegDate.get(2015, 4, 29)));
+				addOrganisation(MockOrganisationFactory.createDummySA(noOrganisationAvecAttenteEtErreur, "AvecAttente-Erreur", RegDate.get(2015, 4, 29)));
 			}
 		});
 

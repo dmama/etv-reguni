@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,6 +54,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -87,9 +87,9 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -141,6 +141,7 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	private ServiceOrganisationService serviceOrganisationService;
 	private TacheService tacheService;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
@@ -187,7 +188,11 @@ public class TiersServiceImpl implements TiersService {
         this.serviceCivilService = serviceCivil;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
+		this.serviceOrganisationService = serviceOrganisationService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
     public void setTacheService(TacheService tacheService) {
         this.tacheService = tacheService;
     }
@@ -4502,7 +4507,7 @@ public class TiersServiceImpl implements TiersService {
         final Contribuable referent = getContribuable(debiteur);
         if (referent != null) {
             if (referent instanceof PersonnePhysique) {
-                raisonSociale = Arrays.asList(getNomPrenom((PersonnePhysique) referent));
+                raisonSociale = Collections.singletonList(getNomPrenom((PersonnePhysique) referent));
             } else if (referent instanceof MenageCommun) {
                 raisonSociale = new ArrayList<>(2);
                 final EnsembleTiersCouple couple = getEnsembleTiersCouple((MenageCommun) referent, null);
@@ -4517,9 +4522,9 @@ public class TiersServiceImpl implements TiersService {
                     raisonSociale.add(nomPrenomConjoint);
                 }
             } else if (referent instanceof AutreCommunaute) {
-                raisonSociale = Arrays.asList(((AutreCommunaute) referent).getNom());
+                raisonSociale = Collections.singletonList(((AutreCommunaute) referent).getNom());
             } else if (referent instanceof Entreprise) {
-                raisonSociale = getRaisonSociale((Entreprise) referent);
+                raisonSociale = Collections.singletonList(getRaisonSociale((Entreprise) referent));
             } else if (referent instanceof CollectiviteAdministrative) {
                 try {
                     final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
@@ -4559,33 +4564,20 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
-    public String getRaisonSocialeAbregee(Entreprise entreprise) {
-        final Long numeroEntreprise = entreprise.getNumero();
-        Assert.notNull(numeroEntreprise);
-        final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
-        return pm != null ? StringUtils.trimToNull(pm.getRaisonSociale()) : null;
-    }
-
-    @Override
-    public List<String> getRaisonSociale(Entreprise entreprise) {
-
-        final Long numeroEntreprise = entreprise.getNumero();
-        Assert.notNull(numeroEntreprise);
-        final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
-
-        final List<String> nomsComplets = new ArrayList<>(3);
-        if (pm != null) {
-            if (StringUtils.isNotBlank(pm.getRaisonSociale1())) {
-                nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale1()));
-            }
-            if (StringUtils.isNotBlank(pm.getRaisonSociale2())) {
-                nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale2()));
-            }
-            if (StringUtils.isNotBlank(pm.getRaisonSociale3())) {
-                nomsComplets.add(StringUtils.trimToNull(pm.getRaisonSociale3()));
-            }
-        }
-        return nomsComplets;
+    public String getRaisonSociale(Entreprise entreprise) {
+	    if (entreprise.isConnueAuCivil()) {
+		    final Organisation organisation = serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
+		    final List<DateRanged<String>> nom = organisation.getNom();
+		    return nom.get(nom.size() - 1).getPayload();
+	    }
+	    else {
+		    final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+		    if (!rcData.isEmpty()) {
+			    final DonneesRegistreCommerce data = rcData.get(rcData.size() - 1);
+			    return data.getRaisonSociale();
+		    }
+	    }
+	    return null;
     }
 
     @Override

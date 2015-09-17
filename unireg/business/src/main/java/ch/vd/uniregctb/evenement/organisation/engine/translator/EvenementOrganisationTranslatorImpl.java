@@ -93,7 +93,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNo());
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();

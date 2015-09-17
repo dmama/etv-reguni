@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
@@ -32,6 +33,7 @@ public abstract class WebserviceTest extends AbstractBusinessTest {
 	protected HttpServletResponse response;
 
 	protected ProxyServicePM servicePM;
+	protected ProxyServiceOrganisation serviceOrganisation;
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServiceInfrastructureService serviceInfra;
 	protected ProxyServiceSecuriteService serviceSecurite;
@@ -48,6 +50,7 @@ public abstract class WebserviceTest extends AbstractBusinessTest {
 
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		servicePM = getBean(ProxyServicePM.class, "servicePersonneMoraleService");
+		serviceOrganisation = getBean(ProxyServiceOrganisation.class, "serviceOrganisationService");
 		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
 		serviceSecurite = getBean(ProxyServiceSecuriteService.class, "serviceSecuriteService");
 

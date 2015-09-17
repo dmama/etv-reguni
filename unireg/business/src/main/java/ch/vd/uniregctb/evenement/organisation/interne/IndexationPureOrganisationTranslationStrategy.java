@@ -17,8 +17,11 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 
 	@NotNull
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(final EvenementOrganisation event, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options)
-			throws EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(final EvenementOrganisation event,
+	                                                   Organisation organisation,
+	                                                   Entreprise entreprise,
+	                                                   EvenementOrganisationContext context,
+	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		return new IndexationPure(event, organisation, entreprise, context, options);
 	}

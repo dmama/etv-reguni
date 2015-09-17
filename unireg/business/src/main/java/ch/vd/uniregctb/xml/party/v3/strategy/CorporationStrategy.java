@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v3.Capital;
 import ch.vd.unireg.xml.party.corporation.v3.Corporation;
 import ch.vd.unireg.xml.party.corporation.v3.LegalForm;
@@ -51,33 +52,32 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initBase(to, from, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		if (entreprise.isConnueAuCivil()) {
-			// TODO [SIPM][RCEnt] Aller chercher les données dans l'organisation...
-//			to.setShortName(data.getRaisonSociale());
-//			to.setName1(data.getRaisonSociale());
-		}
-		else {
-			final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-			if (!rcData.isEmpty()) {
-				final DonneesRegistreCommerce data = rcData.get(rcData.size() - 1);
-				to.setShortName(data.getRaisonSociale());
-				to.setName1(data.getRaisonSociale());
-			}
-		}
+		final String raisonSociale = context.tiersService.getRaisonSociale(entreprise);
+		to.setName1(raisonSociale);
+		to.setShortName(raisonSociale);
 
 		final RegDate dernierBouclement = context.bouclementService.getDateDernierBouclement(entreprise.getBouclements(), RegDate.get(), false);
 		final RegDate prochainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), RegDate.get(), true);
 		to.setEndDateOfLastBusinessYear(DataHelper.coreToXMLv2(dernierBouclement));
 		to.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv2(prochainBouclement));
 
-		// L'exposition du numéro IDE TODO [SIPM][RCEnt] à terme, cela viendra de RCEnt directement...
-		final Set<IdentificationEntreprise> ides = entreprise.getIdentificationsEntreprise();
-		if (ides != null && !ides.isEmpty()) {
-			final List<String> ideList = new ArrayList<>(ides.size());
-			for (IdentificationEntreprise ide : ides) {
-				ideList.add(ide.getNumeroIde());
+		// L'exposition du numéro IDE
+		if (entreprise.isConnueAuCivil()) {
+			final Organisation organisation = context.serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
+			final List<DateRanged<String>> numeros = organisation.getNumeroIDE();
+			if (numeros != null && !numeros.isEmpty()) {
+				to.setUidNumbers(new UidNumberList(Collections.singletonList(numeros.get(numeros.size() - 1).getPayload())));
 			}
-			to.setUidNumbers(new UidNumberList(ideList));
+		}
+		else {
+			final Set<IdentificationEntreprise> ides = entreprise.getIdentificationsEntreprise();
+			if (ides != null && !ides.isEmpty()) {
+				final List<String> ideList = new ArrayList<>(ides.size());
+				for (IdentificationEntreprise ide : ides) {
+					ideList.add(ide.getNumeroIde());
+				}
+				to.setUidNumbers(new UidNumberList(ideList));
+			}
 		}
 	}
 

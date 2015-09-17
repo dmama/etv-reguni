@@ -464,10 +464,7 @@ public class AdresseServiceImpl implements AdresseService {
 			if (fillFormulePolitesse) {
 				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
 			}
-			final List<String> raisonComplete = getRaisonSocialeLongue(entreprise);
-			for (String ligne : raisonComplete) {
-				adresse.addRaisonSociale(ligne);
-			}
+			adresse.addRaisonSociale(getRaisonSociale(entreprise));
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
@@ -818,16 +815,6 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale de l'enteprise sur une seule ligne
 	 */
 	private String getRaisonSociale(Entreprise entreprise) {
-		return tiersService.getRaisonSocialeAbregee(entreprise);
-	}
-
-	/**
-	 * Retourne la raison sociale pour l'adressage de l'entreprise spécifiée.
-	 *
-	 * @param entreprise une entreprise
-	 * @return la raison sociale de l'entreprise sur une, deux ou trois lignes.
-	 */
-	private List<String> getRaisonSocialeLongue(Entreprise entreprise) {
 		return tiersService.getRaisonSociale(entreprise);
 	}
 

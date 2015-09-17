@@ -1,14 +1,16 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -42,8 +44,11 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	 * @throws EvenementOrganisationException
 	 */
 	@Override
-	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event, final Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws
-			EvenementOrganisationException {
+	public EvenementOrganisationInterne matchAndCreate(EvenementOrganisation event,
+	                                                   final Organisation organisation,
+	                                                   Entreprise entreprise,
+	                                                   EvenementOrganisationContext context,
+	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// On décide qu'on a affaire à une création uniquement selon la présence d'un tiers entreprise dans Unireg, et rien d'autre.
 		if (entreprise != null) {
@@ -95,21 +100,21 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 
 	@NotNull
 	private String createTraitementManuelMessage(EvenementOrganisation event, Organisation organisation) {
-		return String.format("L'organisation %s %s, commune OFS %s et juridique %s ne peut être créée sans intervention utilisateur.",
-		                     organisation.getNo(), organisation.getNom(), organisation.getSiegePrincipal(event.getDateEvenement()), organisation.getFormeLegale(event.getDateEvenement()));
+		return String.format("L'organisation %s %s, commune OFS %s et forme juridique %s ne peut être créée sans intervention utilisateur.",
+		                     organisation.getNumeroOrganisation(),
+		                     organisation.getNom(),
+		                     rangeAt(organisation.getSiegePrincipal(), event.getDateEvenement()),
+		                     rangeAt(organisation.getFormeLegale(), event.getDateEvenement()));
 	}
 
 	private boolean hasSiteVD(Organisation organisation, EvenementOrganisation event, EvenementOrganisationContext context) {
-		for (Map.Entry<Long, SiteOrganisation> entry : organisation.getDonneesSites().entrySet()) {
-			List<DateRanged<Integer>> siegesRange = entry.getValue().getSiege();
-			if (siegesRange != null) {
-				DateRanged<Integer> siegeRange = DateRangeHelper.rangeAt(siegesRange, event.getDateEvenement());
-				if (siegeRange != null) {
-					Integer siege = siegeRange.getPayload();
-					Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(siege, event.getDateEvenement());
-					if (commune.isVaudoise()) {
-						return true;
-					}
+		for (SiteOrganisation site : organisation.getDonneesSites()) {
+			final DateRanged<Integer> siegeRange = rangeAt(site.getSiege(), event.getDateEvenement());
+			if (siegeRange != null) {
+				final Integer siege = siegeRange.getPayload();
+				final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(siege, event.getDateEvenement());
+				if (commune.isVaudoise()) {
+					return true;
 				}
 			}
 		}
@@ -117,7 +122,16 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	}
 
 	@Nullable
-	private CategorieEntreprise getCurrentCategorieEntreprise(EvenementOrganisation event, Organisation organisation) {
-		return CategorieEntrepriseHelper.map(organisation.getFormeLegale(event.getDateEvenement()));
+	private static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
+		if (ranges == null) {
+			return null;
+		}
+		return DateRangeHelper.rangeAt(ranges, date);
+	}
+
+	@Nullable
+	private static CategorieEntreprise getCurrentCategorieEntreprise(EvenementOrganisation event, Organisation organisation) {
+		final DateRanged<FormeLegale> fl = rangeAt(organisation.getFormeLegale(), event.getDateEvenement());
+		return fl == null ? null : CategorieEntrepriseHelper.map(fl.getPayload());
 	}
 }

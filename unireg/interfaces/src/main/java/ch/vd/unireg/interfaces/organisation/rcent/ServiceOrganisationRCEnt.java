@@ -35,12 +35,12 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 	@Override
 	public void ping() throws ServiceOrganisationException {
 		long noOrganisation = 12345678L;
-		final Organisation organisation = getOrganisationHistory(noOrganisation); // Francis Perroset
+		final Organisation organisation = getOrganisationHistory(noOrganisation);
 		if (organisation == null) {
 			throw new ServiceOrganisationException(String.format("L'organisation n°%s est introuvable", noOrganisation));
 		}
-		if (organisation.getNo() != noOrganisation) {
-			throw new ServiceOrganisationException(String.format("Demandé l'organisation n°%s, reçu l'individu n°%s!", noOrganisation, organisation.getNo()));
+		if (organisation.getNumeroOrganisation() != noOrganisation) {
+			throw new ServiceOrganisationException(String.format("Demandé l'organisation n°%s, reçu l'organisation n°%s!", noOrganisation, organisation.getNumeroOrganisation()));
 		}
 	}
 

@@ -27,7 +27,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 
 	public static final String CACHE_NAME = "ServiceOrganisationPersistent";
 
-	private PersistentCache<Organisation> cache;
+	private PersistentCache<OrganisationDataCache> cache;
 	private PersistentCache<Long> siteCache;
 	private ServiceOrganisationRaw target;
 	private UniregCacheManager uniregCacheManager;
@@ -39,7 +39,7 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setCache(PersistentCache<Organisation> cache) {
+	public void setCache(PersistentCache<OrganisationDataCache> cache) {
 		this.cache = cache;
 	}
 
@@ -136,19 +136,17 @@ public class ServiceOrganisationPersistentCache implements ServiceOrganisationRa
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws ServiceOrganisationException {
 
-		final Organisation organisation;
-
 		final GetOrganisationHistoryKey key = new GetOrganisationHistoryKey(noOrganisation);
-		final Organisation value = cache.get(key);
+		final OrganisationDataCache value = cache.get(key);
 		if (value == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			organisation = target.getOrganisationHistory(noOrganisation);
+			final Organisation organisation = target.getOrganisationHistory(noOrganisation);
 			Objects.requireNonNull(organisation, String.format("Aucune organisation retournée par le service pour le no: %s", noOrganisation));
 
-			cache.put(key, organisation);
+			cache.put(key, new OrganisationDataCache(organisation));
 			return organisation;
 		}
-		return value;
+		return value.getOrganisation();
 	}
 
 	private static class GetOrganisationForSiteKey implements ObjectKey {

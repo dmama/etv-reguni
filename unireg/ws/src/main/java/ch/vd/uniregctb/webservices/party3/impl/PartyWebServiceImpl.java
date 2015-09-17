@@ -77,6 +77,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -166,6 +167,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivil(ServiceCivilService service) {
 		context.serviceCivilService = service;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceOrganisation(ServiceOrganisationService service) {
+		context.serviceOrganisationService = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

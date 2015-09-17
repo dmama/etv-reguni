@@ -1005,6 +1005,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
+	/**
+	 * @deprecated c'est l'ancienne façon de faire (= RegPM) quand le numéro de contribuable suffisait pour faire le lien
+	 * @param numeroEntreprise un numéro de contribuable
+	 * @return une entreprise complètement vide avec ce numéro de contribuable
+	 * @see #addEntrepriseConnueAuCivil(long)
+	 * @see #addEntrepriseInconnueAuCivil()
+	 */
 	protected Entreprise addEntreprise(@NotNull Long numeroEntreprise) {
 		Entreprise ent = new Entreprise();
 		ent.setNumero(numeroEntreprise);
@@ -1021,6 +1028,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Entreprise addEntrepriseInconnueAuCivil() {
 		final Entreprise ent = new Entreprise();
 		return merge(ent);
+	}
+
+	protected Etablissement addEtablissement() {
+		final Etablissement etb = new Etablissement();
+		return merge(etb);
+	}
+
+	protected ActiviteEconomique addLienActiviteEconomique(Contribuable ctb, Etablissement etablissement, RegDate dateDebut, @Nullable RegDate dateFin) {
+		final ActiviteEconomique ret = new ActiviteEconomique(dateDebut, dateFin, ctb, etablissement);
+		return merge(ret);
 	}
 
 	protected CollectiviteAdministrative addCollAdm(int numero) {

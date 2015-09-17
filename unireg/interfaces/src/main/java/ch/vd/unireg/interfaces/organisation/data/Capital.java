@@ -13,10 +13,6 @@ public class Capital implements Serializable {
     private BigDecimal cashedInAmount;
     private String division;
 
-   public Capital() {
-		super();
-	}
-
 	public Capital(final TypeDeCapital typeOfCapital, final String currency, final BigDecimal capitalAmount, final BigDecimal cashedInAmount, final String division) {
 		this.typeOfCapital = typeOfCapital;
 		this.currency = currency;

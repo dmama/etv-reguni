@@ -72,18 +72,19 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
 			entrepriseView.setAutresRaisonsSociales(getNomsAdditionnels(organisation));
 
-			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
+			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegePrincipal()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
 			entrepriseView.setCapitaux(extractCapitaux(organisation));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
-			List<DateRanged<String>> noIdeList = organisation.getNoIDE();
+			List<DateRanged<String>> noIdeList = organisation.getNumeroIDE();
 			if (noIdeList != null && noIdeList.size() > 0) {
 				DateRanged<String> noIdeRange = noIdeList.get(0);
 				if (noIdeRange != null) {
 					entrepriseView.setNumerosIDE(Collections.singletonList(noIdeRange.getPayload()));
 				}
 			}
-		} else {
+		}
+		else {
 			/*
 				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
 			 */
@@ -272,7 +273,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	}
 
 	private static List<CapitalView> extractCapitaux(Organisation organisation) {
-		final List<DateRanged<Capital>> capitaux = organisation.getCapitaux();
+		final List<DateRanged<Capital>> capitaux = organisation.getCapital();
 		if (capitaux == null) {
 			return null;
 		}

@@ -1,10 +1,21 @@
 package ch.vd.unireg.interfaces.organisation.mock.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -17,57 +28,150 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
  * - Il implémente éventuellement des mutations spécifiques, nécessaires dans un
  *   contexte de test.
  */
-public class MockOrganisation extends Organisation {
-	public MockOrganisation(long no, @NotNull Map<String, List<DateRanged<String>>> identifiants,
-	                        @NotNull List<DateRanged<String>> nom,
-	                        List<DateRanged<String>> nomsAdditionels,
-	                        List<DateRanged<FormeLegale>> formeLegale,
-	                        @NotNull List<DateRanged<Long>> sites,
-	                        @NotNull Map<Long, SiteOrganisation> donneesSites,
-	                        List<DateRanged<Long>> transfereA,
-	                        List<DateRanged<Long>> transferDe,
-	                        List<DateRanged<Long>> remplacePar,
-	                        List<DateRanged<Long>> enRemplacementDe) {
-		super(no, identifiants, nom, nomsAdditionels, formeLegale, sites, donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe);
+public class MockOrganisation implements Organisation {
+
+	private final long idOrganisation;
+	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
+	private final NavigableMap<RegDate, List<String>> nomsAdditionnels = new TreeMap<>();
+	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
+	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
+	private final NavigableMap<RegDate, Long> idSites = new TreeMap<>();
+	private final List<MockSiteOrganisation> sites = new ArrayList<>();
+
+	public MockOrganisation(long idOrganisation, RegDate dateDebut, String nom, FormeLegale formeLegale) {
+		this.idOrganisation = idOrganisation;
+		changeNom(dateDebut, nom);
+		changeFormeLegale(dateDebut, formeLegale);
 	}
 
-	protected void setDonneesSites(@NotNull Map<Long, SiteOrganisation> donneesSites) {
-		super.setDonneesSites(donneesSites);
+	public void changeNom(RegDate date, String nouveauNom) {
+		MockOrganisationHelper.changeRangedData(nom, date, nouveauNom);
 	}
 
-	protected void setEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
-		super.setEnRemplacementDe(enRemplacementDe);
+	public void addNom(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauNom) {
+		MockOrganisationHelper.addRangedData(nom, dateDebut, dateFin, nouveauNom);
 	}
 
-	protected void setFormeLegale(List<DateRanged<FormeLegale>> formeLegale) {
-		super.setFormeLegale(formeLegale);
+	public void changeFormeLegale(RegDate date, FormeLegale nouvelleFormeLegale) {
+		MockOrganisationHelper.changeRangedData(formeLegale, date, nouvelleFormeLegale);
 	}
 
-	protected void setIdentifiants(@NotNull Map<String, List<DateRanged<String>>> identifiants) {
-		super.setIdentifiants(identifiants);
+	public void addFormeLegale(RegDate dateDebut, @Nullable RegDate dateFin, FormeLegale nouvelleFormeLegale) {
+		MockOrganisationHelper.addRangedData(formeLegale, dateDebut, dateFin, nouvelleFormeLegale);
 	}
 
-	protected void setNom(@NotNull List<DateRanged<String>> nom) {
-		super.setNom(nom);
+	public void changeNumeroIDE(RegDate date, String nouveauNumeroIDE) {
+		MockOrganisationHelper.changeRangedData(ide, date, nouveauNumeroIDE);
 	}
 
-	protected void setNomsAdditionels(List<DateRanged<String>> nomsAdditionels) {
-		super.setNomsAdditionels(nomsAdditionels);
+	public void addNumeroIDE(RegDate dateDebut, @Nullable RegDate dateFin, String nouveauNumeroIDE) {
+		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
 	}
 
-	protected void setRemplacePar(List<DateRanged<Long>> remplacePar) {
-		super.setRemplacePar(remplacePar);
+	public void addSiteId(RegDate dateDebut, @Nullable RegDate dateFin, long idSite) {
+		MockOrganisationHelper.addRangedData(idSites, dateDebut, dateFin, idSite);
 	}
 
-	protected void setSites(@NotNull List<DateRanged<Long>> sites) {
-		super.setSites(sites);
+	public void addDonneesSite(MockSiteOrganisation site) {
+		sites.add(site);
 	}
 
-	protected void setTransferDe(List<DateRanged<Long>> transferDe) {
-		super.setTransferDe(transferDe);
+	public void addNomsAdditionnels(RegDate dateDebut, RegDate dateFin, String... nouveauxNomsAdditionnels) {
+		MockOrganisationHelper.addRangedData(nomsAdditionnels, dateDebut, dateFin, nouveauxNomsAdditionnels != null ? Arrays.asList(nouveauxNomsAdditionnels) : Collections.<String>emptyList());
 	}
 
-	protected void setTransfereA(List<DateRanged<Long>> transfereA) {
-		super.setTransfereA(transfereA = transfereA);
+	@Override
+	public long getNumeroOrganisation() {
+		return idOrganisation;
+	}
+
+	@Override
+	public List<SiteOrganisation> getDonneesSites() {
+		return new ArrayList<SiteOrganisation>(sites);
+	}
+
+	@Override
+	public List<DateRanged<Long>> getEnRemplacementDe() {
+		return null;
+	}
+
+	@Override
+	public List<DateRanged<FormeLegale>> getFormeLegale() {
+		return MockOrganisationHelper.getHisto(formeLegale);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNumeroIDE() {
+		return MockOrganisationHelper.getHisto(ide);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNom() {
+		return MockOrganisationHelper.getHisto(nom);
+	}
+
+	@Override
+	public List<DateRanged<String>> getNomsAdditionels() {
+		// un peu de calcul...
+
+		// on commence par regrouper les noms entre eux
+		final Map<String, List<DateRange>> noms = new HashMap<>();
+		final List<DateRanged<List<String>>> histo = MockOrganisationHelper.getHisto(nomsAdditionnels);
+		for (DateRanged<List<String>> range : histo) {
+			for (String nom : range.getPayload()) {
+				final List<DateRange> rangesPourNom;
+				if (!noms.containsKey(nom)) {
+					rangesPourNom = new ArrayList<>();
+					noms.put(nom, rangesPourNom);
+				}
+				else {
+					rangesPourNom = noms.get(nom);
+				}
+				rangesPourNom.add(range);
+			}
+		}
+
+		// puis on reconstitue tous les ranges pour les noms
+		final List<DateRanged<String>> result = new ArrayList<>();
+		for (Map.Entry<String, List<DateRange>> entry : noms.entrySet()) {
+			final List<DateRange> merged = DateRangeHelper.merge(entry.getValue());
+			for (DateRange range : merged) {
+				result.add(new DateRanged<>(range.getDateDebut(), range.getDateFin(), entry.getKey()));
+			}
+		}
+
+		// et on trie tout ça
+		Collections.sort(result, new DateRangeComparator<>());
+		return result;
+	}
+
+	@Override
+	public List<DateRanged<Long>> getRemplacePar() {
+		return null;
+	}
+
+	@Override
+	public List<DateRanged<Long>> getSites() {
+		return MockOrganisationHelper.getHisto(idSites);
+	}
+
+	@Override
+	public List<DateRanged<Long>> getTransferDe() {
+		return null;
+	}
+
+	@Override
+	public List<DateRanged<Long>> getTransfereA() {
+		return null;
+	}
+
+	@Override
+	public List<DateRanged<Capital>> getCapital() {
+		return null;
+	}
+
+	@Override
+	public List<DateRanged<Integer>> getSiegePrincipal() {
+		return null;
 	}
 }

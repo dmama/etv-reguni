@@ -22,13 +22,13 @@ import static ch.vd.unireg.interfaces.infra.mock.MockPays.Suisse;
 /**
  * @author Raphaël Marmier, 2015-09-14
  */
-public class OrganisationTest {
+public class OrganisationRCEntTest {
 
-	private Organisation organisation;
+	private OrganisationRCEnt organisation;
 
 	@Before
 	public void setUp() throws Exception {
-		organisation = new OrganisationBuilder(101202100L)
+		organisation = new OrganisationBuilder()
 				.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 				.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 				.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
@@ -36,9 +36,9 @@ public class OrganisationTest {
 				.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
 				.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-				.addIdentifiant("CH.IDE", RegDate.get(2015, 4, 29), null, "CHE543257199")
+				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
 				.addIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
-				.addIdentifiant("CT.VD.PARTY", RegDate.get(2015, 4, 29), null, "101202100")
+				.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101202100")
 
 				.addSite(RegDate.get(2015, 4, 29), null, 101072613L)
 				.addSite(RegDate.get(2015, 4, 29), null, 101072656L)
@@ -48,12 +48,13 @@ public class OrganisationTest {
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
 				.addDonneesSite(
-						new SiteOrganisationBuilder(101072613L)
+						new SiteOrganisationBuilder()
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant("CH.IDE", RegDate.get(2015, 4, 29), null, "CHE100057199")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
+								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072613")
 
 								.addSiege(RegDate.get(2015, 4, 29), null, Leysin.getCommuneLocalite().getNoOFS())
 
@@ -117,12 +118,13 @@ public class OrganisationTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder(101072656L)
+						new SiteOrganisationBuilder()
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant("CH.IDE", RegDate.get(2015, 4, 29), null, "CHE100052312")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
+								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072656")
 
 								.addSiege(RegDate.get(2015, 4, 29), null, Lausanne.getCommuneLocalite().getNoOFS())
 
@@ -167,12 +169,12 @@ public class OrganisationTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder(12345678L)
+						new SiteOrganisationBuilder()
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant("CH.IDE", RegDate.get(2015, 5, 30), null, "CHE12345678")
-								.addIdentifiant("CT.VD.PARTY", RegDate.get(2015, 5, 30), null, "12345678")
+								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
+								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 5, 30), null, "12345678")
 
 								.addSiege(RegDate.get(2015, 5, 30), null, Zurich.getCommuneLocalite().getNoOFS())
 
@@ -230,8 +232,8 @@ public class OrganisationTest {
 
 	@Test
 	public void testGetSiegesPrincipaux() throws Exception {
-		Assert.assertEquals(Leysin.getCommuneLocalite().getNoOFS(), organisation.getSiegesPrincipaux().get(0).getPayload().intValue());
-		Assert.assertEquals(Zurich.getCommuneLocalite().getNoOFS(), organisation.getSiegesPrincipaux().get(1).getPayload().intValue());
+		Assert.assertEquals(Leysin.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal().get(0).getPayload().intValue());
+		Assert.assertEquals(Zurich.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal().get(1).getPayload().intValue());
 	}
 
 	@Test
@@ -248,12 +250,12 @@ public class OrganisationTest {
 
 	@Test
 	public void testGetCapitaux() throws Exception {
-		Assert.assertEquals(25000, organisation.getCapitaux().get(0).getPayload().getCashedInAmount().intValue());
-		Assert.assertEquals(50000, organisation.getCapitaux().get(1).getPayload().getCashedInAmount().intValue());
+		Assert.assertEquals(25000, organisation.getCapital().get(0).getPayload().getCashedInAmount().intValue());
+		Assert.assertEquals(50000, organisation.getCapital().get(1).getPayload().getCashedInAmount().intValue());
 	}
 
 	@Test
 	public void testGetNoIDE() throws Exception {
-		Assert.assertEquals("CHE543257199", organisation.getNoIDE().get(0).getPayload());
+		Assert.assertEquals("CHE543257199", organisation.getNumeroIDE().get(0).getPayload());
 	}
 }

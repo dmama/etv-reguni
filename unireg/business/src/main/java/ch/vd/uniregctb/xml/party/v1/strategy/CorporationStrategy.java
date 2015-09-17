@@ -48,19 +48,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initBase(to, from, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		if (entreprise.isConnueAuCivil()) {
-			// TODO [SIPM][RCEnt] Aller chercher les données dans l'organisation...
-//			to.setShortName(data.getRaisonSociale());
-//			to.setName1(data.getRaisonSociale());
-		}
-		else {
-			final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-			if (!rcData.isEmpty()) {
-				final DonneesRegistreCommerce data = rcData.get(rcData.size() - 1);
-				to.setShortName(data.getRaisonSociale());
-				to.setName1(data.getRaisonSociale());
-			}
-		}
+		final String raisonSociale = context.tiersService.getRaisonSociale(entreprise);
+		to.setName1(raisonSociale);
+		to.setShortName(raisonSociale);
 
 		final RegDate dernierBouclement = context.bouclementService.getDateDernierBouclement(entreprise.getBouclements(), RegDate.get(), false);
 		final RegDate prochainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), RegDate.get(), true);

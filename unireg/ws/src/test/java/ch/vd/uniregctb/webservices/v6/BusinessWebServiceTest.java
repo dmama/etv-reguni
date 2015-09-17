@@ -38,6 +38,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.ws.ack.v6.AckStatus;
 import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckRequest;
 import ch.vd.unireg.ws.ack.v6.OrdinaryTaxDeclarationAckResponse;
@@ -125,8 +128,6 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.efacture.EFactureServiceProxy;
 import ch.vd.uniregctb.efacture.MockEFactureService;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
@@ -1239,11 +1240,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			}
 		});
 
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockPersonneMorale pm = addPM(noEntreprise, "Au petit coin", "SA", pmActivityStartDate, null);
-				pm.setNumeroIDE("CHE123456788");
+				final MockOrganisation org = addOrganisation(noEntreprise, pmActivityStartDate, "Au petit coin", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
 			}
 		});
 
@@ -1262,9 +1263,13 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();
+
 				final DebiteurPrestationImposable dpi = addDebiteur("Débiteur IS", mc, dateDebutContactIS);
 				dpi.setModeCommunication(ModeCommunication.ELECTRONIQUE);
-				final Entreprise pm = addEntreprise(noEntreprise);
+
+				final Entreprise pm = addEntrepriseConnueAuCivil(noEntreprise);
+				addForPrincipal(pm, pmActivityStartDate, MotifFor.DEBUT_EXPLOITATION, MockCommune.Morges);
+
 				final CollectiviteAdministrative ca = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noCAT);
 				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 				ac.setFormeJuridique(FormeJuridique.ASS);
@@ -1351,7 +1356,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 			final Corporation pm = (Corporation) party;
 			Assert.assertEquals("Au petit coin", pm.getName());
-			Assert.assertEquals(pmActivityStartDate, ch.vd.uniregctb.xml.DataHelper.xmlToCore(pm.getActivityStartDate()));
 			Assert.assertNotNull(pm.getUidNumbers());
 			Assert.assertEquals(1, pm.getUidNumbers().getUidNumber().size());
 			Assert.assertEquals("CHE123456788", pm.getUidNumbers().getUidNumber().get(0));
@@ -3505,11 +3509,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		final long noEntreprise = 423672L;
 		final RegDate pmActivityStartDate = date(2000, 1, 1);
 
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockPersonneMorale pm = addPM(noEntreprise, "Au petit coin", "SA", pmActivityStartDate, null);
-				pm.setNumeroIDE("CHE123456788");
+				final MockOrganisation org = addOrganisation(noEntreprise, pmActivityStartDate, "Au petit coin", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addNumeroIDE(org, "CHE123456788", pmActivityStartDate, null);
 			}
 		});
 
@@ -3535,7 +3539,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 				da.setTiers(ppProtege);
 				hibernateTemplate.merge(da);
 
-				final Entreprise entreprise = addEntreprise(noEntreprise);
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noEntreprise);
 
 				final AutreCommunaute ac = addAutreCommunaute("Tata!!");
 				ac.setFormeJuridique(FormeJuridique.ASS);
@@ -3554,7 +3558,7 @@ public class BusinessWebServiceTest extends WebserviceTest {
 		});
 
 		final UserLogin user = new UserLogin("TOTO", 22);
-		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 4845, ids.pp2, ids.pm, ids.ac), null);
+		final Parties parties = service.getParties(user, Arrays.asList(ids.pp1, ids.ppProtege, 99999, ids.pp2, ids.pm, ids.ac), null);
 		Assert.assertNotNull(parties);
 		Assert.assertNotNull(parties.getEntries());
 		Assert.assertEquals(6, parties.getEntries().size());
@@ -3569,14 +3573,6 @@ public class BusinessWebServiceTest extends WebserviceTest {
 
 		{
 			final Entry e = sorted.get(0);
-			Assert.assertNull(e.getParty());
-			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(4845, e.getPartyNo());
-			Assert.assertEquals("Le tiers n°48.45 n'existe pas", e.getError().getErrorMessage());
-			Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
-		}
-		{
-			final Entry e = sorted.get(1);
 			Assert.assertNotNull(e.getParty());
 			Assert.assertNull(e.getError());
 			Assert.assertEquals(Corporation.class, e.getParty().getClass());
@@ -3587,6 +3583,14 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			Assert.assertNotNull(corp.getUidNumbers());
 			Assert.assertEquals(1, corp.getUidNumbers().getUidNumber().size());
 			Assert.assertEquals("CHE123456788", corp.getUidNumbers().getUidNumber().get(0));
+		}
+		{
+			final Entry e = sorted.get(1);
+			Assert.assertNull(e.getParty());
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(99999, e.getPartyNo());
+			Assert.assertEquals("Le tiers n°999.99 n'existe pas", e.getError().getErrorMessage());
+			Assert.assertEquals(ErrorType.BUSINESS, e.getError().getType());
 		}
 		{
 			final Entry e = sorted.get(2);

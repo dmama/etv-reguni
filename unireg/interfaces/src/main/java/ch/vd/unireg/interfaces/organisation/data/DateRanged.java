@@ -1,11 +1,8 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
-import java.io.Serializable;
-
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
@@ -33,14 +30,9 @@ import ch.vd.registre.base.date.RegDateHelper;
  *
  * @param <T> type de la donnée historisée
  */
-public class DateRanged<T> implements DateRange, Serializable {
+public class DateRanged<T> extends DateRangeHelper.Ranged<T> {
 
- 	private static final long serialVersionUID = 2491428497472988246L;
-
-	private final RegDate dateDebut;
-	private final RegDate dateFin;
-	@NotNull
-	private final T payload;
+	private static final long serialVersionUID = -8605247461059999993L;
 
 	/**
 	 * Crée une nouvelle instance immuable et valide.
@@ -50,17 +42,15 @@ public class DateRanged<T> implements DateRange, Serializable {
 	 * @param payload La données. Obligatoire.
 	 */
 	public DateRanged(RegDate dateDebut, RegDate dateFin, @NotNull T payload) {
+		super(dateDebut, dateFin, payload);
 		if (payload == null) {
 			throw new NullPointerException("Tentative de créer une plage sans charge utile! Une plage temporelle doit obligatoirement porter sur une donnée.");
 		}
 		ensureValidRange(dateDebut, dateFin);
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.payload = payload;
 	}
 
-	private void ensureValidRange(RegDate dateDebut, RegDate dateFin) {
-		if (dateFin != null && dateDebut.isAfter(dateFin)) {
+	private static void ensureValidRange(RegDate dateDebut, RegDate dateFin) {
+		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
 			throw new IllegalArgumentException (
 					String.format("Tentative de créer une plage dont le début [%s] commence après la fin [%s].",
 								  RegDateHelper.dateToDisplayString(dateDebut),
@@ -73,24 +63,32 @@ public class DateRanged<T> implements DateRange, Serializable {
 	 * @param dateFin La nouvelle date de fin.
 	 * @return La nouvelle plage.
 	 */
+	@Override
 	@NotNull
 	public DateRanged<T> withDateFin(RegDate dateFin) {
-		return new DateRanged<>(this.dateDebut, dateFin, this.payload);
+		return new DateRanged<>(getDateDebut(), dateFin, getPayload());
 	}
 
+	/**
+	 * Crée une nouvelle plage dotée de la date de début précisée en paramètre.
+	 * @param dateDebut La nouvelle date de début.
+	 * @return La nouvelle plage.
+	 */
 	@Override
-	public RegDate getDateDebut() {
-		return dateDebut;
+	@NotNull
+	public DateRanged<T> withDateDebut(RegDate dateDebut) {
+		return new DateRanged<>(dateDebut, getDateFin(), getPayload());
 	}
 
+	/**
+	 * Crée une nouvelle plage dotée de la payload précisée en paramètre.
+	 * @param payload la nouvelle payload.
+	 * @return La nouvelle plage.
+	 */
 	@Override
-	public RegDate getDateFin() {
-		return dateFin;
-	}
-
-	@Override
-	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, this.dateDebut, this.dateFin, NullDateBehavior.LATEST);
+	@NotNull
+	public <U> DateRanged<U> withPayload(U payload) {
+		return new DateRanged<>(getDateDebut(), getDateFin(), payload);
 	}
 
 	/**
@@ -98,27 +96,6 @@ public class DateRanged<T> implements DateRange, Serializable {
 	 */
 	@NotNull
 	public T getPayload() {
-		return payload;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		final DateRanged<?> that = (DateRanged<?>) o;
-
-		if (!getDateDebut().equals(that.getDateDebut())) return false;
-		if (getDateFin() != null ? !getDateFin().equals(that.getDateFin()) : that.getDateFin() != null) return false;
-		return getPayload().equals(that.getPayload());
-
-	}
-
-	@Override
-	public int hashCode() {
-		int result = getDateDebut().hashCode();
-		result = 31 * result + (getDateFin() != null ? getDateFin().hashCode() : 0);
-		result = 31 * result + getPayload().hashCode();
-		return result;
+		return super.getPayload();
 	}
 }
