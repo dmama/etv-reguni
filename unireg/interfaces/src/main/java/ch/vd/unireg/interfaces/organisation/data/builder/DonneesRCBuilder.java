@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Adresse;
+import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
@@ -17,8 +17,8 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	private List<DateRanged<StatusRC>> status;
 	private List<DateRanged<String>> nom;
 	private List<DateRanged<StatusInscriptionRC>> statusInscription;
-	private List<DateRanged<Capital>> capital;
-	private List<DateRanged<Adresse>> adresseLegale;
+	private List<Capital> capital;
+	private List<AdresseRCEnt> adresseLegale;
 
 	public DonneesRCBuilder() {}
 
@@ -47,22 +47,22 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 		return this;
 	}
 
-	public DonneesRCBuilder addCapital(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Capital valeur) {
-		capital = BuilderHelper.addValueToList(capital, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public DonneesRCBuilder addCapital(@NotNull Capital valeur) {
+		capital = BuilderHelper.addValueToList(capital, valeur);
 		return this;
 	}
 
-	public DonneesRCBuilder addAdresseLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		adresseLegale = BuilderHelper.addValueToList(adresseLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public DonneesRCBuilder addAdresseLegale(@NotNull AdresseRCEnt valeur) {
+		adresseLegale = BuilderHelper.addValueToList(adresseLegale, valeur);
 		return this;
 	}
 
-	public DonneesRCBuilder withAdresseLegale(List<DateRanged<Adresse>> adresseLegale) {
+	public DonneesRCBuilder withAdresseLegale(List<AdresseRCEnt> adresseLegale) {
 		this.adresseLegale = adresseLegale;
 		return this;
 	}
 
-	public DonneesRCBuilder withCapital(List<DateRanged<Capital>> capital) {
+	public DonneesRCBuilder withCapital(List<Capital> capital) {
 		this.capital = capital;
 		return this;
 	}

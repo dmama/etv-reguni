@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -23,6 +23,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
@@ -60,7 +61,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (hasSiteVD(organisation, event, context)) {
+			if (hasSiteVD(organisation, event)) {
 
 				switch (category) {
 
@@ -103,19 +104,15 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		return String.format("L'organisation %s %s, commune OFS %s et forme juridique %s ne peut être créée sans intervention utilisateur.",
 		                     organisation.getNumeroOrganisation(),
 		                     organisation.getNom(),
-		                     rangeAt(organisation.getSiegePrincipal(), event.getDateEvenement()),
+		                     rangeAt(organisation.getSiegesPrincipaux(), event.getDateEvenement()),
 		                     rangeAt(organisation.getFormeLegale(), event.getDateEvenement()));
 	}
 
-	private boolean hasSiteVD(Organisation organisation, EvenementOrganisation event, EvenementOrganisationContext context) {
+	private boolean hasSiteVD(Organisation organisation, EvenementOrganisation event) {
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final DateRanged<Integer> siegeRange = rangeAt(site.getSiege(), event.getDateEvenement());
-			if (siegeRange != null) {
-				final Integer siege = siegeRange.getPayload();
-				final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(siege, event.getDateEvenement());
-				if (commune.isVaudoise()) {
-					return true;
-				}
+			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
+			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				return true;
 			}
 		}
 		return false;

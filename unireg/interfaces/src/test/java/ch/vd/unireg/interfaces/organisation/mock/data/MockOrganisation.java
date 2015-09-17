@@ -15,11 +15,16 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
 /**
  * Représente un object mock pour une organisation. Le mock fait plusieurs choses:
@@ -35,8 +40,8 @@ public class MockOrganisation implements Organisation {
 	private final NavigableMap<RegDate, List<String>> nomsAdditionnels = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
-	private final NavigableMap<RegDate, Long> idSites = new TreeMap<>();
 	private final List<MockSiteOrganisation> sites = new ArrayList<>();
+	private final List<Adresse> adresses = new ArrayList<>();
 
 	public MockOrganisation(long idOrganisation, RegDate dateDebut, String nom, FormeLegale formeLegale) {
 		this.idOrganisation = idOrganisation;
@@ -68,16 +73,17 @@ public class MockOrganisation implements Organisation {
 		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
 	}
 
-	public void addSiteId(RegDate dateDebut, @Nullable RegDate dateFin, long idSite) {
-		MockOrganisationHelper.addRangedData(idSites, dateDebut, dateFin, idSite);
-	}
-
 	public void addDonneesSite(MockSiteOrganisation site) {
 		sites.add(site);
 	}
 
 	public void addNomsAdditionnels(RegDate dateDebut, RegDate dateFin, String... nouveauxNomsAdditionnels) {
 		MockOrganisationHelper.addRangedData(nomsAdditionnels, dateDebut, dateFin, nouveauxNomsAdditionnels != null ? Arrays.asList(nouveauxNomsAdditionnels) : Collections.<String>emptyList());
+	}
+
+	public void addAdresse(MockAdresse adresse) {
+		this.adresses.add(adresse);
+		Collections.sort(this.adresses, new DateRangeComparator<>());
 	}
 
 	@Override
@@ -92,7 +98,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<Long>> getEnRemplacementDe() {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -147,31 +153,40 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<Long>> getRemplacePar() {
-		return null;
-	}
-
-	@Override
-	public List<DateRanged<Long>> getSites() {
-		return MockOrganisationHelper.getHisto(idSites);
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public List<DateRanged<Long>> getTransferDe() {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public List<DateRanged<Long>> getTransfereA() {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<DateRanged<Capital>> getCapital() {
-		return null;
+	public List<Capital> getCapitaux() {
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<DateRanged<Integer>> getSiegePrincipal() {
-		return null;
+	public List<Adresse> getAdresses() {
+		return adresses;
+	}
+
+	@Override
+	public List<Siege> getSiegesPrincipaux() {
+		final List<Siege> sieges = new ArrayList<>();
+		for (MockSiteOrganisation site : sites) {
+			for (DateRanged<TypeDeSite> typeSite : site.getTypeDeSite()) {
+				if (typeSite.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					sieges.addAll(site.getSieges());
+				}
+			}
+		}
+		Collections.sort(sieges, new DateRangeComparator<>());
+		return DateRangeHelper.collate(sieges);
 	}
 }

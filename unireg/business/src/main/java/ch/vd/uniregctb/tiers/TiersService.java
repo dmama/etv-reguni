@@ -15,6 +15,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -1498,5 +1499,10 @@ public interface TiersService {
      */
     Set<Contribuable> getContribuablesLies(Contribuable ctb, Integer ageLiaison);
 
+    /**
+     * @param entreprise une entreprise fiscale
+     * @return les données civiles de l'entreprise, où <code>null</code> si cette entreprise est inconnue dans les registres civils
+     */
+    Organisation getOrganisation(@NotNull Entreprise entreprise);
 }
 

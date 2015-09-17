@@ -5,7 +5,7 @@ package ch.vd.uniregctb.interfaces.model;
  */
 public interface CompteBancaire {
 
-	public static enum Format {
+	enum Format {
 		/**
 		 * Le format spécifique à l'organisme financier suisse (banque ou poste). L'organisme est spécifié par le numéro de clearing.
 		 * Exemples :

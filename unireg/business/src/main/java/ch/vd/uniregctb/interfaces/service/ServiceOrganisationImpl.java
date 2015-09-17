@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.common.DonneesOrganisationException;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class ServiceOrganisationImpl implements ServiceOrganisationService {
-
-	//private static final Logger LOGGER = LoggerFactory.getLogger(ServiceOrganisationImpl.class);
 
 	private ServiceOrganisationRaw target;
 
@@ -24,24 +25,35 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		this.target = target;
 	}
 
-	@NotNull
 	@Override
 	public Organisation getOrganisationHistory(long noOrganisation) throws DonneesOrganisationException {
-		Organisation org = target.getOrganisationHistory(noOrganisation);
-		if (org == null) {
-			throw new DonneesOrganisationException(String.format("L'organisation %s est introuvable.", noOrganisation));
-		}
-		return org;
+		return target.getOrganisationHistory(noOrganisation);
 	}
 
-	@NotNull
 	@Override
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
-		Long noOrganisation = target.getOrganisationPourSite(noSite);
-		if (noOrganisation == null) {
-			throw new DonneesOrganisationException(String.format("Pas d'organisation correspondant au site %s.", noSite));
-		}
-		return noOrganisation;
+		return target.getOrganisationPourSite(noSite);
+	}
 
+	@Override
+	public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
+		final Organisation organisation = getOrganisationHistory(noOrganisation);
+		if (organisation == null) {
+			return null;
+		}
+
+		final AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
+		final List<Adresse> adresses = organisation.getAdresses();
+		if (adresses != null && !adresses.isEmpty()) {
+			for (Adresse adresse : adresses) {
+				if (adresse.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
+					resultat.courriers.add(adresse);
+				}
+				else {
+					resultat.principales.add(adresse);
+				}
+			}
+		}
+		return resultat;
 	}
 }

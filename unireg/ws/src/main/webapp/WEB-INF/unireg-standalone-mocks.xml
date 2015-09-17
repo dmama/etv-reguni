@@ -32,9 +32,6 @@
 	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
 	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
 
-	<!-- Bean client ServicePM MOCK -->
-	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />
-
 	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
 	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
 

@@ -31,7 +31,7 @@ public class AddressBuilderTest extends WithoutSpringTest {
 		// l'adresse bizarre
 		final AdresseEnvoiDetaillee from =
 				new AdresseEnvoiDetaillee(RegDate.get(2011, 10, 1), null, "Monsieur", "Monsieur", new NomPrenom("Porte", "Jean-Claude"), new RueEtNumero("Rue Aimé Pinel", "42"),
-						new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE);
+						new NpaEtLocalite("1110", "38230"), MockPays.France, 254, 0, AdresseGenerique.SourceType.CIVILE_PERS);
 		
 		final Address to = new Address();
 		AddressBuilder.fillDestination(to, from);

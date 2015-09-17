@@ -3,8 +3,8 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
-import ch.vd.unireg.interfaces.civil.data.CasePostale;
+import ch.vd.unireg.interfaces.common.AdresseAvecCommune;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.uniregctb.common.Loggable;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -19,7 +19,7 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 	/**
 	 * Représente la source (type et tiers) d'une adresse générique
 	 */
-	public static class Source {
+	class Source {
 		private final SourceType type;
 		private final Tiers tiers;
 
@@ -44,8 +44,9 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		}
 	}
 
-	public static enum SourceType {
-		CIVILE(false),
+	enum SourceType {
+		CIVILE_PERS(false),
+		CIVILE_ORG(false),
 		FISCALE(false),
 		REPRESENTATION(true),
 		TUTELLE(true),
@@ -55,7 +56,6 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		/** = cas d'un ménage commun avec principal sous tutelle (l'adresse du conjoint prime sur celle du tuteur) */
 		CONJOINT(true),
 		CONSEIL_LEGAL(true),
-		PM(false),
 		/**
 		 * Cas du contribuable associé à un débiteur
 		 */

@@ -47,27 +47,4 @@
 
 	<alias alias="serviceSecuriteService" name="serviceSecuriteCache"/>
 
-	<!-- Service PM -->
-	
-	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServicePersonneMoraleHostInterfaces">
-		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
-		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
-	</bean>
-
-	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
-		<property name="target" ref="servicePersonneMoraleServiceHost" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="servicePersonneMoraleServiceCache" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleCache">
-		<property name="target" ref="servicePersonneMoraleServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="servicePM" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>
-	
 </beans>

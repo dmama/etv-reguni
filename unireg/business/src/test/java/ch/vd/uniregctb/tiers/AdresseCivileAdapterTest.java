@@ -3,7 +3,7 @@ package ch.vd.uniregctb.tiers;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -36,7 +36,7 @@ public class AdresseCivileAdapterTest {
 			assertEquals(RegDate.get(1980, 1, 1), adapter.getDateDebut());
 			assertEquals(RegDate.get(1987, 12, 11), adapter.getDateFin());
 			assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
-			assertEquals(SourceType.CIVILE,adapter.getSource().getType());
+			assertEquals(SourceType.CIVILE_PERS,adapter.getSource().getType());
 		}
 
 		/*
@@ -60,7 +60,7 @@ public class AdresseCivileAdapterTest {
 			assertEquals(RegDate.get(1980, 1, 1), adapter.getDateDebut());
 			assertEquals(RegDate.get(1987, 12, 11), adapter.getDateFin());
 			assertEquals(MockPays.France.getNoOFS(), adapter.getNoOfsPays().intValue());
-			assertEquals(SourceType.CIVILE,adapter.getSource().getType());
+			assertEquals(SourceType.CIVILE_PERS,adapter.getSource().getType());
 		}
 	}
 
@@ -76,7 +76,7 @@ public class AdresseCivileAdapterTest {
 			assertEquals(RegDate.get(1987, 12, 11), adapter.getDateFin());
 			assertEquals("Lausanne", adapter.getLocalite());
 			assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
-			assertEquals(SourceType.CIVILE,adapter.getSource().getType());
+			assertEquals(SourceType.CIVILE_PERS,adapter.getSource().getType());
 			assertFalse(adapter.isDefault());
 		}
 
@@ -98,7 +98,7 @@ public class AdresseCivileAdapterTest {
 			assertEquals(RegDate.get(1987, 6, 5), adapter.getDateFin());
 			assertEquals("Lausanne", adapter.getLocalite());
 			assertEquals(ServiceInfrastructureService.noOfsSuisse, adapter.getNoOfsPays().intValue());
-			assertEquals(SourceType.CIVILE,adapter.getSource().getType());
+			assertEquals(SourceType.CIVILE_PERS,adapter.getSource().getType());
 			assertFalse(adapter.isDefault());
 		}
 	}

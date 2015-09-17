@@ -26,6 +26,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
@@ -94,8 +97,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -111,7 +112,6 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -1406,24 +1406,24 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final long noPM = 20151L;
 
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockPersonneMorale pm = addPM(noPM, "Fiduciaire Galper S.A.", "", date(1993, 7, 23), null);
-				addAdresse(pm, TypeAdressePM.COURRIER, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
-				addAdresse(pm, TypeAdressePM.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
+				final MockOrganisation org = addOrganisation(noPM, date(1993, 7, 23), "Fiduciaire Galper S.A.", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addAdresse(org, TypeAdresseCivil.PRINCIPALE, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
+				addAdresse(org, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
 			}
 		});
 
 		final long idPM = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				final Entreprise pm = addEntreprise(noPM);
+				final Entreprise pm = addEntrepriseConnueAuCivil(noPM);
 				return pm.getNumero();
 			}
 		});
 
-		final GetPartyRequest params = new GetPartyRequest(login, (int) idPM, Arrays.asList(PartyPart.ADDRESSES));
+		final GetPartyRequest params = new GetPartyRequest(login, (int) idPM, Collections.singletonList(PartyPart.ADDRESSES));
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 
@@ -1853,17 +1853,19 @@ public class PartyWebServiceTest extends WebserviceTest {
 	@Test
 	public void testGetCorporationWithoutAutomaticReimbursementInfo() throws Exception {
 
-		servicePM.setUp(new MockServicePM() {
+		final long idOrganisation = 12345L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(12345L, "Biscottes Duchmole", "SARL", date(1990, 4, 5), null);
+				addOrganisation(idOrganisation, date(1990, 4, 5), "Biscottes Duchmole", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
 			}
 		});
 
 		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				Entreprise ent = addEntreprise(12345L);
+				final Entreprise ent = addEntrepriseConnueAuCivil(idOrganisation);
 				ent.setBlocageRemboursementAutomatique(null);
 				return ent.getId();
 			}

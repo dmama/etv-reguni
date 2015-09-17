@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service;
 
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
 public interface ServiceOrganisationService {
 
@@ -24,5 +25,12 @@ public interface ServiceOrganisationService {
 	 * @throws ServiceOrganisationException
 	 */
 	Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException;
+
+	/**
+	 * @param noOrganisation l'identifiant cantonal d'une organisation
+	 * @return l'historique des adresses de cette organisation
+	 * @throws ServiceOrganisationException en cas de souci
+	 */
+	AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
 
 }

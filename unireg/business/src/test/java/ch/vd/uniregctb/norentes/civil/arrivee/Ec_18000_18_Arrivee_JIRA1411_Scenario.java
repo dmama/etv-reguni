@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -172,13 +172,13 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			final AdresseGenerique domicileAvant = histoDomicile.get(0);
 			assertNull(domicileAvant.getDateDebut(), "Qui a trouvé une date de début à l'adresse avant déménagement?");
 			assertTrue(domicileAvant.getLocalite().contains("Bex"), "L'adresse de domicile avant déménagement devrait être à Bex");
-			assertEquals(AdresseGenerique.SourceType.CIVILE, domicileAvant.getSource().getType(), "Adresse de domicile d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE_PERS, domicileAvant.getSource().getType(), "Adresse de domicile d'une autre source?");
 
 			final AdresseGenerique domicileApres = histoDomicile.get(1);
 			assertEquals(dateArriveeLausanne, domicileApres.getDateDebut(), "Mauvaise date de début");
 			assertNull(domicileApres.getDateFin(), "Qui a trouvé une date de fin à l'adresse après déménagement?");
 			assertTrue(domicileApres.getLocalite().contains("Lausanne"), "L'adresse de domicile avant déménagement devrait être à Lausanne");
-			assertEquals(AdresseGenerique.SourceType.CIVILE, domicileApres.getSource().getType(), "Adresse de domicile d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE_PERS, domicileApres.getSource().getType(), "Adresse de domicile d'une autre source?");
 		}
 
 		// courrier
@@ -191,7 +191,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 			assertNull(courrierAvant.getDateDebut(), "Qui a trouvé une date de début à l'adresse de courrier d'avant la surcharge?");
 			assertEquals(date(2009, 7, 7), courrierAvant.getDateFin(), "Mauvaise date de fin");
 			assertTrue(courrierAvant.getLocalite().contains("Bex"), "L'adresse de domicile avant déménagement devrait être à Bex");
-			assertEquals(AdresseGenerique.SourceType.CIVILE, courrierAvant.getSource().getType(), "Adresse de courier d'une autre source?");
+			assertEquals(AdresseGenerique.SourceType.CIVILE_PERS, courrierAvant.getSource().getType(), "Adresse de courier d'une autre source?");
 
 			final AdresseGenerique courrierSurcharge = histoCourrier.get(1);
 			assertNull(courrierSurcharge.getDateFin(), "Qui a trouvé une date de fin à l'adresse de courrier surchargée?");

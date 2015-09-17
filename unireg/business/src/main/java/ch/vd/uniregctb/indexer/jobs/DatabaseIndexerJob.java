@@ -46,7 +46,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
 
-		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, true);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

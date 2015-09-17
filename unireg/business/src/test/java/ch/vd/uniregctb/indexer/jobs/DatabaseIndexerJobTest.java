@@ -6,20 +6,26 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
@@ -28,12 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 public class DatabaseIndexerJobTest extends BusinessTest {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseIndexerJobTest.class);
-
-	private static final String DBUNIT_FILE = "DatabaseIndexerJobTest.xml";
-
 	private TiersDAO tiersDAO;
-
 
 	public DatabaseIndexerJobTest() {
 		setWantIndexationTiers(true);
@@ -45,7 +46,17 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
-		servicePM.setUp(new DefaultMockServicePM());
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.NESTLE);
+				addOrganisation(MockOrganisationFactory.BCV);
+				addOrganisation(MockOrganisationFactory.KPMG);
+				addOrganisation(MockOrganisationFactory.CURIA_TREUHAND);
+				addOrganisation(MockOrganisationFactory.JAL_HOLDING);
+				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
+			}
+		});
 
 		serviceCivil.setUp(new MockServiceCivil() {
 
@@ -79,13 +90,61 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		});
 
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
-
-		loadDatabase(DBUNIT_FILE);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testReindexationJob() throws Exception {
+
+		final class Ids {
+			long idNestle;
+			long idBcv;
+			long idKpmg;
+			long idCuriaTreuhand;
+			long idJalHolding;
+			long idBanqueCoop;
+		}
+
+		// tout d'abord quelques tiers qui se réindexent
+		final Ids ids;
+		globalTiersIndexer.setOnTheFlyIndexation(true);
+		try {
+			ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+				@Override
+				public Ids doInTransaction(TransactionStatus status) {
+					final Entreprise nestle = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
+					addForPrincipal(nestle, MockOrganisationFactory.NESTLE.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Vevey);
+
+					final Entreprise bcv = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
+					addForPrincipal(bcv, MockOrganisationFactory.BCV.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+					final Entreprise kpmg = addEntrepriseConnueAuCivil(MockOrganisationFactory.KPMG.getNumeroOrganisation());
+					addForPrincipal(kpmg, MockOrganisationFactory.KPMG.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Zurich);
+
+					final Entreprise curiaTreuhand = addEntrepriseConnueAuCivil(MockOrganisationFactory.CURIA_TREUHAND.getNumeroOrganisation());
+					addForPrincipal(curiaTreuhand, MockOrganisationFactory.CURIA_TREUHAND.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Chur);
+
+					final Entreprise jalHolding = addEntrepriseConnueAuCivil(MockOrganisationFactory.JAL_HOLDING.getNumeroOrganisation());
+					addForPrincipal(jalHolding, MockOrganisationFactory.JAL_HOLDING.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne);
+
+					final Entreprise banqueCoop = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
+					addForPrincipal(banqueCoop, MockOrganisationFactory.BANQUE_COOP.getNumeroIDE().get(0).getDateDebut(), MotifFor.DEBUT_EXPLOITATION, MockCommune.Bale);
+
+					final Ids ids = new Ids();
+					ids.idNestle = nestle.getNumero();
+					ids.idBcv = bcv.getNumero();
+					ids.idKpmg = kpmg.getNumero();
+					ids.idCuriaTreuhand = curiaTreuhand.getNumero();
+					ids.idJalHolding = jalHolding.getNumero();
+					ids.idBanqueCoop = banqueCoop.getNumero();
+					return ids;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.sync();
+			globalTiersIndexer.setOnTheFlyIndexation(false);
+		}
 
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 		doInNewTransaction(new TxCallback<Object>() {
@@ -95,7 +154,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 				// Ajout d'un Habitant qui ne se reindexe pas
 				PersonnePhysique hab = new PersonnePhysique(true);
 				hab.setNumero(12345678L);
-				hab.setNumeroIndividu(123456L);
+				hab.setNumeroIndividu(123456L);     // ce numéro n'existe pas dans le mock civil
 				tiersDAO.save(hab);
 				return null;
 			}
@@ -105,10 +164,11 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		// Le tiers est chargé
 		{
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(7823L);
-			List<?> l = globalTiersSearcher.search(criteria);
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(ids.idNestle);
+			final List<TiersIndexedData> l = globalTiersSearcher.search(criteria);
 			assertEquals(1, l.size());
+			assertEquals((Long) ids.idNestle, l.get(0).getNumero());
 		}
 
 		// L'index est vidé
@@ -116,28 +176,29 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 
 		// L'index est vide
 		{
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(1111L);
-			List<?> l = globalTiersSearcher.search(criteria);
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(ids.idNestle);
+			final List<TiersIndexedData> l = globalTiersSearcher.search(criteria);
 			assertEquals(0, l.size());
+
+			final Set<Long> allIds = globalTiersSearcher.getAllIds();
+			assertEquals(0, allIds.size());
 		}
 
 		// On index dabord avec 1 Thread pour mettre LOG_MDATE et INDEX_DIRTY comme il faut
-		globalTiersIndexer.indexAllDatabase(null, 1, Mode.FULL, false);
+		globalTiersIndexer.indexAllDatabase(null, 1, Mode.FULL);
 
 		// Puis avec 4 pour vérifier que le multi-threading marche bien
-		globalTiersIndexer.indexAllDatabase(null, 4, Mode.FULL, false);
+		globalTiersIndexer.indexAllDatabase(null, 4, Mode.FULL);
 
 		// De nouveau trouvé
 		{
-			long id = 7823L;
-
-			TiersCriteria criteria = new TiersCriteria();
-			criteria.setNumero(id);
-			List<?> l = globalTiersSearcher.search(criteria);
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNumero(ids.idKpmg);
+			final List<TiersIndexedData> l = globalTiersSearcher.search(criteria);
 			assertEquals(1, l.size());
 
-			Tiers tiers = tiersDAO.get(id);
+			final Tiers tiers = tiersDAO.get(ids.idKpmg);
 			assertFalse(tiers.isDirty());
 		}
 
@@ -145,29 +206,27 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		{
 			long id = 12345678L;
 
-			TiersCriteria criteria = new TiersCriteria();
+			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(id);
-			List<?> l = globalTiersSearcher.search(criteria);
+			final List<TiersIndexedData> l = globalTiersSearcher.search(criteria);
 			assertEquals(0, l.size());
 
-			Tiers tiers = tiersDAO.get(id);
+			final Tiers tiers = tiersDAO.get(id);
 			assertTrue(tiers.isDirty());
 		}
 
 		// Nombre de tiers indexés
 		{
-			final Set<Long> ids = globalTiersSearcher.getAllIds();
-			assertTrue(ids.contains(Long.valueOf(1234)));
-			assertTrue(ids.contains(Long.valueOf(5434)));
-			assertTrue(ids.contains(Long.valueOf(7239)));
-			assertTrue(ids.contains(Long.valueOf(7632)));
-			assertTrue(ids.contains(Long.valueOf(7823)));
-			assertTrue(ids.contains(Long.valueOf(8901)));
-			assertTrue(ids.contains(Long.valueOf(27769)));
-			assertTrue(ids.contains(Long.valueOf(76327)));
+			final Set<Long> allIds = globalTiersSearcher.getAllIds();
+			assertTrue(allIds.contains(Long.valueOf(ids.idBanqueCoop)));
+			assertTrue(allIds.contains(Long.valueOf(ids.idBcv)));
+			assertTrue(allIds.contains(Long.valueOf(ids.idCuriaTreuhand)));
+			assertTrue(allIds.contains(Long.valueOf(ids.idJalHolding)));
+			assertTrue(allIds.contains(Long.valueOf(ids.idKpmg)));
+			assertTrue(allIds.contains(Long.valueOf(ids.idNestle)));
 
 			int nb = globalTiersSearcher.getExactDocCount();
-			assertEquals(8 + MockCollectiviteAdministrative.getAll().size(), nb);
+			assertEquals(6 + MockCollectiviteAdministrative.getAll().size(), nb);
 		}
 	}
 

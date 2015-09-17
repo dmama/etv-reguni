@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -7,10 +8,12 @@ import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 
 public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 
-	private RCEntAdapter adapter;
+	private final RCEntAdapter adapter;
+	private final ServiceInfrastructureRaw infraService;
 
-	public ServiceOrganisationRCEnt(RCEntAdapter adapter) {
+	public ServiceOrganisationRCEnt(RCEntAdapter adapter, ServiceInfrastructureRaw infraService) {
 		this.adapter = adapter;
+		this.infraService = infraService;
 	}
 
 	@Override
@@ -20,7 +23,7 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 			return null;
 		}
 		sanityCheck(noOrganisation, received.getCantonalId());
-		return RCEntOrganisationHelper.get(received);
+		return RCEntOrganisationHelper.get(received, infraService);
 	}
 
 	@Override
@@ -54,9 +57,4 @@ public class ServiceOrganisationRCEnt implements ServiceOrganisationRaw {
 					              receivedId));
 		}
 	}
-
-	public void setAdapter(RCEntAdapter adapter) {
-		this.adapter = adapter;
-	}
-
 }

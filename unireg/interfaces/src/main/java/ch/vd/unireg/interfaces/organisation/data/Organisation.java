@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
 
+import ch.vd.unireg.interfaces.common.Adresse;
+
 public interface Organisation {
 
 	/**
@@ -34,15 +36,15 @@ public interface Organisation {
 	 */
 	List<DateRanged<String>> getNomsAdditionels();
 
-	List<DateRanged<Capital>> getCapital();
+	List<Capital> getCapitaux();
 
-	List<DateRanged<Integer>> getSiegePrincipal();
+	List<Siege> getSiegesPrincipaux();
+
+	List<Adresse> getAdresses();
 
 	List<DateRanged<Long>> getEnRemplacementDe();
 
 	List<DateRanged<Long>> getRemplacePar();
-
-	List<DateRanged<Long>> getSites();
 
 	List<DateRanged<Long>> getTransferDe();
 

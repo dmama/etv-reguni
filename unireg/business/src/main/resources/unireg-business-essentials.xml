@@ -66,7 +66,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="validationService" ref="validationService" />
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="assujettissementService" ref="assujettissementService" />
@@ -119,7 +118,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

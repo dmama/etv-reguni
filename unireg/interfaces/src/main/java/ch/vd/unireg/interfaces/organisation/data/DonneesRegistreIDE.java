@@ -12,14 +12,14 @@ public class DonneesRegistreIDE implements Serializable {
 	@NotNull
 	private final List<DateRanged<StatusRegistreIDE>> status;
 	private final List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
-	private final List<DateRanged<Adresse>> adresseEffective;
-	private final List<DateRanged<Adresse>> adresseBoitePostale;
+	private final List<AdresseRCEnt> adresseEffective;
+	private final List<AdresseRCEnt> adresseBoitePostale;
 	private final List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
 
-	public DonneesRegistreIDE(List<DateRanged<Adresse>> adresseBoitePostale,
+	public DonneesRegistreIDE(List<AdresseRCEnt> adresseBoitePostale,
 	                          @NotNull List<DateRanged<StatusRegistreIDE>> status,
 	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
-	                          List<DateRanged<Adresse>> adresseEffective,
+	                          List<AdresseRCEnt> adresseEffective,
 	                          List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		this.status = status;
@@ -28,11 +28,11 @@ public class DonneesRegistreIDE implements Serializable {
 		this.raisonDeLiquidation = raisonDeLiquidation;
 	}
 
-	public List<DateRanged<Adresse>> getAdresseBoitePostale() {
+	public List<AdresseRCEnt> getAdresseBoitePostale() {
 		return adresseBoitePostale;
 	}
 
-	public List<DateRanged<Adresse>> getAdresseEffective() {
+	public List<AdresseRCEnt> getAdresseEffective() {
 		return adresseEffective;
 	}
 

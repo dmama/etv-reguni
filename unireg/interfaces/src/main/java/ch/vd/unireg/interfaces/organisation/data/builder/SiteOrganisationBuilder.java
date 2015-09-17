@@ -10,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 
@@ -23,10 +24,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	private Map<String,List<DateRanged<String>>> identifiants;
 	private List<DateRanged<String>> nomsAdditionnels;
 	private List<DateRanged<TypeDeSite>> typeDeSite;
-	/**
-	 * municipalityId du SwissMunicipality
-	 */
-	private List<DateRanged<Integer>> siege;
+	private List<Siege> siege;
 	private List<DateRanged<FonctionOrganisation>> fonction;
 
 	@NotNull
@@ -54,8 +52,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addSiege(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Integer valeur) {
-		siege = BuilderHelper.addValueToList(siege, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addSiege(@NotNull Siege valeur) {
+		siege = BuilderHelper.addValueToList(siege, valeur);
 		return this;
 	}
 
@@ -89,7 +87,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder setSiege(List<DateRanged<Integer>> siege) {
+	public SiteOrganisationBuilder setSiege(List<Siege> siege) {
 		this.siege = siege;
 		return this;
 	}

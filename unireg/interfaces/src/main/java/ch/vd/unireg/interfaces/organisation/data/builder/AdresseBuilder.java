@@ -1,116 +1,102 @@
 package ch.vd.unireg.interfaces.organisation.data.builder;
 
-import ch.vd.unireg.interfaces.organisation.data.Adresse;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.common.CasePostale;
+import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class AdresseBuilder {
-	private String addressLine1;
-	private String addressLine2;
-	private String street;
-	private String houseNumber;
-	private String dwellingNumber;
-	private String postOfficeBoxText;
-	private Long postOfficeBoxNumber;
-	private String locality;
-	private String town;
-	private Integer swissZipCode;
-	private String swissZipCodeAddOn;
-	private Integer swissZipCodeId;
-	private String foreignZipCode;
-	private Integer pays;
-	private Long federalBuildingId;
-	private Long xCoordinate;
-	private Long yCoordinate;
+public class AdresseBuilder implements DataBuilder<AdresseRCEnt> {
+
+	private RegDate dateDebut;
+	private RegDate dateFin;
+	private String localite;
+	private String numeroMaison;
+	private String numeroAppartement;
+	private Integer numeroOrdrePostal;
+	private String numeroPostal;
+	private String numeroPostalComplementaire;
+	private Integer noOfsPays;
+	private String rue;
+	private String titre;
+	private TypeAdresseCivil typeAdresse;
+	private Integer egid;
+	private CasePostale casePostale;
 
 	public AdresseBuilder() {
 	}
 
-	public AdresseBuilder withAddressLine1(String addressLine1) {
-		this.addressLine1 = addressLine1;
+	public AdresseBuilder withDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
 		return this;
 	}
 
-	public AdresseBuilder withAddressLine2(String addressLine2) {
-		this.addressLine2 = addressLine2;
+	public AdresseBuilder withDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 		return this;
 	}
 
-	public AdresseBuilder withStreet(String street) {
-		this.street = street;
+	public AdresseBuilder withLocalite(String localite) {
+		this.localite = localite;
 		return this;
 	}
 
-	public AdresseBuilder withHouseNumber(String houseNumber) {
-		this.houseNumber = houseNumber;
+	public AdresseBuilder withNumeroMaison(String numeroMaison) {
+		this.numeroMaison = numeroMaison;
 		return this;
 	}
 
-	public AdresseBuilder withDwellingNumber(String dwellingNumber) {
-		this.dwellingNumber = dwellingNumber;
+	public AdresseBuilder withNumeroAppartement(String numeroAppartement) {
+		this.numeroAppartement = numeroAppartement;
 		return this;
 	}
 
-	public AdresseBuilder withPostOfficeBoxText(String postOfficeBoxText) {
-		this.postOfficeBoxText = postOfficeBoxText;
+	public AdresseBuilder withNumeroOrdrePostal(Integer numeroOrdrePostal) {
+		this.numeroOrdrePostal = numeroOrdrePostal;
 		return this;
 	}
 
-	public AdresseBuilder withPostOfficeBoxNumber(Long postOfficeBoxNumber) {
-		this.postOfficeBoxNumber = postOfficeBoxNumber;
+	public AdresseBuilder withNumeroPostal(String numeroPostal) {
+		this.numeroPostal = numeroPostal;
 		return this;
 	}
 
-	public AdresseBuilder withLocality(String locality) {
-		this.locality = locality;
+	public AdresseBuilder withNumeroPostalComplementaire(String numeroPostalComplementaire) {
+		this.numeroPostalComplementaire = numeroPostalComplementaire;
 		return this;
 	}
 
-	public AdresseBuilder withTown(String town) {
-		this.town = town;
+	public AdresseBuilder withNoOfsPays(Integer noOfsPays) {
+		this.noOfsPays = noOfsPays;
 		return this;
 	}
 
-	public AdresseBuilder withSwissZipCode(Integer swissZipCode) {
-		this.swissZipCode = swissZipCode;
+	public AdresseBuilder withRue(String rue) {
+		this.rue = rue;
 		return this;
 	}
 
-	public AdresseBuilder withSwissZipCodeAddOn(String swissZipCodeAddOn) {
-		this.swissZipCodeAddOn = swissZipCodeAddOn;
+	public AdresseBuilder withTitre(String titre) {
+		this.titre = titre;
 		return this;
 	}
 
-	public AdresseBuilder withSwissZipCodeId(Integer swissZipCodeId) {
-		this.swissZipCodeId = swissZipCodeId;
+	public AdresseBuilder withTypeAdresse(TypeAdresseCivil type) {
+		this.typeAdresse = type;
 		return this;
 	}
 
-	public AdresseBuilder withForeignZipCode(String foreignZipCode) {
-		this.foreignZipCode = foreignZipCode;
+	public AdresseBuilder withEgid(Integer egid) {
+		this.egid = egid;
 		return this;
 	}
 
-	public AdresseBuilder withPays(Integer pays) {
-		this.pays = pays;
+	public AdresseBuilder withCasePostale(CasePostale casePostale) {
+		this.casePostale = casePostale;
 		return this;
 	}
 
-	public AdresseBuilder withFederalBuildingId(Long federalBuildingId) {
-		this.federalBuildingId = federalBuildingId;
-		return this;
-	}
-
-	public AdresseBuilder withXCoordinate(Long xCoordinate) {
-		this.xCoordinate = xCoordinate;
-		return this;
-	}
-
-	public AdresseBuilder withYCoordinate(Long yCoordinate) {
-		this.yCoordinate = yCoordinate;
-		return this;
-	}
-
-	public Adresse build() {
-		return new Adresse(addressLine1, addressLine2, street, houseNumber, dwellingNumber, postOfficeBoxText, postOfficeBoxNumber, locality, town, swissZipCode, swissZipCodeAddOn, swissZipCodeId,
-		            foreignZipCode, pays, federalBuildingId, xCoordinate, yCoordinate);
+	public AdresseRCEnt build() {
+		return new AdresseRCEnt(dateDebut, dateFin, localite, numeroMaison, numeroAppartement, numeroOrdrePostal, numeroPostal, numeroPostalComplementaire,
+		                        noOfsPays, rue, titre, typeAdresse, egid, casePostale);
 	}
 }

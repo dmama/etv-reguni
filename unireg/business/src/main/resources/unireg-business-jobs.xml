@@ -508,33 +508,22 @@
 		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
-	<bean id="migregCoquillesPMJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM">
-		<constructor-arg value="708" />
-		<constructor-arg value="Migrer les coquilles vides des PMs"/>
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="rapportService" ref="rapportService"/>
-		<property name="servicePM" ref="servicePersonneMoraleService" />
-		<property name="tiersService" ref="tiersService"/>
-		<property name="adresseService" ref="adresseService"/>
-	</bean>
-
 	<bean id="insertEmployeurFictifEmpAciJob" parent="schedulerJob" class="ch.vd.uniregctb.database.InsertEmployeurFictifEmpAciJob">
-		<constructor-arg value="709" />
+		<constructor-arg value="708" />
 		<constructor-arg value="Insérer en base l'employeur fictif pour EmpACI"/>
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 	
 	<bean id="auditPurgeJob" parent="schedulerJob" class="ch.vd.uniregctb.database.AuditLogPurgeJob">
-		<constructor-arg value="710"/>
+		<constructor-arg value="709"/>
 		<constructor-arg value="Purger les vieilles entrées dans le log d'audit"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="auditLineDAO" ref="auditLineDAO"/>
 	</bean>
 
 	<bean id="calculParentesJob" parent="schedulerJob" class="ch.vd.uniregctb.parentes.CalculParentesJob">
-		<constructor-arg value="711"/>
+		<constructor-arg value="710"/>
 		<constructor-arg value="(Ré-)initialiser les relations de parentés"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
@@ -552,14 +541,14 @@
 	</bean>
 
 	<bean id="recupDonneesAnciensHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsJob">
-		<constructor-arg value="712"/>
+		<constructor-arg value="711"/>
 		<constructor-arg value="Récupérer les données des anciens habitants depuis le registre civil"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
 	<bean id="recupOriginesNonHabitantsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsJob">
-		<constructor-arg value="713"/>
+		<constructor-arg value="712"/>
 		<constructor-arg value="Migration des données d'origine des non-habitants 14R3 -> 14R4"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="rapportService" ref="rapportService"/>

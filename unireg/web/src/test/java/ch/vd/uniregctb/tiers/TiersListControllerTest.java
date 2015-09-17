@@ -22,7 +22,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebMockMvcTest;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -38,8 +37,6 @@ public class TiersListControllerTest extends WebMockMvcTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
-		servicePM.setUp(new DefaultMockServicePM());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -62,7 +59,6 @@ public class TiersListControllerTest extends WebMockMvcTest {
 				addAdresse(individu3, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu4, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
 				addAdresse(individu5, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, RegDate.get(1980, 1, 1), null);
-
 			}
 		});
 

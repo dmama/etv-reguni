@@ -13,11 +13,11 @@ public class DonneesRC implements Serializable {
 	private final List<DateRanged<StatusRC>> status;
 	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
-	private final List<DateRanged<Capital>> capital;
-	private final List<DateRanged<Adresse>> adresseLegale;
+	private final List<Capital> capital;
+	private final List<AdresseRCEnt> adresseLegale;
 
-	public DonneesRC(List<DateRanged<Adresse>> adresseLegale, @NotNull List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
-	                 List<DateRanged<StatusInscriptionRC>> statusInscription, List<DateRanged<Capital>> capital) {
+	public DonneesRC(List<AdresseRCEnt> adresseLegale, @NotNull List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
+	                 List<DateRanged<StatusInscriptionRC>> statusInscription, List<Capital> capital) {
 		this.adresseLegale = adresseLegale;
 		this.status = status;
 		this.nom = nom;
@@ -25,11 +25,11 @@ public class DonneesRC implements Serializable {
 		this.capital = capital;
 	}
 
-	public List<DateRanged<Adresse>> getAdresseLegale() {
+	public List<AdresseRCEnt> getAdresseLegale() {
 		return adresseLegale;
 	}
 
-	public List<DateRanged<Capital>> getCapital() {
+	public List<Capital> getCapital() {
 		return capital;
 	}
 

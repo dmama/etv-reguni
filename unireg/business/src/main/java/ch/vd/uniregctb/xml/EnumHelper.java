@@ -2699,6 +2699,7 @@ public abstract class EnumHelper {
 		case PARTICULIER:
 		case PNC:
 		case SS:
+		case FILIALE_CH_RC:
 			return null;
 
 		default:

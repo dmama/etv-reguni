@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -21,10 +22,10 @@ import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntrepriseS
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Lausanne;
 import static ch.vd.unireg.interfaces.infra.mock.MockCommune.Zurich;
-import static ch.vd.unireg.interfaces.organisation.data.FormeLegale.*;
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.IDE;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 import static ch.vd.uniregctb.type.TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE;
@@ -84,121 +85,121 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	public void testCasEntrepriseVD() throws Exception {
 
 		// Création et contrôle pour chaque type d'entreprise
-		createAddOrg(101220000L, RegDate.get(2015, 9, 7), N_00_AUTRE, Lausanne.getNoOFS());
+		createAddOrg(101220000L, RegDate.get(2015, 9, 7), FormeLegale.N_00_AUTRE, Lausanne);
 		tryCreationEventAndCheckResult(101220000L, TraitementManuel.class);
 
-		createAddOrg(101220100L, RegDate.get(2015, 9, 7), N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC, Lausanne.getNoOFS());
+		createAddOrg(101220100L, RegDate.get(2015, 9, 7), FormeLegale.N_01_FORMES_JUR_DE_DROIT_PRIVE_UTILISEES_DANS_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220100L, TraitementManuel.class);
 
-		createAddOrg(101220101L, RegDate.get(2015, 9, 7), N_0101_ENTREPRISE_INDIVIDUELLE, Lausanne.getNoOFS());
+		createAddOrg(101220101L, RegDate.get(2015, 9, 7), FormeLegale.N_0101_ENTREPRISE_INDIVIDUELLE, Lausanne);
 		tryCreationAndExpectNull(101220101L);
 
-		createAddOrg(101220103L, RegDate.get(2015, 9, 7), N_0103_SOCIETE_NOM_COLLECIF, Lausanne.getNoOFS());
+		createAddOrg(101220103L, RegDate.get(2015, 9, 7), FormeLegale.N_0103_SOCIETE_NOM_COLLECIF, Lausanne);
 		tryCreationEventAndCheckResult(101220103L, CreateEntrepriseSP.class);
 
-		createAddOrg(101220104L, RegDate.get(2015, 9, 7), N_0104_SOCIETE_EN_COMMANDITE, Lausanne.getNoOFS());
+		createAddOrg(101220104L, RegDate.get(2015, 9, 7), FormeLegale.N_0104_SOCIETE_EN_COMMANDITE, Lausanne);
 		tryCreationEventAndCheckResult(101220104L, CreateEntrepriseSP.class);
 
-		createAddOrg(101220105L, RegDate.get(2015, 9, 7), N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS, Lausanne.getNoOFS());
+		createAddOrg(101220105L, RegDate.get(2015, 9, 7), FormeLegale.N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS, Lausanne);
 		tryCreationEventAndCheckResult(101220105L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220106L, RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Lausanne.getNoOFS());
+		createAddOrg(101220106L, RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME, Lausanne);
 		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220107L, RegDate.get(2015, 9, 7), N_0107_SOCIETE_A_RESPONSABILITE_LIMITE, Lausanne.getNoOFS());
+		createAddOrg(101220107L, RegDate.get(2015, 9, 7), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE, Lausanne);
 		tryCreationEventAndCheckResult(101220107L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220108L, RegDate.get(2015, 9, 7), N_0108_SOCIETE_COOPERATIVE, Lausanne.getNoOFS());
+		createAddOrg(101220108L, RegDate.get(2015, 9, 7), FormeLegale.N_0108_SOCIETE_COOPERATIVE, Lausanne);
 		tryCreationEventAndCheckResult(101220108L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220109L, RegDate.get(2015, 9, 7), N_0109_ASSOCIATION, Lausanne.getNoOFS());
+		createAddOrg(101220109L, RegDate.get(2015, 9, 7), FormeLegale.N_0109_ASSOCIATION, Lausanne);
 		tryCreationEventAndCheckResult(101220109L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220110L, RegDate.get(2015, 9, 7), N_0110_FONDATION, Lausanne.getNoOFS());
+		createAddOrg(101220110L, RegDate.get(2015, 9, 7), FormeLegale.N_0110_FONDATION, Lausanne);
 		tryCreationEventAndCheckResult(101220110L, CreateEntreprisePMAPM.class);
 
-		createAddOrg(101220111L, RegDate.get(2015, 9, 7), N_0111_FILIALE_ETRANGERE_AU_RC, Lausanne.getNoOFS());
+		createAddOrg(101220111L, RegDate.get(2015, 9, 7), FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220111L, TraitementManuel.class);
 
-		createAddOrg(101220113L, RegDate.get(2015, 9, 7), N_0113_FORME_JURIDIQUE_PARTICULIERE, Lausanne.getNoOFS());
+		createAddOrg(101220113L, RegDate.get(2015, 9, 7), FormeLegale.N_0113_FORME_JURIDIQUE_PARTICULIERE, Lausanne);
 		tryCreationEventAndCheckResult(101220113L, TraitementManuel.class);
 
-		createAddOrg(101220114L, RegDate.get(2015, 9, 7), N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX, Lausanne.getNoOFS());
+		createAddOrg(101220114L, RegDate.get(2015, 9, 7), FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX, Lausanne);
 		tryCreationEventAndCheckResult(101220114L, CreateEntrepriseFDSPLAC.class);
 
-		createAddOrg(101220115L, RegDate.get(2015, 9, 7), N_0115_SOCIETE_INVESTISSEMENT_CAPITAL_VARIABLE, Lausanne.getNoOFS());
+		createAddOrg(101220115L, RegDate.get(2015, 9, 7), FormeLegale.N_0115_SOCIETE_INVESTISSEMENT_CAPITAL_VARIABLE, Lausanne);
 		tryCreationEventAndCheckResult(101220115L, CreateEntrepriseFDSPLAC.class);
 
-		createAddOrg(101220116L, RegDate.get(2015, 9, 7), N_0116_SOCIETE_INVESTISSEMENT_CAPITAL_FIXE, Lausanne.getNoOFS());
+		createAddOrg(101220116L, RegDate.get(2015, 9, 7), FormeLegale.N_0116_SOCIETE_INVESTISSEMENT_CAPITAL_FIXE, Lausanne);
 		tryCreationEventAndCheckResult(101220116L, CreateEntrepriseFDSPLAC.class);
 
-		createAddOrg(101220117L, RegDate.get(2015, 9, 7), N_0117_INSTITUT_DE_DROIT_PUBLIC, Lausanne.getNoOFS());
+		createAddOrg(101220117L, RegDate.get(2015, 9, 7), FormeLegale.N_0117_INSTITUT_DE_DROIT_PUBLIC, Lausanne);
 		tryCreationEventAndCheckResult(101220117L, TraitementManuel.class);
 
-		createAddOrg(101220118L, RegDate.get(2015, 9, 7), N_0118_PROCURATIONS_NON_COMMERCIALES, Lausanne.getNoOFS());
+		createAddOrg(101220118L, RegDate.get(2015, 9, 7), FormeLegale.N_0118_PROCURATIONS_NON_COMMERCIALES, Lausanne);
 		tryCreationEventAndCheckResult(101220118L, TraitementManuel.class);
 
-		createAddOrg(101220119L, RegDate.get(2015, 9, 7), N_0119_CHEF_INDIVISION, Lausanne.getNoOFS());
+		createAddOrg(101220119L, RegDate.get(2015, 9, 7), FormeLegale.N_0119_CHEF_INDIVISION, Lausanne);
 		tryCreationEventAndCheckResult(101220119L, TraitementManuel.class);
 
-		createAddOrg(101220151L, RegDate.get(2015, 9, 7), N_0151_SUCCURSALE_SUISSE_AU_RC, Lausanne.getNoOFS());
+		createAddOrg(101220151L, RegDate.get(2015, 9, 7), FormeLegale.N_0151_SUCCURSALE_SUISSE_AU_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220151L, TraitementManuel.class);
 
-		createAddOrg(101220200L, RegDate.get(2015, 9, 7), N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC, Lausanne.getNoOFS());
+		createAddOrg(101220200L, RegDate.get(2015, 9, 7), FormeLegale.N_02_FORMES_JUR_DE_DROIT_PUBLIC_NON_UTILISEES_DANS_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220200L, TraitementManuel.class);
 
-		createAddOrg(101220220L, RegDate.get(2015, 9, 7), N_0220_ADMINISTRATION_CONFEDERATION, Lausanne.getNoOFS());
+		createAddOrg(101220220L, RegDate.get(2015, 9, 7), FormeLegale.N_0220_ADMINISTRATION_CONFEDERATION, Lausanne);
 		tryCreationEventAndCheckResult(101220220L, TraitementManuel.class);
 
-		createAddOrg(101220221L, RegDate.get(2015, 9, 7), N_0221_ADMINISTRATION_CANTON, Lausanne.getNoOFS());
+		createAddOrg(101220221L, RegDate.get(2015, 9, 7), FormeLegale.N_0221_ADMINISTRATION_CANTON, Lausanne);
 		tryCreationEventAndCheckResult(101220221L, TraitementManuel.class);
 
-		createAddOrg(101220222L, RegDate.get(2015, 9, 7), N_0222_ADMINISTRATION_DISTRICT, Lausanne.getNoOFS());
+		createAddOrg(101220222L, RegDate.get(2015, 9, 7), FormeLegale.N_0222_ADMINISTRATION_DISTRICT, Lausanne);
 		tryCreationEventAndCheckResult(101220222L, TraitementManuel.class);
 
-		createAddOrg(101220223L, RegDate.get(2015, 9, 7), N_0223_ADMINISTRATION_COMMUNE, Lausanne.getNoOFS());
+		createAddOrg(101220223L, RegDate.get(2015, 9, 7), FormeLegale.N_0223_ADMINISTRATION_COMMUNE, Lausanne);
 		tryCreationEventAndCheckResult(101220223L, TraitementManuel.class);
 
-		createAddOrg(101220224L, RegDate.get(2015, 9, 7), N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION, Lausanne.getNoOFS());
+		createAddOrg(101220224L, RegDate.get(2015, 9, 7), FormeLegale.N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION, Lausanne);
 		tryCreationEventAndCheckResult(101220224L, TraitementManuel.class);
 
-		createAddOrg(101220230L, RegDate.get(2015, 9, 7), N_0230_ENTREPRISE_CONFEDERATION, Lausanne.getNoOFS());
+		createAddOrg(101220230L, RegDate.get(2015, 9, 7), FormeLegale.N_0230_ENTREPRISE_CONFEDERATION, Lausanne);
 		tryCreationEventAndCheckResult(101220230L, TraitementManuel.class);
 
-		createAddOrg(101220231L, RegDate.get(2015, 9, 7), N_0231_ENTREPRISE_CANTON, Lausanne.getNoOFS());
+		createAddOrg(101220231L, RegDate.get(2015, 9, 7), FormeLegale.N_0231_ENTREPRISE_CANTON, Lausanne);
 		tryCreationEventAndCheckResult(101220231L, TraitementManuel.class);
 
-		createAddOrg(101220232L, RegDate.get(2015, 9, 7), N_0232_ENTREPRISE_DISTRICT, Lausanne.getNoOFS());
+		createAddOrg(101220232L, RegDate.get(2015, 9, 7), FormeLegale.N_0232_ENTREPRISE_DISTRICT, Lausanne);
 		tryCreationEventAndCheckResult(101220232L, TraitementManuel.class);
 
-		createAddOrg(101220233L, RegDate.get(2015, 9, 7), N_0233_ENTREPRISE_COMMUNE, Lausanne.getNoOFS());
+		createAddOrg(101220233L, RegDate.get(2015, 9, 7), FormeLegale.N_0233_ENTREPRISE_COMMUNE, Lausanne);
 		tryCreationEventAndCheckResult(101220233L, TraitementManuel.class);
 
-		createAddOrg(101220234L, RegDate.get(2015, 9, 7), N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE, Lausanne.getNoOFS());
+		createAddOrg(101220234L, RegDate.get(2015, 9, 7), FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE, Lausanne);
 		tryCreationEventAndCheckResult(101220234L, CreateEntrepriseDPPM.class);
 
-		createAddOrg(101220300L, RegDate.get(2015, 9, 7), N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC, Lausanne.getNoOFS());
+		createAddOrg(101220300L, RegDate.get(2015, 9, 7), FormeLegale.N_03_AUTRES_FORMES_JUR_NON_UTILISEES_DANS_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220300L, TraitementManuel.class);
 
-		createAddOrg(101220302L, RegDate.get(2015, 9, 7), N_0302_SOCIETE_SIMPLE, Lausanne.getNoOFS());
+		createAddOrg(101220302L, RegDate.get(2015, 9, 7), FormeLegale.N_0302_SOCIETE_SIMPLE, Lausanne);
 		tryCreationEventAndCheckResult(101220302L, TraitementManuel.class);
 
-		createAddOrg(101220312L, RegDate.get(2015, 9, 7), N_0312_FILIALE_ETRANGERE_NON_AU_RC, Lausanne.getNoOFS());
+		createAddOrg(101220312L, RegDate.get(2015, 9, 7), FormeLegale.N_0312_FILIALE_ETRANGERE_NON_AU_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220312L, TraitementManuel.class);
 
-		createAddOrg(101220327L, RegDate.get(2015, 9, 7), N_0327_ENTREPRISE_PUBLIQUE_ETRANGERE, Lausanne.getNoOFS());
+		createAddOrg(101220327L, RegDate.get(2015, 9, 7), FormeLegale.N_0327_ENTREPRISE_PUBLIQUE_ETRANGERE, Lausanne);
 		tryCreationEventAndCheckResult(101220327L, TraitementManuel.class);
 
-		createAddOrg(101220328L, RegDate.get(2015, 9, 7), N_0328_ADMINISTRATION_PUBLIQUE_ETRANGERE, Lausanne.getNoOFS());
+		createAddOrg(101220328L, RegDate.get(2015, 9, 7), FormeLegale.N_0328_ADMINISTRATION_PUBLIQUE_ETRANGERE, Lausanne);
 		tryCreationEventAndCheckResult(101220328L, TraitementManuel.class);
 
-		createAddOrg(101220329L, RegDate.get(2015, 9, 7), N_0329_ORGANISATION_INTERNATIONALE, Lausanne.getNoOFS());
+		createAddOrg(101220329L, RegDate.get(2015, 9, 7), FormeLegale.N_0329_ORGANISATION_INTERNATIONALE, Lausanne);
 		tryCreationEventAndCheckResult(101220329L, TraitementManuel.class);
 
-		createAddOrg(101220400L, RegDate.get(2015, 9, 7), N_04_ENTREPRISE_ETRANGERE, Lausanne.getNoOFS());
+		createAddOrg(101220400L, RegDate.get(2015, 9, 7), FormeLegale.N_04_ENTREPRISE_ETRANGERE, Lausanne);
 		tryCreationEventAndCheckResult(101220400L, TraitementManuel.class);
 
-		createAddOrg(101220441L, RegDate.get(2015, 9, 7), N_0441_ENTREPRISE_ETRANGERE, Lausanne.getNoOFS());
+		createAddOrg(101220441L, RegDate.get(2015, 9, 7), FormeLegale.N_0441_ENTREPRISE_ETRANGERE, Lausanne);
 		tryCreationEventAndCheckResult(101220441L, TraitementManuel.class);
 
 	}
@@ -206,7 +207,9 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	@Test
 	public void testCasEntrepriseHCAvecSiegeSecondaireVaud() throws EvenementOrganisationException {
 		// Cas hors Vaud avec un site secondaire sur Vaud
-		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Lausanne.getNoOFS(), null, null,
+		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(101220106L, 101220106L + 1000000, 101220106L + 2000000, "abcdef", RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME,
+		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
+		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null,
 		                                                                    null, null, null, null, null, null));
 		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
 	}
@@ -216,26 +219,32 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 	public void testCasSpeciaux() throws Exception {
 
 		// Avec une entreprise existante
-		createAddOrg(222222001L, RegDate.get(2010, 1, 1), N_0106_SOCIETE_ANONYME, Lausanne.getNoOFS());
+		createAddOrg(222222001L, RegDate.get(2010, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME, Lausanne);
 		tryCreationAndExpectNull(222222001L);
 
 		// Avec commune forme juridique inconnue
-		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, Lausanne.getNoOFS(), null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222003L, 222222003L + 1000000, "abcdef", RegDate.get(2015, 9, 7), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null, null, null));
 		tryCreationEventAndCheckResult(222222003L, TraitementManuel.class);
 
 		// TODO: A bien vérifier ce qu'on doit faire lorsque le siege n'est pas connu.
 		// Avec commune inconnue (pas de no ofs dans le siege)
-		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, null, null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisation(222222002L, 222222002L + 1000000, "abcdef", RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME, null, null, null, null, null, null));
 		tryCreationAndExpectNull(222222002L);
 
 		// Cas hors Vaud aucun site sur Vaud
-		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), N_0106_SOCIETE_ANONYME, Zurich.getNoOFS(), Zurich.getNoOFS(), null, null, null, null, null, null, null, null));
+		addOrg(MockOrganisationFactory.createOrganisationAvecSiteSecondaire(222222004L, 222222004L + 1000000, 222222004L + 2000000, "abcdef", RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME,
+		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
+		                                                                    null, null, null, null, null, null, null, null));
 		tryCreationAndExpectNull(222222004L);
 
 	}
 
-	private void createAddOrg(long cantonalId, RegDate dateDebut, FormeLegale formeLegale, Integer noOfsSiege) {
-		addOrg(MockOrganisationFactory.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, noOfsSiege));
+	private void createAddOrg(long cantonalId, RegDate dateDebut, FormeLegale formeLegale, MockCommune commune) {
+		addOrg(MockOrganisationFactory.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, commune));
+	}
+
+	private void createAddOrg(long cantonalId, RegDate dateDebut, FormeLegale formeLegale, MockPays pays) {
+		addOrg(MockOrganisationFactory.createSimpleEntrepriseRC(cantonalId, cantonalId + 1000000, "XYZ", dateDebut, formeLegale, pays));
 	}
 
 	private void addOrg(MockOrganisation org) {

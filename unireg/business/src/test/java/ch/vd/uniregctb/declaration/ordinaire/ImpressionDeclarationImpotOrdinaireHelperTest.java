@@ -630,7 +630,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("de la Riviera - Pays-d'Enhaut", retour.getADRES2RETOUR());
 		assertEquals("Rue du Simplon 22", retour.getADRES3RETOUR());
 		assertEquals("Case Postale 1032", retour.getADRES4RETOUR());
-		assertEquals("1800 Vevey 1", retour.getADRES5RETOUR());
+		assertEquals("1800 Vevey", retour.getADRES5RETOUR());
 	}
 
 	/**

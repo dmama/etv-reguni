@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
-	private static final long serialVersionUID = -7436167903142874881L;
+	private static final long serialVersionUID = 4000453604399268480L;
 
 	/**
 	 * Le numéro technique du site pour Unireg
@@ -22,15 +22,12 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final List<DateRanged<String>> nomsAdditionnels;
 	private final List<DateRanged<TypeDeSite>> typeDeSite;
 
-	/**
-	 * municipalityId du SwissMunicipality
-	 */
-	private final List<DateRanged<Integer>> siege;
+	private final List<Siege> siege;
 	private final List<DateRanged<FonctionOrganisation>> fonction;
 
 	public SiteOrganisationRCEnt(List<DateRanged<String>> nom, DonneesRC rc, DonneesRegistreIDE ide,
 	                             Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
-	                             List<DateRanged<TypeDeSite>> typeDeSite, List<DateRanged<Integer>> siege,
+	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Siege> siege,
 	                             List<DateRanged<FonctionOrganisation>> fonction) {
 		this.numeroSite = OrganisationHelper.extractIdCantonal(identifiants);
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
@@ -73,7 +70,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return rc;
 	}
 
-	public List<DateRanged<Integer>> getSiege() {
+	public List<Siege> getSieges() {
 		return siege;
 	}
 

@@ -213,6 +213,6 @@ public abstract class BusinessItTestApplication {
 	}
 
 	protected void reindexDatabase() {
-		indexer.indexAllDatabase(null, 4, Mode.INCREMENTAL, false);
+		indexer.indexAllDatabase(null, 4, Mode.INCREMENTAL);
 	}
 }

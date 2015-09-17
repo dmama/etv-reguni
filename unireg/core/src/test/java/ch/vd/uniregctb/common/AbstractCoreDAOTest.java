@@ -35,7 +35,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -1005,20 +1004,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
-	/**
-	 * @deprecated c'est l'ancienne façon de faire (= RegPM) quand le numéro de contribuable suffisait pour faire le lien
-	 * @param numeroEntreprise un numéro de contribuable
-	 * @return une entreprise complètement vide avec ce numéro de contribuable
-	 * @see #addEntrepriseConnueAuCivil(long)
-	 * @see #addEntrepriseInconnueAuCivil()
-	 */
-	protected Entreprise addEntreprise(@NotNull Long numeroEntreprise) {
-		Entreprise ent = new Entreprise();
-		ent.setNumero(numeroEntreprise);
-		ent = merge(ent);
-		return ent;
-	}
-
 	protected Entreprise addEntrepriseConnueAuCivil(long idCantonal) {
 		final Entreprise ent = new Entreprise();
 		ent.setNumeroEntreprise(idCantonal);
@@ -1027,6 +1012,11 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected Entreprise addEntrepriseInconnueAuCivil() {
 		final Entreprise ent = new Entreprise();
+		return merge(ent);
+	}
+
+	protected Entreprise addEntrepriseInconnueAuCivil(long noContribuable) {
+		final Entreprise ent = new Entreprise(noContribuable);
 		return merge(ent);
 	}
 

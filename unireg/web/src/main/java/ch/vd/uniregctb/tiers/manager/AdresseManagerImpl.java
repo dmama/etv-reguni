@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -558,7 +558,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	private AdresseDisponibleView createAdresseDisponibleViewFromAdresseCivil(Adresse addIndividu) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE);
+		addDispoView.setSource(AdresseGenerique.SourceType.CIVILE_PERS);
 		addDispoView.setLocalite(addIndividu.getLocalite());
 		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());      // TODO noOrdreP dans un champ CasePostale ???
 

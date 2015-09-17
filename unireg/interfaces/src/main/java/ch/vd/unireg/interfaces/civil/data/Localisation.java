@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.interfaces.common.Adresse;
+
 /**
  * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays) et - éventuellement - une adresse courrier.
  */

@@ -3,61 +3,63 @@ package ch.vd.unireg.interfaces.organisation.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Capital implements Serializable {
+import org.jetbrains.annotations.Nullable;
 
-    private static final long serialVersionUID = 7488505460809710055L;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
-	private TypeDeCapital typeOfCapital;
-    private String currency;
-    private BigDecimal capitalAmount;
-    private BigDecimal cashedInAmount;
-    private String division;
+public class Capital implements Serializable, DateRange, DateRangeLimitable<Capital> {
 
-	public Capital(final TypeDeCapital typeOfCapital, final String currency, final BigDecimal capitalAmount, final BigDecimal cashedInAmount, final String division) {
+	private static final long serialVersionUID = -6722570519011278024L;
+
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final TypeDeCapital typeOfCapital;
+    private final String currency;
+    private final BigDecimal capitalAmount;
+
+	public Capital(RegDate dateDebut, @Nullable RegDate dateFin, TypeDeCapital typeOfCapital, String currency, BigDecimal capitalAmount) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
 		this.typeOfCapital = typeOfCapital;
 		this.currency = currency;
 		this.capitalAmount = capitalAmount;
-		this.cashedInAmount = cashedInAmount;
-		this.division = division;
+	}
+
+	public Capital limitTo(@Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
+		return new Capital(dateDebut == null ? this.dateDebut : dateDebut,
+		                   dateFin == null ? this.dateFin : dateFin,
+		                   this.typeOfCapital,
+		                   this.currency,
+		                   this.capitalAmount);
 	}
 
 	public BigDecimal getCapitalAmount() {
 		return capitalAmount;
 	}
 
-	public BigDecimal getCashedInAmount() {
-		return cashedInAmount;
-	}
-
 	public String getCurrency() {
 		return currency;
-	}
-
-	public String getDivision() {
-		return division;
 	}
 
 	public TypeDeCapital getTypeOfCapital() {
 		return typeOfCapital;
 	}
 
-	protected void setDivision(String division) {
-		this.division = division;
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	protected void setCashedInAmount(BigDecimal cashedInAmount) {
-		this.cashedInAmount = cashedInAmount;
+	@Override
+	public RegDate getDateDebut() {
+		return dateDebut;
 	}
 
-	protected void setCapitalAmount(BigDecimal capitalAmount) {
-		this.capitalAmount = capitalAmount;
-	}
-
-	protected void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
-	protected void setTypeOfCapital(TypeDeCapital typeOfCapital) {
-		this.typeOfCapital = typeOfCapital;
+	@Override
+	public RegDate getDateFin() {
+		return dateFin;
 	}
 }

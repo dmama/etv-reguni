@@ -91,7 +91,6 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -178,10 +177,6 @@ public class BusinessWebServiceImpl implements BusinessWebService {
 
 	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
 		this.tiersSearcher = tiersSearcher;
-	}
-
-	public void setPersonneMoraleService(ServicePersonneMoraleService personneMoraleService) {
-		this.context.servicePM = personneMoraleService;
 	}
 
 	public void setAssujettissementService(AssujettissementService service) {

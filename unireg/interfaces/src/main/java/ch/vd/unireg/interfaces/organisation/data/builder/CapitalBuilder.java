@@ -2,16 +2,17 @@ package ch.vd.unireg.interfaces.organisation.data.builder;
 
 import java.math.BigDecimal;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeCapital;
 
 public class CapitalBuilder {
 
+	private RegDate dateDebut;
+	private RegDate dateFin;
 	private BigDecimal capitalAmount;
 	private TypeDeCapital typeOfCapital;
 	private String currency;
-	private BigDecimal cashedInAmount;
-	private String division;
 
 	public CapitalBuilder() {
 	}
@@ -31,17 +32,17 @@ public class CapitalBuilder {
 		return this;
 	}
 
-	public CapitalBuilder withCashedInAmount(BigDecimal cashedInAmount) {
-		this.cashedInAmount = cashedInAmount;
+	public CapitalBuilder withDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
 		return this;
 	}
 
-	public CapitalBuilder withDivision(String division) {
-		this.division = division;
+	public CapitalBuilder withDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 		return this;
 	}
 
 	public Capital build() {
-		return new Capital(typeOfCapital, currency, capitalAmount, cashedInAmount, division);
+		return new Capital(dateDebut, dateFin, typeOfCapital, currency, capitalAmount);
 	}
 }

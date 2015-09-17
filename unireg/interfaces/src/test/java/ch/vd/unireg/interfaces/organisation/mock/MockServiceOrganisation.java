@@ -3,7 +3,12 @@ package ch.vd.unireg.interfaces.organisation.mock;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
@@ -12,6 +17,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public abstract class MockServiceOrganisation implements ServiceOrganisationRaw {
 
@@ -57,7 +63,6 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	protected MockSiteOrganisation addSite(MockOrganisation organisation, long cantonalId, RegDate dateCreation,
 	                                       DonneesRegistreIDE donneesRegistreIDE, DonneesRC donneesRC) {
 		final MockSiteOrganisation site = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC);
-		organisation.addSiteId(dateCreation, null, cantonalId);
 		organisation.addDonneesSite(site);
 		return site;
 	}
@@ -69,4 +74,39 @@ public abstract class MockServiceOrganisation implements ServiceOrganisationRaw 
 	protected void addNumeroIDE(MockSiteOrganisation site, String numeroIDE, RegDate dateDebut, RegDate dateFin) {
 		site.addNumeroIDE(dateDebut, dateFin, numeroIDE);
 	}
+
+	protected MockAdresse addAdresse(MockOrganisation organisation, TypeAdresseCivil type, MockRue rue, RegDate dateDebut, @Nullable RegDate dateFin) {
+		return addAdresse(organisation, type, rue, null, rue.getLocalite(), dateDebut, dateFin);
+	}
+
+	/**
+	 * Ajoute une adresse pour la PM spécifiée.
+	 */
+	protected MockAdresse addAdresse(MockOrganisation organisation, TypeAdresseCivil type, @Nullable MockRue rue, @Nullable String complement,
+	                                 MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
+		return addAdresse(organisation, type, rue, null, complement, localite, debutValidite, finValidite);
+	}
+
+	/**
+	 * Ajoute une adresse pour la PM spécifiée.
+	 */
+	protected MockAdresse addAdresse(MockOrganisation pm, TypeAdresseCivil type, @Nullable MockRue rue, @Nullable String numeroMaison, @Nullable String complement,
+	                                 MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
+
+		final MockAdresse adresse = new MockAdresse();
+		adresse.setTypeAdresse(type);
+		adresse.setTitre(complement);
+		if (rue != null) {
+			adresse.setRue(rue.getDesignationCourrier());
+		}
+		adresse.setNumero(numeroMaison);
+		adresse.setLocalite(localite.getNomAbrege());
+		adresse.setDateDebutValidite(debutValidite);
+		adresse.setDateFinValidite(finValidite);
+
+		pm.addAdresse(adresse);
+		return adresse;
+	}
+
+
 }

@@ -1785,8 +1785,8 @@ public class TiersDAOTest extends CoreDAOTest {
 				Etablissement etablissement1 = addEtablissement(null);
 				etablissement1.setAnnule(true);
 
-				Entreprise entreprise0 = addEntreprise(423L);
-				Entreprise entreprise1 = addEntreprise(424L);
+				Entreprise entreprise0 = addEntrepriseInconnueAuCivil();
+				Entreprise entreprise1 = addEntrepriseInconnueAuCivil();
 				entreprise1.setAnnule(true);
 
 				DebiteurPrestationImposable debiteur0 = addDebiteur();

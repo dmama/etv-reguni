@@ -25,7 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -60,7 +60,6 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
@@ -169,7 +168,6 @@ public class TiersManager implements MessageSourceAware {
 
 	protected RapportEntreTiersDAO rapportEntreTiersDAO;
 	protected IbanValidator ibanValidator;
-	private ServicePersonneMoraleService servicePM;
 	private AutorisationManager autorisationManager;
 	protected SecurityProviderInterface securityProvider;
 
@@ -789,12 +787,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected ComplementView buildComplement(Tiers tiers) {
-		return new ComplementView(tiers, servicePM, serviceInfrastructureService, ibanValidator);
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServicePM(ServicePersonneMoraleService servicePM) {
-		this.servicePM = servicePM;
+		return new ComplementView(tiers, ibanValidator);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -1096,7 +1089,7 @@ public class TiersManager implements MessageSourceAware {
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
 			if (TypeAdresseTiers.DOMICILE != view.getUsage()) {
-				if (view.getDateFin() == null || AdresseGenerique.SourceType.CIVILE != view.getSource()) {
+				if (view.getDateFin() == null || AdresseGenerique.SourceType.CIVILE_PERS != view.getSource()) {
 					resultat.add(view);
 				}
 

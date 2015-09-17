@@ -43,7 +43,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
@@ -51,6 +50,7 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -90,7 +90,6 @@ import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -146,7 +145,6 @@ public class TiersServiceImpl implements TiersService {
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
 	private RemarqueDAO remarqueDAO;
-	private ServicePersonneMoraleService servicePM;
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
 	private HibernateTemplate hibernateTemplate;
@@ -216,10 +214,6 @@ public class TiersServiceImpl implements TiersService {
     @SuppressWarnings({"UnusedDeclaration"})
     public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
         this.remarqueDAO = remarqueDAO;
-    }
-
-    public void setServicePM(ServicePersonneMoraleService servicePM) {
-        this.servicePM = servicePM;
     }
 
     public void setValidationService(ValidationService validationService) {
@@ -1811,7 +1805,7 @@ public class TiersServiceImpl implements TiersService {
 
 	/**
 	 * @param adresses collection d'adresses dans laquelle on cherche au moins une adresse vaudoise
-	 * @return <code>true</code> si au moins l'une des adresses de la collection est vaudoise au sens de {@link #isAdresseVaudoise(ch.vd.unireg.interfaces.civil.data.Adresse)}, <code>false</code> sinon
+	 * @return <code>true</code> si au moins l'une des adresses de la collection est vaudoise au sens de {@link #isAdresseVaudoise(Adresse)}, <code>false</code> sinon
 	 */
 	private boolean hasAdresseVaudoise(Collection<Adresse> adresses) {
 		if (adresses != null && !adresses.isEmpty()) {
@@ -5166,5 +5160,16 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		af.setDateFin(dateFin);
+	}
+
+	@Override
+	public Organisation getOrganisation(@NotNull Entreprise entreprise) {
+		// inconnue au registre civil, pas difficile...
+		if (!entreprise.isConnueAuCivil()) {
+			return null;
+		}
+
+		final long numeroOrganisation = entreprise.getNumeroEntreprise();
+		return serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
 	}
 }

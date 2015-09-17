@@ -13,7 +13,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertNotNull;
@@ -35,8 +34,6 @@ public class TiersVisuControllerTest extends WebTest {
 		super.onSetUp();
 
 		controller = getBean(TiersVisuController.class, CONTROLLER_NAME);
-
-		servicePM.setUp(new DefaultMockServicePM());
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

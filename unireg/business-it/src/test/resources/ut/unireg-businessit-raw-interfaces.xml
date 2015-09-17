@@ -29,6 +29,7 @@
 
 	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
 		<constructor-arg ref="rcEntAdapter"/>
+		<constructor-arg ref="serviceInfrastructureRaw"/>
 	</bean>
 
 	<bean id="serviceOrganisationTracing" class="ch.vd.unireg.interfaces.organisation.ServiceOrganisationTracing">

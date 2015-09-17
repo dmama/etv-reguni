@@ -5,6 +5,7 @@ import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 
@@ -36,6 +37,12 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	public Long getOrganisationPourSite(Long noSite) throws ServiceOrganisationException {
 		assertTargetNotNull();
 		return service.getOrganisationPourSite(noSite);
+	}
+
+	@Override
+	public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
+		assertTargetNotNull();
+		return service.getAdressesOrganisationHisto(noOrganisation);
 	}
 
 	private void assertTargetNotNull() {

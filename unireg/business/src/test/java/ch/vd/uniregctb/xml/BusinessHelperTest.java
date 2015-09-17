@@ -6,9 +6,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -21,10 +21,10 @@ public class BusinessHelperTest extends BusinessTest {
 	public void testGetDebtorName() throws Exception {
 
 		// une PM
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(MockPersonneMorale.BanqueCoopBale);
+				addOrganisation(MockOrganisationFactory.BANQUE_COOP);
 			}
 		});
 
@@ -32,7 +32,7 @@ public class BusinessHelperTest extends BusinessTest {
 		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm =  addEntreprise(MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BANQUE_COOP.getNumeroOrganisation());
 				final DebiteurPrestationImposable dpi = addDebiteur("TotoComplément", pm, date(2000, 1, 1));
 				return dpi.getNumero();
 			}
@@ -44,7 +44,7 @@ public class BusinessHelperTest extends BusinessTest {
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final String name = BusinessHelper.getDebtorName(dpi, tiersService);
-				Assert.assertEquals("Bank Coop AG (Banque Coop SA) (Banca Coop SA) (Bank Coop Ltd)", name);
+				Assert.assertEquals("Bank Coop AG", name);
 			}
 		});
 	}

@@ -51,7 +51,6 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
-import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
@@ -100,7 +99,6 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
-import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -386,15 +384,6 @@ public interface RapportService {
 	 * @return   le rapport généré
 	 */
 	ListeNoteRapport generateRapport(ListeNoteResults results, StatusManager statusManager);
-
-	/**
-	 * [UNIREG-2612] Génère le rapport d'exécution de la migration des coquilles des personnes morales.
-	 *
-	 * @param results les résultats brutes de la migration
-	 * @param status  un status manager
-	 * @return le rapport généré
-	 */
-	MigrationCoquillesPMRapport generateRapport(MigrationCoquillesPM.MigrationResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution de la comparaison de la commune du for et de la commune de la résidence

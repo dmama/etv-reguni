@@ -33,11 +33,11 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.xml.event.reqdes.v1.Actor;
 import ch.vd.unireg.xml.event.reqdes.v1.CreationModification;

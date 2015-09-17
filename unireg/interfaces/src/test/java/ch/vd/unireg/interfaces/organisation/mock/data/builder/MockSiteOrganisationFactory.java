@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.organisation.data.TypeDeSite.ETABLISSEMENT_PRINCIPAL;
 import static ch.vd.unireg.interfaces.organisation.data.TypeDeSite.ETABLISSEMENT_SECONDAIRE;
@@ -27,6 +28,7 @@ public abstract class MockSiteOrganisationFactory {
 	                                           RegDate dateDebut,
 	                                           String nom,
 	                                           @Nullable Boolean principal,
+	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiege,
 	                                           @Nullable Integer noOfsSiege,
 	                                           @Nullable StatusRC statusRC,
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
@@ -61,7 +63,6 @@ public abstract class MockSiteOrganisationFactory {
 		}
 
 		final MockSiteOrganisation mock = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC);
-		organisation.addSiteId(dateDebut, null, cantonalId);
 		organisation.addDonneesSite(mock);
 		mock.changeNom(dateDebut, nom);
 
@@ -69,8 +70,8 @@ public abstract class MockSiteOrganisationFactory {
 			mock.changeTypeDeSite(dateDebut, principal ? ETABLISSEMENT_PRINCIPAL : ETABLISSEMENT_SECONDAIRE);
 		}
 
-		if (noOfsSiege != null) {
-			mock.changeSiege(dateDebut, noOfsSiege);
+		if (typeAutoriteFiscaleSiege != null && noOfsSiege != null) {
+			mock.changeSiege(dateDebut, typeAutoriteFiscaleSiege, noOfsSiege);
 		}
 
 		return mock;

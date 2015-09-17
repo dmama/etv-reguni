@@ -51,7 +51,7 @@ public class DataHelperTest extends WithoutSpringTest {
 		}
 
 		// juste pour vérifier qu'on ne s'est pas complètement lourdé et que l'on teste bien quelque chose...
-		Assert.assertTrue(Integer.toString(nbTestedMethod), nbTestedMethod > 3);
+		Assert.assertTrue(Integer.toString(nbTestedMethod), nbTestedMethod > 1);
 	}
 
 }

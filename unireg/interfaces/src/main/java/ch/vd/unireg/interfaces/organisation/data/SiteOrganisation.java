@@ -35,7 +35,7 @@ public interface SiteOrganisation {
 	/**
 	 * @return les identifiants historisés des sièges du site (= numéro OFS de la commune)
 	 */
-	List<DateRanged<Integer>> getSiege();
+	List<Siege> getSieges();
 
 	/**
 	 * @return les valeurs historisées du type de site (principal / secondaire)

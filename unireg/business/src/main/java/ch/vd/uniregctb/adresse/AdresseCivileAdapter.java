@@ -13,8 +13,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
-import ch.vd.unireg.interfaces.civil.data.CasePostale;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -47,7 +47,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = new Source(SourceType.CIVILE, tiers);
+		this.source = new Source(SourceType.CIVILE_PERS, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
@@ -102,7 +102,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = debut;
 		this.finValiditeSurcharge = fin;
-		this.source = new Source(SourceType.CIVILE, tiers);
+		this.source = new Source(SourceType.CIVILE_PERS, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());

@@ -1,10 +1,12 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
@@ -115,10 +117,29 @@ public class RCEntHelper {
 		if (rcEntDrListMap == null) {
 			return null;
 		}
-		HashMap<K, List<DateRanged<R>>> map = new HashMap<>(rcEntDrListMap.size());
+		final Map<K, List<DateRanged<R>>> map = new HashMap<>(rcEntDrListMap.size());
 		for (Map.Entry<K, List<DateRangeHelper.Ranged<U>>> e : rcEntDrListMap.entrySet()) {
 			map.put(e.getKey(), convertAndMap(e.getValue(), mapper));
 		}
 		return map;
+	}
+
+	public static <S, D extends DateRange> List<D> convertAndFlatmap(List<? extends DateRangeHelper.Ranged<S>> source,
+	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
+		if (source == null) {
+			return null;
+		}
+		if (source.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<D> resultat = new ArrayList<>(source.size());
+		for (DateRangeHelper.Ranged<S> src : source) {
+			final D mapped = flatMapper.apply(src);
+			if (mapped != null) {
+				resultat.add(mapped);
+			}
+		}
+		return resultat;
 	}
 }

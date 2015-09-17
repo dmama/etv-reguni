@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.party3.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,7 +79,6 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -197,11 +197,6 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setBamMessageSender(BamMessageSender service) {
 		context.bamSender = service;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServicePM(ServicePersonneMoraleService service) {
-		context.servicePM = service;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -615,10 +610,11 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
+		// TODO [SIPM] Remettre quelque chose ???
 		final Long corpNr = params.getCorporationNumber() != null ? Long.valueOf(params.getCorporationNumber()) : null;
-		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
-				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
-				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
+		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list = Collections.emptyList();
+//				context.servicePM.findEvenements(corpNr, params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
+//				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
 		return DataHelper.events2web(list);
 	}
 

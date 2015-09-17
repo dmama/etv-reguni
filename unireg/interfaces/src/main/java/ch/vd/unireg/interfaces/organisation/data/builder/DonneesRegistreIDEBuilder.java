@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Adresse;
+import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.RaisonLiquidationRegistreIDE;
@@ -16,8 +16,8 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 
 	private List<DateRanged<StatusRegistreIDE>> status;
 	private List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation;
-	private List<DateRanged<Adresse>> adresseEffective;
-	private List<DateRanged<Adresse>> adresseBoitePostale;
+	private List<AdresseRCEnt> adresseEffective;
+	private List<AdresseRCEnt> adresseBoitePostale;
 	private List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDEBuilder() {}
@@ -41,13 +41,13 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addAdresseEffective(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		adresseEffective = BuilderHelper.addValueToList(adresseEffective, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public DonneesRegistreIDEBuilder addAdresseEffective(@NotNull AdresseRCEnt valeur) {
+		adresseEffective = BuilderHelper.addValueToList(adresseEffective, valeur);
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder addAdresseBoitePostale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Adresse valeur) {
-		adresseBoitePostale = BuilderHelper.addValueToList(adresseBoitePostale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public DonneesRegistreIDEBuilder addAdresseBoitePostale(@NotNull AdresseRCEnt valeur) {
+		adresseBoitePostale = BuilderHelper.addValueToList(adresseBoitePostale, valeur);
 		return this;
 	}
 
@@ -56,12 +56,12 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withAdresseBoitePostale(List<DateRanged<Adresse>> adresseBoitePostale) {
+	public DonneesRegistreIDEBuilder withAdresseBoitePostale(List<AdresseRCEnt> adresseBoitePostale) {
 		this.adresseBoitePostale = adresseBoitePostale;
 		return this;
 	}
 
-	public DonneesRegistreIDEBuilder withAdresseEffective(List<DateRanged<Adresse>> adresseEffective) {
+	public DonneesRegistreIDEBuilder withAdresseEffective(List<AdresseRCEnt> adresseEffective) {
 		this.adresseEffective = adresseEffective;
 		return this;
 	}

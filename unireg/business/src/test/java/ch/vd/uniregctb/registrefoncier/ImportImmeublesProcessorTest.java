@@ -293,7 +293,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addEntreprise(45678L);
+				addEntrepriseInconnueAuCivil(45678L);           // ce numéro correspond à la ligne dans le fichier importé !
 				return null;
 			}
 		});
@@ -320,7 +320,7 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addEntreprise(45678L);
+				addEntrepriseInconnueAuCivil(45678L);       // ce numéro correspond à la ligne dans le fichier importé !
 				return null;
 			}
 		});

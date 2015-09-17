@@ -30,7 +30,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -40,6 +39,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -49,6 +49,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -61,9 +63,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -3963,10 +3963,10 @@ debut PF                                                                        
 	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
 
 		// mise en place du service PM
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(MockPersonneMorale.NestleSuisse);
+				addOrganisation(MockOrganisationFactory.NESTLE);
 			}
 		});
 
@@ -3980,7 +3980,7 @@ debut PF                                                                        
 				dpi.setComplementNom("Titi");
 
 				// on indique le tiers référent
-				final Entreprise pm = addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
 				tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
 
 				return dpi.getNumero();
@@ -3995,9 +3995,7 @@ debut PF                                                                        
 				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 				Assert.assertNotNull(raisonSociale);
 				Assert.assertEquals(1, raisonSociale.size());
-				Assert.assertEquals(MockPersonneMorale.NestleSuisse.getRaisonSociale1(), raisonSociale.get(0));
-				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale2());
-				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale3());
+				Assert.assertEquals(MockOrganisationFactory.NESTLE.getNom().get(0).getPayload(), raisonSociale.get(0));
 				return null;
 			}
 		});

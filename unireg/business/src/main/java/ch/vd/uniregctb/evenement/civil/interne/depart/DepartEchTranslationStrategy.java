@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.civil.interne.depart;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;

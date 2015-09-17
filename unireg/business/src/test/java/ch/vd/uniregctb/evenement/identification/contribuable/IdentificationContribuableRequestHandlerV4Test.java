@@ -13,6 +13,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.xml.common.v2.PartialDate;
 import ch.vd.unireg.xml.event.identification.request.v4.CorporationIdentificationData;
 import ch.vd.unireg.xml.event.identification.request.v4.IdentificationContribuableRequest;
@@ -25,8 +28,6 @@ import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedNaturalPerson
 import ch.vd.unireg.xml.event.identification.response.v4.IdentifiedTaxpayer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.jms.EsbBusinessCode;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -369,11 +370,11 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		assertTrue(raisonSociale.length() > 100);
 
 		// mise en place civile
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockPersonneMorale pm = addPM(noCivilPM, raisonSociale, "S.A.", date(1989, 7, 4), null);
-				pm.setNumeroIDE(ide);
+				final MockOrganisation organisation = addOrganisation(noCivilPM, date(1989, 7, 4), raisonSociale, FormeLegale.N_0106_SOCIETE_ANONYME);
+				organisation.addNumeroIDE(date(1989, 7, 4), null, ide);
 			}
 		});
 
@@ -381,7 +382,7 @@ public class IdentificationContribuableRequestHandlerV4Test extends BusinessTest
 		final long idPM = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntreprise(noCivilPM);
+				final Entreprise pm = addEntrepriseConnueAuCivil(noCivilPM);
 				return pm.getNumero();
 			}
 		});

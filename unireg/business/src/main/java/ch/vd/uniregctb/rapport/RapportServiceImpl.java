@@ -61,7 +61,6 @@ import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
-import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
@@ -111,7 +110,6 @@ import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnci
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
-import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
 /**
@@ -897,28 +895,6 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ListeNoteRapport doc, OutputStream os) throws Exception {
 					final PdfListeNoteRapport document = new PdfListeNoteRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public MigrationCoquillesPMRapport generateRapport(final MigrationCoquillesPM.MigrationResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "MigrationCoquillesPM";
-		final String description = String.format("Rapport de la migration des coquilles des personnes morales. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(MigrationCoquillesPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<MigrationCoquillesPMRapport>() {
-				@Override
-				public void writeDoc(MigrationCoquillesPMRapport doc, OutputStream os) throws Exception {
-					final PdfMigrationCoquillesPMRapport document = new PdfMigrationCoquillesPMRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

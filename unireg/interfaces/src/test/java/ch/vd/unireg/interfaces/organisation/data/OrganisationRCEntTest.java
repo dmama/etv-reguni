@@ -7,12 +7,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.builder.AdresseBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.OrganisationBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.SiteOrganisationBuilder;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Lausanne;
 import static ch.vd.unireg.interfaces.infra.mock.MockLocalite.Leysin;
@@ -40,10 +42,6 @@ public class OrganisationRCEntTest {
 				.addIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
 				.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101202100")
 
-				.addSite(RegDate.get(2015, 4, 29), null, 101072613L)
-				.addSite(RegDate.get(2015, 4, 29), null, 101072656L)
-				.addSite(RegDate.get(2015, 5, 30), null, 12345678L)
-
 				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
@@ -56,7 +54,7 @@ public class OrganisationRCEntTest {
 								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
 								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072613")
 
-								.addSiege(RegDate.get(2015, 4, 29), null, Leysin.getCommuneLocalite().getNoOFS())
+								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
 
 								.addTypeDeSite(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), TypeDeSite.ETABLISSEMENT_PRINCIPAL)
 								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
@@ -69,12 +67,13 @@ public class OrganisationRCEntTest {
 
 												.addStatus(RegDate.get(2015, 4, 29), null, StatusRC.INSCRIT)
 
-												.addAdresseLegale(RegDate.get(2015, 4, 29), null, new AdresseBuilder()
-														                  .withAddressLine1("Robert Plant")
-														                  .withStreet("Rue principale")
-														                  .withTown(Leysin.getNom())
-														                  .withSwissZipCode(Leysin.getNPA())
-														                  .withPays(Suisse.getNoOFS())
+												.addAdresseLegale(new AdresseBuilder()
+														                  .withDateDebut(RegDate.get(2015, 4, 29))
+														                  .withTitre("Robert Plant")
+														                  .withRue("Rue principale")
+														                  .withLocalite(Leysin.getNom())
+														                  .withNumeroPostal(Leysin.getNPA().toString())
+														                  .withNoOfsPays(Suisse.getNoOFS())
 														                  .build()
 												)
 
@@ -82,9 +81,10 @@ public class OrganisationRCEntTest {
 												.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
 
 
-												.addCapital(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), new CapitalBuilder()
-														            .withCapitalAmount(new BigDecimal(50000))
-														            .withCashedInAmount(new BigDecimal(25000))
+												.addCapital(new CapitalBuilder()
+														            .withDateDebut(RegDate.get(2015, 4, 29))
+														            .withDateFin(RegDate.get(2015, 5, 29))
+														            .withCapitalAmount(new BigDecimal(25000))
 														            .withCurrency("CHF")
 														            .withTypeOfCapital(TypeDeCapital.CAPITAL_ACTIONS)
 														            .build()
@@ -97,20 +97,23 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), new AdresseBuilder()
-														                     .withAddressLine1("Robert Plant")
-														                     .withStreet("Rue principale")
-														                     .withTown(Leysin.getNom())
-														                     .withSwissZipCode(Leysin.getNPA())
-														                     .withPays(Suisse.getNoOFS())
+												.addAdresseEffective(new AdresseBuilder()
+														                     .withDateDebut(RegDate.get(2015, 4, 29))
+														                     .withDateFin(RegDate.get(2015, 9, 30))
+														                     .withTitre("Robert Plant")
+														                     .withRue("Rue principale")
+														                     .withLocalite(Leysin.getNom())
+														                     .withNumeroPostal(Leysin.getNPA().toString())
+														                     .withNoOfsPays(Suisse.getNoOFS())
 														                     .build()
 												)
-												.addAdresseEffective(RegDate.get(2015, 10, 1), null, new AdresseBuilder()
-														                     .withAddressLine1("c/o André Hefti")
-														                     .withStreet("Place Large")
-														                     .withTown(Leysin.getNom())
-														                     .withSwissZipCode(Leysin.getNPA())
-														                     .withPays(Suisse.getNoOFS())
+												.addAdresseEffective(new AdresseBuilder()
+														                     .withDateDebut(RegDate.get(2015, 10, 1))
+														                     .withTitre("c/o André Hefti")
+														                     .withRue("Place Large")
+														                     .withLocalite(Leysin.getNom())
+														                     .withNumeroPostal(Leysin.getNPA().toString())
+														                     .withNoOfsPays(Suisse.getNoOFS())
 														                     .build()
 												)
 												.build()
@@ -126,7 +129,7 @@ public class OrganisationRCEntTest {
 								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
 								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072656")
 
-								.addSiege(RegDate.get(2015, 4, 29), null, Lausanne.getCommuneLocalite().getNoOFS())
+								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
 
 								.addTypeDeSite(RegDate.get(2015, 4, 29), null, TypeDeSite.ETABLISSEMENT_SECONDAIRE)
 
@@ -138,11 +141,12 @@ public class OrganisationRCEntTest {
 
 												.addStatus(RegDate.get(2015, 4, 29), null, StatusRC.INSCRIT)
 
-												.addAdresseLegale(RegDate.get(2015, 4, 29), null, new AdresseBuilder()
-														                  .withStreet("Avenue de la gare")
-														                  .withTown(Lausanne.getNom())
-														                  .withSwissZipCode(Lausanne.getNPA())
-														                  .withPays(Suisse.getNoOFS())
+												.addAdresseLegale(new AdresseBuilder()
+														                  .withDateDebut(RegDate.get(2015, 4, 29))
+														                  .withRue("Avenue de la gare")
+														                  .withLocalite(Lausanne.getNom())
+														                  .withNumeroPostal(Lausanne.getNPA().toString())
+														                  .withNoOfsPays(Suisse.getNoOFS())
 														                  .build()
 												)
 
@@ -157,11 +161,12 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 4, 29), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(RegDate.get(2015, 10, 1), null, new AdresseBuilder()
-														                     .withStreet("Avenue de la gare")
-														                     .withTown(Lausanne.getNom())
-														                     .withSwissZipCode(Lausanne.getNPA())
-														                     .withPays(Suisse.getNoOFS())
+												.addAdresseEffective(new AdresseBuilder()
+														                     .withDateDebut(RegDate.get(2015, 10, 1))
+														                     .withRue("Avenue de la gare")
+														                     .withLocalite(Lausanne.getNom())
+														                     .withNumeroPostal(Lausanne.getNPA().toString())
+														                     .withNoOfsPays(Suisse.getNoOFS())
 														                     .build()
 												)
 												.build()
@@ -176,7 +181,7 @@ public class OrganisationRCEntTest {
 								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
 								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 5, 30), null, "12345678")
 
-								.addSiege(RegDate.get(2015, 5, 30), null, Zurich.getCommuneLocalite().getNoOFS())
+								.addSiege(new Siege(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 
 								.addTypeDeSite(RegDate.get(2015, 5, 30), null, TypeDeSite.ETABLISSEMENT_PRINCIPAL)
 
@@ -187,21 +192,22 @@ public class OrganisationRCEntTest {
 
 												.addStatus(RegDate.get(2015, 5, 30), null, StatusRC.INSCRIT)
 
-												.addAdresseLegale(RegDate.get(2015, 5, 30), null, new AdresseBuilder()
-														                  .withAddressLine1("Albert Truc")
-														                  .withStreet("Place courte")
-														                  .withTown(Zurich.getNom())
-														                  .withSwissZipCode(Zurich.getNPA())
-														                  .withPays(Suisse.getNoOFS())
+												.addAdresseLegale(new AdresseBuilder()
+														                  .withDateDebut(RegDate.get(2015, 5, 30))
+														                  .withTitre("Albert Truc")
+														                  .withRue("Place courte")
+														                  .withLocalite(Zurich.getNom())
+														                  .withNumeroPostal(Zurich.getNPA().toString())
+														                  .withNoOfsPays(Suisse.getNoOFS())
 														                  .build()
 												)
 
 												.addStatusInscription(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), StatusInscriptionRC.ACTIF)
 												.addStatusInscription(RegDate.get(2015, 10, 1), null, StatusInscriptionRC.EN_LIQUIDATION)
 
-												.addCapital(RegDate.get(2015, 5, 30), null, new CapitalBuilder()
+												.addCapital(new CapitalBuilder()
+														            .withDateDebut(RegDate.get(2015, 5, 30))
 														            .withCapitalAmount(new BigDecimal(50000))
-														            .withCashedInAmount(new BigDecimal(50000))
 														            .withCurrency("CHF")
 														            .withTypeOfCapital(TypeDeCapital.CAPITAL_ACTIONS)
 														            .build()
@@ -214,12 +220,13 @@ public class OrganisationRCEntTest {
 												.addStatus(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), StatusRegistreIDE.DEFINITIF)
 												.addStatus(RegDate.get(2015, 10, 1), null, StatusRegistreIDE.RADIE)
 												.addRaisonDeLiquidation(RegDate.get(2015, 10, 1), null, RaisonLiquidationRegistreIDE.CESSATION_SCISSION_RETRAITE_SALARIE)
-												.addAdresseEffective(RegDate.get(2015, 5, 30), null, new AdresseBuilder()
-														                     .withAddressLine1("Albert Truc")
-														                     .withStreet("Place courte")
-														                     .withTown(Zurich.getNom())
-														                     .withSwissZipCode(Zurich.getNPA())
-														                     .withPays(Suisse.getNoOFS())
+												.addAdresseEffective(new AdresseBuilder()
+														                     .withDateDebut(RegDate.get(2015, 5, 30))
+														                     .withTitre("Albert Truc")
+														                     .withRue("Place courte")
+														                     .withLocalite(Zurich.getNom())
+														                     .withNumeroPostal(Zurich.getNPA().toString())
+														                     .withNoOfsPays(Suisse.getNoOFS())
 														                     .build()
 												)
 												.build()
@@ -232,14 +239,18 @@ public class OrganisationRCEntTest {
 
 	@Test
 	public void testGetSiegesPrincipaux() throws Exception {
-		Assert.assertEquals(Leysin.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal().get(0).getPayload().intValue());
-		Assert.assertEquals(Zurich.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal().get(1).getPayload().intValue());
+		Assert.assertEquals(MockCommune.Leysin.getNoOFS(), organisation.getSiegesPrincipaux().get(0).getNoOfs());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, organisation.getSiegesPrincipaux().get(0).getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Zurich.getNoOFS(), organisation.getSiegesPrincipaux().get(1).getNoOfs());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, organisation.getSiegesPrincipaux().get(1).getTypeAutoriteFiscale());
 	}
 
 	@Test
 	public void testGetSiegePrincipal() throws Exception {
-		Assert.assertEquals(Leysin.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).intValue());
-		Assert.assertEquals(Zurich.getCommuneLocalite().getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).intValue());
+		Assert.assertEquals(MockCommune.Leysin.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).getNoOfs());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, organisation.getSiegePrincipal(RegDate.get(2015, 5, 1)).getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Zurich.getNoOFS(), organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).getNoOfs());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, organisation.getSiegePrincipal(RegDate.get(2015, 6, 10)).getTypeAutoriteFiscale());
 	}
 
 	@Test
@@ -250,8 +261,8 @@ public class OrganisationRCEntTest {
 
 	@Test
 	public void testGetCapitaux() throws Exception {
-		Assert.assertEquals(25000, organisation.getCapital().get(0).getPayload().getCashedInAmount().intValue());
-		Assert.assertEquals(50000, organisation.getCapital().get(1).getPayload().getCashedInAmount().intValue());
+		Assert.assertEquals(25000, organisation.getCapitaux().get(0).getCapitalAmount().intValue());
+		Assert.assertEquals(50000, organisation.getCapitaux().get(1).getCapitalAmount().intValue());
 	}
 
 	@Test

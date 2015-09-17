@@ -37,7 +37,6 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private List<DateRanged<String>> nomsAdditionnels;
 	private List<DateRanged<FormeLegale>> formeLegale;
 
-	private List<DateRanged<Long>> sites;
 	private Map<Long, SiteOrganisation> donneesSites;
 
 	private List<DateRanged<Long>> transfereA;
@@ -47,8 +46,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(identifiants, nom, nomsAdditionnels, formeLegale, sites,
-		                        donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe
+		return new OrganisationRCEnt(identifiants, nom, nomsAdditionnels, formeLegale,
+		                             donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe
 		);
 	}
 
@@ -69,11 +68,6 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	public OrganisationBuilder addFormeLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FormeLegale valeur) {
 		formeLegale = BuilderHelper.addValueToList(formeLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
-		return this;
-	}
-
-	public OrganisationBuilder addSite(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		sites = BuilderHelper.addValueToList(sites, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -129,11 +123,6 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	public OrganisationBuilder withRemplacePar(List<DateRanged<Long>> remplacePar) {
 		this.remplacePar = remplacePar;
-		return this;
-	}
-
-	public OrganisationBuilder withSites(List<DateRanged<Long>> sites) {
-		this.sites = sites;
 		return this;
 	}
 

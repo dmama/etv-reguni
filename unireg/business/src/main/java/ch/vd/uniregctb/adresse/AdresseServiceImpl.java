@@ -24,12 +24,13 @@ import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.common.NomPrenom;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
-import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -40,7 +41,7 @@ import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -50,6 +51,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
@@ -83,7 +85,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
 	private ServiceInfrastructureService serviceInfra;
-	private ServicePersonneMoraleService servicePM;
+	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceCivilService serviceCivilService;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -101,8 +103,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServicePM(ServicePersonneMoraleService servicePM) {
-		this.servicePM = servicePM;
+	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisation) {
+		this.serviceOrganisationService = serviceOrganisation;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -121,11 +123,11 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
-	                             ServicePersonneMoraleService servicePM, ServiceCivilService serviceCivilService) {
+	                             ServiceOrganisationService serviceOrganisationService, ServiceCivilService serviceCivilService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
-		this.servicePM = servicePM;
+		this.serviceOrganisationService = serviceOrganisationService;
 		this.serviceCivilService = serviceCivilService;
 	}
 
@@ -518,7 +520,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesCiviles adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
-			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE, date, date, adresseCourrier == null);
+			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE_PERS, date, date, adresseCourrier == null);
 			adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 			adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
@@ -963,6 +965,17 @@ public class AdresseServiceImpl implements AdresseService {
 		return sandwich.emballe();
 	}
 
+	private static AdresseGenerique.Source getSourceCivilePourTiers(Tiers tiers) {
+		final SourceType sourceType;
+		if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
+			sourceType = SourceType.CIVILE_ORG;
+		}
+		else {
+			sourceType = SourceType.CIVILE_PERS;
+		}
+		return new AdresseGenerique.Source(sourceType, tiers);
+	}
+
 	private AdressesFiscalesSandwich getAdressesFiscalesSandwich(Tiers tiers, boolean inclureRepresentation, int callDepth, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
@@ -971,33 +984,17 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdressesFiscalesSandwich adresses = new AdressesFiscalesSandwich();
 
-		// Récolte des adresses en provenance du registre civil/registre PM
-		if (tiers instanceof Entreprise) {
-			final Entreprise entreprise = (Entreprise) tiers;
-			final AdressesPMHisto adressesPM = getAdressesPMHisto(entreprise);
+		// Récolte des adresses en provenance des registres civils
+		final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
 
-			// [SIFISC-5622] Parfois, une PM n'a pas d'adresse...
-			if (adressesPM != null) {
-				final List<AdresseGenerique> courriers = initAdressesPMHisto(entreprise, adressesPM.courriers, adressesPM.sieges);
-				final List<AdresseGenerique> sieges = initAdressesPMHisto(entreprise, adressesPM.sieges, adressesPM.courriers);
+		final List<AdresseGenerique> courriers = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, adressesCiviles.principales, strict);
+		final List<AdresseGenerique> principales = initAdressesCivilesHisto(tiers, adressesCiviles.principales, adressesCiviles.courriers, strict);
 
-				adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-				adresses.domicile.addCouche(AdresseCouche.CIVILE, sieges, null, null);
-				adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-				adresses.poursuite.addCouche(AdresseCouche.CIVILE, sieges, null, null);
-			}
-		}
-		else {
-			final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
-
-			final List<AdresseGenerique> courriers = initAdressesCivilesHisto(tiers, adressesCiviles.courriers, adressesCiviles.principales, strict);
-			final List<AdresseGenerique> principales = initAdressesCivilesHisto(tiers, adressesCiviles.principales, adressesCiviles.courriers, strict);
-
-			adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-			adresses.domicile.addCouche(AdresseCouche.CIVILE, principales, null, null);
-			adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-			adresses.poursuite.addCouche(AdresseCouche.CIVILE, principales, null, null);
-		}
+		final AdresseGenerique.Source sourceCivile = getSourceCivilePourTiers(tiers);
+		adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, sourceCivile, null);
+		adresses.domicile.addCouche(AdresseCouche.CIVILE, principales, sourceCivile, null);
+		adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, sourceCivile, null);
+		adresses.poursuite.addCouche(AdresseCouche.CIVILE, principales, sourceCivile, null);
 
 		/*
 		 * Surcharge avec les adresses fiscales
@@ -1607,8 +1604,7 @@ public class AdresseServiceImpl implements AdresseService {
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
 			if (entreprise.isConnueAuCivil()) {
-				// TODO [SIPM] récupérer les adresses de RCEnt
-				throw new IllegalArgumentException("Il va falloir coder la recherche des adresses dans RCEnt...");
+				adressesCiviles = getAdressesCivilesHisto((Entreprise) tiers);
 			}
 			else {
 				adressesCiviles = new AdressesCivilesHisto();
@@ -1677,10 +1673,17 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
-	private AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
-		final Long numeroEntreprise = entreprise.getNumero();
-		Assert.notNull(numeroEntreprise);
-		return servicePM.getAdressesHisto(numeroEntreprise);
+	private AdressesCivilesHisto getAdressesCivilesHisto(Entreprise entreprise) {
+		final Organisation organisation = tiersService.getOrganisation(entreprise);
+		if (organisation == null) {
+			throw new OrganisationNotFoundException(entreprise);
+		}
+
+		final AdressesCivilesHistoriques adressesCiviles = serviceOrganisationService.getAdressesOrganisationHisto(entreprise.getNumeroEntreprise());
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		adresses.principales.addAll(adressesCiviles.principales);
+		adresses.courriers.addAll(adressesCiviles.courriers);
+		return adresses;
 	}
 
 	/**
@@ -1694,8 +1697,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return une adresse générique
 	 * @throws AdresseException en cas de dépendence circulaire
 	 */
-	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict)
-			throws AdresseException {
+	private AdresseGenerique resolveAdresseSurchargee(final Tiers tiers, final AdresseTiers adresseSurchargee, int callDepth, boolean strict) throws AdresseException {
 
 		AdresseGenerique surcharge;
 

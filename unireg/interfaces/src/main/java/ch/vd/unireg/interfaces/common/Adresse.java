@@ -1,9 +1,10 @@
-package ch.vd.unireg.interfaces.civil.data;
+package ch.vd.unireg.interfaces.common;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public interface Adresse extends DateRange, AdresseAvecCommune {
@@ -127,7 +128,7 @@ public interface Adresse extends DateRange, AdresseAvecCommune {
 	 * @return la localisation de l'adresse qui précède immédiatement cette adresse.
 	 */
 	@Nullable
-	Localisation getLocalisationPrecedente();
+    Localisation getLocalisationPrecedente();
 
 	/**
 	 * Retourne la localisation de l'adresse qui suit immédiatement cette adresse. Cette information n'est pas disponible sur toutes les adresses.

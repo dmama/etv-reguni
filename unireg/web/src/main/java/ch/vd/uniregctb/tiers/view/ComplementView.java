@@ -3,8 +3,6 @@ package ch.vd.uniregctb.tiers.view;
 import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 
@@ -30,7 +28,7 @@ public class ComplementView {
 	public ComplementView() {
 	}
 
-	public ComplementView(Tiers tiers, ServicePersonneMoraleService servicePM, ServiceInfrastructureService serviceInfra, IbanValidator ibanValidator) {
+	public ComplementView(Tiers tiers, IbanValidator ibanValidator) {
 
 		// nom
 		this.personneContact = tiers.getPersonneContact();

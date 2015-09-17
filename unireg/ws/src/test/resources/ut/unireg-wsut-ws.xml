@@ -39,7 +39,6 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="threadPool" ref="wsThreadPoolParty3" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="bouclementService" ref="bouclementService" />
@@ -84,7 +83,6 @@
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="threadPool" ref="wsThreadPoolParty4" />
-		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="bouclementService" ref="bouclementService" />
@@ -141,7 +139,6 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="lrService" ref="lrService"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="personneMoraleService" ref="servicePersonneMoraleService"/>
 		<property name="adresseService" ref="adresseService" />
 		<property name="situationService" ref="situationFamilleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
@@ -193,7 +190,6 @@
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="lrService" ref="lrService"/>
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
-		<property name="personneMoraleService" ref="servicePersonneMoraleService"/>
 		<property name="adresseService" ref="adresseService" />
 		<property name="situationService" ref="situationFamilleService" />
 		<property name="ibanValidator" ref="ibanValidator" />

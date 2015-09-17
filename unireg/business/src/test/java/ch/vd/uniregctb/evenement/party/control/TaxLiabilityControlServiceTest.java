@@ -12,9 +12,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -851,13 +850,18 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControleAssujettissementPersonneMorale() throws Exception {
 
 		// mise en place service PM
-		servicePM.setUp(new DefaultMockServicePM());
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.BCV);
+			}
+		});
 
 		// mise en place fiscale
 		final long idPm = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
 				return pm.getNumero();
 			}
 		});
@@ -965,10 +969,10 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 	public void testControlePM() throws Exception {
 
 		// mise en place civile
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(MockPersonneMorale.BCV);
+				addOrganisation(MockOrganisationFactory.BCV);
 			}
 		});
 
@@ -976,7 +980,7 @@ public class TaxLiabilityControlServiceTest extends AbstractControlTaxliabilityT
 		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+				final Entreprise pm = addEntrepriseConnueAuCivil(MockOrganisationFactory.BCV.getNumeroOrganisation());
 				return pm.getNumero();
 			}
 		});

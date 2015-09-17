@@ -7,9 +7,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCanton;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -18,10 +18,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
-import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
@@ -997,10 +996,10 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiDebiteurPrestationImposableSurEntreprise() throws Exception {
 
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(MockPersonneMorale.NestleSuisse);
+				addOrganisation(MockOrganisationFactory.NESTLE);
 			}
 		});
 
@@ -1013,9 +1012,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
 				long noDebiteur = debiteur.getNumero();
 
-				Entreprise nestleSuisse = new Entreprise();
-				nestleSuisse.setNumero(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
-				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
+				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
 				hibernateTemplate.merge(contact);
@@ -1032,8 +1029,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(adresseCourrier);
 			assertEquals("Nestlé Suisse S.A.", adresseCourrier.getLigne1());
 			assertEquals("Usine d'Orbe", adresseCourrier.getLigne2());
-			assertEquals("Finance et Audit", adresseCourrier.getLigne3());
-			assertEquals("pa Myriam Steiner / CP 352", adresseCourrier.getLigne4()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
+			assertEquals("pa Myriam Steiner", adresseCourrier.getLigne3()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
+			assertEquals("Case Postale 352", adresseCourrier.getLigne4());
 			assertEquals("1800 Vevey", adresseCourrier.getLigne5());
 			assertNull(adresseCourrier.getLigne6());
 			assertTrue(adresseCourrier.isSuisse());
@@ -1064,40 +1061,27 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(debiteur, true);
 			assertNotNull(adressesEnvoi);
 			assertEquals(1, adressesEnvoi.domicile.size());
-			assertEquals(2, adressesEnvoi.courrier.size());
-			assertEquals(2, adressesEnvoi.representation.size());
+			assertEquals(1, adressesEnvoi.courrier.size());
+			assertEquals(1, adressesEnvoi.representation.size());
 			assertEquals(1, adressesEnvoi.poursuite.size());
 
 			final AdresseEnvoiDetaillee courrier0 = adressesEnvoi.courrier.get(0);
 			assertNotNull(courrier0);
-			assertEquals(date(1996, 12, 5), courrier0.getDateDebut());
-			assertEquals(date(2003, 6, 12), courrier0.getDateFin());
+			assertEquals(date(1996, 12, 18), courrier0.getDateDebut());
+			assertNull(courrier0.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", courrier0.getLigne1());
 			assertEquals("Usine d'Orbe", courrier0.getLigne2());
-			assertEquals("Entre-Deux-Villes", courrier0.getLigne3());
-			assertEquals("1800 Vevey", courrier0.getLigne4());
-			assertNull(courrier0.getLigne5());
+			assertEquals("pa Myriam Steiner", courrier0.getLigne3()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
+			assertEquals("Case Postale 352", courrier0.getLigne4());
+			assertEquals("1800 Vevey", courrier0.getLigne5());
+			assertNull(courrier0.getLigne6());
 			assertTrue(courrier0.isSuisse());
 			assertNull(courrier0.getSalutations());
 			assertNull(courrier0.getFormuleAppel());
 
-			final AdresseEnvoiDetaillee courrier1 = adressesEnvoi.courrier.get(1);
-			assertNotNull(courrier1);
-			assertEquals(date(2003, 6, 13), courrier1.getDateDebut());
-			assertNull(courrier1.getDateFin());
-			assertEquals("Nestlé Suisse S.A.", courrier1.getLigne1());
-			assertEquals("Usine d'Orbe", courrier1.getLigne2());
-			assertEquals("Finance et Audit", courrier1.getLigne3());
-			assertEquals("pa Myriam Steiner / CP 352", courrier1.getLigne4()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
-			assertEquals("1800 Vevey", courrier1.getLigne5());
-			assertNull(courrier1.getLigne6());
-			assertTrue(courrier1.isSuisse());
-			assertNull(courrier1.getSalutations());
-			assertNull(courrier1.getFormuleAppel());
-
 			final AdresseEnvoiDetaillee domicile = adressesEnvoi.domicile.get(0);
 			assertNotNull(domicile);
-			assertEquals(date(1996, 12, 5), domicile.getDateDebut());
+			assertEquals(date(1996, 12, 18), domicile.getDateDebut());
 			assertNull(domicile.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", domicile.getLigne1());
 			assertEquals("Usine d'Orbe", domicile.getLigne2());
@@ -1110,7 +1094,6 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(domicile.getFormuleAppel());
 
 			assertEquals(courrier0, adressesEnvoi.representation.get(0));
-			assertEquals(courrier1, adressesEnvoi.representation.get(1));
 			assertEquals(domicile, adressesEnvoi.poursuite.get(0));
 		}
 	}
@@ -1126,13 +1109,14 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				cantons.add(MockCanton.Vaud);
 				communesVaud.add(MockCommune.Orbe);
 				localites.add(MockLocalite.Orbe);
+				localites.add(MockLocalite.Vevey);
 			}
 		});
 
-		servicePM.setUp(new MockServicePM() {
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addPM(MockPersonneMorale.NestleSuisse);
+				addOrganisation(MockOrganisationFactory.NESTLE);
 			}
 		});
 
@@ -1153,9 +1137,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
 				long noDebiteur = debiteur.getNumero();
 
-				Entreprise nestleSuisse = new Entreprise();
-				nestleSuisse.setNumero(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
-				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
+				final Entreprise nestleSuisse = addEntrepriseConnueAuCivil(MockOrganisationFactory.NESTLE.getNumeroOrganisation());
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
 				hibernateTemplate.merge(contact);
@@ -1194,8 +1176,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(adresseRepresentation);
 			assertEquals("Nestlé Suisse S.A.", adresseRepresentation.getLigne1());
 			assertEquals("Usine d'Orbe", adresseRepresentation.getLigne2());
-			assertEquals("Finance et Audit", adresseRepresentation.getLigne3());
-			assertEquals("pa Myriam Steiner / CP 352", adresseRepresentation.getLigne4());
+			assertEquals("pa Myriam Steiner", adresseRepresentation.getLigne3());
+			assertEquals("Case Postale 352", adresseRepresentation.getLigne4());
 			assertEquals("1800 Vevey", adresseRepresentation.getLigne5());
 			assertNull(adresseRepresentation.getLigne6());
 			assertTrue(adresseRepresentation.isSuisse());
@@ -1214,7 +1196,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(adressesEnvoi);
 			assertEquals(2, adressesEnvoi.domicile.size());
 			assertEquals(1, adressesEnvoi.courrier.size());
-			assertEquals(3, adressesEnvoi.representation.size());
+			assertEquals(2, adressesEnvoi.representation.size());
 			assertEquals(2, adressesEnvoi.poursuite.size());
 
 			final AdresseEnvoiDetaillee courrier = adressesEnvoi.courrier.get(0);
@@ -1233,7 +1215,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			final AdresseEnvoiDetaillee domicile0 = adressesEnvoi.domicile.get(0);
 			assertNotNull(domicile0);
 			assertEquals(date(1950, 1, 1), domicile0.getDateDebut());
-			assertEquals(date(1996, 12, 4), domicile0.getDateFin());
+			assertEquals(date(1996, 12, 17), domicile0.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", domicile0.getLigne1());
 			assertEquals("Usine d'Orbe", domicile0.getLigne2());
 			assertEquals("La plaine", domicile0.getLigne3());
@@ -1245,7 +1227,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			final AdresseEnvoiDetaillee domicile1 = adressesEnvoi.domicile.get(1);
 			assertNotNull(domicile1);
-			assertEquals(date(1996, 12, 5), domicile1.getDateDebut());
+			assertEquals(date(1996, 12, 18), domicile1.getDateDebut());
 			assertNull(domicile1.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", domicile1.getLigne1());
 			assertEquals("Usine d'Orbe", domicile1.getLigne2());
@@ -1263,7 +1245,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			final AdresseEnvoiDetaillee repres0 = adressesEnvoi.representation.get(0);
 			assertNotNull(repres0);
 			assertEquals(date(1950, 1, 1), repres0.getDateDebut());
-			assertEquals(date(1996, 12, 4), repres0.getDateFin());
+			assertEquals(date(1996, 12, 17), repres0.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", repres0.getLigne1());
 			assertEquals("Usine d'Orbe", repres0.getLigne2());
 			assertEquals("La plaine", repres0.getLigne3());
@@ -1275,31 +1257,17 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			final AdresseEnvoiDetaillee repres1 = adressesEnvoi.representation.get(1);
 			assertNotNull(repres1);
-			assertEquals(date(1996, 12, 5), repres1.getDateDebut());
-			assertEquals(date(2003, 6, 12), repres1.getDateFin());
+			assertEquals(date(1996, 12, 18), repres1.getDateDebut());
+			assertNull(repres1.getDateFin());
 			assertEquals("Nestlé Suisse S.A.", repres1.getLigne1());
 			assertEquals("Usine d'Orbe", repres1.getLigne2());
-			assertEquals("Entre-Deux-Villes", repres1.getLigne3());
-			assertEquals("1800 Vevey", repres1.getLigne4());
-			assertNull(repres1.getLigne5());
+			assertEquals("pa Myriam Steiner", repres1.getLigne3()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
+			assertEquals("Case Postale 352", repres1.getLigne4());
+			assertEquals("1800 Vevey", repres1.getLigne5());
 			assertNull(repres1.getLigne6());
 			assertTrue(repres1.isSuisse());
 			assertNull(repres1.getSalutations());
 			assertNull(repres1.getFormuleAppel());
-
-			final AdresseEnvoiDetaillee repres2 = adressesEnvoi.representation.get(2);
-			assertNotNull(repres2);
-			assertEquals(date(2003, 6, 13), repres2.getDateDebut());
-			assertNull(repres2.getDateFin());
-			assertEquals("Nestlé Suisse S.A.", repres2.getLigne1());
-			assertEquals("Usine d'Orbe", repres2.getLigne2());
-			assertEquals("Finance et Audit", repres2.getLigne3());
-			assertEquals("pa Myriam Steiner / CP 352", repres2.getLigne4()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
-			assertEquals("1800 Vevey", repres2.getLigne5());
-			assertNull(repres2.getLigne6());
-			assertTrue(repres2.isSuisse());
-			assertNull(repres2.getSalutations());
-			assertNull(repres2.getFormuleAppel());
 		}
 	}
 
@@ -2546,18 +2514,25 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiJalHolding() throws Exception {
 
-		servicePM.setUp(new DefaultMockServicePM());
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.JAL_HOLDING);
+			}
+		});
 
-		final Entreprise jal = new Entreprise();
-		jal.setNumero(MockPersonneMorale.JalHolding.getNumeroEntreprise());
+		final Entreprise jal = addEntrepriseConnueAuCivil(MockOrganisationFactory.JAL_HOLDING.getNumeroOrganisation());
+		final AdresseSuisse surcharge = addAdresseSuisse(jal, TypeAdresseTiers.COURRIER, date(1990, 1, 4), null, MockRue.Lausanne.AvenueDeLaGare);
+		surcharge.setNumeroMaison("10");
+		surcharge.setComplement("pa Fid.Commerce & Industrie S.A.");
 
 		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.COURRIER, true);
 		assertNotNull(adresseCourrier);
-		assertEquals("Jal holding S.A.", adresseCourrier.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", adresseCourrier.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
-		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne3());
-		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne4());
-		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
+		assertEquals("JAL Holding, en liquidation", adresseCourrier.getLigne1()); // <-- raison sociale
+		assertEquals("pa Fid.Commerce & Industrie S.A.", adresseCourrier.getLigne2());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne3());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne4());
+		assertNull(adresseCourrier.getLigne5());
 		assertNull(adresseCourrier.getLigne6());
 		assertTrue(adresseCourrier.isSuisse());
 		assertNull(adresseCourrier.getSalutations());
@@ -2565,11 +2540,11 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.DOMICILE, true);
 		assertNotNull(adresseDomicile);
-		assertEquals("Jal holding S.A.", adresseDomicile.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", adresseDomicile.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
-		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne3());
-		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne4());
-		assertEquals("1006 Lausanne", adresseDomicile.getLigne5());
+		assertEquals("JAL Holding, en liquidation", adresseDomicile.getLigne1()); // <-- raison sociale
+		assertEquals("p.a. Fidu. Commerce & Industrie S.A.", adresseDomicile.getLigne2());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne3());
+		assertEquals("1006 Lausanne", adresseDomicile.getLigne4());
+		assertNull(adresseDomicile.getLigne5());
 		assertNull(adresseDomicile.getLigne6());
 		assertTrue(adresseDomicile.isSuisse());
 		assertNull(adresseDomicile.getSalutations());
@@ -2582,27 +2557,26 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final AdresseEnvoiDetaillee courrier0 = adressesEnvoi.courrier.get(0);
 		assertNotNull(courrier0);
-		assertEquals(date(1997, 5, 14), courrier0.getDateDebut());
-		assertEquals(date(2007, 6, 10), courrier0.getDateFin());
-		assertEquals("Jal holding S.A.", courrier0.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", courrier0.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
-		assertEquals("Fid.Commerce & Industrie S.A.", courrier0.getLigne3());
-		assertEquals("Chemin Messidor 5", courrier0.getLigne4());
-		assertEquals("1006 Lausanne", courrier0.getLigne5());
-		assertNull(courrier0.getLigne6());
+		assertEquals(date(1975, 12, 24), courrier0.getDateDebut());
+		assertEquals(date(1990, 1, 3), courrier0.getDateFin());
+		assertEquals("JAL Holding, en liquidation", courrier0.getLigne1()); // <-- raison sociale
+		assertEquals("p.a. Fidu. Commerce & Industrie S.A.", courrier0.getLigne2());
+		assertEquals("Chemin Messidor 5", courrier0.getLigne3());
+		assertEquals("1006 Lausanne", courrier0.getLigne4());
+		assertNull(courrier0.getLigne5());
 		assertTrue(courrier0.isSuisse());
 		assertNull(courrier0.getSalutations());
 		assertEquals("Madame, Monsieur", courrier0.getFormuleAppel());
 
 		final AdresseEnvoiDetaillee courrier1 = adressesEnvoi.courrier.get(1);
 		assertNotNull(courrier1);
-		assertEquals(date(2007, 6, 11), courrier1.getDateDebut());
+		assertEquals(date(1990, 1, 4), courrier1.getDateDebut());
 		assertNull(courrier1.getDateFin());
-		assertEquals("Jal holding S.A.", courrier1.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", courrier1.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
-		assertEquals("pa Fidu. Commerce & Industrie", courrier1.getLigne3());
-		assertEquals("Avenue de la Gare 10", courrier1.getLigne4());
-		assertEquals("1003 Lausanne", courrier1.getLigne5());
+		assertEquals("JAL Holding, en liquidation", courrier1.getLigne1()); // <-- raison sociale
+		assertEquals("pa Fid.Commerce & Industrie S.A.", courrier1.getLigne2());
+		assertEquals("Avenue de la Gare 10", courrier1.getLigne3());
+		assertEquals("1003 Lausanne", courrier1.getLigne4());
+		assertNull(courrier1.getLigne5());
 		assertNull(courrier1.getLigne6());
 		assertTrue(courrier1.isSuisse());
 		assertNull(courrier1.getSalutations());
@@ -2610,64 +2584,17 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final AdresseEnvoiDetaillee domicile = adressesEnvoi.domicile.get(0);
 		assertNotNull(domicile);
-		assertEquals(date(1997, 5, 14), domicile.getDateDebut());
+		assertEquals(date(1975, 12, 24), domicile.getDateDebut());
 		assertNull(domicile.getDateFin());
-		assertEquals("Jal holding S.A.", domicile.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("en liquidation", domicile.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
-		assertEquals("Fid.Commerce & Industrie S.A.", domicile.getLigne3());
-		assertEquals("Chemin Messidor 5", domicile.getLigne4());
-		assertEquals("1006 Lausanne", domicile.getLigne5());
+		assertEquals("JAL Holding, en liquidation", domicile.getLigne1()); // <-- raison sociale
+		assertEquals("p.a. Fidu. Commerce & Industrie S.A.", domicile.getLigne2());
+		assertEquals("Chemin Messidor 5", domicile.getLigne3());
+		assertEquals("1006 Lausanne", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
 		assertNull(domicile.getLigne6());
 		assertTrue(domicile.isSuisse());
 		assertNull(domicile.getSalutations());
 		assertEquals("Madame, Monsieur", domicile.getFormuleAppel());
-	}
-
-	/**
-	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testGetAdresseEnvoiEvianRussie() throws Exception {
-
-		servicePM.setUp(new DefaultMockServicePM());
-
-		final Entreprise evian = new Entreprise();
-		evian.setNumero(MockPersonneMorale.EvianRussie.getNumeroEntreprise());
-
-		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(evian, null, TypeAdresseFiscale.COURRIER, true);
-		assertNotNull(adresseCourrier);
-		assertEquals("Distributor (Evian Water)", adresseCourrier.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("LLC PepsiCo Holdings", adresseCourrier.getLigne2()); // <-- raison sociale ligne 2
-		assertEquals("Free Economic Zone Sherrizone", adresseCourrier.getLigne3()); // <-- raison sociale ligne 3
-
-		// [UNIREG-1974] le complément est ignoré pour que l'adresse tienne sur 6 lignes
-		// assertEquals("p.a. Aleksey Fyodorovich Karamazov", adresseCourrier.getLigneXXX());
-
-		assertEquals("Solnechnogorsk Dist.", adresseCourrier.getLigne4()); // <-- rue
-		assertEquals("141580 Moscow region", adresseCourrier.getLigne5()); // <-- npa + lieu
-		assertEquals("Russie", adresseCourrier.getLigne6()); // <-- pays
-		assertFalse(adresseCourrier.isSuisse());
-		assertNull(adresseCourrier.getSalutations());
-		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
-
-		final AdressesEnvoiHisto adressesEnvoi = adresseService.getAdressesEnvoiHisto(evian, true);
-		assertNotNull(adressesEnvoi);
-		assertEquals(1, adressesEnvoi.courrier.size());
-
-		final AdresseEnvoiDetaillee courrier = adressesEnvoi.courrier.get(0);
-		assertNotNull(courrier);
-		assertEquals(date(1966, 11, 10), courrier.getDateDebut());
-		assertNull(courrier.getDateFin());
-		assertEquals("Distributor (Evian Water)", courrier.getLigne1()); // <-- raison sociale ligne 1
-		assertEquals("LLC PepsiCo Holdings", courrier.getLigne2()); // <-- raison sociale ligne 2
-		assertEquals("Free Economic Zone Sherrizone", courrier.getLigne3()); // <-- raison sociale ligne 3
-		assertEquals("Solnechnogorsk Dist.", courrier.getLigne4()); // <-- rue
-		assertEquals("141580 Moscow region", courrier.getLigne5()); // <-- npa + lieu
-		assertEquals("Russie", courrier.getLigne6()); // <-- pays
-		assertFalse(courrier.isSuisse());
-		assertNull(courrier.getSalutations());
-		assertEquals("Madame, Monsieur", courrier.getFormuleAppel());
 	}
 
 	private static void assertAdressesEquals(AdresseEnvoiDetaillee expected, AdresseEnvoiDetaillee actual) {

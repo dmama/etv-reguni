@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
@@ -152,7 +153,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	}
 
 	private Expediteur remplitExpediteur(ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
-		final ch.vd.unireg.interfaces.civil.data.Adresse adresse = ca.getAdresse();
+		final Adresse adresse = ca.getAdresse();
 		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -236,7 +237,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		// Expediteur
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
-		ch.vd.unireg.interfaces.civil.data.Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
+		Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
@@ -279,7 +280,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		// Expediteur
 		//
 		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
-		ch.vd.unireg.interfaces.civil.data.Adresse aciAdresse = aci.getAdresse();
+		Adresse aciAdresse = aci.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

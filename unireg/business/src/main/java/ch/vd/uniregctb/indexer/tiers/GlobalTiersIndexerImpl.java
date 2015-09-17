@@ -41,7 +41,7 @@ import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.uniregctb.indexer.async.TiersIndexerWorker;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
 import ch.vd.uniregctb.load.LoadMonitorable;
@@ -80,7 +80,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private ServiceInfrastructureService serviceInfra;
     private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
-	private ServicePersonneMoraleService servicePM;
+	private ServiceOrganisationService serviceOrganisationService;
 	private AvatarService avatarService;
 	private Dialect dialect;
 	private StatsService statsService;
@@ -107,12 +107,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         public long startTime;
         public long startTimeInfra;
 	    public long startTimeCivil;
-	    public long startTimePM;
+	    public long startTimeOrganisation;
 	    public long startTimeIndex;
         public long endTime;
         public long endTimeInfra;
 	    public long endTimeCivil;
-	    public long endTimePM;
+	    public long endTimeOrganisation;
 	    public long endTimeIndex;
         public long indexerCpuTime;
         public long indexerExecTime;
@@ -121,7 +121,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		    startTime = System.nanoTime() / NANO_TO_MILLI;
 		    startTimeInfra = getNanoInfra() / NANO_TO_MILLI;
 		    startTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-		    startTimePM = getNanoPM() / NANO_TO_MILLI;
+		    startTimeOrganisation = getNanoOrganisation() / NANO_TO_MILLI;
 		    startTimeIndex = getNanoIndex() / NANO_TO_MILLI;
 	    }
 
@@ -129,7 +129,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		    endTime = System.nanoTime() / NANO_TO_MILLI;
 		    endTimeInfra = getNanoInfra() / NANO_TO_MILLI;
 		    endTimeCivil = getNanoCivil() / NANO_TO_MILLI;
-		    endTimePM = getNanoPM() / NANO_TO_MILLI;
+		    endTimeOrganisation = getNanoOrganisation() / NANO_TO_MILLI;
 		    endTimeIndex = getNanoIndex() / NANO_TO_MILLI;
 		    indexerCpuTime = asyncIndexer.getTotalCpuTime() / NANO_TO_MILLI;
 		    indexerExecTime = asyncIndexer.getTotalExecTime() / NANO_TO_MILLI;
@@ -142,9 +142,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             long timeWait = indexerExecTime - indexerCpuTime;
             long timeWaitInfra = endTimeInfra - startTimeInfra;
             long timeWaitCivil = endTimeCivil - startTimeCivil;
-            long timeWaitPM = endTimePM - startTimePM;
+            long timeWaitOrganisation = endTimeOrganisation - startTimeOrganisation;
             long timeWaitIndex = endTimeIndex - startTimeIndex;
-            long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitPM - timeWaitIndex;
+            long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitOrganisation - timeWaitIndex;
 
             if (indexerExecTime == 0 || timeWait == 0) {
                 LOGGER.debug("Statistiques d'indexation indisponibles !");
@@ -155,9 +155,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             int percentWait = 100 - percentCpu;
             int percentWaitInfra = (int) (100 * timeWaitInfra / timeWait);
             int percentWaitCivil = (int) (100 * timeWaitCivil / timeWait);
-            int percentWaitPM = (int) (100 * timeWaitPM / timeWait);
+            int percentWaitOrganisation = (int) (100 * timeWaitOrganisation / timeWait);
             int percentWaitIndex = (int) (100 * timeWaitIndex / timeWait);
-            int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitPM - percentWaitIndex;
+            int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitOrganisation - percentWaitIndex;
 
 	        String log = "Temps total d'exécution         : " + timeTotal + " ms\n";
 	        log += "Temps 'exec' threads indexation : " + indexerExecTime + " ms\n";
@@ -165,7 +165,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	        log += "Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)\n";
 	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>\n" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
 	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>\n" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
-	        log += " - service pm                   : " + (timeWaitPM == 0 ? "<indisponible>\n" : timeWaitPM + " ms" + " (" + percentWaitPM + "%)\n");
+	        log += " - service organisation         : " + (timeWaitOrganisation == 0 ? "<indisponible>\n" : timeWaitOrganisation + " ms" + " (" + percentWaitOrganisation + "%)\n");
 	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>\n" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
 	        log += " - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)";
 	        LOGGER.info(log);
@@ -180,9 +180,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             return timecivil;
         }
 
-        private long getNanoPM() {
+        private long getNanoOrganisation() {
             long timecivil = 0;
-	        final ServiceStats stats = statsService.getServiceStats(ServicePersonneMoraleService.SERVICE_NAME);
+	        final ServiceStats stats = statsService.getServiceStats(ServiceOrganisationService.SERVICE_NAME);
             if (stats != null) {
                 timecivil = stats.getTotalTime();
             }
@@ -210,11 +210,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public int indexAllDatabase() throws IndexerException {
-		return indexAllDatabase(null, 1, Mode.FULL, true);
+		return indexAllDatabase(null, 1, Mode.FULL);
 	}
 
 	@Override
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws
+	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode) throws
 			IndexerException {
 
 		if (statusManager == null) {
@@ -233,7 +233,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		final DeltaIds deltaIds = getIdsToIndex(mode);
 
 		try {
-			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchPMs, statusManager);
+			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, statusManager);
 			remove(deltaIds.toRemove, statusManager);
 
 			// [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
@@ -299,7 +299,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, boolean prefetchPMs, StatusManager statusManager) throws Exception {
+	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, StatusManager statusManager) throws Exception {
 
 		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode);
 
@@ -307,7 +307,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		timeLog.start();
 
 		final int queueSizeByThread = TiersIndexerWorker.BATCH_SIZE;
-		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread, prefetchPMs);
+		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread);
 
 		final int size = list.size();
 
@@ -384,11 +384,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 * @param nbThreads                 le nombre de threads pour l'indexation en parallèle
 	 * @param mode                      le mode d'indexation
 	 * @param queueSizeByThread         la taille maximale de la queue par thread
-	 * @param prefetchPMs               <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchPMs) {
-		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer, prefetchPMs, tiersDAO, servicePM);
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread) {
+		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer);
 	}
 
 	/**
@@ -561,7 +560,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         if (tiers instanceof DebiteurPrestationImposable) {
             final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, servicePM, serviceInfra, avatarService, dpi);
+            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, serviceOrganisationService, serviceInfra, avatarService, dpi);
         } else if (tiers instanceof PersonnePhysique) {
             final PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
@@ -584,7 +583,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, avatarService, cmc);
         } else if (tiers instanceof Entreprise) {
             final Entreprise entreprise = (Entreprise) tiers;
-	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, servicePM, avatarService, entreprise);
+	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, serviceOrganisationService, avatarService, entreprise);
         } else if (tiers instanceof AutreCommunaute) {
             final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
             indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, avatarService, autreCommunaute);
@@ -759,9 +758,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		this.statsService = statsService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServicePM(ServicePersonneMoraleService servicePM) {
-		this.servicePM = servicePM;
+	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
+		this.serviceOrganisationService = serviceOrganisationService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

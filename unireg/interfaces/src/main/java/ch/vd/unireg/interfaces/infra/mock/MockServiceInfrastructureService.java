@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -211,7 +210,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			}
 		}
 		// TODO le jour où on introduira la notion d'historique dans le Mock, il ne faudra pas oublier de trier les valeurs ici...
-		return Arrays.asList(localite);
+		return localite == null ? Collections.<Localite>emptyList() : Collections.singletonList(localite);
 	}
 
 	@Override

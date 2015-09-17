@@ -9,13 +9,12 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -23,7 +22,6 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web
@@ -72,7 +70,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
 			entrepriseView.setAutresRaisonsSociales(getNomsAdditionnels(organisation));
 
-			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegePrincipal()));
+			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
 			entrepriseView.setCapitaux(extractCapitaux(organisation));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
@@ -173,7 +171,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			                                                                             public CapitalView extract(DonneesRegistreCommerce source) {
 				                                                                             final MontantMonetaire capitalLibere = source.getCapital();
 				                                                                             if (capitalLibere != null) {
-					                                                                             return new CapitalView(source.getDateDebut(), source.getDateFin(), null, capitalLibere);
+					                                                                             return new CapitalView(source.getDateDebut(), source.getDateFin(), capitalLibere);
 				                                                                             }
 				                                                                             else {
 					                                                                             return null;
@@ -216,24 +214,15 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return l;
 	}
 
-	private List<SiegeView> getSiegesFromOrganisation(List<DateRanged<Integer>> sieges) {
+	private List<SiegeView> getSiegesFromOrganisation(List<Siege> sieges) {
 		if (sieges == null) {
 			return null;
 		}
 		final List<SiegeView> list = new ArrayList<>(sieges.size());
-		for (DateRanged<Integer> siege : sieges) {
-
-			final TypeNoOfs type; // FIXME: Si par malheur un pays se trouve avoir un numéro identique à une commune ... boom. Il faut qu'on obtienne l'information proprement.
-			Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getPayload(), siege.getDateFin());
-			if (commune != null) {
-				type = TypeNoOfs.COMMUNE_CH;
-			} else {
-				type = TypeNoOfs.PAYS_HS;
-			}
-
-			list.add(new SiegeView(siege, type));
+		for (Siege siege : sieges) {
+			list.add(new SiegeView(siege));
 		}
-		Collections.sort(list, new DateRangeComparator<SiegeView>());
+		Collections.sort(list, new DateRangeComparator<>());
 		Collections.reverse(list);
 		return list;
 	}
@@ -245,14 +234,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		final List<SiegeView> list = new ArrayList<>(domiciles.size());
 
 		for (DomicileEtablissement domicile : domiciles) {
-			final TypeNoOfs type;
-
-			if (domicile.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
-				type = TypeNoOfs.PAYS_HS;
-			} else {
-				type = TypeNoOfs.COMMUNE_CH;
-			}
-			list.add(new SiegeView(new DateRanged<>(domicile.getDateDebut(), domicile.getDateFin(), domicile.getNumeroOfsAutoriteFiscale()), type));
+			list.add(new SiegeView(domicile));
 		}
 		Collections.sort(list, new DateRangeComparator<SiegeView>());
 		Collections.reverse(list);
@@ -273,12 +255,12 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	}
 
 	private static List<CapitalView> extractCapitaux(Organisation organisation) {
-		final List<DateRanged<Capital>> capitaux = organisation.getCapital();
+		final List<Capital> capitaux = organisation.getCapitaux();
 		if (capitaux == null) {
 			return null;
 		}
 		final List<CapitalView> list = new ArrayList<>(capitaux.size());
-		for (DateRanged<Capital> capital : capitaux) {
+		for (Capital capital : capitaux) {
 			final CapitalView view = new CapitalView(capital);
 			list.add(view);
 		}

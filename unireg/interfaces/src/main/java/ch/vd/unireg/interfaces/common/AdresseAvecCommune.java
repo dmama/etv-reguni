@@ -1,4 +1,4 @@
-package ch.vd.unireg.interfaces.civil.data;
+package ch.vd.unireg.interfaces.common;
 
 import org.jetbrains.annotations.Nullable;
 
