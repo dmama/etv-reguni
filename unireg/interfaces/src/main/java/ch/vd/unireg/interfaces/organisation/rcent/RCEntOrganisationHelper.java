@@ -15,6 +15,7 @@ public class RCEntOrganisationHelper {
 
 	public static Organisation get(ch.vd.uniregctb.adapter.rcent.model.Organisation organisation, ServiceInfrastructureRaw infraService) {
 		return new OrganisationRCEnt(
+				organisation.getCantonalId(),
 				RCEntHelper.convert(organisation.getOrganisationIdentifiers()),
 				RCEntHelper.convert(organisation.getOrganisationName()),
 				RCEntHelper.convert(organisation.getOrganisationAdditionalName()),

@@ -21,19 +21,24 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	public DonneesRC rc;
 	public DonneesRegistreIDE ide;
 
-	private Map<String,List<DateRanged<String>>> identifiants;
+	private final long numeroSite;
+	private Map<String,List<DateRanged<String>>> autresIdentifiants;
 	private List<DateRanged<String>> nomsAdditionnels;
-	private List<DateRanged<TypeDeSite>> typeDeSite;
-	private List<Siege> siege;
+	private List<DateRanged<TypeDeSite>> typesDeSite;
+	private List<Siege> sieges;
 	private List<DateRanged<FonctionOrganisation>> fonction;
+
+	public SiteOrganisationBuilder(long numeroSite) {
+		this.numeroSite = numeroSite;
+	}
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(nom, rc, ide, identifiants, nomsAdditionnels, typeDeSite, siege, fonction);
+		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, sieges, fonction);
 	}
 
-	public SiteOrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		identifiants = BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addAutreIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		autresIdentifiants = BuilderHelper.addValueToMapOfList(autresIdentifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -48,12 +53,12 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	}
 
 	public SiteOrganisationBuilder addTypeDeSite(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull TypeDeSite valeur) {
-		typeDeSite = BuilderHelper.addValueToList(typeDeSite, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		typesDeSite = BuilderHelper.addValueToList(typesDeSite, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
 	public SiteOrganisationBuilder addSiege(@NotNull Siege valeur) {
-		siege = BuilderHelper.addValueToList(siege, valeur);
+		sieges = BuilderHelper.addValueToList(sieges, valeur);
 		return this;
 	}
 
@@ -72,28 +77,28 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder setFonction(List<DateRanged<FonctionOrganisation>> fonction) {
+	public SiteOrganisationBuilder withFonctions(List<DateRanged<FonctionOrganisation>> fonction) {
 		this.fonction = fonction;
 		return this;
 	}
 
-	public SiteOrganisationBuilder setIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
-		this.identifiants = identifiants;
+	public SiteOrganisationBuilder withAutresIdentifiants(Map<String, List<DateRanged<String>>> autresIdentifiants) {
+		this.autresIdentifiants = autresIdentifiants;
 		return this;
 	}
 
-	public SiteOrganisationBuilder setNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+	public SiteOrganisationBuilder withNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
 		this.nomsAdditionnels = nomsAdditionnels;
 		return this;
 	}
 
-	public SiteOrganisationBuilder setSiege(List<Siege> siege) {
-		this.siege = siege;
+	public SiteOrganisationBuilder withSieges(List<Siege> sieges) {
+		this.sieges = sieges;
 		return this;
 	}
 
-	public SiteOrganisationBuilder setTypeDeSite(List<DateRanged<TypeDeSite>> typeDeSite) {
-		this.typeDeSite = typeDeSite;
+	public SiteOrganisationBuilder withTypesDeSite(List<DateRanged<TypeDeSite>> typesDeSite) {
+		this.typesDeSite = typesDeSite;
 		return this;
 	}
 }

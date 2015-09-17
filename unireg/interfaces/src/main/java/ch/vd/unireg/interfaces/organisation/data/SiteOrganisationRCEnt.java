@@ -25,12 +25,16 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final List<Siege> siege;
 	private final List<DateRanged<FonctionOrganisation>> fonction;
 
-	public SiteOrganisationRCEnt(List<DateRanged<String>> nom, DonneesRC rc, DonneesRegistreIDE ide,
-	                             Map<String, List<DateRanged<String>>> identifiants, List<DateRanged<String>> nomsAdditionnels,
+	public SiteOrganisationRCEnt(long numeroSite,
+	                             Map<String, List<DateRanged<String>>> autresIdentifiants,
+	                             List<DateRanged<String>> nom,
+	                             DonneesRC rc,
+	                             DonneesRegistreIDE ide,
+	                             List<DateRanged<String>> nomsAdditionnels,
 	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Siege> siege,
 	                             List<DateRanged<FonctionOrganisation>> fonction) {
-		this.numeroSite = OrganisationHelper.extractIdCantonal(identifiants);
-		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
+		this.numeroSite = numeroSite;
+		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
 		this.rc = rc;
 		this.ide = ide;

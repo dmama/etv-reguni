@@ -34,10 +34,11 @@ public class RCEntSiteOrganisationHelper {
 		final OrganisationLocation.RCEntUIDData uid = rcEntLocation.getUid();
 
 		return new SiteOrganisationRCEnt(
+				rcEntLocation.getCantonalId(),
+				RCEntHelper.convert(rcEntLocation.getIdentifiers()),
 				RCEntHelper.convert(rcEntLocation.getName()),
 				createDonneesRC(rc),
 				createDonneesIDE(uid),
-				RCEntHelper.convert(rcEntLocation.getIdentifiers()),
 				RCEntHelper.convert(rcEntLocation.getOtherNames()),
 				RCEntHelper.convertAndMap(rcEntLocation.getKindOfLocation(), KIND_OF_LOCATION_CONVERTER),
 				RCEntHelper.convertAndFlatmap(rcEntLocation.getSeat(), new SeatConverter(infraService)),

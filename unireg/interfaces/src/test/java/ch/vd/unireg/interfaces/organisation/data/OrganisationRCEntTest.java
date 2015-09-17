@@ -30,7 +30,7 @@ public class OrganisationRCEntTest {
 
 	@Before
 	public void setUp() throws Exception {
-		organisation = new OrganisationBuilder()
+		organisation = new OrganisationBuilder(101202100L)
 				.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 				.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 				.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
@@ -38,21 +38,19 @@ public class OrganisationRCEntTest {
 				.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
 				.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
-				.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
-				.addIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
-				.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101202100")
+				.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
+				.addAutreIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")
 
 				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
 				.addDonneesSite(
-						new SiteOrganisationBuilder()
+						new SiteOrganisationBuilder(101072613L)
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
-								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072613")
+								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100057199")
 
 								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Leysin))
 
@@ -121,13 +119,12 @@ public class OrganisationRCEntTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder()
+						new SiteOrganisationBuilder(101072656L)
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
-								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 4, 29), null, "101072656")
+								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE100052312")
 
 								.addSiege(new Siege(RegDate.get(2015, 4, 29), null, MockCommune.Lausanne))
 
@@ -174,12 +171,11 @@ public class OrganisationRCEntTest {
 								)
 								.build())
 				.addDonneesSite(
-						new SiteOrganisationBuilder()
+						new SiteOrganisationBuilder(12345678L)
 								.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 								.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
 
-								.addIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
-								.addIdentifiant(OrganisationConstants.CLE_ID_CANTONAL, RegDate.get(2015, 5, 30), null, "12345678")
+								.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 5, 30), null, "CHE12345678")
 
 								.addSiege(new Siege(RegDate.get(2015, 5, 30), null, MockCommune.Zurich))
 

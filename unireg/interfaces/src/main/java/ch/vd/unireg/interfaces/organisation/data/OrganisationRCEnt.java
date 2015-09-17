@@ -21,7 +21,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	/**
 	 * Le numéro technique de l'organisation pour Unireg
 	 */
-	private final long idOrganisation;
+	private final long numeroOrganisation;
 
 	private final List<DateRanged<String>> numeroIDE;
 
@@ -38,11 +38,15 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	private final List<DateRanged<Long>> remplacePar;
 	private final List<DateRanged<Long>> enRemplacementDe;
 
-	public OrganisationRCEnt(@NotNull Map<String, List<DateRanged<String>>> identifiants, @NotNull List<DateRanged<String>> nom,
-	                         List<DateRanged<String>> nomsAdditionels, List<DateRanged<FormeLegale>> formeLegale,
-	                         @NotNull Map<Long, SiteOrganisation> donneesSites, List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
+	public OrganisationRCEnt(long numeroOrganisation,
+	                         @NotNull Map<String, List<DateRanged<String>>> identifiants,
+	                         @NotNull List<DateRanged<String>> nom,
+	                         List<DateRanged<String>> nomsAdditionels,
+	                         List<DateRanged<FormeLegale>> formeLegale,
+	                         @NotNull Map<Long, SiteOrganisation> donneesSites,
+	                         List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
 	                         List<DateRanged<Long>> remplacePar, List<DateRanged<Long>> enRemplacementDe) {
-		this.idOrganisation = OrganisationHelper.extractIdCantonal(identifiants);
+		this.numeroOrganisation = numeroOrganisation;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
 		this.nomsAdditionels = nomsAdditionels;
@@ -56,7 +60,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public long getNumeroOrganisation() {
-		return idOrganisation;
+		return numeroOrganisation;
 	}
 
 	@Override

@@ -38,7 +38,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings({"JavaDoc"})
-public class ServiceOrganisationRCEntTest extends BusinessItTest {
+public class ServiceOrganisationRCEntItTest extends BusinessItTest {
 
 	public static final String[] RCENT_SCHEMA = new String[]{
 			"eVD-0004-3-0.xsd",

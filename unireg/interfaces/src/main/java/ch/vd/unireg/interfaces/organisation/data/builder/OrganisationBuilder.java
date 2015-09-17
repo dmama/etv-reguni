@@ -31,7 +31,8 @@ import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
  */
 public class OrganisationBuilder implements DataBuilder<Organisation> {
 
-	private Map<String, List<DateRanged<String>>> identifiants;
+	private final long numeroOrganisation;
+	private Map<String, List<DateRanged<String>>> autresIdentifiants;
 
 	private List<DateRanged<String>> nom;
 	private List<DateRanged<String>> nomsAdditionnels;
@@ -44,11 +45,14 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private List<DateRanged<Long>> remplacePar;
 	private List<DateRanged<Long>> enRemplacementDe;
 
+	public OrganisationBuilder(long numeroOrganisation) {
+		this.numeroOrganisation = numeroOrganisation;
+	}
+
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(identifiants, nom, nomsAdditionnels, formeLegale,
-		                             donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe
-		);
+		return new OrganisationRCEnt(numeroOrganisation, autresIdentifiants, nom, nomsAdditionnels, formeLegale,
+		                             donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe);
 	}
 
 	public OrganisationBuilder addNom(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -56,8 +60,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder addIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		identifiants = BuilderHelper.addValueToMapOfList(identifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public OrganisationBuilder addAutreIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		autresIdentifiants = BuilderHelper.addValueToMapOfList(autresIdentifiants, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -111,8 +115,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder withIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
-		this.identifiants = identifiants;
+	public OrganisationBuilder withAutresIdentifiants(Map<String, List<DateRanged<String>>> identifiants) {
+		this.autresIdentifiants = identifiants;
 		return this;
 	}
 
