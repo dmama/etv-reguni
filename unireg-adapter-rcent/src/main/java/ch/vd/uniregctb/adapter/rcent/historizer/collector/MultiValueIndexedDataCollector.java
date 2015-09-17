@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.Keyed;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
@@ -62,13 +62,13 @@ public class MultiValueIndexedDataCollector<S, D, KS, KI> extends IndexedDataCol
 	}
 
 	@Override
-	public Map<KS, List<DateRanged<D>>> getCollectedData(Supplier<Map<KS, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
-		final Function<Map.Entry<KS, MultiValueDataCollector<S, Keyed<KS, D>, KI>>, List<DateRanged<D>>> mapper =
+	public Map<KS, List<DateRangeHelper.Ranged<D>>> getCollectedData(Supplier<Map<KS, List<DateRangeHelper.Ranged<D>>>> mapFactory, Supplier<List<DateRangeHelper.Ranged<D>>> listFactory) {
+		final Function<Map.Entry<KS, MultiValueDataCollector<S, Keyed<KS, D>, KI>>, List<DateRangeHelper.Ranged<D>>> mapper =
 				entry -> entry.getValue().getCollectedDataStream()
-						.map(d -> new DateRanged<>(d.getDateDebut(), d.getDateFin(), d.getPayload().getValue()))
+						.map(d -> new DateRangeHelper.Ranged<>(d.getDateDebut(), d.getDateFin(), d.getPayload().getValue()))
 						.collect(Collectors.toCollection(listFactory));
 
-		final BinaryOperator<List<DateRanged<D>>> merger = (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(listFactory));
+		final BinaryOperator<List<DateRangeHelper.Ranged<D>>> merger = (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(listFactory));
 
 		return groupings.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, mapper, merger, mapFactory));

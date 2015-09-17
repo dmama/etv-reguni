@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.IndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.ListDataCollector;
@@ -23,7 +24,6 @@ import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueDataCollecto
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.MultiValueIndexedDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.SingleValueDataCollector;
 import ch.vd.uniregctb.adapter.rcent.historizer.collector.SingleValueIndexedDataCollector;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.Keyed;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
@@ -59,52 +59,52 @@ public class HistorizerTest {
 
 		Historizer.historize(input, Arrays.asList(iCollector, strCollector, nullCollector));
 
-		final List<DateRanged<Integer>> is = iCollector.getCollectedData();
+		final List<DateRangeHelper.Ranged<Integer>> is = iCollector.getCollectedData();
 		Assert.assertNotNull(is);
 		Assert.assertEquals(4, is.size());
 		{
-			final DateRanged<Integer> i = is.get(0);
+			final DateRangeHelper.Ranged<Integer> i = is.get(0);
 			Assert.assertEquals(RegDate.get(2000, 3, 27), i.getDateDebut());
 			Assert.assertEquals(RegDate.get(2000, 4, 5), i.getDateFin());
 			Assert.assertEquals((Integer) 1, i.getPayload());
 		}
 		{
-			final DateRanged<Integer> i = is.get(1);
+			final DateRangeHelper.Ranged<Integer> i = is.get(1);
 			Assert.assertEquals(RegDate.get(2000, 4, 6), i.getDateDebut());
 			Assert.assertEquals(RegDate.get(2002, 7, 8), i.getDateFin());
 			Assert.assertEquals((Integer) 2, i.getPayload());
 		}
 		{
-			final DateRanged<Integer> i = is.get(2);
+			final DateRangeHelper.Ranged<Integer> i = is.get(2);
 			Assert.assertEquals(RegDate.get(2002, 7, 9), i.getDateDebut());
 			Assert.assertEquals(RegDate.get(2005, 6, 29), i.getDateFin());
 			Assert.assertEquals((Integer) 3, i.getPayload());
 		}
 		{
-			final DateRanged<Integer> i = is.get(3);
+			final DateRangeHelper.Ranged<Integer> i = is.get(3);
 			Assert.assertEquals(RegDate.get(2005, 6, 30), i.getDateDebut());
 			Assert.assertNull(i.getDateFin());
 			Assert.assertEquals((Integer) 4, i.getPayload());
 		}
 
-		final List<DateRanged<String>> strs = strCollector.getCollectedData();
+		final List<DateRangeHelper.Ranged<String>> strs = strCollector.getCollectedData();
 		Assert.assertNotNull(strs);
 		Assert.assertEquals(2, strs.size());
 		{
-			final DateRanged<String> str = strs.get(0);
+			final DateRangeHelper.Ranged<String> str = strs.get(0);
 			Assert.assertEquals(RegDate.get(2000, 3, 27), str.getDateDebut());
 			Assert.assertEquals(RegDate.get(2005, 1, 18), str.getDateFin());
 			Assert.assertEquals("1020 VD", str.getPayload());
 
 		}
 		{
-			final DateRanged<String> str = strs.get(1);
+			final DateRangeHelper.Ranged<String> str = strs.get(1);
 			Assert.assertEquals(RegDate.get(2005, 1, 31), str.getDateDebut());
 			Assert.assertNull(str.getDateFin());
 			Assert.assertEquals("1040 VD", str.getPayload());
 		}
 
-		final List<DateRanged<Object>> os = nullCollector.getCollectedData();
+		final List<DateRangeHelper.Ranged<Object>> os = nullCollector.getCollectedData();
 		Assert.assertNotNull(os);
 		Assert.assertEquals(0, os.size());
 	}
@@ -156,14 +156,14 @@ public class HistorizerTest {
 
 		Historizer.historize(input, Collections.singletonList(dataCollector));
 
-		final List<DateRanged<Data>> collected = dataCollector.getCollectedData();
+		final List<DateRangeHelper.Ranged<Data>> collected = dataCollector.getCollectedData();
 		Assert.assertNotNull(collected);
 		Assert.assertEquals(5, collected.size());
 
-		final List<DateRanged<Data>> sorted = new ArrayList<>(collected);
+		final List<DateRangeHelper.Ranged<Data>> sorted = new ArrayList<>(collected);
 		Collections.sort(sorted, Comparator.comparing(d -> d.getPayload().id));     // le tri est stable : à id égal, on aura les périodes dans l'ordre chronologique
 		{
-			final DateRanged<Data> data = sorted.get(0);
+			final DateRangeHelper.Ranged<Data> data = sorted.get(0);
 			Assert.assertNotNull(data);
 			Assert.assertEquals(RegDate.get(2000, 1, 4), data.getDateDebut());
 			Assert.assertEquals(RegDate.get(2001, 7, 31), data.getDateFin());       // "One" becomes "One prime" after this date
@@ -171,7 +171,7 @@ public class HistorizerTest {
 			Assert.assertEquals("One", data.getPayload().value);
 		}
 		{
-			final DateRanged<Data> data = sorted.get(1);
+			final DateRangeHelper.Ranged<Data> data = sorted.get(1);
 			Assert.assertNotNull(data);
 			Assert.assertEquals(RegDate.get(2001, 8, 1), data.getDateDebut());
 			Assert.assertEquals(RegDate.get(2002, 5, 11), data.getDateFin());
@@ -179,7 +179,7 @@ public class HistorizerTest {
 			Assert.assertEquals("One prime", data.getPayload().value);
 		}
 		{
-			final DateRanged<Data> data = sorted.get(2);
+			final DateRangeHelper.Ranged<Data> data = sorted.get(2);
 			Assert.assertNotNull(data);
 			Assert.assertEquals(RegDate.get(2000, 1, 4), data.getDateDebut());
 			Assert.assertEquals(RegDate.get(2000, 7, 11), data.getDateFin());
@@ -187,7 +187,7 @@ public class HistorizerTest {
 			Assert.assertEquals("Two", data.getPayload().value);
 		}
 		{
-			final DateRanged<Data> data = sorted.get(3);
+			final DateRangeHelper.Ranged<Data> data = sorted.get(3);
 			Assert.assertNotNull(data);
 			Assert.assertEquals(RegDate.get(2001, 8, 1), data.getDateDebut());
 			Assert.assertEquals(RegDate.get(2002, 5, 11), data.getDateFin());
@@ -195,7 +195,7 @@ public class HistorizerTest {
 			Assert.assertEquals("Two", data.getPayload().value);
 		}
 		{
-			final DateRanged<Data> data = sorted.get(4);
+			final DateRangeHelper.Ranged<Data> data = sorted.get(4);
 			Assert.assertNotNull(data);
 			Assert.assertEquals(RegDate.get(2000, 7, 12), data.getDateDebut());
 			Assert.assertNull(data.getDateFin());
@@ -271,17 +271,17 @@ public class HistorizerTest {
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
-		final Map<Long, List<DateRanged<Adresse>>> collected = collector.getCollectedData();
+		final Map<Long, List<DateRangeHelper.Ranged<Adresse>>> collected = collector.getCollectedData();
 		Assert.assertEquals(3, collected.size());
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(1L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(1L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(3, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -289,7 +289,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Rue du Lac", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -297,7 +297,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Rue du Lac, Case postale", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(2);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(2);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -306,14 +306,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(2L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(2L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(3, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -321,7 +321,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Dans les bois", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -329,7 +329,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Dans les bois, Case postale", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(2);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(2);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -338,14 +338,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(3L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(3L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(2, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -353,7 +353,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Bahnhofstrasse 12", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -509,17 +509,17 @@ public class HistorizerTest {
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
-		final Map<Long, List<DateRanged<Adresse>>> collected = collector.getCollectedData();
+		final Map<Long, List<DateRangeHelper.Ranged<Adresse>>> collected = collector.getCollectedData();
 		Assert.assertEquals(4, collected.size());
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(1L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(1L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(2, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -527,7 +527,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Rue du Lac", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -536,14 +536,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(2L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(2L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(2, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -551,7 +551,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Dans les bois", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -560,14 +560,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(3L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(3L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(2, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2001, 6, 3), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
@@ -575,7 +575,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Bahnhofstrasse 12", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -584,14 +584,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<Adresse>> adresses = collected.get(4L);
+			final List<DateRangeHelper.Ranged<Adresse>> adresses = collected.get(4L);
 			Assert.assertNotNull(adresses);
 			Assert.assertEquals(2, adresses.size());
 
-			final List<DateRanged<Adresse>> sorted = new ArrayList<>(adresses);
+			final List<DateRangeHelper.Ranged<Adresse>> sorted = new ArrayList<>(adresses);
 			Collections.sort(sorted, Comparator.comparing(a -> a.getPayload().type));
 			{
-				final DateRanged<Adresse> a = adresses.get(0);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2001, 6, 2), a.getDateFin());
@@ -599,7 +599,7 @@ public class HistorizerTest {
 				Assert.assertEquals("Sur le toit", a.getPayload().adresse);
 			}
 			{
-				final DateRanged<Adresse> a = adresses.get(1);
+				final DateRangeHelper.Ranged<Adresse> a = adresses.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2002, 12, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -660,24 +660,24 @@ public class HistorizerTest {
 
 		Historizer.historize(input, Collections.singletonList(collector));
 
-		final Map<Long, List<DateRanged<String>>> collected = collector.getCollectedData();
+		final Map<Long, List<DateRangeHelper.Ranged<String>>> collected = collector.getCollectedData();
 		Assert.assertEquals(3, collected.size());
 		{
-			final List<DateRanged<String>> dataValues = collected.get(1L);
+			final List<DateRangeHelper.Ranged<String>> dataValues = collected.get(1L);
 			Assert.assertNotNull(dataValues);
 			Assert.assertEquals(2, dataValues.size());
 
-			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
-			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			final List<DateRangeHelper.Ranged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRangeHelper.Ranged::getDateDebut));
 			{
-				final DateRanged<String> a = dataValues.get(0);
+				final DateRangeHelper.Ranged<String> a = dataValues.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
 				Assert.assertEquals("Blah1", a.getPayload());
 			}
 			{
-				final DateRanged<String> a = dataValues.get(1);
+				final DateRangeHelper.Ranged<String> a = dataValues.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -685,21 +685,21 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<String>> dataValues = collected.get(2L);
+			final List<DateRangeHelper.Ranged<String>> dataValues = collected.get(2L);
 			Assert.assertNotNull(dataValues);
 			Assert.assertEquals(2, dataValues.size());
 
-			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
-			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			final List<DateRangeHelper.Ranged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRangeHelper.Ranged::getDateDebut));
 			{
-				final DateRanged<String> a = dataValues.get(0);
+				final DateRangeHelper.Ranged<String> a = dataValues.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertEquals(RegDate.get(2002, 11, 30), a.getDateFin());
 				Assert.assertEquals("Blah1", a.getPayload());
 			}
 			{
-				final DateRanged<String> a = dataValues.get(1);
+				final DateRangeHelper.Ranged<String> a = dataValues.get(1);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2003, 2, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());
@@ -707,14 +707,14 @@ public class HistorizerTest {
 			}
 		}
 		{
-			final List<DateRanged<String>> dataValues = collected.get(3L);
+			final List<DateRangeHelper.Ranged<String>> dataValues = collected.get(3L);
 			Assert.assertNotNull(dataValues);
 			Assert.assertEquals(1, dataValues.size());
 
-			final List<DateRanged<String>> sorted = new ArrayList<>(dataValues);
-			Collections.sort(sorted, Comparator.comparing(DateRanged::getDateDebut));
+			final List<DateRangeHelper.Ranged<String>> sorted = new ArrayList<>(dataValues);
+			Collections.sort(sorted, Comparator.comparing(DateRangeHelper.Ranged::getDateDebut));
 			{
-				final DateRanged<String> a = dataValues.get(0);
+				final DateRangeHelper.Ranged<String> a = dataValues.get(0);
 				Assert.assertNotNull(a);
 				Assert.assertEquals(RegDate.get(2000, 1, 1), a.getDateDebut());
 				Assert.assertNull(a.getDateFin());

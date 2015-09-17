@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
+import ch.vd.registre.base.date.DateRangeHelper;
 
 /**
  * Spécificité de collecteur de données dont le résultat est exprimable sous la forme d'un ensemble de listes indexées par une clé de regroupement
@@ -19,7 +19,7 @@ public abstract class IndexedDataCollector<S, D, K> extends DataCollector<S> {
 	/**
 	 * @return les données historisées disponibles après analyse
 	 */
-	public final Map<K, List<DateRanged<D>>> getCollectedData() {
+	public final Map<K, List<DateRangeHelper.Ranged<D>>> getCollectedData() {
 		return getCollectedData(HashMap::new, ArrayList::new);
 	}
 
@@ -28,5 +28,5 @@ public abstract class IndexedDataCollector<S, D, K> extends DataCollector<S> {
 	 * @param listFactory constructeur des listes utilisées comme valeurs dans la map renvoyée
 	 * @return les données historisées disponibles après analyse
 	 */
-	public abstract Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory);
+	public abstract Map<K, List<DateRangeHelper.Ranged<D>>> getCollectedData(Supplier<Map<K, List<DateRangeHelper.Ranged<D>>>> mapFactory, Supplier<List<DateRangeHelper.Ranged<D>>> listFactory);
 }

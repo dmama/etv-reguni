@@ -13,8 +13,8 @@ import ch.vd.evd0022.v1.KindOfLocation;
 import ch.vd.evd0022.v1.UidRegisterLiquidationReason;
 import ch.vd.evd0022.v1.UidRegisterStatus;
 import ch.vd.evd0022.v1.UidRegisterTypeOfOrganisation;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 public class OrganisationLocation {
 
@@ -23,21 +23,21 @@ public class OrganisationLocation {
      */
     private final long cantonalId;
     @NotNull
-    private final List<DateRanged<String>> name;
+    private final List<DateRangeHelper.Ranged<String>> name;
 
 	public final RCEntRCData rc;
 	public final RCEntUIDData uid;
 
-	private final Map<String,List<DateRanged<String>>> identifiers;
-	private final List<DateRanged<String>> otherNames;
-	private final List<DateRanged<KindOfLocation>> kindOfLocation;
-	private final List<DateRanged<Integer>> seat;
-	private final List<DateRanged<OrganisationFunction>> function;
+	private final Map<String,List<DateRangeHelper.Ranged<String>>> identifiers;
+	private final List<DateRangeHelper.Ranged<String>> otherNames;
+	private final List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation;
+	private final List<DateRangeHelper.Ranged<Integer>> seat;
+	private final List<DateRangeHelper.Ranged<OrganisationFunction>> function;
 
-	public OrganisationLocation(long cantonalId, @NotNull List<DateRanged<String>> name, RCEntRCData rc, RCEntUIDData uid,
-	                            Map<String,List<DateRanged<String>>> identifiers, List<DateRanged<String>> otherNames,
-	                            List<DateRanged<KindOfLocation>> kindOfLocation, List<DateRanged<Integer>> seat,
-	                            List<DateRanged<OrganisationFunction>> function) {
+	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
+	                            Map<String,List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> otherNames,
+	                            List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation, List<DateRangeHelper.Ranged<Integer>> seat,
+	                            List<DateRangeHelper.Ranged<OrganisationFunction>> function) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
@@ -53,24 +53,24 @@ public class OrganisationLocation {
 		return cantonalId;
 	}
 
-	public List<DateRanged<OrganisationFunction>> getFunction() {
+	public List<DateRangeHelper.Ranged<OrganisationFunction>> getFunction() {
 		return function;
 	}
 
-	public Map<String,List<DateRanged<String>>> getIdentifiers() {
+	public Map<String,List<DateRangeHelper.Ranged<String>>> getIdentifiers() {
 		return identifiers;
 	}
 
-	public List<DateRanged<KindOfLocation>> getKindOfLocation() {
+	public List<DateRangeHelper.Ranged<KindOfLocation>> getKindOfLocation() {
 		return kindOfLocation;
 	}
 
 	@NotNull
-	public List<DateRanged<String>> getName() {
+	public List<DateRangeHelper.Ranged<String>> getName() {
 		return name;
 	}
 
-	public List<DateRanged<String>> getOtherNames() {
+	public List<DateRangeHelper.Ranged<String>> getOtherNames() {
 		return otherNames;
 	}
 
@@ -78,7 +78,7 @@ public class OrganisationLocation {
 		return rc;
 	}
 
-	public List<DateRanged<Integer>> getSeat() {
+	public List<DateRangeHelper.Ranged<Integer>> getSeat() {
 		return seat;
 	}
 
@@ -87,16 +87,16 @@ public class OrganisationLocation {
 	}
 
 	public static class RCEntRCData {
-		private final List<DateRanged<CommercialRegisterStatus>> status;
-		private final List<DateRanged<String>> name;
-		private final List<DateRanged<CommercialRegisterEntryStatus>> entryStatus;
-		private final List<DateRanged<Capital>> capital;
-		private final List<DateRanged<Address>> legalAddress;
-		private final List<DateRanged<RegDate>> entryDate;
+		private final List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status;
+		private final List<DateRangeHelper.Ranged<String>> name;
+		private final List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> entryStatus;
+		private final List<DateRangeHelper.Ranged<Capital>> capital;
+		private final List<DateRangeHelper.Ranged<Address>> legalAddress;
+		private final List<DateRangeHelper.Ranged<RegDate>> entryDate;
 
-		public RCEntRCData(List<DateRanged<CommercialRegisterStatus>> status,
-		                   List<DateRanged<String>> name, List<DateRanged<CommercialRegisterEntryStatus>> entryStatus,
-		                   List<DateRanged<Capital>> capital, List<DateRanged<Address>> legalAddress, List<DateRanged<RegDate>> entryDate) {
+		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status,
+		                   List<DateRangeHelper.Ranged<String>> name, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> entryStatus,
+		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress, List<DateRangeHelper.Ranged<RegDate>> entryDate) {
 			this.status = status;
 			this.name = name;
 			this.entryStatus = entryStatus;
@@ -105,42 +105,42 @@ public class OrganisationLocation {
 			this.entryDate = entryDate;
 		}
 
-		public List<DateRanged<Capital>> getCapital() {
+		public List<DateRangeHelper.Ranged<Capital>> getCapital() {
 			return capital;
 		}
 
-		public List<DateRanged<CommercialRegisterEntryStatus>> getEntryStatus() {
+		public List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> getEntryStatus() {
 			return entryStatus;
 		}
 
-		public List<DateRanged<Address>> getLegalAddress() {
+		public List<DateRangeHelper.Ranged<Address>> getLegalAddress() {
 			return legalAddress;
 		}
 
-		public List<DateRanged<String>> getName() {
+		public List<DateRangeHelper.Ranged<String>> getName() {
 			return name;
 		}
 
-		public List<DateRanged<CommercialRegisterStatus>> getStatus() {
+		public List<DateRangeHelper.Ranged<CommercialRegisterStatus>> getStatus() {
 			return status;
 		}
 
-		public List<DateRanged<RegDate>> getEntryDate() {
+		public List<DateRangeHelper.Ranged<RegDate>> getEntryDate() {
 			return entryDate;
 		}
 	}
 
 	public static class RCEntUIDData {
-		private final List<DateRanged<UidRegisterStatus>> status;
-		private final List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
-		private final List<DateRanged<Address>> effectiveAddress;
-		private final List<DateRanged<Address>> postOfficeBoxAddress;
-		private final List<DateRanged<UidRegisterLiquidationReason>> liquidationReason;
+		private final List<DateRangeHelper.Ranged<UidRegisterStatus>> status;
+		private final List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>> typeOfOrganisation;
+		private final List<DateRangeHelper.Ranged<Address>> effectiveAddress;
+		private final List<DateRangeHelper.Ranged<Address>> postOfficeBoxAddress;
+		private final List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>> liquidationReason;
 
-		public RCEntUIDData(List<DateRanged<Address>> effectiveAddress, List<DateRanged<UidRegisterStatus>> status,
-		                    List<DateRanged<UidRegisterTypeOfOrganisation>> typeOfOrganisation,
-		                    List<DateRanged<Address>> postOfficeBoxAddress,
-		                    List<DateRanged<UidRegisterLiquidationReason>> liquidationReason) {
+		public RCEntUIDData(List<DateRangeHelper.Ranged<Address>> effectiveAddress, List<DateRangeHelper.Ranged<UidRegisterStatus>> status,
+		                    List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>> typeOfOrganisation,
+		                    List<DateRangeHelper.Ranged<Address>> postOfficeBoxAddress,
+		                    List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>> liquidationReason) {
 			this.effectiveAddress = effectiveAddress;
 			this.status = status;
 			this.typeOfOrganisation = typeOfOrganisation;
@@ -148,23 +148,23 @@ public class OrganisationLocation {
 			this.liquidationReason = liquidationReason;
 		}
 
-		public List<DateRanged<Address>> getEffectiveAddress() {
+		public List<DateRangeHelper.Ranged<Address>> getEffectiveAddress() {
 			return effectiveAddress;
 		}
 
-		public List<DateRanged<UidRegisterLiquidationReason>> getLiquidationReason() {
+		public List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>> getLiquidationReason() {
 			return liquidationReason;
 		}
 
-		public List<DateRanged<Address>> getPostOfficeBoxAddress() {
+		public List<DateRangeHelper.Ranged<Address>> getPostOfficeBoxAddress() {
 			return postOfficeBoxAddress;
 		}
 
-		public List<DateRanged<UidRegisterStatus>> getStatus() {
+		public List<DateRangeHelper.Ranged<UidRegisterStatus>> getStatus() {
 			return status;
 		}
 
-		public List<DateRanged<UidRegisterTypeOfOrganisation>> getTypeOfOrganisation() {
+		public List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>> getTypeOfOrganisation() {
 			return typeOfOrganisation;
 		}
 	}

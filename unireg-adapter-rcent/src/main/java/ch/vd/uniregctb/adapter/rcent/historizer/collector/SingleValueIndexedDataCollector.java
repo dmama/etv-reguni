@@ -6,8 +6,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.container.Keyed;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
@@ -51,7 +51,7 @@ public class SingleValueIndexedDataCollector<S, D, K> extends IndexedDataCollect
 	 * @return les données historisées disponibles après analyse
 	 */
 	@Override
-	public final Map<K, List<DateRanged<D>>> getCollectedData(Supplier<Map<K, List<DateRanged<D>>>> mapFactory, Supplier<List<DateRanged<D>>> listFactory) {
+	public final Map<K, List<DateRangeHelper.Ranged<D>>> getCollectedData(Supplier<Map<K, List<DateRangeHelper.Ranged<D>>>> mapFactory, Supplier<List<DateRangeHelper.Ranged<D>>> listFactory) {
 		return delegateCollector.getCollectedData(mapFactory, listFactory);
 	}
 

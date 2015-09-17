@@ -6,7 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0022.v1.LegalForm;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
+import ch.vd.registre.base.date.DateRangeHelper;
 
 public class Organisation {
 
@@ -16,26 +16,26 @@ public class Organisation {
 	private final long cantonalId;
 
 	@NotNull
-	private final Map<String,List<DateRanged<String>>> organisationIdentifiers;
+	private final Map<String,List<DateRangeHelper.Ranged<String>>> organisationIdentifiers;
 
 	@NotNull
-	private final List<DateRanged<String>> organisationName;
-	private final List<DateRanged<String>> organisationAdditionalName;
-	private final List<DateRanged<LegalForm>> legalForm;
+	private final List<DateRangeHelper.Ranged<String>> organisationName;
+	private final List<DateRangeHelper.Ranged<String>> organisationAdditionalName;
+	private final List<DateRangeHelper.Ranged<LegalForm>> legalForm;
 
-	private final List<DateRanged<Long>> locations;
+	private final List<DateRangeHelper.Ranged<Long>> locations;
 	private final List<OrganisationLocation> locationData;
 
-	private final List<DateRanged<Long>> transferTo;
-	private final List<DateRanged<Long>> transferFrom;
-	private final List<DateRanged<Long>> replacedBy;
-	private final List<DateRanged<Long>> inReplacementOf;
+	private final List<DateRangeHelper.Ranged<Long>> transferTo;
+	private final List<DateRangeHelper.Ranged<Long>> transferFrom;
+	private final List<DateRangeHelper.Ranged<Long>> replacedBy;
+	private final List<DateRangeHelper.Ranged<Long>> inReplacementOf;
 
-	public Organisation(long cantonalId, @NotNull Map<String,List<DateRanged<String>>> organisationIdentifiers,
-	                    @NotNull List<DateRanged<String>> organisationName, List<DateRanged<String>> organisationAdditionalName,
-	                    List<DateRanged<LegalForm>> legalForm, List<DateRanged<Long>> locations, List<OrganisationLocation> locationData,
-	                    List<DateRanged<Long>> transferTo, List<DateRanged<Long>> transferFrom, List<DateRanged<Long>> replacedBy,
-	                    List<DateRanged<Long>> inReplacementOf) {
+	public Organisation(long cantonalId, @NotNull Map<String,List<DateRangeHelper.Ranged<String>>> organisationIdentifiers,
+	                    @NotNull List<DateRangeHelper.Ranged<String>> organisationName, List<DateRangeHelper.Ranged<String>> organisationAdditionalName,
+	                    List<DateRangeHelper.Ranged<LegalForm>> legalForm, List<DateRangeHelper.Ranged<Long>> locations, List<OrganisationLocation> locationData,
+	                    List<DateRangeHelper.Ranged<Long>> transferTo, List<DateRangeHelper.Ranged<Long>> transferFrom, List<DateRangeHelper.Ranged<Long>> replacedBy,
+	                    List<DateRangeHelper.Ranged<Long>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.organisationIdentifiers = organisationIdentifiers;
 		this.organisationName = organisationName;
@@ -53,11 +53,11 @@ public class Organisation {
 		return cantonalId;
 	}
 
-	public List<DateRanged<Long>> getInReplacementOf() {
+	public List<DateRangeHelper.Ranged<Long>> getInReplacementOf() {
 		return inReplacementOf;
 	}
 
-	public List<DateRanged<LegalForm>> getLegalForm() {
+	public List<DateRangeHelper.Ranged<LegalForm>> getLegalForm() {
 		return legalForm;
 	}
 
@@ -65,33 +65,33 @@ public class Organisation {
 		return locationData;
 	}
 
-	public List<DateRanged<Long>> getLocations() {
+	public List<DateRangeHelper.Ranged<Long>> getLocations() {
 		return locations;
 	}
 
-	public List<DateRanged<String>> getOrganisationAdditionalName() {
+	public List<DateRangeHelper.Ranged<String>> getOrganisationAdditionalName() {
 		return organisationAdditionalName;
 	}
 
 	@NotNull
-	public Map<String,List<DateRanged<String>>> getOrganisationIdentifiers() {
+	public Map<String,List<DateRangeHelper.Ranged<String>>> getOrganisationIdentifiers() {
 		return organisationIdentifiers;
 	}
 
 	@NotNull
-	public List<DateRanged<String>> getOrganisationName() {
+	public List<DateRangeHelper.Ranged<String>> getOrganisationName() {
 		return organisationName;
 	}
 
-	public List<DateRanged<Long>> getReplacedBy() {
+	public List<DateRangeHelper.Ranged<Long>> getReplacedBy() {
 		return replacedBy;
 	}
 
-	public List<DateRanged<Long>> getTransferFrom() {
+	public List<DateRangeHelper.Ranged<Long>> getTransferFrom() {
 		return transferFrom;
 	}
 
-	public List<DateRanged<Long>> getTransferTo() {
+	public List<DateRangeHelper.Ranged<Long>> getTransferTo() {
 		return transferTo;
 	}
 }

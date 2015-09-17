@@ -24,10 +24,10 @@ import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.evd0022.v1.OrganisationData;
 import ch.vd.evd0022.v1.TypeOfCapital;
 import ch.vd.evd0022.v1.UidRegisterStatus;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcent.RcEntClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.OrganisationHistorizer;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationFunction;
 
@@ -86,7 +86,7 @@ public class RCEntAdapterTest {
 		assertThat(organisation.getLocationData().size(), equalTo(1));
 		assertThat(organisation.getLocationData().get(0).getCantonalId(), equalTo(101072745L));
 
-		Map<String, List<DateRanged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
+		Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(5));
 
 		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
@@ -129,7 +129,7 @@ public class RCEntAdapterTest {
 		assertThat(organisation.getCantonalId(), equalTo(101202262L));
 
 		// Adresse
-		final DateRanged<Address> postOfficeBoxAddressRange1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
+		final DateRangeHelper.Ranged<Address> postOfficeBoxAddressRange1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
 		Address postalAddress_period1 = postOfficeBoxAddressRange1.getPayload();
 		assertThat(postOfficeBoxAddressRange1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(postOfficeBoxAddressRange1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
@@ -142,7 +142,7 @@ public class RCEntAdapterTest {
 		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
 
 		// Adresse changée
-		final DateRanged<Address> postOfficeBoxAddressRange2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
+		final DateRangeHelper.Ranged<Address> postOfficeBoxAddressRange2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = postOfficeBoxAddressRange2.getPayload();
 		assertThat(postOfficeBoxAddressRange2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(postOfficeBoxAddressRange2.getDateFin(), nullValue());
@@ -168,7 +168,7 @@ public class RCEntAdapterTest {
 		// Adresse postale
 		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(3));
 
-		final DateRanged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
+		final DateRangeHelper.Ranged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
 		Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
@@ -181,7 +181,7 @@ public class RCEntAdapterTest {
 		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
 
 		// Adresse changée
-		final DateRanged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
+		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
 		assertThat(addressDateRanged2.getDateFin(), equalTo(RegDate.get(2015, 5, 23)));
@@ -194,7 +194,7 @@ public class RCEntAdapterTest {
 		assertThat(postalAddress_period2.getCountry().getCountryName(), equalTo("CH"));
 
 		// Adresse enlevée puis nouvelle plus tard
-		final DateRanged<Address> addressDateRanged3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2);
+		final DateRangeHelper.Ranged<Address> addressDateRanged3 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(2);
 		Address postalAddress_period3 = addressDateRanged3.getPayload();
 		assertThat(addressDateRanged3.getDateDebut(), equalTo(RegDate.get(2015, 6, 6)));
 		assertThat(addressDateRanged3.getDateFin(), nullValue());
@@ -258,7 +258,7 @@ public class RCEntAdapterTest {
 		}
 
 
-		Map<String, List<DateRanged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
+		Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();
 		assertThat(identifierMap.size(), equalTo(8));
 
 		assertThat(identifierMap.get("CH.HR").size(), equalTo(1));
@@ -287,7 +287,7 @@ public class RCEntAdapterTest {
 		// Adresse postale
 		assertThat(organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().size(), equalTo(2));
 
-		final DateRanged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
+		final DateRangeHelper.Ranged<Address> addressDateRanged1 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(0);
 		Address postalAddress_period1 = addressDateRanged1.getPayload();
 		assertThat(addressDateRanged1.getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
 		assertThat(addressDateRanged1.getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
@@ -300,7 +300,7 @@ public class RCEntAdapterTest {
 		assertThat(postalAddress_period1.getCountry().getCountryName(), equalTo("CH"));
 
 		// Adresse enlevée puis nouvelle plus tard, à l'identique
-		final DateRanged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
+		final DateRangeHelper.Ranged<Address> addressDateRanged2 = organisation.getLocationData().get(0).getUid().getPostOfficeBoxAddress().get(1);
 		Address postalAddress_period2 = addressDateRanged2.getPayload();
 		assertThat(addressDateRanged2.getDateDebut(), equalTo(RegDate.get(2015, 5, 15)));
 		assertThat(addressDateRanged2.getDateFin(), nullValue());
@@ -322,11 +322,11 @@ public class RCEntAdapterTest {
 		Organisation organisation = service.getOrganisationHistory(100983251L);
 		assertThat(organisation.getCantonalId(), equalTo(100983251L));
 
-		List<DateRanged<UidRegisterStatus>> ideStatus = organisation.getLocationData().get(0).getUid().getStatus();
+		List<DateRangeHelper.Ranged<UidRegisterStatus>> ideStatus = organisation.getLocationData().get(0).getUid().getStatus();
 		assertNotNull(ideStatus);
 		assertEquals(UidRegisterStatus.DEFINITIF, ideStatus.get(0).getPayload());
 
-		List<DateRanged<Capital>> capitalRanges = organisation.getLocationData().get(0).getRc().getCapital();
+		List<DateRangeHelper.Ranged<Capital>> capitalRanges = organisation.getLocationData().get(0).getRc().getCapital();
 		assertNotNull(capitalRanges);
 		Capital capital = capitalRanges.get(0).getPayload();
 		assertEquals("CHF", capital.getCurrency());
@@ -334,21 +334,21 @@ public class RCEntAdapterTest {
 		assertEquals(new BigDecimal(23000), capital.getCashedInAmount());
 		assertEquals(TypeOfCapital.CAPITAL_SOCIAL, capital.getTypeOfCapital());
 
-		List<DateRanged<String>> locationRcName = organisation.getLocationData().get(0).getRc().getName();
+		List<DateRangeHelper.Ranged<String>> locationRcName = organisation.getLocationData().get(0).getRc().getName();
 		assertEquals("Bomaco Sàrl en liquidation", locationRcName.get(0).getPayload());
 
-		List<DateRanged<CommercialRegisterEntryStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getEntryStatus();
+		List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> locationRcEntryStatus = organisation.getLocationData().get(0).getRc().getEntryStatus();
 		assertEquals(CommercialRegisterEntryStatus.ACTIF, locationRcEntryStatus.get(0).getPayload());
 
-		List<DateRanged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
+		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
-		List<DateRanged<OrganisationFunction>> locationFunctions = organisation.getLocationData().get(0).getFunction();
+		List<DateRangeHelper.Ranged<OrganisationFunction>> locationFunctions = organisation.getLocationData().get(0).getFunction();
 		assertEquals(2, locationFunctions.size()); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
-		Map<String, DateRanged<OrganisationFunction>> functionMap = new HashMap<>();
-		DateRanged<OrganisationFunction> function0 = locationFunctions.get(0);
+		Map<String, DateRangeHelper.Ranged<OrganisationFunction>> functionMap = new HashMap<>();
+		DateRangeHelper.Ranged<OrganisationFunction> function0 = locationFunctions.get(0);
 		functionMap.put(function0.getPayload().getName(), function0);
-		DateRanged<OrganisationFunction> function1 = locationFunctions.get(1);
+		DateRangeHelper.Ranged<OrganisationFunction> function1 = locationFunctions.get(1);
 		functionMap.put(function1.getPayload().getName(), function1);
 
 		assertEquals("Harrison Ford", functionMap.get("Harrison Ford").getPayload().getName());

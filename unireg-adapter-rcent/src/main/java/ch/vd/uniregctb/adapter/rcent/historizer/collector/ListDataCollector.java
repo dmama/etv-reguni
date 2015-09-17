@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
 /**
@@ -31,7 +31,7 @@ public abstract class ListDataCollector<S, D> extends DataCollector<S> {
 	/**
 	 * @return la liste des données historisées disponible après analyse
 	 */
-	public final List<DateRanged<D>> getCollectedData() {
+	public final List<DateRangeHelper.Ranged<D>> getCollectedData() {
 		return getCollectedData(ArrayList::new);
 	}
 
@@ -39,12 +39,12 @@ public abstract class ListDataCollector<S, D> extends DataCollector<S> {
 	 * @param listFactory constructeur de liste spécifique
 	 * @return la liste des données historisées disponible après analyse
 	 */
-	public List<DateRanged<D>> getCollectedData(Supplier<List<DateRanged<D>>> listFactory) {
+	public List<DateRangeHelper.Ranged<D>> getCollectedData(Supplier<List<DateRangeHelper.Ranged<D>>> listFactory) {
 		return getCollectedDataStream().collect(Collectors.toCollection(listFactory));
 	}
 
 	/**
 	 * @return le stream des données historisées, disponible après analyse
 	 */
-	protected abstract Stream<DateRanged<D>> getCollectedDataStream();
+	protected abstract Stream<DateRangeHelper.Ranged<D>> getCollectedDataStream();
 }

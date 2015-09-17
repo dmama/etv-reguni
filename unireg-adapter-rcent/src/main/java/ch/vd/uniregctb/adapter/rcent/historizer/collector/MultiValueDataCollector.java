@@ -9,8 +9,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
 /**
@@ -34,7 +34,7 @@ public class MultiValueDataCollector<S, D, K> extends ListDataCollector<S, D> {
 	/**
 	 * Données consolidées au fur et à mesure de l'analyse
 	 */
-	private final Map<K, NavigableMap<RegDate, DateRanged<D>>> groupings = new HashMap<>();
+	private final Map<K, NavigableMap<RegDate, DateRangeHelper.Ranged<D>>> groupings = new HashMap<>();
 
 	/**
 	 * @param dataExtractor extracteur des données historisées depuis le snapshot
@@ -49,7 +49,7 @@ public class MultiValueDataCollector<S, D, K> extends ListDataCollector<S, D> {
 	}
 
 	@Override
-	protected Stream<DateRanged<D>> getCollectedDataStream() {
+	protected Stream<DateRangeHelper.Ranged<D>> getCollectedDataStream() {
 		return groupings.values().stream()
 				.map(DataCollector::getCollected)
 				.flatMap(Function.identity());
@@ -70,7 +70,7 @@ public class MultiValueDataCollector<S, D, K> extends ListDataCollector<S, D> {
 			final K key = groupingKeyExtractor.apply(d);
 			usedKeys.add(key);
 
-			final NavigableMap<RegDate, DateRanged<D>> keySpecificMap = getOrCreateSpecificMap(key, groupings);
+			final NavigableMap<RegDate, DateRangeHelper.Ranged<D>> keySpecificMap = getOrCreateSpecificMap(key, groupings);
 			collect(keySpecificMap, dataEqualator, date, d);
 		});
 
@@ -88,13 +88,13 @@ public class MultiValueDataCollector<S, D, K> extends ListDataCollector<S, D> {
 	 * @param <K> type de la clé de regroupement
 	 * @return la map (existante ou nouvellement créée) associée à la clé dans l'ensemble des regroupements
 	 */
-	private static <D, K> NavigableMap<RegDate, DateRanged<D>> getOrCreateSpecificMap(K key, Map<K, NavigableMap<RegDate, DateRanged<D>>> groupings) {
-		final NavigableMap<RegDate, DateRanged<D>> existing = groupings.get(key);
+	private static <D, K> NavigableMap<RegDate, DateRangeHelper.Ranged<D>> getOrCreateSpecificMap(K key, Map<K, NavigableMap<RegDate, DateRangeHelper.Ranged<D>>> groupings) {
+		final NavigableMap<RegDate, DateRangeHelper.Ranged<D>> existing = groupings.get(key);
 		if (existing != null) {
 			return existing;
 		}
 
-		final NavigableMap<RegDate, DateRanged<D>> newMap = new TreeMap<>();
+		final NavigableMap<RegDate, DateRangeHelper.Ranged<D>> newMap = new TreeMap<>();
 		groupings.put(key, newMap);
 		return newMap;
 	}

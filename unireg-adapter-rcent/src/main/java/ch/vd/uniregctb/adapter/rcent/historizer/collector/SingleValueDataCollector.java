@@ -5,8 +5,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
 
 /**
@@ -25,7 +25,7 @@ public class SingleValueDataCollector<S, D> extends ListDataCollector<S, D> {
 	/**
 	 * Données consolidées au fur et à mesure de l'analyse
 	 */
-	private final NavigableMap<RegDate, DateRanged<D>> collected = new TreeMap<>();
+	private final NavigableMap<RegDate, DateRangeHelper.Ranged<D>> collected = new TreeMap<>();
 
 	/**
 	 * @param dataExtractor extracteur de la donnée du snapshot
@@ -37,7 +37,7 @@ public class SingleValueDataCollector<S, D> extends ListDataCollector<S, D> {
 	}
 
 	@Override
-	protected Stream<DateRanged<D>> getCollectedDataStream() {
+	protected Stream<DateRangeHelper.Ranged<D>> getCollectedDataStream() {
 		return getCollected(collected);
 	}
 

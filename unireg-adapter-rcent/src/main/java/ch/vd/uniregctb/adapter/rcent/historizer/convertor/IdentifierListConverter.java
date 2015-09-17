@@ -10,7 +10,6 @@ import ch.vd.evd0022.v1.Identifier;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.adapter.rcent.historizer.container.DateRanged;
 
 public class IdentifierListConverter {
 
@@ -21,12 +20,12 @@ public class IdentifierListConverter {
 	 * @param identifiers La liste de périodes d'identifiants, indifférement de la catégorie.
 	 * @return La Map de périodes de valeur.
 	 */
-	public static Map<String, List<DateRanged<String>>> toMapOfListsOfDateRangedValues(List<DateRanged<Identifier>> identifiers) {
+	public static Map<String, List<DateRangeHelper.Ranged<String>>> toMapOfListsOfDateRangedValues(List<DateRangeHelper.Ranged<Identifier>> identifiers) {
 		// construction de la map
-		final Map<String, List<DateRanged<String>>> map = identifiers.stream()
+		final Map<String, List<DateRangeHelper.Ranged<String>>> map = identifiers.stream()
 				.sorted(DateRangeComparator::compareRanges)
 				.collect(Collectors.toMap(dr -> dr.getPayload().getIdentifierCategory(),
-				                          dr -> Collections.<DateRanged<String>>singletonList(dr.map(Identifier::getIdentifierValue)),
+				                          dr -> Collections.singletonList(DateRangedConvertor.map(dr, Identifier::getIdentifierValue)),
 				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList())));
 
 		// vérification des overlaps
