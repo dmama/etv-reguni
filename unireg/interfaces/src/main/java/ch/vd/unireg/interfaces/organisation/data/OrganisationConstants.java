@@ -10,8 +10,4 @@ public abstract class OrganisationConstants {
 	 */
 	public static final String CLE_IDE = "CH.IDE";
 
-	/**
-	 * La clé de l'identifiant "id cantonal"
-	 */
-	public static final String CLE_ID_CANTONAL = "CT.VD.PARTY";
 }
