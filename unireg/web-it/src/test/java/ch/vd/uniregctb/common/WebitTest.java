@@ -132,10 +132,10 @@ public abstract class WebitTest {
 		final URL dbUnitUrl = getClass().getResource(filename);
 
 		// Charge la page d'import
-		HtmlPage page = (HtmlPage) webClient.getPage(importPageUrl);
+		HtmlPage page = webClient.getPage(importPageUrl);
 
 		// Rempli le champ d'import avec le chemin vers le fichier DB unit
-		HtmlFileInput file = (HtmlFileInput) page.getHtmlElementById("scriptData");
+		HtmlFileInput file = page.getHtmlElementById("scriptData");
 		file.setValueAttribute(dbUnitUrl.getPath());
 
 		// Exécute le formulaire

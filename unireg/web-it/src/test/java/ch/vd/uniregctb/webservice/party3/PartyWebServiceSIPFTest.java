@@ -23,6 +23,7 @@ import ch.vd.unireg.xml.party.corporation.v1.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v1.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v1.LegalSeatType;
 import ch.vd.unireg.xml.party.corporation.v1.TaxSystem;
+import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
@@ -83,11 +84,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 		assertEquals(222L, pm.getNumber());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
-		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
-		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Récupération des informations des fors fiscaux
 
@@ -98,8 +94,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final TaxResidence ffp0 = forPrincipaux.get(0);
 		assertNotNull(ffp0);
 		// Note : les communes hors-canton et les pays hors-Suisse sont aussi retourné. C'est à l'appelant de faire le tri si nécessaire.
-		assertSameDay(newDate(1979, 8, 7), ffp0.getDateFrom());
-		assertNull(ffp0.getDateTo());
+		assertSameDay(newDate(1992, 12, 31), ffp0.getDateFrom());
+		assertSameDay(newDate(2003, 12, 31), ffp0.getDateTo());
+		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffp0.getStartReason());
+		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getEndReason());
 		assertEquals(5413, ffp0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp0.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffp0.getTaxType());
@@ -111,7 +109,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final TaxResidence ffs0 = forSecondaires.get(0);
 		assertNotNull(ffs0);
-		assertSameDay(newDate(1988, 7, 22), ffs0.getDateFrom());
+		assertSameDay(newDate(1992, 12, 31), ffs0.getDateFrom());
 		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
 		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
@@ -130,8 +128,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(icc0);
 		assertEquals("01", icc0.getCode()); // selon table TY_REGIME_FISCAL
 		assertSameDay(newDate(1993, 1, 1), icc0.getDateFrom());
-		assertNull(icc0.getDateTo());
-		// note : la catégorie de PM se déduit du code
+		assertSameDay(newDate(2003, 12, 31), icc0.getDateTo());
 
 		final List<TaxSystem> regimesIFD = pm.getTaxSystemsCH();
 		assertNotNull(regimesIFD);
@@ -141,7 +138,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(ifd0);
 		assertEquals("01", ifd0.getCode()); // selon table TY_REGIME_FISCAL
 		assertSameDay(newDate(1993, 1, 1), ifd0.getDateFrom());
-		assertNull(ifd0.getDateTo());
+		assertSameDay(newDate(2003, 12, 31), ifd0.getDateTo());
 	}
 
 	@Test
@@ -155,11 +152,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 		assertEquals(222L, pm.getNumber());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
-		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
-		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Récupération du capital
 
@@ -170,13 +162,13 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
 		assertEquals(150000, capital.getPaidInCapital());
-		assertEquals(150000, capital.getShareCapital());
-
-		// note : il est de la responsabilité de l'appelant de déterminer si l'abscence ou non du capital libéré est normale ou non. Pour
-		// rappel, cette abscence justifiée ou non se déduit de la catégorie de PM (= normal pour une APM, d'après le document d'Eric Wyss).
-		// Cette catégorie est elle-même déduite du code du régime fiscal.
+		assertNull(capital.getShareCapital());
 	}
 
+	/**
+	 * TODO [SIPM] Les événements PM ne sont pour l'instant (?) plus supportés
+	 */
+	@Ignore
 	@Test
 	public void testFournirEvenementsPMParNumero() throws Exception {
 
@@ -288,6 +280,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals("002", ev15.getCode());
 	}
 
+	/**
+	 * TODO [SIPM] Les événements PM ne sont pour l'instant (?) plus supportés
+	 */
+	@Ignore
 	@Test
 	public void testFournirEvenementsPMParCode() throws Exception {
 
@@ -318,7 +314,9 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-2039] vérifie que les paramètres date mini et date maxi fonctionnent correctement.
+	 * TODO [SIPM] Les événements PM ne sont pour l'instant (?) plus supportés
 	 */
+	@Ignore
 	@Test
 	public void testFournirEvenementsPMDateMiniMaxi() throws Exception {
 
@@ -392,10 +390,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final BankAccount comptePM = comptes.get(0);
 		assertNotNull(comptePM);
-		assertEquals("18-25277-7", comptePM.getAccountNumber());
+		assertEquals("CH2409000000180252777", comptePM.getAccountNumber());
 		assertNull(comptePM.getClearing());
 		assertNull(comptePM.getBicAddress());
-		assertEquals(AccountNumberFormat.SWISS_SPECIFIC, comptePM.getFormat());
+		assertEquals(AccountNumberFormat.IBAN, comptePM.getFormat());
 		assertNull(comptePM.getOwnerName());
 		assertEquals("La Poste Suisse", comptePM.getBankName());
 	}
@@ -445,7 +443,9 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-2106] teste que les coordonnées fiscales d'un mandataire de type 'T' sont bien exposées
+	 * TODO [SIPM] Ceci reste encore à spécifier / valider après la reprise des PM dans Unireg (chantier "mandataires")
 	 */
+	@Ignore
 	@Test
 	public void testFournirCoordonneesFinancieresAvecMandatairePM() throws Exception {
 
@@ -486,10 +486,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(pm);
 		assertEquals(222L, pm.getNumber());
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
-		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
+		assertEquals("Kalesa S.A., en liquidation", trimValiPattern(pm.getShortName()));
+		assertEquals("Kalesa S.A., en liquidation", trimValiPattern(pm.getName1()));
 		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
+		assertNull(trimValiPattern(pm.getName3()));
 
 		final List<Address> adressesCourrier = pm.getMailAddresses();
 		assertNotNull(adressesCourrier);
@@ -539,89 +539,12 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final FormattedAddress adresseEnvoi = addressCourrier1.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine4()));
+		assertEquals("Kalesa S.A., en liquidation", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLine3()));
+		assertNull(adresseEnvoi.getLine4());
 		assertNull(adresseEnvoi.getLine5());
 		assertNull(adresseEnvoi.getLine6());
-	}
-
-	/**
-	 * [UNIREG-1974]
-	 */
-	@Test
-	public void testFournirAdresseCourrierLocaliteAbregee() throws Exception {
-
-		final GetPartyRequest params = new GetPartyRequest();
-		params.setLogin(login);
-		params.setPartyNumber(1314);
-		params.getParts().add(PartyPart.ADDRESSES);
-
-
-		final Corporation pm = (Corporation) service.getParty(params);
-		assertNotNull(pm);
-		assertEquals(1314L, pm.getNumber());
-		assertEquals("R. Borgo", trimValiPattern(pm.getContactPerson()));
-		assertEquals("JAL HOLDING", trimValiPattern(pm.getShortName()));
-		assertEquals("Jal holding S.A.", trimValiPattern(pm.getName1()));
-		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
-
-		final List<Address> adressesCourrier = pm.getMailAddresses();
-		assertNotNull(adressesCourrier);
-		assertEquals(2, adressesCourrier.size());
-
-		final Address addressCourrier0 = adressesCourrier.get(0);
-		assertNotNull(addressCourrier0);
-		assertSameDay(newDate(1997, 5, 14), addressCourrier0.getDateFrom());
-		assertSameDay(newDate(2007, 6, 10), addressCourrier0.getDateTo());
-
-		final AddressInformation info0 = addressCourrier0.getAddressInformation();
-		assertNotNull(info0);
-		assertEquals("Fid.Commerce & Industrie S.A.", info0.getComplementaryInformation());
-		assertNull(info0.getPostOfficeBoxNumber());
-		assertNull(info0.getPostOfficeBoxText());
-		assertNull(info0.getDwellingNumber());
-		assertEquals("Chemin Messidor", info0.getStreet());
-		assertEquals("5", info0.getHouseNumber());
-		assertEquals(Long.valueOf(1006), info0.getSwissZipCode());
-		assertEquals("Lausanne", info0.getTown());
-		assertEquals("CH", info0.getCountry());
-		assertEquals(Integer.valueOf(153), info0.getSwissZipCodeId());
-		assertNull(info0.getStreetId());
-		assertEquals(TariffZone.SWITZERLAND, info0.getTariffZone());
-
-		final Address addressCourrier1 = adressesCourrier.get(1);
-		assertNotNull(addressCourrier1);
-		assertSameDay(newDate(2007, 6, 11), addressCourrier1.getDateFrom());
-		assertNull(addressCourrier1.getDateTo());
-
-		final AddressInformation info1 = addressCourrier1.getAddressInformation();
-		assertNotNull(info1);
-		assertEquals("pa Fidu. Commerce & Industrie", info1.getComplementaryInformation());
-		assertNull(info1.getPostOfficeBoxNumber());
-		assertNull(info1.getPostOfficeBoxText());
-		assertNull(info1.getDwellingNumber());
-		assertEquals("Avenue de la Gare", info1.getStreet());
-		assertEquals("10", info1.getHouseNumber());
-		assertEquals(Long.valueOf(1003), info1.getSwissZipCode());
-		assertEquals("Lausanne", info1.getTown());
-		assertEquals("CH", info1.getCountry());
-		assertEquals(Integer.valueOf(150), info1.getSwissZipCodeId());
-		assertNull(info1.getStreetId());
-		assertEquals(TariffZone.SWITZERLAND, info1.getTariffZone());
-
-		// Récupération de l'adresse d'envoi de la PM
-
-		final FormattedAddress adresseEnvoi = addressCourrier1.getFormattedAddress();
-		assertNotNull(adresseEnvoi);
-		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLine4()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLine5()));
-		assertNull(trimValiPattern(adresseEnvoi.getLine6()));
 	}
 
 	/**
@@ -645,11 +568,11 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Address courrier = courriers.get(courriers.size() - 1);
 		final FormattedAddress adresseEnvoi = courrier.getFormattedAddress();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Fonds prévoyance en faveur du", trimValiPattern(adresseEnvoi.getLine1()));
-		assertEquals("personnel Sté électrique", trimValiPattern(adresseEnvoi.getLine2()));
-		assertEquals("intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLine3()));
-		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLine4()));
-		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine5()));
+		assertEquals("Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte", trimValiPattern(adresseEnvoi.getLine1()));
+		assertEquals("Rte des Avouillons 2", trimValiPattern(adresseEnvoi.getLine2()));
+		assertEquals("Case Postale 321", trimValiPattern(adresseEnvoi.getLine3()));
+		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLine4()));
+		assertNull(adresseEnvoi.getLine5());
 		assertNull(adresseEnvoi.getLine6());
 		assertEquals(TariffZone.SWITZERLAND, courrier.getAddressInformation().getTariffZone());
 	}
@@ -666,10 +589,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(pm);
 		assertEquals(37L, pm.getNumber());
 		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getContactPerson()));
-		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getShortName()));
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(pm.getName1()));
+		assertEquals("Fiber Seal (Romandie) SA, en liquidation", trimValiPattern(pm.getShortName()));
+		assertEquals("Fiber Seal (Romandie) SA, en liquidation", trimValiPattern(pm.getName1()));
 		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
+		assertNull(trimValiPattern(pm.getName3()));
 
 		// Récupération des adresses de domicile (pour le contentieux)
 
@@ -699,10 +622,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final FormattedAddress adresseDomicileFormattee = addressDomicile.getFormattedAddress();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adresseDomicileFormattee.getLine1()));
-		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLine2()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine3()));
-		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine4()));
+		assertEquals("Fiber Seal (Romandie) SA, en liquidation", trimValiPattern(adresseDomicileFormattee.getLine1()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLine2()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLine3()));
+		assertNull(adresseDomicileFormattee.getLine4());
 		assertNull(adresseDomicileFormattee.getLine5());
 		assertNull(adresseDomicileFormattee.getLine6());
 
@@ -734,10 +657,10 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final FormattedAddress adressePoursuiteFormattee = addressPoursuite.getFormattedAddress();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("Fiber Seal (Romandie) SA", trimValiPattern(adressePoursuiteFormattee.getLine1()));
-		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLine2()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLine3()));
-		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLine4()));
+		assertEquals("Fiber Seal (Romandie) SA, en liquidation", trimValiPattern(adressePoursuiteFormattee.getLine1()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLine2()));
+		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLine3()));
+		assertNull(adressePoursuiteFormattee.getLine4());
 		assertNull(adressePoursuiteFormattee.getLine5());
 		assertNull(adressePoursuiteFormattee.getLine6());
 
@@ -763,11 +686,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 		assertEquals(222L, pm.getNumber());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
-		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
-		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		// Sièges
 		final List<LegalSeat> sieges = pm.getLegalSeats();
@@ -776,7 +694,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final LegalSeat siege = sieges.get(0);
 		assertNotNull(siege);
-		assertSameDay(newDate(1979, 8, 7), siege.getDateFrom());
+		assertSameDay(newDate(1992, 12, 31), siege.getDateFrom());
 		assertNull(siege.getDateTo());
 		assertEquals(LegalSeatType.SWISS_MUNICIPALITY, siege.getType());
 		assertEquals(5413, siege.getFsoId());
@@ -787,12 +705,12 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals(1, forsFiscauxPrincipaux.size());
 
 		final TaxResidence ffp = forsFiscauxPrincipaux.get(0);
-		assertNull(ffp.getDateTo());
+		assertSameDay(newDate(1992, 12, 31), ffp.getDateFrom());
+		assertSameDay(newDate(2003, 12, 31), ffp.getDateTo());
 		assertEquals(5413, ffp.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffp.getTaxType());
 		assertEquals(TaxLiabilityReason.RESIDENCE, ffp.getTaxLiabilityReason());
-		// note : le nom de la commune/pays doit être demandé au service infrastructure
 
 		// Fors secondaires actifs
 		final List<TaxResidence> forSecondaires = pm.getOtherTaxResidences();
@@ -807,7 +725,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffs0.getTaxType());
 		assertEquals(TaxLiabilityReason.STABLE_ESTABLISHMENT, ffs0.getTaxLiabilityReason());
-		// note : le nom de la commune doit être demandé au service infrastructure
 
 		// Forme juridique
 		final List<LegalForm> formesJuridiques = pm.getLegalForms();
@@ -828,14 +745,14 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final TaxSystem regimeICC = regimesFiscauxICC.get(0);
 		assertNotNull(regimeICC);
 		assertSameDay(newDate(1993, 1, 1), regimeICC.getDateFrom());
-		assertNull(regimeICC.getDateTo());
+		assertSameDay(newDate(2003, 12, 31), regimeICC.getDateTo());
 		assertEquals("01", regimeICC.getCode()); // selon table TY_REGIME_FISCAL
 
 		// Date de fin du dernier exercice commercial
-		assertNull(pm.getEndDateOfLastBusinessYear());
+		assertSameDay(newDate(2003, 12, 31), pm.getEndDateOfLastBusinessYear());
 
-		// Date de bouclement future
-		assertSameDay(newDate(2003, 12, 31), pm.getEndDateOfNextBusinessYear());
+		// Date de bouclement futur (SIPM : cette date était dans le passé -> le calcul renvoie maintenant null)
+		assertNull(pm.getEndDateOfNextBusinessYear());
 
 		// Dates de début et de fin de l'assujettissement LIC
 		final List<SimplifiedTaxLiability> periodesAssujettissementLIC = pm.getSimplifiedTaxLiabilityVD();
@@ -859,8 +776,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertEquals(newDate(2003, 12, 31), assujettissementLIFD.getDateTo());
 		assertEquals(SimplifiedTaxLiabilityType.UNLIMITED, assujettissementLIFD.getType());
 
-		// Numéro IPMRO
-		assertEquals("01880", pm.getIpmroNumber());
+		// Numéro IPMRO (deouis la reprise SIPM, plus supporté)
+		assertNull(pm.getIpmroNumber());
 
 		// Code blocage remboursement automatique
 		assertTrue(pm.isAutomaticReimbursementBlocked());
@@ -868,26 +785,27 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		// Date de validite et code de l'état de la PM
 		final List<CorporationStatus> etats = pm.getStatuses();
 		assertNotNull(etats);
-		assertEquals(3, etats.size());
 
-		final CorporationStatus etat0 = etats.get(0);
-		assertNotNull(etat0);
-		assertSameDay(newDate(1979, 8, 7), etat0.getDateFrom());
-		assertSameDay(newDate(2003, 4, 2), etat0.getDateTo());
-		assertEquals("01", etat0.getCode()); // selon table ETAT du host
-
-		final CorporationStatus etat1 = etats.get(1);
-		assertNotNull(etat1);
-		assertSameDay(newDate(2003, 4, 3), etat1.getDateFrom());
-		assertSameDay(newDate(2003, 11, 5), etat1.getDateTo());
-		assertEquals("04", etat1.getCode()); // selon table ETAT du host
-
-		final CorporationStatus etat2 = etats.get(2);
-		assertNotNull(etat2);
-		assertSameDay(newDate(2003, 11, 6), etat2.getDateFrom());
-		assertNull(etat2.getDateTo());
-		assertEquals("06", etat2.getCode()); // selon table ETAT du host
-		// note : le libellé des états doit être demandé au service infrastructure
+		// TODO [SIPM] Les états ?
+//		assertEquals(3, etats.size());
+//
+//		final CorporationStatus etat0 = etats.get(0);
+//		assertNotNull(etat0);
+//		assertSameDay(newDate(1979, 8, 7), etat0.getDateFrom());
+//		assertSameDay(newDate(2003, 4, 2), etat0.getDateTo());
+//		assertEquals("01", etat0.getCode()); // selon table ETAT du host
+//
+//		final CorporationStatus etat1 = etats.get(1);
+//		assertNotNull(etat1);
+//		assertSameDay(newDate(2003, 4, 3), etat1.getDateFrom());
+//		assertSameDay(newDate(2003, 11, 5), etat1.getDateTo());
+//		assertEquals("04", etat1.getCode()); // selon table ETAT du host
+//
+//		final CorporationStatus etat2 = etats.get(2);
+//		assertNotNull(etat2);
+//		assertSameDay(newDate(2003, 11, 6), etat2.getDateFrom());
+//		assertNull(etat2.getDateTo());
+//		assertEquals("06", etat2.getCode()); // selon table ETAT du host
 
 		// Capital libéré + absence normale ou non
 		final List<Capital> capitaux = pm.getCapitals();
@@ -896,7 +814,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
-		assertEquals(150000, capital.getShareCapital());
+		assertNull(capital.getShareCapital());
 		assertEquals(150000, capital.getPaidInCapital());
 		assertFalse(capital.isAbsentPaidInCapitalNormal());
 	}
@@ -912,11 +830,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Corporation pm = (Corporation) service.getParty(params);
 		assertNotNull(pm);
 		assertEquals(222L, pm.getNumber());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getContactPerson()));
-		assertEquals("KALESA", trimValiPattern(pm.getShortName()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getName1()));
-		assertNull(trimValiPattern(pm.getName2()));
-		assertEquals("en liquidation", trimValiPattern(pm.getName3()));
 
 		final List<SimplifiedTaxLiability> lic = pm.getSimplifiedTaxLiabilityVD();
 		assertEquals(1, lic.size());
@@ -939,7 +852,9 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 	/**
 	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
+	 * TODO [SIPM] la notion de raison sociale abbrégée n'existe plus...
 	 */
+	@Ignore
 	@Test
 	public void testGetAdresseEnvoiPM() throws Exception {
 

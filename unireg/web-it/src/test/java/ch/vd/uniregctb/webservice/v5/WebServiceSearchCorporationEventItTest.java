@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.ws.search.corpevent.v1.SearchResult;
 
+/**
+ * TODO [SIPM] Pour l'instant (?), les événements PM ne sont plus supportés
+ */
+@Ignore
 public class WebServiceSearchCorporationEventItTest extends AbstractWebServiceItTest {
 
 	private static Pair<String, Map<String, ?>> buildUriAndParams(@Nullable Integer pmId, @Nullable String eventCode, @Nullable RegDate from, @Nullable RegDate to) {
