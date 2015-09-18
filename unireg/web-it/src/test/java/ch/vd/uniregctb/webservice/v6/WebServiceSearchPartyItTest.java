@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import ch.vd.unireg.ws.search.party.v1.SearchResult;
+import ch.vd.unireg.ws.search.party.v6.SearchResult;
 import ch.vd.unireg.xml.party.v4.PartyType;
 
 public class WebServiceSearchPartyItTest extends AbstractWebServiceItTest {
