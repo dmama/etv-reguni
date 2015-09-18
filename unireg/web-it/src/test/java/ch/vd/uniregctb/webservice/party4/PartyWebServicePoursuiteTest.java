@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.junit.Test;
 
-import ch.vd.unireg.webservices.party4.GetPartyRequest;
-import ch.vd.unireg.webservices.party4.PartyPart;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
-import ch.vd.unireg.xml.party.person.v2.CommonHousehold;
-import ch.vd.unireg.xml.party.v2.Party;
+import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.uniregctb.webservice.party3.AbstractPartyWebServiceTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -243,13 +244,13 @@ public class PartyWebServicePoursuiteTest extends AbstractPartyWebServiceTest {
 				"Case Postale 1872", "8026 Zürich");
 
 		final List<Address> debtProsecutionAddresses = tiers.getDebtProsecutionAddresses();
-		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172",
+		assertFormattedAddress(debtProsecutionAddresses.get(debtProsecutionAddresses.size() - 1).getFormattedAddress(), "KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstrasse 172",
 				"Case Postale 1872", "8026 Zürich");
 
 		final List<AddressOtherParty> debtProsecutionAddressesOfOtherParty = tiers.getDebtProsecutionAddressesOfOtherParty();
 		final AddressOtherParty debtProsecutionAddressOfOtherParty = debtProsecutionAddressesOfOtherParty.get(debtProsecutionAddressesOfOtherParty.size() - 1);
 		assertEquals(OtherPartyAddressType.REPRESENTATIVE, debtProsecutionAddressOfOtherParty.getOtherPartyType());
-		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstrasse 172", "Case Postale 1872", "8026 Zürich");
+		assertFormattedAddress(debtProsecutionAddressOfOtherParty.getBase().getFormattedAddress(), "KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstrasse 172", "Case Postale 1872", "8026 Zürich");
 	}
 
 	@Test
