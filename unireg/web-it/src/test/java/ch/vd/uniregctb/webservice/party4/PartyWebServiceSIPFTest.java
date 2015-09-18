@@ -817,7 +817,6 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
-		assertNull(capital.getShareCapital());
 		assertEquals(150000, capital.getPaidInCapital());
 		assertEquals(150000, capital.getShareCapital());
 		assertFalse(capital.isAbsentPaidInCapitalNormal());

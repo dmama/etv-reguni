@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import ch.vd.unireg.ws.security.v1.AllowedAccess;
-import ch.vd.unireg.ws.security.v1.SecurityResponse;
+import ch.vd.unireg.ws.security.v6.AllowedAccess;
+import ch.vd.unireg.ws.security.v6.SecurityResponse;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 
 public class WebServiceSecurityItTest extends AbstractWebServiceItTest {

@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.ws.modifiedtaxpayers.v1.PartyNumberList;
+import ch.vd.unireg.ws.modifiedtaxpayers.v6.PartyNumberList;
 
 public class WebServiceModifiedTaxPayersItTest extends AbstractWebServiceItTest {
 
