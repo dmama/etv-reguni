@@ -96,7 +96,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		// Note : les communes hors-canton et les pays hors-Suisse sont aussi retourné. C'est à l'appelant de faire le tri si nécessaire.
 		assertSameDay(newDate(1992, 12, 31), ffp0.getDateFrom());
 		assertSameDay(newDate(2003, 12, 31), ffp0.getDateTo());
-		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getStartReason());
+		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffp0.getStartReason());
 		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getEndReason());
 		assertEquals(5413, ffp0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp0.getTaxationAuthorityType());
@@ -111,6 +111,8 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(ffs0);
 		assertSameDay(newDate(1992, 12, 31), ffs0.getDateFrom());
 		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
+		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffs0.getStartReason());
+		assertEquals(LiabilityChangeReason.UNDETERMINED, ffs0.getEndReason());
 		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
 		assertEquals(TaxType.PROFITS_CAPITAL, ffs0.getTaxType());
@@ -719,7 +721,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 
 		final TaxResidence ffs0 = forSecondaires.get(0);
 		assertNotNull(ffs0);
-		assertSameDay(newDate(1988, 7, 22), ffs0.getDateFrom());
+		assertSameDay(newDate(1992, 12, 31), ffs0.getDateFrom());
 		assertSameDay(newDate(2001, 9, 6), ffs0.getDateTo());
 		assertEquals(5413, ffs0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffs0.getTaxationAuthorityType());
