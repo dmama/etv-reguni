@@ -14,7 +14,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.metier.piis.PeriodeImpositionImpotSourceService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
@@ -60,8 +59,6 @@ public class Context {
 	public PeriodeImpositionService periodeImpositionService;
 
 	public PeriodeImpositionImpotSourceService periodeImpositionImpotSourceService;
-
-	public BouclementService bouclementService;
 
 	public SecurityProviderInterface securityProvider;
 

@@ -75,7 +75,6 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="partyRequestHandlerV2" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV2">
@@ -95,7 +94,6 @@
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
-		<property name="bouclementService" ref="bouclementService" />
 	</bean>
 
 	<bean id="partyRequestHandlerV3" class="ch.vd.uniregctb.evenement.party.PartyRequestHandlerV3">
@@ -116,7 +114,6 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
-		<property name="bouclementService" ref="bouclementService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
@@ -138,7 +135,6 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 		<property name="periodeImpositionImpotSourceService" ref="periodeImpositionImpotSourceService" />
-		<property name="bouclementService" ref="bouclementService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 

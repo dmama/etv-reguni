@@ -21,6 +21,7 @@ import ch.vd.unireg.xml.party.corporation.v2.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v2.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v2.TaxSystem;
 import ch.vd.unireg.xml.party.v2.PartyPart;
+import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -52,10 +53,22 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		to.setName1(raisonSociale);
 		to.setShortName(raisonSociale);
 
-		final RegDate dernierBouclement = context.bouclementService.getDateDernierBouclement(entreprise.getBouclements(), RegDate.get(), false);
-		final RegDate prochainBouclement = context.bouclementService.getDateProchainBouclement(entreprise.getBouclements(), RegDate.get(), true);
-		to.setEndDateOfLastBusinessYear(DataHelper.coreToXMLv1(dernierBouclement));
-		to.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv1(prochainBouclement));
+		final List<ExerciceCommercial> exercices = context.tiersService.getExercicesCommerciaux(entreprise);
+		final ExerciceCommercial current = DateRangeHelper.rangeAt(exercices, RegDate.get());
+		final ExerciceCommercial previous;
+		if (current == null) {
+			previous = exercices.isEmpty() ? null : exercices.get(exercices.size() - 1);
+		}
+		else {
+			previous = DateRangeHelper.rangeAt(exercices, current.getDateDebut().getOneDayBefore());
+		}
+
+		if (previous != null) {
+			to.setEndDateOfLastBusinessYear(DataHelper.coreToXMLv1(previous.getDateFin()));
+		}
+		if (current != null) {
+			to.setEndDateOfNextBusinessYear(DataHelper.coreToXMLv1(current.getDateFin()));
+		}
 	}
 
 	@Override
