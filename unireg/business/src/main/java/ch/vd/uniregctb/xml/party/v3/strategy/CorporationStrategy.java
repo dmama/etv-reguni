@@ -161,6 +161,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			capital.setDateFrom(DataHelper.coreToXMLv2(data.getDateDebut()));
 			capital.setDateTo(DataHelper.coreToXMLv2(data.getDateFin()));
 			capital.setPaidInCapital(data.getPayload());
+			capital.setShareCapital(data.getPayload());
 			liste.add(capital);
 		}
 		return liste;

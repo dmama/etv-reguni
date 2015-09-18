@@ -392,7 +392,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final BankAccount comptePM = comptes.get(0);
 		assertNotNull(comptePM);
 		assertEquals("CH2409000000180252777", comptePM.getAccountNumber());
-		assertNull(comptePM.getClearing());
+		assertEquals("09000", comptePM.getClearing());
 		assertNull(comptePM.getBicAddress());
 		assertEquals(AccountNumberFormat.IBAN, comptePM.getFormat());
 		assertNull(comptePM.getOwnerName());
