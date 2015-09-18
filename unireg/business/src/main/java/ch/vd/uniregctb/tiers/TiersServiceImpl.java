@@ -4263,7 +4263,7 @@ public class TiersServiceImpl implements TiersService {
 		final List<ForFiscalPrincipalPM> forsPrincipaux = entreprise.getForsFiscauxPrincipauxActifsSorted();
 		final Set<Bouclement> bouclements = entreprise.getBouclements();
 		final boolean noFors = forsPrincipaux.isEmpty();
-		final boolean noBouclements = bouclements.isEmpty();
+		final boolean noBouclements = bouclements == null || bouclements.isEmpty();
 
 		if (noFors && noBouclements) {
 			// rien de rien...
