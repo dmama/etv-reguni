@@ -3,16 +3,36 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
+	<!-- Petite bricole autour du tiersService, qui est passablement difficile à initialiser -->
+	<!-- et dont on n'a clairement pas besoin de toute la complexité ici. -->
+	<!-- On ne va donc laisser passer que certains appels vers la véritable implémentation, en faisant exploser les autres -->
+
+	<bean id="_tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
+		<property name="bouclementService" ref="bouclementService"/>
+		<!-- en théorie, il en manque plein... -->
+	</bean>
+
+	<bean id="tiersService" class="ch.vd.uniregctb.migration.pm.utils.TiersServiceFactory">
+		<property name="target" ref="_tiersService"/>
+		<property name="supportedMethodNames">
+			<set>
+				<value>getExercicesCommerciaux</value>
+			</set>
+		</property>
+	</bean>
+
+	<!-- Et maintenant, place aux services plus "traditionnels" -->
+
 	<bean id="assujettissementService" class="ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl">
 		<property name="validationService" ref="validationService"/>
-		<property name="bouclementService" ref="bouclementService"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 	<bean id="bouclementService" class="ch.vd.uniregctb.metier.bouclement.BouclementServiceImpl"/>
 
 	<bean id="periodeImpositionService" class="ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionServiceImpl">
 		<property name="assujettissementService" ref="assujettissementService"/>
-		<property name="bouclementService" ref="bouclementService"/>
+		<property name="tiersService" ref="tiersService"/>
 		<property name="parametreAppService" ref="parametreAppService"/>
 	</bean>
 

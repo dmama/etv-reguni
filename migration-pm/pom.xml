@@ -78,6 +78,11 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.shared</groupId>
+			<artifactId>shared-date</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.shared</groupId>
 			<artifactId>shared-hibernate</artifactId>
 			<version>4.7.2</version>
 		</dependency>

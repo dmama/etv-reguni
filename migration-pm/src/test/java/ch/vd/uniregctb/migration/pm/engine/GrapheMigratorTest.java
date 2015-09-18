@@ -148,6 +148,15 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	}
 
 	/**
+	 * Utile dans les cas où aucune donnée d'exercice commercial n'existe dans RegPM, l'exercice commercial
+	 * courant est alors supposé aller jusqu'à la fin de l'année...
+	 * @return la date de fin de l'année en cours
+	 */
+	private static RegDate getFinAnneeEnCours() {
+		return RegDate.get(RegDate.get().year(), 12, 31);
+	}
+
+	/**
 	 * Ce remplissage est particulièrement important dès qu'on parle de validation (si le rapport n'est pas mis dans
 	 * la collection ad'hoc des rapports entre tiers, les validations de cette collection seront forcément biaisés)
 	 */
@@ -732,11 +741,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 
-			// on a la date du jour car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
+			// on a la date de la fin d'année courante car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
-			// l'ouverture du premier for de l'entreprise jusqu'à la date du jour)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", msgs.get(0));
+			// l'ouverture du premier for de l'entreprise jusqu'à la fin l'année civile en cours)
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
@@ -952,11 +961,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 
-			// on a la date du jour car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
+			// on a la fin de l'année en cours car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
-			// l'ouverture du premier for de l'entreprise jusqu'à la date du jour)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", msgs.get(0));
+			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année en cours)
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
@@ -1764,11 +1773,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 
-			// on a la date du jour car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
+			// on a la date de fin d'année courante car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
-			// l'ouverture du premier for de l'entreprise jusqu'à la date du jour)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", msgs.get(0));
+			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année civile courante)
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -1896,11 +1905,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 
-			// on a la date du jour car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
+			// on a la date de fin d'année car il s'agit d'un assujetti hors-Canton qui ferme tous ses fors vaudois,
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
-			// l'ouverture du premier for de l'entreprise jusqu'à la date du jour)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", msgs.get(0));
+			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année en cours)
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
