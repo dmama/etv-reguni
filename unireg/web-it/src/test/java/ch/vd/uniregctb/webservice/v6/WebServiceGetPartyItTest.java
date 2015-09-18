@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import ch.vd.unireg.xml.party.adminauth.v4.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v4.Corporation;
 import ch.vd.unireg.xml.party.debtor.v4.Debtor;
+import ch.vd.unireg.xml.party.establishment.v1.Establishment;
 import ch.vd.unireg.xml.party.othercomm.v2.OtherCommunity;
 import ch.vd.unireg.xml.party.person.v4.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v4.NaturalPerson;
@@ -35,6 +36,7 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 		public Corporation corporation;
 		public AdministrativeAuthority administrativeAuthority;
 		public OtherCommunity otherCommunity;
+		public Establishment establishment;
 	}
 
 	@Override
@@ -91,6 +93,7 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertNull(partyContainer.debtor);
 			Assert.assertNotNull(partyContainer.naturalPerson);
 			Assert.assertNull(partyContainer.otherCommunity);
+			Assert.assertNull(partyContainer.establishment);
 
 			Assert.assertEquals("Tummers-De Wit Wouter", partyContainer.naturalPerson.getOfficialName());
 			Assert.assertEquals("Elisabeth", partyContainer.naturalPerson.getFirstName());
@@ -127,6 +130,7 @@ public class WebServiceGetPartyItTest extends AbstractWebServiceItTest {
 			Assert.assertNull(partyContainer.debtor);
 			Assert.assertNotNull(partyContainer.naturalPerson);
 			Assert.assertNull(partyContainer.otherCommunity);
+			Assert.assertNull(partyContainer.establishment);
 
 			Assert.assertEquals("Allora", partyContainer.naturalPerson.getOfficialName());
 			Assert.assertEquals("Cédric", partyContainer.naturalPerson.getFirstName());
