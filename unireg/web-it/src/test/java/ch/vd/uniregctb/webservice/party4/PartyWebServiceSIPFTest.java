@@ -97,7 +97,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		// Note : les communes hors-canton et les pays hors-Suisse sont aussi retourné. C'est à l'appelant de faire le tri si nécessaire.
 		assertSameDay(newDate(1992, 12, 31), ffp0.getDateFrom());
 		assertSameDay(newDate(2003, 12, 31), ffp0.getDateTo());
-		assertEquals(LiabilityChangeReason.START_COMMERCIAL_EXPLOITATION, ffp0.getStartReason());
+		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getStartReason());
 		assertEquals(LiabilityChangeReason.UNDETERMINED, ffp0.getEndReason());
 		assertEquals(5413, ffp0.getTaxationAuthorityFSOId());
 		assertEquals(TaxationAuthorityType.VAUD_MUNICIPALITY, ffp0.getTaxationAuthorityType());
@@ -163,7 +163,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final Capital capital = capitaux.get(0);
 		assertNotNull(capital);
 		assertEquals(150000, capital.getPaidInCapital());
-		assertNull(capital.getShareCapital());
+		assertEquals(150000, capital.getShareCapital());
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNull(comptePM.getBicAddress());
 		assertEquals(AccountNumberFormat.IBAN, comptePM.getFormat());
 		assertNull(comptePM.getOwnerName());
-		assertEquals("La Poste Suisse", comptePM.getBankName());
+		assertNull(comptePM.getBankName());
 	}
 
 	@Ignore // exemple fictif
@@ -696,7 +696,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		final LegalSeat siege = sieges.get(0);
 		assertNotNull(siege);
 		assertSameDay(newDate(1992, 12, 31), siege.getDateFrom());
-		assertNull(siege.getDateTo());
+		assertSameDay(newDate(2003, 12, 31), siege.getDateTo());
 		assertEquals(LegalSeatType.SWISS_MUNICIPALITY, siege.getType());
 		assertEquals(5413, siege.getFsoId());
 
@@ -817,6 +817,7 @@ public class PartyWebServiceSIPFTest extends AbstractPartyWebServiceTest {
 		assertNotNull(capital);
 		assertNull(capital.getShareCapital());
 		assertEquals(150000, capital.getPaidInCapital());
+		assertEquals(150000, capital.getShareCapital());
 		assertFalse(capital.isAbsentPaidInCapitalNormal());
 	}
 
