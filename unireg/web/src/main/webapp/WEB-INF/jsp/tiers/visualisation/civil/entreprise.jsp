@@ -98,11 +98,6 @@
 		<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
 			<unireg:regdate regdate="${capitaux.dateFin}"/>
 		</display:column>
-		<display:column sortable="true" titleKey="label.capital.action" style="text-align:right" sortProperty="capitalActions.montant">
-			<c:if test="${capitaux.capitalActions != null}">
-				<unireg:currency value="${capitaux.capitalActions.montant}"/>&nbsp;<c:out value="${capitaux.capitalActions.monnaie}"/>
-			</c:if>
-		</display:column>
 		<display:column sortable="true" titleKey="label.capital.libere" style="text-align:right" sortProperty="capitalLibere.montant">
 			<c:if test="${capitaux.capitalLibere != null}">
 				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
