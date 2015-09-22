@@ -52,12 +52,13 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
 		// On décide qu'on a affaire à une création uniquement selon la présence d'un tiers entreprise dans Unireg, et rien d'autre.
+		// TODO: Retrouver aussi les entreprises n'ayant pas d'id cantonal.
 		if (entreprise != null) {
 			return null;
 		}
 
 		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = getCurrentCategorieEntreprise(event, organisation);
+		CategorieEntreprise category = getCategorieEntreprise(event.getDateEvenement(), organisation);
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
@@ -126,9 +127,10 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		return DateRangeHelper.rangeAt(ranges, date);
 	}
 
+	// TODO: Déplacer dans l'adapter?
 	@Nullable
-	private static CategorieEntreprise getCurrentCategorieEntreprise(EvenementOrganisation event, Organisation organisation) {
-		final DateRanged<FormeLegale> fl = rangeAt(organisation.getFormeLegale(), event.getDateEvenement());
+	private static CategorieEntreprise getCategorieEntreprise(RegDate date, Organisation organisation) {
+		final DateRanged<FormeLegale> fl = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
 		return fl == null ? null : CategorieEntrepriseHelper.map(fl.getPayload());
 	}
 }

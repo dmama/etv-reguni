@@ -62,6 +62,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return ide;
 	}
 
+	@Override
 	public List<DateRanged<String>> getNom() {
 		return nom;
 	}

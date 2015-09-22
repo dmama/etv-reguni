@@ -76,8 +76,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 *
 	 * On extraie ensuite toute les plages sièges correspondant à la plage type principal.
 	 *
-	 * TODO: Ecrire le test
-	 *
 	 * @return La succession de plage contenant l'information de siege.
 	 */
 	@Override
@@ -125,8 +123,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 *
 	 * On recrée l'information du capital dans une nouvelle plage aux limites de la plage type principale qui a permis
 	 * de la trouver.
-	 *
-	 * TODO: Ecrire le test
 	 *
 	 * @return La succession de plage contenant l'information de capital.
 	 */

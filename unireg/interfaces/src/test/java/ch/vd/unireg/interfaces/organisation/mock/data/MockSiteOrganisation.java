@@ -94,6 +94,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public List<DateRanged<String>> getNom() {
+		return MockOrganisationHelper.getHisto(nom);
+	}
+
+	@Override
 	public DonneesRC getDonneesRC() {
 		return donneesRC;
 	}

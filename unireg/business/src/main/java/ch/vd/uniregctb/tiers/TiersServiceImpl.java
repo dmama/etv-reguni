@@ -1632,6 +1632,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
+		nouveauForFiscal.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
 		nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
 		if (validationService.validate(contribuable).errorsCount() == 0) {
@@ -1713,7 +1714,7 @@ public class TiersServiceImpl implements TiersService {
         nouveauForFiscal.setMotifOuverture(motifOuverture);
         nouveauForFiscal.setDateFin(dateFermeture);
         nouveauForFiscal.setMotifFermeture(motifFermeture);
-
+	    nouveauForFiscal.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
         nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
         if (validationService.validate(contribuable).errorsCount() == 0) {

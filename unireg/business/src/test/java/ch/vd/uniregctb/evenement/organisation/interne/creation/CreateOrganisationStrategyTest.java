@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,7 +6,6 @@ import org.junit.Test;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.unireg.interfaces.infra.mock.MockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
@@ -15,11 +14,9 @@ import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFa
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntrepriseDPPM;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntrepriseFDSPLAC;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprisePMAPM;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntrepriseSP;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.AbstractEvenementOrganisationInterneTest;
+import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -55,14 +52,6 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 
 		// Mise en place services mock
 		this.serviceOrganisation.setUp(new OpenMockServiceOrganisation());
-		this.serviceInfra.setUp(new MockServiceInfrastructureService() {
-
-			@Override
-			protected void init() {
-				communesVaud.add(Lausanne);
-				communesHorsCanton.add(MockCommune.Zurich);
-			}
-		});
 
 		MockTiersDAO tiersDAO = new MockTiersDAO() {
 			@Override

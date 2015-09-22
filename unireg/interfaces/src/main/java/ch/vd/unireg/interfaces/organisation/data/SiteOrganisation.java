@@ -27,13 +27,15 @@ public interface SiteOrganisation {
 	 */
 	DonneesRegistreIDE getDonneesRegistreIDE();
 
+	List<DateRanged<String>> getNom();
+
 	/**
 	 * @return les données historisées en provenance du registre RC
 	 */
 	DonneesRC getDonneesRC();
 
 	/**
-	 * @return les identifiants historisés des sièges du site (= numéro OFS de la commune)
+	 * @return l'historique des sièges du site (= commune ou pays)
 	 */
 	List<Siege> getSieges();
 
