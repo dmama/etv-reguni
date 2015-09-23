@@ -168,6 +168,10 @@ public class MockTiersDAO implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
+	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		throw new NotImplementedException();

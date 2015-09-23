@@ -25,13 +25,13 @@ import ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise;
 import ch.vd.uniregctb.evenement.organisation.interne.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.BouclementHelper;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
-import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -41,7 +41,8 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
  * Evénement interne de création d'entreprise de catégories "Personne morale" et "Association Personne Morale" (PM et APM)
  *
  *  Spécification:
- *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 0.6 - 08.09.2015
+ *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
+ *  - Ti02SE01-Créer automatiquement une entreprise.doc - Version 1.1 - 23.09.2015
  *
  * @author Raphaël Marmier, 2015-09-02
  */
@@ -51,64 +52,95 @@ public class CreateEntreprisePMAPM extends EvenementOrganisationInterne {
 	                                EvenementOrganisationContext context,
 	                                EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
+
+		/*
+		   TODO: Utiliser la date d'inscription au RC quand elle existe (cf. specs?)
+		   - Implique pas mal de tests
+		   - Peut-elle être différente de la date de l'annonce? Elle ne devrait pas, d'après les specs.
+		   - Si elle peut l'être, c'est qu'on a un cas de correction. On devrait le traiter en manuel?
+		  */
+
+		// TODO: Ecrire les tests.
+
+		// TODO: Générer événements fiscaux
+
+		// TODO: Générer documents éditique
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 
-		final Entreprise entreprise = createEntreprise();
-
 		final SiteOrganisation sitePrincipal = getSitePrincipal(getOrganisation(), getDate()).getPayload();
-		final Etablissement etablissementPrincipal = createEtablissement(sitePrincipal, true);
 
 		final Siege siegePrincipal = getSiege(sitePrincipal);
-		if (siegePrincipal == null) { // Indique un établissement à l'étranger
+		if (siegePrincipal == null) { // Indique un établissement "probablement" à l'étranger, que nous ne savons pas traiter pour l'instant.
 			throw new EvenementOrganisationException(
-					String.format("Siège introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement principal.",
-					              etablissementPrincipal.getNumeroEtablissement(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), getDate())));
+					String.format(
+							"Siège introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement principal.",
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), getDate())));
 		}
+		// TODO: Vérifier que le siège n'est pas sur une commune faîtière et passer en manuel si c'est le cas. (fractions de communes)
+
+		final Entreprise entreprise = createEntreprise();
+		final Etablissement etablissementPrincipal = createEtablissement(sitePrincipal, true);
 		final DomicileEtablissement domicilePrincipal = createDomicileEtablissement(etablissementPrincipal, siegePrincipal);
 
 		getContext().getTiersService().addRapport(new ActiviteEconomique(getDate(), null, entreprise, etablissementPrincipal), entreprise, etablissementPrincipal);
-
-		getContext().getTiersService().addForPrincipal(entreprise, getDate(), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE,
+		// Ouverture For: date d'inscription au RC + un jour.
+		getContext().getTiersService().addForPrincipal(entreprise, getDate().addDays(1), MotifFor.DEBUT_EXPLOITATION, null, null, MotifRattachement.DOMICILE,
 		                                               domicilePrincipal.getNumeroOfsAutoriteFiscale(), domicilePrincipal.getTypeAutoriteFiscale());
 
-		for (SiteOrganisation site : getSitesSecondaires(getOrganisation(), getDate())) {
-			final Siege siege = getSiege(site);
-			final List<Integer> autoritesAvecForSecondaire = new ArrayList<>();
-
-			// Si le siège est null, on considère qu'il est étranger
-			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				final Etablissement etablissement = createEtablissement(site, false);
-
-				final DomicileEtablissement domicile = createDomicileEtablissement(etablissement, siege);
-
-				getContext().getTiersService().addRapport(new ActiviteEconomique(getDate(), null, entreprise, etablissement), entreprise, etablissement);
-
-				if (domicilePrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-						(!autoritesAvecForSecondaire.contains(domicile.getNumeroOfsAutoriteFiscale()))) {
-					getContext().getTiersService().addForSecondaire(entreprise, getDate(), null,
-					                                                MotifRattachement.ETABLISSEMENT_STABLE, domicile.getNumeroOfsAutoriteFiscale(),
-					                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.DEBUT_EXPLOITATION, null);
-					autoritesAvecForSecondaire.add(siege.getNoOfs());
-				}
+		if (false) { // Non géré pour l'instant, en attente du métier
+			for (SiteOrganisation site : getSitesSecondaires(getOrganisation(), getDate())) {
+				handleEtablissementsSecondaires(entreprise, domicilePrincipal, site);
 			}
 		}
 
-		createAddBouclement(entreprise);
+		createAddBouclement(entreprise, getDate());
 
 		Audit.info(String.format("Entreprise créée avec le numéro %s", entreprise.getNumero()));
 		return HandleStatus.TRAITE;
 	}
 
-	private void createAddBouclement(Entreprise entreprise) {
-		final Bouclement bouclement = new Bouclement();
+	private void handleEtablissementsSecondaires(Entreprise entreprise, DomicileEtablissement domicilePrincipal, SiteOrganisation site) throws EvenementOrganisationException {
+		Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(site.getNumeroSite());
+		if (etablissement != null) {
+			throw new EvenementOrganisationException(
+					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
+					              site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), getDate())));
+		}
+
+		final Siege siege = getSiege(site);
+		if (siege == null) {
+			throw new EvenementOrganisationException(
+					String.format(
+							"Siège introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
+							site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), getDate())));
+		}
+
+		final List<Integer> autoritesAvecForSecondaire = new ArrayList<>();
+
+		if (siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			etablissement = createEtablissement(site, false);
+
+			final DomicileEtablissement domicile = createDomicileEtablissement(etablissement, siege);
+
+			getContext().getTiersService().addRapport(new ActiviteEconomique(getDate(), null, entreprise, etablissement), entreprise, etablissement);
+
+			if (domicilePrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+					(!autoritesAvecForSecondaire.contains(domicile.getNumeroOfsAutoriteFiscale()))) {
+				getContext().getTiersService().addForSecondaire(entreprise, getDate(), null,
+				                                                MotifRattachement.ETABLISSEMENT_STABLE, domicile.getNumeroOfsAutoriteFiscale(),
+				                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifFor.DEBUT_EXPLOITATION, null);
+				autoritesAvecForSecondaire.add(siege.getNoOfs());
+			}
+		}
+	}
+
+	private void createAddBouclement(Entreprise entreprise, RegDate creationDate) {
+		final Bouclement bouclement = BouclementHelper.createBouclementSelonSemestre(creationDate);
 		bouclement.setEntreprise(entreprise);
-		bouclement.setPeriodeMois(12);
-		bouclement.setAncrage(DayMonth.get(12, 31));
-		bouclement.setDateDebut(getDate());
 		getContext().getTiersDAO().addAndSave(entreprise, bouclement);
 	}
 
@@ -168,8 +200,7 @@ public class CreateEntreprisePMAPM extends EvenementOrganisationInterne {
 											getNoOrganisation(),
 											DateRangeHelper.rangeAt(getOrganisation().getNom(), getDate())));
 		}
-
-		// Vérifier la présence des données nécessaires (no ofs siege, type de site, etc...)
+		// Vérifier la présence des données nécessaires (no ofs siege, type de site, dateRC pour une PM, etc...)
 	}
 
 	// TODO: A déplacer dans RCEntOrganisation avec tests et version mock, ou alors mieux, générer dans l'adapter.

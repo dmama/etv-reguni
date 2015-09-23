@@ -217,6 +217,12 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public Etablissement getEtablissementByNumeroSite(long numeroSite) {
+		return target.getEtablissementByNumeroSite(numeroSite);
+	}
+
+
+	@Override
 	public Long getNumeroPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return target.getNumeroPPByNumeroIndividu(numeroIndividu, doNotAutoFlush);
 	}

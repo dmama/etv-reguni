@@ -188,6 +188,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
 
+	Etablissement getEtablissementByNumeroSite(long numeroSite);
+
 	/**
 	 * Renvoie le numéro de la personne physique dont le numéro d'individu est passé en paramètre
 	 *

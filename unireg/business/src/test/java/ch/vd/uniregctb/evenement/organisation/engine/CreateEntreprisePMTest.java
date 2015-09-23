@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -7,11 +9,16 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
@@ -36,7 +43,7 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -60,9 +67,27 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			                             @Override
 			                             public Object doInTransaction(TransactionStatus status) {
+
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
+				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+
+				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
+				                             Assert.assertEquals(1, etablissements.size());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 24), etablissements.get(0).getDateDebut());
+
+				                             final Etablissement etablissement = etablissements.get(0).getPayload();
+				                             Assert.assertEquals(RegDate.get(2015, 6, 24), etablissement.getDomiciles().iterator().next().getDateDebut());
+
 				                             return null;
 			                             }
 		                             }

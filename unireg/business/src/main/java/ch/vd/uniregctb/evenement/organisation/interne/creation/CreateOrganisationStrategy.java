@@ -35,7 +35,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 	 * pertinente.
 	 *
 	 * Spécifications:
-	 *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 0.6 - 08.09.2015
+	 *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 1.1 - 23.09.2015
 	 *
 	 * @param event   un événement organisation reçu de RCEnt
 	 * @param organisation
