@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-events</artifactId>
-			<version>3.6.1-SNAPSHOT</version>
+			<version>3.6.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
