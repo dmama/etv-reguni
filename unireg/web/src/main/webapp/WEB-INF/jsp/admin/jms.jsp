@@ -34,6 +34,5 @@
 				</display:table>
 			</fieldset>
 		</form:form>
-		<script type="text/javascript" language="javascript" src="<c:url value="/js/unireg.js"/>"></script>
 	</tiles:put>
 </tiles:insert>
