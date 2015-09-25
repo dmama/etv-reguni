@@ -8,7 +8,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>migration-pm</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>1.1-SNAPSHOT</version>
+	<version>1.2-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>migration-pm</name>
