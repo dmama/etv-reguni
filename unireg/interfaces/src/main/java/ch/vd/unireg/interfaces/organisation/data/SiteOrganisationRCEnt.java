@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	private static final long serialVersionUID = 4000453604399268480L;
@@ -83,4 +86,12 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return typeDeSite;
 	}
 
+	@Override
+	public Siege getSiege(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		if (getSieges() != null) {
+			return DateRangeHelper.rangeAt(getSieges(), theDate);
+		}
+		return null;
+	}
 }

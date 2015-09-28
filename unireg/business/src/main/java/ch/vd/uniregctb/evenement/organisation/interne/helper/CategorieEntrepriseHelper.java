@@ -1,14 +1,20 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.uniregctb.evenement.organisation.interne.helper;
 
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.APM;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.DP_APM;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.DP_PM;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.FDS_PLAC;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.PM;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.PP;
-import static ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise.SP;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.APM;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.DP_APM;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.DP_PM;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.FDS_PLAC;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.PM;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.PP;
+import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.SP;
 
 /**
  * @author Raphaël Marmier, 2015-09-08
@@ -66,5 +72,12 @@ public class CategorieEntrepriseHelper {
 			}
 		}
 		return null;
+	}
+
+	// TODO: Déplacer dans l'adapter?
+	@Nullable
+	public static CategorieEntreprise getCategorieEntreprise(RegDate date, Organisation organisation) {
+		final DateRanged<FormeLegale> fl = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
+		return fl == null ? null : CategorieEntrepriseHelper.map(fl.getPayload());
 	}
 }

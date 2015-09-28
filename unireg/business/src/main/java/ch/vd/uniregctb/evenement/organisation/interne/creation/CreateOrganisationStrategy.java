@@ -8,8 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -18,10 +16,10 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.CategorieEntreprise;
-import ch.vd.uniregctb.evenement.organisation.interne.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -58,7 +56,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		}
 
 		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = getCategorieEntreprise(event.getDateEvenement(), organisation);
+		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(event.getDateEvenement(), organisation);
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
@@ -125,12 +123,5 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 			return null;
 		}
 		return DateRangeHelper.rangeAt(ranges, date);
-	}
-
-	// TODO: Déplacer dans l'adapter?
-	@Nullable
-	private static CategorieEntreprise getCategorieEntreprise(RegDate date, Organisation organisation) {
-		final DateRanged<FormeLegale> fl = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
-		return fl == null ? null : CategorieEntrepriseHelper.map(fl.getPayload());
 	}
 }

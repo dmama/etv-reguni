@@ -152,6 +152,11 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
+	public Siege getSiegePrincipal(RegDate date) {
+		return DateRangeHelper.rangeAt(getSiegesPrincipaux(), date != null ? date : RegDate.get());
+	}
+
+	@Override
 	public List<DateRanged<Long>> getRemplacePar() {
 		throw new NotImplementedException();
 	}
@@ -164,6 +169,41 @@ public class MockOrganisation implements Organisation {
 	@Override
 	public List<DateRanged<Long>> getTransfereA() {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<DateRanged<SiteOrganisation>> getSitePrincipaux() {
+		List<DateRanged<SiteOrganisation>> sitePrincipaux = new ArrayList<>();
+		for (SiteOrganisation site : this.getDonneesSites()) {
+			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
+				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					sitePrincipaux.add(new DateRanged<>(siteRange.getDateDebut(), siteRange.getDateFin(), site));
+				}
+			}
+		}
+		return sitePrincipaux;
+	}
+
+	// Implémentation identique à la classe Organisation
+	@Override
+	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		return DateRangeHelper.rangeAt(getSitePrincipaux(), theDate);
+	}
+
+	// Implémentation identique à la classe Organisation
+	@Override
+	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		List<SiteOrganisation> siteSecondaires = new ArrayList<>();
+		for (SiteOrganisation site : this.getDonneesSites()) {
+			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
+				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE && siteRange.isValidAt(theDate)) {
+					siteSecondaires.add(site);
+				}
+			}
+		}
+		return siteSecondaires;
 	}
 
 	@Override

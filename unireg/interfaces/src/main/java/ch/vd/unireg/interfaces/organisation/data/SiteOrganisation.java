@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
+
 /**
  * Interface d'un site d'organisation (= un établissement, au sens civil du terme)
  */
@@ -43,4 +45,11 @@ public interface SiteOrganisation {
 	 * @return les valeurs historisées du type de site (principal / secondaire)
 	 */
 	List<DateRanged<TypeDeSite>> getTypeDeSite();
+
+	/**
+	 * Retourne le siege correspondant à la date. Si la date est nulle, la date du jour est utilisée.
+	 * @param date La date désirée
+	 * @return Le siège, ou null si aucun siège valide à la date donnée
+	 */
+	Siege getSiege(RegDate date);
 }

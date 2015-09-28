@@ -95,6 +95,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 * @param date
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
+	@Override
 	public Siege getSiegePrincipal(RegDate date) {
 		return DateRangeHelper.rangeAt(getSiegesPrincipaux(), date != null ? date : RegDate.get());
 	}
@@ -150,6 +151,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		}
 	}
 
+	@NotNull
 	private <T> List<DateRanged<T>> extractRangedDataFromSitesPrincipaux(SiteDataExtractor<List<DateRanged<T>>> extractor) {
 		final List<DateRanged<T>> extracted = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
@@ -178,6 +180,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		return extracted;
 	}
 
+	@NotNull
 	private <T extends DateRange> List<T> extractDataFromSitesPrincipaux(final DateRangeLimitator<T> limitator, SiteDataExtractor<List<T>> extractor) {
 		final List<T> extracted = new ArrayList<>();
 		for (Map.Entry<Long, SiteOrganisation> entry : donneesSites.entrySet()) {
@@ -276,5 +279,55 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		});
 		final List<AdresseRCEnt> flat = DateRangeHelper.override(rcLegale, ideEffective, buildAdapterCallbackFromLimitator(limitator));
 		return new ArrayList<Adresse>(flat);
+	}
+
+	// TODO: A générer dans l'adapter?
+	/**
+	 * Liste des sites principaux
+	 * @return La liste des sites principaux
+	 */
+	@Override
+	public List<DateRanged<SiteOrganisation>> getSitePrincipaux() {
+		List<DateRanged<SiteOrganisation>> sitePrincipaux = new ArrayList<>();
+		for (SiteOrganisation site : this.getDonneesSites()) {
+			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
+				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+					sitePrincipaux.add(new DateRanged<>(siteRange.getDateDebut(), siteRange.getDateFin(), site));
+				}
+			}
+		}
+		return sitePrincipaux;
+	}
+
+	// TODO: A générer dans l'adapter?
+	/**
+	 * Le site principal à une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @param date
+	 * @return Le site princpial
+	 */
+	@Override
+	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		return DateRangeHelper.rangeAt(getSitePrincipaux(), theDate);
+	}
+
+	// TODO: A générer dans l'adapter?
+	/**
+	 * Liste des sites secondaire pour une date donnée. Si la date est nulle, la date du jour est utilisée.
+	 * @param date La date pour laquelle on désire la liste des sites secondaires
+	 * @return La liste des sites secondaire
+	 */
+	@Override
+	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		List<SiteOrganisation> siteSecondaires = new ArrayList<>();
+		for (SiteOrganisation site : this.getDonneesSites()) {
+			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
+				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE && siteRange.isValidAt(theDate)) {
+					siteSecondaires.add(site);
+				}
+			}
+		}
+		return siteSecondaires;
 	}
 }

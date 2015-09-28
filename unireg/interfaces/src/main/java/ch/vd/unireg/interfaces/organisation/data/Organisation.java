@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 
 public interface Organisation {
@@ -36,6 +37,8 @@ public interface Organisation {
 	 */
 	List<DateRanged<String>> getNomsAdditionels();
 
+	Siege getSiegePrincipal(RegDate date);
+
 	List<Capital> getCapitaux();
 
 	List<Siege> getSiegesPrincipaux();
@@ -50,4 +53,9 @@ public interface Organisation {
 
 	List<DateRanged<Long>> getTransfereA();
 
+	List<DateRanged<SiteOrganisation>> getSitePrincipaux();
+
+	DateRanged<SiteOrganisation> getSitePrincipal(RegDate date);
+
+	List<SiteOrganisation> getSitesSecondaires(RegDate date);
 }

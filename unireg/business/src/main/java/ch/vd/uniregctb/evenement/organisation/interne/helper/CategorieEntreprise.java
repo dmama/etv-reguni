@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne;
+package ch.vd.uniregctb.evenement.organisation.interne.helper;
 
 /**
  * Catégories métier d'entreprises pertinentes pour Unireg.

@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -116,5 +117,15 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public List<DateRanged<TypeDeSite>> getTypeDeSite() {
 		return MockOrganisationHelper.getHisto(typeDeSite);
+	}
+
+	// Implémentation identique à la classe SiteOrganisation
+	@Override
+	public Siege getSiege(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		if (getSieges() != null) {
+			return DateRangeHelper.rangeAt(getSieges(), theDate);
+		}
+		return null;
 	}
 }
