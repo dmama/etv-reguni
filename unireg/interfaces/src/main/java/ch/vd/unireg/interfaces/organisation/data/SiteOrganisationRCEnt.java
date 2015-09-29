@@ -88,7 +88,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public Siege getSiege(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
+		final RegDate theDate= date != null ? date : RegDate.get();
 		if (getSieges() != null) {
 			return DateRangeHelper.rangeAt(getSieges(), theDate);
 		}

@@ -83,10 +83,10 @@ public class CreateEntreprisePMTest extends AbstractEvenementOrganisationProcess
 
 				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
 				                             Assert.assertEquals(1, etablissements.size());
-				                             Assert.assertEquals(RegDate.get(2015, 6, 24), etablissements.get(0).getDateDebut());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissements.get(0).getDateDebut());
 
 				                             final Etablissement etablissement = etablissements.get(0).getPayload();
-				                             Assert.assertEquals(RegDate.get(2015, 6, 24), etablissement.getDomiciles().iterator().next().getDateDebut());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
 
 				                             return null;
 			                             }

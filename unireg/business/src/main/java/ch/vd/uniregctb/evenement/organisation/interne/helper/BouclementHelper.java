@@ -17,11 +17,11 @@ public class BouclementHelper {
 	 * @param creationDate La date de référence
 	 */
 	public static Bouclement createBouclementSelonSemestre(RegDate creationDate) {
-		RegDate bouclementDebut = RegDate.get(creationDate.year(), creationDate.month(), creationDate.day());
+		RegDate bouclementDebut = creationDate;
 
 		// Si on a dépassé la moitié de l'année, on crée un bouclement pour l'années d'après.
 		if (creationDate.isAfterOrEqual(RegDate.get(creationDate.year(), 7, 1))) {
-			bouclementDebut = RegDate.get(bouclementDebut.year() + 1, 1, 1); // Date au début de l'année pour éviter tout problème
+			bouclementDebut = RegDate.get(creationDate.year() + 1, 1, 1); // Date au début de l'année pour éviter tout problème
 		}
 		final Bouclement bouclement = new Bouclement();
 		bouclement.setPeriodeMois(12);

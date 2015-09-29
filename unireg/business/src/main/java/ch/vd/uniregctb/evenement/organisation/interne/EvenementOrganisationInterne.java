@@ -3,25 +3,35 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.BouclementHelper;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
  *
- * // FIXME: Beaucoup de travail la dedans.
  * Implémentation des événements organisation en provenance du RCEnt.
  */
 public abstract class EvenementOrganisationInterne {
@@ -29,10 +39,10 @@ public abstract class EvenementOrganisationInterne {
 //	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationInterne.class);
 
 	private final long noOrganisation;
-	private final Entreprise entreprise;
+	private Entreprise entreprise;
 	private Organisation organisation;
 
-	private final RegDate date;
+	private final RegDate dateEvt;
 	private final Long numeroEvenement;
 
 	protected final EvenementOrganisationContext context;
@@ -43,7 +53,7 @@ public abstract class EvenementOrganisationInterne {
 		this.options = options;
 
 		/* récupération des informations liés à l'événement */
-		this.date = evenement.getDateEvenement();
+		this.dateEvt = evenement.getDateEvenement();
 		this.numeroEvenement = evenement.getId();
 		this.noOrganisation = evenement.getNoOrganisation();
 		this.organisation = organisation;
@@ -82,7 +92,7 @@ public abstract class EvenementOrganisationInterne {
 		/*
 		 * Vérifie que les éléments de base sont renseignés
 		 */
-		if (getDate() == null) {
+		if (getDateEvt() == null) {
 			erreurs.addErreur("L'événement n'est pas daté");
 			return;
 		}
@@ -90,7 +100,7 @@ public abstract class EvenementOrganisationInterne {
 		/*
 		 * La date de l'événement se situe dans le futur.
 		 */
-		if (getDate().isAfter(RegDate.get())) {
+		if (getDateEvt().isAfter(RegDate.get())) {
 			erreurs.addErreur("La date de l'événement est dans le futur");
 		}
 
@@ -123,8 +133,8 @@ public abstract class EvenementOrganisationInterne {
 		return numeroEvenement;
 	}
 
-	public RegDate getDate() {
-		return date;
+	public RegDate getDateEvt() {
+		return dateEvt;
 	}
 
 	public long getNoOrganisation() {
@@ -139,10 +149,125 @@ public abstract class EvenementOrganisationInterne {
 		return entreprise;
 	}
 
-	/** // TODO: Checkthis
+	/**
+	 * Védifie qu'il n'existe pas déjà un établissement pour le site donné. Lance une exception dans
+	 * le cas contraire.
+	 * @param numeroSite Le numéro de registre civil du site
+	 * @param date La date pour laquelle la présence doit être contrôlée
+	 * @throws EvenementOrganisationException Si l'établissement existe déjà
+	 */
+	protected void ensureNotExistsEtablissement(long numeroSite, RegDate date) throws EvenementOrganisationException {
+		Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
+		if (etablissement != null) {
+			throw new EvenementOrganisationException(
+					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
+					              numeroSite, getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), date)));
+		}
+	}
+
+	/**
+	 * Determiner le siège principal pour la date
+	 * @param sitePrincipal
+	 * @return
+	 * @throws EvenementOrganisationException
+	 */
+	@NotNull
+	protected Siege determineAutoriteFiscalePrincipale(SiteOrganisation sitePrincipal, RegDate date) throws EvenementOrganisationException {
+		final RegDate theDate = date != null ? date : RegDate.get();
+		final Siege siegePrincipal = sitePrincipal.getSiege(theDate);
+		if (siegePrincipal == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
+		}
+		return siegePrincipal;
+	}
+
+	/**
+	 * Déterminer le siège secondaire pour la date
+	 * @param site
+	 * @param date
+	 * @return
+	 * @throws EvenementOrganisationException
+	 */
+	@NotNull
+	protected Siege determineAutoriteFiscaleSiteSecondaire(SiteOrganisation site, RegDate date) throws EvenementOrganisationException {
+		final RegDate theDate = date != null ? date : RegDate.get();
+		final Siege siege = site.getSiege(theDate);
+		if (siege == null) {
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
+							site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
+		}
+		return siege;
+	}
+
+
+	protected void createEntreprise(Long noOrganisation, RegDate dateDebut) {
+		Assert.notNull(noOrganisation);
+		Assert.notNull(dateDebut);
+
+		Audit.info(String.format("Création d'une entreprise pour l'organisation %s", noOrganisation));
+		final Entreprise entreprise = new Entreprise();
+		// Le numéro
+		entreprise.setNumeroEntreprise(noOrganisation);
+		// Le régime fiscal VD + CH
+		entreprise.addRegimeFiscal(new RegimeFiscal(dateDebut, null, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE));
+		entreprise.addRegimeFiscal(new RegimeFiscal(dateDebut, null, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
+		// Persistence
+		setEntreprise((Entreprise) context.getTiersDAO().save(entreprise));
+	}
+
+	/*
+	 * Protection contre l'écrasement intempestif de l'entreprise existante, qui si elle existe déjà,
+	 * est à priori une entité rattachée à un contexte de persistence. Entité que l'on doit modifier directement si l'on
+	 * effectue des modifications.
+	 */
+	private void setEntreprise(Entreprise entreprise) {
+		if (this.entreprise != null) {
+			throw new IllegalStateException(
+					String.format("Refus d'écraser l'instance d'entreprise existante [no: %s, no organisation: %s]. Arrêt du traitement de l'événement.",
+					              entreprise.getNumero(),
+					              entreprise.getNumeroEntreprise())
+			);
+		}
+		this.entreprise = entreprise;
+	}
+
+	/**
+	 * Créer un établissement, avec toutes ses caractéristiques usuelles, et le rattacher à l'entreprise en cours au
+	 * moyen d'un rapport entre tiers d'activité économique.
+	 * @param numeroSite Le numéro du site sur lequel porte l'établissement
+	 * @param autoriteFiscale La commune politique de domicile de l'établissement
+	 * @param principal Si l'établissement est principal ou secondaire
+	 * @param dateDebut Date de début
+	 */
+	protected void createAddEtablissement(Long numeroSite, Siege autoriteFiscale, boolean principal, RegDate dateDebut) {
+		Assert.notNull(numeroSite);
+		Assert.notNull(autoriteFiscale);
+		Assert.notNull(dateDebut);
+
+		Audit.info(String.format("Création d'un établissement %s no site %s", principal ? "principal" : "secondaire", numeroSite));
+		// L'établissement
+		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite, principal));
+		// Le domicile
+		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
+		// L'activité économique
+		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement), getEntreprise(), etablissement);
+	}
+
+	private Etablissement createEtablissement(Long numeroSite, boolean principal) {
+		final Etablissement etablissement = new Etablissement();
+		etablissement.setNumeroEtablissement(numeroSite);
+		etablissement.setPrincipal(principal);
+		return (Etablissement) context.getTiersDAO().save(etablissement);
+	}
+
+	/**
 	 * Ouvre un nouveau for fiscal principal.
 	 *
-	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
@@ -150,11 +275,37 @@ public abstract class EvenementOrganisationInterne {
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipalPM openForFiscalPrincipal(ContribuableImpositionPersonnesMorales contribuable, final RegDate dateOuverture,
-	                                                    TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
-	                                                    MotifFor motifOuverture) {
+	@NotNull
+	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale,
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
-		return context.getTiersService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
+		return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
 	}
 
+	/**
+	 * Ouvre un nouveau for fiscal secondaire. // TODO: verifier qu'on n'a pas besoin de créer une classe spécifique PM pour les for secondiares établissements.
+	 *
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param rattachement             le motif de rattachement du nouveau for
+	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @return le nouveau for fiscal principal
+	 */
+	@NotNull
+	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale,
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture) {
+		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+		return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
+	}
+
+	/**
+	 * Ajoute un bouclement en bonne et due forme.
+	 * @param dateDebut Date de début du bouclement
+	 */
+	protected void createAddBouclement(RegDate dateDebut) {
+		final Bouclement bouclement = BouclementHelper.createBouclementSelonSemestre(dateDebut);
+		bouclement.setEntreprise(entreprise);
+		context.getTiersDAO().addAndSave(entreprise, bouclement);
+	}
 }

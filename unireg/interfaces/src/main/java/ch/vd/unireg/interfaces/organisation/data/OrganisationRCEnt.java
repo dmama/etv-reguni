@@ -307,7 +307,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
+		final RegDate theDate = date != null ? date : RegDate.get();
 		return DateRangeHelper.rangeAt(getSitePrincipaux(), theDate);
 	}
 
@@ -319,7 +319,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
+		final RegDate theDate = date != null ? date : RegDate.get();
 		List<SiteOrganisation> siteSecondaires = new ArrayList<>();
 		for (SiteOrganisation site : this.getDonneesSites()) {
 			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {

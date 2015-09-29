@@ -263,7 +263,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		Assert.assertNotNull(interne);
 		Assert.assertEquals(event.getId(), interne.getNumeroEvenement().longValue());
 		Assert.assertEquals(event.getNoOrganisation(), interne.getNoOrganisation());
-		Assert.assertEquals(event.getDateEvenement(), interne.getDate());
+		Assert.assertEquals(event.getDateEvenement(), interne.getDateEvt());
 		Assert.assertEquals(resultClass, interne.getClass());
 	}
 }

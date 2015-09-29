@@ -8,9 +8,11 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -29,7 +31,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public class CreateOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
 
 	/**
-	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprisePMAPM} est
+	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntrepriseBase} est
 	 * pertinente.
 	 *
 	 * Spécifications:
@@ -60,7 +62,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (hasSiteVD(organisation, event)) {
+			if (hasSitePrincipalVD(organisation, event)) {
 
 				switch (category) {
 
@@ -85,7 +87,29 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 				case DP_PM:
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
 
-				// Catégories qu'on ne peut pas traiter manuellement, catégories éventuellement inconnues.
+				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
+				case DP_APM:
+				default:
+					return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
+				}
+			} else if (hasSiteVD(organisation, event)) {
+				switch (category) {
+
+				case PP:
+				case SP:
+				case FDS_PLAC:
+					return null; // Cas normallement inexistant --> traitement manuel ce serait plus prudent?
+
+				case PM:
+				case APM:
+					return new CreateEntreprisePMAPM(event, organisation, null, context, options);
+
+				// Personnes morales de droit public
+				case DP_PM:
+					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
+
+				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
+				case DP_APM:
 				default:
 					return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
 				}
@@ -105,6 +129,17 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		                     organisation.getNom(),
 		                     rangeAt(organisation.getSiegesPrincipaux(), event.getDateEvenement()),
 		                     rangeAt(organisation.getFormeLegale(), event.getDateEvenement()));
+	}
+
+	private boolean hasSitePrincipalVD(Organisation organisation, EvenementOrganisation event) {
+		for (SiteOrganisation site : organisation.getDonneesSites()) {
+			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
+			final DateRanged<TypeDeSite> type = rangeAt(site.getTypeDeSite(), event.getDateEvenement());
+			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&  type != null && type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean hasSiteVD(Organisation organisation, EvenementOrganisation event) {
