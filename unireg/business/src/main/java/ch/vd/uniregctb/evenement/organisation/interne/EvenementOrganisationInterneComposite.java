@@ -2,8 +2,6 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -37,18 +35,13 @@ public class EvenementOrganisationInterneComposite extends EvenementOrganisation
 		this.listEvtEch = listEvtEch;
 	}
 
-	@NotNull
 	@Override
-	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		HandleStatus ret = HandleStatus.REDONDANT;
+	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		for (EvenementOrganisationInterne evt : listEvtEch) {
-			final HandleStatus hs = evt.handle(warnings);
-			if (HandleStatus.TRAITE == hs) {
-				ret = HandleStatus.TRAITE;
-			}
+			raiseStatusTo(evt.handle(warnings));
 		}
-		return ret;
 	}
+
 
 	@Override
 	protected void validateCommon(EvenementOrganisationErreurCollector erreurs) {

@@ -3,8 +3,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -37,10 +35,9 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
-	@NotNull
 	@Override
-	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.handle(warnings);
+	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+		super.doHandle(warnings);
 
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
 		if (inscritAuRC(getSitePrincipal())) { // TODO: Tester!
@@ -52,6 +49,8 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 
 			// Création du bouclement
 			createAddBouclement(getDateDeDebut());
+		} else {
+			raiseStatusTo(HandleStatus.A_VERIFIER);
 		}
 
 		// Gestion des sites secondaires non supportée pour l'instant, en attente du métier.
@@ -62,8 +61,8 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 		}
 
 		Audit.info(String.format("Entreprise créée avec le numéro %s", getEntreprise().getNumero()));
-		return HandleStatus.TRAITE;
 
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site) throws EvenementOrganisationException {
@@ -83,14 +82,6 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 				autoritesAvecForSecondaire.add(autoriteFiscale.getNoOfs());
 			}
 		}
-	}
-
-	private boolean inscritAuRC(SiteOrganisation sitePrincipal) {
-		// Comme nous sommes dans le cadre d'une création,
-		if (sitePrincipal.getDonneesRC() != null) {
-			return true;
-		}
-		return false;
 	}
 
 

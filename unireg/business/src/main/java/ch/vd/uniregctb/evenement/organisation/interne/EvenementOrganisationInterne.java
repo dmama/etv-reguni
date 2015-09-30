@@ -5,6 +5,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -45,6 +46,8 @@ public abstract class EvenementOrganisationInterne {
 	private final RegDate dateEvt;
 	private final Long numeroEvenement;
 
+	private HandleStatus status;
+
 	protected final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
@@ -83,7 +86,26 @@ public abstract class EvenementOrganisationInterne {
 	 * @throws EvenementOrganisationException si le traitement de l'événement est impossible pour une raison ou pour une autre.
 	 */
 	@NotNull
-	public abstract HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
+	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+		this.doHandle(warnings);
+		if (status == null) {
+			throw new EvenementOrganisationException("Status inconnu après le traitement de l'événement interne!");
+		}
+		return status;
+	}
+
+	/*
+	Méthode à redéfinir pour implémenter le traitement concret.
+	 */
+	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
+
+	protected boolean inscritAuRC(SiteOrganisation sitePrincipal) {
+		// Comme nous sommes dans le cadre d'une création,
+		if (sitePrincipal.getDonneesRC() != null) {
+			return true;
+		}
+		return false;
+	}
 
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
@@ -149,6 +171,13 @@ public abstract class EvenementOrganisationInterne {
 		return entreprise;
 	}
 
+	public void raiseStatusTo(HandleStatus nouveau) {
+		if (status != null) {
+			status = status.raiseTo(nouveau);
+		} else {
+			status = HandleStatus.REDONDANT.raiseTo(nouveau);
+		}
+	}
 	/**
 	 * Védifie qu'il n'existe pas déjà un établissement pour le site donné. Lance une exception dans
 	 * le cas contraire.
@@ -279,6 +308,10 @@ public abstract class EvenementOrganisationInterne {
 	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
+
+		Audit.info(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s",
+		                         entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+		                         RegDateHelper.dateToDisplayString(dateOuverture)));
 		return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
 	}
 

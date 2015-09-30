@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -28,9 +27,8 @@ public class IndexationPure extends EvenementOrganisationInterne {
 		event = evenement;
 	}
 
-	@NotNull
 	@Override
-	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		final Entreprise pm = getEntreprise();
 		if (pm != null) {
 			context.getIndexer().schedule(pm.getNumero());
@@ -40,7 +38,7 @@ public class IndexationPure extends EvenementOrganisationInterne {
 		} else {
 			event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 		}
-		return HandleStatus.TRAITE;
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override

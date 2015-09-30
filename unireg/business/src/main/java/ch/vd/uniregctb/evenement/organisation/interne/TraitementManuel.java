@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -23,9 +21,8 @@ public class TraitementManuel extends EvenementOrganisationInterne {
 		this.message = message;
 	}
 
-	@NotNull
 	@Override
-	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		throw new IllegalStateException("Le traitement n'aurait jamais dû arriver jusqu'ici !");
 	}
 

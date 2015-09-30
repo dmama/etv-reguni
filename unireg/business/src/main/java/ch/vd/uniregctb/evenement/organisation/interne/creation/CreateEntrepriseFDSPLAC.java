@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -10,7 +8,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -29,9 +26,8 @@ public class CreateEntrepriseFDSPLAC extends EvenementOrganisationInterne {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
-	@NotNull
 	@Override
-	public HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		throw new UnsupportedOperationException(); // En attendant
 	}
 
