@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import org.springframework.util.Assert;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
@@ -11,6 +13,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -55,8 +58,10 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
 
+		Assert.state(getCategory() == CategorieEntreprise.DP_PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+
 		if (!inscritAuRC(getSitePrincipal()) || getCapital(getSitePrincipal().getDonneesRC()) == null) {
-			throw new EvenementOrganisationException("Capital introuvable"); // TODO: Mettre un message correct dans les erreurs.
+			erreurs.addErreur(String.format("Création impossible, capital introuvable. %s", getOrganisationDescription()));
 		}
 	}
 }

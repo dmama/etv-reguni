@@ -94,13 +94,18 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
+
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 
 		/*
-		 Erreurs fatale
+		 Erreurs techniques fatale
 		  */
 		Assert.notNull(dateDeDebut);
+
+		// Vérifier qu'il n'y a pas d'entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
+		Assert.isNull(getEntreprise());
+
 		// TODO: Vérifier que la date de l'événement correspond bien à la date d'inscription au RC?
 		// Devrait être superflu, cette exigeance étant une règle métier de RCEnt.
 
@@ -108,29 +113,23 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		 Problèmes métiers empêchant la progression
 		  */
 
-		// TODO: Ajouter message d'explication aux erreurs plutôt que d'arrêter brutalement la progression
 		DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(getOrganisation().getFormeLegale(), getDateDeDebut());
-		Assert.notNull(category, String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-		                                       formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
-		Assert.notNull(sitePrincipal, String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %s]", RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
-		Assert.notNull(autoriteFiscalePrincipale, String.format("Autorité fiscale introuvable pour la date du %s. [no organisation: %s]", RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
+		if (category == null) {
+			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
+			                                formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+		}
+		if (sitePrincipal == null) {
+			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %s]",
+			                                RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
+		}
+
+		if (autoriteFiscalePrincipale == null) {
+			erreurs.addErreur(String.format("Autorité fiscale introuvable pour la date du %s. [no organisation: %s]",
+			                                RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
+		}
 
 		// TODO: Vérifier que le siège n'est pas sur une commune faîtière et passer en manuel si c'est le cas. (fractions de communes)
 
-
-		// Vérifier qu'on est bien en présence d'un type qu'on supporte.
-		if (!(category == CategorieEntreprise.PM) && !(category == CategorieEntreprise.APM)) {
-			erreurs.addErreur(String.format("Catégorie d'entreprise non supportée! %s", category));
-		}
-
-		// Vérifier qu'il n'y a pas d'entreprise préexistante en base ?
-		if (getEntreprise() != null) {
-			erreurs.addErreur(String.format("Une entreprise no %s de type %s existe déjà dans Unireg pour l'organisation %s:%s!",
-			                                getEntreprise().getNumero(),
-			                                getEntreprise().getType(),
-											getNoOrganisation(),
-											DateRangeHelper.rangeAt(getOrganisation().getNom(), getDateEvt())));
-		}
 
 		// Vérifier la présence des autres données nécessaires ?
 	}

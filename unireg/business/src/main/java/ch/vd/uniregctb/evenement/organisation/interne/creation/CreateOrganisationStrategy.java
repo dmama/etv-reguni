@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -29,6 +28,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * @author Raphaël Marmier, 2015-09-02
  */
 public class CreateOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
+
+	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique impossible:";
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntrepriseBase} est
@@ -70,14 +71,16 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 				case PP:
 					return null;
 
-				// Cas des sociétés de personnes
+				// Sociétés de personnes
 				case SP:
 					return new CreateEntrepriseSP(event, organisation, null, context, options);
 
-				// Personnes morales et associations personne morale
+				// Personnes morales
 				case PM:
+					return new CreateEntreprisePM(event, organisation, null, context, options);
+				// Associations personne morale
 				case APM:
-					return new CreateEntreprisePMAPM(event, organisation, null, context, options);
+					return new CreateEntrepriseAPM(event, organisation, null, context, options);
 
 				// Fonds de placements
 				case FDS_PLAC:
@@ -90,19 +93,25 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DP_APM:
 				default:
-					return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
+					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
 			} else if (hasSiteVD(organisation, event)) {
 				switch (category) {
 
+				// Sociétés individuelles
+				// Sociétés de personnes
+				// Fonds de placement
 				case PP:
 				case SP:
 				case FDS_PLAC:
 					return null; // Cas normallement inexistant --> traitement manuel ce serait plus prudent?
 
+				// Personnes morales
 				case PM:
+					return new CreateEntreprisePM(event, organisation, null, context, options);
+				// Associations personne morale
 				case APM:
-					return new CreateEntreprisePMAPM(event, organisation, null, context, options);
+					return new CreateEntrepriseAPM(event, organisation, null, context, options);
 
 				// Personnes morales de droit public
 				case DP_PM:
@@ -111,7 +120,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DP_APM:
 				default:
-					return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
+					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
 			} else {
 				return null; // Pas de siège sur Vaud, pas de création
@@ -119,16 +128,7 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 		}
 
 		// Catchall traitement manuel
-		return new TraitementManuel(event, organisation, null, context, options, createTraitementManuelMessage(event, organisation));
-	}
-
-	@NotNull
-	private String createTraitementManuelMessage(EvenementOrganisation event, Organisation organisation) {
-		return String.format("L'organisation %s %s, commune OFS %s et forme juridique %s ne peut être créée sans intervention utilisateur.",
-		                     organisation.getNumeroOrganisation(),
-		                     organisation.getNom(),
-		                     rangeAt(organisation.getSiegesPrincipaux(), event.getDateEvenement()),
-		                     rangeAt(organisation.getFormeLegale(), event.getDateEvenement()));
+		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 	}
 
 	private boolean hasSitePrincipalVD(Organisation organisation, EvenementOrganisation event) {

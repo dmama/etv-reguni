@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -14,6 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -27,11 +30,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
+public class CreateEntreprisePM extends CreateEntrepriseBase {
 
-	protected CreateEntreprisePMAPM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                                EvenementOrganisationContext context,
-	                                EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected CreateEntreprisePM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
+	                             EvenementOrganisationContext context,
+	                             EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
@@ -39,19 +42,14 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.doHandle(warnings);
 
-		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
-		if (inscritAuRC(getSitePrincipal())) { // TODO: Tester!
-			openForFiscalPrincipal(getDateDeDebut(),
-			                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
-			                       getAutoriteFiscalePrincipale().getNoOfs(),
-			                       MotifRattachement.DOMICILE,
-			                       MotifFor.DEBUT_EXPLOITATION);
+		openForFiscalPrincipal(getDateDeDebut(),
+		                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
+		                       getAutoriteFiscalePrincipale().getNoOfs(),
+		                       MotifRattachement.DOMICILE,
+		                       MotifFor.DEBUT_EXPLOITATION);
 
-			// Création du bouclement
-			createAddBouclement(getDateDeDebut());
-		} else {
-			raiseStatusTo(HandleStatus.A_VERIFIER);
-		}
+		// Création du bouclement
+		createAddBouclement(getDateDeDebut());
 
 		// Gestion des sites secondaires non supportée pour l'instant, en attente du métier.
 		if (false) {
@@ -88,5 +86,11 @@ public class CreateEntreprisePMAPM extends CreateEntrepriseBase {
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
+
+		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+
+		if (!inscritAuRC(getSitePrincipal())) {
+			erreurs.addErreur(String.format("Pas d'inscription au RC. %s", getOrganisationDescription()));
+		}
 	}
 }

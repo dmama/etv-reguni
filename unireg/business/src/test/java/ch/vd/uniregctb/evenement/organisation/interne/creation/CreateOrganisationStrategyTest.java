@@ -90,22 +90,22 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		tryCreationEventAndCheckResult(101220104L, CreateEntrepriseSP.class);
 
 		createAddOrg(101220105L, RegDate.get(2015, 9, 7), FormeLegale.N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS, Lausanne);
-		tryCreationEventAndCheckResult(101220105L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220105L, CreateEntreprisePM.class);
 
 		createAddOrg(101220106L, RegDate.get(2015, 9, 7), FormeLegale.N_0106_SOCIETE_ANONYME, Lausanne);
-		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePM.class);
 
 		createAddOrg(101220107L, RegDate.get(2015, 9, 7), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE, Lausanne);
-		tryCreationEventAndCheckResult(101220107L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220107L, CreateEntreprisePM.class);
 
 		createAddOrg(101220108L, RegDate.get(2015, 9, 7), FormeLegale.N_0108_SOCIETE_COOPERATIVE, Lausanne);
-		tryCreationEventAndCheckResult(101220108L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220108L, CreateEntreprisePM.class);
 
 		createAddOrg(101220109L, RegDate.get(2015, 9, 7), FormeLegale.N_0109_ASSOCIATION, Lausanne);
-		tryCreationEventAndCheckResult(101220109L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220109L, CreateEntrepriseAPM.class);
 
 		createAddOrg(101220110L, RegDate.get(2015, 9, 7), FormeLegale.N_0110_FONDATION, Lausanne);
-		tryCreationEventAndCheckResult(101220110L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220110L, CreateEntrepriseAPM.class);
 
 		createAddOrg(101220111L, RegDate.get(2015, 9, 7), FormeLegale.N_0111_FILIALE_ETRANGERE_AU_RC, Lausanne);
 		tryCreationEventAndCheckResult(101220111L, TraitementManuel.class);
@@ -200,7 +200,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
 		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null,
 		                                                                    null, null, null, null, null, null));
-		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePMAPM.class);
+		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePM.class);
 	}
 
 

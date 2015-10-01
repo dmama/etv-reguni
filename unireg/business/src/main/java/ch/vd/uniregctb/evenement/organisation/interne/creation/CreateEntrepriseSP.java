@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import org.springframework.util.Assert;
+
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -7,6 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
+import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -33,5 +36,7 @@ public class CreateEntrepriseSP extends CreateEntrepriseBase {
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
+
+		Assert.state(getCategory() == CategorieEntreprise.SP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 	}
 }

@@ -27,14 +27,14 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreateEntreprisePMAPMTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 
 	protected boolean buildProcessorOnSetup() {
 		return true;
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreatePM() throws Exception {
+	public void testCreationPM() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;

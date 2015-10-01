@@ -3,9 +3,10 @@ package ch.vd.uniregctb.evenement.organisation.interne;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -31,6 +32,8 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
+import static ch.vd.registre.base.date.DateRangeHelper.rangeAt;
+
 /**
  *
  * Implémentation des événements organisation en provenance du RCEnt.
@@ -42,6 +45,7 @@ public abstract class EvenementOrganisationInterne {
 	private final long noOrganisation;
 	private Entreprise entreprise;
 	private Organisation organisation;
+	private String organisationDescription;
 
 	private final RegDate dateEvt;
 	private final Long numeroEvenement;
@@ -61,6 +65,9 @@ public abstract class EvenementOrganisationInterne {
 		this.noOrganisation = evenement.getNoOrganisation();
 		this.organisation = organisation;
 		this.entreprise = entreprise;
+
+		/* Champs précalculés */
+		this.organisationDescription = createOrganisationDescription();
 	}
 
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -167,6 +174,10 @@ public abstract class EvenementOrganisationInterne {
 		return organisation;
 	}
 
+	public String getOrganisationDescription() {
+		return organisationDescription;
+	}
+
 	public Entreprise getEntreprise() {
 		return entreprise;
 	}
@@ -190,7 +201,7 @@ public abstract class EvenementOrganisationInterne {
 		if (etablissement != null) {
 			throw new EvenementOrganisationException(
 					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
-					              numeroSite, getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), date)));
+					              numeroSite, getNoOrganisation(), rangeAt(getOrganisation().getNom(), date)));
 		}
 	}
 
@@ -208,7 +219,7 @@ public abstract class EvenementOrganisationInterne {
 			throw new EvenementOrganisationException(
 					String.format(
 							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-							sitePrincipal.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), rangeAt(getOrganisation().getNom(), theDate)));
 		}
 		return siegePrincipal;
 	}
@@ -228,7 +239,7 @@ public abstract class EvenementOrganisationInterne {
 			throw new EvenementOrganisationException(
 					String.format(
 							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
-							site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
+							site.getNumeroSite(), getNoOrganisation(), rangeAt(getOrganisation().getNom(), theDate)));
 		}
 		return siege;
 	}
@@ -340,5 +351,22 @@ public abstract class EvenementOrganisationInterne {
 		final Bouclement bouclement = BouclementHelper.createBouclementSelonSemestre(dateDebut);
 		bouclement.setEntreprise(entreprise);
 		context.getTiersDAO().addAndSave(entreprise, bouclement);
+	}
+
+	@NotNull
+	private String createOrganisationDescription() {
+		Siege siege = rangeAt(organisation.getSiegesPrincipaux(), getDateEvt());
+		String commune = "";
+		if (siege != null) {
+			commune = context.getServiceInfra().getCommuneByNumeroOfs(siege.getNoOfs(), getDateEvt()).getNomOfficielAvecCanton();
+		}
+		DateRanged<FormeLegale> formeLegaleDateRanged = rangeAt(organisation.getFormeLegale(), getDateEvt());
+		DateRanged<String> nomDateRanged = rangeAt(organisation.getNom(), getDateEvt());
+		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
+		                     nomDateRanged != null ? nomDateRanged.getPayload() : "[inconnu]",
+		                     organisation.getNumeroOrganisation(),
+		                     commune,
+		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
+		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
 	}
 }

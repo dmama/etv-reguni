@@ -67,6 +67,8 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		return query.list();
 	}
 
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementOrganisation> getEvenementsOrganisationARelancer() {
