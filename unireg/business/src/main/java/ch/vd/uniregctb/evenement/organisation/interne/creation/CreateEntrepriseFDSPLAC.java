@@ -7,7 +7,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -18,7 +18,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseFDSPLAC extends EvenementOrganisationInterne {
+public class CreateEntrepriseFDSPLAC extends CreateEntrepriseBase {
 
 	protected CreateEntrepriseFDSPLAC(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                  EvenementOrganisationContext context,
@@ -28,11 +28,12 @@ public class CreateEntrepriseFDSPLAC extends EvenementOrganisationInterne {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		throw new UnsupportedOperationException(); // En attendant
+		super.doHandle(warnings);
+		raiseStatusTo(HandleStatus.A_VERIFIER);
 	}
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-
+		super.validateSpecific(erreurs, warnings);
 	}
 }

@@ -27,7 +27,7 @@ public class CreateEntrepriseSP extends CreateEntrepriseBase {
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		raiseStatusTo(super.handle(warnings));
+		super.doHandle(warnings);
 	}
 
 	@Override
