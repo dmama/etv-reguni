@@ -2,9 +2,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -49,18 +46,13 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 		raiseStatusTo(HandleStatus.A_VERIFIER);
 	}
 
-	private Capital getCapital(DonneesRC donneesRC) {
-		return DateRangeHelper.rangeAt(donneesRC.getCapital(), getDateEvt());
-	}
-
-
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
 
 		Assert.state(getCategory() == CategorieEntreprise.DP_PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
-		if (!inscritAuRC(getSitePrincipal()) || getCapital(getSitePrincipal().getDonneesRC()) == null) {
+		if (getCapital() != null) {
 			erreurs.addErreur(String.format("Création impossible, capital introuvable. %s", getOrganisationDescription()));
 		}
 	}

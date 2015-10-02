@@ -6,7 +6,9 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -82,6 +84,20 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		return autoriteFiscalePrincipale;
 	}
 
+	// TODO: A faire autrement
+	protected boolean inscritAuRC() {
+		return sitePrincipal.getDonneesRC() != null;
+	}
+
+	// TODO: A faire autrement
+	protected Capital getCapital() {
+		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
+		if (donneesRC != null) {
+			return rangeAt(donneesRC.getCapital(), getDateEvt());
+		}
+		return null;
+	}
+
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 
@@ -93,7 +109,6 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
-
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {

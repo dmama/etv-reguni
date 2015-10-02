@@ -89,7 +89,7 @@ public class CreateEntreprisePM extends CreateEntrepriseBase {
 
 		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
-		if (!inscritAuRC(getSitePrincipal())) {
+		if (!inscritAuRC()) {
 			erreurs.addErreur(String.format("Pas d'inscription au RC. %s", getOrganisationDescription()));
 		}
 	}

@@ -1,33 +1,20 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
-import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
+public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique impossible:";
 
@@ -129,34 +116,5 @@ public class CreateOrganisationStrategy implements EvenementOrganisationTranslat
 
 		// Catchall traitement manuel
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
-	}
-
-	private boolean hasSitePrincipalVD(Organisation organisation, EvenementOrganisation event) {
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
-			final DateRanged<TypeDeSite> type = rangeAt(site.getTypeDeSite(), event.getDateEvenement());
-			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&  type != null && type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean hasSiteVD(Organisation organisation, EvenementOrganisation event) {
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
-			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Nullable
-	private static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
-		if (ranges == null) {
-			return null;
-		}
-		return DateRangeHelper.rangeAt(ranges, date);
 	}
 }

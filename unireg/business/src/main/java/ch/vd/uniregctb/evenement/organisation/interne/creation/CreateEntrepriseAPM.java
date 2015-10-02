@@ -42,7 +42,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 		super.doHandle(warnings);
 
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
-		if (inscritAuRC(getSitePrincipal())) { // TODO: Tester!
+		if (inscritAuRC()) { // TODO: Tester!
 			openForFiscalPrincipal(getDateDeDebut(),
 			                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
 			                       getAutoriteFiscalePrincipale().getNoOfs(),
@@ -92,6 +92,6 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 		super.validateSpecific(erreurs, warnings);
 
 		// Vérifier qu'on est bien en présence d'un type qu'on supporte.
-		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+		Assert.state(getCategory() == CategorieEntreprise.APM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 	}
 }

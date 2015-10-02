@@ -1,8 +1,13 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -31,8 +36,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
-
-import static ch.vd.registre.base.date.DateRangeHelper.rangeAt;
 
 /**
  *
@@ -105,14 +108,6 @@ public abstract class EvenementOrganisationInterne {
 	Méthode à redéfinir pour implémenter le traitement concret.
 	 */
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
-
-	protected boolean inscritAuRC(SiteOrganisation sitePrincipal) {
-		// Comme nous sommes dans le cadre d'une création,
-		if (sitePrincipal.getDonneesRC() != null) {
-			return true;
-		}
-		return false;
-	}
 
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
@@ -189,6 +184,7 @@ public abstract class EvenementOrganisationInterne {
 			status = HandleStatus.REDONDANT.raiseTo(nouveau);
 		}
 	}
+
 	/**
 	 * Védifie qu'il n'existe pas déjà un établissement pour le site donné. Lance une exception dans
 	 * le cas contraire.
@@ -368,5 +364,22 @@ public abstract class EvenementOrganisationInterne {
 		                     commune,
 		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
 		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
+	}
+
+	/**
+	 * Appelle la méthode analogue de DateRangeHelper, mais seulement après avoir controler que la liste des
+	 * ranges n'est pas nulle.
+	 * TODO: Trouver une autre solution
+	 * @param ranges La liste des ranges
+	 * @param date La date dont on cherche le range correspondant
+	 * @param <T> Le type encapsulé par le range
+	 * @return Le range, ou null s'il n'y en a pas ou si la liste est null.
+	 */
+	@Nullable
+	protected static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
+		if (ranges == null) {
+			return null;
+		}
+		return DateRangeHelper.rangeAt(ranges, date);
 	}
 }

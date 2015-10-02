@@ -13,7 +13,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.helper;
  */
 public enum CategorieEntreprise {
 
-	PP("Personne Physique"),
+	PP("Société individuelle"),
 
 	SP("Société de personnes"),
 
@@ -23,9 +23,9 @@ public enum CategorieEntreprise {
 
 	FDS_PLAC("Fonds de placement"),
 
-	DP_PM("PM de droit public"),
+	DP_PM("Personne morale de droit public"),
 
-	DP_APM("APM de droit public");
+	DP_APM("Association de droit public");
 
 	private String nomLong;
 
