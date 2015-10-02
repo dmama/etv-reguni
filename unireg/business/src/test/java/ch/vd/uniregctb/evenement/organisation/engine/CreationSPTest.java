@@ -18,9 +18,7 @@ import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFa
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
-import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -31,14 +29,14 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreationSPTest extends AbstractEvenementOrganisationProcessorTest {
 
 	protected boolean buildProcessorOnSetup() {
 		return true;
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationPM() throws Exception {
+	public void testCreationSP() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -47,7 +45,7 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -79,11 +77,7 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
-				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
-				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
-				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
-				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
 
 				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
 				                             Assert.assertEquals(1, etablissements.size());
@@ -99,7 +93,7 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationPMNonRC() throws Exception {
+	public void testCreationAPMNonRC() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -108,7 +102,7 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}
@@ -136,13 +130,23 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
-				                             Assert.assertNull(tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation()));
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+
+				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
+
+				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
+				                             Assert.assertEquals(1, etablissements.size());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissements.get(0).getDateDebut());
+
+				                             final Etablissement etablissement = etablissements.get(0).getPayload();
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+
 				                             return null;
 			                             }
 		                             }
 		);
 	}
-
 }

@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.mock.data.builder;
 
+import java.math.BigDecimal;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -91,6 +93,39 @@ public abstract class MockOrganisationFactory {
 		                                    statusInscriptionRC,
 		                                    statusIde,
 		                                    typeIde);
+
+		return mockOrg;
+	}
+
+	public static MockOrganisation createOrganisation(long cantonalId,
+	                                                  long cantonalIdSitePrincipal,
+	                                                  String nom,
+	                                                  RegDate dateDebut,
+	                                                  @Nullable FormeLegale formeLegale,
+	                                                  @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiegePrincipal,
+	                                                  @Nullable Integer noOfsSiegePrincipal,
+	                                                  @Nullable StatusRC statusRC,
+	                                                  @Nullable StatusInscriptionRC statusInscriptionRC,
+	                                                  @Nullable StatusRegistreIDE statusIde,
+	                                                  @Nullable TypeOrganisationRegistreIDE typeIde,
+	                                                  @Nullable BigDecimal capitalAmount,
+	                                                  @Nullable String capitalCurrency) {
+
+		final MockOrganisation mockOrg = new MockOrganisation(cantonalId, dateDebut, nom, formeLegale);
+
+		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
+		                                    mockOrg,
+		                                    dateDebut,
+		                                    nom,
+		                                    true,
+		                                    typeAutoriteFiscaleSiegePrincipal,
+		                                    noOfsSiegePrincipal,
+		                                    statusRC,
+		                                    statusInscriptionRC,
+		                                    statusIde,
+		                                    typeIde,
+		                                    capitalAmount,
+		                                    capitalCurrency);
 
 		return mockOrg;
 	}

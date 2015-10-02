@@ -52,7 +52,7 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 
 		Assert.state(getCategory() == CategorieEntreprise.DP_PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
-		if (getCapital() != null) {
+		if (getCapital() == null) {
 			erreurs.addErreur(String.format("Création impossible, capital introuvable. %s", getOrganisationDescription()));
 		}
 	}
