@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -84,9 +85,15 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		return autoriteFiscalePrincipale;
 	}
 
-	// TODO: A faire autrement
 	protected boolean inscritAuRC() {
-		return sitePrincipal.getDonneesRC() != null;
+		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
+		if (donneesRC != null) {
+			DateRanged<StatusRC> statusRCDateRanged = rangeAt(donneesRC.getStatus(), getDateEvt());
+			if (statusRCDateRanged != null) {
+				return statusRCDateRanged.getPayload() == StatusRC.INSCRIT;
+			}
+		}
+		return false;
 	}
 
 	// TODO: A faire autrement

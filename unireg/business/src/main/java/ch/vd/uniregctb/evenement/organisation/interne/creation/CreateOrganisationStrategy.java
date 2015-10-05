@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  */
 public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
-	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique impossible:";
+	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Pas de création automatique:";
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntrepriseBase} est
