@@ -200,7 +200,7 @@ public class CreateOrganisationStrategyTest extends AbstractEvenementOrganisatio
 		                                                                    TypeAutoriteFiscale.COMMUNE_HC, Zurich.getNoOFS(),
 		                                                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, Lausanne.getNoOFS(), null, null,
 		                                                                    null, null, null, null, null, null));
-		tryCreationEventAndCheckResult(101220106L, CreateEntreprisePM.class);
+		tryCreationEventAndCheckResult(101220106L, CreateEntrepriseHorsVD.class);
 	}
 
 

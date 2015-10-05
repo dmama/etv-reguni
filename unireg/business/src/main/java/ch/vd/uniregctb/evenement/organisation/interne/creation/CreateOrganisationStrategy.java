@@ -85,29 +85,10 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			} else if (hasSiteVD(organisation, event)) {
 				switch (category) {
 
-				// Sociétés individuelles
-				// Sociétés de personnes
-				// Fonds de placement
 				case PP:
-				case SP:
-				case FDS_PLAC:
-					return null; // Cas normallement inexistant --> traitement manuel ce serait plus prudent?
-
-				// Personnes morales
-				case PM:
-					return new CreateEntreprisePM(event, organisation, null, context, options);
-				// Associations personne morale
-				case APM:
-					return new CreateEntrepriseAPM(event, organisation, null, context, options);
-
-				// Personnes morales de droit public
-				case DP_PM:
-					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
-
-				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
-				case DP_APM:
+					return null;
 				default:
-					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
+					return new CreateEntrepriseHorsVD(event, organisation, null, context, options);
 				}
 			} else {
 				return null; // Pas de siège sur Vaud, pas de création

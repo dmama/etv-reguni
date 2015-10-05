@@ -2,10 +2,6 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -17,18 +13,18 @@ import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
- * Evénement interne de création d'entreprise de catégorie "Société de personnes" (SP)
+ * Evénement interne de création d'entreprises dont le siège principal est hors VD
  *
  *  Spécification:
  *  - Ti01SE03-Identifier et traiter les mutations entreprise.doc - Version 0.6 - 08.09.2015
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseSP extends CreateEntrepriseBase {
+public class CreateEntrepriseHorsVD extends CreateEntrepriseBase {
 
-	protected CreateEntrepriseSP(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                             EvenementOrganisationContext context,
-	                             EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
+	                                 EvenementOrganisationContext context,
+	                                 EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 	}
 
@@ -41,12 +37,8 @@ public class CreateEntrepriseSP extends CreateEntrepriseBase {
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
 
-		DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(getOrganisation().getFormeLegale(), getDateDeDebut());
-		if (getCategory() == null) {
-			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+		if (getCategory() != null) {
+			Assert.state(getCategory() != CategorieEntreprise.PP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 		}
-
-		Assert.state(getCategory() == CategorieEntreprise.SP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 	}
 }

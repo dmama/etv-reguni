@@ -3,13 +3,11 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -70,7 +68,6 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		return dateDeDebut;
 	}
 
-	@NotNull
 	public CategorieEntreprise getCategory() {
 		return category;
 	}
@@ -135,11 +132,6 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		 Problèmes métiers empêchant la progression
 		  */
 
-		DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(getOrganisation().getFormeLegale(), getDateDeDebut());
-		if (category == null) {
-			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
-		}
 		if (sitePrincipal == null) {
 			erreurs.addErreur(String.format("Aucun établissement principal trouvé pour la date du %s. [no organisation: %s]",
 			                                RegDateHelper.dateToDisplayString(getDateDeDebut()), getOrganisation().getNumeroOrganisation()));
