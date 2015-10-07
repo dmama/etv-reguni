@@ -245,7 +245,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(noOrganisation);
 		Assert.notNull(dateDebut);
 
-		Audit.info(String.format("Création d'une entreprise pour l'organisation %s", noOrganisation));
+		Audit.info(getNumeroEvenement(), String.format("Création d'une entreprise pour l'organisation %s", noOrganisation));
 		final Entreprise entreprise = new Entreprise();
 		// Le numéro
 		entreprise.setNumeroEntreprise(noOrganisation);
@@ -285,7 +285,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
 
-		Audit.info(String.format("Création d'un établissement %s no site %s", principal ? "principal" : "secondaire", numeroSite));
+		Audit.info(getNumeroEvenement(), String.format("Création d'un établissement %s no site %s", principal ? "principal" : "secondaire", numeroSite));
 		// L'établissement
 		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite, principal));
 		// Le domicile
@@ -316,7 +316,7 @@ public abstract class EvenementOrganisationInterne {
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
-		Audit.info(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s",
+		Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s",
 		                         entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 		                         RegDateHelper.dateToDisplayString(dateOuverture)));
 		return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
