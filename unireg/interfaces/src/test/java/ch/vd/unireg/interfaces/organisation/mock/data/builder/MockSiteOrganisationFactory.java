@@ -55,10 +55,10 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable String capitalCurrency) {
 
 		final DonneesRC donneesRC;
+		final DonneesRCBuilder rcBuilder = new DonneesRCBuilder();
 		if (statusRC != null) {
-			final DonneesRCBuilder rcBuilder = new DonneesRCBuilder()
-					.addNom(dateDebut, null, nom)
-					.addStatus(dateDebut, null, statusRC);
+			rcBuilder.addNom(dateDebut, null, nom);
+			rcBuilder.addStatus(dateDebut, null, statusRC);
 			if (statusInscriptionRC != null) {
 				rcBuilder.addStatusInscription(dateDebut, null, statusInscriptionRC);
 			}
@@ -70,11 +70,8 @@ public abstract class MockSiteOrganisationFactory {
 						                     .build()
 				);
 			}
-			donneesRC = rcBuilder.build();
 		}
-		else {
-			donneesRC = null;
-		}
+		donneesRC = rcBuilder.build();
 
 		final DonneesRegistreIDE donneesRegistreIDE;
 		if (statusIde != null) {

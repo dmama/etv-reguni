@@ -3,20 +3,17 @@ package ch.vd.unireg.interfaces.organisation.data;
 import java.io.Serializable;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 public class DonneesRC implements Serializable {
 
 	private static final long serialVersionUID = 1633547309615186996L;
 
-	@NotNull
 	private final List<DateRanged<StatusRC>> status;
 	private final List<DateRanged<String>> nom;
 	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private final List<Capital> capital;
 	private final List<AdresseRCEnt> adresseLegale;
 
-	public DonneesRC(List<AdresseRCEnt> adresseLegale, @NotNull List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
+	public DonneesRC(List<AdresseRCEnt> adresseLegale, List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
 	                 List<DateRanged<StatusInscriptionRC>> statusInscription, List<Capital> capital) {
 		this.adresseLegale = adresseLegale;
 		this.status = status;
@@ -37,7 +34,6 @@ public class DonneesRC implements Serializable {
 		return nom;
 	}
 
-	@NotNull
 	public List<DateRanged<StatusRC>> getStatus() {
 		return status;
 	}

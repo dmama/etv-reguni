@@ -47,28 +47,22 @@ public class RCEntSiteOrganisationHelper {
 	}
 
 	private static DonneesRC createDonneesRC(OrganisationLocation.RCEntRCData rc) {
-		if (rc.getStatus() != null && rc.getStatus().size() > 0) {
-			return new DonneesRC(
-					RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_CONVERTER),
-					RCEntHelper.convertAndMap(rc.getStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
-					RCEntHelper.convert(rc.getName()),
-					RCEntHelper.convertAndMap(rc.getEntryStatus(), COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER),
-					RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER)
-			);
-		}
-		return null;
+		return new DonneesRC(
+				RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndMap(rc.getStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
+				RCEntHelper.convert(rc.getName()),
+				RCEntHelper.convertAndMap(rc.getEntryStatus(), COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER),
+				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER)
+		);
 	}
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {
-		if (uid.getStatus() != null && uid.getStatus().size() > 0) {
-			return new DonneesRegistreIDE(
-					RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_CONVERTER),
-					RCEntHelper.convertAndMap(uid.getStatus(), UID_REGISTER_STATUS_CONVERTER),
-					RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),
-					RCEntHelper.convertAndFlatmap(uid.getEffectiveAddress(), ADDRESS_CONVERTER),
-					RCEntHelper.convertAndMap(uid.getLiquidationReason(), UID_REGISTER_LIQUIDATION_REASON_CONVERTER)
-			);
-		}
-		return null;
+		return new DonneesRegistreIDE(
+				RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndMap(uid.getStatus(), UID_REGISTER_STATUS_CONVERTER),
+				RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),
+				RCEntHelper.convertAndFlatmap(uid.getEffectiveAddress(), ADDRESS_CONVERTER),
+				RCEntHelper.convertAndMap(uid.getLiquidationReason(), UID_REGISTER_LIQUIDATION_REASON_CONVERTER)
+		);
 	}
 }
