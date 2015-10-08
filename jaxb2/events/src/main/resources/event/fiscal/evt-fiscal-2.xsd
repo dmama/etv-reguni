@@ -288,12 +288,12 @@
 		<xs:complexContent>
 			<xs:extension base="evenementFiscalType">
 				<xs:sequence>
-					<xs:element name="dateDebutPeriode" type="unireg:dateType">
+					<xs:element name="dateFrom" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Premier jour de la période de déclaration.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="dateFinPeriode" type="unireg:dateType">
+					<xs:element name="dateTo" type="unireg:dateType">
 						<xs:annotation>
 							<xs:documentation>Dernier jour de la période de déclaration.</xs:documentation>
 						</xs:annotation>
@@ -313,7 +313,7 @@
 			<xs:documentation>Le type d'un événement fiscal sur une déclaration.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="ENVOI">
+			<xs:enumeration value="EMISSION">
 				<xs:annotation>
 					<xs:documentation>Type de l'événement fiscal émis à l'envoi du formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
@@ -338,9 +338,9 @@
 					<xs:documentation>Type de l'événement fiscal émis à l'échéance après sommation d'un formulaire de déclaration, ouvrant la porte à une éventuelle taxation d'office.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="RETOUR">
+			<xs:enumeration value="QUITTANCEMENT">
 				<xs:annotation>
-					<xs:documentation>Type de l'événement fiscal émis au retour d'un formulaire de déclaration.</xs:documentation>
+					<xs:documentation>Type de l'événement fiscal émis au quittancement du retour d'un formulaire de déclaration.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
