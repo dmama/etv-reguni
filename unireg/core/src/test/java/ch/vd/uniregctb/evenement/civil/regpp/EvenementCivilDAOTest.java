@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.civil.regpp;
 
 import java.util.List;
 
@@ -11,8 +11,6 @@ import org.springframework.util.Assert;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static org.junit.Assert.assertEquals;

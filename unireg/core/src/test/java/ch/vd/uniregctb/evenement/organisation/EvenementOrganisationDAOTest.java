@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.organisation;
 
 import java.util.List;
 
@@ -9,9 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteria;
-import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 import static org.junit.Assert.assertEquals;
