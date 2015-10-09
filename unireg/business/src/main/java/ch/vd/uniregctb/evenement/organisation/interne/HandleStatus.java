@@ -14,16 +14,6 @@ public enum HandleStatus {
 		}
 	},
 	/**
-	 * L'événement a été bien traité et les données d'Unireg ont été modifiées en conséquences. Mais
-	 * une vérification par un opérateur est nécessaire.
-	 */
-	A_VERIFIER(2) {
-		@Override
-		public EtatEvenementOrganisation toEtat() {
-			return EtatEvenementOrganisation.A_VERIFIER;
-		}
-	},
-	/**
 	 * L'événement a été détecté comme redondant, c'est-à-dire que les données d'Unireg étaient déjà dans l'état voulu.
 	 */
 	REDONDANT(0) {

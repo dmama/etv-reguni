@@ -20,7 +20,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -111,8 +110,6 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeDebut);
-
-		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override

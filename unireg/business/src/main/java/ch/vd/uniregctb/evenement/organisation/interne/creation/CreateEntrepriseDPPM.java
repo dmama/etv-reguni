@@ -50,7 +50,7 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 		// Création du bouclement
 		createAddBouclement(getDateDeDebut());
 
-		warnings.addWarning("Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.");
+		warnings.addWarning(MSG_GENERIQUE_A_VERIFIER);
 	}
 
 	@Override

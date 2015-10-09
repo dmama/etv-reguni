@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -36,7 +35,8 @@ public class CreateEntrepriseFDSPLAC extends CreateEntrepriseBase {
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.doHandle(warnings);
-		raiseStatusTo(HandleStatus.A_VERIFIER);
+
+		warnings.addWarning(MSG_GENERIQUE_A_VERIFIER);
 	}
 
 	@Override

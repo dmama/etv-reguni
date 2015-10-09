@@ -64,7 +64,7 @@ public class CreationTraitementManuelTest extends AbstractEvenementOrganisationP
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
 				                             Assert.assertEquals(EtatEvenementOrganisation.EN_ERREUR, evt.getEtat());
-				                             Assert.assertEquals("Création automatique non prise en charge. Synergy SA (civil: 101202100), Lausanne (VD) (ofs:5586), forme juridique N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION.", evt.getErreurs().iterator().next().getMessage());
+				                             Assert.assertEquals("Création automatique non prise en charge. Synergy SA (civil: 101202100), Lausanne (VD) (ofs: 5586), forme juridique N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION", evt.getErreurs().iterator().next().getMessage());
 				                             return null;
 			                             }
 		                             }

@@ -58,6 +58,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 
 			// Création du bouclement
 			createAddBouclement(getDateDeDebut());
+			raiseStatusTo(HandleStatus.TRAITE);
 		} else {
 			warnings.addWarning("Organisation non inscrite au RC. Pas de création automatique du for fiscal. Veuillez traiter le cas manuellement.");
 		}
@@ -68,8 +69,6 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 				handleEtablissementsSecondaires(getAutoriteFiscalePrincipale(), site, warnings);
 			}
 		}
-
-		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -88,6 +87,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 				openForFiscalSecondaire(getDateDeDebut(), autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), MotifRattachement.ETABLISSEMENT_STABLE, MotifFor.DEBUT_EXPLOITATION, warnings);
 				autoritesAvecForSecondaire.add(autoriteFiscale.getNoOfs());
 			}
+
 		}
 	}
 

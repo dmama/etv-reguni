@@ -54,6 +54,8 @@ public abstract class EvenementOrganisationInterne {
 	protected final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
+	protected static final String MSG_GENERIQUE_A_VERIFIER = "Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.";
+
 	protected EvenementOrganisationInterne(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise, EvenementOrganisationContext context, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		this.context = context;
 		this.options = options;
@@ -275,6 +277,7 @@ public abstract class EvenementOrganisationInterne {
 		setEntreprise((Entreprise) context.getTiersDAO().save(entreprise));
 
 		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", getEntreprise().getNumero(), noOrganisation));
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	/*
@@ -322,6 +325,7 @@ public abstract class EvenementOrganisationInterne {
 		                         commune,
 		                         autoriteFiscale.getNoOfs(),
 		                         RegDateHelper.dateToDisplayString(dateDebut)));
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	private Etablissement createEtablissement(Long numeroSite, boolean principal) {
@@ -356,6 +360,7 @@ public abstract class EvenementOrganisationInterne {
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",
 					              commune.getNomOfficielAvecCanton()));
 		}
+		raiseStatusTo(HandleStatus.TRAITE);
 		return null;
 	}
 
@@ -383,6 +388,7 @@ public abstract class EvenementOrganisationInterne {
 					String.format("Ouverture de for fiscal secondaire sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal secondaire manuellement.",
 					              commune.getNomOfficielAvecCanton()));
 		}
+		raiseStatusTo(HandleStatus.TRAITE);
 		return null;
 	}
 
@@ -404,5 +410,6 @@ public abstract class EvenementOrganisationInterne {
 		RegDate premierBouclement = RegDate.get(bouclement.getDateDebut().year(), bouclement.getAncrage().month(), bouclement.getAncrage().day());
 		Audit.info(getNumeroEvenement(), String.format("Bouclement créé avec une périodicité de %s mois à partir du %s",
 		                                               bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 }
