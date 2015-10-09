@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -40,7 +39,7 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.doHandle(warnings);
 
-		MotifFor motifOuverture = OrganisationHelper.isCreationPure(getOrganisation(), getDateEvt()) ? MotifFor.DEBUT_EXPLOITATION : MotifFor.ARRIVEE_HC;
+		MotifFor motifOuverture = determineMotifOuvertureFor();
 
 		openForFiscalPrincipal(getDateDeDebut(),
 		                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),

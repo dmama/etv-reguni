@@ -47,7 +47,7 @@ public class CreationAPMTest extends AbstractEvenementOrganisationProcessorTest 
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), FormeLegale.N_0110_FONDATION,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -108,7 +108,7 @@ public class CreationAPMTest extends AbstractEvenementOrganisationProcessorTest 
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), FormeLegale.N_0110_FONDATION,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}

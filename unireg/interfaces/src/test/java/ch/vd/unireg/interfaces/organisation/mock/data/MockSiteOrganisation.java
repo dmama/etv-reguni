@@ -59,7 +59,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	public void changeSiege(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
-		MockOrganisationHelper.changeRangedData(siege, date, Pair.of(typeAutoriteFiscale, ofs));
+		Pair payload = null;
+		if (typeAutoriteFiscale != null && ofs != null) {
+			payload = Pair.of(typeAutoriteFiscale, ofs);
+		}
+		MockOrganisationHelper.changeRangedData(siege, date, payload);
 	}
 
 	public void addSiege(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {

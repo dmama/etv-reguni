@@ -35,14 +35,15 @@ public abstract class MockOrganisationFactory {
 
 	public static MockOrganisation createDummySA(long cantonalId, String nom, RegDate dateDebut) {
 		FormeLegale formeLegale = FormeLegale.N_0106_SOCIETE_ANONYME;
-		return createSimpleEntrepriseRC(cantonalId, cantonalId + 999373737, nom, dateDebut, formeLegale, MockCommune.Lausanne);
+		return createSimpleEntrepriseRC(cantonalId, cantonalId + 999373737, nom, dateDebut, null, formeLegale, MockCommune.Lausanne);
 	}
 
-	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, FormeLegale formeLegale, MockCommune commune) {
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockCommune commune) {
 		return createOrganisation(cantonalId,
 		                          cantonalIdSitePrincipal,
 		                          nom,
 		                          dateDebut,
+		                          dateFin,
 		                          formeLegale,
 		                          commune != null ? (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC) : null,
 		                          commune != null ? commune.getNoOFS() : null,
@@ -53,11 +54,12 @@ public abstract class MockOrganisationFactory {
 		);
 	}
 
-	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, FormeLegale formeLegale, MockPays pays) {
+	public static MockOrganisation createSimpleEntrepriseRC(long cantonalId, long cantonalIdSitePrincipal, String nom, RegDate dateDebut, RegDate dateFin, FormeLegale formeLegale, MockPays pays) {
 		return createOrganisation(cantonalId,
 		                          cantonalIdSitePrincipal,
 		                          nom,
 		                          dateDebut,
+		                          dateFin,
 		                          formeLegale,
 		                          pays != null ? TypeAutoriteFiscale.PAYS_HS : null,
 		                          pays != null ? pays.getNoOFS() : null,
@@ -72,6 +74,7 @@ public abstract class MockOrganisationFactory {
 	                                                  long cantonalIdSitePrincipal,
 	                                                  String nom,
 	                                                  RegDate dateDebut,
+	                                                  RegDate dateFin,
 	                                                  @Nullable FormeLegale formeLegale,
 	                                                  @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiegePrincipal,
 	                                                  @Nullable Integer noOfsSiegePrincipal,
@@ -85,6 +88,7 @@ public abstract class MockOrganisationFactory {
 		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
 		                                    mockOrg,
 		                                    dateDebut,
+		                                    dateFin,
 		                                    nom,
 		                                    true,
 		                                    typeAutoriteFiscaleSiegePrincipal,
@@ -101,6 +105,7 @@ public abstract class MockOrganisationFactory {
 	                                                  long cantonalIdSitePrincipal,
 	                                                  String nom,
 	                                                  RegDate dateDebut,
+	                                                  RegDate dateFin,
 	                                                  @Nullable FormeLegale formeLegale,
 	                                                  @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiegePrincipal,
 	                                                  @Nullable Integer noOfsSiegePrincipal,
@@ -116,6 +121,7 @@ public abstract class MockOrganisationFactory {
 		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
 		                                    mockOrg,
 		                                    dateDebut,
+		                                    dateFin,
 		                                    nom,
 		                                    true,
 		                                    typeAutoriteFiscaleSiegePrincipal,
@@ -135,6 +141,7 @@ public abstract class MockOrganisationFactory {
 	                                                                    long cantonalIdSiteSecondaire,
 	                                                                    String nom,
 	                                                                    RegDate dateDebut,
+	                                                                    RegDate dateFin,
 	                                                                    @Nullable FormeLegale formeLegale,
 	                                                                    @Nullable TypeAutoriteFiscale tafSiegePrincipal,
 	                                                                    @Nullable Integer noOfsSiegePrincipal,
@@ -154,6 +161,7 @@ public abstract class MockOrganisationFactory {
 		MockSiteOrganisationFactory.addSite(cantonalIdSitePrincipal,
 		                                    mockOrg,
 		                                    dateDebut,
+		                                    dateFin,
 		                                    nom,
 		                                    true,
 		                                    tafSiegePrincipal,
@@ -166,6 +174,7 @@ public abstract class MockOrganisationFactory {
 		MockSiteOrganisationFactory.addSite(cantonalIdSiteSecondaire,
 		                                    mockOrg,
 		                                    dateDebut,
+		                                    dateFin,
 		                                    nom,
 		                                    false,
 		                                    tafSiegeSecondaire,
@@ -187,6 +196,7 @@ public abstract class MockOrganisationFactory {
 		                                                48751L,
 		                                                "Nestlé Suisse S.A.",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Vevey.getNoOFS(),
@@ -206,6 +216,7 @@ public abstract class MockOrganisationFactory {
 		final MockOrganisation org = createOrganisation(45518L, 481554L,
 		                                                "Banque Cantonale Vaudoise",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Lausanne.getNoOFS(),
@@ -221,6 +232,7 @@ public abstract class MockOrganisationFactory {
 		final MockOrganisation org = createOrganisation(81574L, 8157L,
 		                                                "KPMG SA",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Zurich.getNoOFS(),
@@ -236,6 +248,7 @@ public abstract class MockOrganisationFactory {
 		final MockOrganisation org = createOrganisation(784515L, 418451L,
 		                                                "Curia Treuhand AG",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Chur.getNoOFS(),
@@ -251,6 +264,7 @@ public abstract class MockOrganisationFactory {
 		final MockOrganisation org = createOrganisation(454585L, 4656484L,
 		                                                "JAL Holding, en liquidation",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 		                                                MockCommune.Lausanne.getNoOFS(),
@@ -270,6 +284,7 @@ public abstract class MockOrganisationFactory {
 		final MockOrganisation org = createOrganisation(1874515L, 8791056469L,
 		                                                "Bank Coop AG",
 		                                                dateDebut,
+		                                                null,
 		                                                FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                TypeAutoriteFiscale.COMMUNE_HC,
 		                                                MockCommune.Bale.getNoOFS(),

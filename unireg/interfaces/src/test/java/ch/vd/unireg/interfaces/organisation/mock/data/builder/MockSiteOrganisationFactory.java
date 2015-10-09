@@ -91,15 +91,23 @@ public abstract class MockSiteOrganisationFactory {
 		final MockSiteOrganisation mock = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC);
 		organisation.addDonneesSite(mock);
 		mock.changeNom(dateDebut, nom);
+		if (dateFin != null) {
+			mock.changeNom(dateFin.getOneDayAfter(), null);
+		}
 
 		if (principal != null) {
 			mock.changeTypeDeSite(dateDebut, principal ? ETABLISSEMENT_PRINCIPAL : ETABLISSEMENT_SECONDAIRE);
+			if (dateFin != null) {
+				mock.changeTypeDeSite(dateFin.getOneDayAfter(), null);
+			}
 		}
 
 		if (typeAutoriteFiscaleSiege != null && noOfsSiege != null) {
 			mock.changeSiege(dateDebut, typeAutoriteFiscaleSiege, noOfsSiege);
+			if (dateFin != null) {
+				mock.changeSiege(dateFin.getOneDayAfter(), null, null);
+			}
 		}
-
 		return mock;
 	}
 }

@@ -36,7 +36,7 @@ public class CreationTraitementManuelTest extends AbstractEvenementOrganisationP
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), FormeLegale.N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), null, FormeLegale.N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION,
 						                                                 MockCommune.Lausanne));
 			}
 		});

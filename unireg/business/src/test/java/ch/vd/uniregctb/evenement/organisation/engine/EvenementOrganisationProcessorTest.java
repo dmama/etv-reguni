@@ -68,7 +68,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME, MockCommune.Lausanne));
 			}
 		});
 

@@ -40,7 +40,7 @@ public class CreationDPAPMTest extends AbstractEvenementOrganisationProcessorTes
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Commune de trucmuche", RegDate.get(2015, 6, 24), FormeLegale.N_0223_ADMINISTRATION_COMMUNE,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Commune de trucmuche", RegDate.get(2015, 6, 24), null, FormeLegale.N_0223_ADMINISTRATION_COMMUNE,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -86,7 +86,7 @@ public class CreationDPAPMTest extends AbstractEvenementOrganisationProcessorTes
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Commune de trucmuche", RegDate.get(2015, 6, 24), FormeLegale.N_0223_ADMINISTRATION_COMMUNE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Commune de trucmuche", RegDate.get(2015, 6, 24), null, FormeLegale.N_0223_ADMINISTRATION_COMMUNE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}

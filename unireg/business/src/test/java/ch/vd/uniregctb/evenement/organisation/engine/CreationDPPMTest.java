@@ -50,7 +50,7 @@ public class CreationDPPMTest extends AbstractEvenementOrganisationProcessorTest
 			@Override
 			protected void init() {
 				addOrganisation(MockOrganisationFactory
-						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
+						                .createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), null, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
 						                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF,
 						                                    StatusRegistreIDE.DEFINITIF,
 						                                    TypeOrganisationRegistreIDE.ASSOCIATION, BigDecimal.valueOf(100000), "CHF"));
@@ -112,7 +112,7 @@ public class CreationDPPMTest extends AbstractEvenementOrganisationProcessorTest
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24),
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), null,
 				                                                           FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
 				                                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				                                                           StatusRC.INSCRIT,
@@ -163,7 +163,7 @@ public class CreationDPPMTest extends AbstractEvenementOrganisationProcessorTest
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Corpotruc", RegDate.get(2015, 6, 24), null, FormeLegale.N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}

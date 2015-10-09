@@ -105,6 +105,30 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
+	@NotNull
+	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {
+		final MotifFor motifOuverture;
+		Siege siegePrecedant = OrganisationHelper.siegePrincipalPrecedant(getOrganisation(), getDateEvt());
+		if (siegePrecedant == null) {
+			motifOuverture = MotifFor.DEBUT_EXPLOITATION;
+		} else {
+			switch (siegePrecedant.getTypeAutoriteFiscale()) {
+			case COMMUNE_OU_FRACTION_VD:
+				throw new EvenementOrganisationException(
+						"L'organisation a un précédent siège sur Vaud. C'est donc une organisation existante inconnue jusque là (association nouvellement inscrite au RC?) Veuillez traiter le cas manuellement.");
+			case COMMUNE_HC:
+				motifOuverture = MotifFor.ARRIVEE_HC;
+				break;
+			case PAYS_HS:
+				motifOuverture = MotifFor.ARRIVEE_HS;
+				break;
+			default:
+				throw new EvenementOrganisationException("L'organisation a un précédent siège avec un type d'autorité fiscal inconnu. Veuillez traiter le cas manuellement.");
+			}
+		}
+		return motifOuverture;
+	}
+
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
 	protected void validateCommon(EvenementOrganisationErreurCollector erreurs) {
@@ -358,7 +382,7 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected void createAddBouclement(RegDate dateDebut) {
 		final Bouclement bouclement;
-		if (OrganisationHelper.isCreationPure(organisation, getDateEvt())) {
+		if (OrganisationHelper.siegePrincipalPrecedant(organisation, getDateEvt()) != null) {
 			bouclement = BouclementHelper.createBouclement3112SelonSemestre(dateDebut);
 		} else {
 			bouclement = BouclementHelper.createBouclement3112(RegDate.get(dateDebut.year() - 1, 12, 31));

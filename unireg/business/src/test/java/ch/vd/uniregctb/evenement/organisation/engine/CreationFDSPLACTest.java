@@ -45,7 +45,7 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -102,7 +102,7 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}

@@ -24,7 +24,8 @@ public abstract class OrganisationHelper {
 		return extracted == null || extracted.isEmpty() ? null : extracted;
 	}
 
-	public static boolean isCreationPure(Organisation organisation, RegDate evtDate) {
-		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), evtDate.getOneDayBefore()) == null;
+	public static Siege siegePrincipalPrecedant(Organisation organisation, RegDate evtDate) {
+		final RegDate theDate = evtDate != null ? evtDate : RegDate.get();
+		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), theDate.getOneDayBefore());
 	}
 }

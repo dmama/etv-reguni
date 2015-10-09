@@ -9,7 +9,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -48,7 +47,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
 		if (inscritAuRC()) { // TODO: Tester!
 
-			MotifFor motifOuverture = OrganisationHelper.isCreationPure(getOrganisation(), getDateEvt()) ? MotifFor.DEBUT_EXPLOITATION : MotifFor.ARRIVEE_HC;
+			MotifFor motifOuverture = determineMotifOuvertureFor();
 
 			openForFiscalPrincipal(getDateDeDebut(),
 			                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
