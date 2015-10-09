@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
@@ -85,7 +86,7 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 	protected boolean inscritAuRC() {
 		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
 		if (donneesRC != null) {
-			DateRanged<StatusRC> statusRCDateRanged = rangeAt(donneesRC.getStatus(), getDateEvt());
+			DateRanged<StatusRC> statusRCDateRanged = DateRangeHelper.rangeAt(donneesRC.getStatus(), getDateEvt());
 			if (statusRCDateRanged != null) {
 				return statusRCDateRanged.getPayload() == StatusRC.INSCRIT;
 			}
@@ -97,7 +98,7 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 	protected Capital getCapital() {
 		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
 		if (donneesRC != null) {
-			return rangeAt(donneesRC.getCapital(), getDateEvt());
+			return DateRangeHelper.rangeAt(donneesRC.getCapital(), getDateEvt());
 		}
 		return null;
 	}

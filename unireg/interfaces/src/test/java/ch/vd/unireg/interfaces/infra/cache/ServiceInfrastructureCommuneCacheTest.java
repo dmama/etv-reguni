@@ -300,6 +300,23 @@ public class ServiceInfrastructureCommuneCacheTest {
 		public String getSigleOFS() {
 			throw new NotImplementedException();
 		}
+
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			throw new NotImplementedException();
+		}
+
 	}
 
 	private static class TestCommuneComparator implements Comparator<Commune> {

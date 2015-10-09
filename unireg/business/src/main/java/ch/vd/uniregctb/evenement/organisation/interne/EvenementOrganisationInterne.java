@@ -1,17 +1,11 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -70,7 +64,7 @@ public abstract class EvenementOrganisationInterne {
 		this.entreprise = entreprise;
 
 		/* Champs précalculés */
-		this.organisationDescription = createOrganisationDescription();
+		this.organisationDescription = context.getServiceOrganisation().createOrganisationDescription(organisation, getDateEvt());
 	}
 
 	public final void validate(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -197,7 +191,7 @@ public abstract class EvenementOrganisationInterne {
 		if (etablissement != null) {
 			throw new EvenementOrganisationException(
 					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
-					              numeroSite, getNoOrganisation(), rangeAt(getOrganisation().getNom(), date)));
+					              numeroSite, getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), date)));
 		}
 	}
 
@@ -215,7 +209,7 @@ public abstract class EvenementOrganisationInterne {
 			throw new EvenementOrganisationException(
 					String.format(
 							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-							sitePrincipal.getNumeroSite(), getNoOrganisation(), rangeAt(getOrganisation().getNom(), theDate)));
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
 		}
 		return siegePrincipal;
 	}
@@ -235,7 +229,7 @@ public abstract class EvenementOrganisationInterne {
 			throw new EvenementOrganisationException(
 					String.format(
 							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
-							site.getNumeroSite(), getNoOrganisation(), rangeAt(getOrganisation().getNom(), theDate)));
+							site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
 		}
 		return siege;
 	}
@@ -350,39 +344,5 @@ public abstract class EvenementOrganisationInterne {
 		final Bouclement bouclement = BouclementHelper.createBouclementSelonSemestre(dateDebut);
 		bouclement.setEntreprise(entreprise);
 		context.getTiersDAO().addAndSave(entreprise, bouclement);
-	}
-
-	@NotNull
-	private String createOrganisationDescription() {
-		Siege siege = rangeAt(organisation.getSiegesPrincipaux(), getDateEvt());
-		String commune = "";
-		if (siege != null) {
-			commune = context.getServiceInfra().getCommuneByNumeroOfs(siege.getNoOfs(), getDateEvt()).getNomOfficielAvecCanton();
-		}
-		DateRanged<FormeLegale> formeLegaleDateRanged = rangeAt(organisation.getFormeLegale(), getDateEvt());
-		DateRanged<String> nomDateRanged = rangeAt(organisation.getNom(), getDateEvt());
-		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
-		                     nomDateRanged != null ? nomDateRanged.getPayload() : "[inconnu]",
-		                     organisation.getNumeroOrganisation(),
-		                     commune,
-		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
-		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
-	}
-
-	/**
-	 * Appelle la méthode analogue de DateRangeHelper, mais seulement après avoir controler que la liste des
-	 * ranges n'est pas nulle.
-	 * TODO: Trouver une autre solution
-	 * @param ranges La liste des ranges
-	 * @param date La date dont on cherche le range correspondant
-	 * @param <T> Le type encapsulé par le range
-	 * @return Le range, ou null s'il n'y en a pas ou si la liste est null.
-	 */
-	@Nullable
-	protected static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
-		if (ranges == null) {
-			return null;
-		}
-		return DateRangeHelper.rangeAt(ranges, date);
 	}
 }

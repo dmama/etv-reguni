@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -132,13 +130,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@NotNull
 	private String createOrganisationDescription(Organisation organisation, EvenementOrganisation event) {
 		RegDate date = event.getDateEvenement();
-		Siege siege = rangeAt(organisation.getSiegesPrincipaux(), date);
+		Siege siege = DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), date);
 		String commune = "";
 		if (siege != null) {
 			commune = context.getServiceInfra().getCommuneByNumeroOfs(siege.getNoOfs(), date).getNomOfficielAvecCanton();
 		}
-		DateRanged<FormeLegale> formeLegaleDateRanged = rangeAt(organisation.getFormeLegale(), date);
-		DateRanged<String> nomDateRanged = rangeAt(organisation.getNom(), date);
+		DateRanged<FormeLegale> formeLegaleDateRanged = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
+		DateRanged<String> nomDateRanged = DateRangeHelper.rangeAt(organisation.getNom(), date);
 		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
 		                     nomDateRanged != null ? nomDateRanged.getPayload() : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
@@ -146,24 +144,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
 		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
 	}
-
-	/**
-	 * Appelle la méthode analogue de DateRangeHelper, mais seulement après avoir controlé que la liste des
-	 * ranges n'est pas nulle.
-	 * TODO: Trouver une autre solution
-	 * @param ranges La liste des ranges
-	 * @param date La date dont on cherche le range correspondant
-	 * @param <T> Le type encapsulé par le range
-	 * @return Le range, ou null s'il n'y en a pas ou si la liste est null.
-	 */
-	@Nullable
-	protected static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
-		if (ranges == null) {
-			return null;
-		}
-		return DateRangeHelper.rangeAt(ranges, date);
-	}
-
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {

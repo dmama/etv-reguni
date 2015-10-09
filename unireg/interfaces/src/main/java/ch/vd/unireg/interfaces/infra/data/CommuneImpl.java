@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumCanton;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -183,5 +184,20 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return String.format("%s, dateDebut=%s, dateFin=%s, mere=%s, vaudoise=%b, fraction=%b, principale=%b, canton=%s, district=%s, region=%s",
 		                     super.getMemberString(), dateDebut, dateFin, noOfsCommuneMere <= 0 ? null : noOfsCommuneMere, vaudoise, fraction,
 		                     principale, buildQuotedString(sigleCanton), codeDistrict, codeRegion);
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, getDateDebutValidite(), getDateFinValidite(), NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public RegDate getDateDebut() {
+		return getDateDebutValidite();
+	}
+
+	@Override
+	public RegDate getDateFin() {
+		return getDateFinValidite();
 	}
 }

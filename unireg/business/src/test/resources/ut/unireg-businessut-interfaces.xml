@@ -14,7 +14,9 @@
 	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
 	<!-- Bean client ServiceOrganisation MOCK -->
-	<bean id="serviceOrganisationServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation" />
+	<bean id="serviceOrganisationServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceOrganisation">
+		<constructor-arg index="0" ref="serviceInfrastructureService"/>
+	</bean>
 	<alias alias="serviceOrganisationService" name="serviceOrganisationServiceMock"/>
 
 	<!-- Service UPI -->

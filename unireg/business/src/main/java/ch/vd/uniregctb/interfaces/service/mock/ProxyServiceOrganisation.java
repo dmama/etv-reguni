@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationServiceWrapper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 
@@ -18,8 +22,8 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	private ServiceOrganisationRaw target;
 	private final ServiceOrganisationImpl service;
 
-	public ProxyServiceOrganisation() {
-		this.service = new ServiceOrganisationImpl();
+	public ProxyServiceOrganisation(ServiceInfrastructureService serviceInfra) {
+		this.service = new ServiceOrganisationImpl(serviceInfra);
 	}
 
 	public void setUp(ServiceOrganisationRaw target) {
@@ -43,6 +47,12 @@ public class ProxyServiceOrganisation implements ServiceOrganisationService, Ser
 	public AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException {
 		assertTargetNotNull();
 		return service.getAdressesOrganisationHisto(noOrganisation);
+	}
+
+	@NotNull
+	@Override
+	public String createOrganisationDescription(Organisation organisation, RegDate date) {
+		return service.createOrganisationDescription(organisation, date);
 	}
 
 	private void assertTargetNotNull() {

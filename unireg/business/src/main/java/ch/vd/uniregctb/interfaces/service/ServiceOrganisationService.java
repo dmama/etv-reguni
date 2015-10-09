@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -33,4 +36,6 @@ public interface ServiceOrganisationService {
 	 */
 	AdressesCivilesHistoriques getAdressesOrganisationHisto(long noOrganisation) throws ServiceOrganisationException;
 
+	@NotNull
+	String createOrganisationDescription(Organisation organisation, RegDate date);
 }

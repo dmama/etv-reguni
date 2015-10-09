@@ -107,7 +107,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			}
 		});
 
-		serviceOrganisation = new ProxyServiceOrganisation();
+		serviceOrganisation = new ProxyServiceOrganisation(serviceInfra);
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
