@@ -26,17 +26,29 @@
 		<xs:sequence>
 			<xs:element name="categorieTiers" type="categorieTiersType">
 				<xs:annotation>
-					<xs:documentation>La catégorie du tiers pour lequel l'événement fiscal est émis.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La catégorie du tiers pour lequel l'événement fiscal est émis.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="numeroTiers" type="unireg:partyNumberType">
 				<xs:annotation>
-					<xs:documentation>Le numéro du tiers pour lequel l'événement fiscal est émis.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro du tiers pour lequel l'événement fiscal est émis.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="date" type="unireg:dateType">
 				<xs:annotation>
-					<xs:documentation>La date de valeur de l'événement fiscal.</xs:documentation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de valeur de l'événement fiscal.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -103,7 +115,11 @@
 				<xs:sequence>
 					<xs:element name="scope" type="corporation:taxSystemScopeType">
 						<xs:annotation>
-							<xs:documentation>Portée (VD, CH) du régime fiscal concerné par l'événement fiscal.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Portée (VD, CH) du régime fiscal concerné par l'événement fiscal.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -268,12 +284,20 @@
 				<xs:sequence>
 					<xs:element name="forPrincipal" type="xs:boolean">
 						<xs:annotation>
-							<xs:documentation>Indique si le for fiscal est principal ou non.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Indique si le for fiscal est principal ou non.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="localisationFor" type="taxresidence:taxationAuthorityTypeType">
 						<xs:annotation>
-							<xs:documentation>Localisation du for fiscal.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Localisation du for fiscal.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -294,7 +318,11 @@
 				<xs:sequence>
 					<xs:element name="motifOuverture" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Motif d'ouverture du for fiscal (optionnel dans certains cas...).</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Motif d'ouverture du for fiscal (optionnel dans certains cas...).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="padding" type="xs:int">
@@ -325,7 +353,11 @@
 				<xs:sequence>
 					<xs:element name="modeImposition" type="taxresidence:taxationMethodType">
 						<xs:annotation>
-							<xs:documentation>Nouveau mode d'imposition introduit.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Nouveau mode d'imposition introduit.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
@@ -347,7 +379,11 @@
 				<xs:sequence>
 					<xs:element name="motifFermeture" type="taxresidence:liabilityChangeReasonType">
 						<xs:annotation>
-							<xs:documentation>Motif de fermeture du for fiscal.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Motif de fermeture du for fiscal.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
@@ -390,7 +426,11 @@
 				<xs:sequence>
 					<xs:element name="noContribuableEnfant" type="unireg:partyNumberType">
 						<xs:annotation>
-							<xs:documentation>Numéro du contribuable enfant.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Numéro du contribuable enfant.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -449,17 +489,29 @@
 				<xs:sequence>
 					<xs:element name="dateFrom" type="unireg:dateType">
 						<xs:annotation>
-							<xs:documentation>Premier jour de la période de déclaration.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Premier jour de la période de déclaration.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="dateTo" type="unireg:dateType">
 						<xs:annotation>
-							<xs:documentation>Dernier jour de la période de déclaration.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Dernier jour de la période de déclaration.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="type" type="typeEvenementFiscalDeclarationType">
 						<xs:annotation>
-							<xs:documentation>Type d'événement fiscal de déclaration.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Type d'événement fiscal de déclaration.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -556,7 +608,11 @@
 				<xs:sequence>
 					<xs:element name="type" type="typeInformationComplementaireType">
 						<xs:annotation>
-							<xs:documentation>Type de l'annonce reçue du registre civil.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Type de l'annonce reçue du registre civil.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
