@@ -320,7 +320,7 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Motif d'ouverture du for fiscal (optionnel dans certains cas...).</jxb:javadoc>
+									<jxb:javadoc>Motif d'ouverture du for fiscal (optionnel, car tous les fors n'ont pas nécessairement de motifs d'ouverture).</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -377,11 +377,20 @@
 		<xs:complexContent>
 			<xs:extension base="evenementFiscalForType">
 				<xs:sequence>
-					<xs:element name="motifFermeture" type="taxresidence:liabilityChangeReasonType">
+					<xs:element name="motifFermeture" type="taxresidence:liabilityChangeReasonType" minOccurs="0">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Motif de fermeture du for fiscal.</jxb:javadoc>
+									<jxb:javadoc>Motif de fermeture du for fiscal (optionnel, car tous les types de for n'ont pas nécessairement un motif de fermeture).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
