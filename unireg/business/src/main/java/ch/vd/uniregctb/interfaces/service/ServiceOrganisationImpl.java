@@ -23,6 +23,8 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 
 	private ServiceInfrastructureService serviceInfra;
 
+	public ServiceOrganisationImpl() {}
+
 	public ServiceOrganisationImpl(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
 	}
