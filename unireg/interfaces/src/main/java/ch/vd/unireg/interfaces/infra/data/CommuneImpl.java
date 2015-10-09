@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = -5224553666590025447L;
+	private static final long serialVersionUID = 5489780767000047569L;
 
 	private static final RegDate REFINF_ORIGINE_COMMUNES = RegDate.get(1960, 1, 1);
 
