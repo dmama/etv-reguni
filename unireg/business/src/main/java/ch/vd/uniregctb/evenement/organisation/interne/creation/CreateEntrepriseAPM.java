@@ -11,7 +11,6 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -65,8 +64,6 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 				handleEtablissementsSecondaires(getAutoriteFiscalePrincipale(), site);
 			}
 		}
-
-		Audit.info(String.format("Entreprise créée avec le numéro %s", getEntreprise().getNumero()));
 
 		raiseStatusTo(HandleStatus.TRAITE);
 	}

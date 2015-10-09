@@ -245,7 +245,6 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(noOrganisation);
 		Assert.notNull(dateDebut);
 
-		Audit.info(getNumeroEvenement(), String.format("Création d'une entreprise pour l'organisation %s", noOrganisation));
 		final Entreprise entreprise = new Entreprise();
 		// Le numéro
 		entreprise.setNumeroEntreprise(noOrganisation);
@@ -254,6 +253,8 @@ public abstract class EvenementOrganisationInterne {
 		entreprise.addRegimeFiscal(new RegimeFiscal(dateDebut, null, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
 		// Persistence
 		setEntreprise((Entreprise) context.getTiersDAO().save(entreprise));
+
+		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", getEntreprise().getNumero(), noOrganisation));
 	}
 
 	/*
@@ -292,6 +293,8 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement), getEntreprise(), etablissement);
+
+		Audit.info(String.format("Etablissement créée avec le numéro %s, domicile %s", etablissement.getNumero(), autoriteFiscale.getNoOfs()));
 	}
 
 	private Etablissement createEtablissement(Long numeroSite, boolean principal) {
