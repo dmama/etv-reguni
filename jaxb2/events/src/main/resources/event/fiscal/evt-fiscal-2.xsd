@@ -4,10 +4,12 @@
            xmlns="http://www.vd.ch/fiscalite/unireg/event/fiscal/2"
            xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/2"
            xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2"
+           xmlns:corporation="http://www.vd.ch/fiscalite/unireg/party/corporation/4"
            xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-2.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/4" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-4.xsd" />
 
 	<!-- L'élément racine -->
 	<xs:element name="evenementFiscal" type="evenementFiscalType"/>
@@ -67,40 +69,6 @@
 	<!-- Les événements fiscaux 'simples' -->
 	<!-- -->
 
-	<xs:complexType name="changementRegimeFiscalType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Evénement fiscal envoyé en cas de changement de régime fiscal d'une entreprise.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
-				<xs:sequence>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
-	<xs:complexType name="changementAllegementFiscalType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Evénement fiscal envoyé en cas de changement dans un allègement fiscal d'une entreprise.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="evenementFiscalType">
-				<xs:sequence>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
 	<xs:complexType name="changementSituationFamilleType">
 		<xs:annotation>
 			<xs:appinfo>
@@ -111,6 +79,171 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="evenementFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- -->
+	<!-- Les événements fiscaux autour des régimes fiscaux -->
+	<!-- -->
+
+	<xs:complexType name="evenementFiscalRegimeFiscalType" abstract="true">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Base des événements fiscaux envoyés en cas de changement de régime fiscal d'une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalType">
+				<xs:sequence>
+					<xs:element name="scope" type="corporation:taxSystemScopeType">
+						<xs:annotation>
+							<xs:documentation>Portée (VD, CH) du régime fiscal concerné par l'événement fiscal.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ouvertureRegimeFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé à l'ouverture d'un nouveau régime fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalRegimeFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fermetureRegimeFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé à la fermeture (= introduction d'une date de fin de validité) d'un régime fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalRegimeFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="annulationRegimeFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé à l'annulation d'un régime fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalRegimeFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- -->
+	<!-- Les événements fiscaux autour des allègements fiscaux -->
+	<!-- -->
+
+	<xs:complexType name="evenementFiscalAllegementFiscalType" abstract="true">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Base des événements fiscaux envoyés en cas de changement dans un allègement fiscal d'une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalType">
+				<xs:sequence>
+					<xs:element name="genreImpot" type="corporation:taxTypeType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le type d'impôt concerné (Bénéfice / Capital).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="typeCollectivite" type="corporation:lighteningTargetType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La collectivité concernée par l'allègement (confédération, canton (VD), commune(s)).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ouvertureAllegementFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé en cas d'ouverture d'un nouvel allègement fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalAllegementFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fermetureAllegementFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé en cas à la fermeture (= introduction d'une date de fin de validité) d'un allègement fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalAllegementFiscalType">
+				<xs:sequence>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="annulationAllegementFiscalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé à l'annulation d'un allègement fiscal sur une entreprise.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalAllegementFiscalType">
 				<xs:sequence>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 				</xs:sequence>
@@ -164,9 +297,35 @@
 							<xs:documentation>Motif d'ouverture du for fiscal (optionnel dans certains cas...).</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="changementModeImposition" type="xs:boolean">
+					<xs:element name="padding" type="xs:int">
 						<xs:annotation>
-							<xs:documentation>Indique si l'ouverture du for correspond à un changement de mode d'imposition.</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="changementModeImpositionType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evénement fiscal envoyé lors d'un changement de mode d'imposition.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementFiscalForType">
+				<xs:sequence>
+					<xs:element name="modeImposition" type="taxresidence:taxationMethodType">
+						<xs:annotation>
+							<xs:documentation>Nouveau mode d'imposition introduit.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
