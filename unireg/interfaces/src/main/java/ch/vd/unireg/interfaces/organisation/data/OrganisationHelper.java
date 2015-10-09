@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+
 /**
  * Quelques méthodes pratiques d'interprétation des données dans le cadre des organisations
  */
@@ -21,4 +24,7 @@ public abstract class OrganisationHelper {
 		return extracted == null || extracted.isEmpty() ? null : extracted;
 	}
 
+	public static boolean isCreationPure(Organisation organisation, RegDate evtDate) {
+		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), evtDate.getOneDayBefore()) == null;
+	}
 }

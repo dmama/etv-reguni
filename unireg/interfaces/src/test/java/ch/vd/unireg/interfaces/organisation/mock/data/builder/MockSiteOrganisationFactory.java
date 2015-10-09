@@ -29,6 +29,7 @@ public abstract class MockSiteOrganisationFactory {
 	public static MockSiteOrganisation addSite(long cantonalId,
 	                                           MockOrganisation organisation,
 	                                           RegDate dateDebut,
+	                                           RegDate dateFin,
 	                                           String nom,
 	                                           @Nullable Boolean principal,
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiege,
@@ -37,12 +38,13 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable StatusInscriptionRC statusInscriptionRC,
 	                                           @Nullable StatusRegistreIDE statusIde,
 	                                           @Nullable TypeOrganisationRegistreIDE typeIde) {
-		return addSite(cantonalId, organisation, dateDebut, nom, principal, typeAutoriteFiscaleSiege, noOfsSiege, statusRC, statusInscriptionRC, statusIde, typeIde, null, null);
+		return addSite(cantonalId, organisation, dateDebut, dateFin, nom, principal, typeAutoriteFiscaleSiege, noOfsSiege, statusRC, statusInscriptionRC, statusIde, typeIde, null, null);
 	}
 
 	public static MockSiteOrganisation addSite(long cantonalId,
 	                                           MockOrganisation organisation,
 	                                           RegDate dateDebut,
+	                                           RegDate dateFin,
 	                                           String nom,
 	                                           @Nullable Boolean principal,
 	                                           @Nullable TypeAutoriteFiscale typeAutoriteFiscaleSiege,
@@ -57,10 +59,10 @@ public abstract class MockSiteOrganisationFactory {
 		final DonneesRC donneesRC;
 		final DonneesRCBuilder rcBuilder = new DonneesRCBuilder();
 		if (statusRC != null) {
-			rcBuilder.addNom(dateDebut, null, nom);
-			rcBuilder.addStatus(dateDebut, null, statusRC);
+			rcBuilder.addNom(dateDebut, dateFin, nom);
+			rcBuilder.addStatus(dateDebut, dateFin, statusRC);
 			if (statusInscriptionRC != null) {
-				rcBuilder.addStatusInscription(dateDebut, null, statusInscriptionRC);
+				rcBuilder.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
 			}
 			if (capitalAmount != null) {
 				rcBuilder.addCapital(new CapitalBuilder()
@@ -76,9 +78,9 @@ public abstract class MockSiteOrganisationFactory {
 		final DonneesRegistreIDE donneesRegistreIDE;
 		if (statusIde != null) {
 			final DonneesRegistreIDEBuilder idebuilder = new DonneesRegistreIDEBuilder()
-					.addStatus(dateDebut, null, statusIde);
+					.addStatus(dateDebut, dateFin, statusIde);
 			if (typeIde != null) {
-				idebuilder.addTypeOrganisation(dateDebut, null, typeIde);
+				idebuilder.addTypeOrganisation(dateDebut, dateFin, typeIde);
 			}
 			donneesRegistreIDE = idebuilder.build();
 		}

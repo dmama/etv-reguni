@@ -49,7 +49,7 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		/*
 		  Demande du métier: date de référence pour la création à la date de l'événement + 1 jour
 		  */
-		dateDeDebut = getDateEvt().addDays(1);
+		dateDeDebut = getDateEvt().getOneDayAfter();
 
 		category = CategorieEntrepriseHelper.getCategorieEntreprise(getDateEvt(), getOrganisation());
 

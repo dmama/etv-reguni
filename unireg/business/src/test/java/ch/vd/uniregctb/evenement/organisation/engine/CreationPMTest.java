@@ -99,6 +99,67 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 	}
 
 	@Test(timeout = 10000L)
+	public void testCreationPMCommuneFaitiere() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2015, 6, 24), FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                 MockCommune.Lausanne));
+			}
+		});
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "abcdefgh");
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
+				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
+
+				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
+				                             Assert.assertEquals(1, etablissements.size());
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissements.get(0).getDateDebut());
+
+				                             final Etablissement etablissement = etablissements.get(0).getPayload();
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
 	public void testCreationPMNonRC() throws Exception {
 
 		// Mise en place service mock
