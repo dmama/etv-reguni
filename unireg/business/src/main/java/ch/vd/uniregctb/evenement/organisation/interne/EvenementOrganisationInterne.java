@@ -306,7 +306,6 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
 
-		Audit.info(getNumeroEvenement(), String.format("Création d'un établissement %s no site %s", principal ? "principal" : "secondaire", numeroSite));
 		// L'établissement
 		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite, principal));
 		// Le domicile
@@ -314,7 +313,15 @@ public abstract class EvenementOrganisationInterne {
 		// L'activité économique
 		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement), getEntreprise(), etablissement);
 
-		Audit.info(String.format("Etablissement créée avec le numéro %s, domicile %s", etablissement.getNumero(), autoriteFiscale.getNoOfs()));
+		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
+
+		Audit.info(String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
+		                         principal ? "principal" : "secondaire",
+		                         etablissement.getNumero(),
+		                         numeroSite,
+		                         commune,
+		                         autoriteFiscale.getNoOfs(),
+		                         RegDateHelper.dateToDisplayString(dateDebut)));
 	}
 
 	private Etablissement createEtablissement(Long numeroSite, boolean principal) {
@@ -340,9 +347,9 @@ public abstract class EvenementOrganisationInterne {
 
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
-			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s",
+			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
 			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-			                                               RegDateHelper.dateToDisplayString(dateOuverture)));
+			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
 		} else {
 			warnings.addWarning(
@@ -366,8 +373,11 @@ public abstract class EvenementOrganisationInterne {
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings) {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
 		if (!commune.isPrincipale()) {
-		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
-		return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
+			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
+			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
+			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
+			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal secondaire sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal secondaire manuellement.",
@@ -382,12 +392,17 @@ public abstract class EvenementOrganisationInterne {
 	 */
 	protected void createAddBouclement(RegDate dateDebut) {
 		final Bouclement bouclement;
-		if (OrganisationHelper.siegePrincipalPrecedant(organisation, getDateEvt()) != null) {
+		boolean isCreationPure = OrganisationHelper.siegePrincipalPrecedant(organisation, getDateEvt()) == null;
+
+		if (isCreationPure) {
 			bouclement = BouclementHelper.createBouclement3112SelonSemestre(dateDebut);
 		} else {
 			bouclement = BouclementHelper.createBouclement3112(RegDate.get(dateDebut.year() - 1, 12, 31));
 		}
 		bouclement.setEntreprise(entreprise);
 		context.getTiersDAO().addAndSave(entreprise, bouclement);
+		RegDate premierBouclement = RegDate.get(bouclement.getDateDebut().year(), bouclement.getAncrage().month(), bouclement.getAncrage().day());
+		Audit.info(getNumeroEvenement(), String.format("Bouclement créé avec une périodicité de %s mois à partir du %s",
+		                                               bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
 	}
 }

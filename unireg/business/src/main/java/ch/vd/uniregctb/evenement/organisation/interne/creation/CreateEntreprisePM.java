@@ -92,6 +92,7 @@ public class CreateEntreprisePM extends CreateEntrepriseBase {
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		super.validateSpecific(erreurs, warnings);
 
+		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
 		DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(getOrganisation().getFormeLegale(), getDateDeDebut());
 		if (getCategory() == null) {
@@ -99,10 +100,8 @@ public class CreateEntreprisePM extends CreateEntrepriseBase {
 			                                formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
 		}
 
-		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
-
 		if (!inscritAuRC()) {
-			erreurs.addErreur(String.format("Pas d'inscription au RC. %s", getOrganisationDescription()));
+			erreurs.addErreur("Inscription au RC manquante.");
 		}
 	}
 }

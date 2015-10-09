@@ -20,9 +20,11 @@ import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
+import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -92,6 +94,11 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 				                             Assert.assertEquals(MotifRattachement.DOMICILE, forFiscalPrincipal.getMotifRattachement());
 				                             Assert.assertEquals(MotifFor.DEBUT_EXPLOITATION, forFiscalPrincipal.getMotifOuverture());
+
+				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), bouclement.getDateDebut());
+				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
 
 				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
 				                             Assert.assertEquals(1, etablissements.size());
@@ -171,6 +178,11 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 				                             Assert.assertEquals(MotifFor.ARRIVEE_HC, forFiscalPrincipal.getMotifOuverture());
+
+				                             final Bouclement bouclement = entreprise.getBouclements().iterator().next();
+				                             Assert.assertEquals(2014, bouclement.getDateDebut().year());
+				                             Assert.assertEquals(DayMonth.get(12, 31), bouclement.getAncrage());
+				                             Assert.assertEquals(12, bouclement.getPeriodeMois());
 
 				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
 				                             Assert.assertEquals(1, etablissements.size());

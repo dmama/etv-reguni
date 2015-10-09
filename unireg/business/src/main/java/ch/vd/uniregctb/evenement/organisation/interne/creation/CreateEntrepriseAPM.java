@@ -45,7 +45,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 		super.doHandle(warnings);
 
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
-		if (inscritAuRC()) { // TODO: Tester!
+		if (inscritAuRC()) {
 
 			MotifFor motifOuverture = determineMotifOuvertureFor();
 
@@ -59,7 +59,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 			// Création du bouclement
 			createAddBouclement(getDateDeDebut());
 		} else {
-			raiseStatusTo(HandleStatus.A_VERIFIER);
+			warnings.addWarning("Organisation non inscrite au RC. Pas de création automatique du for fiscal. Veuillez traiter le cas manuellement.");
 		}
 
 		// Gestion des sites secondaires non supportée pour l'instant, en attente du métier.

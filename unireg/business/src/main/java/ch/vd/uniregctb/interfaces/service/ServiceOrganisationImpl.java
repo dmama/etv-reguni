@@ -83,11 +83,11 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		}
 		DateRanged<FormeLegale> formeLegaleDateRanged = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
 		DateRanged<String> nomDateRanged = DateRangeHelper.rangeAt(organisation.getNom(), date);
-		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
+		return String.format("%s (civil: %d), %s %s, forme juridique %s",
 		                     nomDateRanged != null ? nomDateRanged.getPayload() : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
 		                     commune,
-		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
+		                     siege != null ? "(ofs: " + siege.getNoOfs() + ")" : "[inconnue]",
 		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
 	}
 }
