@@ -242,6 +242,14 @@ public class ArriveePrincipale extends Arrivee {
 			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
 				final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				if (rapportMenage != null) {
+					MenageCommun mc = (MenageCommun)context.getTiersService().getTiers(rapportMenage.getObjetId());
+					final ForFiscalPrincipal forFP = mc.getForFiscalPrincipalAt(getDate());
+					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && nouvelleCommune.getNoOFS() != forFP.getNumeroOfsAutoriteFiscale()) {
+						erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a un for principal vaudois " +
+								"différent de celui du menage commun (ctb:%s) qu'il est sensé rejoindre (SIFISC-11697) )", pp.getNumero(),mc.getNumero()));
+					}
+				}
 
 				// seulement pour les PP qui ne sont pas en couple, car dans le cas des couples,
 				// un membre peut déjà être arrivé lorsque le second arrive

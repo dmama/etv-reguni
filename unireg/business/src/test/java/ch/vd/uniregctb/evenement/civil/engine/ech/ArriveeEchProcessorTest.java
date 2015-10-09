@@ -338,6 +338,185 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+
+	//SIFISC-11697
+	@Test(timeout = 10000L)
+	public void testArriveesMadameSurCoupleVaudoisCommuneDifferente() throws Exception {
+
+		final long noLui = 246L;
+		final long noElle = 3342L;
+		final RegDate dateArrivee = date(2011, 10, 31);
+		final RegDate dateArriveeCantonMonsieur = date(2009, 10, 31);
+		final RegDate dateMariage = date(2001, 10, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate naissanceLui = date(1970, 3, 12);
+				final MockIndividu lui = addIndividu(noLui, naissanceLui, "Tartempion", "François", true);
+				final RegDate naissanceElle = date(1971, 6, 21);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(lui, MockPays.France, naissanceLui, null);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+				marieIndividus(lui, elle, dateMariage);
+
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArriveeCantonMonsieur, null);
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
+
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateArrivee, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
+
+
+		// événement civil de l'arrivée de madame
+		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(321674L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noElle);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée de monsieur
+		traiterEvenements(noElle);
+
+		// vérification de l'état de traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+				assertNotNull(pp);
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				assertEquals(1,mc.getForsFiscaux().size());
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				return null;
+			}
+		});
+	}
+
+	//SIFISC-11697
+	@Test(timeout = 10000L)
+	public void testArriveesMadameSurCoupleVaudoisMemeCommune() throws Exception {
+
+		final long noLui = 246L;
+		final long noElle = 3342L;
+		final RegDate dateArrivee = date(2011, 10, 31);
+		final RegDate dateArriveeCantonMonsieur = date(2009, 10, 31);
+		final RegDate dateMariage = date(2001, 10, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate naissanceLui = date(1970, 3, 12);
+				final MockIndividu lui = addIndividu(noLui, naissanceLui, "Tartempion", "François", true);
+				final RegDate naissanceElle = date(1971, 6, 21);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(lui, MockPays.France, naissanceLui, null);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+				marieIndividus(lui, elle, dateMariage);
+
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArriveeCantonMonsieur, null);
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateArrivee, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
+
+
+		// événement civil de l'arrivée de madame
+		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(321674L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noElle);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée de monsieur
+		traiterEvenements(noElle);
+
+		// vérification de l'état de traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+				assertNotNull(pp);
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				assertEquals(1,mc.getForsFiscaux().size());
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				return null;
+			}
+		});
+	}
+
+
 	@Test(timeout = 10000L)
 	public void testArriveesCoupleAvecRedondancePosterieure() throws Exception {
 
