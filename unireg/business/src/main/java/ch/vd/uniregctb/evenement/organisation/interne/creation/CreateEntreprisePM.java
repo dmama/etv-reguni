@@ -5,9 +5,7 @@ import java.util.List;
 
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -20,6 +18,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurC
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -67,9 +66,20 @@ public class CreateEntreprisePM extends CreateEntrepriseBase {
 
 	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		long numeroSite = site.getNumeroSite();
-		ensureNotExistsEtablissement(numeroSite, getDateDeDebut());
+		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
+		if (etablissement != null) {
+			throw new EvenementOrganisationException(
+					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
+					              numeroSite, getNoOrganisation(), getOrganisation().getNom(getDateDeDebut())));
+		}
 
-		final Siege autoriteFiscale = determineAutoriteFiscaleSiteSecondaire(site, getDateEvt());
+		final Siege autoriteFiscale = site.getSiege(getDateEvt());
+		if (autoriteFiscale == null) {
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
+							site.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
+		}
 
 		final List<Integer> autoritesAvecForSecondaire = new ArrayList<>();
 
@@ -91,10 +101,10 @@ public class CreateEntreprisePM extends CreateEntrepriseBase {
 
 		Assert.state(getCategory() == CategorieEntreprise.PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
-		DateRanged<FormeLegale> formeLegaleRange = DateRangeHelper.rangeAt(getOrganisation().getFormeLegale(), getDateDeDebut());
 		if (getCategory() == null) {
+			FormeLegale formeLegale = getOrganisation().getFormeLegale(getDateDeDebut());
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
-			                                formeLegaleRange != null ? formeLegaleRange.getPayload() : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
+			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
 		}
 
 		if (!inscritAuRC()) {

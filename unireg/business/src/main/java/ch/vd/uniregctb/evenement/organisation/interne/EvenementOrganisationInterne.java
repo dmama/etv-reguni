@@ -10,7 +10,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -88,7 +87,19 @@ public abstract class EvenementOrganisationInterne {
 	 * En fonction des différentes valeurs renseignées par cette méthode, le framework de traitement des événements va déterminer l'état de l'événement organisation de la manière suivante : <ul>
 	 * <li>exception => état de l'événement = EN_ERREUR</li><li>status = TRAITE et pas de warnings => état de l'événement = TRAITE</li> <li>status = REDONDANT et pas de warnings => état de l'événement =
 	 * REDONDANT</li> <li>status = TRAITE avec warnings => état de l'événement = A_VERIFIER</li> <li>status = REDONDANT avec warnings => état de l'événement = A_VERIFIER</li> </ul>
-	 *
+	 * </p>
+	 * <p>
+	 * A noter que cette méthode est finale. Le traitement à proprement parler est effectué dans la méthode doHandle().
+	 * </p>
+	 * <p>
+	 * Quelques règles à respecter dans doHandle() pour que tout se passe bien:
+	 * <ul>
+	 *     <li>Chaque traitement entraînant la création d'objet en base, ou tout autre changement d'état métier, doit être effectué au sein d'une méthode dédiée à l'opération
+	 *     métier correspondante, et nommée en fonction d'elle.</li>
+	 *     <li>Chaque méthode métier doit impérativement se terminer par un appel à raiseStatusTo() pour établir le status résultant de l'opération.</li>
+	 *     <li>D'une manière générale, les décisions métier doivent ressortir clairement de la lecture de la méthode doHandle().</li>
+	 * </ul>
+	 * </p>
 	 * @param warnings une liste de warnings qui sera remplie - si nécessaire - par la méthode.
 	 * @return un code de status permettant de savoir si lévénement a été traité ou s'il était redondant.
 	 * @throws EvenementOrganisationException si le traitement de l'événement est impossible pour une raison ou pour une autre.
@@ -103,7 +114,7 @@ public abstract class EvenementOrganisationInterne {
 	}
 
 	/*
-	Méthode à redéfinir pour implémenter le traitement concret.
+		Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
 	 */
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
@@ -207,59 +218,8 @@ public abstract class EvenementOrganisationInterne {
 		}
 	}
 
-	/**
-	 * Védifie qu'il n'existe pas déjà un établissement pour le site donné. Lance une exception dans
-	 * le cas contraire.
-	 * @param numeroSite Le numéro de registre civil du site
-	 * @param date La date pour laquelle la présence doit être contrôlée
-	 * @throws EvenementOrganisationException Si l'établissement existe déjà
-	 */
-	protected void ensureNotExistsEtablissement(long numeroSite, RegDate date) throws EvenementOrganisationException {
-		Etablissement etablissement = context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
-		if (etablissement != null) {
-			throw new EvenementOrganisationException(
-					String.format("Trouvé un établissement existant %s pour l'organisation en création %s %s. Impossible de continuer.",
-					              numeroSite, getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), date)));
-		}
-	}
-
-	/**
-	 * Determiner le siège principal pour la date
-	 * @param sitePrincipal
-	 * @return
-	 * @throws EvenementOrganisationException
-	 */
-	@NotNull
-	protected Siege determineAutoriteFiscalePrincipale(SiteOrganisation sitePrincipal, RegDate date) throws EvenementOrganisationException {
-		final RegDate theDate = date != null ? date : RegDate.get();
-		final Siege siegePrincipal = sitePrincipal.getSiege(theDate);
-		if (siegePrincipal == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
-			throw new EvenementOrganisationException(
-					String.format(
-							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
-							sitePrincipal.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
-		}
-		return siegePrincipal;
-	}
-
-	/**
-	 * Déterminer le siège secondaire pour la date
-	 * @param site
-	 * @param date
-	 * @return
-	 * @throws EvenementOrganisationException
-	 */
-	@NotNull
-	protected Siege determineAutoriteFiscaleSiteSecondaire(SiteOrganisation site, RegDate date) throws EvenementOrganisationException {
-		final RegDate theDate = date != null ? date : RegDate.get();
-		final Siege siege = site.getSiege(theDate);
-		if (siege == null) {
-			throw new EvenementOrganisationException(
-					String.format(
-							"Autorité fiscale (siège) introuvable pour le site secondaire %s de l'organisation %s %s. Site probablement à l'étranger. Impossible pour le moment de créer le domicile de l'établissement secondaire.",
-							site.getNumeroSite(), getNoOrganisation(), DateRangeHelper.rangeAt(getOrganisation().getNom(), theDate)));
-		}
-		return siege;
+	protected Etablissement getEtablissementByNumeroSite(long numeroSite) {
+		return context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
 	}
 
 	/**

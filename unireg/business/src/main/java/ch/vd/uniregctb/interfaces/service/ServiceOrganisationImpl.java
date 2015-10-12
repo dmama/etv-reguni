@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -83,13 +82,13 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 		if (siege != null) {
 			commune = DateRangeHelper.rangeAt(serviceInfra.getCommuneHistoByNumeroOfs(siege.getNoOfs()), date).getNomOfficielAvecCanton();
 		}
-		DateRanged<FormeLegale> formeLegaleDateRanged = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
-		DateRanged<String> nomDateRanged = DateRangeHelper.rangeAt(organisation.getNom(), date);
+		FormeLegale formeLegale = organisation.getFormeLegale(date);
+		String nom = organisation.getNom(date);
 		return String.format("%s (civil: %d), %s %s, forme juridique %s",
-		                     nomDateRanged != null ? nomDateRanged.getPayload() : "[inconnu]",
+		                     nom != null ? nom : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
 		                     commune,
 		                     siege != null ? "(ofs: " + siege.getNoOfs() + ")" : "[inconnue]",
-		                     formeLegaleDateRanged != null ? formeLegaleDateRanged.getPayload() : "[inconnue]");
+		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}
 }

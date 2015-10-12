@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -107,6 +108,11 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
+	public FormeLegale getFormeLegale(RegDate date) {
+		return OrganisationHelper.getFormeLegale(this, date);
+	}
+
+	@Override
 	public List<DateRanged<String>> getNumeroIDE() {
 		return MockOrganisationHelper.getHisto(ide);
 	}
@@ -114,6 +120,11 @@ public class MockOrganisation implements Organisation {
 	@Override
 	public List<DateRanged<String>> getNom() {
 		return MockOrganisationHelper.getHisto(nom);
+	}
+
+	@Override
+	public String getNom(RegDate date) {
+		return OrganisationHelper.getNom(this, date);
 	}
 
 	@Override
@@ -153,7 +164,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public Siege getSiegePrincipal(RegDate date) {
-		return DateRangeHelper.rangeAt(getSiegesPrincipaux(), date != null ? date : RegDate.get());
+		return OrganisationHelper.getSiegePrincipal(this, date);
 	}
 
 	@Override
@@ -173,42 +184,33 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<DateRanged<SiteOrganisation>> getSitePrincipaux() {
-		List<DateRanged<SiteOrganisation>> sitePrincipaux = new ArrayList<>();
-		for (SiteOrganisation site : this.getDonneesSites()) {
-			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
-				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-					sitePrincipaux.add(new DateRanged<>(siteRange.getDateDebut(), siteRange.getDateFin(), site));
-				}
-			}
-		}
-		return sitePrincipaux;
+		return OrganisationHelper.getSitePrincipaux(this);
 	}
 
 	// Implémentation identique à la classe Organisation
 	@Override
 	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
-		return DateRangeHelper.rangeAt(getSitePrincipaux(), theDate);
+		return OrganisationHelper.getSitePrincipal(this, date);
 	}
 
 	// Implémentation identique à la classe Organisation
 	@Override
 	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
-		List<SiteOrganisation> siteSecondaires = new ArrayList<>();
-		for (SiteOrganisation site : this.getDonneesSites()) {
-			for (DateRanged<TypeDeSite> siteRange : site.getTypeDeSite()) {
-				if (siteRange != null && siteRange.getPayload() == TypeDeSite.ETABLISSEMENT_SECONDAIRE && siteRange.isValidAt(theDate)) {
-					siteSecondaires.add(site);
-				}
-			}
-		}
-		return siteSecondaires;
+		return OrganisationHelper.getSitesSecondaires(this, date);
 	}
 
 	@Override
 	public List<Capital> getCapitaux() {
-		throw new NotImplementedException();
+		Map<Long, SiteOrganisation> sitesMap = new HashMap<>();
+		for (MockSiteOrganisation mock : sites) {
+			sitesMap.put(mock.getNumeroSite(), mock);
+		}
+		return OrganisationHelper.getCapitaux(sitesMap);
+	}
+
+	@Override
+	public Capital getCapital(RegDate date) {
+		return OrganisationHelper.getCapital(this, date);
 	}
 
 	@Override

@@ -1,17 +1,9 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -54,44 +46,21 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 	/*
 	TODO: Implémenter au niveau de l'adapteur?
 	 */
-	protected boolean hasSitePrincipalVD(Organisation organisation, EvenementOrganisation event) {
-		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
-			final DateRanged<TypeDeSite> type = rangeAt(site.getTypeDeSite(), event.getDateEvenement());
-			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&  type != null && type.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
-				return true;
-			}
-		}
-		return false;
+	protected boolean hasSitePrincipalVD(Organisation organisation, RegDate date) {
+		Siege siegePrincipal = organisation.getSiegePrincipal(date);
+		return siegePrincipal != null && siegePrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	/*
 	Todo: Implémenter au niveau de l'adapteur?
 	 */
-	protected boolean hasSiteVD(Organisation organisation, EvenementOrganisation event) {
+	protected boolean hasSiteVD(Organisation organisation, RegDate date) {
 		for (SiteOrganisation site : organisation.getDonneesSites()) {
-			final Siege siege = rangeAt(site.getSieges(), event.getDateEvenement());
+			final Siege siege = site.getSiege(date);
 			if (siege != null && siege.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Appelle la méthode analogue de DateRangeHelper, mais seulement après avoir controler que la liste des
-	 * ranges n'est pas nulle.
-	 * TODO: Trouver une autre solution
-	 * @param ranges La liste des ranges
-	 * @param date La date dont on cherche le range correspondant
-	 * @param <T> Le type encapsulé par le range
-	 * @return Le range, ou null s'il n'y en a pas ou si la liste est null.
-	 */
-	@Nullable
-	protected static <T extends DateRange> T rangeAt(@Nullable List<? extends T> ranges, RegDate date) {
-		if (ranges == null) {
-			return null;
-		}
-		return DateRangeHelper.rangeAt(ranges, date);
 	}
 }

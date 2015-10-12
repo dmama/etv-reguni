@@ -12,6 +12,8 @@ public interface Organisation {
 	 */
 	long getNumeroOrganisation();
 
+	Capital getCapital(RegDate date);
+
 	/**
 	 * @return Liste des sites de l'organisation
 	 */
@@ -32,12 +34,16 @@ public interface Organisation {
 	 */
 	List<DateRanged<String>> getNom();
 
+	String getNom(RegDate date);
+
 	/**
 	 * @return historiques des noms additionnels de l'organisation
 	 */
 	List<DateRanged<String>> getNomsAdditionels();
 
 	Siege getSiegePrincipal(RegDate date);
+
+	FormeLegale getFormeLegale(RegDate date);
 
 	List<Capital> getCapitaux();
 

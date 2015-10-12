@@ -2,9 +2,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.helper;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 
@@ -31,7 +29,7 @@ public class CategorieEntrepriseHelper {
 	 * @param formeLegale
 	 * @return la catégorie, ou null si pas de correspondance ou pas forme légale en entrée.
 	 */
-	public static CategorieEntreprise map(FormeLegale formeLegale) {
+	public static CategorieEntreprise map(@Nullable FormeLegale formeLegale) {
 		if (formeLegale != null) {
 			switch (formeLegale) {
 			/* Personne Physique */
@@ -76,8 +74,7 @@ public class CategorieEntrepriseHelper {
 
 	// TODO: Déplacer dans l'adapter?
 	@Nullable
-	public static CategorieEntreprise getCategorieEntreprise(RegDate date, Organisation organisation) {
-		final DateRanged<FormeLegale> fl = DateRangeHelper.rangeAt(organisation.getFormeLegale(), date);
-		return fl == null ? null : CategorieEntrepriseHelper.map(fl.getPayload());
+	public static CategorieEntreprise getCategorieEntreprise(Organisation organisation, RegDate date) {
+		return CategorieEntrepriseHelper.map(organisation.getFormeLegale(date));
 	}
 }

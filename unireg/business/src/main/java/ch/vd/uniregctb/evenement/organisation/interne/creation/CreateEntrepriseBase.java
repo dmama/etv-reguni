@@ -3,16 +3,12 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
-import ch.vd.unireg.interfaces.organisation.data.DateRanged;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -50,13 +46,20 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 		  */
 		dateDeDebut = getDateEvt().getOneDayAfter();
 
-		category = CategorieEntrepriseHelper.getCategorieEntreprise(getDateEvt(), getOrganisation());
+		category = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
 
-		sitePrincipal = getOrganisation().getSitePrincipal(getDateEvt()).getPayload();
+		sitePrincipal = organisation.getSitePrincipal(getDateEvt()).getPayload();
 
-		autoriteFiscalePrincipale = determineAutoriteFiscalePrincipale(sitePrincipal, getDateEvt());
+		autoriteFiscalePrincipale = sitePrincipal.getSiege(getDateEvt());
 
-		// TODO: Ecrire plus de tests.
+		if (autoriteFiscalePrincipale == null) { // Indique un établissement "probablement" à l'étranger. Nous ne savons pas traiter ce cas pour l'instant.
+			throw new EvenementOrganisationException(
+					String.format(
+							"Autorité fiscale (siège) introuvable pour le site principal %s de l'organisation %s %s. Site probablement à l'étranger. Impossible de créer le domicile de l'établissement principal.",
+							sitePrincipal.getNumeroSite(), getNoOrganisation(), getOrganisation().getNom(getDateEvt())));
+		}
+
+		// TODO: Ecrire plus de tests?
 
 		// TODO: Générer événements fiscaux
 
@@ -80,26 +83,6 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 	@NotNull
 	public Siege getAutoriteFiscalePrincipale() {
 		return autoriteFiscalePrincipale;
-	}
-
-	protected boolean inscritAuRC() {
-		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
-		if (donneesRC != null) {
-			DateRanged<StatusRC> statusRCDateRanged = DateRangeHelper.rangeAt(donneesRC.getStatus(), getDateEvt());
-			if (statusRCDateRanged != null) {
-				return statusRCDateRanged.getPayload() == StatusRC.INSCRIT;
-			}
-		}
-		return false;
-	}
-
-	// TODO: A faire autrement
-	protected Capital getCapital() {
-		DonneesRC donneesRC = sitePrincipal.getDonneesRC();
-		if (donneesRC != null) {
-			return DateRangeHelper.rangeAt(donneesRC.getCapital(), getDateEvt());
-		}
-		return null;
 	}
 
 	@Override
@@ -144,5 +127,13 @@ public class CreateEntrepriseBase extends EvenementOrganisationInterne {
 
 
 		// Vérifier la présence des autres données nécessaires ?
+	}
+
+	protected boolean inscritAuRC() {
+		return OrganisationHelper.isInscritAuRC(getOrganisation(), getDateEvt());
+	}
+
+	protected boolean hasCapital() {
+		return getOrganisation().getCapital(getDateEvt()) != null;
 	}
 }

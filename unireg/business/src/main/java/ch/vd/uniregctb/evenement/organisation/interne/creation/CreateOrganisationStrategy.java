@@ -46,11 +46,11 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 		}
 
 		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(event.getDateEvenement(), organisation);
+		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, event.getDateEvenement());
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (hasSitePrincipalVD(organisation, event)) {
+			if (hasSitePrincipalVD(organisation, event.getDateEvenement())) {
 
 				switch (category) {
 
@@ -82,7 +82,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 				default:
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
-			} else if (hasSiteVD(organisation, event)) {
+			} else if (hasSiteVD(organisation, event.getDateEvenement())) {
 				switch (category) {
 
 				case PP:
