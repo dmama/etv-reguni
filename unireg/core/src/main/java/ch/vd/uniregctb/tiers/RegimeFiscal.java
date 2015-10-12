@@ -15,13 +15,14 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 @Entity
 @Table(name = "REGIME_FISCAL")
-public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEntity {
+public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEntity, Duplicable<RegimeFiscal> {
 
 	public enum Portee {
 		VD,
@@ -99,5 +100,11 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
+	}
+
+	@Transient
+	@Override
+	public RegimeFiscal duplicate() {
+		return new RegimeFiscal(getDateDebut(), getDateFin(), portee, type);
 	}
 }

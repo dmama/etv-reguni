@@ -16,12 +16,13 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
 @Table(name = "ALLEGEMENT_FISCAL")
-public class AllegementFiscal extends HibernateDateRangeEntity implements LinkedEntity {
+public class AllegementFiscal extends HibernateDateRangeEntity implements LinkedEntity, Duplicable<AllegementFiscal> {
 
 	public enum TypeImpot {
 		BENEFICE,
@@ -71,6 +72,12 @@ public class AllegementFiscal extends HibernateDateRangeEntity implements Linked
 	@Override
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return entreprise == null ? null : Collections.singletonList(entreprise);
+	}
+
+	@Transient
+	@Override
+	public AllegementFiscal duplicate() {
+		return new AllegementFiscal(this);
 	}
 
 	@Transient

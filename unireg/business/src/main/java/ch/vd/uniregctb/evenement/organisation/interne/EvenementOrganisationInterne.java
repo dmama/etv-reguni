@@ -262,21 +262,29 @@ public abstract class EvenementOrganisationInterne {
 		return siege;
 	}
 
+	/**
+	 * Crée et persiste une nouvelle entreprise pour un numéro d'organisation donné
+	 * @param noOrganisation numéro d'organisation à utiliser
+	 * @return la nouvelle entreprise déjà persistée
+	 */
+	private Entreprise createEntreprise(long noOrganisation) {
+		final Entreprise entreprise = new Entreprise();
+		entreprise.setNumeroEntreprise(noOrganisation);
+		return (Entreprise) context.getTiersDAO().save(entreprise);
+	}
 
-	protected void createEntreprise(Long noOrganisation, RegDate dateDebut) {
+	protected void createEntreprise(long noOrganisation, RegDate dateDebut) {
 		Assert.notNull(noOrganisation);
 		Assert.notNull(dateDebut);
 
-		final Entreprise entreprise = new Entreprise();
-		// Le numéro
-		entreprise.setNumeroEntreprise(noOrganisation);
-		// Le régime fiscal VD + CH
-		entreprise.addRegimeFiscal(new RegimeFiscal(dateDebut, null, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE));
-		entreprise.addRegimeFiscal(new RegimeFiscal(dateDebut, null, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
-		// Persistence
-		setEntreprise((Entreprise) context.getTiersDAO().save(entreprise));
+		final Entreprise entreprise = createEntreprise(noOrganisation);
 
-		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", getEntreprise().getNumero(), noOrganisation));
+		// Le régime fiscal VD + CH
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE, dateDebut);
+		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE, dateDebut);
+
+		setEntreprise(entreprise);
+		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 

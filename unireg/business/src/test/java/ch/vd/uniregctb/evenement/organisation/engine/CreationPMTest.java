@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.engine;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -19,11 +22,16 @@ import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -31,6 +39,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.IDE;
@@ -40,6 +49,14 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
  * @author Raphaël Marmier, 2015-09-03
  */
 public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
+
+	private EvenementFiscalDAO evtFiscalDAO;
+
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+		evtFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+	}
 
 	protected boolean buildProcessorOnSetup() {
 		return true;
@@ -106,6 +123,54 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 
 				                             final Etablissement etablissement = etablissements.get(0).getPayload();
 				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(3, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
+
+				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
+				                             // puis les fors... donc les IDs sont dans cet ordre
+				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+					                             @Override
+					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						                             return Long.compare(o1.getId(), o2.getId());
+					                             }
+				                             });
+
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
+				                             }
 
 				                             return null;
 			                             }
@@ -190,6 +255,55 @@ public class CreationPMTest extends AbstractEvenementOrganisationProcessorTest {
 
 				                             final Etablissement etablissement = etablissements.get(0).getPayload();
 				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(3, evtsFiscaux.size());    // 2 pour les régimes fiscaux, un pour le for principal
+
+				                             // on sait (parce qu'on a regardé...) que l'ordre de création est : d'abord les régimes fiscaux (CH puis VD)
+				                             // puis les fors... donc les IDs sont dans cet ordre
+				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+					                             @Override
+					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						                             return Long.compare(o1.getId(), o2.getId());
+					                             }
+				                             });
+
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
+					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
+					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
+					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+				                             }
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalFor.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 25), ef.getDateValeur());
+
+					                             final EvenementFiscalFor eff = (EvenementFiscalFor) ef;
+					                             Assert.assertEquals(EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, eff.getType());
+					                             Assert.assertEquals(date(2015, 6, 25), eff.getForFiscal().getDateDebut());
+				                             }
 
 				                             return null;
 			                             }

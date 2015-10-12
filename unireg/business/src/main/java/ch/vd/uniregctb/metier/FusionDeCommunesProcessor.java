@@ -507,7 +507,7 @@ public class FusionDeCommunesProcessor {
 			else {
 				final Entreprise e = allegement.getEntreprise();
 				tiersService.closeAllegementFiscal(allegement, dateFusion.getOneDayBefore());
-				tiersService.addAllegementFiscal(e, allegement.getPourcentageAllegement(), allegement.getTypeCollectivite(), allegement.getTypeImpot(), nouveauNoOfs, dateFusion, null);
+				tiersService.openAllegementFiscal(e, allegement.getPourcentageAllegement(), allegement.getTypeCollectivite(), allegement.getTypeImpot(), nouveauNoOfs, dateFusion);
 			}
 		}
 	}

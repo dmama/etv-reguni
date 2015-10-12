@@ -34,6 +34,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
  * Fournit les differents services d'accès aux données du Tiers.
@@ -1492,12 +1493,66 @@ public interface TiersService {
                                          BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
                                          Integer noOfsCommune, RegDate dateDebut, RegDate dateFin);
 
+    /**
+     * Crée un allègement fiscal sur l'entreprise passée en paramètre, avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param pourcentageAllegement le pourcentage d'allègement souhaité (0 -> 100)
+     * @param typeCollectivite le type de collectivité (= portée de l'impôt) pour lequel l'allègement est demandé (<code>null</code> pour "TOUS")
+     * @param typeImpot le type d'impôt concerné par l'allègement (<code>null</code> pour "TOUS")
+     * @param noOfsCommune le numéro ofs de la commune (vaudoise), valide uniquement si le type de collectivité est {@link AllegementFiscal.TypeCollectivite#COMMUNE} (<code>null</code> pour "TOUTES")
+     * @param dateDebut la date de début de la validité de l'allègement fiscal
+     * @return l'allègement nouvellement créé
+     */
+    AllegementFiscal openAllegementFiscal(Entreprise e,
+                                          BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
+                                          Integer noOfsCommune, RegDate dateDebut);
+
 	/**
 	 * Ferme l'allègement fiscal à la date indiquée
 	 * @param af l'allègement fiscal à fermer
 	 * @param dateFin la date de fin à utiliser
 	 */
 	void closeAllegementFiscal(AllegementFiscal af, RegDate dateFin);
+
+    /**
+     * Annule l'allègement fiscal passé en paramètre
+     * @param af l'allègement fiscal à annuler
+     */
+    void annuleAllegementFiscal(AllegementFiscal af);
+
+    /**
+     * Crée un régime fiscal sur l'entreprise passée en paramètre avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param portee la portée du régime fiscal
+     * @param type le type de régime fiscal
+     * @param dateDebut la date de début de validité du régime fiscal
+     * @param dateFin la date de fin de validité du régime fiscal
+     * @return le régime fiscal nouvellement créé
+     */
+    RegimeFiscal addRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin);
+
+    /**
+     * Crée un régime fiscal valide depuis la date donnée avec les informations fournies
+     * @param e l'entreprise destinataire
+     * @param portee la portée du régime fiscal
+     * @param type le type de régime fiscal
+     * @param dateDebut la date de début de validité du régime fiscal
+     * @return le régime fiscal nouvellement créé
+     */
+    RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut);
+
+    /**
+     * Ferme le régime fiscal à la date indiquée
+     * @param rf le régime fiscal à fermer
+     * @param dateFin la date de fin à utiliser
+     */
+    void closeRegimeFiscal(RegimeFiscal rf, RegDate dateFin);
+
+    /**
+     * Annule le régime fiscal passé en paramètre
+     * @param rf le régime fiscal à annuler
+     */
+    void annuleRegimeFiscal(RegimeFiscal rf);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre

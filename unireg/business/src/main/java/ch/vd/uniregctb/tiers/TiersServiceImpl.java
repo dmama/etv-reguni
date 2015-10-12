@@ -64,6 +64,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -123,6 +124,7 @@ import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -5217,10 +5219,42 @@ public class TiersServiceImpl implements TiersService {
 		domicile.setDateFin(dateFin);
 	}
 
+	@Nullable
+	private static AllegementFiscal getDernierAllegementFiscal(Entreprise e, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot, @Nullable Integer noOfsCommune) {
+		final List<AllegementFiscal> tous = e.getAllegementsFiscauxNonAnnulesTries();
+		for (AllegementFiscal af : CollectionsUtils.revertedOrder(tous)) {
+			if (af.getTypeCollectivite() == typeCollectivite
+					&& af.getTypeImpot() == typeImpot
+					&& ((noOfsCommune == null && af.getNoOfsCommune() == null) || (noOfsCommune != null && af.getNoOfsCommune() != null && noOfsCommune.equals(af.getNoOfsCommune())))) {
+				return af;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public AllegementFiscal addAllegementFiscal(Entreprise e, BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot,
 	                                            Integer noOfsCommune, RegDate dateDebut, RegDate dateFin) {
-		return tiersDAO.addAndSave(e, new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, typeCollectivite, noOfsCommune));
+
+		final AllegementFiscal existing = getDernierAllegementFiscal(e, typeCollectivite, typeImpot, noOfsCommune);
+		if (existing != null && existing.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+				closeAllegementFiscal(existing, dateDebut.getOneDayBefore());
+			}
+		}
+
+		final AllegementFiscal af = openAllegementFiscal(e, pourcentageAllegement, typeCollectivite, typeImpot, noOfsCommune, dateDebut);
+		if (dateFin != null) {
+			closeAllegementFiscal(af, dateFin);
+		}
+		return af;
+	}
+
+	@Override
+	public AllegementFiscal openAllegementFiscal(Entreprise e, BigDecimal pourcentageAllegement, AllegementFiscal.TypeCollectivite typeCollectivite, AllegementFiscal.TypeImpot typeImpot, Integer noOfsCommune, RegDate dateDebut) {
+		final AllegementFiscal af = tiersDAO.addAndSave(e, new AllegementFiscal(dateDebut, null, pourcentageAllegement, typeImpot, typeCollectivite, noOfsCommune));
+		evenementFiscalService.publierEvenementFiscalOuvertureAllegementFiscal(af);
+		return af;
 	}
 
 	@Override
@@ -5232,6 +5266,94 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		af.setDateFin(dateFin);
+		evenementFiscalService.publierEvenementFiscalFermetureAllegementFiscal(af);
+	}
+
+	@Override
+	public void annuleAllegementFiscal(AllegementFiscal af) {
+		final AllegementFiscal dernier = getDernierAllegementFiscal(af.getEntreprise(), af.getTypeCollectivite(), af.getTypeImpot(), af.getNoOfsCommune());
+		if (dernier != af) {
+			throw new ValidationException(af, "Seul le dernier allègement fiscal peut être annulé.");
+		}
+		af.setAnnule(true);
+
+		// éventuellement, on ré-ouvre le précédent
+		final AllegementFiscal precedent = getDernierAllegementFiscal(af.getEntreprise(), af.getTypeCollectivite(), af.getTypeImpot(), af.getNoOfsCommune());
+		if (precedent != null && precedent.getDateFin() == af.getDateDebut().getOneDayBefore()) {
+			final AllegementFiscal reouvert = precedent.duplicate();
+			precedent.setAnnule(true);
+			reouvert.setDateFin(null);
+			tiersDAO.addAndSave(af.getEntreprise(), reouvert);
+		}
+
+		// et on envoie un événement fiscal
+		evenementFiscalService.publierEvenementFiscalAnnulationAllegementFiscal(af);
+	}
+
+	@Nullable
+	private static RegimeFiscal getDernierRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee) {
+		final List<RegimeFiscal> tous = e.getRegimesFiscauxNonAnnulesTries();
+		for (RegimeFiscal rf : CollectionsUtils.revertedOrder(tous)) {
+			if (rf.getPortee() == portee) {
+				return rf;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public RegimeFiscal addRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut, RegDate dateFin) {
+		final RegimeFiscal existing = getDernierRegimeFiscal(e, portee);
+		if (existing != null && existing.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(existing.getDateDebut())) {
+				closeRegimeFiscal(existing, dateDebut.getOneDayBefore());
+			}
+		}
+
+		final RegimeFiscal rf = openRegimeFiscal(e, portee, type, dateDebut);
+		if (dateFin != null) {
+			closeRegimeFiscal(rf, dateFin);
+		}
+		return rf;
+	}
+
+	@Override
+	public RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut) {
+		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, null, portee, type));
+		evenementFiscalService.publierEvenementFiscalOuvertureRegimeFiscal(rf);
+		return rf;
+	}
+
+	@Override
+	public void closeRegimeFiscal(RegimeFiscal rf, RegDate dateFin) {
+		if (rf.getDateDebut().isAfter(dateFin)) {
+			throw new ValidationException(rf, String.format("La date de fermeture (%s) est avant la date de début (%s) du régime fiscal actif.",
+			                                                RegDateHelper.dateToDisplayString(dateFin), RegDateHelper.dateToDisplayString(rf.getDateDebut())));
+		}
+
+		rf.setDateFin(dateFin);
+		evenementFiscalService.publierEvenementFiscalFermetureRegimeFiscal(rf);
+	}
+
+	@Override
+	public void annuleRegimeFiscal(RegimeFiscal rf) {
+		final RegimeFiscal dernier = getDernierRegimeFiscal(rf.getEntreprise(), rf.getPortee());
+		if (dernier != rf) {
+			throw new ValidationException(rf, "Seul le dernier régime fiscal peut être annulé.");
+		}
+		rf.setAnnule(true);
+
+		// éventuellement, ou ré-ouvre le précédent
+		final RegimeFiscal precedent = getDernierRegimeFiscal(rf.getEntreprise(), rf.getPortee());
+		if (precedent != null && precedent.getDateFin() == rf.getDateDebut().getOneDayBefore()) {
+			final RegimeFiscal reouvert = precedent.duplicate();
+			precedent.setAnnule(true);
+			reouvert.setDateFin(null);
+			tiersDAO.addAndSave(rf.getEntreprise(), reouvert);
+		}
+
+		// et on envoie un événement fiscal
+		evenementFiscalService.publierEvenementFiscalAnnulationRegimeFiscal(rf);
 	}
 
 	@Override
