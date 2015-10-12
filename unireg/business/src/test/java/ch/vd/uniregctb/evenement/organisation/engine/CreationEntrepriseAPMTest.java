@@ -18,7 +18,9 @@ import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFa
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
@@ -29,14 +31,14 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreationEntrepriseAPMTest extends AbstractEvenementOrganisationProcessorTest {
 
 	protected boolean buildProcessorOnSetup() {
 		return true;
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationFDSPLAC() throws Exception {
+	public void testCreationAPM() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -45,7 +47,7 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
 						                                                 MockCommune.Lausanne));
 			}
 		});
@@ -72,12 +74,16 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 
 				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
 				                             Assert.assertNotNull(evt);
-				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
 
-				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
+				                             ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).get(0);
+				                             Assert.assertEquals(RegDate.get(2015, 6, 25), forFiscalPrincipal.getDateDebut());
+				                             Assert.assertNull(forFiscalPrincipal.getDateFin());
+				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
+				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 
 				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
 				                             Assert.assertEquals(1, etablissements.size());
@@ -93,7 +99,7 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 	}
 
 	@Test(timeout = 10000L)
-	public void testCreationFDSPLACNonRC() throws Exception {
+	public void testCreationAPMNonRC() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -102,7 +108,7 @@ public class CreationFDSPLACTest extends AbstractEvenementOrganisationProcessorT
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Kramer Placements", RegDate.get(2015, 6, 24), null, FormeLegale.N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX,
+						MockOrganisationFactory.createOrganisation(noOrganisation, noOrganisation + 1000000, "Association bidule", RegDate.get(2015, 6, 24), null, FormeLegale.N_0110_FONDATION,
 						                                           TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), null, null, StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.ASSOCIATION));
 			}

@@ -33,7 +33,7 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreationHorsVDTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreationEntrepriseHorsVDTest extends AbstractEvenementOrganisationProcessorTest {
 
 	protected boolean buildProcessorOnSetup() {
 		return true;

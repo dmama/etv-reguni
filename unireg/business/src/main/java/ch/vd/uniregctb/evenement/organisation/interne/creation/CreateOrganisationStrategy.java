@@ -5,6 +5,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
+import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
