@@ -133,20 +133,12 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 		situationFamille.setNombreEnfants(situationFamilleView.getNombreEnfants());
 		contribuable.closeSituationFamilleActive(dateDebut.addDays(-1));
 
-		final SituationFamille nouvelleSituation = tiersDAO.addAndSave(contribuable, situationFamille);
-		evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, nouvelleSituation.getId());
-	}
-
-	public SituationFamilleDAO getSituationFamilleDAO() {
-		return situationFamilleDAO;
+		tiersDAO.addAndSave(contribuable, situationFamille);
+		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(dateDebut, contribuable);
 	}
 
 	public void setSituationFamilleDAO(SituationFamilleDAO situationFamilleDAO) {
 		this.situationFamilleDAO = situationFamilleDAO;
-	}
-
-	public EvenementFiscalService getEvenementFiscalService() {
-		return evenementFiscalService;
 	}
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {

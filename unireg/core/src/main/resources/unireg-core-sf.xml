@@ -34,13 +34,14 @@
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscal</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalFor</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalDI</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalLR</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale</value>
-		<value>ch.vd.uniregctb.evenement.EvenementFiscalNaissance</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscal</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalAllegementFiscal</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalRegimeFiscal</value>
+		<value>ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSituationFamille</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch</value>
 		<value>ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur</value>
 		<value>ch.vd.uniregctb.evenement.organisation.EvenementOrganisation</value>

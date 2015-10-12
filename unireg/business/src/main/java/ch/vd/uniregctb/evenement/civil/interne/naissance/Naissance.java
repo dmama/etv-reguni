@@ -20,7 +20,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class Naissance extends EvenementCivilInterne {
@@ -125,10 +125,10 @@ public class Naissance extends EvenementCivilInterne {
 
 		context.getTiersService().refreshParentesSurPersonnePhysique(bebe, false);
 
-		context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
+		context.getEvenementFiscalService().publierEvenementFiscalChangementSituationFamille(dateEvenement, bebe);
 
 		// [UNIREG-3244] on envoie les faire-parts de naissance
-		final Contribuable parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
+		final ContribuableImpositionPersonnesPhysiques parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
 		if (parent != null) {
 			context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
 		}

@@ -299,12 +299,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException {
 
-		final Contribuable ctb = (Contribuable) declaration.getTiers();
+		final Contribuable ctb = declaration.getTiers();
 
 		EditiqueResultat resultat;
 		try {
 			resultat = editiqueCompositionService.imprimeDIOnline(declaration);
-			evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
 
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de création de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = declaration.getPeriode().getAnnee();
@@ -312,15 +312,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 				final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
 				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, declaration.getCodeControle(), codeSegmentString);
 			}
+
+			// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents)
+			final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+			if (etatRetour != null) {
+				evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(declaration, etatRetour.getDateObtention());
+			}
 		}
 		catch (EditiqueException | EvenementDeclarationException | JMSException e) {
 			throw new DeclarationException(e);
-		}
-
-		// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents) 
-		final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-		if (etatRetour != null) {
-			evenementFiscalService.publierEvenementFiscalRetourDI(ctb, declaration, etatRetour.getDateObtention());
 		}
 		return resultat;
 	}
@@ -345,7 +345,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		try {
 			final Contribuable tiers = declaration.getTiers();
 			editiqueCompositionService.imprimeDIForBatch(declaration);
-			evenementFiscalService.publierEvenementFiscalEnvoiDI(tiers, declaration, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
 
 			final String codeSegmentString = Integer.toString(declaration.getCodeSegment() != null ? declaration.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
 			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
@@ -366,7 +366,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		evenementFiscalService.publierEvenementFiscalSommationDI(declaration.getTiers(), declaration, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
 		declaration.addEtat(etat);
-		evenementFiscalService.publierEvenementFiscalEcheanceDI(declaration.getTiers(), declaration, dateTraitement);
+		evenementFiscalService.publierEvenementFiscalEcheanceDeclarationImpot(declaration, dateTraitement);
 	}
 
 	@Override
@@ -395,7 +395,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		di.addEtat(etat);
 
 		if (evtFiscal) {
-			evenementFiscalService.publierEvenementFiscalRetourDI(contribuable, di, dateEvenement);
+			evenementFiscalService.publierEvenementFiscalQuittancementDeclarationImpot(di, dateEvenement);
 		}
 		return di;
 	}
@@ -412,7 +412,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public DeclarationImpotOrdinairePP annulationDI(ContribuableImpositionPersonnesPhysiques contribuable, DeclarationImpotOrdinairePP di, @Nullable Long tacheId, RegDate dateEvenement) {
 		di.setAnnule(true);
-		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalAnnulationDeclarationImpot(di);
 
 		// traitement de la tâche...
 		if (tacheId != null) {
@@ -443,7 +443,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		di.setAnnule(false);
-		evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, di, dateEvenement);
+		evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(di, dateEvenement);
 		try {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de désannulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			// [SIFISC-8598] Les DI de la PF 2011 qui ont été émises avant l'envoi de masse de début 2012 n'ont pas forcément de code de contrôle, il est donc inutile de les signaler à ADDI

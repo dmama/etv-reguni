@@ -36,10 +36,10 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
-import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -1262,14 +1262,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				TiersService tiersService = getBean(TiersService.class, "tiersService");
 				EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-				Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementsFiscaux(tiersService
-						.getTiers(ids.jeanId));
+				Collection<EvenementFiscal> lesEvenementsdeJean = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jeanId));
 				assertFalse(lesEvenementsdeJean.isEmpty());
-				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementsFiscaux(tiersService
-						.getTiers(ids.jacquesId));
+				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.jacquesId));
 				assertEmpty("Evénements fiscaux engendrés", lesEvenementsdeJacques);
-				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementsFiscaux(tiersService
-						.getTiers(ids.pierreId));
+				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementsFiscaux(tiersService.getTiers(ids.pierreId));
 				assertFalse(lesEvenementsdePierre.isEmpty());
 				return null;
 			}
@@ -1644,16 +1641,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
-			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
 				fiscEventEnvoiDI.add(di.getId());
 			}
 
 			@Override
-			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
-		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender() {
 			@Override
 			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
 				diEventEmission.add(periodeFiscale);
@@ -1755,12 +1752,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
-			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
 				fiscEventEnvoiDI.add(di.getId());
 			}
 
 			@Override
-			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
@@ -1844,19 +1841,19 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
+		final Set<Long> fiscEventEmissionDI = new HashSet<>();
 		final Set<Long> fiscEventAnnulationDI = new HashSet<>();
 		final Set<Integer> diEventEmission = new HashSet<>();
 		final Set<Integer> diEventAnnulation = new HashSet<>();
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
-			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-				fiscEventEnvoiDI.add(di.getId());
+			public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
+				fiscEventEmissionDI.add(di.getId());
 			}
 
 			@Override
-			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
@@ -1892,8 +1889,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
 				assertFalse(di.isAnnule());
 
-				assertEquals(1, fiscEventEnvoiDI.size());
-				assertEquals(ids.di, fiscEventEnvoiDI.iterator().next());
+				assertEquals(1, fiscEventEmissionDI.size());
+				assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
 				assertEmpty(fiscEventAnnulationDI);
 
 				assertEquals(1, diEventEmission.size());
@@ -1936,19 +1933,19 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			}
 		});
 
-		final Set<Long> fiscEventEnvoiDI = new HashSet<>();
+		final Set<Long> fiscEventEmissionDI = new HashSet<>();
 		final Set<Long> fiscEventAnnulationDI = new HashSet<>();
 		final Set<Integer> diEventEmission = new HashSet<>();
 		final Set<Integer> diEventAnnulation = new HashSet<>();
 
 		service.setEvenementFiscalService(new MockEvenementFiscalService() {
 			@Override
-			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-				fiscEventEnvoiDI.add(di.getId());
+			public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
+				fiscEventEmissionDI.add(di.getId());
 			}
 
 			@Override
-			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+			public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
 				fiscEventAnnulationDI.add(di.getId());
 			}
 		});
@@ -1984,8 +1981,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
 				assertFalse(di.isAnnule());
 
-				assertEquals(1, fiscEventEnvoiDI.size());
-				assertEquals(ids.di, fiscEventEnvoiDI.iterator().next());
+				assertEquals(1, fiscEventEmissionDI.size());
+				assertEquals(ids.di, fiscEventEmissionDI.iterator().next());
 				assertEmpty(fiscEventAnnulationDI);
 
 				assertEmpty(diEventEmission);

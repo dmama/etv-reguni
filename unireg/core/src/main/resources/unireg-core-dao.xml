@@ -48,7 +48,7 @@
 	</bean>
 	<bean id="migrationErrorDAO" class="ch.vd.uniregctb.migreg.MigrationErrorDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.EvenementFiscalDAOImpl" parent="hibernateDao">
+	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="evenementExterneDAO" class="ch.vd.uniregctb.evenement.externe.EvenementExterneDAOImpl" parent="hibernateDao">
 	</bean>

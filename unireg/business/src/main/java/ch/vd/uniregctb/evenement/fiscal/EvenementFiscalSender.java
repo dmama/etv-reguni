@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-
-
 /**
- * Interface qui permet d'envoyer des événements externes.
- *
- * @author Manuel Siggen <manuel.siggen@vd.ch>
+ * Interface qui permet d'envoyer des événements fiscaux
  */
 public interface EvenementFiscalSender {
+
+	String VERSION_ATTRIBUTE = "evenementVersion";
 
 	/**
 	 * Envoie l'événement comme message JMS.

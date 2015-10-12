@@ -476,7 +476,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			lr = lrDAO.save(lr);
 			dpi.addDeclaration(lr);
 			//tiersDAO.save(dpi);
-			evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lr, RegDate.get());
+			evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lr, RegDate.get());
 		}
 		else {
 			lr = lrDAO.get(lrEditView.getId());
@@ -484,7 +484,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				etat = new EtatDeclarationRetournee();
 				etat.setDateObtention(RegDateHelper.get(lrEditView.getDateRetour()));
 				lr.addEtat(etat);
-				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDateHelper.get(lrEditView.getDateRetour()));
+				evenementFiscalService.publierEvenementFiscalQuittancementListeRecapitulative(lr, RegDateHelper.get(lrEditView.getDateRetour()));
 			}
 		}
 
@@ -609,7 +609,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		final EtatDeclaration etat = lr.getDernierEtat();
 		if (etat == null || etat.getEtat() != TypeEtatDeclaration.RETOURNEE) {
 			lr.setAnnule(true);
-			evenementFiscalService.publierEvenementFiscalAnnulationLR((DebiteurPrestationImposable) lr.getTiers(), lr, RegDate.get()) ;
+			evenementFiscalService.publierEvenementFiscalAnnulationListeRecapitulative(lr); ;
 		}
 		else {
 			throw new ActionException("La liste récapitulative est quittancée. Son annulation est donc impossible.");

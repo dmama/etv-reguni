@@ -531,7 +531,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		try {
 			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, dateDuJour);
-			evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable) di.getTiers(), di, etat.getDateObtention());
+			evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(di, etat.getDateObtention());
 			return resultat;
 		}
 		catch (JMSException e) {

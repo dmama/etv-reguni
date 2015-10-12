@@ -59,10 +59,10 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
-import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalParente;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
@@ -5028,14 +5028,23 @@ debut PF                                                                        
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				final List<EvenementFiscal> tries = new ArrayList<>(events);
+				Collections.sort(tries, new Comparator<EvenementFiscal>() {
+					@Override
+					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						return Long.compare(o1.getId(), o2.getId());
+					}
+				});
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
+				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.mere, event1.getTiers().getNumero());
 				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
+				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.FIN_AUTORITE_PARENTALE, event1.getType());
+				assertEquals(date(2011, 2, 8), event1.getDateValeur());
 				return null;
 			}
 		});
@@ -5192,14 +5201,23 @@ debut PF                                                                        
 				assertNotNull(events);
 				assertEquals(2, events.size());
 
-				final EvenementFiscalFor event0 = (EvenementFiscalFor) events.get(0);
+				final List<EvenementFiscal> tries = new ArrayList<>(events);
+				Collections.sort(tries, new Comparator<EvenementFiscal>() {
+					@Override
+					public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						return Long.compare(o1.getId(), o2.getId());
+					}
+				});
+
+				final EvenementFiscalFor event0 = (EvenementFiscalFor) tries.get(0);
 				assertNotNull(event0);
 
-				final EvenementFiscalFinAutoriteParentale event1 = (EvenementFiscalFinAutoriteParentale) events.get(1);
+				final EvenementFiscalParente event1 = (EvenementFiscalParente) tries.get(1);
 				assertNotNull(event1);
 				assertEquals(ids.menage, event1.getTiers().getNumero());
 				assertEquals(ids.fils, event1.getEnfant().getNumero());
-				assertEquals(date(2011, 2, 8), event1.getDateEvenement());
+				assertEquals(EvenementFiscalParente.TypeEvenementFiscalParente.FIN_AUTORITE_PARENTALE, event1.getType());
+				assertEquals(date(2011, 2, 8), event1.getDateValeur());
 				return null;
 			}
 		});

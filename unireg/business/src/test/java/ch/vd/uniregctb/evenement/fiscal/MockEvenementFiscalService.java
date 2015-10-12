@@ -5,14 +5,13 @@ import java.util.Collection;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 
 public class MockEvenementFiscalService implements EvenementFiscalService {
 
@@ -22,78 +21,98 @@ public class MockEvenementFiscalService implements EvenementFiscalService {
 	}
 
 	@Override
-	public void publierEvenementFiscal(EvenementFiscal evenementFiscal) {
+	public void publierEvenementFiscalOuvertureFor(ForFiscal forFiscal) {
 	}
 
 	@Override
-	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) {
+	public void publierEvenementFiscalFermetureFor(ForFiscal forFiscal) {
 	}
 
 	@Override
-	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) {
+	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal) {
 	}
 
 	@Override
-	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation) {
+	public void publierEvenementFiscalChangementModeImposition(ForFiscal forFiscal) {
 	}
 
 	@Override
-	public void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) {
+	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateMajorite) {
 	}
 
 	@Override
-	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
+	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateNaissance) {
 	}
 
 	@Override
-	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
+	public void publierEvenementFiscalChangementSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques ctb) {
 	}
 
 	@Override
-	public void publierEvenementFiscalChangementSituation(Contribuable contribuable, RegDate dateEvenement, Long id) {
+	public void publierEvenementFiscalEmissionListeRecapitulative(DeclarationImpotSource lr, RegDate dateEmission) {
 	}
 
 	@Override
-	public void publierEvenementFiscalOuverturePeriodeDecompteLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalQuittancementListeRecapitulative(DeclarationImpotSource lr, RegDate dateQuittancement) {
 	}
 
 	@Override
-	public void publierEvenementFiscalRetourLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalSommationListeRecapitulative(DeclarationImpotSource lr, RegDate dateSommation) {
 	}
 
 	@Override
-	public void publierEvenementFiscalSommationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalEcheanceListeRecapitulative(DeclarationImpotSource lr, RegDate dateEcheance) {
 	}
 
 	@Override
-	public void publierEvenementFiscalLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalAnnulationListeRecapitulative(DeclarationImpotSource lr) {
 	}
 
 	@Override
-	public void publierEvenementFiscalAnnulationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
 	}
 
 	@Override
-	public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalQuittancementDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateQuittance) {
 	}
 
 	@Override
-	public void publierEvenementFiscalRetourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalSommationDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateSommation) {
 	}
 
 	@Override
-	public void publierEvenementFiscalSommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalEcheanceDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEcheance) {
 	}
 
 	@Override
-	public void publierEvenementFiscalEcheanceDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
 	}
 
 	@Override
-	public void publierEvenementFiscalTaxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalOuvertureRegimeFiscal(RegimeFiscal rf) {
 	}
 
 	@Override
-	public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public void publierEvenementFiscalFermetureRegimeFiscal(RegimeFiscal rf) {
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationRegimeFiscal(RegimeFiscal rf) {
+	}
+
+	@Override
+	public void publierEvenementFiscalOuvertureAllegementFiscal(AllegementFiscal af) {
+	}
+
+	@Override
+	public void publierEvenementFiscalFermetureAllegementFiscal(AllegementFiscal af) {
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af) {
+	}
+
+	@Override
+	public void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement) {
 	}
 }

@@ -2,43 +2,28 @@ package ch.vd.uniregctb.evenement.fiscal;
 
 import java.util.Collection;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.EvenementFiscalDI;
-import ch.vd.uniregctb.evenement.EvenementFiscalFinAutoriteParentale;
-import ch.vd.uniregctb.evenement.EvenementFiscalFor;
-import ch.vd.uniregctb.evenement.EvenementFiscalLR;
-import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
-import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 /**
  * Service des événement fiscaux
- *
- * @author xcicfh (last modified by $Author: $ @ $Date: $)
- * @version $Revision: $
  */
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 
 	private EvenementFiscalDAO evenementFiscalDAO;
 	private EvenementFiscalSender evenementFiscalSender;
-	private ParametreAppService parametres;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalDAO(EvenementFiscalDAO evenementFiscalDAO) {
@@ -50,25 +35,12 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 		this.evenementFiscalSender = evenementFiscalSender;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setParametres(ParametreAppService parametres) {
-		this.parametres = parametres;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) {
 		return evenementFiscalDAO.getEvenementsFiscaux(tiers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscal(EvenementFiscal evenementFiscal) {
+	private void saveAndPublish(EvenementFiscal evenementFiscal) {
 		Assert.notNull(evenementFiscal, "evenementFiscal ne peut être null.");
 
 		// sauve evenementFiscal
@@ -79,224 +51,167 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 			evenementFiscalSender.sendEvent(evenementFiscal);
 		}
 		catch (EvenementFiscalException e) {
-			throw new RuntimeException("Erreur survenu lors de la publication de l'evenement Fiscal [" + evenementFiscal.getId() + "].", e);
+			throw new RuntimeException("Erreur survenu lors de la publication de l'evenement fiscal [" + evenementFiscal.getId() + "].", e);
 		}
 	}
 
-	private int getAnneePremierePeriodeFiscale() {
-		return parametres.getPremierePeriodeFiscalePersonnesPhysiques();
-	}
-
-	private boolean peutPublierEvenementFiscal(RegDate dateEvenement) {
-		return dateEvenement.year() >= getAnneePremierePeriodeFiscale();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalOuvertureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) {
-		final EvenementFiscal evenementFiscal = new EvenementFiscalFor(tiers, dateEvenement, TypeEvenementFiscal.OUVERTURE_FOR, motifFor, null, id);
-		publierEvenementFiscal(evenementFiscal);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalFermetureFor(Tiers tiers, RegDate dateEvenement, MotifFor motifFor, Long id) {
-		final EvenementFiscal evenementFiscal = new EvenementFiscalFor(tiers, dateEvenement, TypeEvenementFiscal.FERMETURE_FOR, motifFor, null, id);
-		publierEvenementFiscal(evenementFiscal);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation) {
-		// on ne bloque l'envoi des événements fiscaux d'annulation que pour les fors fermés avant 2003
-		final RegDate dateFin = forFiscal.getDateFin();
-		if (dateFin == null || peutPublierEvenementFiscal(dateFin)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalFor(forFiscal.getTiers(), dateAnnulation, TypeEvenementFiscal.ANNULATION_FOR, null, null, forFiscal.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalFor(RegDate date, ForFiscal forFiscal, EvenementFiscalFor.TypeEvenementFiscalFor type) {
+		saveAndPublish(new EvenementFiscalFor(date, forFiscal, type));
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalFinAutoriteParentale(contribuableEnfant, contribuableParent, dateEvenement);
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalOuvertureFor(ForFiscal forFiscal) {
+		publierEvenementFiscalFor(forFiscal.getDateDebut(), forFiscal, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE);
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, Contribuable contribuableParent, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalNaissance(contribuableEnfant, contribuableParent, dateEvenement);
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalFermetureFor(ForFiscal forFiscal) {
+		publierEvenementFiscalFor(forFiscal.getDateFin(), forFiscal, EvenementFiscalFor.TypeEvenementFiscalFor.FERMETURE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalChangementModeImposition(Contribuable contribuable, RegDate dateEvenement, ModeImposition modeImposition, Long id) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalFor(contribuable, dateEvenement, TypeEvenementFiscal.CHANGEMENT_MODE_IMPOSITION, null, modeImposition, id);
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal) {
+		publierEvenementFiscalFor(forFiscal.getDateDebut(), forFiscal, EvenementFiscalFor.TypeEvenementFiscalFor.ANNULATION);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalChangementSituation(Contribuable contribuable, RegDate dateEvenement, Long id) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalSituationFamille(contribuable, dateEvenement, id);
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalChangementModeImposition(ForFiscal forFiscal) {
+		publierEvenementFiscalFor(forFiscal.getDateDebut(), forFiscal, EvenementFiscalFor.TypeEvenementFiscalFor.CHGT_MODE_IMPOSITION);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalRetourLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.RETOUR_LR, lr.getDateDebut(), lr.getDateFin(), lr.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalParente(RegDate date, PersonnePhysique enfant, ContribuableImpositionPersonnesPhysiques parent, EvenementFiscalParente.TypeEvenementFiscalParente type) {
+		saveAndPublish(new EvenementFiscalParente(parent, date, enfant, type));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalOuverturePeriodeDecompteLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.OUVERTURE_PERIODE_DECOMPTE_LR, lr.getDateDebut(), lr.getDateFin(),
-					lr.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalFinAutoriteParentale(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateMajorite) {
+		publierEvenementFiscalParente(dateMajorite, contribuableEnfant, contribuableParent, EvenementFiscalParente.TypeEvenementFiscalParente.FIN_AUTORITE_PARENTALE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.ANNULATION_LR, lr.getDateDebut(), lr.getDateFin(), lr.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalNaissance(PersonnePhysique contribuableEnfant, ContribuableImpositionPersonnesPhysiques contribuableParent, RegDate dateNaissance) {
+		publierEvenementFiscalParente(dateNaissance, contribuableEnfant, contribuableParent, EvenementFiscalParente.TypeEvenementFiscalParente.NAISSANCE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.LR_MANQUANTE, lr.getDateDebut(), lr.getDateFin(), lr.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalChangementSituationFamille(RegDate date, ContribuableImpositionPersonnesPhysiques ctb) {
+		saveAndPublish(new EvenementFiscalSituationFamille(date, ctb));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalSommationLR(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.SOMMATION_LR, lr.getDateDebut(), lr.getDateFin(), lr.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalDeclaration(RegDate date, Declaration declaration, EvenementFiscalDeclaration.TypeAction type) {
+		saveAndPublish(new EvenementFiscalDeclaration(date, declaration, type));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.ENVOI_DI, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalEmissionDeclaration(RegDate date, Declaration declaration) {
+		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.EMISSION);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalEcheanceDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.ECHEANCE_DI, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalQuittancementDeclaration(RegDate date, Declaration declaration) {
+		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.QUITTANCEMENT);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalRetourDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.RETOUR_DI, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalSommationDeclaration(RegDate date, Declaration declaration) {
+		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.SOMMATION);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalSommationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.SOMMATION_DI, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalEcheanceDeclaration(RegDate date, Declaration declaration) {
+		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.ECHEANCE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalTaxationOffice(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.TAXATION_OFFICE, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	private void publierEvenementFiscalAnnulationDeclaration(RegDate date, Declaration declaration) {
+		publierEvenementFiscalDeclaration(date, declaration, EvenementFiscalDeclaration.TypeAction.ANNULATION);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
-		if (peutPublierEvenementFiscal(dateEvenement)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalDI(contribuable, dateEvenement, TypeEvenementFiscal.ANNULATION_DI, di.getDateDebut(), di.getDateFin(), di.getId());
-			publierEvenementFiscal(evenementFiscal);
-		}
+	public void publierEvenementFiscalEmissionListeRecapitulative(DeclarationImpotSource lr, RegDate dateEmission) {
+		publierEvenementFiscalEmissionDeclaration(dateEmission, lr);
+	}
+
+	@Override
+	public void publierEvenementFiscalQuittancementListeRecapitulative(DeclarationImpotSource lr, RegDate dateQuittancement) {
+		publierEvenementFiscalQuittancementDeclaration(dateQuittancement, lr);
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationListeRecapitulative(DeclarationImpotSource lr) {
+		publierEvenementFiscalAnnulationDeclaration(RegDateHelper.get(lr.getAnnulationDate()), lr);
+	}
+
+	@Override
+	public void publierEvenementFiscalSommationListeRecapitulative(DeclarationImpotSource lr, RegDate dateSommation) {
+		publierEvenementFiscalSommationDeclaration(dateSommation, lr);
+	}
+
+	@Override
+	public void publierEvenementFiscalEcheanceListeRecapitulative(DeclarationImpotSource lr, RegDate dateEcheance) {
+		publierEvenementFiscalEcheanceDeclaration(dateEcheance, lr);
+	}
+
+	@Override
+	public void publierEvenementFiscalEmissionDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEmission) {
+		publierEvenementFiscalEmissionDeclaration(dateEmission, di);
+	}
+
+	@Override
+	public void publierEvenementFiscalQuittancementDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateQuittance) {
+		publierEvenementFiscalQuittancementDeclaration(dateQuittance, di);
+	}
+
+	@Override
+	public void publierEvenementFiscalSommationDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateSommation) {
+		publierEvenementFiscalSommationDeclaration(dateSommation, di);
+	}
+
+	@Override
+	public void publierEvenementFiscalEcheanceDeclarationImpot(DeclarationImpotOrdinaire di, RegDate dateEcheance) {
+		publierEvenementFiscalEcheanceDeclaration(dateEcheance, di);
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationDeclarationImpot(DeclarationImpotOrdinaire di) {
+		publierEvenementFiscalAnnulationDeclaration(RegDateHelper.get(di.getAnnulationDate()), di);
+	}
+
+	private void publierEvenementFiscalRegimeFiscal(RegDate date, RegimeFiscal rf, EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime type) {
+		saveAndPublish(new EvenementFiscalRegimeFiscal(date, rf, type));
+	}
+
+	@Override
+	public void publierEvenementFiscalOuvertureRegimeFiscal(RegimeFiscal rf) {
+		publierEvenementFiscalRegimeFiscal(rf.getDateDebut(), rf, EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalFermetureRegimeFiscal(RegimeFiscal rf) {
+		publierEvenementFiscalRegimeFiscal(rf.getDateFin(), rf, EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.FERMETURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationRegimeFiscal(RegimeFiscal rf) {
+		publierEvenementFiscalRegimeFiscal(rf.getDateDebut(), rf, EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.ANNULATION);
+	}
+
+	private void publierEvenementFiscalAllegementFiscal(RegDate date, AllegementFiscal af, EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement type) {
+		saveAndPublish(new EvenementFiscalAllegementFiscal(date, af, type));
+	}
+
+	@Override
+	public void publierEvenementFiscalOuvertureAllegementFiscal(AllegementFiscal af) {
+		publierEvenementFiscalAllegementFiscal(af.getDateDebut(), af, EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement.OUVERTURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalFermetureAllegementFiscal(AllegementFiscal af) {
+		publierEvenementFiscalAllegementFiscal(af.getDateFin(), af, EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement.FERMETURE);
+	}
+
+	@Override
+	public void publierEvenementFiscalAnnulationAllegementFiscal(AllegementFiscal af) {
+		publierEvenementFiscalAllegementFiscal(af.getDateDebut(), af, EvenementFiscalAllegementFiscal.TypeEvenementFiscalAllegement.ANNULATION);
+	}
+
+	@Override
+	public void publierEvenementFiscalInformationComplementaire(Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire type, RegDate dateEvenement) {
+		saveAndPublish(new EvenementFiscalInformationComplementaire(entreprise, dateEvenement, type));
 	}
 }

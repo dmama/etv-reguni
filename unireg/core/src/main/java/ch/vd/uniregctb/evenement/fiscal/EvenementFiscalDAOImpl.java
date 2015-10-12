@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement;
+package ch.vd.uniregctb.evenement.fiscal;
 
 import java.util.Collection;
 
@@ -9,26 +9,15 @@ import org.hibernate.criterion.Restrictions;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.tiers.Tiers;
 
-/**
- * DAO des événements fiscaux..
- *
- * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
- *
- */
 public class EvenementFiscalDAOImpl extends BaseDAOImpl<EvenementFiscal, Long> implements EvenementFiscalDAO {
-
-	//private static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalDAOImpl.class);
 
 	public EvenementFiscalDAOImpl() {
 		super(EvenementFiscal.class);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<EvenementFiscal> getEvenementsFiscaux(final Tiers tiers)  {
+	@Override
+	public Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) {
 		final Session session = getCurrentSession();
 		final Criteria criteria = session.createCriteria(EvenementFiscal.class);
 		criteria.add(Restrictions.eq("tiers", tiers));

@@ -132,7 +132,7 @@ public class DeterminerLRsEchuesProcessor {
 
 	/**
 	 * Traite un débiteur : vérifie s'il a encore des LR qui doivent être émises et, si ce n'est pas le cas
-	 * envoie des événements fiscaux "LR_MANQUANTE" pour toutes les LR échues
+	 * envoie des événements fiscaux "LR échue" pour toutes les LR échues
 	 * @param rapport
 	 * @param infoDebiteur
 	 * @param dateTraitement
@@ -162,7 +162,7 @@ public class DeterminerLRsEchuesProcessor {
 					lr.addEtat(etat);
 
 					// publication d'un événement fiscal
-					evenementFiscalService.publierEvenementFiscalLRManquante(dpi, lr, dateTraitement);
+					evenementFiscalService.publierEvenementFiscalEcheanceListeRecapitulative(lr, dateTraitement);
 
 					// génération du rapport d'exécution
 					rapport.addLrEchue(dpi, lr);

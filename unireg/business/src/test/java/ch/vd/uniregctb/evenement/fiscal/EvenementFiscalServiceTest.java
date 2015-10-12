@@ -3,32 +3,29 @@ package ch.vd.uniregctb.evenement.fiscal;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
-import ch.vd.uniregctb.evenement.EvenementFiscalFor;
-import ch.vd.uniregctb.evenement.EvenementFiscalLR;
-import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEvenementFiscal;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class EvenementFiscalServiceTest extends BusinessTest {
-
-	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/evenement/fiscal/EvenementFiscalServiceTest.xml";
-	private static final Long NUMERO_CONTRIBUABLE = 12300002L;
-	private static final Long NUMERO_DEBITEUR = 12500001L;
-
 
 	private EvenementFiscalService evenementFiscalService;
 	private MockEvenementFiscalSender evenementFiscalSender;
@@ -47,109 +44,156 @@ public class EvenementFiscalServiceTest extends BusinessTest {
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	    evenementFiscalSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
-
-		loadDatabase(DB_UNIT_DATA_FILE);
 		tiersDAO = getBean( TiersDAO.class, "tiersDAO");
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testPublierEvenementNullArgument() throws Exception {
-		try {
-			evenementFiscalService.publierEvenementFiscal(null);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("evenementFiscal ne peut être null.", e.getMessage());
-		}
-	}
-	
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testPublierEvenementFor() throws Exception {
 
-		evenementFiscalSender.count = 0;
-		assertEquals(0, evenementFiscalDAO.getAll().size());
+		// mise en place fiscale
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				evenementFiscalSender.count = 0;
+				assertEquals(0, evenementFiscalDAO.getAll().size());
 
-		// Crée et publie un événement
-		final Tiers tiers = tiersDAO.get(NUMERO_CONTRIBUABLE);
-		final EvenementFiscalFor event = new EvenementFiscalFor(tiers, RegDate.get(), TypeEvenementFiscal.OUVERTURE_FOR, MotifFor.ARRIVEE_HS, null, (long) 1);
-		evenementFiscalService.publierEvenementFiscal(event);
+				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 5, 27), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		// création d'un for et envoi d'un événement
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(id);
+				assertNotNull(pp);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get().addDays(-5), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				evenementFiscalService.publierEvenementFiscalOuvertureFor(ffp);
+			}
+		});
 
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.count);
 
 		// Vérifie que l'événement est dans la base
-		final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-		assertEquals(1, events.size());
-		assertForEvent(NUMERO_CONTRIBUABLE, RegDate.get(), TypeEvenementFiscal.OUVERTURE_FOR, null, MotifFor.ARRIVEE_HS, 1L, events.get(0));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertEquals(1, events.size());
+				assertForEvent(id, RegDate.get().addDays(-5), EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE, events.get(0));
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void publierEvenementFiscalRetourLR() throws Exception {
 
-		evenementFiscalSender.count = 0;
-		assertEquals(0, evenementFiscalDAO.getAll().size());
+		// mise en place fiscale
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				evenementFiscalSender.count = 0;
+				assertEquals(0, evenementFiscalDAO.getAll().size());
 
-		// Crée et publie un événement
-		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(NUMERO_DEBITEUR);
-		final EvenementFiscalLR event = new EvenementFiscalLR(debiteur, RegDate.get(), TypeEvenementFiscal.RETOUR_LR, date(2005, 1, 1), date(2005, 6, 30), (long) 1);
-		evenementFiscalService.publierEvenementFiscal(event);
+				// le DPI
+				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.ANNUEL, date(2009, 1, 1));
+				return debiteur.getNumero();
+			}
+		});
+
+		// création d'une LR et publication d'un événement correspondant
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(id);
+				assertNotNull(dpi);
+				addForDebiteur(dpi, date(2009, 1, 1), MotifFor.DEBUT_PRESTATION_IS, date(2009, 12, 31), MotifFor.CESSATION_ACTIVITE_FUSION_FAILLITE, MockCommune.Lausanne);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), PeriodiciteDecompte.ANNUEL, pf);
+				evenementFiscalService.publierEvenementFiscalEmissionListeRecapitulative(lr, RegDate.get().addDays(-2));
+			}
+		});
 
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.count);
 
-		// Vérifie que l'événement est dans la base
-		final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-		assertEquals(1, events.size());
-		assertLREvent(NUMERO_DEBITEUR, RegDate.get(), TypeEvenementFiscal.RETOUR_LR, date(2005, 1, 1), date(2005, 6, 30), 1L, events.get(0));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// Vérifie que l'événement est dans la base
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertEquals(1, events.size());
+				assertDeclarationEvent(id, RegDate.get().addDays(-2), EvenementFiscalDeclaration.TypeAction.EMISSION, date(2009, 1, 1), date(2009, 12, 31), DeclarationImpotSource.class, events.get(0));
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void publierEvenementFiscalChangementSituation() throws Exception {
 
-		evenementFiscalSender.count = 0;
-		assertEquals(0, evenementFiscalDAO.getAll().size());
+		// mise en place
+		final long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				evenementFiscalSender.count = 0;
+				assertEquals(0, evenementFiscalDAO.getAll().size());
 
-		// Crée et publie un événement
-		final Tiers tiers = tiersDAO.get(NUMERO_CONTRIBUABLE);
-		final EvenementFiscalSituationFamille event = new EvenementFiscalSituationFamille(tiers, RegDate.get(), (long) 1);
-		evenementFiscalService.publierEvenementFiscal(event);
+				final PersonnePhysique pp = addNonHabitant("Laurent", "Schmidt", date(1970, 4, 2), Sexe.MASCULIN);
+				evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get().addDays(-3), pp);
+				return pp.getNumero();
+			}
+		});
 
 		// Vérifie que l'événement a été envoyé
 		assertEquals(1, evenementFiscalSender.count);
 
-		// Vérifie que l'événement est dans la base
-		final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
-		assertEquals(1, events.size());
-		assertCSFEvent(NUMERO_CONTRIBUABLE, RegDate.get(), 1L, events.get(0));
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				// Vérifie que l'événement est dans la base
+				final List<EvenementFiscal> events = evenementFiscalDAO.getAll();
+				assertEquals(1, events.size());
+				assertCSFEvent(id, RegDate.get().addDays(-3), events.get(0));
+			}
+		});
 	}
 
-	private static void assertCSFEvent(Long tiersId, RegDate dateEvenement, long numeroTechnique, EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, TypeEvenementFiscal.CHANGEMENT_SITUATION_FAMILLE, numeroTechnique, event);
+	private static void assertCSFEvent(Long tiersId, RegDate dateEvenement, EvenementFiscal event) {
+		assertEvent(tiersId, dateEvenement, EvenementFiscalSituationFamille.class, event);
 	}
 
-	private static void assertForEvent(Long tiersId, RegDate dateEvenement, TypeEvenementFiscal type, ModeImposition modeImposition, MotifFor motifFor, Long numeroTechnique, EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, type, numeroTechnique, event);
+	private static void assertForEvent(Long tiersId, RegDate dateEvenement, EvenementFiscalFor.TypeEvenementFiscalFor type, EvenementFiscal event) {
+		assertEvent(tiersId, dateEvenement, EvenementFiscalFor.class, event);
 		final EvenementFiscalFor forEvent = (EvenementFiscalFor) event;
-		assertEquals(modeImposition, forEvent.getModeImposition());
-		assertEquals(motifFor, forEvent.getMotifFor());
+		assertEquals(type, forEvent.getType());
+		assertNotNull(forEvent.getForFiscal());
 	}
 
-	private static void assertLREvent(Long tiersId, RegDate dateEvenement, TypeEvenementFiscal type, RegDate dateDebutPeriode, RegDate dateFinPeriode, Long numeroTechnique, EvenementFiscal event) {
-		assertEvent(tiersId, dateEvenement, type, numeroTechnique, event);
-		final EvenementFiscalLR forEvent = (EvenementFiscalLR) event;
-		assertEquals(dateDebutPeriode, forEvent.getDateDebutPeriode());
-		assertEquals(dateFinPeriode, forEvent.getDateFinPeriode());
+	private static void assertDeclarationEvent(Long tiersId,
+	                                           RegDate dateEvenement,
+	                                           EvenementFiscalDeclaration.TypeAction type,
+	                                           RegDate dateDebutPeriode,
+	                                           RegDate dateFinPeriode,
+	                                           Class<? extends Declaration> expectedDeclarationClass,
+	                                           EvenementFiscal event) {
+		assertEvent(tiersId, dateEvenement, EvenementFiscalDeclaration.class, event);
+
+		final EvenementFiscalDeclaration declaEvent = (EvenementFiscalDeclaration) event;
+		assertEquals(type, declaEvent.getTypeAction());
+
+		final Declaration declaration = declaEvent.getDeclaration();
+		assertInstanceOf(expectedDeclarationClass, declaration);
+		assertEquals(dateDebutPeriode, declaration.getDateDebut());
+		assertEquals(dateFinPeriode, declaration.getDateFin());
 	}
 
-	private static void assertEvent(Long tiersId, RegDate dateEvenement, TypeEvenementFiscal type, Long numeroTechnique, EvenementFiscal event0) {
+	private static void assertEvent(Long tiersId, RegDate dateEvenement, Class<? extends EvenementFiscal> expectedClass, EvenementFiscal event0) {
 		assertNotNull(event0);
-		assertEquals(dateEvenement, event0.getDateEvenement());
-		assertEquals(numeroTechnique, event0.getNumeroTechnique());
-		assertEquals(type, event0.getType());
 		assertEquals(tiersId, event0.getTiers().getNumero());
+		assertEquals(dateEvenement, event0.getDateValeur());
+		assertEquals(expectedClass, event0.getClass());
 	}
 }

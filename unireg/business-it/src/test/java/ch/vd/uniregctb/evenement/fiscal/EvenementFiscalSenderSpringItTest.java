@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,16 +16,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,9 +32,9 @@ import static org.junit.Assert.assertNull;
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-businessit-jms.xml"
 })
-public class EvenementFiscalSenderSpringTest extends BusinessItTest {
+public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderSpringTest.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(EvenementFiscalSenderSpringItTest.class);
 
 	private EsbJmsTemplate esbTemplate;
 	private EvenementFiscalSender sender;
@@ -64,7 +65,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 		while (esbTemplate.receive(queueName) != null) {}
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testTransactionaliteSend() throws Exception {
 
 		// test positif : le message arrive bien
@@ -75,10 +76,23 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			// on doit maintenant vérifier que le message a bien été envoyé
 			LOGGER.info("Attente du premier message message pendant 3s maximum");
 
+			final Set<String> received = new HashSet<>();
 			esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
-			final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
-			LOGGER.info("Message reçu ou timeout expiré");
-			Assert.assertNotNull(msg);
+			for (int i = 0 ; i < 2 ; ++ i) {            // pour l'instant, les v1 et v2 sont envoyés (= 2 événements)
+				final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+				LOGGER.info("Message reçu ou timeout expiré");
+				Assert.assertNotNull(msg);
+
+				final String version = msg.getHeader(EvenementFiscalSender.VERSION_ATTRIBUTE);
+				Assert.assertNotNull("Message reçu sans version...", version);
+				if (received.contains(version)) {
+					Assert.fail("Au moins deux messages reçus avec la même version '" + version + "'");
+				}
+				received.add(version);
+			}
+			Assert.assertEquals(2, received.size());
+			Assert.assertTrue("v1 absent", received.contains("v1"));
+			Assert.assertTrue("v2 absent", received.contains("v2"));
 
 			// la personne physique doit avoir été sauvegardée en base
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -136,10 +150,10 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Création du message
-				final Tiers tiers = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
-				final EvenementFiscalFor event = new EvenementFiscalFor(tiers, RegDate.get(2009, 12, 9), TypeEvenementFiscal.OUVERTURE_FOR, MotifFor.ARRIVEE_HS, ModeImposition.ORDINAIRE, (long) 1);
-				event.setId(1234L);
-				ppId.setValue(tiers.getNumero());
+				final PersonnePhysique pp = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2009, 12, 9), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(ffp.getDateDebut(), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
+				ppId.setValue(pp.getNumero());
 
 				try {
 					sender.sendEvent(event);
@@ -160,7 +174,7 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 	/**
 	 * Vérifie qu'aucun événement n'est envoyé dans une transaction marquée comme rollback-only (voir utilisation de la méthode ForFiscalManagerImpl#buildSynchronizeActionsTableSurFermetureDeFor)
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testSendEvenementInRollbackOnlyTransaction() throws Exception {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -201,10 +215,9 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			}
 
 			// Création du message
-			final Tiers tiers = new PersonnePhysique(false);
-			tiers.setNumero(10001111L);
-			final EvenementFiscalFor event = new EvenementFiscalFor(tiers, RegDate.get(2009, 12, 9), TypeEvenementFiscal.OUVERTURE_FOR, MotifFor.ARRIVEE_HS, ModeImposition.ORDINAIRE, (long) 1);
-			event.setId(1234L);
+			final PersonnePhysique pp = addNonHabitant("Maria", "Goldberg", null, Sexe.FEMININ);
+			final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2009, 12, 9), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+			final EvenementFiscalFor event = hibernateTemplate.merge(new EvenementFiscalFor(RegDate.get(2009, 12, 9), ffp, EvenementFiscalFor.TypeEvenementFiscalFor.OUVERTURE));
 
 			// Envoi du message
 			try {

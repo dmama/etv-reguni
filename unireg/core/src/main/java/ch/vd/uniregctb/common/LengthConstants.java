@@ -56,6 +56,12 @@ public abstract class LengthConstants {
 	public static final int MVTDOSSIER_ETAT = 15;
 
 	public static final int EVTFISCAL_TYPE = 29;
+	public static final int EVTFISCAL_TYPE_EVT_DECLARATION = 15;
+	public static final int EVTFISCAL_TYPE_EVT_FOR = 20;
+	public static final int EVTFISCAL_TYPE_EVT_PARENTE = 25;
+	public static final int EVTFISCAL_TYPE_EVT_ALLEGEMENT = 15;
+	public static final int EVTFISCAL_TYPE_EVT_REGIME = 15;
+	public static final int EVTFISCAL_TYPE_EVT_INFO_COMPLEMENTAIRE = 60;
 
 	public static final int EVTCIVILREG_ETAT = 10;
 	public static final int EVTCIVILREG_TYPE = 45;

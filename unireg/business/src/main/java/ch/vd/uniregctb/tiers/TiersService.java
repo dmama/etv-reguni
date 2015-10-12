@@ -174,7 +174,7 @@ public interface TiersService {
      * @param dateValidite       une date de validité
      * @return le contribuable personne physique ou ménage-commun qui possède l'autorité parentale; ou <b>null</b> si la mère est inconnue.
      */
-    Contribuable getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
+    ContribuableImpositionPersonnesPhysiques getAutoriteParentaleDe(PersonnePhysique contribuableEnfant, RegDate dateValidite);
 
     /**
      * Renvoie la collectivité administrative rattachée au numero de collectivité donné.

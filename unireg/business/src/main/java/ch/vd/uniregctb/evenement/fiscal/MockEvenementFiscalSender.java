@@ -3,8 +3,6 @@ package ch.vd.uniregctb.evenement.fiscal;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.evenement.EvenementFiscal;
-
 public class MockEvenementFiscalSender implements EvenementFiscalSender {
 
 	public int count;

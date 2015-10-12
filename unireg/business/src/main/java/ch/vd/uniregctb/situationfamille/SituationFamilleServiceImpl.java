@@ -437,7 +437,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		contribuable.closeSituationFamilleActive(dateDebut.getOneDayBefore());
 
 		situationFamille = tiersDAO.addAndSave(contribuable, situationFamille);
-		evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, situationFamille.getId());
+		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(dateDebut, contribuable);
 		return situationFamille;
 	}
 
@@ -489,7 +489,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, true);
-		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), idSituationFamille);
+		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), situationFamille.getContribuable());
 	}
 
 	/**
@@ -503,7 +503,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 		// Situation de famille ayant comme source Unireg
 		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, false);
-		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), situationFamille.getId());
+		evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), situationFamille.getContribuable());
 	}
 
 	@Override
@@ -513,7 +513,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		final SituationFamille situationFamille = contribuable.getSituationFamilleActive();
 		if (situationFamille != null) {
 			contribuable.closeSituationFamilleActive(date);
-			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, RegDate.get(), situationFamille.getId());
+			evenementFiscalService.publierEvenementFiscalChangementSituationFamille(RegDate.get(), contribuable);
 		}
 	}
 

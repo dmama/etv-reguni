@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
 	<bean id="esbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
@@ -72,12 +72,30 @@
 		<property name="endpoint" value="${testprop.esb.raft.store}" />
 	</bean>
 
-	<bean id="evenementFiscalSenderPourTest" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSenderImpl">
-		<property name="esbTemplate" ref="esbJmsTemplate" />
-		<property name="serviceDestination" value="${testprop.jms.queue.evtFiscal}" />
-		<property name="enabled" value="true" />
+	<bean id="evenementFiscalV1Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV1SenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
 		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="parametres" ref="parametreAppService"/>
+		<property name="serviceDestination" value="${testprop.jms.queue.evtFiscal}"/>
 	</bean>
+
+	<bean id="evenementFiscalV2Sender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalV2SenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbValidator" ref="esbMessageValidator"/>
+		<property name="serviceDestination" value="${testprop.jms.queue.evtFiscal}"/>
+	</bean>
+
+	<bean id="evenementFiscalSendingPod" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSendingPod">
+		<property name="senders">
+			<array>
+				<ref bean="evenementFiscalV1Sender"/>
+				<ref bean="evenementFiscalV2Sender"/>
+			</array>
+		</property>
+		<property name="enabled" value="true"/>
+	</bean>
+
+	<alias alias="evenementFiscalSenderPourTest" name="evenementFiscalSendingPod"/>
 
 	<bean id="esbMessageValidatorRaw" class="ch.vd.uniregctb.jms.EsbMessageValidatorImpl">
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
@@ -86,6 +104,7 @@
 				<value>classpath:xsd/civil/**/*.xsd</value>
 				<value>classpath:xsd/database/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
+				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
 				<value>classpath:xsd/identification/**/*.xsd</value>
 				<value>classpath:unireg-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
