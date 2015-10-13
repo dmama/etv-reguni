@@ -23,6 +23,6 @@ public class IndexationPureOrganisationTranslationStrategy implements EvenementO
 	                                                   EvenementOrganisationContext context,
 	                                                   EvenementOrganisationOptions options) throws EvenementOrganisationException {
 
-		return new IndexationPure(event, organisation, entreprise, context, options);
+		return new Indexation(event, organisation, entreprise, context, options);
 	}
 }

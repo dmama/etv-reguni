@@ -7,8 +7,6 @@ public class EvenementOrganisationOptions {
 
 	private final boolean refreshCache;
 
-	public String traitementManuelMessage;
-
 	public EvenementOrganisationOptions(boolean refreshCache) {
 		this.refreshCache = refreshCache;
 	}
@@ -17,11 +15,4 @@ public class EvenementOrganisationOptions {
 		return refreshCache;
 	}
 
-	public String getTraitementManuelMessage() {
-		return traitementManuelMessage;
-	}
-
-	public void setTraitementManuelMessage(String traitementManuelMessage) {
-		this.traitementManuelMessage = traitementManuelMessage;
-	}
 }

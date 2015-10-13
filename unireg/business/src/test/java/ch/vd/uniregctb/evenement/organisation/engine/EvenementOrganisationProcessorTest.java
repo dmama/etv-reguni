@@ -19,7 +19,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslatorImpl;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
+import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierServicePM;
@@ -116,7 +116,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		traiterEvenements(noOrganisation);
 
 		// Verification de l'événement interne créé
-		Assert.assertTrue(translator.getCreatedEvent() instanceof IndexationPure);
+		Assert.assertTrue(translator.getCreatedEvent() instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -184,7 +184,7 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		traiterEvenements(noOrganisation);
 
 		// Verification de l'événement interne créé
-		Assert.assertTrue(translator.getCreatedEvent() instanceof IndexationPure);
+		Assert.assertTrue(translator.getCreatedEvent() instanceof Indexation);
 
 		// Vérification du traitement de l'événement
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

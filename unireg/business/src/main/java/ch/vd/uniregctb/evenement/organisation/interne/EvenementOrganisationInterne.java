@@ -33,8 +33,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
+ * Classe de base pour l'implémentation des événements organisation en provenance du RCEnt.
  *
- * Implémentation des événements organisation en provenance du RCEnt.
+ * Note importante: le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
+ *                  sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
+ *                  à TRAITE au moyen de la méthode raiseStatusTo().
  */
 public abstract class EvenementOrganisationInterne {
 
@@ -48,7 +51,7 @@ public abstract class EvenementOrganisationInterne {
 	private final RegDate dateEvt;
 	private final Long numeroEvenement;
 
-	private HandleStatus status;
+	private HandleStatus status = HandleStatus.REDONDANT;
 
 	protected final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
@@ -94,7 +97,7 @@ public abstract class EvenementOrganisationInterne {
 	 * <p>
 	 * Quelques règles à respecter dans doHandle() pour que tout se passe bien:
 	 * <ul>
-	 *     <li>Chaque traitement entraînant la création d'objet en base, ou tout autre changement d'état métier, doit être effectué au sein d'une méthode dédiée à l'opération
+	 *     <li>Chaque traitement entraînant la création d'objet en base, ou tout autre action métier, doit être effectué au sein d'une méthode dédiée à l'opération
 	 *     métier correspondante, et nommée en fonction d'elle.</li>
 	 *     <li>Chaque méthode métier doit impérativement se terminer par un appel à raiseStatusTo() pour établir le status résultant de l'opération.</li>
 	 *     <li>D'une manière générale, les décisions métier doivent ressortir clairement de la lecture de la méthode doHandle().</li>
@@ -107,9 +110,7 @@ public abstract class EvenementOrganisationInterne {
 	@NotNull
 	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		this.doHandle(warnings);
-		if (status == null) {
-			throw new EvenementOrganisationException("Status inconnu après le traitement de l'événement interne!");
-		}
+		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
 		return status;
 	}
 

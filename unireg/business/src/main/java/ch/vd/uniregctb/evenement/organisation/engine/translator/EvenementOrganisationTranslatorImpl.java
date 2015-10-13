@@ -22,7 +22,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterneComposite;
-import ch.vd.uniregctb.evenement.organisation.interne.IndexationPureOrganisationTranslationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
+import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -45,11 +46,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	 * Stratégie par défaut tant que certains traitements ne sont pas encore implémentés (de manière politiquement correcte, il faut dire "implémentés en traitement manuel")
 	 */
 	private static final EvenementOrganisationTranslationStrategy NOT_IMPLEMENTED = new TraitementManuelOrganisationTranslationStrategy();
-
-	/**
-	 * Stratégie utilisable pour les événements dont le seul traitement est une indexation
-	 */
-	private static final EvenementOrganisationTranslationStrategy INDEXATION_ONLY = new IndexationPureOrganisationTranslationStrategy();
 
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
@@ -114,14 +110,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		}
 
 		/*
-		 * Aucun événement n'est créé, indexation seule.
+		 * Aucun événement n'est créé, indexation seulement, le status sera TRAITE.
 		 */
 		if (evenements.size() == 0) {
-			return INDEXATION_ONLY.matchAndCreate(event, organisation, entreprise, context, options);
+			return new IndexationPure(event, organisation, entreprise, context, options);
 		}
-		else if (evenements.size() == 1) {
-			return evenements.get(0);
-		}
+		/* Indexation obligatoire pour toute entité connue d'Unireg. Le status sera inchangé. */
+		evenements.add(new Indexation(event, organisation, entreprise, context, options));
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
