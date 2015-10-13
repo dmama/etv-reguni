@@ -48,7 +48,7 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-09-03
  */
-public class CreationEntreprisePMTest extends AbstractEvenementOrganisationProcessorTest {
+public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
 	private EvenementFiscalDAO evtFiscalDAO;
 
