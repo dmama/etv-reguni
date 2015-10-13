@@ -91,8 +91,8 @@ public class EvenementFiscalSenderSpringItTest extends BusinessItTest {
 				received.add(version);
 			}
 			Assert.assertEquals(2, received.size());
-			Assert.assertTrue("v1 absent", received.contains("v1"));
-			Assert.assertTrue("v2 absent", received.contains("v2"));
+			Assert.assertTrue("v1 absent", received.contains("1"));
+			Assert.assertTrue("v2 absent", received.contains("2"));
 
 			// la personne physique doit avoir été sauvegardée en base
 			doInNewTransactionAndSession(new TransactionCallback<Object>() {
