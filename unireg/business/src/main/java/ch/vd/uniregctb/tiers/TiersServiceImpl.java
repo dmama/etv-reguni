@@ -4080,7 +4080,13 @@ public class TiersServiceImpl implements TiersService {
 			if (forPrincipalContext.hasNext()) {
 				final List<ForFiscalPrincipal> nexts = forPrincipalContext.getAllNext();
 				for (ForFiscalPrincipal next : nexts) {
+					//SIFISC-16670 il faut que les fors suivants soient vaudois si on a un seul for non vaudois
+					// dans les suivants on peut arréter car on a plus de continuité
+					if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != next.getTypeAutoriteFiscale()) {
+						break;
+					}
 					final boolean isFermeDansPeriode = periodeReference.equals(RegDateHelper.getYear(next.getDateFin()));
+
 					if (hasMotifFermetureSupprimantAssujettisssement(next) && isFermeDansPeriode) {
 						//ON trouve un for avec un départ hors canton collé au for analysé
 						// avec une date de fin dans la période,

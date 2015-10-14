@@ -1714,6 +1714,90 @@ public class TiersServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableUnForPrincipalFermeDansMemePeriode() {
+
+		// Contribuable avec un for principal ferme dans la meme période
+		{
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
+			addForPrincipal(c, date(2015, 4, 1), MotifFor.ARRIVEE_HC, date(2015, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			addForPrincipal(c, date(2015, 7, 1), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+
+			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
+			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
+			assertNull(tiersService.getForGestionActif(c, date(2015, 6, 30)));
+			final List<ForGestion> histo = tiersService.getForsGestionHisto(c);
+			assertEquals(0, histo.size());
+		}
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuable2ForFermeFermeDansMemePeriode() {
+
+		// Contribuable avec un for principal ferme dans la meme période
+		{
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
+			addForPrincipal(c, date(2015, 4, 1), MotifFor.ARRIVEE_HC, date(2015, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			addForPrincipal(c, date(2015,6, 1), MotifFor.DEMENAGEMENT_VD, date(2015, 6, 30), MotifFor.DEPART_HC, MockCommune.Aubonne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			addForPrincipal(c, date(2015, 7, 1), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+
+			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
+			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
+			assertNull(tiersService.getForGestionActif(c, date(2015, 5, 30)));
+			final List<ForGestion> histo = tiersService.getForsGestionHisto(c);
+			assertEquals(0, histo.size());
+		}
+
+
+	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableUnForPrincipalFermeDansPeriodeDifferente() {
+
+		// Contribuable avec un for principal ferme dans la meme période
+		{
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
+			addForPrincipal(c, date(2014, 4, 1), MotifFor.ARRIVEE_HC, date(2015, 6, 30), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			addForPrincipal(c, date(2015, 7, 1), MotifFor.DEPART_HC, null, null, MockCommune.Bern, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+
+			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
+			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
+			assertForGestion(date(2014, 4, 1), date(2015,6,30), MockCommune.Lausanne.getNoOFS(), tiersService.getForGestionActif(c, date(2015,6,30)));
+			final List<ForGestion> histo = tiersService.getForsGestionHisto(c);
+			assertEquals(1, histo.size());
+			assertForGestion(date(2014, 4, 1), null, MockCommune.Lausanne.getNoOFS(), histo.get(0));
+		}
+
+
+	}
+
+
+	//SIFISC-16670
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetForGestionContribuableApresDepartHsEtMariage() {
+
+		// Contribuable avec un for principal ferme pour départ Hors suisse
+		{
+			PersonnePhysique c = addNonHabitant("Eymeric","Duvoisin",date(1973,2,3),Sexe.MASCULIN);
+			addForPrincipal(c, date(2012, 6, 15), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2012, 7, 1), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			addForPrincipal(c, date(2012,7, 2), MotifFor.DEPART_HS, date(2012, 11, 30), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.France, ModeImposition.ORDINAIRE);
+
+			assertForGestion(date(2012, 6,15),date(2012, 7, 1), MockCommune.Lausanne.getNoOFS(), tiersService.getForGestionActif(c, date(2012, 6, 20)));
+			final List<ForGestion> histo = tiersService.getForsGestionHisto(c);
+			assertEquals(1, histo.size());
+			assertForGestion(date(2012, 6, 15), null, MockCommune.Lausanne.getNoOFS(), histo.get(0));
+		}
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForGestionContribuableUnForPrincipalHorsCanton() {
 
 		// Contribuable avec un for principal ouvert hors-canton
