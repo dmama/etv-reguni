@@ -137,11 +137,16 @@ public class GlobalMessageIdentificationIndexerImpl implements GlobalMessageIden
 		for (IdentificationContribuable msg : list) {
 			data.add(new MessageIdentificationIndexable(msg).getIndexableData());
 		}
-		if (eraseBeforeIndexing) {
-			globalIndex.removeThenIndexEntities(data);
+		try {
+			if (eraseBeforeIndexing) {
+				globalIndex.removeThenIndexEntities(data);
+			}
+			else {
+				globalIndex.indexEntities(data);
+			}
 		}
-		else {
-			globalIndex.indexEntities(data);
+		catch (Exception e){
+			LOGGER.error("Exception lors de l'indexation de message d'identification: "+e.getMessage(),e);
 		}
 	}
 
