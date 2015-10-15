@@ -375,7 +375,7 @@ public class EvenementReqDesProcessorTest extends AbstractEvenementReqDesProcess
 					final ErreurTraitement erreur = sorted.get(1);
 					Assert.assertNotNull(erreur);
 					Assert.assertEquals(ErreurTraitement.TypeErreur.ERROR, erreur.getType());
-					Assert.assertEquals("Un événement correspondant au même acte (numéro de minute moinot/56754K) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.", erreur.getMessage());
+					Assert.assertEquals("Un événement correspondant au même acte (numéro d'affaire moinot/56754K) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.", erreur.getMessage());
 				}
 			}
 		});

@@ -536,7 +536,7 @@ public class EvenementReqDesProcessorImpl implements EvenementReqDesProcessor, I
 
 		// est-ce un doublon reçu, qui justifie d'un traitement manuel systématique ?
 		if (evenement.isDoublon()) {
-			errorCollector.addNewMessage(String.format("Un événement correspondant au même acte (numéro de minute %s/%s) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.",
+			errorCollector.addNewMessage(String.format("Un événement correspondant au même acte (numéro d'affaire %s/%s) a déjà été reçu auparavant, celui-ci passe donc en traitement manuel.",
 			                                           evenement.getNotaire().getVisa(), evenement.getNumeroMinute()));
 		}
 
