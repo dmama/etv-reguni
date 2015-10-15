@@ -112,41 +112,42 @@ public class DepartSecondaire extends Depart {
 	 */
 	private void handleDepartResidenceSecondaire(PersonnePhysique pp, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 
-		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		// For principal est sur la commune de départ d'une résidence secondaire
+		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
 
-		//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
-		//ce cas d'arrangement fiscal ne sera pas détecté, il faut mettre l'événement en erreur pour
-		//traitement manuel
+		//SIFISC-15850
+		//Dans le cas ou le départ n'est pas complet on ne fait rien, on ne touche à rien
+		if (getDateDepartComplet(true) != null) {
 
-		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
+			if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
 
-			final Commune commune = (estEnSuisse() ? getNouvelleCommune() : null);
-			final ForFiscalPrincipalPP ffp = contribuable.getForFiscalPrincipalAt(null);
+				final Commune commune = (estEnSuisse() ? getNouvelleCommune() : null);
+				final ForFiscalPrincipalPP ffp = contribuable.getForFiscalPrincipalAt(null);
 
-			// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
-			if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFS() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				// rien à faire sur les fors...
-			}
-			else {
-				// fermeture de l'ancien for principal à la date du départ
-				getService().closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
-
-				// l'individu a sa residence principale en suisse
-				if (commune != null) {
-					if (commune.isVaudoise()) {
-						//Ces cas sont detectées en amont et mis en erreur
-					}
-					else {
-						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
-						openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
-					}
+				// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
+				if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFS() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					// rien à faire sur les fors...
 				}
-				else if (ffp != null) {
-					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
-					final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
-					final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
-					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
+				else {
+					// fermeture de l'ancien for principal à la date du départ
+					getService().closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+
+					// l'individu a sa residence principale en suisse
+					if (commune != null) {
+						if (commune.isVaudoise()) {
+							//Ces cas sont detectées en amont et mis en erreur
+						}
+						else {
+							final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
+							openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
+						}
+					}
+					else if (ffp != null) {
+						final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
+						final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
+						final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
+						openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
+					}
 				}
 			}
 		}

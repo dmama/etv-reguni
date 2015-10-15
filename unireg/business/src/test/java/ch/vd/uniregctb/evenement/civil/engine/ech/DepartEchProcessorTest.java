@@ -2340,4 +2340,118 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 	}
+	@Test(timeout = 10000L)
+	public void testDepartConjointAvecMariToujoursVaudois() throws Exception {
+
+		//
+		// Le meneur part d'abord, le suiveur... suit
+		//
+
+		final long noIndividuMonsieur = 3674532L;
+		final long noIndividuMadame = 3764325623L;
+		final RegDate dateMariage = date(2005, 5, 1);
+		final RegDate dateDepartMadame = date(2014, 5, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individuMonsieur = addIndividu(noIndividuMonsieur, null, "Dubalai", "Philibert", Sexe.MASCULIN);
+				final MockIndividu individuMadame = addIndividu(noIndividuMadame, null, "Dubalai", "Martina", Sexe.FEMININ);
+				marieIndividus(individuMonsieur, individuMadame, dateMariage);
+
+				addAdresse(individuMonsieur, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+				addAdresse(individuMadame, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+			}
+		});
+
+		final class Ids {
+			long idMonsieur;
+			long idMadame;
+			long idMenage;
+		}
+
+		// mise en place fiscale
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique monsieur = addHabitant(noIndividuMonsieur);
+				final PersonnePhysique madame = addHabitant(noIndividuMadame);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+
+
+				final Ids ids = new Ids();
+				ids.idMenage = mc.getNumero();
+				ids.idMonsieur = monsieur.getNumero();
+				ids.idMadame = madame.getNumero();
+				return ids;
+			}
+		});
+
+		//
+		//
+
+		doModificationIndividu(noIndividuMadame, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				final Collection<Adresse> adresses = individu.getAdresses();
+				Assert.assertEquals(1, adresses.size());
+
+				final MockAdresse prn = (MockAdresse) adresses.iterator().next();
+				prn.setDateFinValidite(dateDepartMadame);
+				prn.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+			}
+		});
+
+		final long evtMadameId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepartMadame);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuMadame);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividuMadame);
+
+		//
+		// vérification du for sur le couple (à ce stade, il est encore vaudois, puisque le conjoint n'est pas connu comme parti)
+		//
+
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtMadameId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertFalse(ffp.isAnnule());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+			}
+		});
+
+		//
+		// traitement du deuxième départ : celui du meneur (on les traite justement dans le désordre)
+		//
+
+	}
 }

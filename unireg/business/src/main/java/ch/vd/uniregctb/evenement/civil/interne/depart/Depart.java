@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.depart;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.CollatableDateRange;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -18,7 +24,9 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.common.MovingWindow;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -28,6 +36,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchFacade;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.mouvement.Mouvement;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
@@ -472,7 +481,150 @@ public abstract class Depart extends Mouvement {
 		return nouvelleCommune;
 	}
 
+	/**
+	 * Dans le cas du départ d'une personne seule, c'est la date du départ. Dans le cas du départ d'une personne en couple, l'idée est de renvoyer ici la prochaine date
+	 * (égale ou postérieure à la date du départ en cours de traitement) à laquelle le conjoint est également parti (soit du canton, soit de sa résidence vaudoise
+	 * au moment du départ traité)... Si un tel moment n'existe pas (ou pas encore), on retournera <i>null</i>.
+	 */
+	@Nullable
+	protected RegDate getDateDepartComplet(final boolean includeSecondaire) throws EvenementCivilException {
+		final PersonnePhysique habitant = getPrincipalPP();
+		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, getDate());
+		if (couple != null) {
+			final PersonnePhysique conjoint = couple.getConjoint(habitant);
+			if (conjoint != null) {
+				// il faut donc trouver un historique (postérieur ou égal à la date du départ traité) des lieux de résidence du conjoint
+				final List<LieuResidence> lieuxResidencePrincipaleConjoint = getLieuxResidencePrincipale(conjoint);
+				RegDate dateDepartComplet = getDateFromLieuxResidence(lieuxResidencePrincipaleConjoint);
+				if (dateDepartComplet == null && includeSecondaire) {
+					final List<LieuResidence> lieuxResidenceSecondaireConjoint = getLieuxResidenceSecondaire(conjoint);
+					//Si le conjoint n'a pas de résidence secondaire, on ne fait rien
+					if (!lieuxResidenceSecondaireConjoint.isEmpty()) {
+						dateDepartComplet = getDateFromLieuxResidence(lieuxResidenceSecondaireConjoint);
+					}
 
+				}
+				return dateDepartComplet;
+			}
+		}
+		return getDate();
+	}
+
+	private RegDate getDateFromLieuxResidence(List<LieuResidence> lieuxResidenceConjoint) {
+		final LieuResidence residenceAuMomentDuDepart = DateRangeHelper.rangeAt(lieuxResidenceConjoint, getDate());
+		final RegDate dateDepartComplet;
+		if (residenceAuMomentDuDepart != null && residenceAuMomentDuDepart.typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			dateDepartComplet = residenceAuMomentDuDepart.getDateFin();
+		}
+		else {
+			dateDepartComplet = getDate();
+		}
+		return dateDepartComplet;
+	}
+
+
+	private List<LieuResidence> getLieuxResidencePrincipale(PersonnePhysique pp) throws EvenementCivilException {
+		if (pp.isConnuAuCivil()) {
+			try {
+				final AdressesCivilesHistoriques adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
+				return getLieuResidences(adresses.principales);
+			}
+			catch (DonneesCivilesException e) {
+				throw new EvenementCivilException(e);
+			}
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	private List<LieuResidence> getLieuxResidenceSecondaire(PersonnePhysique pp) throws EvenementCivilException {
+		if (pp.isConnuAuCivil()) {
+			try {
+				final AdressesCivilesHistoriques adresses = context.getServiceCivil().getAdressesHisto(pp.getNumeroIndividu(), false);
+				return getLieuResidences(adresses.secondaires);
+			}
+			catch (DonneesCivilesException e) {
+				throw new EvenementCivilException(e);
+			}
+		}
+		else {
+			return Collections.emptyList();
+		}
+	}
+
+	@NotNull
+	private List<LieuResidence> getLieuResidences(List<Adresse> residences) {
+		if (residences== null  ||  residences.isEmpty()) {
+			return Collections.emptyList();
+		}
+		else {
+			final List<LieuResidence> lieux = new ArrayList<>(residences.size() * 2);
+			final MovingWindow<Adresse> adresseWindow = new MovingWindow<>(residences);
+			while (adresseWindow.hasNext()) {
+				final MovingWindow.Snapshot<Adresse> snapshot = adresseWindow.next();
+				final Adresse adresse = snapshot.getCurrent();
+				final LieuResidence lieu = new LieuResidence(adresse.getDateDebut(), adresse.getDateFin(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, adresse.getNoOfsCommuneAdresse());
+				lieux.add(lieu);
+
+				// une adresse de destination sur le canton devrait être reprise dans les résidences suivantes -> pas la peine de la prendre en compte maintenant
+				if (adresse.getLocalisationSuivante() != null && adresse.getLocalisationSuivante().getType() != LocalisationType.CANTON_VD) {
+					final Adresse adresseSuivante = snapshot.getNext();
+					if (adresseSuivante == null || RegDateHelper.isAfter(adresseSuivante.getDateDebut(), adresse.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST)) {
+						final RegDate dateFin = adresseSuivante == null ? null : adresseSuivante.getDateDebut().getOneDayBefore();
+						final TypeAutoriteFiscale typeAutoriteFiscale =
+								adresse.getLocalisationSuivante().getType() == LocalisationType.HORS_CANTON ? TypeAutoriteFiscale.COMMUNE_HC : TypeAutoriteFiscale.PAYS_HS;
+						final LieuResidence suivant = new LieuResidence(adresse.getDateFin().getOneDayAfter(), dateFin, typeAutoriteFiscale, adresse.getLocalisationSuivante().getNoOfs());
+						lieux.add(suivant);
+					}
+				}
+			}
+			return lieux;
+		}
+	}
+
+	private static class LieuResidence implements CollatableDateRange {
+		private final TypeAutoriteFiscale typeAutoriteFiscale;
+		private final int noOfs;
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+
+		private LieuResidence(RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, Integer noOfs) {
+			this.dateDebut = dateDebut;
+			this.typeAutoriteFiscale = typeAutoriteFiscale;
+			this.noOfs = noOfs == null ? -1 : noOfs;
+			this.dateFin = dateFin;
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			return DateRangeHelper.isCollatable(this, next) && next instanceof LieuResidence && ((LieuResidence) next).noOfs == noOfs && ((LieuResidence) next).typeAutoriteFiscale == typeAutoriteFiscale;
+		}
+
+		@Override
+		public DateRange collate(DateRange next) {
+			return new LieuResidence(dateDebut, next.getDateFin(), typeAutoriteFiscale, noOfs);
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return typeAutoriteFiscale;
+		}
+	}
 	public Pays getPaysInconnu() {
 		return paysInconnu;
 	}
