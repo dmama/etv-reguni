@@ -79,18 +79,19 @@ public class EvenementCediServiceImpl implements EvenementCediService {
 
 		final int noSequenceDI = scan.getNoSequenceDI();
 		final DeclarationImpotOrdinaire declaration = findDeclaration(noSequenceDI, declarations);
-		if (declaration == null) {
-			throw new EvenementCediException(EsbBusinessCode.DECLARATION_ABSENTE, "Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale " + annee + " avec le numéro de séquence " + noSequenceDI + '.');
+		if (declaration != null) {
+			// on envoie l'information au BAM
+			sendRetourDiToBAM(ctbId, annee, incomingHeaders);
+			// On met-à-jour le type de déclaration
+			updateTypeDocument(declaration, scan);
+		}else {
+			LOGGER.warn("Le contribuable n°" + ctbId + " ne possède pas de déclaration pour la période fiscale "
+							+ annee + " avec le numéro de séquence " + noSequenceDI + ". Le contribuables sera quand même mis à jour avce les informations retournées");
 		}
-
-		// on envoie l'information au BAM
-		sendRetourDiToBAM(ctbId, annee, incomingHeaders);
 
 		// On met-à-jour les informations personnelles
 		updateInformationsPersonnelles(ctb, scan);
 
-		// On met-à-jour le type de déclaration
-		updateTypeDocument(declaration, scan);
 	}
 
 	private void sendRetourDiToBAM(long ctbId, int annee, Map<String, String> incomingHeaders) throws EvenementCediException {

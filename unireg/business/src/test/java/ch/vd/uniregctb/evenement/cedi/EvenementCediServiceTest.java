@@ -290,4 +290,79 @@ public class EvenementCediServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testModifierInformationsPersonnellesPourDiAnnulee() throws Exception {
+
+		// Création d'un contribuable ordinaire et de sa DI
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale periode2014 = addPeriodeFiscale(2014);
+				final ModeleDocument declarationComplete2014 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2014);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2014);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2014);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2014);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2014);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2014);
+
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				final PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				final DeclarationImpotOrdinaire d2014_1 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						declarationComplete2014);
+				d2014_1.setAnnule(true);
+				final DeclarationImpotOrdinaire d2014_2 = addDeclarationImpot(eric, periode2014, date(2014, 1, 1), date(2014, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						declarationComplete2014);
+
+
+				return eric.getNumero();
+			}
+		});
+
+		// Simule la réception d'un événement de scan de DI
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final RetourDI scan = new RetourDI();
+				scan.setNoContribuable(id.intValue());
+				scan.setEmail("zuzu@gmail.com");
+				scan.setIban("CFE2145000321457");
+				scan.setNoMobile("0789651243");
+				scan.setNoTelephone("0215478936");
+				scan.setTitulaireCompte("Famille devel");
+				scan.setTypeDocument(RetourDI.TypeDocument.VAUDTAX);
+				scan.setPeriodeFiscale(2014);
+				scan.setNoSequenceDI(1);
+				service.onRetourDI(scan, Collections.<String, String>emptyMap());
+				return null;
+			}
+		});
+
+		// Vérifie que les informations personnelles ainsi que le type de DI ont bien été mis-à-jour
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique eric = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				assertEquals("zuzu@gmail.com", eric.getAdresseCourrierElectronique());
+				assertEquals("CFE2145000321457", eric.getNumeroCompteBancaire());
+				assertEquals("Famille devel", eric.getTitulaireCompteBancaire());
+				assertEquals("0215478936", eric.getNumeroTelephonePrive());
+				assertEquals("0789651243", eric.getNumeroTelephonePortable());
+				final List<Declaration> list = eric.getDeclarationsForPeriode(2014, false);
+				assertNotNull(list);
+				assertEquals(1, list.size());
+
+				final DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) list.get(0);
+				assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, declaration.getModeleDocument().getTypeDocument());
+				return null;
+			}
+		});
+	}
+
 }
