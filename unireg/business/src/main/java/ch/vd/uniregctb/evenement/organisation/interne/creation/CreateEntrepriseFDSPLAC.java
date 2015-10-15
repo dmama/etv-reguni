@@ -22,7 +22,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseFDSPLAC extends CreateEntrepriseBase {
+public class CreateEntrepriseFDSPLAC extends CreateEntreprise {
 
 	protected CreateEntrepriseFDSPLAC(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                  EvenementOrganisationContext context,

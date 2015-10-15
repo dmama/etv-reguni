@@ -28,6 +28,6 @@ public class TraitementManuel extends EvenementOrganisationInterne {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		erreurs.addErreur(String.format("%s %s", message, getOrganisationDescription()));
+		erreurs.addErreur(message);
 	}
 }

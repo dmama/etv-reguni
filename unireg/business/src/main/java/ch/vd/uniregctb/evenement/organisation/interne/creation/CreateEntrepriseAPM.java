@@ -31,7 +31,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseAPM extends CreateEntrepriseBase {
+public class CreateEntrepriseAPM extends CreateEntreprise {
 
 	protected CreateEntrepriseAPM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                              EvenementOrganisationContext context,
@@ -49,8 +49,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 			MotifFor motifOuverture = determineMotifOuvertureFor();
 
 			openForFiscalPrincipal(getDateDeDebut(),
-			                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
-			                       getAutoriteFiscalePrincipale().getNoOfs(),
+			                       getAutoriteFiscalePrincipale(),
 			                       MotifRattachement.DOMICILE,
 			                       motifOuverture,
 			                       warnings);
@@ -94,7 +93,7 @@ public class CreateEntrepriseAPM extends CreateEntrepriseBase {
 
 			if (siegePrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 					(!autoritesAvecForSecondaire.contains(autoriteFiscale.getNoOfs()))) {
-				openForFiscalSecondaire(getDateDeDebut(), autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), MotifRattachement.ETABLISSEMENT_STABLE, MotifFor.DEBUT_EXPLOITATION, warnings);
+				openForFiscalSecondaire(getDateDeDebut(), autoriteFiscale, MotifRattachement.ETABLISSEMENT_STABLE, MotifFor.DEBUT_EXPLOITATION, warnings);
 				autoritesAvecForSecondaire.add(autoriteFiscale.getNoOfs());
 			}
 

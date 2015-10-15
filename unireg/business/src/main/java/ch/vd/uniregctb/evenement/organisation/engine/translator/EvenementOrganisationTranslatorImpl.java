@@ -25,6 +25,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInter
 import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -76,7 +77,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			L'ordre des stratégies est important.
 		 */
 		strategies.add(new CreateOrganisationStrategy());
-		// TODO: elle viennent ces stratégies?
+		strategies.add(new DemenagementSiegeStrategy());
 	}
 
 	/**

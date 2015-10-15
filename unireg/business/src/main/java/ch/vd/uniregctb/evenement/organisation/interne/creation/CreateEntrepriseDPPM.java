@@ -24,7 +24,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
+public class CreateEntrepriseDPPM extends CreateEntreprise {
 
 	protected CreateEntrepriseDPPM(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                               EvenementOrganisationContext context,
@@ -39,8 +39,7 @@ public class CreateEntrepriseDPPM extends CreateEntrepriseBase {
 		MotifFor motifOuverture = determineMotifOuvertureFor();
 
 		openForFiscalPrincipal(getDateDeDebut(),
-		                       getAutoriteFiscalePrincipale().getTypeAutoriteFiscale(),
-		                       getAutoriteFiscalePrincipale().getNoOfs(),
+		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
 		                       warnings);

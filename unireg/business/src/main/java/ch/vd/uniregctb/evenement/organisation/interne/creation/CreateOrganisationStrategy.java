@@ -20,7 +20,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique non prise en charge.";
 
 	/**
-	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntrepriseBase} est
+	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
 	 *
 	 * Spécifications:

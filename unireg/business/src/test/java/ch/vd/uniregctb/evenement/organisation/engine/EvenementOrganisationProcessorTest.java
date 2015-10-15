@@ -72,13 +72,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 			}
 		});
 
-		final Entreprise entreprise = new Entreprise();
-		entreprise.setNumeroEntreprise(noOrganisation);
 		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
 			@Override
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
-				tiersDAO.save(entreprise);
-				return entreprise;
+				return addEntrepriseConnueAuCivil(noOrganisation);
 			}
 		});
 

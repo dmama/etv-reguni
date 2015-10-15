@@ -29,16 +29,16 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseBase extends EvenementOrganisationInterne {
+public abstract class CreateEntreprise extends EvenementOrganisationInterne {
 
 	final private RegDate dateDeDebut;
 	final private CategorieEntreprise category;
 	final private SiteOrganisation sitePrincipal;
 	final private Siege autoriteFiscalePrincipale;
 
-	protected CreateEntrepriseBase(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
-	                               EvenementOrganisationContext context,
-	                               EvenementOrganisationOptions options) throws EvenementOrganisationException {
+	protected CreateEntreprise(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
+	                           EvenementOrganisationContext context,
+	                           EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 
 		/*

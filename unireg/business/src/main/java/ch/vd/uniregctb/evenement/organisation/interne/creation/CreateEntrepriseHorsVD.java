@@ -20,7 +20,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseHorsVD extends CreateEntrepriseBase {
+public class CreateEntrepriseHorsVD extends CreateEntreprise {
 
 	protected CreateEntrepriseHorsVD(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                                 EvenementOrganisationContext context,

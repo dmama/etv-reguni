@@ -22,7 +22,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Raphaël Marmier, 2015-09-02
  */
-public class CreateEntrepriseSP extends CreateEntrepriseBase {
+public class CreateEntrepriseSP extends CreateEntreprise {
 
 	protected CreateEntrepriseSP(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
 	                             EvenementOrganisationContext context,

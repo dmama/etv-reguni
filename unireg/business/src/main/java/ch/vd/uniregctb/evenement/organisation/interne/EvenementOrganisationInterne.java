@@ -23,13 +23,13 @@ import ch.vd.uniregctb.tiers.Bouclement;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
@@ -308,28 +308,27 @@ public abstract class EvenementOrganisationInterne {
 	 * Ouvre un nouveau for fiscal principal.
 	 *
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale,
+	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Siege autoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
+		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
 			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
-			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
+			raiseStatusTo(HandleStatus.TRAITE);
+			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal principal sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal principal manuellement.",
 					              commune.getNomOfficielAvecCanton()));
 		}
-		raiseStatusTo(HandleStatus.TRAITE);
 		return null;
 	}
 
@@ -337,28 +336,43 @@ public abstract class EvenementOrganisationInterne {
 	 * Ouvre un nouveau for fiscal secondaire. // TODO: verifier qu'on n'a pas besoin de créer une classe spécifique PM pour les for secondiares établissements.
 	 *
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
-	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
-	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale,
+	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, Siege autoriteFiscale,
 	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings) {
-		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateOuverture);
+		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
 			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
 			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
 			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
-			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture);
+			raiseStatusTo(HandleStatus.TRAITE);
+			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
 		} else {
 			warnings.addWarning(
 					String.format("Ouverture de for fiscal secondaire sur une commune faîtière de fractions, %s: Veuillez saisir le for fiscal secondaire manuellement.",
 					              commune.getNomOfficielAvecCanton()));
 		}
-		raiseStatusTo(HandleStatus.TRAITE);
 		return null;
+	}
+
+	/**
+	 * Ferme l'actuel for principal.
+	 *
+	 * @param dateDeFermeture la date à laquelle l'ancien for est fermé
+	 * @param motifFermeture  le motif de fermeture du for fiscal principal
+	 * @return
+	 */
+	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture) {
+
+		Audit.info(getNumeroEvenement(), String.format("Fermeture du for principal pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
+		                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+
+		raiseStatusTo(HandleStatus.TRAITE);
+		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
 	}
 
 	/**

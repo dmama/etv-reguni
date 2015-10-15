@@ -9,7 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslationStrategy;
-import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntrepriseBase;
+import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -23,7 +23,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 public abstract class AbstractOrganisationStrategy implements EvenementOrganisationTranslationStrategy {
 
 	/**
-	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntrepriseBase} est
+	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
 	 * pertinente.
 	 *
 	 * Spécifications:
