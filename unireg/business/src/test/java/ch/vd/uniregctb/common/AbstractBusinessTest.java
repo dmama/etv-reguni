@@ -983,6 +983,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return tiersDAO.addAndSave(entreprise, rf);
     }
 
+    protected RegimeFiscal addRegimeFiscalCH(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
+        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.CH, type);
+        return tiersDAO.addAndSave(entreprise, rf);
+    }
+
     protected AllegementFiscal addAllegementFiscalFederal(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, BigDecimal pourcentageAllegement) {
         final AllegementFiscal af = new AllegementFiscal(dateDebut, dateFin, pourcentageAllegement, typeImpot, AllegementFiscal.TypeCollectivite.CONFEDERATION, null);
         return tiersDAO.addAndSave(entreprise, af);

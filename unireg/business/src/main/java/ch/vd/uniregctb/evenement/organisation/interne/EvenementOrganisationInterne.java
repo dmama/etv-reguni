@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -114,9 +118,35 @@ public abstract class EvenementOrganisationInterne {
 		return status;
 	}
 
+	@NotNull
+	protected List<RegimeFiscal> extractRegimesFiscauxVD() {
+		List<RegimeFiscal> regimesFiscauxNonAnnulesTries = getEntreprise().getRegimesFiscauxNonAnnulesTries();
+		List<RegimeFiscal> regimesFiscauxVD = new ArrayList<>();
+
+		for (RegimeFiscal regime : regimesFiscauxNonAnnulesTries) {
+			if (regime.getPortee() == RegimeFiscal.Portee.VD) {
+				regimesFiscauxVD.add(regime);
+			}
+		}
+		return regimesFiscauxVD;
+	}
+
+	@NotNull
+	protected List<RegimeFiscal> extractRegimesFiscauxCH() {
+		List<RegimeFiscal> regimesFiscauxNonAnnulesTries = getEntreprise().getRegimesFiscauxNonAnnulesTries();
+		List<RegimeFiscal> regimesFiscauxVD = new ArrayList<>();
+
+		for (RegimeFiscal regime : regimesFiscauxNonAnnulesTries) {
+			if (regime.getPortee() == RegimeFiscal.Portee.CH) {
+				regimesFiscauxVD.add(regime);
+			}
+		}
+		return regimesFiscauxVD;
+	}
+
 	/*
-		Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
-	 */
+			Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
+		 */
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
 
 	@NotNull
@@ -141,6 +171,26 @@ public abstract class EvenementOrganisationInterne {
 			}
 		}
 		return motifOuverture;
+	}
+
+	/**
+	 * Trouve le range en cours de validité et vérifie qu'il est ouvert.
+	 *
+	 * A utiliser pour s'assurer qu'on est en présence d'une situation "propre", c'est-à-dire d'une valeur en cours de validité. N'est valable
+	 * que pour une liste représentant l'historique d'une donnée (une seule valeur à la fois). La liste n'a pas besoin d'être dans l'ordre chronologique.
+	 *
+	 * @param list La liste des valeurs représentant l'historique
+	 * @param date La date de référence
+	 * @param <T> Le type des valeurs de la liste, implémentant {@link DateRange}
+	 * @return Le range valide à la date, null s'il n'y en a pas ou qu'il est fermé.
+	 */
+	protected <T extends DateRange> T getAndValidateOpen(List<T> list, RegDate date) {
+		T range = DateRangeHelper.rangeAt(list, date);
+		return validateOpen(range) ? range : null;
+	}
+
+	private <T extends DateRange> boolean validateOpen(T range) {
+		return range != null && range.getDateFin() == null;
 	}
 
 	protected abstract void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
@@ -239,13 +289,27 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
+		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		setEntreprise(entreprise);
+		raiseStatusTo(HandleStatus.TRAITE);
 
+		openRegimesFiscauxOrdinairesCHVD(entreprise, dateDebut);
+	}
+
+	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, RegDate dateDebut) {
 		// Le régime fiscal VD + CH
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE, dateDebut);
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE, dateDebut);
+		Audit.info(String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
 
-		setEntreprise(entreprise);
-		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+	protected void closeRegimesFiscauxOrdinairesCHVD(RegimeFiscal regimeFiscalCH, RegimeFiscal regimeFiscalVD, RegDate dateFin) throws EvenementOrganisationException {
+		// Le régime fiscal VD + CH
+		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
+		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
+
+		Audit.info(String.format("Régimes fiscaux ordinaires VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
