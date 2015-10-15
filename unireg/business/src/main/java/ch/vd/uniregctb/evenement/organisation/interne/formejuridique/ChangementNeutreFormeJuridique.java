@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne.formejuridique;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -8,6 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire.TypeInformationComplementaire;
@@ -26,7 +28,13 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		TypeInformationComplementaire type = TypeInformationComplementaire.CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE;
+		emetInformationComplementaire(type);
+	}
+
+	private void emetInformationComplementaire(TypeInformationComplementaire type) {
+		Audit.info(String.format("Envoi d'un événement d'information après changement neutre de forme juridique. Entreprise %s (civil: %s).", getEntreprise().getNumero(), getNoOrganisation()));
 		context.getEvenementFiscalService().publierEvenementFiscalInformationComplementaire(getEntreprise(), type, getDateEvt());
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override
