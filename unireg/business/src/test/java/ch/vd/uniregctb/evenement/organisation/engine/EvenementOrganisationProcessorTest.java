@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
-import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
@@ -137,7 +136,10 @@ public class EvenementOrganisationProcessorTest extends AbstractEvenementOrganis
 		serviceOrganisation.setUp(new MockServiceOrganisation() {
 			@Override
 			protected void init() {
-				final MockOrganisation organisation = addOrganisation(noOrganisation, date(2015, 4, 29), "Springbok SA", FormeLegale.N_0106_SOCIETE_ANONYME);
+				addOrganisation(
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Synergy SA", RegDate.get(2000, 1, 1), null, FormeLegale.N_0106_SOCIETE_ANONYME,
+						                                                 MockCommune.Lausanne)
+				);
 			}
 		});
 
