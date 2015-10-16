@@ -27,6 +27,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.formejuridique.ChangementFormeJuridiqueStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.passeplat.PassePlatStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -80,6 +81,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new CreateOrganisationStrategy());
 		strategies.add(new DemenagementSiegeStrategy());
 		strategies.add(new ChangementFormeJuridiqueStrategy());
+		strategies.add(new PassePlatStrategy());
 	}
 
 	/**
