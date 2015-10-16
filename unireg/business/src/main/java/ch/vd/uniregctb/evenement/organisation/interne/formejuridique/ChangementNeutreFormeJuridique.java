@@ -27,12 +27,11 @@ public class ChangementNeutreFormeJuridique extends EvenementOrganisationInterne
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		TypeInformationComplementaire type = TypeInformationComplementaire.CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE;
-		emetInformationComplementaire(type);
+		emetInformationComplementaire(TypeInformationComplementaire.CHANGEMENT_FORME_JURIDIQUE_MEME_CATEGORIE);
 	}
 
 	private void emetInformationComplementaire(TypeInformationComplementaire type) {
-		Audit.info(String.format("Envoi d'un événement d'information après changement neutre de forme juridique. Entreprise %s (civil: %s).", getEntreprise().getNumero(), getNoOrganisation()));
+		Audit.info(String.format("Envoi d'un événement d'information %s après changement neutre de forme juridique. Entreprise %s (civil: %s).", type, getEntreprise().getNumero(), getNoOrganisation()));
 		context.getEvenementFiscalService().publierEvenementFiscalInformationComplementaire(getEntreprise(), type, getDateEvt());
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
