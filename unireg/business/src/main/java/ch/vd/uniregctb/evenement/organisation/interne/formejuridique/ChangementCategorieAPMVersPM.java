@@ -26,9 +26,6 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 	private final RegDate dateAvant;
 	private final RegDate dateApres;
 
-	private final CategorieEntreprise categoryAvant;
-	private final CategorieEntreprise categoryApres;
-
 	private final RegimeFiscal regimeFiscalCHAvant;
 	private final RegimeFiscal regimeFiscalVDAvant;
 
@@ -39,9 +36,6 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 
 		dateApres = evenement.getDateEvenement();
 		dateAvant = dateApres.getOneDayBefore();
-
-		categoryAvant = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), getDateEvt());
-		categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
 
 		regimeFiscalCHAvant = getAndValidateOpen(extractRegimesFiscauxCH(), dateAvant);
 		regimeFiscalVDAvant = getAndValidateOpen(extractRegimesFiscauxVD(), dateApres);
@@ -61,14 +55,13 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 		return dateApres;
 	}
 
-	public CategorieEntreprise getCategoryAvant() {
-		return categoryAvant;
+	public RegimeFiscal getRegimeFiscalCHAvant() {
+		return regimeFiscalCHAvant;
 	}
 
-	public CategorieEntreprise getCategoryApres() {
-		return categoryApres;
+	public RegimeFiscal getRegimeFiscalVDAvant() {
+		return regimeFiscalVDAvant;
 	}
-
 
 	@Override
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
@@ -90,16 +83,18 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 		// Vérifier qu'il y a bien une entreprise préexistante en base ? (Ca ne devrait pas se produire ici)
 		Assert.notNull(getEntreprise());
 
-		Assert.isTrue(categoryAvant != CategorieEntreprise.APM || categoryApres != CategorieEntreprise.PM);
+		final CategorieEntreprise categoryAvant = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), dateAvant);
+		final CategorieEntreprise categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(getOrganisation(), dateApres);
+		Assert.isTrue(categoryAvant == CategorieEntreprise.APM && categoryApres == CategorieEntreprise.PM);
 
 		/*
 		 Problèmes métiers empêchant la progression
 		  */
 		if (regimeFiscalCHAvant == null) {
-			erreurs.addErreur("Régimes fiscal ordinaire VD introuvable, déjà fermé ou incohérent. Veuillez traiter manuellement.");
+			erreurs.addErreur("Régime fiscal ordinaire CH introuvable, déjà fermé ou incohérent. Veuillez traiter manuellement.");
 		}
 		if (regimeFiscalVDAvant == null) {
-			erreurs.addErreur("Régimes fiscal ordinaire VD introuvable, déjà fermé ou incohérent. Veuillez traiter manuellement.");
+			erreurs.addErreur("Régime fiscal ordinaire VD introuvable, déjà fermé ou incohérent. Veuillez traiter manuellement.");
 		}
 	}
 }

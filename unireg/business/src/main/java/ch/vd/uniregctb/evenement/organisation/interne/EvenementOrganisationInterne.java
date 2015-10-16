@@ -105,6 +105,7 @@ public abstract class EvenementOrganisationInterne {
 	 *     métier correspondante, et nommée en fonction d'elle.</li>
 	 *     <li>Chaque méthode métier doit impérativement se terminer par un appel à raiseStatusTo() pour établir le status résultant de l'opération.</li>
 	 *     <li>D'une manière générale, les décisions métier doivent ressortir clairement de la lecture de la méthode doHandle().</li>
+	 *     <li>Les paramètres métier sont passés en paramètres des méthodes métier. En particulier les dates. En revanche, ces méthodes accédent au contexte directement.</li>
 	 * </ul>
 	 * </p>
 	 * @param warnings une liste de warnings qui sera remplie - si nécessaire - par la méthode.
