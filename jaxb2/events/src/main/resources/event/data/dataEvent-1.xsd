@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with vim by DSI (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/unireg/event/data/1"
+           targetNamespace="http://www.vd.ch/fiscalite/unireg/event/data/1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:complexType name="dataEvent" abstract="true">
+		<xs:sequence/>
+	</xs:complexType>
+
+	<xs:complexType name="dataChangeEvent" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="dataEvent">
+				<xs:sequence>
+					<xs:element name="id" type="xs:long"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="tiersChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="individuChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="pmChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="droitAccesChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataChangeEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="relationChangeEvent">
+		<xs:complexContent>
+			<xs:extension base="dataEvent">
+				<xs:sequence>
+					<xs:element name="relationType" type="relationshipType"/>
+					<xs:element name="sujetId" type="xs:long"/>
+					<xs:element name="objetId" type="xs:long"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="databaseTruncateEvent">
+		<xs:complexContent>
+			<xs:extension base="dataEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="databaseLoadEvent">
+		<xs:complexContent>
+			<xs:extension base="dataEvent"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="relationshipType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TUTELLE"/>
+			<xs:enumeration value="CURATELLE"/>
+			<xs:enumeration value="CONSEIL_LEGAL"/>
+			<xs:enumeration value="PRESTATION_IMPOSABLE"/>
+			<xs:enumeration value="APPARTENANCE_MENAGE"/>
+			<xs:enumeration value="REPRESENTATION"/>
+			<xs:enumeration value="CONTACT_IMPOT_SOURCE"/>
+			<xs:enumeration value="ANNULE_ET_REMPLACE"/>
+			<xs:enumeration value="PARENTE"/>
+			<xs:enumeration value="ASSUJETTISSEMENT_PAR_SUBSTITUTION"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="event" type="dataEvent"/>
+
+</xs:schema>

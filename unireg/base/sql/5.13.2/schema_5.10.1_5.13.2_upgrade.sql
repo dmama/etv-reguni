@@ -1,0 +1,5 @@
+-- Version
+INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('5.13.2', '5.10.1_5.13.2_upgrade');
+
+-- SIFISC-15849 (le numéro d'affaire d'un message ReqDes)
+ALTER TABLE EVENEMENT_REQDES ADD NO_AFFAIRE NUMBER(19, 0);

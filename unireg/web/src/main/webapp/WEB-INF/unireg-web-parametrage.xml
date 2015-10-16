@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--
+		Configuration des beans pour : Paramètre d'application 
+	 -->
+	<bean id="paramHelper" class="ch.vd.uniregctb.param.ParamHelper" />
+
+	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
+		<property name="service" ref="parametreAppService" />
+	</bean>
+
+	<bean id="paramApplicationController"  class="ch.vd.uniregctb.param.ParamApplicationController">
+		<property name="paramApplicationManager" ref="paramApplicationManager" />
+		<property name="validator" ref="paramApplicationValidator" />
+	</bean>
+
+	<bean id="paramApplicationValidator" class="ch.vd.uniregctb.param.validator.ParamApplicationValidator">
+	</bean>
+
+
+	<!--
+		Configuration des beans pour : Paramètre de Période fiscale
+	 -->
+
+	<!--  Le manager -->
+	<bean id="paramPeriodeManager" class="ch.vd.uniregctb.param.manager.ParamPeriodeManagerImpl">
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
+		<property name="parametrePeriodeFiscaleDAO" ref="parametrePeriodeFiscaleDAO" />
+		<property name="periodeFiscaleService" ref="periodeFiscaleService" />
+	</bean>
+
+	<!-- Les validators -->
+	<bean id="parametrePeriodeFiscaleValidator" class="ch.vd.uniregctb.param.validator.ParametrePeriodeFiscaleValidator" />
+	<bean id="modeleFeuilleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleFeuilleDocumentValidator">
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+	</bean>
+	<bean id="modeleDocumentValidator" class="ch.vd.uniregctb.param.validator.ModeleDocumentValidator">
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+	</bean>
+
+	<!-- Les Controlleurs -->
+
+	<bean id="parametrePeriodeController" class="ch.vd.uniregctb.param.ParamPeriodeController">
+		<property name="manager" ref="paramPeriodeManager" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
+	<bean id="modeleFeuilleDocumentController" class="ch.vd.uniregctb.param.ModeleFeuilleDocumentController">
+		<property name="manager" ref="paramPeriodeManager" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
+		<property name="modeleFeuilleDocumentValidator" ref="modeleFeuilleDocumentValidator" />
+	</bean>
+
+</beans>
