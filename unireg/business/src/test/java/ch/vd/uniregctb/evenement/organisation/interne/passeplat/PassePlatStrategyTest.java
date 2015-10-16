@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -34,7 +35,7 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-10-16
  */
-public class PassePlatStrategyTest {
+public class PassePlatStrategyTest extends WithoutSpringTest {
 
 	private static class MockServiceOrganisationService implements ServiceOrganisationService {
 		@Override
@@ -72,7 +73,7 @@ public class PassePlatStrategyTest {
 
 	final Entreprise entreprise = new Entreprise();
 
-	@Test(timeout = 10L)
+	@Test
 	public void testMapping() throws Exception {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_NOUVELLE_ENTREPRISE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_NOUVELLE_SUCCURSALE));
@@ -83,32 +84,32 @@ public class PassePlatStrategyTest {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_REINSCRIPTION_ENTREPRISE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_AUTRE_MUTATION));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IMPORTATION_ENTREPRISE));
-		Assert.assertEquals(TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE, createEventAndMatch(TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE).getTypeInfo());
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_SUSPENSION_FAILLITE));
-		Assert.assertEquals(TypeInformationComplementaire.ETAT_COLLOCATION_INVENTAIRE_FAILLITE, createEventAndMatch(TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE).getTypeInfo());
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE, TypeEvenementOrganisation.FOSC_AVIS_PREALABLE_OUVERTURE_FAILLITE);
+		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS, TypeEvenementOrganisation.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS);
+		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.SUSPENSION_FAILLITE, TypeEvenementOrganisation.FOSC_SUSPENSION_FAILLITE);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.ETAT_COLLOCATION_INVENTAIRE_FAILLITE, TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_ET_INVENTAIRE_DANS_FAILLITE);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_FAILLITE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_CLOTURE_DE_LA_FAILLITE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_REVOCATION_DE_LA_FAILLITE));
-		Assert.assertEquals(TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE, createEventAndMatch(TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE).getTypeInfo());
+		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.CLOTURE_FAILLITE, TypeEvenementOrganisation.FOSC_CLOTURE_DE_LA_FAILLITE);
+		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.REVOCATION_FAILLITE, TypeEvenementOrganisation.FOSC_REVOCATION_DE_LA_FAILLITE);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_FAILLITE, TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_FAILLITE);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_ETAT_DES_CHARGES_DANS_FAILLITE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_FAILLITE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_DEMANDE_SURSIS_CONCORDATAIRE));
-		Assert.assertEquals(TypeInformationComplementaire.SURSIS_CONCORDATAIRE_PROVISOIRE, createEventAndMatch(TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.SURSIS_CONCORDATAIRE, createEventAndMatch(TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.APPEL_CREANCIERS_CONCORDAT, createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.AUDIENCE_LIQUIDATION_ABANDON_ACTIF, createEventAndMatch(TypeEvenementOrganisation.FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.PROLONGATION_SURSIS_CONCORDATAIRE, createEventAndMatch(TypeEvenementOrganisation.FOSC_PROLONGATION_SURSIS_CONCORDATAIRE).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.ANNULATION_SURSIS_CONCORDATAIRE, createEventAndMatch(TypeEvenementOrganisation.FOSC_ANNULATION_SURSIS_CONCORDATAIRE).getTypeInfo());
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.SURSIS_CONCORDATAIRE_PROVISOIRE, TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE_PROVISOIRE);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.SURSIS_CONCORDATAIRE, TypeEvenementOrganisation.FOSC_SURSIS_CONCORDATAIRE);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.APPEL_CREANCIERS_CONCORDAT, TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_DANS_CONCORDAT);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.AUDIENCE_LIQUIDATION_ABANDON_ACTIF, TypeEvenementOrganisation.FOSC_AUDIENCE_DE_LIQUIDATION_PAR_ABANDON_ACTIF);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.PROLONGATION_SURSIS_CONCORDATAIRE, TypeEvenementOrganisation.FOSC_PROLONGATION_SURSIS_CONCORDATAIRE);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.ANNULATION_SURSIS_CONCORDATAIRE, TypeEvenementOrganisation.FOSC_ANNULATION_SURSIS_CONCORDATAIRE);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_CONVOCATION_A_ASSEMBLEE_DES_CREANCIERS));
-		Assert.assertEquals(TypeInformationComplementaire.HOMOLOGATION_CONCORDAT, createEventAndMatch(TypeEvenementOrganisation.FOSC_HOMOLOGATION_DU_CONCORDAT).getTypeInfo());
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.HOMOLOGATION_CONCORDAT, TypeEvenementOrganisation.FOSC_HOMOLOGATION_DU_CONCORDAT);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_REFUS_HOMOLOGATION_DU_CONCORDAT));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_REVOCATION_DU_CONCORDAT));
-		Assert.assertEquals(TypeInformationComplementaire.ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF, createEventAndMatch(TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT, createEventAndMatch(TypeEvenementOrganisation.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF).getTypeInfo());
-		Assert.assertEquals(TypeInformationComplementaire.CONCORDAT_BANQUE_CAISSE_EPARGNE, createEventAndMatch(TypeEvenementOrganisation.FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE).getTypeInfo());
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.ETAT_COLLOCATION_CONCORDAT_ABANDON_ACTIF, TypeEvenementOrganisation.FOSC_ETAT_DE_COLLOCATION_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.TABLEAU_DISTRIBUTION_DECOMPTE_FINAL_CONCORDAT, TypeEvenementOrganisation.FOSC_TABLEAU_DE_DISTRIBUTION_ET_DECOMPTE_FINAL_DANS_CONCORDAT_PAR_ABANDON_D_ACTIF);
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.CONCORDAT_BANQUE_CAISSE_EPARGNE, TypeEvenementOrganisation.FOSC_CONCORDAT_DE_BANQUE_ET_DE_CAISSE_EPARGNE);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LE_CONCORDAT));
-		Assert.assertEquals(TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE, createEventAndMatch(TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE).getTypeInfo());
+		assertEvenementFiscalSansImpact(TypeInformationComplementaire.VENTE_ENCHERES_FORCEE_IMMEUBLES_POURSUITE, TypeEvenementOrganisation.FOSC_VENTE_AUX_ENCHERES_FORCEE_IMMEUBLES_DANS_POURSUITE);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMANDEMENT_DE_PAYER));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SEQUESTRE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SAISIE));
@@ -117,7 +118,7 @@ public class PassePlatStrategyTest {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFORMATION_SA_EN_SARL));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER));
+		assertEvenementFiscalAvecImpact(TypeInformationComplementaire.APPEL_CREANCIERS_TRANSFERT_HS, TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_TRANSFERT_ETRANGER);
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_NOUVELLE_INSCRIPTION_DANS_REGISTRE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_MUTATION_DANS_REGISTRE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.IDE_RADIATION_DANS_REGISTRE));
@@ -130,7 +131,19 @@ public class PassePlatStrategyTest {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.RCPERS_CORRECTION_DONNEES));
 	}
 
-	@Test(timeout = 10L)
+	private void assertEvenementFiscalAvecImpact(TypeInformationComplementaire envoye, TypeEvenementOrganisation recu) throws EvenementOrganisationException {
+		PassePlat evtinterne = createEventAndMatch(recu);
+		Assert.assertEquals(PassePlatAVerifier.class, evtinterne.getClass());
+		Assert.assertEquals(envoye, evtinterne.getTypeInfo());
+	}
+
+	private void assertEvenementFiscalSansImpact(TypeInformationComplementaire envoye, TypeEvenementOrganisation recu) throws EvenementOrganisationException {
+		PassePlat evtinterne = createEventAndMatch(recu);
+		Assert.assertEquals(PassePlat.class, evtinterne.getClass());
+		Assert.assertEquals(envoye, evtinterne.getTypeInfo());
+	}
+
+	@Test
 	public void testEntrepriseNull() throws Exception {
 		Assert.assertNull(
 				strategy.matchAndCreate(

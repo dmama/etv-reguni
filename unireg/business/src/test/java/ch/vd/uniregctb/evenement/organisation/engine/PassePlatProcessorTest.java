@@ -49,7 +49,7 @@ public class PassePlatProcessorTest extends AbstractEvenementOrganisationProcess
 	}
 
 	@Test(timeout = 10000L)
-	public void testEvenementFailliteEtConcordat() throws Exception {
+	public void testEvenementFailliteEtConcordatSansImpact() throws Exception {
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
@@ -120,6 +120,85 @@ public class PassePlatProcessorTest extends AbstractEvenementOrganisationProcess
 
 					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
 					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.AVIS_PREALABLE_OUVERTURE_FAILLITE, efrf.getType());
+				                             }
+				                             return null;
+			                             }
+		                             }
+		);
+	}
+
+	@Test(timeout = 10000L)
+	public void testEvenementFailliteEtConcordatAvecImpact() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				addOrganisation(MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE,
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE));
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+
+				return addEntrepriseConnueAuCivil(noOrganisation);
+			}
+		});
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_PUBLICATION_FAILLITE_ET_APPEL_AUX_CREANCIERS, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut");
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.A_VERIFIER, evt.getEtat());
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(1, evtsFiscaux.size());
+
+				                             final List<EvenementFiscal> evtsFiscauxTries = new ArrayList<>(evtsFiscaux);
+				                             Collections.sort(evtsFiscauxTries, new Comparator<EvenementFiscal>() {
+					                             @Override
+					                             public int compare(EvenementFiscal o1, EvenementFiscal o2) {
+						                             return Long.compare(o1.getId(), o2.getId());
+					                             }
+				                             });
+
+				                             {
+					                             final EvenementFiscal ef = evtsFiscauxTries.get(0);
+					                             Assert.assertNotNull(ef);
+					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.class, ef.getClass());
+					                             Assert.assertEquals(date(2015, 6, 24), ef.getDateValeur());
+
+					                             final EvenementFiscalInformationComplementaire efrf = (EvenementFiscalInformationComplementaire) ef;
+					                             Assert.assertEquals(EvenementFiscalInformationComplementaire.TypeInformationComplementaire.PUBLICATION_FAILLITE_APPEL_CREANCIERS, efrf.getType());
 				                             }
 				                             return null;
 			                             }
