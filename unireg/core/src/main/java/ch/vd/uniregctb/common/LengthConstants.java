@@ -76,7 +76,7 @@ public abstract class LengthConstants {
 	public static final int EVTCIVILERREUR_MESSAGE = 1024;
 
 	public static final int EVTORGANISATION_ETAT = 10;
-	public static final int EVTORGANISATION_TYPE = 40;
+	public static final int EVTORGANISATION_TYPE = 120;
 	public static final int EVTORGANISATION_IDENTITEEMETTEUR = 5;
 	public static final int EVTORGANISATION_REFDATAEMETTEUR = 255;
 	public static final int EVTORGANISATION_COMMENT = 255;
