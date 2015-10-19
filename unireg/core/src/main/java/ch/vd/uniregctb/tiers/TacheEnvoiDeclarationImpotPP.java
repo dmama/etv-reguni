@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -20,6 +22,15 @@ import ch.vd.uniregctb.type.TypeTache;
 @Entity
 @DiscriminatorValue("ENVOI_DI_PP")
 public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
+
+	/**
+	 * Tous les types de documents acceptés pour une tâche d'envoi de DI PP
+	 */
+	private static final Set<TypeDocument> TYPES_DOCUMENTS_AUTORISES = EnumSet.of(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+	                                                                              TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
+	                                                                              TypeDocument.DECLARATION_IMPOT_DEPENSE,
+	                                                                              TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE,
+	                                                                              TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
 	/**
 	 * Type de contribuable (précalculé) pour la déclaration à envoyer.
@@ -49,6 +60,10 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 		this.qualification = qualification;
 		this.codeSegment = codeSegment;
 		this.adresseRetour = adresseRetour;
+
+		if (!TYPES_DOCUMENTS_AUTORISES.contains(typeDocument)) {
+			throw new IllegalArgumentException("Le type de document " + typeDocument + " n'est pas accepté pour une tâche d'envoi de déclaration PP.");
+		}
 	}
 
 	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE)

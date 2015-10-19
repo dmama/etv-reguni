@@ -334,6 +334,7 @@
 	<bean id="tacheEnvoiDocumentValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDocumentValidator" abstract="true" parent="tacheValidator"/>
 	<bean id="tacheEnvoiDeclarationImpotValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotValidator" abstract="true" parent="tacheEnvoiDocumentValidator"/>
 	<bean id="tacheEnvoiDeclarationImpotPPValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotPPValidator" parent="tacheEnvoiDeclarationImpotValidator" />
+	<bean id="tacheEnvoiDeclarationImpotPMValidator" class="ch.vd.uniregctb.validation.tache.TacheEnvoiDeclarationImpotPMValidator" parent="tacheEnvoiDeclarationImpotValidator" />
 
 	<bean id="adresseTiersValidator" class="ch.vd.uniregctb.validation.adresse.AdresseTiersValidator" abstract="true" parent="dateRangeEntityValidator" />
 	<bean id="adresseCivileValidator" class="ch.vd.uniregctb.validation.adresse.AdresseCivileValidator" parent="adresseTiersValidator" />

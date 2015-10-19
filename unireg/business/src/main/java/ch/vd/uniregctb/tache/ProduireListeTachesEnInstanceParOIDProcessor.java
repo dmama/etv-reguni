@@ -122,6 +122,9 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		else if ("ENVOI_DI_PP".equals(code)) {
 			return TypeTache.TacheEnvoiDeclarationImpotPP;
 		}
+		else if ("ENVOI_DI_PM".equals(code)) {
+			return TypeTache.TacheEnvoiDeclarationImpotPM;
+		}
 		else if ("ANNUL_DI".equals(code)) {
 			return TypeTache.TacheAnnulationDeclarationImpot;
 		}
