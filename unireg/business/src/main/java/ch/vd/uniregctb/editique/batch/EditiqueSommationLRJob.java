@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 public class EditiqueSommationLRJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationLRJob";
-	private static final String CATEGORIE = "LR";
 	private static final String FIN_PERIODE = "FIN_PERIODE";
 
 	public static final String CATEGORIE_DEB = "CATEGORIE_DEB";
@@ -28,7 +28,7 @@ public class EditiqueSommationLRJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public EditiqueSommationLRJob(int sortOrder) {
-		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des listes recapitulatives");
+		super(NAME, JobCategory.LR, sortOrder, "Imprimer les sommations des listes recapitulatives");
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Catégorie de débiteurs");

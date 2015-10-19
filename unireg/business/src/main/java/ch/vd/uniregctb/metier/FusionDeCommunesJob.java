@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
@@ -29,7 +30,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class FusionDeCommunesJob extends JobDefinition {
 
 	public static final String NAME = "FusionDeCommunesJob";
-	private static final String CATEGORIE = "Fors";
 
 	private static final String ANCIENNES_COMMUNES = "ANCIENNES_COMMUNES";
 	private static final String NOUVELLE_COMMUNE = "NOUVELLE_COMMUNE";
@@ -40,7 +40,7 @@ public class FusionDeCommunesJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public FusionDeCommunesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.FORS, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

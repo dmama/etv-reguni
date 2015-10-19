@@ -12,6 +12,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -25,7 +26,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class DeterminerLRsEchuesJob extends JobDefinition {
 
 	public static final String NAME = "DeterminerLRsEchuesJob";
-	private static final String CATEGORIE = "LR";
 
 	private static final String PERIODE_FISCALE = "PERIODE_FISCALE";
 
@@ -34,7 +34,7 @@ public class DeterminerLRsEchuesJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public DeterminerLRsEchuesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.LR, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

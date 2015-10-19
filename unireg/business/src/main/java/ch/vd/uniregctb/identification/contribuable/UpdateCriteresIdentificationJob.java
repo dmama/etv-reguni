@@ -5,6 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class UpdateCriteresIdentificationJob extends JobDefinition {
@@ -12,12 +13,11 @@ public class UpdateCriteresIdentificationJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateCriteresIdentificationJob.class);
 
 	public static final String NAME = "UpdateCriteresIdentificationJob";
-	private static final String CATEGORIE = "Identification";
 
 	private IdentificationContribuableService identCtbService;
 
 	public UpdateCriteresIdentificationJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.IDENTIFICATION, sortOrder, description);
 	}
 
 

@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -19,12 +20,11 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 
 	public static final String NAME = "ProduireRolesOIDJob";
-	private static final String CATEGORIE = "Stats";
 
 	public static final String NO_COL_OFFICE_IMPOT = "NO_COL_OFFICE_IMPOT";
 
 	public ProduireRolesOIDsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		final RegDate today = RegDate.get();
 		addParameterDefinition(createParamPeriodeFiscale(), today.year() - 1);

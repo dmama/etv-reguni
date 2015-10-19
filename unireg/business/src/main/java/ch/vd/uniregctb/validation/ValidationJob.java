@@ -21,6 +21,7 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -39,7 +40,6 @@ public class ValidationJob extends JobDefinition {
 	private final Logger LOGGER = LoggerFactory.getLogger(ValidationJob.class);
 
 	public static final String NAME = "ValidationJob";
-	private static final String CATEGORIE = "Stats";
 
 	public static final String P_IMPOSITION = "P_IMPOSITION";
 	public static final String ADRESSES = "ADRESSES";
@@ -60,7 +60,7 @@ public class ValidationJob extends JobDefinition {
 	private TiersService tiersService;
 
 	public ValidationJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Calcul les périodes d'imposition");

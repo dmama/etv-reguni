@@ -9,6 +9,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 public class EditiqueSommationDIJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationDIJob";
-	private static final String CATEGORIE = "DI";
 
 	public static final String PARAM_MISE_SS_PLI  = "PARAM_MISE_SS_PLI";
 	public static final String PARAM_NB_MAX_SOMMATIONS  = "PARAM_NB_MAX_SOMMATIONS";
@@ -27,7 +27,7 @@ public class EditiqueSommationDIJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public EditiqueSommationDIJob(int sortOrder) {
-		super(NAME, CATEGORIE, sortOrder, "Imprimer les sommations des déclarations d'impôt");
+		super(NAME, JobCategory.DI_PP, sortOrder, "Imprimer les sommations des déclarations d'impôt");
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Mise sous pli automatique impossible");

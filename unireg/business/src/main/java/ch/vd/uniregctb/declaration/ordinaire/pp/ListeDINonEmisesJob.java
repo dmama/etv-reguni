@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -26,12 +27,10 @@ public class ListeDINonEmisesJob extends JobDefinition {
 	private ParametreAppService paramsApp;
 
 	public static final String NAME = "ListeDINonEmisesJob";
-	private static final String CATEGORIE = "Stats";
-
 	public static final String PERIODE_FISCALE = "PERIODE";
 
 	public ListeDINonEmisesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		RegDate today = RegDate.get();
 		final JobParam param = new JobParam();

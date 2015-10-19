@@ -8,6 +8,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
@@ -21,7 +22,6 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 public class ExclureContribuablesEnvoiJob extends JobDefinition {
 
 	public static final String NAME = "ExclureContribuablesEnvoiJob";
-	private static final String CATEGORIE = "DI";
 
 	public static final String LISTE_CTBS = "LISTE_CTBS";
 	public static final String DATE_LIMITE = "DATE_LIMITE";
@@ -30,7 +30,7 @@ public class ExclureContribuablesEnvoiJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public ExclureContribuablesEnvoiJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

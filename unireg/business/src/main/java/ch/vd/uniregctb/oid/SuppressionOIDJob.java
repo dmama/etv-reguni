@@ -32,6 +32,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplateWithResults;
 import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -46,8 +47,6 @@ public class SuppressionOIDJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SuppressionOIDJob.class);
 
 	public static final String NAME = "SuppressionOIDJob";
-	private static final String CATEGORIE = "OID";
-
 	public static final String OID = "OID";
 
 	private DataSource dataSource;
@@ -59,7 +58,7 @@ public class SuppressionOIDJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public SuppressionOIDJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.OID, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("OID à supprimer");

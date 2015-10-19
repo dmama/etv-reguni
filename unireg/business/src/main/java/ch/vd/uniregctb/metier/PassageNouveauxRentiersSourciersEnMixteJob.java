@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
@@ -19,14 +20,13 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class PassageNouveauxRentiersSourciersEnMixteJob extends JobDefinition {
 
 	public static final String NAME = "PassageNouveauxRentiersSourciersEnMixteJob";
-	private static final String CATEGORIE = "Fors";
 
 	private PlatformTransactionManager transactionManager;
 	private MetierService metierService;
 	private RapportService rapportService;
 
 	public PassageNouveauxRentiersSourciersEnMixteJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.FORS, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Date de traitement");

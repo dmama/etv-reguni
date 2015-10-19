@@ -20,6 +20,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
@@ -35,7 +36,6 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RapprocherCtbRegistreFoncierJob.class);
 
 	public static final String NAME = "RapprocherCtbRegistreFoncierJob";
-	private static final String CATEGORIE = "RF";
 
 	public static final String LISTE_PROPRIO = "LISTE_PROPRIO";
 	public static final String NB_THREADS = "NB_THREADS";
@@ -44,7 +44,7 @@ public class RapprocherCtbRegistreFoncierJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public RapprocherCtbRegistreFoncierJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.RF, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

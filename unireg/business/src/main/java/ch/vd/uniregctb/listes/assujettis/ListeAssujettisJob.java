@@ -15,6 +15,7 @@ import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -26,7 +27,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class ListeAssujettisJob extends JobDefinition {
 
 	private static final String NAME = "ListeAssujettisJob";
-	private static final String CATEGORIE = "Stats";
 
 	private static final String PERIODE_FISCALE = "PERIODE";
 	private static final String NB_THREADS = "NB_THREADS";
@@ -43,7 +43,7 @@ public class ListeAssujettisJob extends JobDefinition {
 	private AdresseService adresseService;
 
 	public ListeAssujettisJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		{
 			final RegDate today = RegDate.get();

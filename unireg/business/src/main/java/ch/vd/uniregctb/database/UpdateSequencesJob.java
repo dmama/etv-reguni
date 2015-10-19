@@ -2,6 +2,7 @@ package ch.vd.uniregctb.database;
 
 import java.util.Map;
 
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -11,7 +12,6 @@ public class UpdateSequencesJob extends JobDefinition {
 	// private final Logger LOGGER = LoggerFactory.getLogger(UpdateSequencesJob.class);
 
 	public static final String NAME = "UpdateSequencesJob";
-	private static final String CATEGORIE = "Database";
 
 	public static final String UPDATE_HIBERNATE_SEQUENCE = "HIBERNATE";
 	public static final String UPDATE_CAAC_SEQUENCE = "CAAC";
@@ -22,7 +22,7 @@ public class UpdateSequencesJob extends JobDefinition {
 	private DatabaseService service;
 
 	public UpdateSequencesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DB, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

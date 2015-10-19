@@ -9,6 +9,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -16,7 +17,6 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 public class ListeNoteJob extends JobDefinition {
 
 	public static final String NAME = "ListeNoteJob";
-	private static final String CATEGORIE = "DI";
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String PERIODE_FISCALE = "PERIODE";
@@ -26,7 +26,7 @@ public class ListeNoteJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public ListeNoteJob(int order, String description) {
-		super(NAME, CATEGORIE, order, description);
+		super(NAME, JobCategory.DI_PP, order, description);
 
 		final RegDate today = RegDate.get();
 		final JobParam param0 = new JobParam();

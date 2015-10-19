@@ -21,6 +21,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
@@ -37,14 +38,13 @@ public class EnvoiAnnexeImmeubleJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiAnnexeImmeubleJob.class);
 
 	public static final String NAME = "EnvoiAnnexeImmeubleJob";
-	public static final String CATEGORIE = "DI";
 	public static final String LISTE_CTB = "LISTE_CTB";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_MAX = "NB_MAX";
 
 
 	public EnvoiAnnexeImmeubleJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		{
 			final RegDate today = RegDate.get();

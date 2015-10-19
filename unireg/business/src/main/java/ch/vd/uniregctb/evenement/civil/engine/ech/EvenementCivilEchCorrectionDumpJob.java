@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -35,8 +36,6 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementCivilEchCorrectionDumpJob.class);
 
 	private static final String NAME = "EvenementCivilEchCorrectionDumpJob";
-	private static final String CATEGORY = "Events";
-
 	private static final String EVTS = "EVTS";
 	private static final String TEST_ANCIEN_HABITANT = "TEST_ANCIEN_HABITANT";
 
@@ -47,7 +46,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 	private List<IndividuComparisonStrategy> strategies;
 
 	public EvenementCivilEchCorrectionDumpJob(int sortOrder, String description) {
-		super(NAME, CATEGORY, sortOrder, description);
+		super(NAME, JobCategory.EVENTS, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

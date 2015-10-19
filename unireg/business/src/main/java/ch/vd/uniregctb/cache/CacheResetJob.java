@@ -9,6 +9,7 @@ import java.util.Map;
 
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -23,7 +24,6 @@ public class CacheResetJob extends JobDefinition {
 	// private final Logger LOGGER = LoggerFactory.getLogger(CacheResetJob.class);
 
 	public static final String NAME = "CacheResetJob";
-	private static final String CATEGORIE = "Cache";
 
 	private UniregCacheManager manager;
 
@@ -32,7 +32,7 @@ public class CacheResetJob extends JobDefinition {
 	}
 
 	public CacheResetJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.CACHE, sortOrder, description);
 	}
 
 	@Override

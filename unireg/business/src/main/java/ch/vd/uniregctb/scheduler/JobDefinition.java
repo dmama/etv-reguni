@@ -49,7 +49,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 
 	// Params static
 	private final String name;
-	private final String categorie;
+	private final JobCategory categorie;
 	private JobSynchronousMode synchronousMode;
 	private final int sortOrder;
 	private final String description;
@@ -89,7 +89,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		JOB_INTERRUPTED
 	}
 
-	public JobDefinition(String name, String categorie, int sortOrder, String description) {
+	public JobDefinition(String name, JobCategory categorie, int sortOrder, String description) {
 		this.name = name;
 		this.categorie = categorie;
 		this.sortOrder = sortOrder;
@@ -232,7 +232,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<JobD
 		return name;
 	}
 
-	public String getCategorie() {
+	public JobCategory getCategorie() {
 		return categorie;
 	}
 

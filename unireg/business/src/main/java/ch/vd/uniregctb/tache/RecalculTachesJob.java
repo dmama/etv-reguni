@@ -8,6 +8,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.RecalculTachesRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -16,7 +17,6 @@ import ch.vd.uniregctb.scheduler.JobParamInteger;
 public class RecalculTachesJob extends JobDefinition {
 
 	private static final String NAME = "RecalculTachesJob";
-	private static final String CATEGORIE = "Tache";
 
 	private static final String CLEANUP_ONLY = "NETTOYAGE_SEUL";
 	private static final String NB_THREADS = "NB_THREADS";
@@ -28,7 +28,7 @@ public class RecalculTachesJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public RecalculTachesJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.TACHE, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

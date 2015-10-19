@@ -16,6 +16,7 @@ import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -34,12 +35,11 @@ public class ProduireStatsJob extends JobDefinition {
 	private ParametreAppService paramsApp;
 
 	public static final String NAME = "ProduireStatsJob";
-	private static final String CATEGORIE = "Stats";
 
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String STATS_TYPE = "TYPE";
 
-	public static enum Type {
+	public enum Type {
 		DECLARATIONS("déclarations"),
 		CONTRIBUABLES("contribuables");
 
@@ -55,7 +55,7 @@ public class ProduireStatsJob extends JobDefinition {
 	}
 
 	public ProduireStatsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		{
 			final RegDate today = RegDate.get();

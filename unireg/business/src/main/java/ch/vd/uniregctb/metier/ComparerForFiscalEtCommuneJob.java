@@ -8,6 +8,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -19,13 +20,12 @@ public class ComparerForFiscalEtCommuneJob extends JobDefinition{
 	private RapportService rapportService;
 
 	public static final String NAME = "ComparerForFiscalEtCommuneJob";
-	private static final String CATEGORIE = "Fors";
 
 	public static final String NB_THREADS = "NB_THREADS";
 
 
 	public ComparerForFiscalEtCommuneJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.FORS, sortOrder, description);
 
 		final JobParam param = new JobParam();
 		param.setDescription("Nombre de threads");

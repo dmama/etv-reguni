@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.audit.AuditLineDAO;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -19,7 +20,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class AuditLogPurgeJob extends JobDefinition {
 
 	private static final String NAME = "AuditLogPurgeJob";
-	private static final String CATEGORIE = "Database";
 	public static final String DAYS = "DAYS";
 	private static final int MIN_DAYS_ALLOWED = 30;
 
@@ -27,7 +27,7 @@ public class AuditLogPurgeJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public AuditLogPurgeJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DB, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();

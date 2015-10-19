@@ -14,6 +14,7 @@ import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
@@ -23,7 +24,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class AssujettisParSubstitutionJob extends JobDefinition {
 
 	private static final String NAME = "ListeAssujettisParSubstitutionJob";
-	private static final String CATEGORIE = "Stats";
 	private static final String NB_THREADS = "NB_THREADS";
 
 	private HibernateTemplate hibernateTemplate;
@@ -33,7 +33,7 @@ public class AssujettisParSubstitutionJob extends JobDefinition {
 	private AssujettissementService assujettissementService;
 
 	public AssujettisParSubstitutionJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.STATS, sortOrder, description);
 		{
 			final JobParam param = new JobParam();
 			param.setDescription("Nombre de threads");

@@ -10,6 +10,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -26,7 +27,6 @@ public class EnvoiDIsJob extends JobDefinition {
 	private RapportService rapportService;
 
 	public static final String NAME = "EnvoiDIsEnMasseJob";
-	private static final String CATEGORIE = "DI";
 
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String CATEGORIE_CTB = "CATEGORIE";
@@ -37,7 +37,7 @@ public class EnvoiDIsJob extends JobDefinition {
 	public static final String NB_THREADS = "NB_THREADS";
 
 	public EnvoiDIsJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		{
 			final RegDate today = RegDate.get();

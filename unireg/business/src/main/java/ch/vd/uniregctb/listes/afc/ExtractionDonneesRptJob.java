@@ -12,6 +12,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
@@ -25,8 +26,6 @@ public class ExtractionDonneesRptJob extends JobDefinition {
 
 	public static final String NAME = "ExtractionDonneesRptJob";
 
-	private static final String CATEGORIE = "Stats";
-
 	public static final String NB_THREADS = "NB_THREADS";
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String MODE = "MODE";
@@ -38,7 +37,7 @@ public class ExtractionDonneesRptJob extends JobDefinition {
 	private ExtractionDonneesRptService service;
 
 	public ExtractionDonneesRptJob(int order, String description) {
-		super(NAME, CATEGORIE, order, description);
+		super(NAME, JobCategory.STATS, order, description);
 
 		{
 			final RegDate today = RegDate.get();

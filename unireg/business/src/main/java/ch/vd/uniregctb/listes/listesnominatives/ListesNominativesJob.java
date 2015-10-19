@@ -12,6 +12,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.listes.ListesTiersService;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
@@ -26,7 +27,6 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 public class ListesNominativesJob extends JobDefinition {
 
 	public static final String NAME = "ListesNominativesJob";
-	private static final String CATEGORIE = "Stats";
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String E_ADRESSES_INCLUSES = "typeAdresses";
@@ -41,7 +41,7 @@ public class ListesNominativesJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public ListesNominativesJob(int order, String description) {
-		super(NAME, CATEGORIE, order, description);
+		super(NAME, JobCategory.STATS, order, description);
 
 		final JobParam param0 = new JobParam();
 		param0.setDescription("Nombre de threads");

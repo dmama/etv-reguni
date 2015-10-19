@@ -16,6 +16,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.document.DatabaseDump;
 import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -31,7 +32,6 @@ public class DumpDatabaseJob extends JobDefinition {
 	private static final SimpleDateFormat FILE_DATE_FORMAT = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 
 	public static final String NAME = "DumpDatabaseJob";
-	private static final String CATEGORIE = "Database";
 
 	private DatabaseService dbService;
 	private DocumentService docService;
@@ -39,7 +39,7 @@ public class DumpDatabaseJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public DumpDatabaseJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DB, sortOrder, description);
 	}
 
 	public void setDbService(DatabaseService dbService) {

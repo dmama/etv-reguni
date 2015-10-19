@@ -3,17 +3,17 @@ package ch.vd.uniregctb.evenement.organisation.engine;
 import java.util.Map;
 
 import ch.vd.shared.batchtemplate.StatusManager;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 
 public class EvenementOrganisationHandlerJob extends JobDefinition {
 
 	public static final String NAME = "EvenementOrganisationHandlerJob";
-	private static final String CATEGORIE = "Events";
 
 	private EvenementOrganisationRetryProcessor processorOrganisation;
 
 	public EvenementOrganisationHandlerJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.EVENTS, sortOrder, description);
 	}
 
 	@Override

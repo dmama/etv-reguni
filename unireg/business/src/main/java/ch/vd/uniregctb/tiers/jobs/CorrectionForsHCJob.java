@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -39,8 +40,6 @@ public class CorrectionForsHCJob extends JobDefinition {
 	
 	public static final String NAME = "CorrectionForsHCJob";
 	
-	private static final String CATEGORIE = "Database";
-	
 	public static final int BATCH_SIZE = 20;
 	
 	private PlatformTransactionManager transactionManager;
@@ -50,7 +49,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 	private TiersService tiersService;
 	
 	public CorrectionForsHCJob(int order, String description) {
-		super(NAME, CATEGORIE, order, description);
+		super(NAME, JobCategory.DB, order, description);
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {

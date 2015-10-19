@@ -11,6 +11,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -31,7 +32,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 public class InsertEmployeurFictifEmpAciJob extends JobDefinition {
 
 	public static final String NAME = "InsertEmployeurFictifEmpAciJob";
-	private static final String CATEGORIE = "Database";
 
 	private static final long ID_EMPLOYEUR_FICTIF = 1999999;
 	private static final long ID_PP_FICTIF = 10820998;
@@ -40,7 +40,7 @@ public class InsertEmployeurFictifEmpAciJob extends JobDefinition {
 	private PlatformTransactionManager transactionManager;
 
 	public InsertEmployeurFictifEmpAciJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DB, sortOrder, description);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

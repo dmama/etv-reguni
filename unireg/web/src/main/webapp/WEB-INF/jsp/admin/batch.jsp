@@ -35,7 +35,7 @@
 			<legend><span><fmt:message key="label.batch.liste"/></span></legend>
 			<c:if test="${not empty command.jobs}">
 				<display:table name="${command.jobs}" id="job" class="tableJob">
-					<display:column title="Catégorie" property="categorie"></display:column>
+					<display:column title="Catégorie" property="categorie" style="white-space:nowrap;"></display:column>
 					<display:column title="Nom"><unireg:batchForm job="${job}" /></display:column>
 					<display:column title="Dernière Progression" property="runningMessage"></display:column>
 					<%--div du statut : voir WebitIncontainerTestingJobTest --%>

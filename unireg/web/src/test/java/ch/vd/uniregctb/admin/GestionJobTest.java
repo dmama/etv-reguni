@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
 
@@ -18,7 +19,7 @@ public class GestionJobTest extends WithoutSpringTest {
 	public static class MyJobDefinition extends JobDefinition {
 
 		public MyJobDefinition() {
-			super("bla", "cat", 1,"descr");
+			super("bla", JobCategory.TEST, 1,"descr");
 		}
 
 		@Override

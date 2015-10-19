@@ -14,6 +14,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher.CheckCallback;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -28,14 +29,13 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 	private final Logger LOGGER = LoggerFactory.getLogger(CheckCoherenceIndexerJob.class);
 
 	public static final String NAME = "CheckCoherenceIndexerJob";
-	private static final String CATEGORIE = "Indexeur";
 
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
 	private PlatformTransactionManager transactionManager;
 
 	public CheckCoherenceIndexerJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.INDEXEUR, sortOrder, description);
 	}
 
 	@Override

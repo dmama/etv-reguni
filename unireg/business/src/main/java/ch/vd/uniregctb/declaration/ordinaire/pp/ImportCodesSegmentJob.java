@@ -24,6 +24,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.rapport.RapportService;
+import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamFile;
@@ -33,14 +34,13 @@ public class ImportCodesSegmentJob extends JobDefinition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImportCodesSegmentJob.class);
 
 	private static final String NAME = "ImportCodesSegmentJob";
-	private static final String CATEGORIE = "DI";
 	private static final String INPUT_FILE = "INPUT_FILE";
 
 	private DeclarationImpotService diService;
 	private RapportService rapportService;
 
 	public ImportCodesSegmentJob(int sortOrder, String description) {
-		super(NAME, CATEGORIE, sortOrder, description);
+		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		{
 			final JobParam param = new JobParam();
