@@ -36,9 +36,11 @@
 				<fmt:message key="option.rattachement.${forFiscal.motifRattachement}" />
 		</c:if>
 	</display:column>
-	<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
+	<c:if test="${command.natureTiers != 'Entreprise'}">
 		<display:column sortable ="true" titleKey="label.mode.imposition">
+			<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipalPP'}">
 				<fmt:message key="option.mode.imposition.${forFiscal.modeImposition}" />
+			</c:if>
 		</display:column>
 	</c:if>
 	<display:column sortable ="true" titleKey="label.for.abrege">
