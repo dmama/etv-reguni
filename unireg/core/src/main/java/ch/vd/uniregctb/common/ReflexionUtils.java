@@ -8,7 +8,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,20 +17,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 public abstract class ReflexionUtils {
 
 	/**
 	 * @param clazz une classe quelconque
-	 * @return la liste de toutes les annotations de cette classe (en incluant les annotations héritées)
+	 * @return la liste de toutes les annotations de cette classe (en incluant les annotations héritées), chaque annotation étant associée à la classe qui la porte effectivement
 	 */
-	public static List<Annotation> getAllAnnotations(Class clazz) {
-		List<Annotation> list = new ArrayList<>();
+	public static List<Pair<Annotation, Class>> getAllAnnotations(Class clazz) {
+		List<Pair<Annotation, Class>> list = new ArrayList<>();
 		while (clazz != null) {
 			final Annotation[] as = clazz.getAnnotations();
 			if (as != null) {
-				list.addAll(Arrays.asList(as));
+				for (int i = 0 ; i < as.length ; ++ i) {
+					list.add(Pair.of(as[i], clazz));
+				}
 			}
 			clazz = clazz.getSuperclass();
 		}

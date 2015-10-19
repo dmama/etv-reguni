@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.usertype.UserType;
@@ -130,15 +131,16 @@ public class MetaEntity {
 		String discriminatorColumn = null;
 		final List<Property> properties = new ArrayList<>();
 
-		final List<Annotation> annotations = ReflexionUtils.getAllAnnotations(clazz);
-		for (Annotation a : annotations) {
+		final List<Pair<Annotation, Class>> annotations = ReflexionUtils.getAllAnnotations(clazz);
+		for (Pair<Annotation, Class> pair : annotations) {
+			final Annotation a = pair.getLeft();
 			if (a instanceof Entity) {
 				entityFound = true;
 			}
 			else if (a instanceof Embeddable) {
 				isEmbeddable = true;
 			}
-			else if (a instanceof DiscriminatorValue) {
+			else if (a instanceof DiscriminatorValue && clazz == pair.getRight()) {
 				final DiscriminatorValue d = (DiscriminatorValue) a;
 				if (discriminatorValue != null) {
 					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminatorValue + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + ']');
