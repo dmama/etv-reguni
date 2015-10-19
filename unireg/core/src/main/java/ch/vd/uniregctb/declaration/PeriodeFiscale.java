@@ -126,7 +126,7 @@ public class PeriodeFiscale extends HibernateEntity {
 		return null;
 	}
 
-	@Column(name = "CODE_CTRL_SOMM_DI", nullable = false)
+	@Column(name = "CODE_CTRL_SOMM_DI_PP", nullable = false)
 	public boolean isShowCodeControleSommationDeclaration() {
 		return showCodeControleSommationDeclaration;
 	}

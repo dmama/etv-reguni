@@ -4,7 +4,7 @@
     <column>LOG_MDATE</column>
     <column>ID</column>
     <column>ANNEE</column>
-    <column>CODE_CTRL_SOMM_DI</column>
+    <column>CODE_CTRL_SOMM_DI_PP</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>

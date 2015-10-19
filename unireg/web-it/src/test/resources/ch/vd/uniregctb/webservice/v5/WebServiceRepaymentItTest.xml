@@ -151,7 +151,7 @@
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
 		<column>ANNEE</column>
-		<column>CODE_CTRL_SOMM_DI</column>
+		<column>CODE_CTRL_SOMM_DI_PP</column>
 		<row>
 			<value>1</value>
 			<null />

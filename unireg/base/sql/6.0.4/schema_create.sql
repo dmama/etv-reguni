@@ -77,7 +77,7 @@ create table PARAMETRE (nom nvarchar2(255) not null, ANNULATION_DATE timestamp, 
 
 create table PARAMETRE_PERIODE_FISCALE (PPF_TYPE nvarchar2(5) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_FIN_ENVOI_MASSE number(10,0), TERME_GEN_SOMM_EFFECT number(10,0), TERME_GEN_SOMM_REGL number(10,0), TYPE_CTB nvarchar2(17), PERIODE_ID number(19,0), PM_DELAI_IMPRIME NUMBER(10,0), PM_DELAI_IMPRIME_MANDATAIRE NUMBER(10,0), PM_DELAI_EFF NUMBER(10,0), PM_DELAI_EFF_MANDATAIRE NUMBER(10,0), primary key (id));
 
-create table PERIODE_FISCALE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), ANNEE number(10,0) not null unique, CODE_CTRL_SOMM_DI number(1,0) not null, primary key (id));
+create table PERIODE_FISCALE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), ANNEE number(10,0) not null unique, CODE_CTRL_SOMM_DI_PP number(1,0) not null, primary key (id));
 
 create table PERIODICITE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0), PERIODE_DECOMPTE nvarchar2(3), PERIODICITE_TYPE nvarchar2(255) not null, DEBITEUR_ID number(19,0) not null, primary key (id));
 
