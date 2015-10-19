@@ -45,7 +45,7 @@ public class DocumentServiceImpl implements DocumentService {
 	static {
 		docType.put(DatabaseDump.class.getSimpleName().toLowerCase(), DatabaseDump.class);
 		docType.put(DeterminationDIsRapport.class.getSimpleName().toLowerCase(), DeterminationDIsRapport.class);
-		docType.put(EnvoiDIsRapport.class.getSimpleName().toLowerCase(), EnvoiDIsRapport.class);
+		docType.put(EnvoiDIsPPRapport.class.getSimpleName().toLowerCase(), EnvoiDIsPPRapport.class);
 		docType.put(MajoriteRapport.class.getSimpleName().toLowerCase(), MajoriteRapport.class);
 		docType.put(FusionDeCommunesRapport.class.getSimpleName().toLowerCase(), FusionDeCommunesRapport.class);
 		docType.put(RolesCommunesRapport.class.getSimpleName().toLowerCase(), RolesCommunesRapport.class);
@@ -279,13 +279,12 @@ public class DocumentServiceImpl implements DocumentService {
 	 * Le format est : yyyyMMdd_$(nom_utilisateur_sans_les_caracteres_speciaux)
 	 */
 	private String buildFileName(String nom, String fileExtension, Date d) {
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 		b.append(new SimpleDateFormat("yyyyMMdd_kkmmss").format(d));
 		b.append('_');
 		b.append(nom.replaceAll("[^-+0-9a-zA-Z._]", "_"));
 		b.append('.').append(fileExtension);
-		String filename = b.toString();
-		return filename;
+		return b.toString();
 	}
 
 	/**

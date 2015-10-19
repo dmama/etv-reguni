@@ -215,13 +215,12 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="envoiDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsJob">
+    <bean id="envoiDIsPPJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsJob">
         <constructor-arg value="401"/>
-        <constructor-arg value="Envoyer à l'impression les déclarations d'impôt (à partir des tâches en instance)"/>
+        <constructor-arg value="Envoyer à l'impression les déclarations d'impôt PP (à partir des tâches en instance)"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
-
 
     <bean id="editiqueSommationDIJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueSommationDIJob">
         <constructor-arg value="402"/>
@@ -268,6 +267,13 @@
         <constructor-arg value="409"/>
         <constructor-arg value="Importer les codes 'segment' fournis par TAO avant l'envoi des déclarations d'impôt en masse"/>
         <property name="diService" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
+    <bean id="envoiDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMJob">
+        <constructor-arg value="451"/>
+        <constructor-arg value="Envoyer à l'impression les déclarations d'impôt PM (à partir des tâches en instance)"/>
+        <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
@@ -328,7 +334,7 @@
         <property name="paramsApp" ref="parametreAppService"/>
     </bean>
 
-    <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ListeDINonEmisesJob">
+    <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmisesJob">
         <constructor-arg value="603"/>
         <constructor-arg value="Produire la liste des DIs non émises"/>
         <property name="service" ref="diService"/>

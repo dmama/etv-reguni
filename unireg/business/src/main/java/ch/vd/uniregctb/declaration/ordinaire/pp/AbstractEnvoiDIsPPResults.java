@@ -13,9 +13,9 @@ import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public abstract class AbstractEnvoiDIsResults<R extends AbstractEnvoiDIsResults<R>> extends JobResults<Long, R> {
+public abstract class AbstractEnvoiDIsPPResults<R extends AbstractEnvoiDIsPPResults<R>> extends JobResults<Long, R> {
 
-	public static enum ErreurType {
+	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION), // --------------------------------------------------------------
 		ROLLBACK("Le traitement du lot a échoué et a été rollbacké"),
 		COLLISION_DI("une déclaration existe déjà, mais elle ne correspond pas à celle calculée"), // -----
@@ -23,7 +23,7 @@ public abstract class AbstractEnvoiDIsResults<R extends AbstractEnvoiDIsResults<
 
 		private final String description;
 
-		private ErreurType(String description) {
+		ErreurType(String description) {
 			this.description = description;
 		}
 
@@ -32,13 +32,13 @@ public abstract class AbstractEnvoiDIsResults<R extends AbstractEnvoiDIsResults<
 		}
 	}
 
-	public static enum IgnoreType {
+	public enum IgnoreType {
 		DI_DEJA_EXISTANTE("la déclaration existe déjà"),   // --------------------------------------------
 		CTB_EXCLU("le contribuable est exclu des envois automatiques");
 
 		private final String description;
 
-		private IgnoreType(String description) {
+		IgnoreType(String description) {
 			this.description = description;
 		}
 
@@ -93,8 +93,8 @@ public abstract class AbstractEnvoiDIsResults<R extends AbstractEnvoiDIsResults<
 	public final List<Erreur> ctbsEnErrors = new LinkedList<>();
 	public boolean interrompu;
 
-	public AbstractEnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
-	                               int nbThreads, TiersService tiersService, AdresseService adresseService) {
+	public AbstractEnvoiDIsPPResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
+	                                 int nbThreads, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.categorie = categorie;

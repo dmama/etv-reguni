@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
@@ -133,14 +133,14 @@ public class EnvoiDIsJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
-		final EnvoiDIsRapport rapport = rapportService.generateRapport(results, status);
+		final EnvoiDIsPPResults results = service.envoyerDIsPPEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
+		final EnvoiDIsPPRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
 
 		final String plageCtb = (noCtbMin == null && noCtbMax == null ? " " : String.format("(plage [%s ; %s]) ", noCtbMin, noCtbMax));
 		final StringBuilder builder = new StringBuilder();
-		builder.append("L'envoi des DIs en masse");
+		builder.append("L'envoi des DIs PP en masse");
 		builder.append(plageCtb);
 		builder.append("pour l'année ");
 		builder.append(annee);
@@ -151,7 +151,7 @@ public class EnvoiDIsJob extends JobDefinition {
 		if (exclureDecedes) {
 			builder.append(" avec exclusion des décédés de fin d'année");
 		}
-		builder.append(" est terminée.");
+		builder.append(" est terminé.");
 		Audit.success(builder.toString(), rapport);
 	}
 }

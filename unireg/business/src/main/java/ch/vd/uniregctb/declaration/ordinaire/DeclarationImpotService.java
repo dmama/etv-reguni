@@ -12,17 +12,19 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
@@ -65,7 +67,7 @@ public interface DeclarationImpotService {
 	 * @param nbThreads      le nombre de threads sur lesquels doit s'effectuer le traitement
 	 * @return le nombre de déclarations envoyées.
 	 */
-	EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, int nbThreads, StatusManager status)
+	EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, int nbThreads, StatusManager status)
 			throws DeclarationException;
 
 
@@ -97,7 +99,7 @@ public interface DeclarationImpotService {
 	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
 	 * @return les statistiques demandées
 	 */
-	ListeDIsNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
+	ListeDIsPPNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires sommées et dont le délai de retour est dépassé.
@@ -261,4 +263,17 @@ public interface DeclarationImpotService {
 	 * @return les données pour construire un rapport d'exécution
 	 */
 	ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s);
+
+	/**
+	 * Lancement du job multi-threadé d'envoi des DI des personnes morales
+	 * @param periodeFiscale la période fiscale cible
+	 * @param typeDeclaration le type de déclaration à envoyer
+	 * @param dateLimiteBouclements la date limite (incluse) des bouclements à prendre en compte
+	 * @param nbMaxEnvois (optionnel) le nombre maximal de documents à envoyer
+	 * @param dateTraitement la date du traitement
+	 * @param nbThreads le degré de parallélisme du job
+	 * @param statusManager status manager
+	 * @return les données du rapport d'exécution du job
+	 */
+	EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale, TypeDeclarationImpotPM typeDeclaration, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
 }

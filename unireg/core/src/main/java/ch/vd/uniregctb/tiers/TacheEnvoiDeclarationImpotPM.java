@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -26,11 +27,14 @@ public class TacheEnvoiDeclarationImpotPM extends TacheEnvoiDeclarationImpot {
 	}
 
 	public TacheEnvoiDeclarationImpotPM(TypeEtatTache etat, RegDate dateEcheance, ContribuableImpositionPersonnesMorales contribuable, RegDate dateDebut, RegDate dateFin,
-	                                    TypeDocument typeDocument, CollectiviteAdministrative collectivite) {
-		super(etat, dateEcheance, contribuable, dateDebut, dateFin, typeDocument, collectivite);
+	                                    TypeContribuable typeContribuable, TypeDocument typeDocument, CollectiviteAdministrative collectivite) {
+		super(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, collectivite);
 
 		if (!TYPES_DOCUMENTS_AUTORISES.contains(typeDocument)) {
 			throw new IllegalArgumentException("Le type de document " + typeDocument + " n'est pas accepté pour une tâche d'envoi de déclaration PM.");
+		}
+		if (!typeContribuable.isUsedForPM()) {
+			throw new IllegalArgumentException("Le type de contribuable " + typeContribuable + " n'est pas accepté pour une tâche d'envoi de déclaration PM.");
 		}
 	}
 

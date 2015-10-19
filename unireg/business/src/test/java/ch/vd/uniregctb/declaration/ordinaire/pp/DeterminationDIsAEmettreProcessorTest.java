@@ -150,8 +150,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		                  eric, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		/*
 		 * Contribuable devant être ignorés
@@ -181,13 +181,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt traitée
 		PersonnePhysique tom = addNonHabitant("Tom", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				tom, Qualification.AUTOMATIQUE, 0, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		                  tom, Qualification.AUTOMATIQUE, 0, colAdm);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance mais annulée
 		PersonnePhysique tommy = addNonHabitant("Tommy", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, tommy, Qualification.AUTOMATIQUE, 0, colAdm);
 		tache.setAnnule(true);
 
 		final List<Long> list = service.createListeIdsContribuables(2007);
@@ -764,8 +764,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-		addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2010, 1, 15), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2010, 1, 15), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(eric, 2009);
@@ -799,8 +799,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable normal avec une tâche d'envoi de DI pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal ffp = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 15), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 15), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
 		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
@@ -1047,8 +1047,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui ne correspond pas du tout
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 
 			Range range = new Range(date(2007, 7, 1), date(2007, 12, 31));
 			assertNull(service.checkExistenceTache(contribuable, range));
@@ -1057,8 +1057,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui correspond parfaitement
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
-					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
+			                  TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1072,8 +1072,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Une tâche qui existe déjà avec un range qui recouvre partiellement le range spécifié
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1088,8 +1088,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Une tâche déjà traitée avec un range qui recouvre partiellement le range spécifié
 		{
 			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-			addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
+			addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+			                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
@@ -1254,8 +1254,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		                  eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
@@ -1293,10 +1293,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable parti hors-Suisse en cours d'année avec une tâche (valide) pour sa période en Suisse, et une autre tâche (invalide) pour sa période hors-Suisse.
 		PersonnePhysique arnold = addNonHabitant("Arnold", "Charbon", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(arnold, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				arnold, Qualification.AUTOMATIQUE, 0, colAdm);
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, arnold,
-				Qualification.AUTOMATIQUE, 0, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 6, 30), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+		                  arnold, Qualification.AUTOMATIQUE, 0, colAdm);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, arnold,
+		                  Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
@@ -1335,8 +1335,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Un contribuable non-assujetti, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante déjà traitée
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
@@ -1374,8 +1374,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable arrivé de hors-Suisse en cours d'année, mais avec une tâche (invalide) d'envoi de déclaration d'impôt pré-existante sur toute l'année
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2007, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
@@ -1412,8 +1412,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
 		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);

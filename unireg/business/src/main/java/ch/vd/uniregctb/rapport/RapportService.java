@@ -5,14 +5,15 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
@@ -33,7 +34,8 @@ import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
 import ch.vd.uniregctb.document.EchoirDIsRapport;
 import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
-import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
+import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
 import ch.vd.uniregctb.document.EnvoiLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
@@ -116,13 +118,22 @@ public interface RapportService {
 	DeterminationDIsRapport generateRapport(DeterminationDIsResults results, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs en masse.
+	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs PP en masse.
 	 *
 	 * @param results
 	 *            le résultat de l'exécution du job d'envoi des DIs en masse
 	 * @return un document de rapport
 	 */
-	EnvoiDIsRapport generateRapport(EnvoiDIsResults results, StatusManager s) throws DeclarationException;
+	EnvoiDIsPPRapport generateRapport(EnvoiDIsPPResults results, StatusManager s) throws DeclarationException;
+
+	/**
+	 * Génère le rapport PDF d'exécution du job d'envoi des DI PM en masse
+	 * @param results résultat de l'exécution du job
+	 * @param s le status manager
+	 * @return un document de rapport
+	 * @throws DeclarationException en cas de souci
+	 */
+	EnvoiDIsPMRapport generateRapport(EnvoiDIsPMResults results, StatusManager s) throws DeclarationException;
 
 		/**
 	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs en masse.
@@ -206,7 +217,7 @@ public interface RapportService {
 	 *
 	 * @return le rapport
 	 */
-	ListeDIsNonEmisesRapport generateRapport(final ListeDIsNonEmises results, StatusManager status);
+	ListeDIsNonEmisesRapport generateRapport(final ListeDIsPPNonEmises results, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) pour l'envoi des sommations de DI

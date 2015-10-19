@@ -18,7 +18,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
-public class ListeDINonEmisesJob extends JobDefinition {
+public class ListeDIsPPNonEmisesJob extends JobDefinition {
 
 	private DeclarationImpotService service;
 	private RapportService rapportService;
@@ -29,7 +29,7 @@ public class ListeDINonEmisesJob extends JobDefinition {
 	public static final String NAME = "ListeDINonEmisesJob";
 	public static final String PERIODE_FISCALE = "PERIODE";
 
-	public ListeDINonEmisesJob(int sortOrder, String description) {
+	public ListeDIsPPNonEmisesJob(int sortOrder, String description) {
 		super(NAME, JobCategory.STATS, sortOrder, description);
 
 		RegDate today = RegDate.get();
@@ -67,7 +67,7 @@ public class ListeDINonEmisesJob extends JobDefinition {
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
 
 		// Exécution de l'envoi dans une transaction.
-		final ListeDIsNonEmises results = service.produireListeDIsNonEmises(annee, dateTraitement, getStatusManager());
+		final ListeDIsPPNonEmises results = service.produireListeDIsNonEmises(annee, dateTraitement, getStatusManager());
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		final Document report = template.execute(new TransactionCallback<Document>() {

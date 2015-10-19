@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
@@ -33,11 +32,6 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 	                                                                              TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
 	/**
-	 * Type de contribuable (précalculé) pour la déclaration à envoyer.
-	 */
-	private TypeContribuable typeContribuable;
-
-	/**
 	 * Qualification.
 	 */
 	private Qualification qualification;
@@ -55,8 +49,7 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 
 	public TacheEnvoiDeclarationImpotPP(TypeEtatTache etat, RegDate dateEcheance, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable,
 	                                    TypeDocument typeDocument, Qualification qualification, Integer codeSegment, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite) {
-		super(etat, dateEcheance, contribuable, dateDebut, dateFin, typeDocument, collectivite);
-		this.typeContribuable = typeContribuable;
+		super(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, collectivite);
 		this.qualification = qualification;
 		this.codeSegment = codeSegment;
 		this.adresseRetour = adresseRetour;
@@ -64,17 +57,9 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 		if (!TYPES_DOCUMENTS_AUTORISES.contains(typeDocument)) {
 			throw new IllegalArgumentException("Le type de document " + typeDocument + " n'est pas accepté pour une tâche d'envoi de déclaration PP.");
 		}
-	}
-
-	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
-	@Index(name = "IDX_TACHE_TYPE_CTB")
-	public TypeContribuable getTypeContribuable() {
-		return typeContribuable;
-	}
-
-	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
-		typeContribuable = theTypeContribuable;
+		if (!typeContribuable.isUsedForPP()) {
+			throw new IllegalArgumentException("Le type de contribuable " + typeContribuable + " n'est pas accepté pour une tâche d'envoi de déclaration PP.");
+		}
 	}
 
 	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF )

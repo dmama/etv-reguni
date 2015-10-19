@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
@@ -27,7 +28,7 @@ public class TacheEnvoiDeclarationImpotPMValidatorTest extends AbstractValidator
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, TypeDocument.DECLARATION_IMPOT_PM, null);
+		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_PM, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{

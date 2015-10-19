@@ -12,7 +12,7 @@ import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class ListeDIsNonEmises extends AbstractEnvoiDIsResults<ListeDIsNonEmises> {
+public class ListeDIsPPNonEmises extends AbstractEnvoiDIsPPResults<ListeDIsPPNonEmises> {
 
 	/**
 	 * Classe pour stocker les informations d'une ligne du fichier csv resulat
@@ -71,7 +71,7 @@ public class ListeDIsNonEmises extends AbstractEnvoiDIsResults<ListeDIsNonEmises
 	private final List<LigneRapport> diNonEmises = new ArrayList<>();
 
 
-	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public ListeDIsPPNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, 1, tiersService, adresseService);
 	}
 
@@ -186,7 +186,7 @@ public class ListeDIsNonEmises extends AbstractEnvoiDIsResults<ListeDIsNonEmises
 	}
 
 	@Override
-	public void addAll(ListeDIsNonEmises rapport) {
+	public void addAll(ListeDIsPPNonEmises rapport) {
 		super.addAll(rapport);
 		diNonEmises.addAll(rapport.diNonEmises);
 	}

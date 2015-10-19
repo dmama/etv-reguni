@@ -12,7 +12,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 
 
 /**
@@ -20,7 +20,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsNonEmises;
  */
 public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 
-	public void write(final ListeDIsNonEmises results, final String nom, final String description, final Date dateGeneration,
+	public void write(final ListeDIsPPNonEmises results, final String nom, final String description, final Date dateGeneration,
 	                  OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
@@ -75,12 +75,12 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile asCsvFile(ListeDIsNonEmises results, String filename, StatusManager status) {
+	private TemporaryFile asCsvFile(ListeDIsPPNonEmises results, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
-		List<ListeDIsNonEmises.LigneRapport> list = results.getLignes();
+		List<ListeDIsPPNonEmises.LigneRapport> list = results.getLignes();
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListeDIsNonEmises.LigneRapport>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<ListeDIsPPNonEmises.LigneRapport>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de contribuale").append(COMMA);
@@ -91,7 +91,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, ListeDIsNonEmises.LigneRapport ligne) {
+				public boolean fillLine(CsvHelper.LineFiller b, ListeDIsPPNonEmises.LigneRapport ligne) {
 					b.append(ligne.getNbCtb()).append(COMMA);
 					b.append(ligne.getDateDebut()).append(COMMA);
 					b.append(ligne.getDateFin()).append(COMMA);

@@ -76,7 +76,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		});
 
 		{
-			final ListeDIsNonEmises results = processor.run(year - 2, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year - 2, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
@@ -86,7 +86,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());
 		}
 		{
-			final ListeDIsNonEmises results = processor.run(year - 1, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year - 1, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
@@ -96,7 +96,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());
 		}
 		{
-			final ListeDIsNonEmises results = processor.run(year, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
@@ -127,7 +127,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		});
 
 		{
-			final ListeDIsNonEmises results = processor.run(year - 2, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year - 2, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
@@ -137,7 +137,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(1, results.getNombreDeDIsNonEmises());
 		}
 		{
-			final ListeDIsNonEmises results = processor.run(year - 1, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year - 1, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
@@ -147,7 +147,7 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(1, results.getNombreDeDIsNonEmises());
 		}
 		{
-			final ListeDIsNonEmises results = processor.run(year, RegDate.get(), null);
+			final ListeDIsPPNonEmises results = processor.run(year, RegDate.get(), null);
 			Assert.assertNotNull(results);
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());

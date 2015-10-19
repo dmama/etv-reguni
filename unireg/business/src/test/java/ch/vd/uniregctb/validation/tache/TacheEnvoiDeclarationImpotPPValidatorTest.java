@@ -29,7 +29,7 @@ public class TacheEnvoiDeclarationImpotPPValidatorTest extends AbstractValidator
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, TypeDocument.DECLARATION_IMPOT_VAUDTAX, null, null, TypeAdresseRetour.CEDI, null);
+		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, null, null, TypeAdresseRetour.CEDI, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{

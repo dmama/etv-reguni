@@ -15,4 +15,11 @@ public class DeclarationImpotOrdinairePM extends DeclarationImpotOrdinaire {
 	public ContribuableImpositionPersonnesMorales getTiers() {
 		return (ContribuableImpositionPersonnesMorales) super.getTiers();
 	}
+
+	/**
+	 * @return un nouveau code de contrôle d'une lettre et de cinq chiffres aléatoires
+	 */
+	public static String generateCodeControle() {
+		return generateCodeControleUneLettreCinqChiffres();
+	}
 }

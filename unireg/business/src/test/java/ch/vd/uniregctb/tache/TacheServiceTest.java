@@ -2187,9 +2187,9 @@ public class TacheServiceTest extends BusinessTest {
 				ids.tacheControl = tacheControl.getId();
 
 				// tâche d'envoi de DI
-				final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
-						date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						raoul, null, null, colAdm);
+				final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
+				                                                                date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				                                                                raoul, null, null, colAdm);
 				ids.tacheEnvoi = tacheEnvoi.getId();
 
 				// annulation du tiers
@@ -2962,8 +2962,8 @@ public class TacheServiceTest extends BusinessTest {
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
 		// une tâche d'envoi en instance qui correspond parfaitement à la déclaration manquante
-		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, Qualification.AUTOMATIQUE, 0, cedi);
+		addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+		                  TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie qu'aucune nouvelle tâche n'est créée
 		hibernateTemplate.flush();
@@ -2985,8 +2985,8 @@ public class TacheServiceTest extends BusinessTest {
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
 		// une tâche d'envoi en instance qui ne possède pas le bon type de contribuable
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
-				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
+		                                                     TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie que :
 		// - la tâche incorrecte est annulée
@@ -3012,8 +3012,8 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 
 		// une tâche d'envoi en instance qui est incorrect
-		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
-				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
+		                                                     TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie que la tâche est annulée
 		hibernateTemplate.flush();
@@ -3899,8 +3899,8 @@ public class TacheServiceTest extends BusinessTest {
 				final CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureRaw.noACI);
 				assertNotNull(aci);
 				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), declaration2008, pp, aci);
-				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,
-						Qualification.MANUEL, 0, aci);
+				addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2008, 7, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp,
+				                  Qualification.MANUEL, 0, aci);
 
 				return pp.getId();
 			}
@@ -5122,8 +5122,8 @@ public class TacheServiceTest extends BusinessTest {
 				addDeclarationImpot(pp, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008));
 
 				final CollectiviteAdministrative oi = tiersService.getCollectiviteAdministrative(15, true);
-				final TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2011, 6, 19), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON,
-						TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.COMPLEXE_1, 1, oi);
+				final TacheEnvoiDeclarationImpot tache = addTacheEnvoiDIPP(TypeEtatTache.EN_INSTANCE, date(2011, 6, 19), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.HORS_CANTON,
+				                                                           TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pp, Qualification.COMPLEXE_1, 1, oi);
 
 				ids.pp = pp.getNumero();
 				ids.tache = tache.getId();

@@ -11,17 +11,17 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 
 /**
- * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
+ * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs PP.
  */
-public class PdfEnvoiDIsRapport extends PdfRapport {
+public class PdfEnvoiDIsPPRapport extends PdfRapport {
 
     /**
      * Génère un rapport au format PDF à partir des résultats de job.
      */
-    public void write(final EnvoiDIsResults results, final String nom, final String description, final Date dateGeneration,
+    public void write(final EnvoiDIsPPResults results, final String nom, final String description, final Date dateGeneration,
                           OutputStream os, StatusManager status) throws Exception {
 
         Assert.notNull(status);

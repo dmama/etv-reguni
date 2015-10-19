@@ -99,6 +99,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
@@ -671,6 +672,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		final PeriodeFiscale periode = new PeriodeFiscale();
 		periode.setAnnee(annee);
 		periode.addAllPeriodeFiscaleParametresPP(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
+		periode.addAllPeriodeFiscaleParametresPM(210, 255, 210, 255);
 		return merge(periode);
 	}
 
@@ -760,11 +762,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
-	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
+	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpotPP addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                     ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
+	protected TacheEnvoiDeclarationImpotPP addTacheEnvoiDIPP(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                         ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
 		TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
+		tache = merge(tache);
+		return tache;
+	}
+
+	/**
+	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.
+	 */
+	protected TacheEnvoiDeclarationImpotPM addTacheEnvoiDIPM(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                         ContribuableImpositionPersonnesMorales contribuable, @Nullable CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, colAdm);
 		tache = merge(tache);
 		return tache;
 	}

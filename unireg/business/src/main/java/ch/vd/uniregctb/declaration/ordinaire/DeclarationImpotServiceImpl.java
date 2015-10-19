@@ -28,6 +28,9 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveProcessor;
@@ -39,7 +42,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleEnMasseProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsEnMasseProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
@@ -49,7 +52,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelpe
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
@@ -264,8 +267,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
-	                                         int nbThreads, @Nullable StatusManager status) throws DeclarationException {
+	public EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
+	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 		                                                                        delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
@@ -303,7 +306,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
+	public ListeDIsPPNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
 		                                                                                            tacheDAO, tiersService, delaisService, this, transactionManager, parametres,
 		                                                                                            serviceCivilCacheWarmer, validationService, periodeImpositionService,
@@ -677,5 +680,19 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s) {
 		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(input, s);
+	}
+
+	@Override
+	public EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale,
+	                                             TypeDeclarationImpotPM typeDeclaration,
+	                                             RegDate dateLimiteBouclements,
+	                                             @Nullable Integer nbMaxEnvois,
+	                                             RegDate dateTraitement,
+	                                             int nbThreads,
+	                                             StatusManager statusManager) throws DeclarationException {
+		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
+		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
+		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
+		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}
 }

@@ -86,7 +86,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.ticketService = ticketService;
 	}
 
-	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, @Nullable StatusManager s) throws DeclarationException {
+	public ListeDIsPPNonEmises run(final int anneePeriode, final RegDate dateTraitement, @Nullable StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -95,7 +95,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
 		                                                                               periodeImpositionService, adresseService);
 
-		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
+		final ListeDIsPPNonEmises rapportFinal = new ListeDIsPPNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
 
 		status.setMessage("Récupération des contribuables à vérifier...");
 
@@ -103,13 +103,13 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		// Traite les contribuables par lots
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<Long, ListeDIsNonEmises>
+		final BatchTransactionTemplateWithResults<Long, ListeDIsPPNonEmises>
 				template = new BatchTransactionTemplateWithResults<>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
-		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ListeDIsNonEmises>() {
+		template.execute(rapportFinal, new BatchWithResultsCallback<Long, ListeDIsPPNonEmises>() {
 
 			@Override
-			public ListeDIsNonEmises createSubRapport() {
-				return new ListeDIsNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
+			public ListeDIsPPNonEmises createSubRapport() {
+				return new ListeDIsPPNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override
@@ -119,7 +119,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, ListeDIsNonEmises r) throws Exception {
+			public boolean doInTransaction(List<Long> batch, ListeDIsPPNonEmises r) throws Exception {
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", progressMonitor.getProgressInPercent());
 				traiterBatch(batch, anneePeriode, dateTraitement, r);
 				return true;
@@ -131,7 +131,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		return rapportFinal;
 	}
 
-	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement, ListeDIsNonEmises r) throws DeclarationException, AssujettissementException {
+	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
 
 		final EnvoiDIsEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
@@ -148,7 +148,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	}
 
-	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException, AssujettissementException {
+	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
 
 		r.nbCtbsTotal++;
 
@@ -169,7 +169,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	}
 
 	private void traiterDetails(PeriodeImpositionPersonnesPhysiques details, ContribuableImpositionPersonnesPhysiques contribuable,
-	                            PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsNonEmises r) throws DeclarationException {
+	                            PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException {
 		
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 
