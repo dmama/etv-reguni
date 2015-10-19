@@ -354,22 +354,32 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="FULL_TAX_DECLARATION">
 				<xs:annotation>
-					<xs:documentation>Déclaration complète.</xs:documentation>
+					<xs:documentation>Déclaration complète (PP).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="VAUDTAX_TAX_DECLARATION">
 				<xs:annotation>
-					<xs:documentation>Déclaration VaudTax.</xs:documentation>
+					<xs:documentation>Déclaration VaudTax (PP).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="EXPENDITURE_BASED_TAX_DECLARATION">
 				<xs:annotation>
-					<xs:documentation>Déclaration à la dépense.</xs:documentation>
+					<xs:documentation>Déclaration à la dépense (PP).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="IMMOVABLE_PROPERTY_OTHER_CANTON_TAX_DECLARATION">
 				<xs:annotation>
-					<xs:documentation>Déclaration hors-canton immeuble.</xs:documentation>
+					<xs:documentation>Déclaration hors-canton immeuble (PP).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CORPORATE_ENTITY_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration ordinaire (PM).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_CORPORATE_ENTITY_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Décaration ordinaire (APM).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
