@@ -13,7 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.declaration.ordinaire.ForsList;
+import ch.vd.uniregctb.declaration.ForsList;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
 
 /**
  * Programme de test des performances des batch de traitement des déclaration. Il s'agit d'un programme stand-alone car le plugin jProfiler

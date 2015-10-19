@@ -18,7 +18,7 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
+import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesCtbs;
 
 /**
  * Rapport PDF contenant les statistiques des contribuables assujettis.

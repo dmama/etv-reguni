@@ -10,7 +10,7 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.declaration.ordinaire.ForsList;
+import ch.vd.uniregctb.declaration.ForsList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;

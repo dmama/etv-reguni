@@ -11,7 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.type.TypeDocument;
 

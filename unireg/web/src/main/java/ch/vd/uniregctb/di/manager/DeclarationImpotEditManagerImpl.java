@@ -45,7 +45,7 @@ import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;

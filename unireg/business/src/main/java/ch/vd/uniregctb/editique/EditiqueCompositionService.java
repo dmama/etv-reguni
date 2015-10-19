@@ -11,9 +11,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
-import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -25,7 +26,7 @@ public interface EditiqueCompositionService {
 	 * Imprime la déclaration spécifiée pour une visualisation on-line, et retourne le document imprimé. Il n'y a pas d'envoi vers inbox si c'est trop lent.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinaire, RegDate)}.
+	 * DeclarationImpotService#envoiDIOnline(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @return le document imprimé
@@ -36,7 +37,7 @@ public interface EditiqueCompositionService {
 	 * Imprime la déclaration spécifiée pour une visualisation on-line et retourne le document imprimé (ou le fait envoyer dans l'inbox si c'est trop lent)
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDuplicataDIOnline(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire, ch.vd.uniregctb.type.TypeDocument, java.util.List}.
+	 * DeclarationImpotService#envoiDuplicataDIOnline(ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire, ch.vd.uniregctb.type.TypeDocument, java.util.List}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 * @param typeDocument  le type de document
@@ -50,7 +51,7 @@ public interface EditiqueCompositionService {
 	 * déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinaire, RegDate)}.
+	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinaire, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 */

@@ -15,7 +15,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ListeNoteResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
 import ch.vd.uniregctb.type.MotifFor;
 
 /**

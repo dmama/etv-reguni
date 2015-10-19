@@ -222,17 +222,17 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="impressionDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelperImpl">
+	<bean id="impressionDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelperImpl">
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 	
-	<bean id="impressionSommationDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelperImpl">
+	<bean id="impressionSommationDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="delaisService" ref="delaisService" />		 
 	</bean>
 	
-	<bean id="impressionConfirmationDelaiHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperImpl"/>
+	<bean id="impressionConfirmationDelaiHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperImpl"/>
 	
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>

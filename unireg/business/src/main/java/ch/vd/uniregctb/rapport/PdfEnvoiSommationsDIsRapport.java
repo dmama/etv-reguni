@@ -13,7 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 
 
 /**

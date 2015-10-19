@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;

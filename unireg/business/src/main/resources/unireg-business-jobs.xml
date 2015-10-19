@@ -208,14 +208,14 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-    <bean id="determineDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.DeterminerDIsJob">
+    <bean id="determineDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.DeterminerDIsJob">
         <constructor-arg value="400"/>
         <constructor-arg value="Déterminer les déclarations d'impôt à envoyer et créer des tâches en instance"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="envoiDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.EnvoiDIsJob">
+    <bean id="envoiDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsJob">
         <constructor-arg value="401"/>
         <constructor-arg value="Envoyer à l'impression les déclarations d'impôt (à partir des tâches en instance)"/>
         <property name="service" ref="diService"/>
@@ -229,7 +229,7 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="echoirDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.EchoirDIsJob">
+    <bean id="echoirDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsJob">
         <constructor-arg value="403"/>
         <constructor-arg value="Faire passer à l'état 'échue' les déclarations sommées dont le délai de retour est dépassé"/>
         <property name="declarationImpotService" ref="diService"/>
@@ -243,28 +243,28 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveJob">
+    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveJob">
         <constructor-arg value="406"/>
         <constructor-arg value="Traiter une demande de délai collective de DIs"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-	<bean id="listeNoteJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ListeNoteJob">
+	<bean id="listeNoteJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteJob">
 		<constructor-arg value="407"/>
 		<constructor-arg value="Produire la liste des contribuables ayant une DI transformée en note pour une période"/>
 		<property name="service" ref="diService"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-	<bean id="envoiAnnexeImmeubleJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleJob">
+	<bean id="envoiAnnexeImmeubleJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleJob">
         <constructor-arg value="408"/>
         <constructor-arg value="Envoyer à l'impression les formulaires immeubles à envoyer avant les DI en masse"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-	<bean id="importCodesSegmentJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentJob">
+	<bean id="importCodesSegmentJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentJob">
         <constructor-arg value="409"/>
         <constructor-arg value="Importer les codes 'segment' fournis par TAO avant l'envoi des déclarations d'impôt en masse"/>
         <property name="diService" ref="diService"/>
@@ -319,7 +319,7 @@
         <constructor-arg value="Produire les rôles pour les OID vaudois"/>
     </bean>
 
-    <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ProduireStatsJob">
+    <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ProduireStatsJob">
         <constructor-arg value="602"/>
         <constructor-arg value="Produire les statistiques sur les DIs ou les contribuables"/>
         <property name="service" ref="diService"/>
@@ -328,7 +328,7 @@
         <property name="paramsApp" ref="parametreAppService"/>
     </bean>
 
-    <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ListeDINonEmisesJob">
+    <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.ListeDINonEmisesJob">
         <constructor-arg value="603"/>
         <constructor-arg value="Produire la liste des DIs non émises"/>
         <property name="service" ref="diService"/>

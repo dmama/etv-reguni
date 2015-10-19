@@ -5,7 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.ordinaire.ForsList;
+import ch.vd.uniregctb.declaration.ForsList;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
