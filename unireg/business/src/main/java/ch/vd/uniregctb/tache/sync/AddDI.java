@@ -39,7 +39,7 @@ public class AddDI extends SynchronizeAction {
 			final int todaysYear = today.year();
 			final int year = periodeImposition.getDateDebut().year();
 			final PeriodeFiscale pf = context.periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
-			final RegDate dateFinEnvoiMasseDI = pf.getParametrePeriodeFiscale(periodeImposition.getTypeContribuable()).getDateFinEnvoiMasseDI();
+			final RegDate dateFinEnvoiMasseDI = pf.getParametrePeriodeFiscalePP(periodeImposition.getTypeContribuable()).getDateFinEnvoiMasseDI();
 			if (todaysYear == year + 1 && RegDateHelper.isBefore(today, dateFinEnvoiMasseDI, NullDateBehavior.LATEST)) {
 				// si on est dans la période de début d'année d'envoi des déclarations d'impôt, l'échéance de la tâche doit être placée en conséquence
 				// (sauf si cela fait arriver la tâche à échéance avant le processus normal)

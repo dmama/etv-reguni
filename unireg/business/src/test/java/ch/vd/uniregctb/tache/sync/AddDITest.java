@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -97,7 +98,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
-				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
 		});
@@ -189,7 +190,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
-				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
 		});
@@ -275,7 +276,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
-				pf.setAllPeriodeFiscaleParametres(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
+				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
 		});
@@ -375,8 +376,8 @@ public class AddDITest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
 				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
-				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);
 
 				// contribuable vaudois ordinaire
@@ -526,8 +527,8 @@ public class AddDITest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
 				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
-				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
-				params.add(new ParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
+				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				pf.setParametrePeriodeFiscale(params);
 
 				// contribuable vaudois ordinaire

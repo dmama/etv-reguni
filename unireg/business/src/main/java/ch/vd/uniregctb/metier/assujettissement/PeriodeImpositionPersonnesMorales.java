@@ -26,6 +26,10 @@ public class PeriodeImpositionPersonnesMorales extends PeriodeImposition {
 		this.exercicesCommerciaux = exercicesCommerciaux;
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
+
+		if (!typeContribuable.isUsedForPM()) {
+			throw new IllegalArgumentException("Le type de contribuable " + typeContribuable + " n'est pas supporté pour les PM.");
+		}
 	}
 
 	@Override

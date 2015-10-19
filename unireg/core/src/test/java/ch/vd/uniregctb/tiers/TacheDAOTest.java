@@ -18,7 +18,8 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.type.Qualification;
@@ -528,45 +529,21 @@ public class TacheDAOTest extends CoreDAOTest {
 		pf0.setModelesDocument(new HashSet());
 		pf0 = hibernateTemplate.merge(pf0);
 
-		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
-		ppf0.setId(1L);
-		ppf0.setDateFinEnvoiMasseDI(RegDate.get(2009, 4, 30));
-		ppf0.setLogModifDate(new Timestamp(1199142000000L));
-		ppf0.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
-		ppf0.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
-		ppf0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
-		pf0.addParametrePeriodeFiscale(ppf0);
-		pf0 = hibernateTemplate.merge(pf0);
-
-		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
-		ppf1.setId(2L);
-		ppf1.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
-		ppf1.setLogModifDate(new Timestamp(1199142000000L));
-		ppf1.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
-		ppf1.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
-		ppf1.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
-		pf0.addParametrePeriodeFiscale(ppf1);
-		pf0 = hibernateTemplate.merge(pf0);
-
-		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
-		ppf2.setId(3L);
-		ppf2.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
-		ppf2.setLogModifDate(new Timestamp(1199142000000L));
-		ppf2.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
-		ppf2.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
-		ppf2.setTypeContribuable(TypeContribuable.HORS_CANTON);
-		pf0.addParametrePeriodeFiscale(ppf2);
-		pf0 = hibernateTemplate.merge(pf0);
-
-		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
-		ppf3.setId(4L);
-		ppf3.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
-		ppf3.setLogModifDate(new Timestamp(1199142000000L));
-		ppf3.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
-		ppf3.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
-		ppf3.setTypeContribuable(TypeContribuable.HORS_SUISSE);
-		pf0.addParametrePeriodeFiscale(ppf3);
-		pf0 = hibernateTemplate.merge(pf0);
+		for (TypeContribuable typeCtb : TypeContribuable.values()) {
+			if (typeCtb.isUsedForPP()) {
+				final RegDate dateFinEnvoiMasse = typeCtb == TypeContribuable.VAUDOIS_ORDINAIRE ? RegDate.get(2009, 4, 30) : RegDate.get(2009, 6, 30);
+				final ParametrePeriodeFiscalePP ppf = new ParametrePeriodeFiscalePP(typeCtb, dateFinEnvoiMasse, RegDate.get(2009, 1, 31), RegDate.get(2009, 3, 31), pf0);
+				ppf.setLogModifDate(new Timestamp(1199142000000L));
+				pf0.addParametrePeriodeFiscale(ppf);
+				pf0 = hibernateTemplate.merge(pf0);
+			}
+			if (typeCtb.isUsedForPM()) {
+				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, 210, 255, 210, 255, pf0);
+				ppf.setLogModifDate(new Timestamp(1199142000000L));
+				pf0.addParametrePeriodeFiscale(ppf);
+				pf0 = hibernateTemplate.merge(pf0);
+			}
+		}
 
 		ModeleDocument md0 = new ModeleDocument();
 		md0.setId(1L);

@@ -168,7 +168,7 @@ public class DeterminationDIsAEmettreProcessor {
 						throw new RuntimeException("La période fiscale " + anneePeriode + " n'existe pas dans la base de données.");
 					}
 
-					final RegDate dateFinEnvoi = periode.getLatestDateFinEnvoiMasseDI();
+					final RegDate dateFinEnvoi = periode.getLatestDateFinEnvoiMasseDIPP();
 					if (dateTraitement.isAfter(dateFinEnvoi)) {
 						throw new RuntimeException("La date de fin d'envoi en masse [" + dateFinEnvoi
 								+ "] est dépassée à la date de traitement [" + dateTraitement + "].");
@@ -536,7 +536,7 @@ public class DeterminationDIsAEmettreProcessor {
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base
-		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(details.getTypeContribuable()).getDateFinEnvoiMasseDI();
+		final RegDate dateEcheance = periode.getParametrePeriodeFiscalePP(details.getTypeContribuable()).getDateFinEnvoiMasseDI();
 		Assert.notNull(dateEcheance);
 
 		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),

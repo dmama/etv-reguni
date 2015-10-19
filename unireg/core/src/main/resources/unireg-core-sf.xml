@@ -31,6 +31,8 @@
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
 		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
+		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP</value>
+		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM</value>
 		<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 		<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
 		<value>ch.vd.uniregctb.declaration.Periodicite</value>

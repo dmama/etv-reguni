@@ -37,7 +37,7 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 	 */
 	private Integer codeSegment;
 
-	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE)
+	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
 	public TypeContribuable getTypeContribuable() {
 		return typeContribuable;

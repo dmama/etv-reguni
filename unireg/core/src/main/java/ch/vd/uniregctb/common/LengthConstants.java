@@ -97,7 +97,7 @@ public abstract class LengthConstants {
 	public static final int LOG_LEVEL = 7;
 	public static final int LOG_MESSAGE = 255;
 
-	public static final int DI_TYPE = 17;
+	public static final int DI_TYPE_CTB = 17;
 	public static final int DI_ETAT = 12;
 	public static final int DI_QUALIF = 16;
 	public static final int DI_ADRESSE_RETOUR = 4;
@@ -135,6 +135,9 @@ public abstract class LengthConstants {
 
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;
+
+	public static final int PARAMETRE_PF_TYPE = 5;
+	public static final int PARAMETRE_PF_TYPE_ENTREPRISE = 5;
 
 	public static final int MONNAIE_ISO = 3;
 

@@ -168,6 +168,7 @@
     <column>TERME_GEN_SOMM_EFFECT</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
+    <column>PPF_TYPE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -176,6 +177,7 @@
       <value>20080430</value>
       <value>VAUDOIS_ORDINAIRE</value>
       <value>6</value>
+      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -185,6 +187,7 @@
       <value>20080630</value>
       <value>VAUDOIS_DEPENSE</value>
       <value>6</value>
+      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -194,6 +197,7 @@
       <value>20080630</value>
       <value>HORS_CANTON</value>
       <value>6</value>
+      <value>PP</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -203,6 +207,7 @@
       <value>20080630</value>
       <value>HORS_SUISSE</value>
       <value>6</value>
+      <value>PP</value>
     </row>
   </table>
   <table name="MODELE_DOCUMENT">

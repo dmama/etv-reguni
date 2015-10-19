@@ -670,7 +670,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected PeriodeFiscale addPeriodeFiscale(int annee) {
 		final PeriodeFiscale periode = new PeriodeFiscale();
 		periode.setAnnee(annee);
-		periode.setAllPeriodeFiscaleParametres(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
+		periode.addAllPeriodeFiscaleParametresPP(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
 		return merge(periode);
 	}
 

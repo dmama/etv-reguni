@@ -66,7 +66,7 @@ public class TacheEnvoiDeclarationImpotPP extends TacheEnvoiDeclarationImpot {
 		}
 	}
 
-	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE)
+	@Column(name = "DECL_TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
 	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
 	@Index(name = "IDX_TACHE_TYPE_CTB")
 	public TypeContribuable getTypeContribuable() {

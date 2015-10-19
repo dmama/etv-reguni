@@ -141,7 +141,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 				for (int pf = firstPf ; pf <= lastPf ; ++ pf) {
 					final PeriodeFiscale periode = new PeriodeFiscale();
 					periode.setAnnee(pf);
-					periode.setAllPeriodeFiscaleParametres(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
+					periode.addAllPeriodeFiscaleParametresPP(RegDate.get(pf + 1, 1, 31), RegDate.get(pf + 1, 3, 31), RegDate.get(pf + 1, 6, 30));
 					periodeFiscaleDAO.save(periode);
 				}
 			}

@@ -16,6 +16,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
@@ -141,23 +142,23 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
 		ppfv.setCodeControleSurSommationDI(pf.isShowCodeControleSommationDeclaration());
 
-		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscaleDepense().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getDateFinEnvoiMasseDI());
-		ppfv.setFinEnvoiMasseDIVaud(pf.getParametrePeriodeFiscaleVaud().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscalePPDepense().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getDateFinEnvoiMasseDI());
 
-		ppfv.setSommationEffectiveDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationEffectif());
-		ppfv.setSommationEffectiveVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveDepense(pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationEffectif());
 
-		ppfv.setSommationReglementaireDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationReglementaire());
-		ppfv.setSommationReglementaireVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireDepense(pf.getParametrePeriodeFiscalePPDepense().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireDiplomate(pf.getParametrePeriodeFiscalePPDiplomateSuisse().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireHorsCanton(pf.getParametrePeriodeFiscalePPHorsCanton().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireHorsSuisse(pf.getParametrePeriodeFiscalePPHorsSuisse().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireVaud(pf.getParametrePeriodeFiscalePPVaudoisOrdinaire().getTermeGeneralSommationReglementaire());
 
 		return ppfv;
 	}
@@ -204,12 +205,12 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		final PeriodeFiscale pf = periodeFiscaleDAO.get(ppfv.getIdPeriodeFiscale());
 		pf.setShowCodeControleSommationDeclaration(ppfv.isCodeControleSurSommationDI());
 
-		final ParametrePeriodeFiscale[] ppfs = new ParametrePeriodeFiscale[] {
-				pf.getParametrePeriodeFiscaleVaud(),
-				pf.getParametrePeriodeFiscaleHorsCanton(),
-				pf.getParametrePeriodeFiscaleHorsSuisse(),
-				pf.getParametrePeriodeFiscaleDepense(),
-				pf.getParametrePeriodeFiscaleDiplomateSuisse()
+		final ParametrePeriodeFiscalePP[] ppfs = new ParametrePeriodeFiscalePP[] {
+				pf.getParametrePeriodeFiscalePPVaudoisOrdinaire(),
+				pf.getParametrePeriodeFiscalePPHorsCanton(),
+				pf.getParametrePeriodeFiscalePPHorsSuisse(),
+				pf.getParametrePeriodeFiscalePPDepense(),
+				pf.getParametrePeriodeFiscalePPDiplomateSuisse()
 		};
 
 		final RegDate[][] termes = new RegDate [][] {

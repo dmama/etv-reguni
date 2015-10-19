@@ -48,7 +48,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
@@ -680,7 +680,7 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 		else {
 			// Traitement normal
-			final ParametrePeriodeFiscale ppf = periode.getParametrePeriodeFiscale(di.getTypeContribuable());
+			final ParametrePeriodeFiscalePP ppf = periode.getParametrePeriodeFiscalePP(di.getTypeContribuable());
 			Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + ']');
 
 			dateRetourAccorde = ppf.getTermeGeneralSommationEffectif(); // [UNIREG-1976] le délai de retour accordé est toujours la date effective
