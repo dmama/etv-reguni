@@ -13,51 +13,56 @@ import ch.vd.registre.base.dao.GenericDAO;
 public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeFiscale, Long> {
 
 	/**
-	 * Retrouve la liste des parametres de periode pour une periode donnée
-	 * 
 	 * @param periodeFiscale la période fiscale
-	 * @return
+	 * @return la liste des parametres de periode pour une periode donnée
 	 */
 	List<ParametrePeriodeFiscale> getByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
-	 * Retrouve les parametres de période fiscale pour un contribuable vaudois ordinaire, pour une période donnée
-	 * 
 	 * @param periodeFiscale la période fiscale
-	 * @return
+	 * @return les parametres de période fiscale pour un contribuable PP vaudois ordinaire, pour une période donnée
 	 */
-	ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale);
-	
+	ParametrePeriodeFiscalePP getPPVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un contribuable PP vaudois à la dépense, pour une période donnée
+	 */
+	ParametrePeriodeFiscalePP getPPDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
-	 * Retrouve les parametres de période fiscale pour un contribuable vaudois à la dépense, pour une période donnée
-	 * 
 	 * @param periodeFiscale la période fiscale
-	 * @return
+	 * @return les parametres de période fiscale pour un contribuable PP hors canton, pour une période donnée
 	 */
-	ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+	ParametrePeriodeFiscalePP getPPHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
-	 * Retrouve les parametres de période fiscale pour un contribuable hors canton, pour une période donnée
-	 * 
 	 * @param periodeFiscale la période fiscale
-	 * @return
+	 * @return les parametres de période fiscale pour un contribuable PP hors Suisse, pour une période donnée
 	 */
-	ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale);
-	
-	
-	/**
-	 * 
-	 * Retrouve les parametres de période fiscale pour un contribuable hors Suisse, pour une période donnée
-	 * 
-	 * @param periodeFiscale la période fiscale
-	 * @return
-	 */
-	ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+	ParametrePeriodeFiscalePP getPPHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
 	 * @param periodeFiscale la période fiscale
 	 * @return les parametres de période fiscale pour un diplomate Suisse, pour une période donnée
 	 */
-	ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+	ParametrePeriodeFiscalePP getPPDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un contribuable PM vaudois, pour une période donnée
+	 */
+	ParametrePeriodeFiscalePM getPMVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un contribuable PM hors canton, pour une période donnée
+	 */
+	ParametrePeriodeFiscalePM getPMHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un contribuable PM hors Suisse, pour une période donnée
+	 */
+	ParametrePeriodeFiscalePM getPMHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 }

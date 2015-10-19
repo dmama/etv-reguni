@@ -15,14 +15,15 @@
 	</tiles:put>
 
 	<tiles:put name="title">
-		<fmt:message key="title.edit.param.periode.fiscale">
+		<fmt:message key="title.edit.param.periode.fiscale.pp">
 			<fmt:param>${command.anneePeriodeFiscale}</fmt:param>
 		</fmt:message>
 	</tiles:put>
 
 	<tiles:put name="body">
-	<form:form name="form" id="formTermes">
+	<form:form name="form" id="formTermes" commandName="command">
 		<form:hidden path="idPeriodeFiscale"/>
+		<form:hidden path="anneePeriodeFiscale"/>
 		<fieldset>
 			<legend><fmt:message key="label.param.parametres-pf-edit" /></legend>
 

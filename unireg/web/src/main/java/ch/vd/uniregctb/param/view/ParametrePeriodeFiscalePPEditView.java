@@ -2,7 +2,7 @@ package ch.vd.uniregctb.param.view;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class ParametrePeriodeFiscaleView {
+public class ParametrePeriodeFiscalePPEditView {
 
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
