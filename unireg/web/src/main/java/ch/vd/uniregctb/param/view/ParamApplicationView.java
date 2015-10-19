@@ -49,6 +49,7 @@ public class ParamApplicationView {
 	private String dateExclusionDecedeEnvoiDI;
 	private String ageRentierFemme;
 	private String ageRentierHomme;
+	private String delaiMinimalRetourDeclarationImpotPM;
 
 	public ParamApplicationView() {}
 
@@ -79,6 +80,7 @@ public class ParamApplicationView {
 		this.dateExclusionDecedeEnvoiDI = ParametreEnum.dateExclusionDecedeEnvoiDI.convertirValeurTypeeVersString(service.getDateExclusionDecedeEnvoiDI());
 		this.ageRentierFemme = ParametreEnum.ageRentierFemme.convertirValeurTypeeVersString(service.getAgeRentierFemme());
 		this.ageRentierHomme = ParametreEnum.ageRentierHomme.convertirValeurTypeeVersString(service.getAgeRentierHomme());
+		this.delaiMinimalRetourDeclarationImpotPM = ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiMinimalRetourDeclarationImpotPM());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -111,6 +113,7 @@ public class ParamApplicationView {
 		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
 		service.setAgeRentierHomme((Integer) ParametreEnum.ageRentierHomme.convertirStringVersValeurTypee(this.ageRentierHomme));
+		service.setDelaiMinimalRetourDeclarationImpotPM((Integer) ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiMinimalRetourDeclarationImpotPM));
 	}
 
 	public String getNoel() {
@@ -303,5 +306,13 @@ public class ParamApplicationView {
 
 	public void setAgeRentierHomme(String ageRentierHomme) {
 		this.ageRentierHomme = ageRentierHomme;
+	}
+
+	public String getDelaiMinimalRetourDeclarationImpotPM() {
+		return delaiMinimalRetourDeclarationImpotPM;
+	}
+
+	public void setDelaiMinimalRetourDeclarationImpotPM(String delaiMinimalRetourDeclarationImpotPM) {
+		this.delaiMinimalRetourDeclarationImpotPM = delaiMinimalRetourDeclarationImpotPM;
 	}
 }

@@ -25,6 +25,8 @@ public enum ParametreEnum {
 	delaiEnvoiSommationDeclarationImpot("15", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpot("30", Type.delaisEnJour, true),
 
+	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
+
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),
 	delaiRetourListeRecapitulative("30", Type.delaisEnJour, true),

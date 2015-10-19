@@ -48,6 +48,8 @@ public interface ParametreAppAccessor {
 
 	Integer[] getDateExclusionDecedeEnvoiDI();
 
+	Integer getDelaiMinimalRetourDeclarationImpotPM();
+
 	/**
 	 * [UNIREG-2507]
 	 *
@@ -108,5 +110,7 @@ public interface ParametreAppAccessor {
 	void setAgeRentierFemme(Integer val);
 
 	void setAgeRentierHomme(Integer val);
+
+	void setDelaiMinimalRetourDeclarationImpotPM(Integer val);
 
 }

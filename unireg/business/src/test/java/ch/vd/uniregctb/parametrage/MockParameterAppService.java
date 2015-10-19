@@ -143,6 +143,11 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
+	public Integer getDelaiMinimalRetourDeclarationImpotPM() {
+		return container.getDelaiMinimalRetourDeclarationImpotPM();
+	}
+
+	@Override
 	public void reset() {
 		container.reset();
 	}
@@ -275,5 +280,10 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setAgeRentierHomme(Integer val) {
 		container.setAgeRentierHomme(val);
+	}
+
+	@Override
+	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
+		container.setDelaiMinimalRetourDeclarationImpotPM(val);
 	}
 }

@@ -245,6 +245,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		return Integer.parseInt(get(ParametreEnum.ageRentierHomme));
 	}
 
+	@Override
+	public Integer getDelaiMinimalRetourDeclarationImpotPM() {
+		return Integer.parseInt(get(ParametreEnum.delaiMinimalRetourDeclarationImpotPM));
+	}
+
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
 		return (Integer[]) p.convertirStringVersValeurTypee(get(p));
 	}
@@ -405,4 +410,8 @@ class ParametreAppContainer implements ParametreAppAccessor {
 		setValeur(ParametreEnum.ageRentierHomme, val.toString());
 	}
 
+	@Override
+	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
+		setValeur(ParametreEnum.delaiMinimalRetourDeclarationImpotPM, val.toString());
+	}
 }

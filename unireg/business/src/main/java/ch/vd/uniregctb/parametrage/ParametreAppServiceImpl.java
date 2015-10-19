@@ -232,6 +232,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getDelaiMinimalRetourDeclarationImpotPM() {
+		return container.getDelaiMinimalRetourDeclarationImpotPM();
+	}
+
+	@Override
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {
 		container.setDelaiAttenteDeclarationImpotPersonneDecedee(val);
 	}
@@ -354,5 +359,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setAgeRentierHomme(Integer val) {
 		container.setAgeRentierHomme(val);
+	}
+
+	@Override
+	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
+		container.setDelaiMinimalRetourDeclarationImpotPM(val);
 	}
 }

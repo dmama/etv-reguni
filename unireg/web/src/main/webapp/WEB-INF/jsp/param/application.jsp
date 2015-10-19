@@ -239,6 +239,15 @@
 		                <sf:input path="delaiRetentionRapportTravailInactif" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
 					 <td><sf:errors path="delaiRetentionRapportTravailInactif" cssClass="erreur"/></td>
+			    </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiMinimalRetourDeclarationImpotPM"/></td>
+		            <%--@elvariable id="delaiMinimalRetourDeclarationImpotPMParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiMinimalRetourDeclarationImpotPMParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiMinimalRetourDeclarationImpotPM" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					 <td><sf:errors path="delaiMinimalRetourDeclarationImpotPM" cssClass="erreur"/></td>
 		        </tr><tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>
