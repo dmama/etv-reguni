@@ -5,21 +5,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 
-public class TacheEnvoiDeclarationImpotPPValidatorTest extends AbstractValidatorTest<TacheEnvoiDeclarationImpotPP> {
+public class TacheEnvoiDeclarationImpotPMValidatorTest extends AbstractValidatorTest<TacheEnvoiDeclarationImpotPM> {
 
 	@Override
 	protected String getValidatorBeanName() {
-		return "tacheEnvoiDeclarationImpotPPValidator";
+		return "tacheEnvoiDeclarationImpotPMValidator";
 	}
 
 	@Test
@@ -29,7 +27,7 @@ public class TacheEnvoiDeclarationImpotPPValidatorTest extends AbstractValidator
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, TypeDocument.DECLARATION_IMPOT_VAUDTAX, null, null, TypeAdresseRetour.CEDI, null);
+		final TacheEnvoiDeclarationImpotPM tache = new TacheEnvoiDeclarationImpotPM(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, TypeDocument.DECLARATION_IMPOT_PM, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{
@@ -39,9 +37,8 @@ public class TacheEnvoiDeclarationImpotPPValidatorTest extends AbstractValidator
 
 		// Adresse valide et annulée => pas d'erreur
 		{
-			tache.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
-			tache.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-			tache.setContribuable(new PersonnePhysique());
+			tache.setTypeDocument(TypeDocument.DECLARATION_IMPOT_PM);
+			tache.setContribuable(new Entreprise());
 			tache.setCollectiviteAdministrativeAssignee(new CollectiviteAdministrative());
 			tache.setAnnule(true);
 			assertFalse(validate(tache).hasErrors());

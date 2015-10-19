@@ -421,7 +421,7 @@ public abstract class PartyStrategy<T extends Party> {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP) declaration, parts));
 			}
 			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
-				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) declaration, parts));
+				// cette version ne supporte pas les DI PM
 			}
 		}
 	}
