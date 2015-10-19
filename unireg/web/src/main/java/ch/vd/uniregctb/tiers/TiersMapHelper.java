@@ -525,6 +525,10 @@ public class TiersMapHelper extends CommonMapHelper {
 		return mapTypesDeclarationImpot;
 	}
 
+	private static final Set<TypeDocument> DI_ORDINAIRE = EnumSet.of(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+	                                                                 TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,
+	                                                                 TypeDocument.DECLARATION_IMPOT_VAUDTAX);
+
 	/**
 	 * Initialise la map des types de declarations d'impôt ordinaires pour l'écran d'édition de la DI (quittancement)
 	 *
@@ -536,7 +540,7 @@ public class TiersMapHelper extends CommonMapHelper {
 			final List<TypeDocument> typesIgnores = new ArrayList<>();
 			for (TypeDocument type : TypeDocument.values()) {
 				// doivent être ignorées la version batch de la déclaration complète et toutes les déclarations non-ordinaires
-				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !type.isOrdinaire()) {
+				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !DI_ORDINAIRE.contains(type)) {
 					typesIgnores.add(type);
 				}
 			}

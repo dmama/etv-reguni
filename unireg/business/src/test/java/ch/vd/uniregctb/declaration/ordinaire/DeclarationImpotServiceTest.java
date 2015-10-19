@@ -51,12 +51,13 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -205,8 +206,8 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		{
-			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
 
 			DeterminationDIsAEmettreProcessor processor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
 					parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
@@ -216,7 +217,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			processor.setBatchSize(1);
 			assertResults(1, processor.run(2007, date(2008, 1, 20), 1, status));
 
-			List<TacheEnvoiDeclarationImpot> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
+			List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
 					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 
@@ -238,16 +239,16 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final long idEric = 10000003L;
 		final long idJohn = 10000004L;
 
-		final Contribuable eric = hibernateTemplate.get(Contribuable.class, idEric);
+		final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, idEric);
 		assertFalse(validationService.validate(eric).hasErrors());
 
-		final Contribuable john = hibernateTemplate.get(Contribuable.class, idJohn);
+		final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, idJohn);
 		assertTrue(validationService.validate(john).hasErrors());
 
 		// Détermine les DIs à émettre : le contribuable invalide ne devrait pas être pris en compte
 		assertResults(1, service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, null));
 
-		List<TacheEnvoiDeclarationImpot> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
+		List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 		assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
 				TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 
@@ -341,9 +342,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		{
-			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
 			assertFalse(validationService.validate(eric).hasErrors());
-			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
+			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
 			assertFalse(validationService.validate(john).hasErrors());
 
 			// Détermine les DIs à émettre : le status manager va lancer une exception sur le traitement de John.
@@ -366,7 +367,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			};
 			assertResults(1, service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, status));
 
-			List<TacheEnvoiDeclarationImpot> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
+			List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
 					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 
@@ -637,19 +638,19 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final Contribuable olrik = hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
-				final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
-				final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // hors-canton complète
-				final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // hors-canton vaudtax
-				final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // ordinaire
-				final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
-				final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse
-				final Contribuable lionel = hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse
-				final Contribuable bruno = hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
-				final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
-				final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
+				final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId); // depense
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId); // ordinaire
+				final PersonnePhysique olrik = hibernateTemplate.get(PersonnePhysique.class, ids.olrikId); // ordinaire
+				final PersonnePhysique guillaume = hibernateTemplate.get(PersonnePhysique.class, ids.guillaumeId); // vaudtax
+				final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jeanId); // hors-canton complète
+				final PersonnePhysique jacques = hibernateTemplate.get(PersonnePhysique.class, ids.jacquesId); // hors-canton vaudtax
+				final PersonnePhysique mitt = hibernateTemplate.get(PersonnePhysique.class, ids.mittId); // ordinaire
+				final PersonnePhysique georges = hibernateTemplate.get(PersonnePhysique.class, ids.georgesId); // hors canton
+				final PersonnePhysique jacky = hibernateTemplate.get(PersonnePhysique.class, ids.jackyId); // hors suisse
+				final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId); // hors suisse
+				final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, ids.brunoId); // hors suisse
+				final PersonnePhysique marc = hibernateTemplate.get(PersonnePhysique.class, ids.marcId); // diplomate suisse
+				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId); // diplomate étranger
 
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE,
 						TypeAdresseRetour.OID, getTachesEnvoiDeclarationImpot(paul, 2007));
@@ -847,19 +848,19 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		}
 
 		{
-			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
-			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-			final Contribuable olrik = hibernateTemplate.get(Contribuable.class, ids.olrikId); // ordinaire
-			final Contribuable guillaume = hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
-			final Contribuable jean = hibernateTemplate.get(Contribuable.class, ids.jeanId); // hors-canton complète
-			final Contribuable jacques = hibernateTemplate.get(Contribuable.class, ids.jacquesId); // hors-canton VaudTax
-			final Contribuable mitt = hibernateTemplate.get(Contribuable.class, ids.mittId); // hors-Suisse
-			final Contribuable georges = hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
-			final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId); // hors suisse depuis toujours
-			final Contribuable lionel = hibernateTemplate.get(Contribuable.class, ids.lionelId); // hors suisse depuis toujours
-			final Contribuable bruno = hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse depuis mi-2007
-			final Contribuable marc = hibernateTemplate.get(Contribuable.class, ids.marcId); // diplomate suisse
-			final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
+			final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId); // depense
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId); // ordinaire
+			final PersonnePhysique olrik = hibernateTemplate.get(PersonnePhysique.class, ids.olrikId); // ordinaire
+			final PersonnePhysique guillaume = hibernateTemplate.get(PersonnePhysique.class, ids.guillaumeId); // vaudtax
+			final PersonnePhysique jean = hibernateTemplate.get(PersonnePhysique.class, ids.jeanId); // hors-canton complète
+			final PersonnePhysique jacques = hibernateTemplate.get(PersonnePhysique.class, ids.jacquesId); // hors-canton VaudTax
+			final PersonnePhysique mitt = hibernateTemplate.get(PersonnePhysique.class, ids.mittId); // hors-Suisse
+			final PersonnePhysique georges = hibernateTemplate.get(PersonnePhysique.class, ids.georgesId); // hors canton
+			final PersonnePhysique jacky = hibernateTemplate.get(PersonnePhysique.class, ids.jackyId); // hors suisse depuis toujours
+			final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId); // hors suisse depuis toujours
+			final PersonnePhysique bruno = hibernateTemplate.get(PersonnePhysique.class, ids.brunoId); // hors suisse depuis mi-2007
+			final PersonnePhysique marc = hibernateTemplate.get(PersonnePhysique.class, ids.marcId); // diplomate suisse
+			final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId); // diplomate étranger
 
 			// Les tâches doivent être traitées, maintenant
 			assertOneTache(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, TypeDocument.DECLARATION_IMPOT_DEPENSE,
@@ -1317,7 +1318,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				PersonnePhysique ours = addNonHabitant("Ours", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				ids.oursId = ours.getNumero();
 				addForPrincipal(ours, date(1983, 4, 13), MotifFor.MAJORITE, date(2007, 5, 23), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.INDIGENT);
-				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 5, 23),
+				TacheEnvoiDeclarationImpotPP t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 5, 23),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ours, null, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 
@@ -1343,11 +1344,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				final Contribuable ours = hibernateTemplate.get(Contribuable.class, ids.oursId);
-				final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId);
-				final Contribuable totor = hibernateTemplate.get(Contribuable.class, ids.totorId);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+				final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
+				final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
+				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
+				final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
 				assertEmpty(eric.getDeclarationsForPeriode(2007, false));
 				assertEmpty(john.getDeclarationsForPeriode(2007, false));
 				assertEmpty(ours.getDeclarationsForPeriode(2007, false));
@@ -1384,11 +1385,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-				final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-				final Contribuable ours = hibernateTemplate.get(Contribuable.class, ids.oursId);
-				final Contribuable ramon = hibernateTemplate.get(Contribuable.class, ids.ramonId);
-				final Contribuable totor = hibernateTemplate.get(Contribuable.class, ids.totorId);
+				final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+				final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
+				final PersonnePhysique ours = hibernateTemplate.get(PersonnePhysique.class, ids.oursId);
+				final PersonnePhysique ramon = hibernateTemplate.get(PersonnePhysique.class, ids.ramonId);
+				final PersonnePhysique totor = hibernateTemplate.get(PersonnePhysique.class, ids.totorId);
 				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
 				           TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationsForPeriode(2007, false));
 				assertDIPP(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -1490,9 +1491,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		{
-			final Contribuable jacky = hibernateTemplate.get(Contribuable.class, ids.jackyId);
-			final Contribuable thierry = hibernateTemplate.get(Contribuable.class, ids.thierryId);
-			final Contribuable lionel = hibernateTemplate.get(Contribuable.class, ids.lionelId);
+			final PersonnePhysique jacky = hibernateTemplate.get(PersonnePhysique.class, ids.jackyId);
+			final PersonnePhysique thierry = hibernateTemplate.get(PersonnePhysique.class, ids.thierryId);
+			final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId);
 
 			// Envoi en masse 2007 pour les contribuables hors Suisse
 			service.determineDIsAEmettre(2007, date(2008, 1, 15), 1, null);
@@ -1558,11 +1559,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, null);
 
-			final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId);
-			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
-			final Contribuable paul = hibernateTemplate.get(Contribuable.class, ids.paulId);
+			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
+			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
+			final PersonnePhysique paul = hibernateTemplate.get(PersonnePhysique.class, ids.paulId);
 
-			List<TacheEnvoiDeclarationImpot> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
+			List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
 			               TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, taches);
 
@@ -1581,14 +1582,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	 * @return toutes les tâches définies pour le contribuable et l'année spécifiés
 	 */
 	@SuppressWarnings("unchecked")
-	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiDeclarationImpot(Contribuable contribuable, int annee) {
+	private List<TacheEnvoiDeclarationImpotPP> getTachesEnvoiDeclarationImpot(ContribuableImpositionPersonnesPhysiques contribuable, int annee) {
 
 		final Map<String, Object> params = new HashMap<>(3);
 		params.put("ctb", contribuable);
 		params.put("debutAnnee", date(annee, 1, 1));
 		params.put("finAnnee", date(annee, 12, 31));
 
-		final String query = "FROM TacheEnvoiDeclarationImpot AS t WHERE t.contribuable = :ctb AND t.dateDebut >= :debutAnnee AND t.dateFin <= :finAnnee ORDER BY t.dateDebut ASC";
+		final String query = "FROM TacheEnvoiDeclarationImpotPP AS t WHERE t.contribuable = :ctb AND t.dateDebut >= :debutAnnee AND t.dateFin <= :finAnnee ORDER BY t.dateDebut ASC";
 		return hibernateTemplate.find(query, params, null);
 	}
 

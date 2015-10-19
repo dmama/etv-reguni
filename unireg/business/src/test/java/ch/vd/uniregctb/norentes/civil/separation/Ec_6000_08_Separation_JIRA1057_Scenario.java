@@ -147,7 +147,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		
 		checkTachesGenerees(menage, null, 6);
 		checkTachesGenerees(menage, TypeTache.TacheControleDossier, 1);
-		checkTachesGenerees(menage, TypeTache.TacheEnvoiDeclarationImpot, 5); // 2003 + 2004 + 2005 + 2006 + 2007
+		checkTachesGenerees(menage, TypeTache.TacheEnvoiDeclarationImpotPP, 5); // 2003 + 2004 + 2005 + 2006 + 2007
 	}
 
 	private void checkTachesGenerees(final Contribuable contribuable, TypeTache typeTache, int expected) {

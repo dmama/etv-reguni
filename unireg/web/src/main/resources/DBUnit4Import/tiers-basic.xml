@@ -10770,7 +10770,7 @@
     <column>CTB_ID</column>
     <column>DECLARATION_ID</column>
     <row>
-      <value>ENVOI_DI</value>
+      <value>ENVOI_DI_PP</value>
       <value>1</value>
       <null/>
       <null/>

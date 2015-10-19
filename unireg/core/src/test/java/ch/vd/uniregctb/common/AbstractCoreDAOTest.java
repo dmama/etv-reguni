@@ -99,6 +99,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -571,7 +572,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpot tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpotPP tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
@@ -580,7 +581,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(typeCtb, tache.getTypeContribuable());
 		assertEquals(typeDoc, tache.getTypeDocument());
 		assertEquals(adresseRetour, tache.getAdresseRetour());
-		if(collectivite!=null){
+		if (collectivite != null) {
 			assertEquals(collectivite, tache.getCollectiviteAdministrativeAssignee());
 		}
 
@@ -590,16 +591,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpot tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpotPP tache) {
 		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, null, tache);
-
 	}
 
 	/**
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
-	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-			TacheAnnulationDeclarationImpot tache) {
+	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TacheAnnulationDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
@@ -648,11 +647,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la collection passée en paramètre possède bien une seule tâche et que celle-ci possède bien les valeurs spécifiées.
 	 */
 	protected static void assertOneTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                     TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, List<TacheEnvoiDeclarationImpot> taches) {
+	                                     TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, List<? extends TacheEnvoiDeclarationImpot> taches) {
 		assertNotNull(taches);
 		assertEquals(1, taches.size());
 		final TacheEnvoiDeclarationImpot tache = taches.get(0);
-		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, tache);
+		assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
+		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, (TacheEnvoiDeclarationImpotPP) tache);
 	}
 
 	protected static void assertSituation(RegDate debut, RegDate fin, int nombreEnfants, TarifImpotSource tarif,
@@ -762,9 +762,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
-	                                                     Contribuable contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
-		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
+	protected TacheEnvoiDeclarationImpotPP addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                     ContribuableImpositionPersonnesPhysiques contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
 		tache = merge(tache);
 		return tache;
 	}

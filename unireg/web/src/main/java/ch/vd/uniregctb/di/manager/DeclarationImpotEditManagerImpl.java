@@ -65,7 +65,7 @@ import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -448,14 +448,14 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		//Mise à jour de l'état de la tâche si il y en a une
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		criterion.setAnnee(dateDebut.year());
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 		criterion.setContribuable(ctb);
 		final List<Tache> taches = tacheDAO.find(criterion);
 		if (taches != null && !taches.isEmpty()) {
 			for (Tache t : taches) {
-				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
+				final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) t;
 				if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
 					tache.setEtat(TypeEtatTache.TRAITE);
 				}

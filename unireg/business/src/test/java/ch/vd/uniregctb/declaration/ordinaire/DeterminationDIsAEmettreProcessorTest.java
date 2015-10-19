@@ -42,6 +42,7 @@ import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -148,7 +149,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 
 		// [UNIREG-1742] Un non-assujetti avec une tâche d'envoi de déclaration d'impôt en instance
-		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				eric, Qualification.AUTOMATIQUE, 0, colAdm);
 
@@ -719,7 +720,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
-			TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
+			TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheEric);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
@@ -736,7 +737,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
-			TacheEnvoiDeclarationImpot tacheJohn = service.traiterPeriodeImposition(john, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
+			TacheEnvoiDeclarationImpotPP tacheJohn = service.traiterPeriodeImposition(john, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheJohn);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheJohn);
@@ -773,7 +774,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 		final DeterminationDIsResults r = new DeterminationDIsResults(2009, RegDate.get(), tiersService, adresseService);
-		TacheEnvoiDeclarationImpot tacheEric = service.traiterPeriodeImposition(eric, periode2009, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
+		TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode2009, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 		assertNotNull(tacheEric);
 		assertTache(TypeEtatTache.EN_INSTANCE, date(2010, 1, 31), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEric);
@@ -1037,7 +1038,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Aucune tâche
 		{
-			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
 			assertNull(service.checkExistenceTache(contribuable, range));
@@ -1045,7 +1046,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Une tâche qui existe déjà avec un range qui ne correspond pas du tout
 		{
-			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 
@@ -1055,13 +1056,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Une tâche qui existe déjà avec un range qui correspond parfaitement
 		{
-			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
 					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
-			final ExistenceResults<TacheEnvoiDeclarationImpot> results = service.checkExistenceTache(contribuable, range);
+			final ExistenceResults<TacheEnvoiDeclarationImpotPP> results = service.checkExistenceTache(contribuable, range);
 			assertNotNull(results);
 			assertEquals(ExistenceResults.TacheStatus.EXISTE_DEJA, results.status);
 			assertEquals(date(2007, 1, 1), results.object.getDateDebut());
@@ -1070,13 +1071,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Une tâche qui existe déjà avec un range qui recouvre partiellement le range spécifié
 		{
-			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
 
 			Range range = new Range(date(2007, 1, 1), date(2007, 12, 31));
-			final ExistenceResults<TacheEnvoiDeclarationImpot> results = service.checkExistenceTache(contribuable, range);
+			final ExistenceResults<TacheEnvoiDeclarationImpotPP> results = service.checkExistenceTache(contribuable, range);
 			assertNotNull(results);
 			assertEquals(ExistenceResults.TacheStatus.INTERSECTE, results.status);
 			assertEquals(date(2007, 1, 1), results.object.getDateDebut());
@@ -1086,7 +1087,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// Une tâche déjà traitée avec un range qui recouvre partiellement le range spécifié
 		{
-			final Contribuable contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+			final PersonnePhysique contribuable = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addTacheEnvoiDI(TypeEtatTache.TRAITE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 5, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, null, colAdm);
 			hibernateTemplate.flush();
@@ -1593,8 +1594,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 					assertNotNull(taches);
 					assertEquals(1, taches.size());
 					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
-					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
 					assertNull(tacheDi.getCodeSegment());
 				}
 
@@ -1604,8 +1605,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 					assertNotNull(taches);
 					assertEquals(1, taches.size());
 					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
-					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
 					assertNull(tacheDi.getCodeSegment());
 				}
 
@@ -1615,8 +1616,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 					assertNotNull(taches);
 					assertEquals(1, taches.size());
 					final Tache tache = taches.get(0);
-					assertInstanceOf(TacheEnvoiDeclarationImpot.class, tache);
-					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertInstanceOf(TacheEnvoiDeclarationImpotPP.class, tache);
+					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
 					assertEquals(2, (int) tacheDi.getCodeSegment());
 				}
 

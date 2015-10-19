@@ -35,7 +35,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -181,9 +181,9 @@ public class ProduireListeDIsNonEmisesProcessor {
 			return;
 		}
 
-		TacheEnvoiDeclarationImpot tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details, null);
+		TacheEnvoiDeclarationImpotPP tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details, null);
 		if (tache == null) {
-			final ExistenceResults<TacheEnvoiDeclarationImpot> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
+			final ExistenceResults<TacheEnvoiDeclarationImpotPP> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
 			if (res == null) {
 				r.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
 				return;

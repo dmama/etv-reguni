@@ -74,7 +74,7 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -207,7 +207,7 @@ public class TacheServiceImpl implements TacheService {
                             if (tiers.isDesactive(null)) {
                                 // Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
                                 // alors on annule toutes ses tâches non traitées (autre que annulation de DI).
-                                annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpot, TypeTache.TacheTransmissionDossier);
+                                annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier, TypeTache.TacheControleDossier, TypeTache.TacheEnvoiDeclarationImpotPP, TypeTache.TacheTransmissionDossier);
                             } else {
                                 // [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
                                 // qui n'ont plus de for de gestion actifs
@@ -662,7 +662,7 @@ public class TacheServiceImpl implements TacheService {
 		// On récupère les données brutes
 		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
 		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsActives(contribuable);
-		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
+		final List<TacheEnvoiDeclarationImpotPP> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
 		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
 		final List<AddDI> addActions = new ArrayList<>();
@@ -767,7 +767,7 @@ public class TacheServiceImpl implements TacheService {
 		if (!addActions.isEmpty()) {
 			for (int i = addActions.size() - 1; i >= 0; i--) {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
-				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
+				final TacheEnvoiDeclarationImpotPP envoi = getMatchingRangeAt(tachesEnvoi, periode);
 				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocumentDeclaration()) {
 					addActions.remove(i);
 				}
@@ -809,7 +809,7 @@ public class TacheServiceImpl implements TacheService {
 		//  On détermine la liste des tâches qui ne sont plus valides vis-à-vis des périodes d'imposition et des déclarations existantes
 		//
 
-		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
+		for (TacheEnvoiDeclarationImpotPP envoi : tachesEnvoi) {
 			if (!isTacheEnvoiValide(envoi, periodes, declarations, updateActions)) {
 				annuleActions.add(new AnnuleTache(envoi));
 			}
@@ -844,7 +844,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinairePP> declarations, List<UpdateDI> updateActions) {
+	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpotPP envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinairePP> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
 		if (periode == null || !periode.isDeclarationMandatory()) {
@@ -1073,13 +1073,13 @@ public class TacheServiceImpl implements TacheService {
 		return tachesAnnulation;
 	}
 
-	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable) {
-		final List<TacheEnvoiDeclarationImpot> tachesEnvoi;
+	private List<TacheEnvoiDeclarationImpotPP> getTachesEnvoiEnInstance(ContribuableImpositionPersonnesPhysiques contribuable) {
+		final List<TacheEnvoiDeclarationImpotPP> tachesEnvoi;
 		{
 			final TacheCriteria criterion = new TacheCriteria();
 			criterion.setContribuable(contribuable);
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 
 			final List<Tache> list = tacheDAO.find(criterion, true);
 			if (list.isEmpty()) {
@@ -1088,7 +1088,7 @@ public class TacheServiceImpl implements TacheService {
 			else {
 				tachesEnvoi = new ArrayList<>(list.size());
 				for (Tache t : list) {
-					tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
+					tachesEnvoi.add((TacheEnvoiDeclarationImpotPP) t);
 				}
 			}
 		}

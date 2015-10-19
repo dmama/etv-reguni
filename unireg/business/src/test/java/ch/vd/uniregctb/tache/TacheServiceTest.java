@@ -69,6 +69,7 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -530,7 +531,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(taches);
 		assertEquals(1, taches.size());   // tâche d'envoi de DI 2008
 
-		final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
+		final TacheEnvoiDeclarationImpotPP tacheEnvoi = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 		assertNotNull(tacheEnvoi);
 
 		// [UNIREG-1305]
@@ -902,7 +903,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(2, taches.size()); // 2006 et 2007
 
 		// il doit y avoir 0 tâche de contrôle d'envoi de DI
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		taches = tacheDAO.find(criterion);
 		assertEmpty(taches);
 	}
@@ -1241,11 +1242,11 @@ public class TacheServiceTest extends BusinessTest {
 		assertEmpty(taches);
 
 		// il doit y avoir 1 tâche d'envoi de DI pour 2005
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
 
-		final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+		final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 		assertNotNull(tache);
 		// activité indépendante -> type contribuable = vaudois ordinaire
 		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(2005, 1, 1), date(2005, 2, 1), TypeContribuable.HORS_SUISSE,
@@ -1358,7 +1359,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées sur le ménage.
 
-		final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
+		final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP);
 		assertNotNull(envois);
 		assertEquals(today.year() - 2007, envois.size());       // 2007 et 2008 en 2009, plus 2009 en 2010...
 
@@ -1370,7 +1371,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// après 2007, on ne trouve pas de DI et on ne considère *pas* le contribuable (ménage) comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
 		for (int i = 2008; i < today.year(); ++i) {
-			final TacheEnvoiDeclarationImpot tache = envois.get(i - 2007);
+			final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 			final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
 			assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 					TypeAdresseRetour.CEDI, tache);
@@ -1473,7 +1474,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheControleDossier));
-			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot));
+			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP));
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheNouveauDossier));
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheTransmissionDossier));
 		}
@@ -1481,7 +1482,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Monsieur
 		{
 			// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			assertEquals(RegDate.get().year() - 2007, envois.size());
 
@@ -1493,7 +1494,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
-				final TacheEnvoiDeclarationImpot tache = envois.get(i - 2007);
+				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
 				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, tache);
@@ -1516,7 +1517,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Madame
 		{
 			// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			assertEquals(RegDate.get().year() - 2007, envois.size());
 
@@ -1528,7 +1529,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
-				final TacheEnvoiDeclarationImpot tache = envois.get(i - 2007);
+				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
 				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, tache);
@@ -1647,7 +1648,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, controles.get(0));
 
 			// Vérifie qu'il n'y a aucune autre tâche
-			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot));
+			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP));
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheNouveauDossier));
 			assertEmpty(tacheDAO.listTaches(ids.menageId, TypeTache.TacheTransmissionDossier));
 		}
@@ -1655,7 +1656,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Monsieur
 		{
 			// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			assertEquals(RegDate.get().year() - 2007, envois.size());
 
@@ -1667,7 +1668,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
-				final TacheEnvoiDeclarationImpot tache = envois.get(i - 2007);
+				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
 				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, tache);
@@ -1690,7 +1691,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Madame
 		{
 			// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			assertEquals(RegDate.get().year() - 2007, envois.size());
 
@@ -1702,7 +1703,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			// après 2007, on ne trouve pas de DI et on ne considère pas le contribuable comme nouvel assujetti (n-1 a un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2008; i < RegDate.get().year(); ++i) {
-				final TacheEnvoiDeclarationImpot tache = envois.get(i - 2007);
+				final TacheEnvoiDeclarationImpotPP tache = envois.get(i - 2007);
 				final RegDate dateEcheance = determineDateEcheance(today, nextSunday, nextFinEnvoiEnMasse, tache.getDateDebut().year());
 				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						TypeAdresseRetour.CEDI, tache);
@@ -1803,7 +1804,7 @@ public class TacheServiceTest extends BusinessTest {
 
 			//[UNIREG-1305]
 			// Vérifie qu'une tâche d'émission de DIs pour 2007 (période partielle) est générée sur le ménage.
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			//La DI 2007 existe, pas de tache d'envoi de déclaration a générer
 			assertEquals(0, envois.size());
@@ -1828,7 +1829,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Monsieur (décédé)
 		{
 			// Vérifier qu'aucune tâche d'émission de DIs n'existe sur le tiers décédé
-			assertEmpty(tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpot));
+			assertEmpty(tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheEnvoiDeclarationImpotPP));
 
 			// Vérifie qu'il n'y a aucune autre tâche
 			assertEmpty(tacheDAO.listTaches(ids.monsieurId, TypeTache.TacheAnnulationDeclarationImpot));
@@ -1840,7 +1841,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Madame (survivante)
 		{
 			// Vérifie que des tâches d'émission des DIs 2007 et 2008 sont générées sur le tiers survivant.
-			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpot);
+			final List<TacheEnvoiDeclarationImpotPP> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpotPP);
 			assertNotNull(envois);
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
 			//assertEquals(0, envois.size());
@@ -1932,7 +1933,7 @@ public class TacheServiceTest extends BusinessTest {
 		// aucune tâche de manipulation de DIs ne doit être créée
 		final TacheCriteria criterion = new TacheCriteria();
 		criterion.setContribuable(simon);
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		assertEmpty(tacheDAO.find(criterion));
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
 		assertEmpty(tacheDAO.find(criterion));
@@ -2039,7 +2040,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(date(2008, 11, 1), di2008.getDateFin());
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
 		for (Tache t : tacheDAO.getAll()) {
-			if (t.getTypeTache() == TypeTache.TacheEnvoiDeclarationImpot) {
+			if (t.getTypeTache() == TypeTache.TacheEnvoiDeclarationImpotPP) {
 				fail("Une tache d'envoi de DI n'aurait pas du être émise");
 			}
 		}
@@ -2082,7 +2083,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
 		boolean trouve = false;
 		for (Tache t : tacheDAO.getAll()) {
-			if (TypeTache.TacheEnvoiDeclarationImpot == t.getTypeTache()) {
+			if (TypeTache.TacheEnvoiDeclarationImpotPP == t.getTypeTache()) {
 				trouve=true;
 				break;
 			}
@@ -2214,7 +2215,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertTrue("La tâche d'envoi devrait être annulée après l'annulation du tiers", tacheEnvoi.isAnnule());
 	}
 
-	private void sortTachesEnvoi(final List<TacheEnvoiDeclarationImpot> envois) {
+	private void sortTachesEnvoi(final List<? extends TacheEnvoiDeclarationImpot> envois) {
 		Collections.sort(envois, new Comparator<TacheEnvoiDeclarationImpot>() {
 			@Override
 			public int compare(TacheEnvoiDeclarationImpot o1, TacheEnvoiDeclarationImpot o2) {
@@ -2326,7 +2327,7 @@ public class TacheServiceTest extends BusinessTest {
 	private void assertTachesEnvoi(TacheCriteria criterion, boolean debutAnnee) {
 		{
 			List<Tache> taches;
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(2006);
 			taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
@@ -2343,7 +2344,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		for (int i = 2007 ; i < RegDate.get().year() ; ++ i) {
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(2007);
 			final List<Tache> taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
@@ -2355,7 +2356,7 @@ public class TacheServiceTest extends BusinessTest {
 		}
 
 		{
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(RegDate.get().year());
 			final List<Tache> taches = tacheDAO.find(criterion);
 			assertEmpty(taches);
@@ -2413,7 +2414,7 @@ public class TacheServiceTest extends BusinessTest {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.MIXTE_137_2);
 		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	@Test
@@ -2422,7 +2423,7 @@ public class TacheServiceTest extends BusinessTest {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.DEPENSE);
 		//[SIFISC-3357] Plus de tâche nouveau dossier pour les contribuables vaudois
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	@Test
@@ -2430,7 +2431,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testChangementModeImpositionOrdinaireVersIndigent() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.ORDINAIRE, ModeImposition.INDIGENT);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	@Test
@@ -2438,7 +2439,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testChangementModeImpositionIndigentVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.INDIGENT, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	@Test
@@ -2446,7 +2447,7 @@ public class TacheServiceTest extends BusinessTest {
 	public void testChangementModeImpositionMixteVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	@Test
@@ -2457,7 +2458,7 @@ public class TacheServiceTest extends BusinessTest {
 		// annulation et ré-envoi des DIs 2006..[année précédente] parce que les types de document ont changé
 		// [UNIREG-3281] les types de document sont mis-à-jour automatiquement dorénavant -> pas de tâche créée
 		assertEquals(0, countTaches(TypeTache.TacheAnnulationDeclarationImpot, taches));
-		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpotPP, taches));
 	}
 
 	/**
@@ -3379,14 +3380,14 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				criterion.setInclureTachesAnnulees(true);
 
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 
-				final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+				final TacheEnvoiDeclarationImpotPP tache0 = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 				final RegDate dateEcheance = determineDateEcheance(aujourdhui, nextSunday, nextFinEnvoiEnMasse, tache0.getDateDebut().year());
 				assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
@@ -3412,7 +3413,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Il devrait maintenant y avoir deux tâches d'envoi de DI : le première annulée et une nouvelle avec la bonne période
 		{
 			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setInclureTachesAnnulees(true);
 
 			final List<Tache> taches = tacheDAO.find(criterion);
@@ -3421,12 +3422,12 @@ public class TacheServiceTest extends BusinessTest {
 
 			final RegDate dateEcheance = determineDateEcheance(aujourdhui, nextSunday, nextFinEnvoiEnMasse, anneePrecedente);
 
-			final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+			final TacheEnvoiDeclarationImpotPP tache0 = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 			assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 			assertTrue(tache0.isAnnule());
 
-			final TacheEnvoiDeclarationImpot tache1 = (TacheEnvoiDeclarationImpot) taches.get(1);
+			final TacheEnvoiDeclarationImpotPP tache1 = (TacheEnvoiDeclarationImpotPP) taches.get(1);
 			assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(anneePrecedente, 3, 12), date(anneePrecedente, 7, 23), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache1);
 			assertFalse(tache1.isAnnule());
@@ -3458,7 +3459,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Il devrait maintenant y avoir une tâche d'envoi de DI
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		criterion.setInclureTachesAnnulees(true);
 
 		final List<Tache> taches = tacheDAO.find(criterion);
@@ -3466,7 +3467,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(1, taches.size());
 		final RegDate dateEcheance = determineDateEcheance(aujourdhui, nextSunday, nextFinEnvoiEnMasse, anneePrecedente);
 
-		final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+		final TacheEnvoiDeclarationImpotPP tache0 = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 		assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(anneePrecedente, 11, 2), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 		            TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 	}
@@ -3831,14 +3832,14 @@ public class TacheServiceTest extends BusinessTest {
 				// il s'agit d'un départ HS dans l'année courante, il y aura donc une tâche d'émission de DI
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				criterion.setInclureTachesAnnulees(true);
 
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 
-				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+				final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
 				return null;
@@ -3937,7 +3938,7 @@ public class TacheServiceTest extends BusinessTest {
 				{
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					criterion.setInclureTachesAnnulees(true);
 
 					final List<Tache> taches = tacheDAO.find(criterion);
@@ -4004,7 +4005,7 @@ public class TacheServiceTest extends BusinessTest {
 				// il s'agit d'un départ HS dans l'année courante avec poursuite d'assujettissement, il ne devrait donc pas y avoir d'émission de DI
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				criterion.setInclureTachesAnnulees(true);
 
 				final List<Tache> taches = tacheDAO.find(criterion);
@@ -4042,22 +4043,22 @@ public class TacheServiceTest extends BusinessTest {
 		//  - deux tâches d'envoi de DIs assignées à l'OID de Cossonay pour les années (anneePrecedente - 2) et (anneePrecedente - 1)
 		//  - une tâche d'envoi de DI assignées à l'OID des successions pour les années pour (anneePrecedente) 
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		criterion.setInclureTachesAnnulees(true);
 
 		final List<Tache> taches = tacheDAO.find(criterion);
 		assertNotNull(taches);
 		assertEquals(3, taches.size());
 
-		final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+		final TacheEnvoiDeclarationImpotPP tache0 = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente - 2, 1, 1), date(anneePrecedente - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 
-		final TacheEnvoiDeclarationImpot tache1 = (TacheEnvoiDeclarationImpot) taches.get(1);
+		final TacheEnvoiDeclarationImpotPP tache1 = (TacheEnvoiDeclarationImpotPP) taches.get(1);
 		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente - 1, 1, 1), date(anneePrecedente - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tache1);
 
-		final TacheEnvoiDeclarationImpot tache2 = (TacheEnvoiDeclarationImpot) taches.get(2);
+		final TacheEnvoiDeclarationImpotPP tache2 = (TacheEnvoiDeclarationImpotPP) taches.get(2);
 		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneePrecedente, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				TypeAdresseRetour.ACI, tache2);
 	}
@@ -4276,12 +4277,12 @@ public class TacheServiceTest extends BusinessTest {
 				{
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					assertNotNull(taches);
 					assertEquals(1, taches.size());
 
-					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+					final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE,
 							TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
 				}
@@ -4399,12 +4400,12 @@ public class TacheServiceTest extends BusinessTest {
 				{
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					assertNotNull(taches);
 					assertEquals(1, taches.size());
 
-					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+					final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
 								TypeAdresseRetour.ACI, tache);
 				}
@@ -4552,8 +4553,8 @@ public class TacheServiceTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4597,8 +4598,8 @@ public class TacheServiceTest extends BusinessTest {
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
 				assertTrue(tache.isAnnule());
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4774,8 +4775,8 @@ public class TacheServiceTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
-				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
 				return null;
 			}
 		});
@@ -4827,20 +4828,20 @@ public class TacheServiceTest extends BusinessTest {
 				boolean trouveeNonAnnulee = false;
 				for (Tache tache : taches) {
 					assertNotNull(tache);
-					assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+					assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 					if (tache.isAnnule()) {
 						assertFalse("Deuxième tâche annulée trouvée", trouveeAnnulee);
 						trouveeAnnulee = true;
 
 						assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
-								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
 					}
 					else {
 						assertFalse("Deuxième tâche non-annulée trouvée", trouveeNonAnnulee);
 						trouveeNonAnnulee = true;
 
 						assertTache(TypeEtatTache.EN_INSTANCE, nouvelleDateDeces.addDays(30), date(anneeCourante, 1, 1), nouvelleDateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+								TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpotPP) tache);
 					}
 				}
 				assertTrue(trouveeAnnulee);
@@ -4973,16 +4974,16 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TacheEnvoiDeclarationImpot.class, tache.getClass());
+				assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
 
-				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) tache;
+				final TacheEnvoiDeclarationImpotPP tacheEnvoi = (TacheEnvoiDeclarationImpotPP) tache;
 				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEnvoi);
 				return null;
 			}
@@ -5026,16 +5027,16 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TacheEnvoiDeclarationImpot.class, tache.getClass());
+				assertEquals(TacheEnvoiDeclarationImpotPP.class, tache.getClass());
 
-				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) tache;
+				final TacheEnvoiDeclarationImpotPP tacheEnvoi = (TacheEnvoiDeclarationImpotPP) tache;
 				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheEnvoi);
 				return null;
 			}
@@ -5079,7 +5080,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(0, taches.size());
@@ -5145,7 +5146,7 @@ public class TacheServiceTest extends BusinessTest {
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
 				criterion.setInclureTachesAnnulees(false);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(0, taches.size());
@@ -5192,7 +5193,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
 				assertEquals(0, taches.size());
@@ -5456,7 +5457,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setContribuable(pp);
-				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criteria);
 				assertNotNull(taches);
 				assertEquals(2, taches.size());
@@ -5464,7 +5465,7 @@ public class TacheServiceTest extends BusinessTest {
 				for (Tache tache : taches) {
 					assertNotNull(tache);
 
-					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) tache;
 					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
 					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 					assertFalse(tache.isAnnule());
@@ -5507,14 +5508,14 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheCriteria criteria = new TacheCriteria();
 				criteria.setContribuable(pp);
-				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
 				criteria.setInclureTachesAnnulees(false);
 				final List<Tache> taches = tacheDAO.find(criteria);
 				assertNotNull(taches);
 				assertEquals(1, taches.size());
 
-				final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) taches.get(0);
+				final TacheEnvoiDeclarationImpotPP tacheDi = (TacheEnvoiDeclarationImpotPP) taches.get(0);
 				assertEquals(date(dateDebutActivite.year() + 1, 1, 1), tacheDi.getDateDebut());
 				assertEquals(date(dateDebutActivite.year() + 1, 12, 31), tacheDi.getDateFin());
 				assertEquals(TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());

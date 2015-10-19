@@ -105,7 +105,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		// Type envoi di
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
@@ -149,7 +149,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		// Type envoi di
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(3, list.size());
@@ -259,14 +259,14 @@ public class TacheDAOTest extends CoreDAOTest {
 
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(2007);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEmpty(list);
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(2008);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
@@ -274,7 +274,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 			criterion.setAnnee(2009);
 			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
@@ -379,19 +379,19 @@ public class TacheDAOTest extends CoreDAOTest {
 				ids.ca2 = addCollAdm(7777).getNumero();
 				ids.ca3 = addCollAdm(22).getNumero();
 
-				ids.envoiEnInstance = addTacheEnvoi(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
+				ids.envoiEnInstance = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.annulationEnInstance = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di).getId();
 				ids.controleEnInstance = addTacheControle(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.nouveauEnInstance = addTacheNouveau(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.transmissionEnInstance = addTacheTransmission(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 
-				ids.envoiTraitee = addTacheEnvoi(ctb, TypeEtatTache.TRAITE, ca).getId();
+				ids.envoiTraitee = addTacheEnvoiDIPP(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.annulationTraitee = addTacheAnnulation(ctb, TypeEtatTache.TRAITE, ca, di).getId();
 				ids.controleTraitee = addTacheControle(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.nouveauTraitee = addTacheNouveau(ctb, TypeEtatTache.TRAITE, ca).getId();
 				ids.transmissionTraitee = addTacheTransmission(ctb, TypeEtatTache.TRAITE, ca).getId();
 
-				final TacheEnvoiDeclarationImpot envoi = addTacheEnvoi(ctb, TypeEtatTache.EN_INSTANCE, ca);
+				final TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDIPP(ctb, TypeEtatTache.EN_INSTANCE, ca);
 				envoi.setAnnule(true);
 				ids.envoiAnnulee = envoi.getId();
 
@@ -509,8 +509,8 @@ public class TacheDAOTest extends CoreDAOTest {
 		return addTacheAnnulDI(etat, date(2010, 1, 1), di, ctb, ca);
 	}
 
-	private TacheEnvoiDeclarationImpot addTacheEnvoi(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
-		TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDI(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+	private TacheEnvoiDeclarationImpot addTacheEnvoiDIPP(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
+		TacheEnvoiDeclarationImpotPP envoi = addTacheEnvoiDI(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, 0, ca);
 		envoi.setAdresseRetour(TypeAdresseRetour.CEDI);
 		envoi = hibernateTemplate.merge(envoi);
@@ -637,7 +637,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		try {
 			modificationLogInterceptor.setCompleteOnly(true); // par garder les valeur de log creation date (voir test testFindParDateCreation)
 
-			TacheEnvoiDeclarationImpot tedi0 = new TacheEnvoiDeclarationImpot();
+			TacheEnvoiDeclarationImpotPP tedi0 = new TacheEnvoiDeclarationImpotPP();
 			tedi0.setContribuable(pp0);
 			tedi0.setDateEcheance(RegDate.get(2008, 10, 25));
 			tedi0.setDateDebut(RegDate.get(2008, 1, 1));
@@ -681,7 +681,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			ttd0 = hibernateTemplate.merge(ttd0);
 			ids.ttd0 = ttd0.getId();
 
-			TacheEnvoiDeclarationImpot tedi1 = new TacheEnvoiDeclarationImpot();
+			TacheEnvoiDeclarationImpotPP tedi1 = new TacheEnvoiDeclarationImpotPP();
 			tedi1.setContribuable(pp0);
 			tedi1.setDateEcheance(RegDate.get(2009, 3, 31));
 			tedi1.setDateDebut(RegDate.get(2009, 1, 1));

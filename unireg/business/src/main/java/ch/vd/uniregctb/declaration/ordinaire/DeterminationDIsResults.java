@@ -7,8 +7,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -135,11 +136,11 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		this.dateTraitement = dateTraitement;
 	}
 
-	public void addTacheEnvoiCreee(Contribuable ctb, TacheEnvoiDeclarationImpot tache) {
+	public void addTacheEnvoiCreee(ContribuableImpositionPersonnesPhysiques ctb, TacheEnvoiDeclarationImpotPP tache) {
 		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_CREEE, tache.getCodeSegment(), tache.getTypeDocument(), tache.getTypeContribuable()));
 	}
 
-	public void addTacheEnvoiAnnulee(Contribuable ctb, TacheEnvoiDeclarationImpot tache) {
+	public void addTacheEnvoiAnnulee(ContribuableImpositionPersonnesPhysiques ctb, TacheEnvoiDeclarationImpotPP tache) {
 		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_ANNULEE, null, null, null));
 	}
 

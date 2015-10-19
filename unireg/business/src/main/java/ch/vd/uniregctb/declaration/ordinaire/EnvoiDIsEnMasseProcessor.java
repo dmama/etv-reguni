@@ -63,7 +63,7 @@ import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForGestion;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -218,9 +218,9 @@ public class EnvoiDIsEnMasseProcessor {
 			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, true, AttributeIndividu.ADRESSES);
 		}
 
-		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);
+		final Iterator<TacheEnvoiDeclarationImpotPP> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);
 		while (iter.hasNext()) {
-			final TacheEnvoiDeclarationImpot tache = iter.next();
+			final TacheEnvoiDeclarationImpotPP tache = iter.next();
 			traiterTache(tache, dateTraitement, rapport, cache, dcache);
 		}
 
@@ -267,7 +267,7 @@ public class EnvoiDIsEnMasseProcessor {
 	"SELECT                                                                                  "
 			+ "    tache                                                                     "
 			+ "FROM                                                                          "
-			+ "    TacheEnvoiDeclarationImpot AS tache                                       "
+			+ "    TacheEnvoiDeclarationImpotPP AS tache                                     "
 			+ "WHERE                                                                         "
 			+ "    tache.etat = 'EN_INSTANCE' AND                                            "
 			+ "    tache.annulationDate IS null AND                                          "
@@ -285,15 +285,15 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return itérateur sur les tiers
 	 */
-	protected Iterator<TacheEnvoiDeclarationImpot> createIteratorOnTaches(final int annee, final TypeContribuable typeContribuable,
+	protected Iterator<TacheEnvoiDeclarationImpotPP> createIteratorOnTaches(final int annee, final TypeContribuable typeContribuable,
 	                                                                      final TypeDocument typeDocument, final List<Long> ids) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
-		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpot>>() {
+		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpotPP>>() {
 			@Override
-			public Iterator<TacheEnvoiDeclarationImpot> doInHibernate(Session session) throws HibernateException {
+			public Iterator<TacheEnvoiDeclarationImpotPP> doInHibernate(Session session) throws HibernateException {
 				FlushMode mode = session.getFlushMode();
 				try {
 					// On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà modifiées
@@ -339,7 +339,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 						final StringBuilder builder = new StringBuilder();
 						builder.append("SELECT DISTINCT tache.contribuable.id");
-						builder.append(" FROM TacheEnvoiDeclarationImpot AS tache");
+						builder.append(" FROM TacheEnvoiDeclarationImpotPP AS tache");
 						builder.append(" WHERE");
 						builder.append(" tache.etat = 'EN_INSTANCE'");
 						builder.append(" AND tache.annulationDate IS NULL");
@@ -383,11 +383,11 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return <b>vrai</b> si la tâche a été traitée, <b>faux</b> autrement
 	 */
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache) throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpotPP tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache) throws DeclarationException {
 		return traiterTache(tache, dateTraitement, rapport, cache, dcache, false);
 	}
 
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpotPP tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
 		if (!(contribuable instanceof ContribuableImpositionPersonnesPhysiques)) {
@@ -421,7 +421,7 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 	}
 
-	private boolean traiterTache(TacheEnvoiDeclarationImpot tache, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache,
+	private boolean traiterTache(TacheEnvoiDeclarationImpotPP tache, ContribuableImpositionPersonnesPhysiques contribuable, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache,
 	                             DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Long numeroCtb = contribuable.getNumero();
@@ -506,7 +506,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'exception
 	 */
-	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpotPP tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final DeclarationImpotOrdinairePP di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
@@ -530,7 +530,7 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Crée une nouvelle déclaration d'impôt sur le tiers
 	 */
-	protected DeclarationImpotOrdinairePP creeDI(TacheEnvoiDeclarationImpot tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected DeclarationImpotOrdinairePP creeDI(TacheEnvoiDeclarationImpotPP tache, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final ContribuableImpositionPersonnesPhysiques contribuable = (ContribuableImpositionPersonnesPhysiques) tache.getContribuable();
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, tache.getDateFin());
@@ -616,7 +616,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @param simul          true si le batch est appelé en mode simulation ( {@link ch.vd.uniregctb.declaration.ordinaire.ProduireListeDIsNonEmisesProcessor} ). Dans ce cas on imprime pas
 	 *
 	 */
-	private boolean envoyerDINormal(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDINormal(TacheEnvoiDeclarationImpotPP tache, RegDate dateTraitement, AbstractEnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable ctb = tache.getContribuable();
 		if (!simul && ctb.getOfficeImpotId() == null) {
@@ -719,7 +719,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @param tache la tâche à l'origine de la création de la déclaration
 	 * @param cache le cache local des données de type structurel (cedi, aci,...)
 	 */
-	private void ajouterAdresseRetour(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpot tache, Cache cache) {
+	private void ajouterAdresseRetour(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpotPP tache, Cache cache) {
 
 		final TypeAdresseRetour adresseRetour = tache.getAdresseRetour();
 		if (adresseRetour == null || adresseRetour == TypeAdresseRetour.CEDI) {
@@ -756,7 +756,7 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Retourne vrai si la déclaration d'impôt et la tâches spécifiées correspondent parfaitement
 	 */
-	protected boolean correspondent(DeclarationImpotOrdinairePP di, TacheEnvoiDeclarationImpot tache) {
+	protected boolean correspondent(DeclarationImpotOrdinairePP di, TacheEnvoiDeclarationImpotPP tache) {
 		return (di.getTypeContribuable() == tache.getTypeContribuable() && di.getTypeDeclaration() == tache.getTypeDocument() && DateRangeHelper.equals(di, tache));
 	}
 

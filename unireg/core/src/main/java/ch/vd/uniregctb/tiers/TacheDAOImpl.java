@@ -162,7 +162,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 			final RegDate dateDebutPeriode = RegDate.get(annee, 1, 1);
 			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
-			if (TypeTache.TacheEnvoiDeclarationImpot == typeTache) {
+			if (TypeTache.TacheEnvoiDeclarationImpotPP == typeTache) {
 				clause += " and tache.dateDebut >= :dateDebut";
 				clause += " and tache.dateFin <= :dateFin";
 				params.put("dateDebut", dateDebutPeriode);
@@ -252,7 +252,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean existsTacheEnvoiEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
+	public boolean existsTacheEnvoiDIPPEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
 
 		final Session session = getCurrentSession();
 
@@ -262,8 +262,8 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		for (Object entity : entities.values()) {
 			if (entity instanceof Tache) {
 				final Tache t = (Tache) entity;
-				if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheEnvoiDeclarationImpot && (isTacheOuverte(t))) {
-					final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) t;
+				if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheEnvoiDeclarationImpotPP && (isTacheOuverte(t))) {
+					final TacheEnvoiDeclarationImpotPP envoi = (TacheEnvoiDeclarationImpotPP) t;
 					if (dateDebut.equals(envoi.getDateDebut()) && dateFin.equals(envoi.getDateFin())) {
 						return true;
 					}
@@ -272,7 +272,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 		}
 
 		// Recherche dans la base de données
-		final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable.id = :noCtb and tache.dateDebut = :debut and tache.dateFin = :fin and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final String query = "from TacheEnvoiDeclarationImpotPP tache where tache.contribuable.id = :noCtb and tache.dateDebut = :debut and tache.dateFin = :fin and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
 		final List<Tache> list = find(query,
 		                              buildNamedParameters(Pair.<String, Object>of("noCtb", noCtb),
 		                                                   Pair.<String, Object>of("debut", dateDebut),

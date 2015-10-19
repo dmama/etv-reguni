@@ -6,7 +6,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -56,8 +56,8 @@ public class AnnuleTache extends SynchronizeAction {
 				                            RegDateHelper.dateToDisplayString(di.getDateFin()));
 			}
 		}
-		else if (tache instanceof TacheEnvoiDeclarationImpot) {
-			final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) tache;
+		else if (tache instanceof TacheEnvoiDeclarationImpotPP) {
+			final TacheEnvoiDeclarationImpotPP envoi = (TacheEnvoiDeclarationImpotPP) tache;
 			tacheDetail = String.format("d'envoi de la déclaration d'impôt %s couvrant la période du %s au %s", toString(envoi.getTypeContribuable()),
 					RegDateHelper.dateToDisplayString(envoi.getDateDebut()), RegDateHelper.dateToDisplayString(envoi.getDateFin()));
 		}

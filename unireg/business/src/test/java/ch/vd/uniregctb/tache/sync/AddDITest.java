@@ -109,7 +109,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(0, taches.size());
@@ -149,7 +149,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(1, taches.size());
@@ -201,7 +201,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(0, taches.size());
@@ -241,7 +241,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(1, taches.size());
@@ -287,7 +287,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(0, taches.size());
@@ -324,7 +324,7 @@ public class AddDITest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(1, taches.size());
@@ -396,7 +396,7 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(0, taches.size());
@@ -459,7 +459,7 @@ public class AddDITest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					Assert.assertNotNull(taches);
 					Assert.assertEquals(1, taches.size());
@@ -476,7 +476,7 @@ public class AddDITest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					Assert.assertNotNull(taches);
 					Assert.assertEquals(1, taches.size());
@@ -547,7 +547,7 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final TacheCriteria criterion = new TacheCriteria();
-				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				Assert.assertNotNull(taches);
 				Assert.assertEquals(0, taches.size());
@@ -609,7 +609,7 @@ public class AddDITest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.ordId);
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					Assert.assertNotNull(taches);
 					Assert.assertEquals(1, taches.size());
@@ -626,7 +626,7 @@ public class AddDITest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.iccdId);
 					final TacheCriteria criterion = new TacheCriteria();
 					criterion.setContribuable(pp);
-					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 					final List<Tache> taches = tacheDAO.find(criterion);
 					Assert.assertNotNull(taches);
 					Assert.assertEquals(1, taches.size());

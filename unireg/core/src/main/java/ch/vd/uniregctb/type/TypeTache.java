@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.type;
 
 public enum TypeTache {
-	TacheEnvoiDeclarationImpot, //---------------------------------------------------------------
+	TacheEnvoiDeclarationImpotPP, //---------------------------------------------------------------
 	TacheAnnulationDeclarationImpot, //----------------------------------------------------------
 	TacheControleDossier, //---------------------------------------------------------------------
 	TacheTransmissionDossier, //-----------------------------------------------------------------

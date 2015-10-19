@@ -120,7 +120,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				return null;
 			}
@@ -161,7 +161,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				return null;
 			}
@@ -188,7 +188,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				return null;
 			}
@@ -217,7 +217,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertTrue(tache.isAnnule());
 				return null;
 			}
@@ -258,7 +258,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				return null;
 			}
@@ -285,7 +285,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				return null;
 			}
@@ -314,7 +314,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertTrue(tache.isAnnule());
 				return null;
 			}
@@ -355,7 +355,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertFalse(tache.isAnnule());
 				tache.setAnnule(true);
 				return null;
@@ -372,7 +372,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 
 				final Tache tache = taches.get(0);
 				assertNotNull(tache);
-				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpotPP, tache.getTypeTache());
 				assertTrue(tache.isAnnule());
 				return null;
 			}

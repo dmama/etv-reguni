@@ -39,7 +39,7 @@ import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -147,8 +147,8 @@ public class TacheListManagerImpl implements TacheListManager {
 			tacheView.setTypeTache(tache.getClass().getSimpleName());
 			tacheView.setEtatTache(tache.getEtat());
 
-			if (tache instanceof TacheEnvoiDeclarationImpot) {
-				final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
+			if (tache instanceof TacheEnvoiDeclarationImpotPP) {
+				final TacheEnvoiDeclarationImpotPP tedi = (TacheEnvoiDeclarationImpotPP) tache;
 				final int annee = tedi.getDateDebut().year();
 				tacheView.setAnnee(annee);
 				tacheView.setDateDebutImposition(tedi.getDateDebut());

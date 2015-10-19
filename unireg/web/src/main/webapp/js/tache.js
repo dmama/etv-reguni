@@ -15,7 +15,7 @@ function selectAllDossiers(checkSelectAll) {
 * Selection d'un type de tache
 */
 function selectTypeTache(name) {
-	if( name == 'TacheEnvoiDeclarationImpot' || name == 'TacheAnnulationDeclarationImpot') {
+	if( name == 'TacheEnvoiDeclarationImpotPP' || name == 'TacheAnnulationDeclarationImpot') {
 		$('#periode_fiscale_label').show();
 		$('#periode_fiscale_input').show();
 	}

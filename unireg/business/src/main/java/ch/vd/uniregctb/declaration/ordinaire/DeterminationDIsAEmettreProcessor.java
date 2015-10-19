@@ -53,7 +53,7 @@ import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -358,7 +358,7 @@ public class DeterminationDIsAEmettreProcessor {
 	                                         DeterminationDIsResults r) {
 		
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		criterion.setAnnee(periodeFiscale.getAnnee());
 		criterion.setContribuable(contribuable);
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE); // [UNIREG-1981] on ignore les tâches déjà traitées
@@ -366,7 +366,7 @@ public class DeterminationDIsAEmettreProcessor {
 		final List<Tache> taches = tacheDAO.find(criterion, true /* don't flush */);
 		if (taches != null && !taches.isEmpty()) {
 			for (Tache t : taches) {
-				final TacheEnvoiDeclarationImpot te = (TacheEnvoiDeclarationImpot) t;
+				final TacheEnvoiDeclarationImpotPP te = (TacheEnvoiDeclarationImpotPP) t;
 				if (!te.isAnnule()) {
 					verifierValiditeTacheEnvoi(contribuable, periodes, te, r);
 				}
@@ -384,7 +384,7 @@ public class DeterminationDIsAEmettreProcessor {
 	 */
 	private void verifierValiditeTacheEnvoi(ContribuableImpositionPersonnesPhysiques contribuable,
 	                                        List<PeriodeImpositionPersonnesPhysiques> periodes,
-	                                        TacheEnvoiDeclarationImpot tache,
+	                                        TacheEnvoiDeclarationImpotPP tache,
 	                                        DeterminationDIsResults r) {
 
 		final ExistenceResults<PeriodeImpositionPersonnesPhysiques> results = checkExistencePeriode(periodes, tache);
@@ -482,10 +482,10 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param r
 	 * @return la tâche créée; ou <b>null</i> si une erreur a été détectée
 	 */
-	protected TacheEnvoiDeclarationImpot traiterPeriodeImposition(ContribuableImpositionPersonnesPhysiques contribuable,
-	                                                              PeriodeFiscale periode,
-	                                                              PeriodeImpositionPersonnesPhysiques details,
-	                                                              DeterminationDIsResults r) {
+	protected TacheEnvoiDeclarationImpotPP traiterPeriodeImposition(ContribuableImpositionPersonnesPhysiques contribuable,
+	                                                                PeriodeFiscale periode,
+	                                                                PeriodeImpositionPersonnesPhysiques details,
+	                                                                DeterminationDIsResults r) {
 
 		// Vérifie qu'une déclaration d'impôt n'existe pas déjà
 		final ExistenceResults<DeclarationImpotOrdinaire> checkDI = checkExistenceDeclaration(contribuable, details);
@@ -512,7 +512,7 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 
 		// Vérifie qu'une tâche n'existe pas déjà
-		final ExistenceResults<TacheEnvoiDeclarationImpot> checkTache = checkExistenceTache(contribuable, details);
+		final ExistenceResults<TacheEnvoiDeclarationImpotPP> checkTache = checkExistenceTache(contribuable, details);
 		if (checkTache != null) {
 			switch (checkTache.status) {
 			case EXISTE_DEJA:
@@ -539,14 +539,14 @@ public class DeterminationDIsAEmettreProcessor {
 		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(details.getTypeContribuable()).getDateFinEnvoiMasseDI();
 		Assert.notNull(dateEcheance);
 
-		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
-		                                                                        details.getTypeContribuable(), details.getTypeDocumentDeclaration(), null,
-		                                                                        details.getCodeSegment(), details.getAdresseRetour(), oid);
+		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
+		                                                                            details.getTypeContribuable(), details.getTypeDocumentDeclaration(), null,
+		                                                                            details.getCodeSegment(), details.getAdresseRetour(), oid);
 		if (r != null) {
 			r.addTacheEnvoiCreee(contribuable, tache);
 		}
 
-		return (TacheEnvoiDeclarationImpot) tacheDAO.save(tache);
+		return (TacheEnvoiDeclarationImpotPP) tacheDAO.save(tache);
 	}
 
 	/**
@@ -631,19 +631,19 @@ public class DeterminationDIsAEmettreProcessor {
 	 * @param range        la période
 	 * @return <b>null</b> si aucune tâche n'existe, ou un résultat détaillé si un tâche préexistente a été détectée.
 	 */
-	protected ExistenceResults<TacheEnvoiDeclarationImpot> checkExistenceTache(Contribuable contribuable, DateRange range) {
+	protected ExistenceResults<TacheEnvoiDeclarationImpotPP> checkExistenceTache(ContribuableImpositionPersonnesPhysiques contribuable, DateRange range) {
 
-		ExistenceResults<TacheEnvoiDeclarationImpot> status = null;
+		ExistenceResults<TacheEnvoiDeclarationImpotPP> status = null;
 
-		TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
 		criterion.setAnnee(range.getDateDebut().year());
 		criterion.setContribuable(contribuable);
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE); // [UNIREG-1984] on ignore les tâches déjà traitées
 
 		final List<Tache> list = tacheDAO.find(criterion, true /* don't flush */);
 		for (Tache t : list) {
-			final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
+			final TacheEnvoiDeclarationImpotPP tache = (TacheEnvoiDeclarationImpotPP) t;
 
 			if (DateRangeHelper.equals(tache, range)) {
 				if (TypeEtatTache.TRAITE == tache.getEtat()) {
@@ -686,7 +686,7 @@ public class DeterminationDIsAEmettreProcessor {
 	"SELECT DISTINCT                                                             "
 			+ "    tache.contribuable.id                                         "
 			+ "FROM                                                              "
-			+ "    TacheEnvoiDeclarationImpot AS tache                           "
+			+ "    TacheEnvoiDeclarationImpotPP AS tache                           "
 			+ "WHERE                                                             "
 			+ "    tache.annulationDate IS null                                  "
 			+ "    AND tache.etat = 'EN_INSTANCE'                                "

@@ -7,7 +7,10 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
 /**
@@ -40,7 +43,7 @@ public class AddDI extends SynchronizeAction {
 			if (todaysYear == year + 1 && RegDateHelper.isBefore(today, dateFinEnvoiMasseDI, NullDateBehavior.LATEST)) {
 				// si on est dans la période de début d'année d'envoi des déclarations d'impôt, l'échéance de la tâche doit être placée en conséquence
 				// (sauf si cela fait arriver la tâche à échéance avant le processus normal)
-				dateEcheance = RegDateHelper.maximum(dateFinEnvoiMasseDI, TacheEnvoiDeclarationImpot.getDefaultEcheance(today), NullDateBehavior.EARLIEST);
+				dateEcheance = RegDateHelper.maximum(dateFinEnvoiMasseDI, Tache.getDefaultEcheance(today), NullDateBehavior.EARLIEST);
 			}
 			else {
 				// autrement, on prend les valeurs par défaut
@@ -50,9 +53,9 @@ public class AddDI extends SynchronizeAction {
 		}
 
 		final TacheEnvoiDeclarationImpot tache =
-				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
-				                               periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocumentDeclaration(), null, periodeImposition.getCodeSegment(),
-				                               periodeImposition.getAdresseRetour(), collectivite);
+				new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, dateEcheance, (ContribuableImpositionPersonnesPhysiques) context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
+				                                 periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocumentDeclaration(), null, periodeImposition.getCodeSegment(),
+				                                 periodeImposition.getAdresseRetour(), collectivite);
 		context.tacheDAO.save(tache);
 	}
 

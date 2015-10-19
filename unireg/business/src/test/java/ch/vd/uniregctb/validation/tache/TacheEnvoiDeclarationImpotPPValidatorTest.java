@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -15,11 +15,11 @@ import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 import static org.junit.Assert.assertFalse;
 
-public class TacheEnvoiDeclarationImpotValidatorTest extends AbstractValidatorTest<TacheEnvoiDeclarationImpot> {
+public class TacheEnvoiDeclarationImpotPPValidatorTest extends AbstractValidatorTest<TacheEnvoiDeclarationImpotPP> {
 
 	@Override
 	protected String getValidatorBeanName() {
-		return "tacheEnvoiDeclarationImpotValidator";
+		return "tacheEnvoiDeclarationImpotPPValidator";
 	}
 
 	@Test
@@ -29,7 +29,7 @@ public class TacheEnvoiDeclarationImpotValidatorTest extends AbstractValidatorTe
 		final int annee = RegDate.get().year() - 1;
 		final RegDate debut = RegDate.get(annee, 1, 1);
 		final RegDate fin = RegDate.get(annee, 12, 31);
-		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, null, null, null, TypeAdresseRetour.CEDI, null);
+		final TacheEnvoiDeclarationImpotPP tache = new TacheEnvoiDeclarationImpotPP(TypeEtatTache.EN_INSTANCE, RegDate.get(), null, debut, fin, null, null, null, null, TypeAdresseRetour.CEDI, null);
 
 		// Adresse invalide (type contribuable nul) mais annulée => pas d'erreur
 		{

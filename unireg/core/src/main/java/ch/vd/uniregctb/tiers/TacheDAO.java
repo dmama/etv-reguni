@@ -118,7 +118,7 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 *            la date de fin de la période de la déclaration
 	 * @return <b>vrai</b> s'il y a au moins une tâche en instance; <b>faux</b> autrement.
 	 */
-	public boolean existsTacheEnvoiEnInstanceOuEnCours(long noCtb, RegDate dateDebut, RegDate dateFin);
+	public boolean existsTacheEnvoiDIPPEnInstanceOuEnCours(long noCtb, RegDate dateDebut, RegDate dateFin);
 
 	/**
 	 * Retourne la liste de toutes les tâches du type spécifié pour le contribuable spécifié.

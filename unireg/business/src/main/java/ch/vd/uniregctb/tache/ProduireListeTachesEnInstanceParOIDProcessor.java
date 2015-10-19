@@ -113,16 +113,16 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		if ("NOUVEAU_DOSSIER".equals(code)) {
 			return TypeTache.TacheNouveauDossier;
 		}
-		else if("TRANS_DOSSIER".equals(code)){
+		else if ("TRANS_DOSSIER".equals(code)) {
 			return TypeTache.TacheTransmissionDossier;
 		}
-		else if("CTRL_DOSSIER".equals(code)){
+		else if ("CTRL_DOSSIER".equals(code)) {
 			return TypeTache.TacheControleDossier;
 		}
-		else if("ENVOI_DI".equals(code)){
-			return TypeTache.TacheEnvoiDeclarationImpot;
+		else if ("ENVOI_DI_PP".equals(code)) {
+			return TypeTache.TacheEnvoiDeclarationImpotPP;
 		}
-		else if("ANNUL_DI".equals(code)){
+		else if ("ANNUL_DI".equals(code)) {
 			return TypeTache.TacheAnnulationDeclarationImpot;
 		}
 		return null;
