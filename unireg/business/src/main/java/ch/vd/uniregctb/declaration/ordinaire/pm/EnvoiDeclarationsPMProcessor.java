@@ -67,6 +67,7 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDeclarationsPMProcessor {
@@ -187,7 +188,7 @@ public class EnvoiDeclarationsPMProcessor {
 		final Iterator<TacheEnvoiDeclarationImpotPM> tacheIterator = getTaches(typeDeclaration, rapport.getPeriodeFiscale(), idsContribuables);
 		while (tacheIterator.hasNext()) {
 			final TacheEnvoiDeclarationImpotPM tache = tacheIterator.next();
-			traiterTache(tache, rapport, typeDeclaration, dateLimiteBouclements, dateTraitement, informationsFiscales);
+			traiterTache(tache, rapport, dateLimiteBouclements, dateTraitement, informationsFiscales);
 		}
 	}
 
@@ -195,18 +196,17 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Traitement d'une tâche d'envoi de DI PM (auparavant, on verrouille la création de DI sur ce contribuable)
 	 * @param tache la tâche à traiter
 	 * @param rapport rapport à remplir
-	 * @param typeDeclaration type de document à générer
 	 * @param dateLimiteBouclements date limite (incluse) des bouclements à prendre en compte
 	 * @param dateTraitement date de traitement
 	 * @param informationsFiscales accesseurs vers les informations fiscales "lourdes" d'un contribuable
 	 */
-	private void traiterTache(TacheEnvoiDeclarationImpotPM tache, EnvoiDIsPMResults rapport, TypeDeclarationImpotPM typeDeclaration, RegDate dateLimiteBouclements, RegDate dateTraitement, InformationsFiscales informationsFiscales) throws DeclarationException {
+	private void traiterTache(TacheEnvoiDeclarationImpotPM tache, EnvoiDIsPMResults rapport, RegDate dateLimiteBouclements, RegDate dateTraitement, InformationsFiscales informationsFiscales) throws DeclarationException {
 		final ContribuableImpositionPersonnesMorales pm = tache.getContribuable();
 		final DeclarationGenerationOperation tickettingKey = new DeclarationGenerationOperation(pm.getNumero());
 		try {
 			final TicketService.Ticket ticket = ticketService.getTicket(tickettingKey, 500);
 			try {
-				traiterTache(tache, pm, rapport, typeDeclaration, dateLimiteBouclements, dateTraitement, informationsFiscales);
+				traiterTache(tache, pm, rapport, dateLimiteBouclements, dateTraitement, informationsFiscales);
 			}
 			finally {
 				ticketService.releaseTicket(ticket);
@@ -225,12 +225,11 @@ public class EnvoiDeclarationsPMProcessor {
 	 * @param tache la tâche à traiter
 	 * @param pm le contribuable concerné
 	 * @param rapport rapport à remplir
-	 * @param typeDeclaration type de document à générer
 	 * @param dateLimiteBouclements date limite (incluse) des bouclements à prendre en compte
 	 * @param dateTraitement date de traitement
 	 * @param informationsFiscales accesseurs vers les informations fiscales "lourdes" d'un contribuable  @throws DeclarationException en cas de souci
 	 */
-	private void traiterTache(TacheEnvoiDeclarationImpotPM tache, ContribuableImpositionPersonnesMorales pm, EnvoiDIsPMResults rapport, TypeDeclarationImpotPM typeDeclaration,
+	private void traiterTache(TacheEnvoiDeclarationImpotPM tache, ContribuableImpositionPersonnesMorales pm, EnvoiDIsPMResults rapport,
 	                          RegDate dateLimiteBouclements, RegDate dateTraitement, InformationsFiscales informationsFiscales) throws DeclarationException {
 
 		// TODO faut-il vérifier que la tâche est toujours d'actualité ?
@@ -283,7 +282,9 @@ public class EnvoiDeclarationsPMProcessor {
 		di.setDateFin(tache.getDateFin());
 		di.setTiers(pm);
 		di.setNumero(getNewSequenceNumber(pm, informationsFiscales));
-		di.setCodeControle(getNewCodeControle(pm, informationsFiscales));
+		if (tache.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_PM) {
+			di.setCodeControle(getNewCodeControle(pm, informationsFiscales));
+		}
 		di.setPeriode(informationsFiscales.getPeriodeFiscale());
 
 		// TODO le type de document doit passer dans le modèle de document choisi...
