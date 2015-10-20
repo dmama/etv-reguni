@@ -13,7 +13,7 @@ public enum RegpmCategoriePersonneMorale {
 	APM,
 
 	/**
-	 * ???
+	 * Société de personnes (SNC, SC...)
 	 */
 	SP
 }
