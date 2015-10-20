@@ -910,6 +910,11 @@
     <column>TERME_GEN_SOMM_REGL</column>
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
+    <column>PPF_TYPE</column>
+    <column>PM_DELAI_IMPRIME</column>
+    <column>PM_DELAI_IMPRIME_MANDATAIRE</column>
+    <column>PM_DELAI_EFF</column>
+    <column>PM_DELAI_EFF_MANDATAIRE</column>
   </table>
   <table name="PARAMETRE">
     <column>NOM</column>
