@@ -668,7 +668,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 
 		// log ou ajout des domiciles dans l'établissement...
 		if (domicilesStables.isEmpty()) {
-			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile.");
+			mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR, "Etablissement sans domicile stable.");
 		}
 		else {
 			domicilesStables.stream()

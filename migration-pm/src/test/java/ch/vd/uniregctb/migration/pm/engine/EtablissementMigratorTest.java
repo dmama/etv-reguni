@@ -850,7 +850,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 				.findAny()
 				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement sans domicile stable\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bEtablissement migré : [0-9.]+\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse trouvée sans rue ni localité postale\\.$");
 
