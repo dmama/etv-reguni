@@ -97,7 +97,7 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
+				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
 				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
@@ -189,7 +189,7 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
+				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
 				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
@@ -275,7 +275,7 @@ public class AddDITest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Otto", "Rhino", null, Sexe.MASCULIN);
 				addForPrincipal(pp, date(currentYear, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
+				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
 				pf.addAllPeriodeFiscaleParametresPP(dateEnvoiMasseDI, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30));
 				return pp.getNumero();
 			}
@@ -374,7 +374,7 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
+				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
 				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
 				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
@@ -525,7 +525,7 @@ public class AddDITest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 
-				final PeriodeFiscale pf = addPeriodeFiscale(currentYear);
+				final PeriodeFiscale pf = addPeriodeFiscale(currentYear, false);
 				final Set<ParametrePeriodeFiscale> params = new HashSet<>();
 				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_ORDINAIRE, dateLimiteOrdinaire, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));
 				params.add(new ParametrePeriodeFiscalePP(TypeContribuable.VAUDOIS_DEPENSE, dateLimiteICCD, date(currentYear + 1, 3, 15), date(currentYear + 1, 6, 30), pf));

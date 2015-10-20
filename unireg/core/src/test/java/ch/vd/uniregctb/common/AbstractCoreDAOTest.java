@@ -666,14 +666,23 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
+	 * Ajoute une période fiscale dans la base de données (avec les délais usuels si le paramètre "addParametres" est à <code>true</code>)
+	 */
+	protected PeriodeFiscale addPeriodeFiscale(int annee, boolean addParametres) {
+		final PeriodeFiscale periode = new PeriodeFiscale();
+		periode.setAnnee(annee);
+		if (addParametres) {
+			periode.addAllPeriodeFiscaleParametresPP(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
+			periode.addAllPeriodeFiscaleParametresPM(210, 255, 210, 255);
+		}
+		return merge(periode);
+	}
+
+	/**
 	 * Ajoute une période fiscale dans la base de données (avec les délais usuels)
 	 */
 	protected PeriodeFiscale addPeriodeFiscale(int annee) {
-		final PeriodeFiscale periode = new PeriodeFiscale();
-		periode.setAnnee(annee);
-		periode.addAllPeriodeFiscaleParametresPP(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
-		periode.addAllPeriodeFiscaleParametresPM(210, 255, 210, 255);
-		return merge(periode);
+		return addPeriodeFiscale(annee, true);
 	}
 
 	/**
