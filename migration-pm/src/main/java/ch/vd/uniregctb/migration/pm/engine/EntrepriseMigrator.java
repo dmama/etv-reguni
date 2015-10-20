@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeAdapterCallback;
@@ -2320,6 +2321,75 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		return etats;
 	}
 
+	/**
+	 * Wrapper autour d'un for fiscal principal PM pour l'implémentation
+	 * de l'interface {@link CollatableDateRange}
+	 */
+	private static final class CollatableForPrincipalPM implements CollatableDateRange {
+
+		private final ForFiscalPrincipalPM forFiscal;
+		private final MigrationResultProduction mr;
+
+		public CollatableForPrincipalPM(ForFiscalPrincipalPM forFiscal, MigrationResultProduction mr) {
+			this.forFiscal = forFiscal;
+			this.mr = mr;
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return forFiscal.getDateDebut();
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return forFiscal.getDateFin();
+		}
+
+		@Override
+		public boolean isValidAt(@Nullable RegDate date) {
+			return forFiscal.isValidAt(date);
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			boolean collatable = next instanceof CollatableForPrincipalPM && DateRangeHelper.isCollatable(this, next);
+			if (collatable) {
+				final CollatableForPrincipalPM nextCollatable = (CollatableForPrincipalPM) next;
+				final ForFiscalPrincipalPM nextForFiscal = nextCollatable.forFiscal;
+				collatable = nextForFiscal.getTypeAutoriteFiscale() == forFiscal.getTypeAutoriteFiscale()
+						&& nextForFiscal.getMotifRattachement() == forFiscal.getMotifRattachement()
+						&& nextForFiscal.getGenreImpot() == forFiscal.getGenreImpot()
+						&& nextForFiscal.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale());
+			}
+			return collatable;
+		}
+
+		@Override
+		public CollatableForPrincipalPM collate(DateRange next) {
+			if (!isCollatable(next)) {
+				throw new IllegalArgumentException("Cet appel n'a pas lieu d'être, les entités ne sont pas collatables...");
+			}
+			final CollatableForPrincipalPM nextCollatable = (CollatableForPrincipalPM) next;
+			final ForFiscalPrincipalPM nextForFiscal = nextCollatable.forFiscal;
+			final ForFiscalPrincipalPM collatedFor = new ForFiscalPrincipalPM(forFiscal.getDateDebut(),
+			                                                                  forFiscal.getMotifOuverture(),
+			                                                                  nextForFiscal.getDateFin(),
+			                                                                  nextForFiscal.getMotifFermeture(),
+			                                                                  forFiscal.getNumeroOfsAutoriteFiscale(),
+			                                                                  forFiscal.getTypeAutoriteFiscale(),
+			                                                                  forFiscal.getMotifRattachement());
+			collatedFor.setGenreImpot(forFiscal.getGenreImpot());
+			mr.addMessage(LogCategory.FORS, LogLevel.INFO, String.format("Fusion des deux entités %s et %s.",
+			                                                             StringRenderers.LOCALISATION_DATEE_RENDERER.toString(forFiscal),
+			                                                             StringRenderers.LOCALISATION_DATEE_RENDERER.toString(nextForFiscal)));
+			return new CollatableForPrincipalPM(collatedFor, mr);
+		}
+
+		public ForFiscalPrincipalPM getForFiscal() {
+			return forFiscal;
+		}
+	}
+
 	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		final Function<RegpmForPrincipal, Optional<Pair<Boolean, ForFiscalPrincipalPM>>> mapper = f -> {
@@ -2363,16 +2433,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		assigneDatesFin(dateFinActivite, liste);
 
 		// corrections dues aux fusions de communes passées
-		final List<ForFiscalPrincipalPM> listeAvecTraitementFusions = liste.stream()
+		final List<CollatableForPrincipalPM> listeAvecTraitementFusions = liste.stream()
 				.map(ff -> adapterAutourFusionsCommunes(ff, mr, LogCategory.FORS, AbstractEntityMigrator::adapteMotifsForsFusionCommunes))
 				.flatMap(List::stream)
+				.map(ff -> new CollatableForPrincipalPM(ff, mr))
+				.collect(Collectors.toList());
+
+		// [SIFISC-16545] on fusionne les fors principaux consécutifs par ailleurs identiques
+		final List<ForFiscalPrincipalPM> collated = DateRangeHelper.collate(listeAvecTraitementFusions).stream()
+				.map(CollatableForPrincipalPM::getForFiscal)
 				.collect(Collectors.toList());
 
 		// assignation des motifs
-		calculeMotifsOuvertureFermeture(listeAvecTraitementFusions);
+		calculeMotifsOuvertureFermeture(collated);
 
 		// on les ajoute au tiers
-		listeAvecTraitementFusions.stream()
+		collated.stream()
 				.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 				                          String.format("For principal %s/%d %s généré.",
 				                                        ff.getTypeAutoriteFiscale(),
