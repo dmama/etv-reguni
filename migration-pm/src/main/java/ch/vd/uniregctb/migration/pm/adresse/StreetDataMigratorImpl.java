@@ -146,7 +146,7 @@ public class StreetDataMigratorImpl implements StreetDataMigrator {
 			if (info != null && info.street != null) {
 				mr.addMessage(LogCategory.ADRESSES, LogLevel.INFO, String.format("Adresse '%s' à '%s' mappée sur l'estrid %d.",
 				                                                                 libelleRue, localitePostale.getNomLong(), info.street.getEstrid()));
-				return new StreetData.AvecEstrid(info.street, info.numeroMaison, info.noOrdrePostal);
+				return new StreetData.AvecEstrid(info.street, info.numeroMaison == null ? adresse.getNoPolice() : info.numeroMaison, info.noOrdrePostal);
 			}
 		}
 
