@@ -3696,7 +3696,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
 		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
-		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
+		final RegpmAdresseEntreprise a = addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
+		a.setChez("c/o moi");
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3726,6 +3727,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final AdresseSuisse adresseSuisse = (AdresseSuisse) adresse;
 			Assert.assertEquals("42", adresseSuisse.getNumeroMaison());
+			Assert.assertEquals("c/o moi", adresseSuisse.getComplement());
 			Assert.assertEquals("Rue des champs", adresseSuisse.getRue());
 			Assert.assertNull(adresseSuisse.getNumeroRue());
 			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());

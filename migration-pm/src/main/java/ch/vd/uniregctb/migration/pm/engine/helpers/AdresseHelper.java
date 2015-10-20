@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.migration.pm.engine.helpers;
 
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
@@ -28,11 +24,11 @@ public class AdresseHelper {
 	 * L'entité retournée n'est rattachée à aucune session Hibernate.
 	 * @param source source des données de l'adresse
 	 * @param mr collecteurs de messages de suivi
-	 * @param complement supplier pour la valeur du "complément"
+	 * @param complement valeur du "complément"
 	 * @param permanente <code>true</code> si l'adresse doit être flaggée comme "permanente"
 	 * @return une adresse presque prête à persister
 	 */
-	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultContextManipulation mr, @Nullable Supplier<String> complement, boolean permanente) {
+	public AdresseTiers buildAdresse(AdresseAvecRue source, MigrationResultContextManipulation mr, String complement, boolean permanente) {
 		if (source == null) {
 			return null;
 		}
@@ -57,7 +53,7 @@ public class AdresseHelper {
 			dest.setDateDebut(source.getDateDebut());
 			dest.setDateFin(source.getDateFin());
 			dest.setPermanente(permanente);
-			dest.setComplement(complement != null ? complement.get() : null);
+			dest.setComplement(complement);
 			return dest;
 		}
 		finally {

@@ -1478,7 +1478,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                           mr))
 				.findFirst()
 				.ifPresent(a -> {
-					final AdresseTiers adresse = adresseHelper.buildAdresse(a, mr, regpm::getEnseigne, false);
+					final String complement = a.getChez() == null ? regpm.getEnseigne() : a.getChez();
+					final AdresseTiers adresse = adresseHelper.buildAdresse(a, mr, complement, false);
 					if (adresse != null) {
 						adresse.setUsage(TypeAdresseTiers.COURRIER);
 						unireg.addAdresseTiers(adresse);
