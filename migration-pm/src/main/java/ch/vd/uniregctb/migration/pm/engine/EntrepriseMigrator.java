@@ -524,7 +524,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.filter(rs -> {
 						if (rs.getDateValidite() == null) {
 							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-							              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est nulle.",
+							              String.format("Raison sociale %d (%s) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
 							                            rs.getId(),
 							                            extractRaisonSociale(rs)));
 							return false;
@@ -594,7 +594,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(c -> {
 					if (c.getDateEvolutionCapital() == null) {
 						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Capital %d (%s) ignoré car sa date de début de validité est nulle.",
+						              String.format("Capital %d (%s) ignoré car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
 						                            c.getId().getSeqNo(),
 						                            c.getCapitalLibere()));
 						return false;
@@ -641,7 +641,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.filter(fj -> {
 						if (fj.getDateValidite() == null) {
 							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-							              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est nulle.",
+							              String.format("Forme juridique %d (%s) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
 							                            fj.getPk().getSeqNo(),
 							                            fj.getType().getCode()));
 							return false;
@@ -1457,7 +1457,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(a -> {
 					if (a.getDateDebut() == null) {
 						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
-						              String.format("Adresse %s ignorée car sa date de début de validité est nulle.", a.getTypeAdresse()));
+						              String.format("Adresse %s ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", a.getTypeAdresse()));
 						return false;
 					}
 					return true;

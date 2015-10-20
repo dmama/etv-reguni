@@ -955,7 +955,7 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 		// pas de date d'attribution (ou beaucoup trop lointaine dans le passé) -> passe ton chemin, manant !
 		if (mandat.getDateAttribution() == null) {
 			mr.addMessage(logCategory, LogLevel.ERROR,
-			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date d'attribution est nulle.",
+			              String.format("Le mandat %d de l'entreprise mandante %d vers l'entité mandataire %d de type %s est ignoré car sa date d'attribution est nulle (ou antérieure au 01.08.1291).",
 			                            mandat.getId().getNoSequence(),
 			                            mandat.getId().getIdEntreprise(),
 			                            mandataire.getId(),
