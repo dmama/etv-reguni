@@ -195,7 +195,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private static final class ControleForsSecondairesData {
 		private final Set<RegpmForSecondaire> regpm;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-
 		public ControleForsSecondairesData(Set<RegpmForSecondaire> regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.regpm = regpm;
 			this.entrepriseSupplier = entrepriseSupplier;
@@ -232,6 +231,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		public ComparaisonAssujettissementsData(boolean active, SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.active = active;
 			this.regpmAssujettissements = regpmAssujettissements;
+			this.entrepriseSupplier = entrepriseSupplier;
+		}
+	}
+
+	private static final class AnnulationDonneesFiscalesPourInactifsData {
+		private final RegpmEntreprise regpm;
+		private final KeyedSupplier<Entreprise> entrepriseSupplier;
+		public AnnulationDonneesFiscalesPourInactifsData(RegpmEntreprise regpm, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.regpm = regpm;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -340,13 +348,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        EntrepriseMigrator::recalculMotifsForsIndetermines);
 
-		// callback pour le contrôle des données d'assujettissement
-		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
-		                                        ConsolidationPhase.COMPARAISON_ASSUJETTISSEMENTS,
-		                                        k -> k.entrepriseSupplier,
-		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
-		                                        d -> comparaisonAssujettissements(d, mr, idMapper));
-
 		// callback pour la migration des déclarations d'impôt (= dossiers fiscaux) non-liées à un exercice commercial
 		// (en gros, les déclarations encore à l'état "EMISE")
 		mr.registerPreTransactionCommitCallback(DeclarationsSansExerciceCommercialRegpmData.class,
@@ -354,6 +355,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        k -> k.entrepriseSupplier,
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> migrateDossiersFiscauxNonAttribues(d, mr, idMapper));
+
+		// callback pour l'annulation des données fiscales (fors, dis...) des contribuables inactifs (doublons) ou sans assujettissement (communes...)
+		mr.registerPreTransactionCommitCallback(AnnulationDonneesFiscalesPourInactifsData.class,
+		                                        ConsolidationPhase.ANNULATION_DONNEES_CONTRIBUABLES_INACTIFS,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> annulationDonneesFiscalesPourInactifs(d, mr, idMapper));
+
+		// callback pour le contrôle des données d'assujettissement
+		mr.registerPreTransactionCommitCallback(ComparaisonAssujettissementsData.class,
+		                                        ConsolidationPhase.COMPARAISON_ASSUJETTISSEMENTS,
+		                                        k -> k.entrepriseSupplier,
+		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
+		                                        d -> comparaisonAssujettissements(d, mr, idMapper));
 
 		//
 		// données "cachées" sur les entreprises
@@ -1410,8 +1425,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la suppression finale des fors créés et déjà annulés
 		mr.addPreTransactionCommitData(new EffacementForsAnnulesData(moi));
 
-		// enregistrement de ette entreprise pour le recalcul final des motifs des fors principaux
+		// enregistrement de cette entreprise pour le recalcul final des motifs des fors principaux
 		mr.addPreTransactionCommitData(new RecalculMotifsForsIndeterminesData(regpm, moi));
+
+		// enregistrement de cette entreprise pour l'annulation éventuelle des données fiscales (fors, dis...) pour les inactifs
+		mr.addPreTransactionCommitData(new AnnulationDonneesFiscalesPourInactifsData(regpm, moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
@@ -2142,6 +2160,40 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// demande de calcul pour la fin de la transaction avec toutes les données nécessaires
 			mr.addPreTransactionCommitData(new DeclarationsSansExerciceCommercialRegpmData(dossiersFiscauxNonAttribues, getEntrepriseSupplier(idMapper, regpm)));
 		}
+	}
+
+	/**
+	 * Méthode de callback pour s'assurer que les contribuables inactifs (doublons) et les communes (???) n'ont pas de données fiscales (fors, dis...) non-annulées
+	 * @param data données d'identification de l'entreprise à contrôler
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapping des identifiants RegPM -> Unireg
+	 */
+	private void annulationDonneesFiscalesPourInactifs(AnnulationDonneesFiscalesPourInactifsData data,
+	                                                   MigrationResultContextManipulation mr,
+	                                                   IdMapping idMapper) {
+		final EntityKey key = data.entrepriseSupplier.getKey();
+		doInLogContext(key, mr, idMapper, () -> {
+			final Entreprise entreprise = data.entrepriseSupplier.get();
+			if (entreprise.isDebiteurInactif()) {
+				// TODO pour l'instant, on ne traite que les débiteurs inactifs (doublons)... comment détecter les communes ?
+
+				// les éventuelles déclarations non-annulées
+				neverNull(entreprise.getDeclarationsSorted()).stream()
+						.filter(decl -> !decl.isAnnule())
+						.peek(decl -> mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+						                            String.format("Déclaration %s sur la période fiscale %d annulée car l'entreprise a été identifée comme un débiteur inactif.",
+						                                          StringRenderers.DATE_RANGE_RENDERER.toString(decl),
+						                                          decl.getPeriode().getAnnee())))
+						.forEach(decl -> decl.setAnnule(true));
+
+				// les éventuels fors fiscaux non-annulés
+				entreprise.getForsFiscauxNonAnnules(true).stream()
+						.peek(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+						                          String.format("For fiscal %s annulé car l'entreprise a été identifiée comme un débiteur inactif.",
+						                                        StringRenderers.LOCALISATION_DATEE_RENDERER.toString(ff))))
+						.forEach(ff -> ff.setAnnule(true));
+			}
+		});
 	}
 
 	/**

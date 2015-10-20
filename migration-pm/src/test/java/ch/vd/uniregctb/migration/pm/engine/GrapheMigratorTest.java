@@ -3066,6 +3066,71 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 	}
 
+	@Test
+	public void testDoublonAvecFor() throws Exception {
+
+		final long idEntreprise = 2623L;
+		final RegDate dateDebut = RegDate.get(2001, 4, 2);
+		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut , "*Chez-moi sàrl", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// en base : le flag débiteur inactif doit avoir été mis, et les fors créés mais annulés
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(entreprise);
+			Assert.assertTrue(entreprise.isDebiteurInactif());          // une étoile au début de la raison sociale -> débiteur inactif
+
+			final Set<ForFiscal> fors = entreprise.getForsFiscaux();
+			Assert.assertNotNull(fors);
+			Assert.assertEquals(1, fors.size());
+			final ForFiscal forFiscal = fors.iterator().next();
+			Assert.assertNotNull(forFiscal);
+			Assert.assertTrue(forFiscal.isAnnule());        // <-- annulé !!!
+			Assert.assertEquals(dateDebut, forFiscal.getDateDebut());
+			Assert.assertNull(forFiscal.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscal.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.LAUSANNE.getNoOfs(), forFiscal.getNumeroOfsAutoriteFiscale());
+		});
+
+		// et dans les messages de suivi ?
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.FORS,
+		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                    messages.keySet());
+
+
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise identifiée comme un doublon.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5586 [02.04.2001 -> ?] généré.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For fiscal ForFiscalPrincipalPM [02.04.2001 -> ?] sur COMMUNE_OU_FRACTION_VD/5586 annulé car l'entreprise a été identifiée comme un débiteur inactif.", msgs.get(1));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [02.04.2001 -> ?], raison sociale (*Chez-moi sàrl), capital () et forme juridique (SARL).", msgs.get(0));
+		}
+	}
+
 	/**
 	 * Ceci est un test utile au debugging, on charge un graphe depuis un fichier sur disque (identique à ce que
 	 * l'on peut envoyer dans la vraie migration) et on tente la migration du graphe en question
