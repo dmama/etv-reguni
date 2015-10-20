@@ -42,6 +42,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.common.NomPrenom;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
@@ -2325,7 +2326,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Wrapper autour d'un for fiscal principal PM pour l'implémentation
 	 * de l'interface {@link CollatableDateRange}
 	 */
-	private static final class CollatableForPrincipalPM implements CollatableDateRange {
+	private final class CollatableForPrincipalPM implements CollatableDateRange {
 
 		private final ForFiscalPrincipalPM forFiscal;
 		private final MigrationResultProduction mr;
@@ -2360,6 +2361,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						&& nextForFiscal.getMotifRattachement() == forFiscal.getMotifRattachement()
 						&& nextForFiscal.getGenreImpot() == forFiscal.getGenreImpot()
 						&& nextForFiscal.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale());
+
+				// toujours ok ? mais peut-être y a-t-il un souci avec une commune qui a conservé le même numéro OFS en changeant d'entité
+				if (collatable && forFiscal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
+					final Commune commune = infraService.getCommuneByNumeroOfs(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+					collatable = commune == null || RegDateHelper.isAfter(commune.getDateFin(), forFiscal.getDateFin(), NullDateBehavior.LATEST);
+					if (!collatable) {
+						mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+						              String.format("Fusion des entités %s et %s empêchée par le changement de la commune %d au %s.",
+						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(forFiscal),
+						                            StringRenderers.LOCALISATION_DATEE_RENDERER.toString(nextForFiscal),
+						                            forFiscal.getNumeroOfsAutoriteFiscale(),
+						                            StringRenderers.DATE_RENDERER.toString(forFiscal.getDateFin())));
+					}
+				}
 			}
 			return collatable;
 		}

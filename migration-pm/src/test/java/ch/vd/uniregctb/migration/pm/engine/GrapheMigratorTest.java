@@ -2142,11 +2142,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
 		final List<String> msg = messages.get(LogCategory.FORS);
 		Assert.assertNotNull(msg);
-		Assert.assertEquals(4, msg.size());
+		Assert.assertEquals(5, msg.size());
 		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [12.04.1998 -> ?] sur COMMUNE_HC/2029 au moins partiellement remplacée par ForFiscalPrincipalPM [12.04.1998 -> 31.12.1999] sur COMMUNE_HC/2029 pour suivre les fusions de communes.", msg.get(0));
 		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Entité ForFiscalPrincipalPM [12.04.1998 -> ?] sur COMMUNE_HC/2029 au moins partiellement remplacée par ForFiscalPrincipalPM [01.01.2000 -> ?] sur COMMUNE_HC/2029 pour suivre les fusions de communes.", msg.get(1));
-		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [12.04.1998 -> 31.12.1999] généré.", msg.get(2));
-		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [01.01.2000 -> ?] généré.", msg.get(3));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Fusion des entités ForFiscalPrincipalPM [12.04.1998 -> 31.12.1999] sur COMMUNE_HC/2029 et ForFiscalPrincipalPM [01.01.2000 -> ?] sur COMMUNE_HC/2029 empêchée par le changement de la commune 2029 au 31.12.1999.", msg.get(2));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [12.04.1998 -> 31.12.1999] généré.", msg.get(3));
+		Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_HC/2029 [01.01.2000 -> ?] généré.", msg.get(4));
 
 		// on va regarder en base quand-même pour vérifier que les fors sont les bons (et qu'il n'y a qu'eux!!)
 		doInUniregTransaction(true, status -> {
