@@ -2379,7 +2379,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * Wrapper autour d'un for fiscal principal PM pour l'implémentation
 	 * de l'interface {@link CollatableDateRange}
 	 */
-	private final class CollatableForPrincipalPM implements CollatableDateRange {
+	private final class CollatableForPrincipalPM implements CollatableDateRange, EntityWrapper<ForFiscalPrincipalPM> {
 
 		private final ForFiscalPrincipalPM forFiscal;
 		private final MigrationResultProduction mr;
@@ -2453,7 +2453,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return new CollatableForPrincipalPM(collatedFor, mr);
 		}
 
-		public ForFiscalPrincipalPM getForFiscal() {
+		@Override
+		public ForFiscalPrincipalPM getWrappedEntity() {
 			return forFiscal;
 		}
 	}
@@ -2509,7 +2510,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// [SIFISC-16545] on fusionne les fors principaux consécutifs par ailleurs identiques
 		final List<ForFiscalPrincipalPM> collated = DateRangeHelper.collate(listeAvecTraitementFusions).stream()
-				.map(CollatableForPrincipalPM::getForFiscal)
+				.map(CollatableForPrincipalPM::getWrappedEntity)
 				.collect(Collectors.toList());
 
 		// assignation des motifs
