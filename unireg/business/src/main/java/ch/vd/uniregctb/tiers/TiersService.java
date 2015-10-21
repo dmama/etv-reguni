@@ -60,14 +60,17 @@ public interface TiersService {
     PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
 
     /**
-     * Renvoie la personne physique correspondant au numéro d'organisation passé en paramètre.
+     * Renvoie l'entreprise (fiscale, donc) correspondant au numéro d'organisation (civile) passé en paramètre.
      *
      * @param numeroOrganisation le numéro de l'organisation
      * @return l'entreprise (tiers non-annulé) correspondante au numéro d'organisation passé en paramètre, ou <b>null</b>.
      */
     Entreprise getEntrepriseByNumeroOrganisation(long numeroOrganisation);
 
-
+    /**
+     * @param entreprise entreprise
+     * @return la liste des établissements qui la composent
+     */
     List<DateRanged<Etablissement>> getEtablissementsForEntreprise(Entreprise entreprise);
 
     /**
@@ -1553,6 +1556,13 @@ public interface TiersService {
      * @param rf le régime fiscal à annuler
      */
     void annuleRegimeFiscal(RegimeFiscal rf);
+
+    /**
+     * @param entreprise une entreprise
+     * @param date une date de référence
+     * @return <code>true</code> si l'entreprise à une forme juridique correspondant à une société de personnes (= SC, SNC) à la date donnée
+     */
+    boolean isSocieteDePersonnes(Entreprise entreprise, RegDate date);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre

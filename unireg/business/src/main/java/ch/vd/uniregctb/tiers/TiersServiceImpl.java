@@ -54,6 +54,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -113,6 +114,7 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -5360,6 +5362,20 @@ public class TiersServiceImpl implements TiersService {
 
 		// et on envoie un événement fiscal
 		evenementFiscalService.publierEvenementFiscalAnnulationRegimeFiscal(rf);
+	}
+
+	@Override
+	public boolean isSocieteDePersonnes(Entreprise entreprise, RegDate date) {
+		final Organisation organisation = getOrganisation(entreprise);
+		if (organisation != null) {
+			final FormeLegale formeLegale = organisation.getFormeLegale(date);
+			return formeLegale != null && (formeLegale == FormeLegale.N_0103_SOCIETE_NOM_COLLECIF || formeLegale == FormeLegale.N_0104_SOCIETE_EN_COMMANDITE);
+		}
+		else {
+			// inconnue au civil -> on va chercher dans nos données
+			final DonneesRegistreCommerce donneesRC = DateRangeHelper.rangeAt(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(), date);
+			return donneesRC != null && (donneesRC.getFormeJuridique() == FormeJuridiqueEntreprise.SNC || donneesRC.getFormeJuridique() == FormeJuridiqueEntreprise.SC);
+		}
 	}
 
 	@Override

@@ -30,8 +30,8 @@ public class ForFiscalSecondaireValidator extends ForFiscalRevenuFortuneValidato
 	}
 
 	@Override
-	protected boolean isGenreImpotCoherent(GenreImpot genreImpot) {
-		return GENRES_IMPOT_AUTORISES.contains(genreImpot);
+	protected boolean isGenreImpotCoherent(ForFiscalSecondaire ff) {
+		return GENRES_IMPOT_AUTORISES.contains(ff.getGenreImpot());
 	}
 
 	@Override
