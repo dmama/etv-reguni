@@ -16,6 +16,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -776,5 +778,20 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		Assert.assertNotNull(assujettissements);
 		Assert.assertEquals(1, assujettissements.size());
 		assertOrdinaire(dateCreation, null, MotifFor.INDETERMINE, null, assujettissements.get(0));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAvecForsPrincipauxNonBeneficeCapital() throws Exception {
+
+		final RegDate dateCreation = date(2011, 7, 12);
+
+		final Entreprise e = addEntrepriseInconnueAuCivil();
+		addDonneesRegistreCommerce(e, dateCreation, null, "L'avenir du genre humain", FormeJuridiqueEntreprise.SNC, null);
+		addForPrincipal(e, dateCreation, MotifFor.INDETERMINE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
+		addBouclement(e, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les 31.12 depuis le 31.12.2012
+
+		final List<Assujettissement> assujettissements = determine(e);
+		Assert.assertNull(assujettissements);
 	}
 }

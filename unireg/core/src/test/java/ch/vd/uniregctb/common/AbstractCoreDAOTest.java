@@ -1246,14 +1246,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales ctb, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,
-	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif) {
+	                                               @Nullable MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif, GenreImpot genreImpot) {
 
 		final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
 		ffp.setDateDebut(ouverture);
 		ffp.setMotifOuverture(motifOuverture);
 		ffp.setDateFin(fermeture);
 		ffp.setMotifFermeture(motifFermeture);
-		ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+		ffp.setGenreImpot(genreImpot);
 		ffp.setTypeAutoriteFiscale(type);
 		ffp.setNumeroOfsAutoriteFiscale(noOFS);
 		ffp.setMotifRattachement(motif);

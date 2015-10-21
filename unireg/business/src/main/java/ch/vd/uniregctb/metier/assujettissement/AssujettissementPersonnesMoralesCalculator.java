@@ -28,6 +28,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -87,6 +88,17 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 
 		// pas de fors, par d'assujettissement...
 		if (fpt.principauxPM.isEmpty()) {
+			return null;
+		}
+
+		// [SIFISC-16333] Seuls les fors dont le genre d'impôt est "bénéfice-capital" peuvent être générateurs d'assujettissement
+		final List<ForFiscalPrincipalPM> forsFiscaux = new ArrayList<>(fpt.principauxPM.size());
+		for (ForFiscalPrincipalPM ff : fpt.principauxPM) {
+			if (ff.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
+				forsFiscaux.add(ff);
+			}
+		}
+		if (forsFiscaux.isEmpty()) {
 			return null;
 		}
 
@@ -258,9 +270,9 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 
 		final Data data;
 		final ForFiscalPrincipalPM current = forPrincipal.getCurrent();
-		switch (current.getTypeAutoriteFiscale()) {
 
-		case COMMUNE_OU_FRACTION_VD: {
+		// [SIFISC-16333] Seuls les fors principaux avec un genre d'impôt "bénéfice/capital" donnent lieu à un assujettissement
+		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getGenreImpot() == GenreImpot.BENEFICE_CAPITAL) {
 
 			final RegDate debut = determinerDateDebutAssujettissement(forPrincipal, fractionnements, exercicesCommerciaux);
 			final RegDate fin = determinerDateFinAssujettissement(forPrincipal, fractionnements, exercicesCommerciaux);
@@ -286,13 +298,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 				// pas de période réelle d'assujettissement
 				data = null;
 			}
-
-			break;
 		}
-
-		case COMMUNE_HC:
-		case PAYS_HS: {
-
+		else {
 			final RegDate adebut = determinerDateDebutNonAssujettissement(forPrincipal, exercicesCommerciaux);
 			final RegDate afin = determinerDateFinNonAssujettissement(forPrincipal, exercicesCommerciaux);
 
@@ -303,12 +310,6 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 				// pas de période réelle d'assujettissement
 				data = null;
 			}
-
-			break;
-		}
-
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnu : " + current.getTypeAutoriteFiscale());
 		}
 
 		return data;
@@ -431,8 +432,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		final RegDate debut = current.getDateDebut();
 		final RegDate adebut;
 
-		// Non-assujettissement -> le for principal est HC ou HS
-		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+		// Non-assujettissement -> le for principal est HC ou HS (ou vaudois si le genre d'impôt du for n'est pas le bon)
+		if (current.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
 			// le rattachement économique se termine à la fin de l'exercice commercial
 			adebut = getDernierDebutExercice(exercicesCommerciaux, debut);
 		}
@@ -462,8 +463,8 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 			afin = null;
 		}
 
-		// Non-assujettissement -> le for principal est HC ou HS
-		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+		// Non-assujettissement -> le for principal est HC ou HS (ou vaudois si le genre d'impôt du for n'est pas le bon)
+		else if (current.getTypeAutoriteFiscale() != TypeAutoriteFiscale.PAYS_HS) {
 			// le rattachement économique commence au début de l'exercice commercial
 			afin = getProchaineFinExercice(exercicesCommerciaux, fin);
 		}
@@ -821,7 +822,7 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		final RegDate dateFinAssujettissementHorsVaud = RegDateHelper.minimum(assujettissement.getDateFin(), economique.getDateFin(), NullDateBehavior.LATEST);
 		liste.add(new Data(dateDebutAssujettissementHorsVaud,
 		                   dateFinAssujettissementHorsVaud,
-		                   assujettissement.typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC ? Type.HorsCanton : Type.HorsSuisse,
+		                   fromTypeAutoriteFiscale(assujettissement.typeAutoriteFiscale),
 		                   fusionnerMotifs(assujettissement.getDateDebut(), assujettissement.motifDebut, economique.getDateDebut(), economique.motifDebut, dateDebutAssujettissementHorsVaud == assujettissement.getDateDebut(), MOTIFS_NON_PRIO_OUVERTURE),
 		                   fusionnerMotifs(assujettissement.getDateFin(), assujettissement.motifFin, economique.getDateFin(), economique.motifFin, dateFinAssujettissementHorsVaud == assujettissement.getDateFin(), MOTIFS_NON_PRIO_FERMETURE),
 		                   assujettissement.typeAutoriteFiscale));
@@ -837,6 +838,23 @@ public class AssujettissementPersonnesMoralesCalculator implements Assujettissem
 		}
 
 		return liste;
+	}
+
+	/**
+	 * @param taf le type d'autorité fiscale du for principal
+	 * @return le type d'assujettissement qui découle du for principal en présence d'un for secondaire (= rattachement économique)
+	 */
+	private static Type fromTypeAutoriteFiscale(TypeAutoriteFiscale taf) {
+		switch (taf) {
+		case COMMUNE_HC:
+			return Type.HorsCanton;
+		case PAYS_HS:
+			return Type.HorsSuisse;
+		case COMMUNE_OU_FRACTION_VD:
+			return Type.Vaudois;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnue : " + taf);
+		}
 	}
 
 	/**

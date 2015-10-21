@@ -94,7 +94,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
 				return entreprise;
 			}
 		});
@@ -217,7 +217,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
 				return entreprise;
 			}
 		});
@@ -350,7 +350,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
 				return entreprise;
 			}
 		});
@@ -482,7 +482,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
-				                MockCommune.Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+				                MockCommune.Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
 				return entreprise;
 			}
 		});
