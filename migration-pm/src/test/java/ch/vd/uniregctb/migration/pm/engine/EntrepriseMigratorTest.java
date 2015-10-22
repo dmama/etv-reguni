@@ -2619,6 +2619,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 53465L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addSiegeEtranger(e, RegDate.get(1977, 4, 7), MockPays.Gibraltar.getNoOFS());
+		addRaisonSociale(e, RegDate.get(1977, 4, 7), "Mon entreprise à moi", null, null, true);
+		addFormeJuridique(e, RegDate.get(1977, 4, 7), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -2639,7 +2641,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
 			Assert.assertNotNull(ffps);
-			Assert.assertEquals(0, ffps.size());
+			Assert.assertEquals(1, ffps.size());
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(1977, 4, 7), ff.getDateDebut());
+				Assert.assertNull(ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.RoyaumeUni.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
 
 			final List<DecisionAci> decisions = entreprise.getDecisionsSorted();
 			Assert.assertNotNull(decisions);
@@ -2840,8 +2851,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	public void testMultiplesSieges() throws Exception {
 
 		final long noEntreprise = 43674L;
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
-		addSiegeSuisse(e, RegDate.get(2000, 1, 1), Commune.MORGES);
+		addRaisonSociale(e, dateDebut, "Mon entreprise qui bouge", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addSiegeSuisse(e, dateDebut, Commune.MORGES);
 		addSiegeSuisse(e, RegDate.get(2004, 2, 23), Commune.LAUSANNE);      // de par la date, c'est celui-ci qui doit être conservé
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
 
@@ -2865,7 +2879,34 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// vérification des fors fiscaux principaux générés : aucuns
 			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
 			Assert.assertNotNull(ffps);
-			Assert.assertEquals(0, ffps.size());
+			Assert.assertEquals(3, ffps.size());
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(dateDebut, ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2001, 5, 1), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(1);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(2001, 5, 2), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2004, 2, 22), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(2);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(2004, 2, 23), ff.getDateDebut());
+				Assert.assertNull(ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
 
 			// récupération du numéro fiscal de l'établissement principal généré
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
@@ -2897,7 +2938,18 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		// vérification des messages dans le contexte "FORS"
 		{
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
-			Assert.assertNull(messages);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(9, textes.size());
+			Assert.assertEquals("Données du siège 1 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5642 depuis le 01.01.2000.", textes.get(0));
+			Assert.assertEquals("Utilisation d'un siège vaudois (1 sur commune 5642 dès le 01.01.2000) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(1));
+            Assert.assertEquals("Données du siège 3 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5518 depuis le 02.05.2001.", textes.get(2));
+			Assert.assertEquals("Utilisation d'un siège vaudois (3 sur commune 5518 dès le 02.05.2001) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(3));
+			Assert.assertEquals("Données du siège 2 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5586 depuis le 23.02.2004.", textes.get(4));
+			Assert.assertEquals("Utilisation d'un siège vaudois (2 sur commune 5586 dès le 23.02.2004) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(5));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [01.01.2000 -> 01.05.2001] généré.", textes.get(6));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [02.05.2001 -> 22.02.2004] généré.", textes.get(7));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5586 [23.02.2004 -> ?] généré.", textes.get(8));
 		}
 
 		// vérification des messages dans le contexte "SUIVI"
@@ -2921,6 +2973,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final long noEntreprise = 43674L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2003, 1, 1), "Mon entreprise qui bouge", null, null, true);
+		addFormeJuridique(e, RegDate.get(2003, 1, 1), createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addSiegeSuisse(e, RegDate.get(2003, 1, 1), Commune.MORGES);
 		addSiegeSuisse(e, RegDate.get(2104, 2, 23), Commune.LAUSANNE);      // de par la date, c'est celui-ci qui doit être conservé, mais il est dans le futur
 		addSiegeSuisse(e, RegDate.get(2001, 5, 2), Commune.ECHALLENS);
@@ -2945,7 +2999,25 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// vérification des fors fiscaux principaux générés : aucuns
 			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
 			Assert.assertNotNull(ffps);
-			Assert.assertEquals(0, ffps.size());
+			Assert.assertEquals(2, ffps.size());
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(2001, 5, 2), ff.getDateDebut());
+				Assert.assertEquals(RegDate.get(2002, 12, 31), ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(1);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(2003, 1, 1), ff.getDateDebut());
+				Assert.assertNull(ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Morges.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
 
 			// récupération du numéro fiscal de l'établissement principal généré
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
@@ -2977,7 +3049,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		// vérification des messages dans le contexte "FORS"
 		{
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
-			Assert.assertNull(messages);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("Données du siège 3 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5518 depuis le 02.05.2001.", textes.get(0));
+			Assert.assertEquals("Utilisation d'un siège vaudois (3 sur commune 5518 dès le 02.05.2001) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(1));
+			Assert.assertEquals("Données du siège 1 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5642 depuis le 01.01.2003.", textes.get(2));
+			Assert.assertEquals("Utilisation d'un siège vaudois (1 sur commune 5642 dès le 01.01.2003) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(3));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [02.05.2001 -> 31.12.2002] généré.", textes.get(4));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [01.01.2003 -> ?] généré.", textes.get(5));
 		}
 
 		// vérification des messages dans le contexte "SUIVI"
@@ -3044,7 +3124,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(5, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Le siège 1 est ignoré car il a une date de début de validité nulle (ou avant 1291).", textes.get(2));
+			Assert.assertEquals("Le siège 1 est ignoré car il a une date de début de validité nulle (ou antérieure au 01.08.1291).", textes.get(2));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(3));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(4));
 		}
@@ -3079,7 +3159,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			// vérification des fors fiscaux principaux générés : aucuns
 			final List<ForFiscalPrincipalPM> ffps = entreprise.getForsFiscauxPrincipauxActifsSorted();
 			Assert.assertNotNull(ffps);
-			Assert.assertEquals(0, ffps.size());
+			Assert.assertEquals(1, ffps.size());
+			{
+				final ForFiscalPrincipalPM ff = ffps.get(0);
+				Assert.assertNotNull(ff);
+				Assert.assertFalse(ff.isAnnule());
+				Assert.assertEquals(RegDate.get(2000, 1, 1), ff.getDateDebut());
+				Assert.assertNull(ff.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ff.getNumeroOfsAutoriteFiscale());
+			}
 
 			// récupération du numéro fiscal de l'établissement principal généré
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
@@ -3111,7 +3200,12 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		// vérification des messages dans le contexte "FORS"
 		{
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
-			Assert.assertNull(messages);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(3, textes.size());
+			Assert.assertEquals("Données du siège 3 utilisées pour les fors principaux : COMMUNE_OU_FRACTION_VD/5518 depuis le 01.01.2000.", textes.get(0));
+			Assert.assertEquals("Utilisation d'un siège vaudois (3 sur commune 5518 dès le 01.01.2000) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?", textes.get(1));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [01.01.2000 -> ?] généré.", textes.get(2));
 		}
 
 		// vérification des messages dans le contexte "SUIVI"
@@ -3122,8 +3216,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
-			Assert.assertEquals("Siège 1 non-migré car on ne prend en compte que le dernier.", textes.get(2));
-			Assert.assertEquals("Siège 2 non-migré car on ne prend en compte que le dernier.", textes.get(3));
+			Assert.assertEquals("Le siège 1 est ignoré car il est suivi d'un autre à la même date.", textes.get(2));
+			Assert.assertEquals("Le siège 2 est ignoré car il est suivi d'un autre à la même date.", textes.get(3));
 			Assert.assertEquals("Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 3.", textes.get(4));
 			Assert.assertEquals("Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.01.2000 -> ?] sur COMMUNE_OU_FRACTION_VD/5518.", textes.get(5));
 			Assert.assertEquals("Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", textes.get(6));
@@ -3863,6 +3957,94 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(RegDate.get(2004, 8, 27), ff.getDateDebut());
 			Assert.assertNull(ff.getDateFin());
 			Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.RENENS.getNoOfs(), ff.getNumeroOfsAutoriteFiscale());
 		});
+	}
+
+	@Test
+	public void testForsDepuisSiegesDroitPublic() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		addRaisonSociale(e, dateDebut, "Basel Gemeinde", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
+		addSiegeSuisse(e, dateDebut, Commune.BALE);
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+			Assert.assertNotNull(forsFiscaux);
+			Assert.assertEquals(0, forsFiscaux.size());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNull(messages);
+		}
+	}
+
+	@Test
+	public void testForsDepuisSiegesNonDroitPublic() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		addRaisonSociale(e, dateDebut, "Basel Mühlentsorgung AG", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addSiegeSuisse(e, dateDebut, Commune.BALE);
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+			Assert.assertNotNull(forsFiscaux);
+			Assert.assertEquals(1, forsFiscaux.size());
+
+			final ForFiscal ff = forsFiscaux.iterator().next();
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, ff.getGenreImpot());
+			Assert.assertEquals(dateDebut, ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ff.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.BALE.getNoOfs(), ff.getNumeroOfsAutoriteFiscale());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("Données du siège 1 utilisées pour les fors principaux : COMMUNE_HC/2701 depuis le 27.08.2004.", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_HC/2701 [27.08.2004 -> ?] généré.", textes.get(1));
+		}
 	}
 }

@@ -298,7 +298,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private static final class FormeJuridiqueHistoData {
 		private final NavigableMap<RegDate, RegpmTypeFormeJuridique> histo;
-
 		public FormeJuridiqueHistoData(NavigableMap<RegDate, RegpmTypeFormeJuridique> histo) {
 			this.histo = histo;
 		}
@@ -311,6 +310,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		public FormeJuridiqueData(RegpmTypeFormeJuridique type, RegDate dateValidite) {
 			this.type = type;
 			this.dateValidite = dateValidite;
+		}
+	}
+
+	private static final class SiegesHistoData {
+		private final NavigableMap<RegDate, RegpmSiegeEntreprise> histo;
+		public SiegesHistoData(NavigableMap<RegDate, RegpmSiegeEntreprise> histo) {
+			this.histo = histo;
 		}
 	}
 
@@ -386,6 +392,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// les fors principaux non-ignorés
 		mr.registerDataExtractor(ForsPrincipauxData.class,
 		                         e -> extractForsPrincipaux(e, mr, idMapper),
+		                         null,
+		                         null);
+
+		// les sièges pris en compte
+		mr.registerDataExtractor(SiegesHistoData.class,
+		                         e -> extractSieges(e, mr, idMapper),
 		                         null,
 		                         null);
 
@@ -725,7 +737,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @param entreprise entreprise dont on veut extraire forme juridique courante
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
-	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
+	 * @return une structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
 	 */
 	@NotNull
 	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
@@ -754,6 +766,66 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// c'est la fin, on ne sait plus trop quoi faire...
 			return new FormeJuridiqueData(null, null);
+		});
+	}
+
+	/**
+	 * Extraction officielle de l'historique des sièges de l'entreprise, tels que connus dans RegPM
+	 * @param entreprise entreprise de RegPM
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 * @return une structure (qui peut être vide) contenant les données historiques retenues pour les sièges de l'entreprise
+	 */
+	private SiegesHistoData extractSieges(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
+			final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> strict = entreprise.getSieges().stream()
+					.filter(s -> !s.isRectifiee())
+					.filter(s -> {
+						if (s.getDateValidite() == null) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("Le siège %d est ignoré car il a une date de début de validité nulle (ou antérieure au 01.08.1291).", s.getId().getSeqNo()));
+							return false;
+						}
+						return true;
+					})
+					.filter(s -> {
+						if (isFutureDate(s.getDateValidite())) {
+							mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+							              String.format("Le siège %d est ignoré car il a une date de début de validité dans le futur (%s).",
+							                            s.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite())));
+							return false;
+						}
+						return true;
+					})
+					.peek(s -> checkDateLouche(s.getDateValidite(),
+					                           () -> String.format("Le siège %d a une date de validité", s.getId().getSeqNo()),
+					                           LogCategory.SUIVI,
+					                           mr))
+					.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
+					                          Collections::singletonList,
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+					                          TreeMap::new));
+
+			// maintenant, on ne garde, à chaque date, que le dernier siège (trié par numéro de séquence...)
+			final NavigableMap<RegDate, RegpmSiegeEntreprise> reduced = strict.entrySet().stream()
+					.map(entry -> {
+						final List<RegpmSiegeEntreprise> values = entry.getValue();
+						if (values.size() > 1) {
+							values.subList(0, values.size() - 1).stream()
+									.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR, String.format("Le siège %d est ignoré car il est suivi d'un autre à la même date.", siege.getId().getSeqNo())));
+						}
+						return Pair.of(entry.getKey(), values.get(values.size() - 1));
+					})
+					.collect(Collectors.toMap(Pair::getKey,
+					                          Pair::getValue,
+					                          (t1, t2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, on ne devrait pas pouvoir de collision de clé ici..."); },
+					                          TreeMap::new));
+
+			return new SiegesHistoData(reduced);
 		});
 	}
 
@@ -1495,7 +1567,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
 		migrateDeclarations(regpm, unireg, mr, idMapper);
-		migrateForsPrincipaux(regpm, unireg, mr);
+		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
 
@@ -1846,79 +1918,40 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// la spécification ne parle pas de l'attribut commune ni des fors principaux pour la génération de l'établissement principal
 		// mais seulement de la récupération du dernier siège depuis la table SIEGE_ENTREPRISE
 
-		// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
-		final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> siegesEffectifs = regpm.getSieges().stream()
-				.filter(s -> !s.isRectifiee())
-				.filter(s -> {
-					if (s.getDateValidite() == null) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Le siège %d est ignoré car il a une date de début de validité nulle (ou avant 1291).", s.getId().getSeqNo()));
-						return false;
-					}
-					return true;
-				})
-				.filter(s -> {
-					if (isFutureDate(s.getDateValidite())) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Le siège %d est ignoré car il a une date de début de validité dans le futur (%s).",
-						                            s.getId().getSeqNo(),
-						                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite())));
-						return false;
-					}
-					return true;
-				})
-				.peek(s -> checkDateLouche(s.getDateValidite(),
-				                           () -> String.format("Le siège %d a une date de validité", s.getId().getSeqNo()),
-				                           LogCategory.SUIVI,
-				                           mr))
-				.collect(Collectors.toMap(RegpmSiegeEntreprise::getDateValidite,
-				                          Collections::singletonList,
-				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
-				                          TreeMap::new));
+		// voyons l'historique des sièges
+		final EntityKey moi = buildEntrepriseKey(regpm);
+		final NavigableMap<RegDate, RegpmSiegeEntreprise> sieges = mr.getExtractedData(SiegesHistoData.class, moi).histo;
 
 		// pas de donnée de siège -> pas d'établissement principal créé
-		if (siegesEffectifs.isEmpty()) {
+		if (sieges.isEmpty()) {
 			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Pas de siège associé, pas d'établissement principal créé.");
 			return;
 		}
 
 		// on ne prend en compte que le dernier (on loggue les autres...)
-		final Map.Entry<RegDate, List<RegpmSiegeEntreprise>> donneesDateReference = siegesEffectifs.lastEntry();
-		siegesEffectifs.headMap(donneesDateReference.getKey(), false).values().stream()
-				.flatMap(List::stream)
+		final Map.Entry<RegDate, RegpmSiegeEntreprise> donneesSiegeReference = sieges.lastEntry();
+		sieges.headMap(donneesSiegeReference.getKey(), false).values().stream()
 				.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
 				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
-
-		// si la dernière date fait référence à plusieurs sièges, on prend le dernier (= en fonction de son numéro de séquence, cette fois)
-		final NavigableMap<Integer, RegpmSiegeEntreprise> siegesDateReference = donneesDateReference.getValue().stream()
-				.collect(Collectors.toMap(s -> s.getId().getSeqNo(),
-				                          Function.identity(),
-				                          (s1, s2) -> { throw new IllegalArgumentException("Plusieurs sièges avec le même numéro de séquence " + s1.getId().getSeqNo() + " sur l'entreprise " + regpm.getId()); },
-				                          TreeMap::new));
-
-		final Map.Entry<Integer, RegpmSiegeEntreprise> donneesSiegeReference = siegesDateReference.lastEntry();
-		siegesDateReference.headMap(donneesSiegeReference.getKey(), false).values().stream()
-				.forEach(siege -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
-				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
+		final RegpmSiegeEntreprise siege = donneesSiegeReference.getValue();
 
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
 		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
 		etbPrincipal.setEnseigne(regpm.getEnseigne());
-		etbPrincipal.setRaisonSociale(mr.getExtractedData(RaisonSocialeData.class, buildEntrepriseKey(regpm)).getRaisonSociale());
+		etbPrincipal.setRaisonSociale(mr.getExtractedData(RaisonSocialeData.class, moi).getRaisonSociale());
 		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s d'après le siège %d.",
 		                                                              FormatNumeroHelper.numeroCTBToDisplay(etbPrincipal.getNumero()),
-		                                                              donneesSiegeReference.getKey()));
+		                                                              siege.getId().getSeqNo()));
 
 		// lien entre l'établissement principal et son entreprise
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesDateReference.getKey(), dateFinActivite));
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesSiegeReference.getKey(), dateFinActivite));
 
 		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
-		final RegpmSiegeEntreprise siege = donneesSiegeReference.getValue();
 		final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, "siège", mr, LogCategory.SUIVI);
 		final DomicileEtablissement domicile = new DomicileEtablissement(siege.getDateValidite(), dateFinActivite, cop.getTypeAutoriteFiscale(), cop.getNumeroOfsAutoriteFiscale(), null);
 		checkFractionCommuneVaudoise(domicile, mr, LogCategory.SUIVI);
@@ -2507,7 +2540,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+	/**
+	 * Génération des fors principaux de l'entreprise d'après les données de RegPM
+	 * @param regpm entreprise dans RegPM
+	 * @param unireg entreprise dans Unireg
+	 * @param mr collecteur de messages de suivi
+	 */
+	private void generateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		// [SIFISC-16333] il faut faire attention à la forme juridique de l'entreprise
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
@@ -2561,36 +2600,26 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// maintenant, on peut migrer...
-
-		final Function<RegpmForPrincipal, Optional<Pair<Boolean, ForFiscalPrincipalPM>>> mapper =
-				f -> {
-					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
-					copyCreationMutation(f, ffp);
-					ffp.setDateDebut(f.getDateValidite());
-					ffp.setGenreImpot(hasSP ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL);
-					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
-
-					final CommuneOuPays cop = buildCommuneOuPays(f.getDateValidite(), f::getCommune, f::getOfsPays, String.format("for principal %d", f.getId().getSeqNo()), mr, LogCategory.FORS);
-					ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
-					ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
-
-					checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
-					return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
-				};
+		final List<Pair<ForFiscalPrincipalPM, Boolean>> donneesForsAGenerer;
+		if (!forsRegpm.isEmpty()) {
+			donneesForsAGenerer = generationDonneesMigrationForsPrincipaux(forsRegpm, unireg, dateFinActivite, hasSP, mr);
+		}
+		else {
+			// ok, pas de fors principaux dans RegPM... mais si nous n'avons pas affaire à une administration de droit
+			// public, on peut générer des fors à partir des sièges...
+			donneesForsAGenerer = generationDonneesForsPrincipauxDepuisSieges(regpm, mr);
+		}
 
 		// ici, on va collecter les fors qui sont issus d'une décision ACI (= administration effective)
 		// afin de générer les entités Unireg 'DecisionACI'
-		final List<ForFiscalPrincipalPM> listeIssueDeDecisionAci = new ArrayList<>(forsRegpm.size());
-		final List<ForFiscalPrincipalPM> liste = forsRegpm.stream()
-				.map(mapper)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
+		final List<ForFiscalPrincipalPM> listeIssueDeDecisionAci = new ArrayList<>(donneesForsAGenerer.size());
+		final List<ForFiscalPrincipalPM> liste = donneesForsAGenerer.stream()
 				.peek(pair -> {
-					if (pair.getLeft()) {
-						listeIssueDeDecisionAci.add(pair.getRight());
+					if (pair.getRight()) {
+						listeIssueDeDecisionAci.add(pair.getLeft());
 					}
 				})
-				.map(Pair::getRight)
+				.map(Pair::getLeft)
 				.sorted(Comparator.comparing(ForFiscalPrincipal::getDateDebut))
 				.collect(Collectors.toList());
 
@@ -2640,6 +2669,83 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                              decision.getNumeroOfsAutoriteFiscale(),
 				                                              StringRenderers.DATE_RANGE_RENDERER.toString(decision))))
 				.forEach(unireg::addDecisionAci);
+	}
+
+	/**
+	 * Génération des données de base pour les fors principaux depuis les sièges d'une entreprise
+	 * @param regpm entreprise de RegPM
+	 * @param mr collecteur de messages de suivi
+	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
+	 */
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesForsPrincipauxDepuisSieges(RegpmEntreprise regpm, MigrationResultProduction mr) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
+		final NavigableMap<RegDate, RegpmSiegeEntreprise> sieges = mr.getExtractedData(SiegesHistoData.class, entrepriseKey).histo;
+		return sieges.entrySet().stream()
+				.map(entry -> {
+					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+					final RegpmSiegeEntreprise siege = entry.getValue();
+					copyCreationMutation(siege, ffp);
+					ffp.setDateDebut(entry.getKey());
+					ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
+					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+
+					final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, String.format("siège %d", siege.getId().getSeqNo()), mr, LogCategory.FORS);
+					ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
+					ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
+
+					mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+					              String.format("Données du siège %d utilisées pour les fors principaux : %s/%d depuis le %s.",
+					                            siege.getId().getSeqNo(),
+					                            cop.getTypeAutoriteFiscale(),
+					                            cop.getNumeroOfsAutoriteFiscale(),
+					                            StringRenderers.DATE_RENDERER.toString(siege.getDateValidite())));
+					if (cop.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+						              String.format("Utilisation d'un siège vaudois (%d sur commune %d dès le %s) dans la génération des fors principaux... Pourquoi n'y avait-il pas de for principal vaudois dans RegPM ?",
+						                            siege.getId().getSeqNo(),
+						                            cop.getNumeroOfsAutoriteFiscale(),
+						                            StringRenderers.DATE_RENDERER.toString(siege.getDateValidite())));
+					}
+
+					checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
+					return ffp;
+				})
+				.map(ff -> Pair.of(ff, Boolean.FALSE))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Génération des données servant à la migration des fors principaux existants en fors principaux pour Unireg
+	 * @param forsRegpm les fors principaux retenus dans RegPM
+	 * @param unireg l'entreprise cible de la migration
+	 * @param dateFinActivite la date de fin d'activité calculée pour l'entreprise (= date de fin du dernier for)
+	 * @param societeDePersonnes <code>vrai</code> si l'entreprise a toujours été une société de personne, <code>false</code> si elle ne l'a jamais été (le cas hybride doit être traité en amont...)
+	 * @param mr collecteur de messages de suivi
+	 * @return une liste de données pour la création de fors (sans date de fin pour le moment) associés à un booléen qui indique si le for est une administration effective
+	 */
+	private List<Pair<ForFiscalPrincipalPM, Boolean>> generationDonneesMigrationForsPrincipaux(List<RegpmForPrincipal> forsRegpm, Entreprise unireg, @Nullable RegDate dateFinActivite, boolean societeDePersonnes, MigrationResultProduction mr) {
+
+		final Function<RegpmForPrincipal, Optional<Pair<ForFiscalPrincipalPM, Boolean>>> mapper =
+				f -> {
+					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+					copyCreationMutation(f, ffp);
+					ffp.setDateDebut(f.getDateValidite());
+					ffp.setGenreImpot(societeDePersonnes ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL);
+					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+
+					final CommuneOuPays cop = buildCommuneOuPays(f.getDateValidite(), f::getCommune, f::getOfsPays, String.format("for principal %d", f.getId().getSeqNo()), mr, LogCategory.FORS);
+					ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
+					ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
+
+					checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
+					return Optional.of(Pair.of(ffp, f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE));
+				};
+
+		return forsRegpm.stream()
+				.map(mapper)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.collect(Collectors.toList());
 	}
 
 	/**
