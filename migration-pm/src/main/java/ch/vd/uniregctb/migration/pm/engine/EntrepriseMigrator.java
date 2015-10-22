@@ -1180,41 +1180,60 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                                                              .filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
 						                                                              .map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
 						                                                              .collect(Collectors.toList())));
-				final List<DateRange> lilicIntersectant = new ArrayList<>(lilic.size());
 
 				// assujettissements calculés par Unireg
 				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
-				final List<DateRange> calculesIntersectant = new ArrayList<>(calcules.size());
 
-				// assujettissements complètement apparus
-				for (DateRange apparu : calcules) {
-					if (DateRangeHelper.intersect(apparu, lilic)) {
-						calculesIntersectant.add(apparu);
+				// [SIFISC-16333] une entreprise qui n'était pas assujettie du tout et qui l'est maintenant, ou une entreprise qui était assujettie, et qui ne l'est plus du tout,
+				// doit être logguées de manière particulière (ERROR)
+				if (lilic.isEmpty() || calcules.isEmpty()) {
+					if (!calcules.isEmpty()) {
+						// apparition totale d'assujettissement
+						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
+						              String.format("Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : %s.",
+						                            CollectionsUtils.toString(calcules, StringRenderers.DATE_RANGE_RENDERER, ",")));
 					}
-					else {
-						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
-						              String.format("Nouvelle période d'assujettissement apparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(apparu)));
+					if (!lilic.isEmpty()) {
+						// disparition totale d'assujettissement
+						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.ERROR,
+						              String.format("Disparition totale de l'assujettissement précédent : %s.",
+						                            CollectionsUtils.toString(lilic, StringRenderers.DATE_RANGE_RENDERER, ",")));
 					}
 				}
+				else {
+					final List<DateRange> lilicIntersectant = new ArrayList<>(lilic.size());
+					final List<DateRange> calculesIntersectant = new ArrayList<>(calcules.size());
 
-				// assujettissements complètement disparus
-				for (DateRange disparu : lilic) {
-					if (DateRangeHelper.intersect(disparu, calcules)) {
-						lilicIntersectant.add(disparu);
+					// assujettissements complètement apparus
+					for (DateRange apparu : calcules) {
+						if (DateRangeHelper.intersect(apparu, lilic)) {
+							calculesIntersectant.add(apparu);
+						}
+						else {
+							mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+							              String.format("Nouvelle période d'assujettissement apparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(apparu)));
+						}
 					}
-					else {
-						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
-						              String.format("Ancienne période d'assujettissement disparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(disparu)));
-					}
-				}
 
-				// les cas qui s'intersectent
-				if (!lilicIntersectant.isEmpty() || !calculesIntersectant.isEmpty()) {
-					if (!sameDateRanges(lilicIntersectant, calculesIntersectant)) {
-						mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
-						              String.format("Période(s) d'assujettissement modifiée(s) : avant (%s) et après (%s).",
-						                            toDisplayString(lilicIntersectant),
-						                            toDisplayString(calculesIntersectant)));
+					// assujettissements complètement disparus
+					for (DateRange disparu : lilic) {
+						if (DateRangeHelper.intersect(disparu, calcules)) {
+							lilicIntersectant.add(disparu);
+						}
+						else {
+							mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+							              String.format("Ancienne période d'assujettissement disparue : %s.", StringRenderers.DATE_RANGE_RENDERER.toString(disparu)));
+						}
+					}
+
+					// les cas qui s'intersectent
+					if (!lilicIntersectant.isEmpty() || !calculesIntersectant.isEmpty()) {
+						if (!sameDateRanges(lilicIntersectant, calculesIntersectant)) {
+							mr.addMessage(LogCategory.ASSUJETTISSEMENTS, LogLevel.WARN,
+							              String.format("Période(s) d'assujettissement modifiée(s) : avant (%s) et après (%s).",
+							                            toDisplayString(lilicIntersectant),
+							                            toDisplayString(calculesIntersectant)));
+						}
 					}
 				}
 

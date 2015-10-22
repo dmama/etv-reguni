@@ -503,7 +503,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1995 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntrepriseMandataire + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.01.1995 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
@@ -746,7 +746,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
 			// l'ouverture du premier for de l'entreprise jusqu'à la fin l'année civile en cours)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
@@ -966,7 +966,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
 			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année en cours)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
@@ -1206,7 +1206,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.05.1982 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
@@ -1337,7 +1337,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.05.1982 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -1453,7 +1453,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1982 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.05.1982 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -1543,7 +1543,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.05.1987 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.05.1987 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -1778,7 +1778,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
 			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année civile courante)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -1910,7 +1910,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// donc l'assujettissement va jusqu'à la fin de l'exercice commercial actif au moment de la fermeture du dernier for vaudois
 			// (et en l'absence de données d'exercices commerciaux, on suppose l'existance d'un seul exercice commercial qui court depuis
 			// l'ouverture du premier for de l'entreprise jusqu'à la fin de l'année en cours)
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [01.01.1990 -> " + RegDateHelper.dateToDisplayString(getFinAnneeEnCours()) + "].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -2032,7 +2032,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
-		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [14.03.1991 -> ?].", msg.get(0));
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [14.03.1991 -> ?].", msg.get(0));
 		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(1));
 	}
 
@@ -2056,7 +2056,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
-		Assert.assertEquals("WARN;" + idEntreprise + ";Inactive;;;Nouvelle période d'assujettissement apparue : [12.05.2015 -> ?].", msg.get(0));
+		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [12.05.2015 -> ?].", msg.get(0));
 		Assert.assertEquals("ERROR;" + idEntreprise + ";Inactive;;;Assujettissement calculé après le 01.01.2015 sur une entreprise considérée comme inactive.", msg.get(1));
 	}
 
@@ -2323,7 +2323,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [12.05.1986 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [12.05.1986 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -2442,7 +2442,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [17.05.1995 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [17.05.1995 -> ?].", msgs.get(0));
 		}
 	}
 
@@ -2803,7 +2803,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Nouvelle période d'assujettissement apparue : [28.09.1998 -> ?].", msgs.get(0));
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [28.09.1998 -> ?].", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ETABLISSEMENTS);
