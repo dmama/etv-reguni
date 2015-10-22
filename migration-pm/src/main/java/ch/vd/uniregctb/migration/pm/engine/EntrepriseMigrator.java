@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -78,7 +80,6 @@ import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
-import ch.vd.uniregctb.migration.pm.engine.data.RaisonSocialeData;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
@@ -286,37 +287,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static final class CapitalData {
-		private final BigDecimal capital;
-		private final RegDate dateValidite;
+	private static final class RaisonSocialeHistoData {
+		private final NavigableMap<RegDate, String> histo;
+		public RaisonSocialeHistoData(NavigableMap<RegDate, String> histo) {
+			this.histo = histo == null ? Collections.emptyNavigableMap() : histo;
+		}
+	}
 
-		public CapitalData(BigDecimal capital, RegDate dateValidite) {
-			this.capital = capital;
-			this.dateValidite = dateValidite;
+	private static final class CapitalHistoData {
+		private final NavigableMap<RegDate, BigDecimal> histo;
+		public CapitalHistoData(NavigableMap<RegDate, BigDecimal> histo) {
+			this.histo = histo == null ? Collections.emptyNavigableMap() : histo;
 		}
 	}
 
 	private static final class FormeJuridiqueHistoData {
 		private final NavigableMap<RegDate, RegpmTypeFormeJuridique> histo;
 		public FormeJuridiqueHistoData(NavigableMap<RegDate, RegpmTypeFormeJuridique> histo) {
-			this.histo = histo;
-		}
-	}
-
-	private static final class FormeJuridiqueData {
-		private final RegpmTypeFormeJuridique type;
-		private final RegDate dateValidite;
-
-		public FormeJuridiqueData(RegpmTypeFormeJuridique type, RegDate dateValidite) {
-			this.type = type;
-			this.dateValidite = dateValidite;
+			this.histo = histo == null ? Collections.emptyNavigableMap() : histo;
 		}
 	}
 
 	private static final class SiegesHistoData {
 		private final NavigableMap<RegDate, RegpmSiegeEntreprise> histo;
 		public SiegesHistoData(NavigableMap<RegDate, RegpmSiegeEntreprise> histo) {
-			this.histo = histo;
+			this.histo = histo == null ? Collections.emptyNavigableMap() : histo;
 		}
 	}
 
@@ -425,27 +420,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         null,
 		                         null);
 		
-		// données de la dernière raison sociale
-		mr.registerDataExtractor(RaisonSocialeData.class,
-		                         e -> extractRaisonSociale(e, mr, idMapper),
+		// données de l'historique des raisons sociales de l'entreprise
+		mr.registerDataExtractor(RaisonSocialeHistoData.class,
+		                         e -> extractRaisonsSociales(e, mr, idMapper),
 		                         null,
 		                         null);
 
-		// données de la dernière modification de capital
-		mr.registerDataExtractor(CapitalData.class,
-		                         e -> extractCapital(e, mr, idMapper),
+		// données de l'historique des capitaux de l'entreprise
+		mr.registerDataExtractor(CapitalHistoData.class,
+		                         e -> extractCapitaux(e, mr, idMapper),
 		                         null,
 		                         null);
 
 		// données de l'historique des formes juridiques de l'entreprise
 		mr.registerDataExtractor(FormeJuridiqueHistoData.class,
 		                         e -> extractFormesJuridiques(e, mr, idMapper),
-		                         null,
-		                         null);
-
-		// données de la dernière forme juridique de l'entreprise
-		mr.registerDataExtractor(FormeJuridiqueData.class,
-		                         e -> extractFormeJuridique(e, mr, idMapper),
 		                         null,
 		                         null);
 
@@ -556,12 +545,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return un structure (qui peut être vide) contenant les données de la raison sociale courante de l'entreprise
 	 */
 	@NotNull
-	private RaisonSocialeData extractRaisonSociale(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
+	private RaisonSocialeHistoData extractRaisonsSociales(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			// tout d'abord, on essaie d'être le plus strict possible
-			final RaisonSociale candidate = entreprise.getRaisonsSociales().stream()
+			// récupération de toutes les données qui ont un sens
+			final NavigableMap<RegDate, List<String>> strict = entreprise.getRaisonsSociales().stream()
 					.filter(rs -> !rs.getRectifiee())
 					.filter(rs -> {
 						if (rs.getDateValidite() == null) {
@@ -584,23 +573,42 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.max(Comparator.naturalOrder())
-					.orElse(null);
+					.peek(rs -> {
+						final String texteRaisonSociale = extractRaisonSociale(rs);
 
-			// si on a trouvé, c'est fini
-			if (candidate != null) {
+						// date louche quand-même ?
+						checkDateLouche(rs.getDateValidite(),
+						                () -> String.format("Raison sociale %d (%s) avec une date de validité",
+						                                    rs.getId(),
+						                                    texteRaisonSociale),
+						                LogCategory.DONNEES_CIVILES_REGPM,
+						                mr);
+					})
+					.map(rs -> Pair.of(rs.getDateValidite(), extractRaisonSociale(rs)))
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> Collections.singletonList(pair.getRight()),
+					                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+					                          TreeMap::new));
 
-				final String texteRaisonSociale = extractRaisonSociale(candidate);
+			// pour chaque date, on ne récupère que la dernière (elles sont ordonnées, à date égale, par numéro de séquence...)
+			final NavigableMap<RegDate, String> reduced = strict.entrySet().stream()
+					.map(entry -> {
+						final List<String> values = entry.getValue();
+						if (values.size() > 1) {
+							values.subList(0, values.size() - 1).forEach(s -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							                                                                String.format("Raison sociale '%s' du %s ignorée car remplacée par une autre valeur à la même date.",
+							                                                                              s, StringRenderers.DATE_RENDERER.toString(entry.getKey()))));
+						}
+						return Pair.of(entry.getKey(), values.get(values.size() - 1));
+					})
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          Pair::getRight,
+					                          (s1, s2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, il ne devrait pas y avoir de conflit de date ici..."); },
+					                          TreeMap::new));
 
-				// date louche quand-même ?
-				checkDateLouche(candidate.getDateValidite(),
-				                () -> String.format("Raison sociale %d (%s) avec une date de validité",
-				                                    candidate.getId(),
-				                                    texteRaisonSociale),
-				                LogCategory.DONNEES_CIVILES_REGPM,
-				                mr);
-
-				return new RaisonSocialeData(texteRaisonSociale, candidate.getDateValidite());
+			// si on a quelque chose, on s'arrête là
+			if (!reduced.isEmpty()) {
+				return new RaisonSocialeHistoData(reduced);
 			}
 
 			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
@@ -613,11 +621,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			if (derniereAvecDateNulle != null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
 				              String.format("En l'absence de donnée valide pour la raison sociale, repêchage de '%s'.", derniereAvecDateNulle));
-				return new RaisonSocialeData(derniereAvecDateNulle, null);
+				final NavigableMap<RegDate, String> map = new TreeMap<>(NullDateBehavior.EARLIEST::compare);
+				map.put(null, derniereAvecDateNulle);
+				return new RaisonSocialeHistoData(map);
 			}
 
 			// c'est la fin, on ne sait plus trop quoi faire...
-			return new RaisonSocialeData(null, null);
+			return new RaisonSocialeHistoData(null);
 		});
 	}
 
@@ -629,40 +639,66 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 * @return un structure (qui peut être vide) contenant les données du capital courant de l'entreprise
 	 */
 	@NotNull
-	private CapitalData extractCapital(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
+	private CapitalHistoData extractCapitaux(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, idMapper, () -> entreprise.getCapitaux().stream()
-				.filter(c -> !c.isRectifiee())
-				.filter(c -> {
-					if (c.getDateEvolutionCapital() == null) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Capital %d (%s) ignoré car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
-						                            c.getId().getSeqNo(),
-						                            c.getCapitalLibere()));
-						return false;
-					}
-					return true;
-				})
-				.filter(c -> {
-					if (isFutureDate(c.getDateEvolutionCapital())) {
-						mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-						              String.format("Capital %d (%s) ignoré car sa date de début de validité est dans le futur (%s).",
-						                            c.getId().getSeqNo(),
-						                            c.getCapitalLibere(),
-						                            StringRenderers.DATE_RENDERER.toString(c.getDateEvolutionCapital())));
-						return false;
-					}
-					return true;
-				})
-				.peek(c -> checkDateLouche(c.getDateEvolutionCapital(),
-				                           () -> String.format("Capital %d (%s) avec une date de début de validité",
-				                                               c.getId().getSeqNo(),
-				                                               c.getCapitalLibere()),
-				                           LogCategory.DONNEES_CIVILES_REGPM,
-				                           mr))
-				.max(Comparator.naturalOrder())
-				.map(c -> new CapitalData(c.getCapitalLibere(), c.getDateEvolutionCapital()))
-				.orElseGet(() -> new CapitalData(null, null)));
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// d'abord les données qui ont un sens
+			final NavigableMap<RegDate, List<BigDecimal>> strict = entreprise.getCapitaux().stream()
+					.filter(c -> !c.isRectifiee())
+					.filter(c -> {
+						if (c.getDateEvolutionCapital() == null) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Capital %d (%s) ignoré car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
+							                            c.getId().getSeqNo(),
+							                            c.getCapitalLibere()));
+							return false;
+						}
+						return true;
+					})
+					.filter(c -> {
+						if (isFutureDate(c.getDateEvolutionCapital())) {
+							mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							              String.format("Capital %d (%s) ignoré car sa date de début de validité est dans le futur (%s).",
+							                            c.getId().getSeqNo(),
+							                            c.getCapitalLibere(),
+							                            StringRenderers.DATE_RENDERER.toString(c.getDateEvolutionCapital())));
+							return false;
+						}
+						return true;
+					})
+					.peek(c -> checkDateLouche(c.getDateEvolutionCapital(),
+					                           () -> String.format("Capital %d (%s) avec une date de début de validité",
+					                                               c.getId().getSeqNo(),
+					                                               c.getCapitalLibere()),
+					                           LogCategory.DONNEES_CIVILES_REGPM,
+					                           mr))
+					.map(c -> Pair.of(c.getDateEvolutionCapital(), c.getCapitalLibere()))
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          pair -> Collections.singletonList(pair.getRight()),
+					                          (c1, c2) -> Stream.concat(c1.stream(), c2.stream()).collect(Collectors.toList()),
+					                          TreeMap::new));
+
+			// pour chaque date, on ne prend que le dernier capital (ils sont triés par numéro de séquence)
+			final NavigableMap<RegDate, BigDecimal> reduced = strict.entrySet().stream()
+					.map(entry -> {
+						final List<BigDecimal> values = entry.getValue();
+						if (values.size() > 1) {
+							values.subList(0, values.size() - 1).forEach(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							                                                                      String.format("Capital %s du %s ignoré car remplacé par une autre valeur à la même date.",
+							                                                                                    capital,
+							                                                                                    StringRenderers.DATE_RENDERER.toString(entry.getKey()))));
+						}
+						return Pair.of(entry.getKey(), values.get(values.size() - 1));
+					})
+					.collect(Collectors.toMap(Pair::getLeft,
+					                          Pair::getRight,
+					                          (c1, c2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, il ne devrait pas y avoir de conflit de date ici."); },
+					                          TreeMap::new));
+
+			// encapsulation dans la structure officielle
+			return new CapitalHistoData(reduced);
+		});
 	}
 
 	/**
@@ -728,27 +764,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					                          (t1, t2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, on ne devrait pas pouvoir de collision de clé ici..."); },
 					                          TreeMap::new));
 
-			return new FormeJuridiqueHistoData(reduced);
-		});
-	}
-
-	/**
-	 * Retrouve les données valides de la forme juridique d'une entreprise
-	 * @param entreprise entreprise dont on veut extraire forme juridique courante
-	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
-	 * @param idMapper mapper d'identifiants RegPM -> Unireg
-	 * @return une structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
-	 */
-	@NotNull
-	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
-		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
-		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
-
-			// voyons voir l'historique
-			final NavigableMap<RegDate, RegpmTypeFormeJuridique> histo = mr.getExtractedData(FormeJuridiqueHistoData.class, entrepriseKey).histo;
-			if (!histo.isEmpty()) {
-				final Map.Entry<RegDate, RegpmTypeFormeJuridique> last = histo.lastEntry();
-				return new FormeJuridiqueData(last.getValue(), last.getKey());
+			// si on a des informations, pas de probléme, on renvoie ça
+			if (!reduced.isEmpty()) {
+				return new FormeJuridiqueHistoData(reduced);
 			}
 
 			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
@@ -761,11 +779,13 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			if (derniereAvecDateNulle != null) {
 				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.WARN,
 				              String.format("En l'absence de donnée valide pour la forme juridique, repêchage de '%s'.", derniereAvecDateNulle.getCode()));
-				return new FormeJuridiqueData(derniereAvecDateNulle, null);
+				final NavigableMap<RegDate, RegpmTypeFormeJuridique> map = new TreeMap<>(NullDateBehavior.EARLIEST::compare);
+				map.put(null, derniereAvecDateNulle);
+				return new FormeJuridiqueHistoData(map);
 			}
 
-			// c'est la fin, on ne sait plus trop quoi faire...
-			return new FormeJuridiqueData(null, null);
+			// là, c'est la fin, on n'a vraiment rien à proposer...
+			return new FormeJuridiqueHistoData(null);
 		});
 	}
 
@@ -1575,7 +1595,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// TODO migrer les documents...
 
-		final String raisonSociale = mr.getExtractedData(RaisonSocialeData.class, moi.getKey()).getRaisonSociale();
+		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
 		migrateFlagDebiteurInactif(regpm, unireg, mr);
@@ -1645,6 +1665,81 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * Un itérateur de structures découpées pour conserver des plages de valeurs constantes
+	 */
+	private static class DonneesRegistreCommerceGenerator implements Iterator<DonneesRegistreCommerce> {
+
+		private final RegDate dateFinActivite;
+		private final NavigableMap<RegDate, String> histoRaisonsSociales;
+		private final NavigableMap<RegDate, BigDecimal> histoCapitaux;
+		private final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques;
+		private final MigrationResultProduction mr;
+
+		private RegDate nextDate;
+		private boolean done;
+
+		public DonneesRegistreCommerceGenerator(RegDate firstDate, RegDate dateFinActivite, NavigableMap<RegDate, String> histoRaisonsSociales, NavigableMap<RegDate, BigDecimal> histoCapitaux,
+		                                        NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques, MigrationResultProduction mr) {
+			this.dateFinActivite = dateFinActivite;
+			this.histoRaisonsSociales = histoRaisonsSociales;
+			this.histoCapitaux = histoCapitaux;
+			this.histoFormesJuridiques = histoFormesJuridiques;
+			this.mr = mr;
+			this.nextDate = firstDate;
+			this.done = histoRaisonsSociales.floorEntry(firstDate) == null || histoFormesJuridiques.floorEntry(firstDate) == null;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !done;
+		}
+
+		@Override
+		public DonneesRegistreCommerce next() {
+			if (done) {
+				throw new NoSuchElementException();
+			}
+			final String raisonSociale = histoRaisonsSociales.floorEntry(nextDate).getValue();
+			final RegpmTypeFormeJuridique formeJuridique = histoFormesJuridiques.floorEntry(nextDate).getValue();
+			final BigDecimal montant = Optional.ofNullable(histoCapitaux.floorEntry(nextDate)).map(Map.Entry::getValue).orElse(null);
+			final MontantMonetaire capital = montant != null ? new MontantMonetaire(montant.longValue(), MontantMonetaire.CHF) : null;
+			final RegDate debut = nextDate;
+
+			nextDate = computeNextDate();
+			final RegDate fin;
+			if (nextDate == null) {
+				if (dateFinActivite != null && dateFinActivite.isBefore(debut)) {
+					mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+					              String.format("Date de début des données du registre du commerce (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
+					                            StringRenderers.DATE_RENDERER.toString(debut),
+					                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+					fin = null;
+				}
+				else {
+					fin = dateFinActivite;
+				}
+			}
+			else {
+				fin = nextDate.getOneDayBefore();
+			}
+
+			return new DonneesRegistreCommerce(debut, fin, raisonSociale, capital, toFormeJuridique(formeJuridique.getCode()));
+		}
+
+		@Nullable
+		private RegDate computeNextDate() {
+			final RegDate nextRaisonSocialeChange = histoRaisonsSociales.higherKey(nextDate);
+			final RegDate nextCapitalChange = histoCapitaux.higherKey(nextDate);
+			final RegDate nextFormeJuridiqueChange = histoFormesJuridiques.higherKey(nextDate);
+			done = nextRaisonSocialeChange == null && nextCapitalChange == null && nextFormeJuridiqueChange == null;
+			return Stream.of(nextRaisonSocialeChange, nextCapitalChange, nextFormeJuridiqueChange)
+					.filter(Objects::nonNull)
+					.min(Comparator.naturalOrder())
+					.orElse(null);
+		}
+	}
+
+	/**
 	 * Reconstitution des données du registre du commerce
 	 * @param regpm entreprise à migrer
 	 * @param unireg entreprise destination de la migration dans Unireg
@@ -1655,71 +1750,56 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey key = buildEntrepriseKey(regpm);
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, key).date;
 
-		// raison sociale (= la dernière)
-		final RaisonSocialeData rsData = mr.getExtractedData(RaisonSocialeData.class, key);
+		// historique des raisons sociales
+		final NavigableMap<RegDate, String> rsData = mr.getExtractedData(RaisonSocialeHistoData.class, key).histo;
 
-		// capital (= le dernier en date)
-		final CapitalData capitalData = mr.getExtractedData(CapitalData.class, key);
+		// historique des capitaux
+		final NavigableMap<RegDate, BigDecimal> capitalData = mr.getExtractedData(CapitalHistoData.class, key).histo;
 
-		// forme juridique (= la dernière en date)
-		final FormeJuridiqueData formeJuridiqueData = mr.getExtractedData(FormeJuridiqueData.class, key);
+		// historique des formes juridiques
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> formeJuridiqueData = mr.getExtractedData(FormeJuridiqueHistoData.class, key).histo;
 
-		// on cherche ensuite la dernière date à partir de laquelle les éléments ci-dessus avaient leur dernière valeur
-		final RegDate dateDebut = Stream.of(rsData.getDateValidite(), capitalData.dateValidite, formeJuridiqueData.dateValidite)
-				.filter(date -> date != null)
-				.max(Comparator.naturalOrder())
-				.orElse(getDateDebutActivite(regpm, mr));
-
-		final RegDate dateFin;
-		if (dateDebut == null) {
+		// y a-t-il seulement un historique au niveau des formes juridiques et des raisons sociales ?
+		if (rsData.isEmpty() || formeJuridiqueData.isEmpty()) {
 			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-			              "Impossible de déterminer la date de début des données du registre du commerce (dernières dates de raison sociale, de capitaux et de forme juridiques inexistantes).");
+			              "Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).");
 			return;
 		}
-		else if (RegDateHelper.isAfter(dateDebut, dateFinActivite, NullDateBehavior.LATEST)) {
-			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
-			              String.format("Date de début des données du registre du commerce (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
-			                            StringRenderers.DATE_RENDERER.toString(dateDebut),
-			                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
-			dateFin = null;
+
+		// l'historique commun entre les raisons sociales et les formes juridiques (seuls éléments obligatoires) commence là
+		final RegDate dateDebutHistoire = RegDateHelper.maximum(rsData.firstKey(), formeJuridiqueData.firstKey(), NullDateBehavior.EARLIEST);
+
+		// si on n'a aucune date de début... on peut éventuellement se rabattre sur la date de début des capitaux ou sur la date de début d'activité de l'entreprise
+		final RegDate dateDebutEffective;
+		if (dateDebutHistoire == null) {
+			final RegDate dateDebutActivite = getDateDebutActivite(regpm, mr);
+			if (dateDebutActivite != null) {
+				dateDebutEffective = dateDebutActivite;
+			}
+			else if (capitalData.isEmpty() || capitalData.firstKey() == null) {
+				mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+				              "Impossible de déterminer la date de début des données du registre du commerce (aucune date de début connue pour la raison sociale, la forme juridique et d'éventuels capitaux).");
+				return;
+			}
+			else {
+				// on prend ça...
+				dateDebutEffective = capitalData.firstKey();
+			}
 		}
 		else {
-			dateFin = dateFinActivite;
+			dateDebutEffective = dateDebutHistoire;
 		}
 
-		// capital à prendre en compte
-		final MontantMonetaire capital;
-		if (capitalData.capital != null) {
-			capital = new MontantMonetaire(capitalData.capital.longValue(), MontantMonetaire.CHF);     // tous les montants dans RegPM sont en CHF
-		}
-		else {
-			capital = null;
-		}
-
-		// forme juridique
-		final FormeJuridiqueEntreprise formeJuridique;
-		if (formeJuridiqueData.type != null) {
-			formeJuridique = toFormeJuridique(formeJuridiqueData.type.getCode());
-		}
-		else {
-			formeJuridique = null;
-		}
-
-		// si on n'a rien, pas la peine de générer une donnée
-		if (StringUtils.isNotBlank(rsData.getRaisonSociale()) || capital != null || formeJuridique != null) {
-			final DonneesRegistreCommerce rc = new DonneesRegistreCommerce(dateDebut, dateFin,
-			                                                               rsData.getRaisonSociale(),
-			                                                               capital,
-			                                                               formeJuridique);
-			unireg.addDonneesRC(rc);
-
-			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
-			              String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s), capital (%s) et forme juridique (%s).",
-			                            StringRenderers.DATE_RANGE_RENDERER.toString(rc),
-			                            rc.getRaisonSociale(),
-			                            rc.getCapital() != null ? StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(rc.getCapital()) : StringUtils.EMPTY,
-			                            rc.getFormeJuridique()));
-		}
+		// génération des données à sauvegarder
+		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, rsData, capitalData, formeJuridiqueData, mr);
+		StreamSupport.stream(donneesRC.spliterator(), false)
+				.peek(rc -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+				                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s), capital (%s) et forme juridique (%s).",
+				                                        StringRenderers.DATE_RANGE_RENDERER.toString(rc),
+				                                        rc.getRaisonSociale(),
+				                                        rc.getCapital() != null ? StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(rc.getCapital()) : StringUtils.EMPTY,
+				                                        rc.getFormeJuridique())))
+				.forEach(unireg::addDonneesRC);
 	}
 
 	private static FormeJuridiqueEntreprise toFormeJuridique(String codeRegpm) {
@@ -1954,10 +2034,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                String.format("Siège %d non-migré car on ne prend en compte que le dernier.", siege.getId().getSeqNo())));
 		final RegpmSiegeEntreprise siege = donneesSiegeReference.getValue();
 
+		// récupération de la raison sociale
+		final NavigableMap<RegDate, String> raisonsSociales = mr.getExtractedData(RaisonSocialeHistoData.class, moi).histo;
+		final String raisonSociale = Optional.ofNullable(raisonsSociales.lastEntry()).map(Map.Entry::getValue).orElse(null);
+
 		final Etablissement etbPrincipal = uniregStore.saveEntityToDb(new Etablissement());
 		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
 		etbPrincipal.setEnseigne(regpm.getEnseigne());
-		etbPrincipal.setRaisonSociale(mr.getExtractedData(RaisonSocialeData.class, moi).getRaisonSociale());
+		etbPrincipal.setRaisonSociale(raisonSociale);
 		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal

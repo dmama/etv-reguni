@@ -708,7 +708,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(7, msgs.size());
@@ -762,6 +762,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement1 + ";;" + noContribuableEtablissementSecondaire1.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2002-07-14;2010-11-25;;" + idEtablissement2 + ";;" + noContribuableEtablissementSecondaire2.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise+ ";;;" + idEntreprise + ";", msgs.get(2));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -928,7 +933,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(7, msgs.size());
@@ -982,6 +987,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement1 + ";;" + noContribuableEtablissementSecondaire1.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2002-07-14;2010-11-25;;" + idEtablissement2 + ";;" + noContribuableEtablissementSecondaire2.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(2));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1211,7 +1221,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (dernières dates de raison sociale, de capitaux et de forme juridiques inexistantes).", msgs.get(0));
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1314,7 +1324,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1343,6 +1353,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1432,7 +1447,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1459,6 +1474,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1525,7 +1545,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1549,6 +1569,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1987-05-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + noEntreprise + ";;;" + noEntreprise + ";", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + noEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1735,7 +1760,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -1785,6 +1810,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1999-05-12;2006-10-31;;" + idEtablissement + ";;" + noContribuableEtablissementSecondaire.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(1));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -1877,7 +1907,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -1916,6 +1946,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;1990-01-01;;;;;" + noContribuableEtablissementPrincipalCree.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -2293,7 +2328,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertNotNull(noContribuableIndividu.getValue());
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(6, msgs.size());
@@ -2330,6 +2365,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2000-01-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
 			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2009-06-12;2010-07-13;" + idEntreprise + ";;;" + idEntreprise + ";;;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";", msgs.get(1));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -2418,7 +2458,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
-		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS), messages.keySet());
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
@@ -2443,6 +2483,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.ASSUJETTISSEMENTS);
 			Assert.assertEquals(1, msgs.size());
 			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;Apparition d'assujettissement sur une entreprise auparavant complètement non-assujettie : [17.05.1995 -> ?].", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
@@ -3037,7 +3082,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
-		                               LogCategory.DECLARATIONS),
+		                               LogCategory.DECLARATIONS,
+		                               LogCategory.DONNEES_CIVILES_REGPM),
 		                    messages.keySet());
 
 		{
@@ -3064,6 +3110,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Génération d'une déclaration sur la PF 2014 à partir des dates [01.01.2014 -> 31.12.2014] de la période d'imposition calculée et du dossier fiscal 2014/1 sans exercice commercial lié.", msgs.get(4));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Délai initial de retour fixé au 14.08.2015.", msgs.get(5));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'EMISE' migré au 01.01.2015.", msgs.get(6));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
 		}
 	}
 
