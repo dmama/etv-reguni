@@ -67,7 +67,9 @@
 	<bean id="forFiscalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalValidator" abstract="true" parent="localisationDateeValidator"/>
 	<bean id="forFiscalRevenuFortuneValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalRevenuFortuneValidator" abstract="true" parent="forFiscalValidator" />
 	<bean id="forFiscalPrincipalValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalValidator" abstract="true" parent="forFiscalRevenuFortuneValidator" />
-	<bean id="forFiscalPrincipalPMValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPMValidator" parent="forFiscalPrincipalValidator" />
+	<bean id="forFiscalPrincipalPMValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalPrincipalPMValidator" parent="forFiscalPrincipalValidator">
+		<property name="tiersService" ref="tiersService"/>
+	</bean>
 	<bean id="forFiscalSecondaireValidator" class="ch.vd.uniregctb.validation.fors.ForFiscalSecondaireValidator" parent="forFiscalRevenuFortuneValidator" />
 
 	<bean id="decisionValidator" class="ch.vd.uniregctb.validation.decision.DecisionValidator" parent="localisationDateeValidator"/>

@@ -9,6 +9,7 @@
 
 	<bean id="_tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="bouclementService" ref="bouclementService"/>
+		<property name="serviceOrganisationService" ref="serviceOrganisationService"/>
 		<!-- en théorie, il en manque plein... -->
 	</bean>
 
@@ -17,6 +18,7 @@
 		<property name="supportedMethodNames">
 			<set>
 				<value>getExercicesCommerciaux</value>
+				<value>isSocieteDePersonnes</value>
 			</set>
 		</property>
 	</bean>
@@ -39,6 +41,16 @@
 	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl">
 		<property name="transactionManager" ref="uniregTransactionManager"/>
 		<property name="dao" ref="parametreAppDAO"/>
+	</bean>
+
+	<bean id="serviceOrganisationService" class="ch.vd.uniregctb.interfaces.service.ServiceOrganisationImpl">
+		<property name="target" ref="serviceOrganisationRCEnt"/>
+		<property name="serviceInfra" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="serviceOrganisationRCEnt" class="ch.vd.unireg.interfaces.organisation.rcent.ServiceOrganisationRCEnt">
+		<constructor-arg ref="rcEntAdapter"/>
+		<constructor-arg ref="serviceInfrastructureFidor"/>
 	</bean>
 
 	<bean id="rcEntAdapter" class="ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter">

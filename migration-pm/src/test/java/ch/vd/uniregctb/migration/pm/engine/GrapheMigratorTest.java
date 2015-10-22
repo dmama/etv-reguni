@@ -54,6 +54,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEtablissement;
@@ -257,11 +258,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idEtablissementMandataire = 3562L;
 		final RegpmEntreprise mandant = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandante);
 		EntrepriseMigratorTest.addRaisonSociale(mandant, RegDate.get(1995, 1, 1), "Je suis", "le mandant", null, true);
-		EntrepriseMigratorTest.addFormeJuridique(mandant, RegDate.get(1995, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("ASS"));
+		EntrepriseMigratorTest.addFormeJuridique(mandant, RegDate.get(1995, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("ASS", RegpmCategoriePersonneMorale.APM));
 
 		final RegpmEntreprise entrepriseMandataire = EntrepriseMigratorTest.buildEntreprise(idEntrepriseMandataire);
 		EntrepriseMigratorTest.addRaisonSociale(entrepriseMandataire, RegDate.get(1990, 1, 1), "Je suis", "le mandataire", null, true);
-		EntrepriseMigratorTest.addFormeJuridique(entrepriseMandataire, RegDate.get(1990, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
+		EntrepriseMigratorTest.addFormeJuridique(entrepriseMandataire, RegDate.get(1990, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addForPrincipalEtranger(entrepriseMandataire, RegDate.get(1990, 1, 1), RegpmTypeForPrincipal.SIEGE, MockPays.RoyaumeUni.getNoOFS());
 		EntrepriseMigratorTest.addSiegeEtranger(entrepriseMandataire, RegDate.get(1990, 2, 2), MockPays.RoyaumeUni.getNoOFS());
 
@@ -2453,7 +2454,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
-		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2506,7 +2507,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
-		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A."));
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		entreprise.setDateRadiationRC(dateRadiation);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
@@ -2560,7 +2561,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
-		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addCapital(entreprise, dateDebut, 45678134L);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
@@ -2627,7 +2628,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		EntrepriseMigratorTest.addSiegeSuisse(entreprise, dateDebut, Commune.MORGES);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.MORGES);
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Markus", "und", "Söhne", true);
-		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 
 		final RegpmEtablissement etablissement = EtablissementMigratorTest.buildEtablissement(idEtablissement, entreprise);
 		EtablissementMigratorTest.addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
@@ -3073,7 +3074,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final RegDate dateDebut = RegDate.get(2001, 4, 2);
 		final RegpmEntreprise e = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addRaisonSociale(e, dateDebut , "*Chez-moi sàrl", null, null, true);
-		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L."));
+		EntrepriseMigratorTest.addFormeJuridique(e, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		EntrepriseMigratorTest.addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),

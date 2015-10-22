@@ -48,6 +48,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCapital;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -197,9 +198,10 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return data;
 	}
 
-	static RegpmTypeFormeJuridique createTypeFormeJuridique(String code) {
+	static RegpmTypeFormeJuridique createTypeFormeJuridique(String code, RegpmCategoriePersonneMorale categorie) {
 		final RegpmTypeFormeJuridique forme = new RegpmTypeFormeJuridique();
 		forme.setCode(code);
+		forme.setCategorie(categorie);
 		return forme;
 	}
 
@@ -856,7 +858,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final long noEntreprise = 1234L;
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2000, 1, 1), "Ma", "petite", "entreprise", true);
-		addFormeJuridique(e, RegDate.get(2000, 1, 1), createTypeFormeJuridique("S.A.R.L."));
+		addFormeJuridique(e, RegDate.get(2000, 1, 1), createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 		e.setCoordonneesFinancieres(createCoordonneesFinancieres(null, "POFICHBEXXX", null, "17-331-7", "Postfinance", null));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -3589,7 +3591,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		final RaisonSociale raisonSociale = addRaisonSociale(e, null, "Ma société à moi", "tout seul", "vraiment", true);
-		addFormeJuridique(e, RegDate.get(2007, 6, 14), createTypeFormeJuridique("S.A.R.L."));
+		addFormeJuridique(e, RegDate.get(2007, 6, 14), createTypeFormeJuridique("S.A.R.L.", RegpmCategoriePersonneMorale.PM));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3642,7 +3644,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -3695,7 +3697,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		final RegpmAdresseEntreprise a = addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 		a.setChez("c/o moi");
 
@@ -3741,7 +3743,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
@@ -3785,7 +3787,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		final RegpmEntreprise e = buildEntreprise(noEntreprise);
 		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
-		addFormeJuridique(e, null, createTypeFormeJuridique("S.A."));
+		addFormeJuridique(e, null, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
 		addAdresse(e, RegpmTypeAdresseEntreprise.SIEGE, RegDate.get(2004, 8, 27), null, LocalitePostale.RENENS, "Rue des champs", "42", null, null);
 
@@ -3820,6 +3822,47 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Rue des étangs", adresseSuisse.getRue());
 			Assert.assertNull(adresseSuisse.getNumeroRue());
 			Assert.assertEquals((Integer) LocalitePostale.RENENS.getNoOrdreP().intValue(), adresseSuisse.getNumeroOrdrePoste());
+		});
+	}
+
+	/**
+	 * Les fors d'une SNC doivent être migrés en genre impôt "revenu/fortune"
+	 */
+	@Test
+	public void testMigrationForsSNC() throws Exception {
+
+		final long noEntreprise = 2623L;
+
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		addRaisonSociale(e, RegDate.get(2004, 8, 27), "Ma société à moi", "tout seul", "si si vraiment", true);
+		addFormeJuridique(e, RegDate.get(2004, 8, 27), createTypeFormeJuridique("S.N.C.", RegpmCategoriePersonneMorale.SP));
+		addAdresse(e, RegpmTypeAdresseEntreprise.COURRIER, RegDate.get(2010, 7, 22), null, LocalitePostale.RENENS, "Rue des étangs", "24", null, null);
+		addForPrincipalSuisse(e, RegDate.get(2004, 8, 27), RegpmTypeForPrincipal.SIEGE, Commune.RENENS);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<ForFiscal> forsFiscaux = entreprise.getForsFiscaux();
+			Assert.assertNotNull(forsFiscaux);
+			Assert.assertEquals(1, forsFiscaux.size());
+
+			final ForFiscal ff = forsFiscaux.iterator().next();
+			Assert.assertNotNull(ff);
+			Assert.assertFalse(ff.isAnnule());
+			Assert.assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());         // <-- c'est ce point qui va faire en sorte qu'il n'y ait pas d'assujettissement
+			Assert.assertEquals(RegDate.get(2004, 8, 27), ff.getDateDebut());
+			Assert.assertNull(ff.getDateFin());
+			Assert.assertEquals(ForFiscalPrincipalPM.class, ff.getClass());
 		});
 	}
 }

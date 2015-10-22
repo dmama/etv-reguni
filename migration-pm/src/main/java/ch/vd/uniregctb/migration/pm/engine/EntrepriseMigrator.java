@@ -93,6 +93,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCanton;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
@@ -295,6 +296,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
+	private static final class FormeJuridiqueHistoData {
+		private final NavigableMap<RegDate, RegpmTypeFormeJuridique> histo;
+
+		public FormeJuridiqueHistoData(NavigableMap<RegDate, RegpmTypeFormeJuridique> histo) {
+			this.histo = histo;
+		}
+	}
+
 	private static final class FormeJuridiqueData {
 		private final RegpmTypeFormeJuridique type;
 		private final RegDate dateValidite;
@@ -413,6 +422,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// données de la dernière modification de capital
 		mr.registerDataExtractor(CapitalData.class,
 		                         e -> extractCapital(e, mr, idMapper),
+		                         null,
+		                         null);
+
+		// données de l'historique des formes juridiques de l'entreprise
+		mr.registerDataExtractor(FormeJuridiqueHistoData.class,
+		                         e -> extractFormesJuridiques(e, mr, idMapper),
 		                         null,
 		                         null);
 
@@ -639,19 +654,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Retrouve les données valides de la forme juridique d'une entreprise
-	 * @param entreprise entreprise dont on veut extraire forme juridique courante
+	 * Retrouve un historique complet des formes juridiques d'une entreprise au cours du temps
+	 * @param entreprise entreprise dont on veut extraire les formes juridiques historiques
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
-	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
+	 * @return une structure (qui peut être vide) contenant les données des formes juridiques historiques de l'entreprise
 	 */
 	@NotNull
-	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
+	private FormeJuridiqueHistoData extractFormesJuridiques(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			// tout d'abord, on essaie d'être le plus strict possible
-			final RegpmFormeJuridique candidate = entreprise.getFormesJuridiques().stream()
+			// on calcule d'abord un historique complet strict
+			final Map<RegDate, List<RegpmTypeFormeJuridique>> strict = entreprise.getFormesJuridiques().stream()
 					.filter(fj -> !fj.isRectifiee())
 					.filter(fj -> {
 						if (fj.getDateValidite() == null) {
@@ -674,21 +689,54 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.max(Comparator.naturalOrder())
-					.orElse(null);
+					.peek(fj -> checkDateLouche(fj.getDateValidite(),
+					                            () -> String.format("Forme juridique %d (%s) avec date de début de validité",
+					                                                fj.getPk().getSeqNo(),
+					                                                fj.getType().getCode()),
+					                            LogCategory.DONNEES_CIVILES_REGPM,
+					                            mr))
+					.collect(Collectors.toMap(RegpmFormeJuridique::getDateValidite,
+					                          fj -> Collections.<RegpmTypeFormeJuridique>singletonList(fj.getType()),
+					                          (set1, set2) -> Stream.concat(set1.stream(), set2.stream()).collect(Collectors.toList())));
 
-			// si on a trouvé, c'est fini
-			if (candidate != null) {
+			// si plusieurs données existent à la même date, on prend le dernier en loggant les autres
+			final NavigableMap<RegDate, RegpmTypeFormeJuridique> reduced = strict.entrySet().stream()
+					.map(entry -> {
+						final List<RegpmTypeFormeJuridique> values = entry.getValue();
+						if (values.size() > 1) {
+							values.subList(0, values.size() - 1).forEach(type -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+							                                                                   String.format("Forme juridique '%s' du %s ignorée car remplacée par une autre à la même date.",
+							                                                                                 type.getCode(),
+							                                                                                 StringRenderers.DATE_RENDERER.toString(entry.getKey()))));
+						}
+						return Pair.of(entry.getKey(), values.get(values.size() - 1));
+					})
+					.collect(Collectors.toMap(Pair::getKey,
+					                          Pair::getValue,
+					                          (t1, t2) -> { throw new IllegalArgumentException("Erreur dans l'algorithme, on ne devrait pas pouvoir de collision de clé ici..."); },
+					                          TreeMap::new));
 
-				// date louche quand-même ?
-				checkDateLouche(candidate.getDateValidite(),
-				                () -> String.format("Forme juridique %d (%s) avec date de début de validité",
-				                                    candidate.getPk().getSeqNo(),
-				                                    candidate.getType().getCode()),
-				                LogCategory.DONNEES_CIVILES_REGPM,
-				                mr);
+			return new FormeJuridiqueHistoData(reduced);
+		});
+	}
 
-				return new FormeJuridiqueData(candidate.getType(), candidate.getDateValidite());
+	/**
+	 * Retrouve les données valides de la forme juridique d'une entreprise
+	 * @param entreprise entreprise dont on veut extraire forme juridique courante
+	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
+	 * @param idMapper mapper d'identifiants RegPM -> Unireg
+	 * @return un structure (qui peut être vide) contenant les données de la forme juridique courante de l'entreprise
+	 */
+	@NotNull
+	private FormeJuridiqueData extractFormeJuridique(RegpmEntreprise entreprise, MigrationResultContextManipulation mr, IdMapping idMapper) {
+		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
+		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
+
+			// voyons voir l'historique
+			final NavigableMap<RegDate, RegpmTypeFormeJuridique> histo = mr.getExtractedData(FormeJuridiqueHistoData.class, entrepriseKey).histo;
+			if (!histo.isEmpty()) {
+				final Map.Entry<RegDate, RegpmTypeFormeJuridique> last = histo.lastEntry();
+				return new FormeJuridiqueData(last.getValue(), last.getKey());
 			}
 
 			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
@@ -2461,26 +2509,74 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private void migrateForsPrincipaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		final Function<RegpmForPrincipal, Optional<Pair<Boolean, ForFiscalPrincipalPM>>> mapper = f -> {
-			final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
-			copyCreationMutation(f, ffp);
-			ffp.setDateDebut(f.getDateValidite());
-			ffp.setGenreImpot(GenreImpot.BENEFICE_CAPITAL);
-			ffp.setMotifRattachement(MotifRattachement.DOMICILE);
-
-			final CommuneOuPays cop = buildCommuneOuPays(f.getDateValidite(), f::getCommune, f::getOfsPays, String.format("for principal %d", f.getId().getSeqNo()), mr, LogCategory.FORS);
-			ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
-			ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
-
-			checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
-			return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
-		};
+		// [SIFISC-16333] il faut faire attention à la forme juridique de l'entreprise
+		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, entrepriseKey).histo;
+		final boolean hasSP = histoFormesJuridiques.values().stream()
+				.filter(tfj -> tfj.getCategorie() == RegpmCategoriePersonneMorale.SP)
+				.findAny()
+				.isPresent();
+		final boolean hasPMorAPMnonDP = histoFormesJuridiques.values().stream()
+				.filter(tfj -> tfj.getCategorie() == RegpmCategoriePersonneMorale.PM || tfj.getCategorie() == RegpmCategoriePersonneMorale.APM)
+				.filter(tfj -> toFormeJuridique(tfj.getCode()) != FormeJuridiqueEntreprise.CORP_DP_ADM)
+				.findAny()
+				.isPresent();
+		final boolean hasDP = histoFormesJuridiques.values().stream()
+				.filter(tfj -> toFormeJuridique(tfj.getCode()) == FormeJuridiqueEntreprise.CORP_DP_ADM)
+				.findAny()
+				.isPresent();
 
 		// récupération des fors principaux valides
-		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, buildEntrepriseKey(regpm)).liste;
-		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
+		final List<RegpmForPrincipal> forsRegpm = mr.getExtractedData(ForsPrincipauxData.class, entrepriseKey).liste;
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, entrepriseKey).date;
 
-		// puis la migration, justement
+		// plusieurs catégories différentes dont SP -> migration manuelle (~10 cas...)
+		if (hasSP && (hasPMorAPMnonDP || hasDP)) {
+			forsRegpm.stream()
+					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
+					                             String.format("For fiscal principal %d du %s non-migré car l'entreprise a été SP et PM/APM au cours de son existence.",
+					                                           ff.getId().getSeqNo(),
+					                                           StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()))));
+			return;
+		}
+
+		// entreprise administratives de droit public et autre -> migration manuelle (combien de cas ?)
+		if (hasDP && hasPMorAPMnonDP) {
+			forsRegpm.stream()
+					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
+					                             String.format("For fiscal principal %d du %s non-migré car l'entreprise PM/APM a été DP et non-DP au cours de son existence.",
+					                                           ff.getId().getSeqNo(),
+					                                           StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()))));
+			return;
+		}
+
+		// entreprises administratives de droit public (communes...) -> pas de for migré, et c'est normal
+		if (hasDP) {
+			forsRegpm.stream()
+					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
+					                             String.format("For fiscal principal %d du %s non-migré (administration de droit public).",
+					                                           ff.getId().getSeqNo(),
+					                                           StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()))));
+			return;
+		}
+
+		// maintenant, on peut migrer...
+
+		final Function<RegpmForPrincipal, Optional<Pair<Boolean, ForFiscalPrincipalPM>>> mapper =
+				f -> {
+					final ForFiscalPrincipalPM ffp = new ForFiscalPrincipalPM();
+					copyCreationMutation(f, ffp);
+					ffp.setDateDebut(f.getDateValidite());
+					ffp.setGenreImpot(hasSP ? GenreImpot.REVENU_FORTUNE : GenreImpot.BENEFICE_CAPITAL);
+					ffp.setMotifRattachement(MotifRattachement.DOMICILE);
+
+					final CommuneOuPays cop = buildCommuneOuPays(f.getDateValidite(), f::getCommune, f::getOfsPays, String.format("for principal %d", f.getId().getSeqNo()), mr, LogCategory.FORS);
+					ffp.setTypeAutoriteFiscale(cop.getTypeAutoriteFiscale());
+					ffp.setNumeroOfsAutoriteFiscale(cop.getNumeroOfsAutoriteFiscale());
+
+					checkFractionCommuneVaudoise(ffp, mr, LogCategory.FORS);
+					return Optional.of(Pair.of(f.getType() == RegpmTypeForPrincipal.ADMINISTRATION_EFFECTIVE, ffp));
+				};
 
 		// ici, on va collecter les fors qui sont issus d'une décision ACI (= administration effective)
 		// afin de générer les entités Unireg 'DecisionACI'
