@@ -4,5 +4,6 @@ public enum RegpmTypeEtatQuestionnaireSNC {
 	ANNULE,
 	ENVOYE,
 	RECU,
-	TAXE
+	TAXE,
+	RAPPELE
 }

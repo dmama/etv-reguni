@@ -15,6 +15,7 @@ public class TypeEtatQuestionnaireSNCUserType extends EnumCharMappingUserType<Re
 		map.put("ENVOYE", RegpmTypeEtatQuestionnaireSNC.ENVOYE);
 		map.put("RECU", RegpmTypeEtatQuestionnaireSNC.RECU);
 		map.put("TAXE", RegpmTypeEtatQuestionnaireSNC.TAXE);
+		map.put("RAPPELE", RegpmTypeEtatQuestionnaireSNC.RAPPELE);
 		return map;
 	}
 
