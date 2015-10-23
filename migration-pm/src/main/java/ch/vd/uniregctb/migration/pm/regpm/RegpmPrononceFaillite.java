@@ -34,9 +34,20 @@ public class RegpmPrononceFaillite extends RegpmEntity implements Comparable<Reg
 	@Embeddable
 	public static class PK implements Serializable, Comparable<PK> {
 
+		private static final long serialVersionUID = 4840347600439534968L;
+
 		private Integer noSeq;
 		private Long idEntreprise;
 		private Integer noSequenceEtatEntreprise;
+
+		public PK() {
+		}
+
+		public PK(Integer noSeq, Integer noSequenceEtatEntreprise, Long idEntreprise) {
+			this.noSeq = noSeq;
+			this.idEntreprise = idEntreprise;
+			this.noSequenceEtatEntreprise = noSequenceEtatEntreprise;
+		}
 
 		@Column(name = "NO_SEQUENCE")
 		public Integer getNoSeq() {

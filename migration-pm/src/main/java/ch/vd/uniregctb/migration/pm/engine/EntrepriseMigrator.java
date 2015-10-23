@@ -103,6 +103,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEnvironnementTaxation;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmExerciceCommercial;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmForSecondaire;
@@ -111,6 +112,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmFusion;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmMandat;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmObjectImpot;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmPrononceFaillite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRegimeFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
@@ -465,9 +467,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(e);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			// [SIFISC-16176] l'ordre des dates à prendre en compte est le suivant :
-			// - date de bilan de fusion (si elle existe, évidemment)
-			// - date de radiation
+			// [SIFISC-16744] nouvelle règle pour l'ordre des dates à prendre en compte
+			// - date de réquisition de radiation
+			// - date de bilan de fusion
+			// - date de prononcé de faillite
 			// - date de dissolution
 
 			final RegDate dateBilanFusion = e.getFusionsApres().stream()
@@ -477,9 +480,20 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.findFirst()
 					.orElse(null);
 
-			final Pair<RegDate, String> finActivite = Stream.of(Pair.of(dateBilanFusion, "bilan de fusion"),
-			                                                    Pair.of(e.getDateRadiationRC(), "radiation au RC"),
-			                                                    Pair.of(e.getDateDissolution(), "dissolution"))
+			final RegDate datePrononceFaillite = e.getEtatsEntreprise().stream()
+					.filter(etat -> !etat.isRectifie())
+					.map(RegpmEtatEntreprise::getPrononcesFaillite)
+					.flatMap(Set::stream)
+					.map(RegpmPrononceFaillite::getDatePrononceFaillite)
+					.sorted(Comparator.reverseOrder())
+					.findFirst()
+					.orElse(null);
+
+			// récupération de toutes les fins d'activité canditates (il faut logguer si on en a plusieurs)
+			final List<Pair<RegDate, String>> finsActivite = Stream.of(Pair.of(e.getDateRequisitionRadiation(), "réquisition de radiation"),
+			                                                           Pair.of(dateBilanFusion, "bilan de fusion"),
+			                                                           Pair.of(datePrononceFaillite, "prononcé de faillite"),
+			                                                           Pair.of(e.getDateDissolution(), "dissolution"))
 					.filter(pair -> pair.getLeft() != null)
 					.filter(pair -> {
 						if (isFutureDate(pair.getLeft())) {
@@ -491,8 +505,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						}
 						return true;
 					})
-					.findFirst()
-					.orElse(null);
+					.collect(Collectors.toList());
+
+			// aurions-nous plusieurs candidats ?
+			if (finsActivite.size() > 1) {
+				// on va logguer ça...
+				final String msg = finsActivite.stream()
+						.map(pair -> String.format("date de %s (%s)", pair.getRight(), StringRenderers.DATE_RENDERER.toString(pair.getLeft())))
+						.collect(Collectors.joining(", ", "Plusieurs dates de fin d'activité en concurrence : ", "."));
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, msg);
+			}
+
+			// on ne prend de toute façon que la première candidate sérieuse
+			final Pair<RegDate, String> finActivite = finsActivite.isEmpty() ? null : finsActivite.get(0);
 
 			// on a quelque chose ?
 			if (finActivite != null) {

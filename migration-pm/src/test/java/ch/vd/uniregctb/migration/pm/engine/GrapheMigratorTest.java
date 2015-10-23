@@ -2383,11 +2383,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	public void testMultiplesZonesForsSecondairesNonCouvertesParForsPrincipaux() throws Exception {
 
 		final long idEntreprise = 5410L;
-		final RegDate dateRadiationRC = RegDate.get(2010, 9, 28);
+		final RegDate dateRequisitionRadiation = RegDate.get(2010, 9, 28);
 		final RegDate dateBouclementFutur = RegDate.get(2015, 12, 31);
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
-		entreprise.setDateRadiationRC(dateRadiationRC);
+		entreprise.setDateRequisitionRadiation(dateRequisitionRadiation);
 		entreprise.setDateBouclementFutur(dateBouclementFutur);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(1995, 5, 17), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 
@@ -2465,7 +2465,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de radiation au RC) : 28.09.2010.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 28.09.2010.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2015 : tous les 12 mois, à partir du premier 31.12.", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
@@ -2550,12 +2550,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final long idEntreprise = 48741L;
 		final RegDate dateDebut = RegDate.get(2010, 9, 28);
-		final RegDate dateRadiation = RegDate.get(2014, 12, 27);
+		final RegDate dateRequisitionRadiation = RegDate.get(2014, 12, 27);
 
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
 		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Billards", "&", "co", true);
 		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
-		entreprise.setDateRadiationRC(dateRadiation);
+		entreprise.setDateRequisitionRadiation(dateRequisitionRadiation);
 
 		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                     null,
@@ -2576,7 +2576,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final DonneesRegistreCommerce rc = donneesRC.iterator().next();
 			Assert.assertNotNull(rc);
 			Assert.assertEquals(dateDebut, rc.getDateDebut());
-			Assert.assertEquals(dateRadiation, rc.getDateFin());
+			Assert.assertEquals(dateRequisitionRadiation, rc.getDateFin());
 			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
 			Assert.assertNull(rc.getCapital());
 			Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
@@ -2588,7 +2588,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de radiation au RC) : 27.12.2014.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 27.12.2014.", msgs.get(1));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
