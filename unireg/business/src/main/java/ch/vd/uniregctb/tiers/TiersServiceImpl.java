@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -5365,17 +5366,33 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public boolean isSocieteDePersonnes(Entreprise entreprise, RegDate date) {
+	public List<DateRange> getPeriodesNonSocieteDePersonnes(Entreprise entreprise) {
 		final Organisation organisation = getOrganisation(entreprise);
+		final List<DateRange> brutto = new LinkedList<>();
 		if (organisation != null) {
-			final FormeLegale formeLegale = organisation.getFormeLegale(date);
-			return formeLegale != null && (formeLegale == FormeLegale.N_0103_SOCIETE_NOM_COLLECIF || formeLegale == FormeLegale.N_0104_SOCIETE_EN_COMMANDITE);
+			final Set<FormeLegale> sp = EnumSet.of(FormeLegale.N_0103_SOCIETE_NOM_COLLECIF, FormeLegale.N_0104_SOCIETE_EN_COMMANDITE);
+
+			// connue au civil -> les données civiles reignent en maître
+			final List<DateRanged<FormeLegale>> all = organisation.getFormeLegale();
+			for (DateRanged<FormeLegale> data : all) {
+				if (!sp.contains(data.getPayload())) {
+					brutto.add(data);
+				}
+			}
 		}
 		else {
-			// inconnue au civil -> on va chercher dans nos données
-			final DonneesRegistreCommerce donneesRC = DateRangeHelper.rangeAt(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(), date);
-			return donneesRC != null && (donneesRC.getFormeJuridique() == FormeJuridiqueEntreprise.SNC || donneesRC.getFormeJuridique() == FormeJuridiqueEntreprise.SC);
+			final Set<FormeJuridiqueEntreprise> sp = EnumSet.of(FormeJuridiqueEntreprise.SC, FormeJuridiqueEntreprise.SNC);
+
+			// inconnue au civil, ce sont donc nos données fiscales qui font foi
+			final List<DonneesRegistreCommerce> all = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+			for (DonneesRegistreCommerce data : all) {
+				if (!sp.contains(data.getFormeJuridique())) {
+					brutto.add(data);
+				}
+			}
 		}
+		final List<DateRange> res = DateRangeHelper.collateRange(brutto);
+		return res.isEmpty() ? Collections.<DateRange>emptyList() : brutto;
 	}
 
 	@Override

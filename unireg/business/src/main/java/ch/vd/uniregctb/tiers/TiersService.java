@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -1558,11 +1559,14 @@ public interface TiersService {
     void annuleRegimeFiscal(RegimeFiscal rf);
 
     /**
+     * L'historiques des données civiles fourni par RCEnt (en gros, rien avant leur reprise, quelque part en 2015...) ne nous permet pas de donner
+     * avec certitude les périodes pendant lesquelles une société avait une forme juridique correspondant à une société de personnes. En revanche,
+     * nous pouvons fournir les périodes connues pendant lesquelles on est sûr qu'elle n'était pas dans ce cas, pour au moins ne relâcher certaines
+     * contraintes qu'en dehors de ces périodes...
      * @param entreprise une entreprise
-     * @param date une date de référence
-     * @return <code>true</code> si l'entreprise à une forme juridique correspondant à une société de personnes (= SC, SNC) à la date donnée
+     * @return la liste des périodes (triées, non chevauchantes) pendant lesquelles on est certain que la société n'est pas une société de personnes (= SNC, SC)
      */
-    boolean isSocieteDePersonnes(Entreprise entreprise, RegDate date);
+    List<DateRange> getPeriodesNonSocieteDePersonnes(Entreprise entreprise);
 
     /**
      * Permet de récuperer touts les contribuables ayant un lien d'au plus 5 ans avec le contribuable dont l'id est passéen paramètre
