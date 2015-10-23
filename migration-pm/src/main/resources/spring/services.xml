@@ -18,7 +18,7 @@
 		<property name="supportedMethodNames">
 			<set>
 				<value>getExercicesCommerciaux</value>
-				<value>isSocieteDePersonnes</value>
+				<value>getPeriodesNonSocieteDePersonnes</value>
 			</set>
 		</property>
 	</bean>
