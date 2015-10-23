@@ -81,6 +81,7 @@ import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesCiviles;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
@@ -166,6 +167,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final ParametreAppService parametreAppService;
 	private final RCEntAdapter rcEntAdapter;
 	private final AdresseHelper adresseHelper;
+	private final DoublonProvider doublonProvider;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
 	                          ActivityManager activityManager,
@@ -178,7 +180,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          FractionsCommuneProvider fractionsCommuneProvider,
 	                          DatesParticulieres datesParticulieres,
 	                          PeriodeImpositionService periodeImpositionService,
-	                          ParametreAppService parametreAppService) {
+	                          ParametreAppService parametreAppService,
+	                          DoublonProvider doublonProvider) {
 		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
@@ -186,6 +189,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		this.adresseHelper = adresseHelper;
 		this.periodeImpositionService = periodeImpositionService;
 		this.parametreAppService = parametreAppService;
+		this.doublonProvider = doublonProvider;
 	}
 
 	private static Entreprise createEntreprise(RegpmEntreprise regpm) {
@@ -366,7 +370,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                                        (d1, d2) -> { throw new IllegalArgumentException("une seule donnée par entreprise, donc pas de raison d'appeler le merger..."); },
 		                                        d -> migrateDossiersFiscauxNonAttribues(d, mr, idMapper));
 
-		// callback pour l'annulation des données fiscales (fors, dis...) des contribuables inactifs (doublons) ou sans assujettissement (communes...)
+		// callback pour l'annulation des données fiscales (fors, dis...) des contribuables inactifs/annulés (doublons)
 		mr.registerPreTransactionCommitCallback(AnnulationDonneesFiscalesPourInactifsData.class,
 		                                        ConsolidationPhase.ANNULATION_DONNEES_CONTRIBUABLES_INACTIFS,
 		                                        k -> k.entrepriseSupplier,
@@ -1598,7 +1602,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
-		migrateFlagDebiteurInactif(regpm, unireg, mr);
+		migrateFlagDoublon(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, unireg, mr);
 
 		migrateAdresses(regpm, unireg, mr);
@@ -1839,15 +1843,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Assigne le flag "débiteur inactif" sur l'entreprise Unireg en fonction de critères internes à la données de RegPM
+	 * Annule l'entreprise Unireg en fonction de critères internes à la données de RegPM qui l'identifient comme un doublon
 	 * @param regpm entreprise à migrer
 	 * @param unireg entreprise destination de la migration dans Unireg
 	 * @param mr collecteur de messages de migration
 	 */
-	private static void migrateFlagDebiteurInactif(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
-		// la règle dit : la ligne 1 de la raison sociale commence par une étoile...
-		if (StringUtils.isNotBlank(regpm.getRaisonSociale1()) && regpm.getRaisonSociale1().startsWith("*")) {
-			unireg.setDebiteurInactif(true);
+	private void migrateFlagDoublon(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		if (doublonProvider.isDoublon(regpm)) {
+			unireg.setAnnule(true);
 			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise identifiée comme un doublon.");
 		}
 	}
@@ -2347,7 +2350,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
-	 * Méthode de callback pour s'assurer que les contribuables inactifs (doublons) et les communes (???) n'ont pas de données fiscales (fors, dis...) non-annulées
+	 * Méthode de callback pour s'assurer que les contribuables inactifs/annulés (doublons) n'ont pas de données fiscales (fors, dis...) non-annulées
 	 * @param data données d'identification de l'entreprise à contrôler
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
 	 * @param idMapper mapping des identifiants RegPM -> Unireg
@@ -2358,9 +2361,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey key = data.entrepriseSupplier.getKey();
 		doInLogContext(key, mr, idMapper, () -> {
 			final Entreprise entreprise = data.entrepriseSupplier.get();
-			if (entreprise.isDebiteurInactif()) {
-				// TODO pour l'instant, on ne traite que les débiteurs inactifs (doublons)... comment détecter les communes ?
-
+			if (entreprise.isDebiteurInactif() || entreprise.isAnnule()) {
 				// les éventuelles déclarations non-annulées
 				neverNull(entreprise.getDeclarationsSorted()).stream()
 						.filter(decl -> !decl.isAnnule())

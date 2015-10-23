@@ -59,6 +59,7 @@
         <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 		<constructor-arg name="periodeImpositionService" ref="periodeImpositionService"/>
 		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
+		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
 	</bean>
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
@@ -86,6 +87,10 @@
 
 	<bean id="fractionsCommuneProvider" class="ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProviderImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="doublonProvider" class="ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProviderImpl">
+		<property name="nomFichierSource" value="${doublons.file}"/>
 	</bean>
 
 	<bean id="activityManager" class="ch.vd.uniregctb.migration.pm.engine.ActivityManagerImpl">

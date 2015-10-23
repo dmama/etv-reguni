@@ -40,6 +40,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RaisonSociale;
@@ -136,7 +137,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
 				getBean(DatesParticulieres.class, "datesParticulieres"),
 				getBean(PeriodeImpositionService.class, "periodeImpositionService"),
-				getBean(ParametreAppService.class, "parametreAppService"));
+				getBean(ParametreAppService.class, "parametreAppService"),
+				getBean(DoublonProvider.class, "doublonProvider"));
 	}
 
 	/**
@@ -3368,7 +3370,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
 			Assert.assertNotNull(entreprise);
-			Assert.assertTrue(entreprise.isDebiteurInactif());          // une étoile au début de la raison sociale -> débiteur inactif
+			Assert.assertTrue(entreprise.isAnnule());               // une étoile au début de la raison sociale -> annulation du tiers
 		});
 
 		// et dans les messages de suivi ?

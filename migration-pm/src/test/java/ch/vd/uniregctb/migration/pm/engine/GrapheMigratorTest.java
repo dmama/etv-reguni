@@ -49,6 +49,7 @@ import ch.vd.uniregctb.migration.pm.SerializationIntermediary;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
+import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
@@ -132,12 +133,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final DatesParticulieres datesParticulieres = getBean(DatesParticulieres.class, "datesParticulieres");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final ParametreAppService parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
+		final DoublonProvider doublonProvider = getBean(DoublonProvider.class, "doublonProvider");
 
 		final ActivityManager activityManager = entreprise -> INACTIVE_ENTREPRISE_ID != entreprise.getId();         // tout le monde est actif dans ces tests, sauf la 1832
 
 		grapheMigrator = new GrapheMigrator();
 		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcEntAdapter, adresseHelper,
-		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService));
+		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, doublonProvider));
 		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setUniregStore(uniregStore);
@@ -3139,7 +3141,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		doInUniregTransaction(true, status -> {
 			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
 			Assert.assertNotNull(entreprise);
-			Assert.assertTrue(entreprise.isDebiteurInactif());          // une étoile au début de la raison sociale -> débiteur inactif
+			Assert.assertTrue(entreprise.isAnnule());          // une étoile au début de la raison sociale -> tiers annulé
 
 			final Set<ForFiscal> fors = entreprise.getForsFiscaux();
 			Assert.assertNotNull(fors);
