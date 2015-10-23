@@ -87,9 +87,8 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 				L'entreprise n'est pas connue du régistre civil cantonal et on doit faire avec les informations dont on dispose.
 			 */
 			entrepriseView.setSource(EntrepriseView.SourceCivile.UNIREG);
-			List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
-			Collections.sort(donneesRC, new DateRangeComparator<DonneesRegistreCommerce>());
-			Collections.reverse(donneesRC);
+			final List<DonneesRegistreCommerce> donneesRC = new ArrayList<>(entreprise.getDonneesRC());
+			Collections.sort(donneesRC, new DateRangeComparator<>());
 
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
 			entrepriseView.setSieges(extractSieges(etablissements));

@@ -1305,7 +1305,7 @@ var Histo = {
 
 			if (showHisto || !isHisto) {
 				// on adapte le style des lignes odd/even
-				line.className = (visibleCount++ % 2 == 0 ? 'even' : 'odd');
+				line.className = (++visibleCount % 2 == 0 ? 'even' : 'odd');
 			}
 		}
 		if (!showHisto && !foundSomething && rows.length > 1) { // si toutes les valeurs sont historiques, on affiche au minimum la plus récente
