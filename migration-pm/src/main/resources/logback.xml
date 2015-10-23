@@ -129,6 +129,17 @@
 		<appender-ref ref="RAPPORTS_ENTRE_TIERS"/>
 	</logger>
 
+	<appender name="DP_APM" class="ch.qos.logback.core.FileAppender">
+		<file>log/dp-apm.csv</file>
+		<append>true</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+	<logger name="ch.vd.uniregctb.migration.pm.log.LogCategory.DP_APM" additivity="false">
+		<appender-ref ref="DP_APM"/>
+	</logger>
+
 	<appender name="EXCEPTIONS" class="ch.qos.logback.core.FileAppender">
 		<file>log/exceptions.log</file>
 		<append>true</append>

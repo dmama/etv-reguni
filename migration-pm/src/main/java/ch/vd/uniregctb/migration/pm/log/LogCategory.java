@@ -59,6 +59,11 @@ public enum LogCategory {
 	/**
 	 * Liste des rapports entre tiers générés
 	 */
-	RAPPORTS_ENTRE_TIERS
+	RAPPORTS_ENTRE_TIERS,
+
+	/**
+	 * Liste des entreprises dont la forme juridique (au moment de la migration) est DP_APM
+	 */
+	DP_APM
 
 }

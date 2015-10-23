@@ -1629,6 +1629,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
 		migrateFlagDoublon(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, unireg, mr);
+		logDroitPublicAPM(regpm, mr);
 
 		migrateAdresses(regpm, unireg, mr);
 		migrateAllegementsFiscaux(regpm, unireg, mr);
@@ -1644,6 +1645,19 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * @param regpm l'entreprise de RegPM
+	 * @param mr le collecteur de messages de suivi
+	 */
+	private static void logDroitPublicAPM(RegpmEntreprise regpm, MigrationResultProduction mr) {
+		final NavigableMap<RegDate, RegpmTypeFormeJuridique> formesJuridiques = mr.getExtractedData(FormeJuridiqueHistoData.class, buildEntrepriseKey(regpm)).histo;
+		final Map.Entry<RegDate, RegpmTypeFormeJuridique> last = formesJuridiques.lastEntry();
+		if (last != null && toFormeJuridique(last.getValue().getCode()) == FormeJuridiqueEntreprise.CORP_DP_ADM) {
+			mr.addMessage(LogCategory.DP_APM, LogLevel.INFO,
+			              String.format("Forme juridique DP/APM depuis le %s.", StringRenderers.DATE_RENDERER.toString(last.getKey())));
+		}
 	}
 
 	/**

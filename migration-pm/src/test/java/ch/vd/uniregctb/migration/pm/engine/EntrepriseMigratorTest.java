@@ -4133,6 +4133,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
 			Assert.assertNull(messages);
 		}
+		// vérification des messages dans le contexte "DP_APM"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DP_APM);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("Forme juridique DP/APM depuis le 27.08.2004.", textes.get(0));
+		}
 	}
 
 	@Test
@@ -4182,6 +4190,11 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(2, textes.size());
 			Assert.assertEquals("Données du siège 1 utilisées pour les fors principaux : COMMUNE_HC/2701 depuis le 27.08.2004.", textes.get(0));
 			Assert.assertEquals("For principal COMMUNE_HC/2701 [27.08.2004 -> ?] généré.", textes.get(1));
+		}
+		// vérification des messages dans le contexte "DP_APM"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DP_APM);
+			Assert.assertNull(messages);
 		}
 	}
 }
