@@ -364,4 +364,6 @@
 
 	<bean id="bouclementValidator" class="ch.vd.uniregctb.validation.bouclement.BouclementValidator" parent="entityValidator"/>
 
+	<bean id="etatEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.EtatEntrepriseValidator" parent="dateRangeEntityValidator"/>
+
 </beans>

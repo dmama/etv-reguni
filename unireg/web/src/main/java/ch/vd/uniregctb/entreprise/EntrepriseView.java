@@ -2,7 +2,7 @@ package ch.vd.uniregctb.entreprise;
 
 import java.util.List;
 
-import ch.vd.uniregctb.tiers.view.EtatPMView;
+import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 public class EntrepriseView {
 
@@ -26,7 +26,7 @@ public class EntrepriseView {
 	private List<SiegeView> sieges;
 	private List<FormeJuridiqueView> formesJuridiques;
 	private List<CapitalView> capitaux;
-	private List<EtatPMView> etats;
+	private List<EtatEntrepriseView> etats;
 	private List<String> numerosIDE;
 
 	private SourceCivile source;
@@ -71,11 +71,11 @@ public class EntrepriseView {
 		this.capitaux = capitaux;
 	}
 
-	public List<EtatPMView> getEtats() {
+	public List<EtatEntrepriseView> getEtats() {
 		return etats;
 	}
 
-	public void setEtats(List<EtatPMView> etats) {
+	public void setEtats(List<EtatEntrepriseView> etats) {
 		this.etats = etats;
 	}
 

@@ -21,7 +21,9 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 /**
  * Re-organisation des informations de l'entreprise pour l'affichage Web
@@ -96,7 +98,36 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			entrepriseView.setCapitaux(extractCapitaux(donneesRC));
 		}
 
+		// les états
+		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
+		Collections.sort(etats, new DateRangeComparator<EtatEntreprise>() {
+			@Override
+			public int compare(EtatEntreprise o1, EtatEntreprise o2) {
+				int comparison = Boolean.compare(o1.isAnnule(), o2.isAnnule());     // false < true
+				if (comparison == 0) {
+					comparison = - super.compare(o1, o2);       // les plus récents d'abord
+				}
+				return comparison;
+			}
+		});
+		entrepriseView.setEtats(getEtats(etats));
+
 		return entrepriseView;
+	}
+
+	private static List<EtatEntrepriseView> getEtats(List<EtatEntreprise> data) {
+		if (data == null || data.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<EtatEntrepriseView> views = new ArrayList<>(data.size());
+		for (EtatEntreprise etat : data) {
+			final EtatEntrepriseView view = new EtatEntrepriseView(etat.getDateDebut(),
+			                                                       etat.getDateFin(),
+			                                                       etat.getType(),
+			                                                       etat.isAnnule());
+			views.add(view);
+		}
+		return views;
 	}
 
 	private List<DateRanged<Etablissement>> extractPrincipals(List<DateRanged<Etablissement>> etablissements) {

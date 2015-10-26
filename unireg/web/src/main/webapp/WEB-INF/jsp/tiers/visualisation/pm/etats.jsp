@@ -14,15 +14,15 @@
 		<input class="noprint" id="showEtatsPMHisto" type="checkbox" onclick="refreshEtatsPM(this);" />
 		<label class="noprint" for="showEtatsPMHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.entreprise.etats}" id="etatsPM" requestURI="visu.do" class="display">
-			<display:column sortable="true" titleKey="label.date.debut" sortProperty="dateDebut">
+		<display:table name="${command.entreprise.etats}" id="etatsPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+			<display:column titleKey="label.date.debut">
 				<unireg:regdate regdate="${etatsPM.dateDebut}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.date.fin" sortProperty="dateFin">
+			<display:column titleKey="label.date.fin">
 				<unireg:regdate regdate="${etatsPM.dateFin}"/>
 			</display:column>
-			<display:column sortable="true" titleKey="label.type">
-				<c:out value="${etatsPM.libelle}"/>&nbsp;(<c:out value="${etatsPM.code}"/>)
+			<display:column titleKey="label.type">
+				<fmt:message key="option.etat.entreprise.${etatsPM.type}"/>
 			</display:column>
 		</display:table>
 

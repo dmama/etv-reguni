@@ -40,6 +40,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<DonneesRegistreCommerce> donneesRC;
 	private Set<AllegementFiscal> allegementsFiscaux;
 	private Set<Bouclement> bouclements;
+	private Set<EtatEntreprise> etats;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -190,6 +191,35 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 		this.bouclements.add(bouclement);
 		bouclement.setEntreprise(this);
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<EtatEntreprise> getEtats() {
+		return etats;
+	}
+
+	public void addEtat(EtatEntreprise etat) {
+		if (etat.getEntreprise() != null && etat.getEntreprise() != this) {
+			throw new IllegalArgumentException("Cet état est déjà associé à une autre entreprise.");
+		}
+
+		if (this.etats == null) {
+			this.etats = new HashSet<>();
+		}
+		this.etats.add(etat);
+		etat.setEntreprise(this);
+	}
+
+	@Transient
+	public List<EtatEntreprise> getEtatsNonAnnulesTries() {
+		final List<EtatEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(etats);
+		Collections.sort(nonAnnules, new DateRangeComparator<>());
+		return nonAnnules;
+	}
+
+	public void setEtats(Set<EtatEntreprise> etats) {
+		this.etats = etats;
 	}
 
 	public Entreprise() {
