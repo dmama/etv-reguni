@@ -122,6 +122,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeFormeJuridique;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -140,6 +141,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -156,6 +158,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
@@ -1639,6 +1642,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
+		migrateEtatsEntreprise(regpm, unireg, mr);
 
 		migrateMandataires(regpm, mr, linkCollector, idMapper);
 		migrateFusionsApres(regpm, linkCollector, idMapper);
@@ -3318,5 +3322,109 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				                                       a.getTypeImpot(),
 				                                       a.getPourcentageAllegement())))
 				.forEach(unireg::addAllegementFiscal);
+	}
+
+	/**
+	 * Migration des états de l'entreprise
+	 * @param regpm une entreprise dans RegPM
+	 * @param unireg l'entreprise cible dans Unireg
+	 * @param mr le collecteur de messages de suivi
+	 */
+	private void migrateEtatsEntreprise(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+
+		// une première liste sans dates de fin
+		final List<EtatEntreprise> liste = regpm.getEtatsEntreprise().stream()
+				.filter(e -> !e.isRectifie())
+				.sorted(Comparator.comparing(e -> e.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
+				.filter(e -> {
+					if (e.getDateValidite() == null) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Etat d'entreprise %d (%s) ignoré car sa date de début de validité est nulle (ou antérieure au 01.08.1291).",
+						                            e.getId().getSeqNo(),
+						                            e.getTypeEtat()));
+						return false;
+					}
+					return true;
+				})
+				.filter(e -> {
+					if (isFutureDate(e.getDateValidite())) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Etat d'entreprise %d (%s) ignoré en raison de sa date de début dans le futur (%s).",
+						                            e.getId().getSeqNo(),
+						                            e.getTypeEtat(),
+						                            StringRenderers.DATE_RENDERER.toString(e.getDateValidite())));
+						return false;
+					}
+					return true;
+				})
+				.peek(e -> checkDateLouche(e.getDateValidite(),
+				                           () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité", e.getId().getSeqNo(), e.getTypeEtat()),
+				                           LogCategory.SUIVI,
+				                           mr))
+				.map(e -> {
+					final EtatEntreprise etat = new EtatEntreprise();
+					copyCreationMutation(e, etat);
+					etat.setDateDebut(e.getDateValidite());
+					etat.setDateFin(null);      // on verra plus tard
+					etat.setType(mapTypeEtatEntreprise(e.getTypeEtat()));
+					return etat;
+				})
+				.sorted(Comparator.comparing(EtatEntreprise::getDateDebut))
+				.collect(Collectors.toList());
+
+		// doit-on prendre en compte la date de fin d'activité de l'entreprise ?
+		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, buildEntrepriseKey(regpm)).date;
+		final RegDate dateFinEffective;
+		if (dateFinActivite != null && !liste.isEmpty()) {
+			final EtatEntreprise dernier = liste.get(liste.size() - 1);
+			if (dateFinActivite.isBefore(dernier.getDateDebut())) {
+				mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+				              String.format("Au moins un état existe après la date de validité (%s) de l'entreprise.", StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+				dateFinEffective = null;
+			}
+			else {
+				dateFinEffective = dateFinActivite;
+			}
+		}
+		else {
+			dateFinEffective = dateFinActivite;
+		}
+
+		// mise en place des dates de fin
+		assigneDatesFin(dateFinEffective, liste);
+
+		// on loggue les états trouvés et on ajoute dans l'entreprise cible
+		liste.stream()
+				.peek(etat -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                            String.format("Etat '%s' migré sur la période %s.",
+				                                          etat.getType(),
+				                                          StringRenderers.DATE_RANGE_RENDERER.toString(etat))))
+				.forEach(unireg::addEtat);
+	}
+
+	private static TypeEtatEntreprise mapTypeEtatEntreprise(RegpmTypeEtatEntreprise regpm) {
+		if (regpm == null) {
+			return null;
+		}
+		switch (regpm) {
+		case ABSORBEE:
+			return TypeEtatEntreprise.ABSORBEE;
+		case DISSOUTE:
+			return TypeEtatEntreprise.DISSOUTE;
+		case EN_FAILLITE:
+			return TypeEtatEntreprise.EN_FAILLITE;
+		case EN_LIQUIDATION:
+			return TypeEtatEntreprise.EN_LIQUIDATION;
+		case EN_SUSPENS_FAILLITE:
+			return TypeEtatEntreprise.EN_SUSPENS_FAILLITE;
+		case FONDEE:
+			return TypeEtatEntreprise.FONDEE;
+		case INSCRITE_AU_RC:
+			return TypeEtatEntreprise.INSCRITE_RC;
+		case RADIEE_DU_RC:
+			return TypeEtatEntreprise.RADIEE_RC;
+		default:
+			throw new IllegalArgumentException("Type d'état entreprise inconnu : " + regpm);
+		}
 	}
 }

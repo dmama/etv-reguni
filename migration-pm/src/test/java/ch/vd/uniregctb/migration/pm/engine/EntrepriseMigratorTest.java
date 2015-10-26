@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -100,6 +101,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
@@ -114,6 +116,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
@@ -3500,13 +3503,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de réquisition de radiation (21.04.2006), date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de réquisition de radiation) : 21.04.2006.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
+			Assert.assertEquals("Etat 'EN_FAILLITE' migré sur la période [23.05.2005 -> 21.04.2006].", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
 	}
 
@@ -3558,13 +3562,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de bilan de fusion (12.03.2007), date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de bilan de fusion) : 12.03.2007.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
+			Assert.assertEquals("Etat 'EN_FAILLITE' migré sur la période [23.05.2005 -> 12.03.2007].", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
 	}
 
@@ -3614,13 +3619,14 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(7, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Plusieurs dates de fin d'activité en concurrence : date de prononcé de faillite (02.06.2005), date de dissolution (04.03.2007).", textes.get(1));
 			Assert.assertEquals("Date de fin d'activité proposée (date de prononcé de faillite) : 02.06.2005.", textes.get(2));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(3));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
+			Assert.assertEquals("Etat 'EN_FAILLITE' migré sur la période [23.05.2005 -> 02.06.2005].", textes.get(5));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(6));
 		}
 	}
 
@@ -4195,6 +4201,69 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		{
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.DP_APM);
 			Assert.assertNull(messages);
+		}
+	}
+
+	@Test
+	public void testMigrationEtatsEntreprise() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addEtatEntreprise(e, dateDebut, RegpmTypeEtatEntreprise.FONDEE);
+		addEtatEntreprise(e, RegDate.get(2005, 3, 1), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<EtatEntreprise> etats = entreprise.getEtats();
+			Assert.assertNotNull(etats);
+			Assert.assertEquals(2, etats.size());
+
+			final List<EtatEntreprise> etatsTries = new ArrayList<>(etats);
+			Collections.sort(etatsTries, new DateRangeComparator<>());
+			{
+				final EtatEntreprise etat = etatsTries.get(0);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(dateDebut, etat.getDateDebut());
+				Assert.assertEquals(RegDate.get(2005, 2, 28), etat.getDateFin());
+				Assert.assertEquals(TypeEtatEntreprise.FONDEE, etat.getType());
+			}
+			{
+				final EtatEntreprise etat = etatsTries.get(1);
+				Assert.assertNotNull(etat);
+				Assert.assertFalse(etat.isAnnule());
+				Assert.assertEquals(RegDate.get(2005, 3, 1), etat.getDateDebut());
+				Assert.assertNull(etat.getDateFin());
+				Assert.assertEquals(TypeEtatEntreprise.INSCRITE_RC, etat.getType());
+			}
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
+			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(2));
+			Assert.assertEquals("Etat 'FONDEE' migré sur la période [27.08.2004 -> 28.02.2005].", textes.get(3));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré sur la période [01.03.2005 -> ?].", textes.get(4));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
 		}
 	}
 }
