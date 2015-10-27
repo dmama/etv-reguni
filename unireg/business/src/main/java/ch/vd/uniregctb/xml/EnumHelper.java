@@ -9,9 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.data.TypeAffranchissement;
-import ch.vd.unireg.xml.party.corporation.v4.LighteningTarget;
-import ch.vd.unireg.xml.party.corporation.v4.MunicipalityLighteningTarget;
-import ch.vd.unireg.xml.party.corporation.v4.TaxType;
 import ch.vd.uniregctb.avatar.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.metier.assujettissement.TypeAssujettissement;
@@ -31,6 +28,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
@@ -2876,11 +2874,11 @@ public abstract class EnumHelper {
 
 		switch (type) {
 		case CONFEDERATION:
-			return new LighteningTarget(new LighteningTarget.SwissConfederation(), null, null);
+			return new ch.vd.unireg.xml.party.corporation.v4.LighteningTarget(new ch.vd.unireg.xml.party.corporation.v4.LighteningTarget.SwissConfederation(), null, null);
 		case CANTON:
-			return new LighteningTarget(null, new LighteningTarget.Canton(), null);
+			return new ch.vd.unireg.xml.party.corporation.v4.LighteningTarget(null, new ch.vd.unireg.xml.party.corporation.v4.LighteningTarget.Canton(), null);
 		case COMMUNE:
-			return new LighteningTarget(null, null, new MunicipalityLighteningTarget(noOfsCommune));
+			return new ch.vd.unireg.xml.party.corporation.v4.LighteningTarget(null, null, new ch.vd.unireg.xml.party.corporation.v4.MunicipalityLighteningTarget(noOfsCommune));
 		default:
 			throw new IllegalArgumentException("Type de collectivité concernée par un allègement fiscal inconnu = [" + type + ']');
 		}
@@ -2893,11 +2891,65 @@ public abstract class EnumHelper {
 
 		switch (type) {
 		case BENEFICE:
-			return TaxType.PROFIT;
+			return ch.vd.unireg.xml.party.corporation.v4.TaxType.PROFIT;
 		case CAPITAL:
-			return TaxType.CAPITAL;
+			return ch.vd.unireg.xml.party.corporation.v4.TaxType.CAPITAL;
 		default:
 			throw new IllegalArgumentException("Type d'impôt concernée par un allègement fiscal inconnu = [" + type + ']');
+		}
+	}
+
+	public static String coreToXMLv1v2v3(TypeEtatEntreprise type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case ABSORBEE:
+			return "05";
+		case DISSOUTE:
+			return "08";
+		case EN_FAILLITE:
+			return "04";
+		case EN_LIQUIDATION:
+			return "02";
+		case EN_SUSPENS_FAILLITE:
+			return "03";
+		case FONDEE:
+			return "07";
+		case INSCRITE_RC:
+			return "01";
+		case RADIEE_RC:
+			return "06";
+		default:
+			throw new IllegalArgumentException("Type d'état entreprise inconnu : [" + type + ']');
+		}
+	}
+
+	public static ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType coreToXMLv4(TypeEtatEntreprise type) {
+		if (type == null) {
+			return null;
+		}
+
+		switch (type) {
+		case ABSORBEE:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.ABSORBED;
+		case DISSOUTE:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.DISSOLVED;
+		case EN_FAILLITE:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.BANKRUPT;
+		case EN_LIQUIDATION:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.IN_LIQUIDATION;
+		case EN_SUSPENS_FAILLITE:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.SUSPENDED_BANKRUPTCY;
+		case FONDEE:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.FOUNDED;
+		case INSCRITE_RC:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.RECORDED_IN_COMMERCIAL_REGISTER;
+		case RADIEE_RC:
+			return ch.vd.unireg.xml.party.corporation.v4.CorporationStatusType.REMOVED_FROM_COMMERCIAL_REGISTER;
+		default:
+			throw new IllegalArgumentException("Type d'état entreprise inconnu : [" + type + ']');
 		}
 	}
 }

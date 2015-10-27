@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v4.Capital;
 import ch.vd.unireg.xml.party.corporation.v4.Corporation;
+import ch.vd.unireg.xml.party.corporation.v4.CorporationStatus;
 import ch.vd.unireg.xml.party.corporation.v4.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v4.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v4.MonetaryAmount;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
@@ -107,11 +109,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			to.getCapitals().addAll(extractCapitaux(rcData));
 		}
 
-		// TODO [SIPM] les états ??? encore eut-il fallu les migrer...
-//		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
-//			to.getStatuses().addAll(corporationStatuses2web(hostCorp.getEtats()));
-//		}
-//
+		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
+			to.getStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
+		}
+
 		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
 			to.getLegalForms().addAll(extractFormesJuridiques(entreprise));
 		}
@@ -260,6 +261,23 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		for (AllegementFiscal allegement : allegements) {
 			corporation.getTaxLightenings().add(TaxLighteningBuilder.newTaxLightening(allegement));
 		}
+	}
+
+	@NotNull
+	private List<CorporationStatus> extractEtats(List<EtatEntreprise> etats) {
+		if (etats == null || etats.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<CorporationStatus> statuses = new ArrayList<>(etats.size());
+		for (EtatEntreprise etat : etats) {
+			final CorporationStatus status = new CorporationStatus();
+			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateDebut()));
+			status.setDateTo(DataHelper.coreToXMLv2(etat.getDateFin()));
+			status.setStatusType(EnumHelper.coreToXMLv4(etat.getType()));
+			statuses.add(status);
+		}
+		return statuses;
 	}
 
 	@Override

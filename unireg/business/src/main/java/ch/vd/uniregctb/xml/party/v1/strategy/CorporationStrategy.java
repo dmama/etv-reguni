@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.xml.party.corporation.v1.Capital;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
+import ch.vd.unireg.xml.party.corporation.v1.CorporationStatus;
 import ch.vd.unireg.xml.party.corporation.v1.LegalForm;
 import ch.vd.unireg.xml.party.corporation.v1.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v1.TaxSystem;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -82,11 +84,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			to.getCapitals().addAll(extractCapitaux(rcData));
 		}
 
-		// TODO [SIPM] les états ??? encore eut-il fallu les migrer...
-//		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
-//			to.getStatuses().addAll(corporationStatuses2web(hostCorp.getEtats()));
-//		}
-//
+		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
+			to.getStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
+		}
+
 		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
 			to.getLegalForms().addAll(extractFormesJuridiques(entreprise));
 		}
@@ -220,6 +221,23 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			}
 		}
 		return liste;
+	}
+
+	@NotNull
+	private List<CorporationStatus> extractEtats(List<EtatEntreprise> etats) {
+		if (etats == null || etats.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<CorporationStatus> statuses = new ArrayList<>(etats.size());
+		for (EtatEntreprise etat : etats) {
+			final CorporationStatus status = new CorporationStatus();
+			status.setDateFrom(DataHelper.coreToXMLv1(etat.getDateDebut()));
+			status.setDateTo(DataHelper.coreToXMLv1(etat.getDateFin()));
+			status.setCode(EnumHelper.coreToXMLv1v2v3(etat.getType()));
+			statuses.add(status);
+		}
+		return statuses;
 	}
 
 	@Override
