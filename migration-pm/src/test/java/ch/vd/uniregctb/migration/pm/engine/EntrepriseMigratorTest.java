@@ -4214,6 +4214,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
 		addEtatEntreprise(e, dateDebut, RegpmTypeEtatEntreprise.FONDEE);
 		addEtatEntreprise(e, RegDate.get(2005, 3, 1), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);
+		addEtatEntreprise(e, RegDate.get(2007, 3, 1), RegpmTypeEtatEntreprise.RADIEE_DU_RC);        // ignoré car remplacé par suivant
+		addEtatEntreprise(e, RegDate.get(2007, 3, 1), RegpmTypeEtatEntreprise.INSCRITE_AU_RC);      // fusionné avec l'état précédent INSCRITE...
 
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
 		                                         null,
@@ -4257,13 +4259,15 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
 			Assert.assertNotNull(messages);
 			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
-			Assert.assertEquals(6, textes.size());
+			Assert.assertEquals(8, textes.size());
 			Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
 			Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(1));
 			Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(2));
-			Assert.assertEquals("Etat 'FONDEE' migré sur la période [27.08.2004 -> 28.02.2005].", textes.get(3));
-			Assert.assertEquals("Etat 'INSCRITE_RC' migré sur la période [01.03.2005 -> ?].", textes.get(4));
-			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(5));
+			Assert.assertEquals("Etat d'entreprise 3 (RADIEE_DU_RC) ignoré car remplacé par un autre à la même date.", textes.get(3));
+			Assert.assertEquals("Fusion des deux états d'entreprise 'INSCRITE_RC' [01.03.2005 -> 28.02.2007] et [01.03.2007 -> ?].", textes.get(4));
+			Assert.assertEquals("Etat 'FONDEE' migré sur la période [27.08.2004 -> 28.02.2005].", textes.get(5));
+			Assert.assertEquals("Etat 'INSCRITE_RC' migré sur la période [01.03.2005 -> ?].", textes.get(6));
+			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(7));
 		}
 	}
 }

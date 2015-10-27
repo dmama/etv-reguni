@@ -3325,6 +3325,65 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * Classe interne pour permettre de manipuler des états d'entreprise comme des collatables et fusionner
+	 * les valeurs successives identiques
+	 * @see CollatableDateRange
+	 */
+	private static final class CollatableEtatEntreprise implements CollatableDateRange, EntityWrapper<EtatEntreprise> {
+
+		private final EtatEntreprise etat;
+		private final MigrationResultProduction mr;
+
+		public CollatableEtatEntreprise(EtatEntreprise etat, MigrationResultProduction mr) {
+			this.etat = etat;
+			this.mr = mr;
+		}
+
+		@Override
+		public EtatEntreprise getWrappedEntity() {
+			return etat;
+		}
+
+		@Override
+		public RegDate getDateDebut() {
+			return etat.getDateDebut();
+		}
+
+		@Override
+		public RegDate getDateFin() {
+			return etat.getDateFin();
+		}
+
+		@Override
+		public boolean isValidAt(RegDate date) {
+			return etat.isValidAt(date);
+		}
+
+		@Override
+		public boolean isCollatable(DateRange next) {
+			return next instanceof CollatableEtatEntreprise
+					&& DateRangeHelper.isCollatable(this, next)
+					&& ((CollatableEtatEntreprise) next).etat.getType() == etat.getType();
+		}
+
+		@Override
+		public CollatableEtatEntreprise collate(DateRange next) {
+			if (!isCollatable(next)) {
+				throw new IllegalArgumentException("Cet appel n'a pas lieu d'être, les entités ne sont pas collatables...");
+			}
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Fusion des deux états d'entreprise '%s' %s et %s.",
+			                                                              etat.getType(),
+			                                                              StringRenderers.DATE_RANGE_RENDERER.toString(etat),
+			                                                              StringRenderers.DATE_RANGE_RENDERER.toString(next)));
+			final EtatEntreprise collated = new EtatEntreprise();
+			collated.setDateDebut(etat.getDateDebut());
+			collated.setDateFin(next.getDateFin());
+			collated.setType(etat.getType());
+			return new CollatableEtatEntreprise(collated, mr);
+		}
+	}
+
+	/**
 	 * Migration des états de l'entreprise
 	 * @param regpm une entreprise dans RegPM
 	 * @param unireg l'entreprise cible dans Unireg
@@ -3332,10 +3391,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	 */
 	private void migrateEtatsEntreprise(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
-		// une première liste sans dates de fin
-		final List<EtatEntreprise> liste = regpm.getEtatsEntreprise().stream()
+		// une première structure par date de début (pour détecter les cas des états multiples à la même date
+		final NavigableMap<RegDate, List<RegpmEtatEntreprise>> map = regpm.getEtatsEntreprise().stream()
 				.filter(e -> !e.isRectifie())
-				.sorted(Comparator.comparing(e -> e.getId().getSeqNo()))    // tri pour les tests en particulier, pour toujours traiter les allègements dans le même ordre
 				.filter(e -> {
 					if (e.getDateValidite() == null) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
@@ -3356,6 +3414,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return false;
 					}
 					return true;
+				})
+				.collect(Collectors.toMap(RegpmEtatEntreprise::getDateValidite,
+				                          Collections::singletonList,
+				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
+				                          TreeMap::new));
+
+		// si plusieurs états commencent à la même date, on ne garde que le dernier en loggant les autres, et on en fait une liste (pour l'instant sans les dates de fin de validité)
+		final List<EtatEntreprise> liste = map.entrySet().stream()
+				.map(entry -> {
+					final List<RegpmEtatEntreprise> values = entry.getValue();
+					if (values.size() > 1) {
+						values.subList(0, values.size() - 1).forEach(e -> mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						                                                                String.format("Etat d'entreprise %d (%s) ignoré car remplacé par un autre à la même date.",
+						                                                                              e.getId().getSeqNo(),
+						                                                                              e.getTypeEtat())));
+					}
+					return values.get(values.size() - 1);
 				})
 				.peek(e -> checkDateLouche(e.getDateValidite(),
 				                           () -> String.format("Etat d'entreprise %d (%s) avec une date de début de validité", e.getId().getSeqNo(), e.getTypeEtat()),
@@ -3393,8 +3468,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// mise en place des dates de fin
 		assigneDatesFin(dateFinEffective, liste);
 
+		// fusion des états successifs identiques...
+		final List<CollatableEtatEntreprise> collated = DateRangeHelper.collate(liste.stream()
+				                                                                        .map(e -> new CollatableEtatEntreprise(e, mr))
+				                                                                        .collect(Collectors.toList()));
+
 		// on loggue les états trouvés et on ajoute dans l'entreprise cible
-		liste.stream()
+		collated.stream()
+				.map(CollatableEtatEntreprise::getWrappedEntity)
 				.peek(etat -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
 				                            String.format("Etat '%s' migré sur la période %s.",
 				                                          etat.getType(),
