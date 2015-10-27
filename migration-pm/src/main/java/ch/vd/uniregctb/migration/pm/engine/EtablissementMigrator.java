@@ -207,16 +207,34 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		final EntityKey key = buildEtablissementKey(e);
 		return doInLogContext(key, mr, idMapper, () -> {
 			final List<DateRange> dates = e.getEtablissementsStables().stream()
-					.map(DateRangeHelper.Range::new)
-					.map(range -> {
-						if (isFutureDate(range.getDateFin())) {
+					.filter(etb -> {
+						if (etb.getDateDebut() == null) {
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+							              String.format("Période d'établissement stable %d ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", etb.getId().getSeqNo()));
+							return false;
+						}
+						return true;
+					})
+					.filter(etb -> {
+						if (isFutureDate(etb.getDateDebut())) {
+							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.ERROR,
+							              String.format("Période d'établissement stable %d ignorée car sa date de début de validité est dans le futur (%s).",
+							                            etb.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(etb.getDateDebut())));
+							return false;
+						}
+						return true;
+					})
+					.map(etb -> {
+						if (isFutureDate(etb.getDateFin())) {
 							mr.addMessage(LogCategory.ETABLISSEMENTS, LogLevel.WARN,
-							              String.format("Etablissement stable avec date de fin dans le futur %s : la migration ignore cette date.",
-							                            StringRenderers.DATE_RENDERER.toString(range.getDateFin())));
-							return new DateRangeHelper.Range(range.getDateDebut(), null);
+							              String.format("Période d'établissement stable %d avec date de fin dans le futur %s : la migration ignore cette date.",
+							                            etb.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(etb.getDateFin())));
+							return new DateRangeHelper.Range(etb.getDateDebut(), null);
 						}
 						else {
-							return range;
+							return new DateRangeHelper.Range(etb);
 						}
 					})
 					.sorted(DateRangeComparator::compareRanges)

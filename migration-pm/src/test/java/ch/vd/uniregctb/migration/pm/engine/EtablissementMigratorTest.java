@@ -1275,6 +1275,34 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(EntityLinkCollector.LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, collectedLink.getType());
 		}
 
-		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement stable avec date de fin dans le futur [0-9.]+ : la migration ignore cette date\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bPériode d'établissement stable 1 avec date de fin dans le futur [0-9.]+ : la migration ignore cette date\\.$");
+	}
+
+	@Test
+	public void testEtablissementStableAvecDateDebutDansLeFutur() throws Exception {
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(12442L);
+		final RegpmEtablissement etablissement = buildEtablissement(5435L, entreprise);
+		addEtablissementStable(etablissement, RegDate.get().addDays(2), null);       // date de début toujours dans le futur
+		addDomicileEtablissement(etablissement, RegDate.get(2005, 3, 12), Commune.LAUSANNE, false);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// migration sans établissement car aucune date d'établissement stable valide
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(0, ids.size());
+		});
+
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bPériode d'établissement stable 1 ignorée car sa date de début de validité est dans le futur \\([0-9.]+\\)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement ignoré car sans établissement stable ni rôle de mandataire\\.$");
 	}
 }
