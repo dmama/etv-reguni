@@ -64,6 +64,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmModeImposition;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeForPrincipal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
@@ -3110,6 +3111,134 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'EMISE' migré au 03.01.2014.", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'RETOURNEE' migré au 12.05.2014.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Génération d'une déclaration sur la PF 2014 à partir des dates [01.01.2014 -> 31.12.2014] de la période d'imposition calculée et du dossier fiscal 2014/1 sans exercice commercial lié.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Délai initial de retour fixé au 14.08.2015.", msgs.get(5));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'EMISE' migré au 01.01.2015.", msgs.get(6));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
+		}
+	}
+	@Test
+	public void testDeclarationEmiseAnnuleeSansLienVersExerciceCommercial() throws Exception {
+
+		final long idEntreprise = 46545L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2013, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
+		entreprise.setDateRequisitionRadiation(RegDate.get(2013, 12, 31));
+		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31), RegpmTypeAssujettissement.LILIC);
+		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2013, RegDate.get(2014, 1, 3), RegpmModeImposition.POST);
+		df2013.setDateRetour(RegDate.get(2014, 5, 12));
+		final RegpmDossierFiscal df2014 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2014, RegDate.get(2015, 1, 1), RegpmModeImposition.POST);           // celui-ci n'a pas d'exercice commercial associé
+		df2014.setEtat(RegpmTypeEtatDossierFiscal.ANNULE);                                                                                                                          // et en plus il est annulé
+		EntrepriseMigratorTest.addExerciceCommercial(entreprise, df2013, RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31));
+		entreprise.setDateBouclementFutur(RegDate.get(2015, 12, 31));       // la DI a été envoyée, donc la date décalée d'un cran
+
+		// ajout de quelques périodes fiscales utiles
+		doInUniregTransaction(false, status -> {
+			addPeriodeFiscale(2013);
+			addPeriodeFiscale(2014);
+		});
+
+		final Graphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                     null,
+		                                     null);
+
+		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(mr);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+
+			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
+			Assert.assertNotNull(e);
+
+			final List<Declaration> declarations = e.getDeclarationsSorted();
+			Assert.assertNotNull(declarations);
+			Assert.assertEquals(2, declarations.size());        // une en 2013, une en 2014
+
+			{
+				// 2013
+				final Declaration d = declarations.get(0);
+				Assert.assertNotNull(d);
+				Assert.assertFalse(d.isAnnule());
+				Assert.assertEquals(DeclarationImpotOrdinairePM.class, d.getClass());
+				Assert.assertEquals(RegDate.get(2013, 1, 1), d.getDateDebut());
+				Assert.assertEquals(RegDate.get(2013, 12, 31), d.getDateFin());
+				Assert.assertEquals((Integer) 2013, d.getPeriode().getAnnee());
+
+				final List<EtatDeclaration> etats = d.getEtatsSorted();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(2, etats.size());
+				{
+					final EtatDeclaration etat = etats.get(0);
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(EtatDeclarationEmise.class, etat.getClass());
+					Assert.assertEquals(RegDate.get(2014, 1, 3), etat.getDateObtention());
+				}
+				{
+					final EtatDeclaration etat = etats.get(1);
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(EtatDeclarationRetournee.class, etat.getClass());
+					Assert.assertEquals(RegDate.get(2014, 5, 12), etat.getDateObtention());
+				}
+			}
+			{
+				// 2014
+				final Declaration d = declarations.get(1);
+				Assert.assertNotNull(d);
+				Assert.assertTrue(d.isAnnule());
+				Assert.assertEquals(DeclarationImpotOrdinairePM.class, d.getClass());
+				Assert.assertEquals(RegDate.get(2014, 1, 1), d.getDateDebut());
+				Assert.assertEquals(RegDate.get(2014, 12, 31), d.getDateFin());
+				Assert.assertEquals((Integer) 2014, d.getPeriode().getAnnee());
+
+				final List<EtatDeclaration> etats = d.getEtatsSorted();
+				Assert.assertNotNull(etats);
+				Assert.assertEquals(1, etats.size());
+				{
+					final EtatDeclaration etat = etats.get(0);
+					Assert.assertNotNull(etat);
+					Assert.assertFalse(etat.isAnnule());
+					Assert.assertEquals(EtatDeclarationEmise.class, etat.getClass());
+					Assert.assertEquals(RegDate.get(2015, 1, 1), etat.getDateObtention());
+				}
+			}
+		});
+
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
+		                               LogCategory.FORS,
+		                               LogCategory.DECLARATIONS,
+		                               LogCategory.DONNEES_CIVILES_REGPM),
+		                    messages.keySet());
+
+		{
+			final List<String> msgs = messages.get(LogCategory.SUIVI);
+			Assert.assertEquals(6, msgs.size());
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 31.12.2013.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Prise en compte d'une date de bouclement estimée au 31.12.2014 (un an avant la date de bouclement futur).", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2013 : tous les 12 mois, à partir du premier 31.12.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(5));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.FORS);
+			Assert.assertEquals(1, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;For principal COMMUNE_OU_FRACTION_VD/5586 [01.01.2013 -> 31.12.2013] généré.", msgs.get(0));
+		}
+		{
+			final List<String> msgs = messages.get(LogCategory.DECLARATIONS);
+			Assert.assertEquals(7, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Génération d'une déclaration sur la PF 2013 à partir des dates [01.01.2013 -> 31.12.2013] de l'exercice commercial 1 et du dossier fiscal correspondant.", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Délai initial de retour fixé au 16.08.2014.", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'EMISE' migré au 03.01.2014.", msgs.get(2));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'RETOURNEE' migré au 12.05.2014.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;Déclaration annulée migrée sur la PF 2014 en supposant des exercices de 12 mois suite au dernier exercice non-annulé ([01.01.2013 -> 31.12.2013]) : [01.01.2014 -> 31.12.2014].", msgs.get(4));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Délai initial de retour fixé au 14.08.2015.", msgs.get(5));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;Etat 'EMISE' migré au 01.01.2015.", msgs.get(6));
 		}

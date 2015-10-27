@@ -256,9 +256,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	private static final class DeclarationsSansExerciceCommercialRegpmData {
+		private final RegpmEntreprise regpm;
 		private final List<RegpmDossierFiscal> dossiersFiscauxNonAssignes;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-		public DeclarationsSansExerciceCommercialRegpmData(List<RegpmDossierFiscal> dossiersFiscauxNonAssignes, KeyedSupplier<Entreprise> entrepriseSupplier) {
+		public DeclarationsSansExerciceCommercialRegpmData(RegpmEntreprise regpm, List<RegpmDossierFiscal> dossiersFiscauxNonAssignes, KeyedSupplier<Entreprise> entrepriseSupplier) {
+			this.regpm = regpm;
 			this.dossiersFiscauxNonAssignes = dossiersFiscauxNonAssignes;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
@@ -2398,7 +2400,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.collect(Collectors.toList());
 		if (!dossiersFiscauxNonAttribues.isEmpty()) {
 			// demande de calcul pour la fin de la transaction avec toutes les données nécessaires
-			mr.addPreTransactionCommitData(new DeclarationsSansExerciceCommercialRegpmData(dossiersFiscauxNonAttribues, getEntrepriseSupplier(idMapper, regpm)));
+			mr.addPreTransactionCommitData(new DeclarationsSansExerciceCommercialRegpmData(regpm, dossiersFiscauxNonAttribues, getEntrepriseSupplier(idMapper, regpm)));
 		}
 	}
 
@@ -2473,6 +2475,14 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toCollection(LinkedList::new)),        // LinkedList pour pouvoir enlever les éléments facilement
 						                          TreeMap::new));
 
+				// indexation des exercices commerciaux connus par pf
+				final NavigableMap<Integer, RegpmExerciceCommercial> mapDernierExerciceCommercial = data.regpm.getExercicesCommerciaux().stream()
+						.filter(ex -> ex.getDossierFiscal() == null || ex.getDossierFiscal().getEtat() != RegpmTypeEtatDossierFiscal.ANNULE)
+						.collect(Collectors.toMap(ex -> ex.getDateDebut().year(),
+						                          Function.identity(),
+						                          (ex1, ex2) -> Stream.of(ex1, ex2).max(Comparator.comparing(RegpmExerciceCommercial::getDateFin)).get(),
+						                          TreeMap::new));
+
 				// pour chaque dossier fiscal non-assigné, on va essayer de générer une déclaration
 				for (RegpmDossierFiscal dossier : data.dossiersFiscauxNonAssignes) {
 					// dans quelle pf, déjà ?
@@ -2484,6 +2494,41 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 							mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
 							              String.format("Dossier fiscal %d/%d sans exercice commercial lié ignoré car antérieur à la PF %d.",
 							                            pf, dossier.getNoParAnnee(), premierePeriodeFiscalePersonnesMorales));
+						}
+						else if (dossier.getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
+							// [SIFISC-16462] dans le cas d'une DI annulé, on essaie de reconstituer des dates (qui n'ont au final que peu d'importance)
+							// à partir de la fin du dernier exercice commercial précédent
+							final RegpmExerciceCommercial exercicePrecedent = Optional.ofNullable(mapDernierExerciceCommercial.lowerEntry(pf))
+									.map(Map.Entry::getValue)
+									.orElse(null);
+							final RegDate dateDebut;
+							final RegDate dateFin;
+							if (exercicePrecedent != null) {
+								// réalignement sur la PF désirée
+								dateFin = exercicePrecedent.getDateFin().addYears(pf - exercicePrecedent.getDateFin().year());
+								dateDebut = dateFin.addYears(-1).addDays(1);
+
+								// un peu de log pour le suivi
+								mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+								              String.format("Déclaration annulée migrée sur la PF %d en supposant des exercices de 12 mois suite au dernier exercice non-annulé (%s) : %s.",
+								                            pf,
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercicePrecedent.getDateDebut(), exercicePrecedent.getDateFin())),
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(dateDebut, dateFin))));
+							}
+							else {
+								// année civile
+								dateDebut = RegDate.get(pf, 1, 1);
+								dateFin = RegDate.get(pf, 12, 31);
+
+								// un peu de log pour le suivi
+								mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+								              String.format("Déclaration annulée migrée sur la PF %d en supposant un exercice sur l'année civile : %s.",
+								                            pf,
+								                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(dateDebut, dateFin))));
+							}
+
+							final Declaration di = migrateDeclaration(dossier, dateDebut, dateFin, mr);
+							entreprise.addDeclaration(di);
 						}
 						else {
 							mr.addMessage(LogCategory.DECLARATIONS, LogLevel.ERROR,
