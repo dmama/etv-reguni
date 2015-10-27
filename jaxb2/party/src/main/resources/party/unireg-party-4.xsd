@@ -786,6 +786,11 @@
 					<xs:documentation>Les allègements fiscaux de la personne morale.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="CORPORATION_STATUSES">
+				<xs:annotation>
+					<xs:documentation>Les états fiscaux de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="DEBTOR_PERIODICITIES">
 				<xs:annotation>
 					<xs:documentation>Les périodicités du débiteur.</xs:documentation>
