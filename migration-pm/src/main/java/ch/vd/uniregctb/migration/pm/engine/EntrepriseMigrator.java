@@ -2366,24 +2366,35 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				// pour trouver au final ceux qui ne le sont pas (= les déclarations envoyées mais pas encore traitées ???)
 				dossiersFiscauxAttribuesAuxExercicesCommerciaux.add(dossier);
 
-				// un peu de log pour le suivi
-				mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
-				              String.format("Génération d'une déclaration sur la PF %d à partir des dates %s de l'exercice commercial %d et du dossier fiscal correspondant.",
-				                            dossier.getPf(),
-				                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
-				                            exercice.getId().getSeqNo()));
+				// un cas très bizarre : un dossier sur une PF qui n'existe pas parce qu'elle n'a pas encore commencé
+				if (dossier.getPf() > RegDate.get().year()) {
+					mr.addMessage(LogCategory.DECLARATIONS, LogLevel.ERROR,
+					              String.format("Dossier fiscal sur la PF %d qui est encore dans le futur (exercice commercial %d %s) : la DI est ignorée.",
+					                            dossier.getPf(),
+					                            exercice.getId().getSeqNo(),
+					                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin()))));
+				}
+				else {
 
-				// un petit warning sur des cas bizarres...
-				if (dossier.getPf() != exercice.getDateFin().year()) {
-					mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
-					              String.format("Dossier fiscal sur la PF %d alors que la fin de l'exercice commercial (%s) est en %d... N'est-ce pas étrange ?",
+					// un peu de log pour le suivi
+					mr.addMessage(LogCategory.DECLARATIONS, LogLevel.INFO,
+					              String.format("Génération d'une déclaration sur la PF %d à partir des dates %s de l'exercice commercial %d et du dossier fiscal correspondant.",
 					                            dossier.getPf(),
 					                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
-					                            exercice.getDateFin().year()));
-				}
+					                            exercice.getId().getSeqNo()));
 
-				final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin(), mr);
-				unireg.addDeclaration(di);
+					// un petit warning sur des cas bizarres...
+					if (dossier.getPf() != exercice.getDateFin().year()) {
+						mr.addMessage(LogCategory.DECLARATIONS, LogLevel.WARN,
+						              String.format("Dossier fiscal sur la PF %d alors que la fin de l'exercice commercial (%s) est en %d... N'est-ce pas étrange ?",
+						                            dossier.getPf(),
+						                            StringRenderers.DATE_RANGE_RENDERER.toString(new DateRangeHelper.Range(exercice.getDateDebut(), exercice.getDateFin())),
+						                            exercice.getDateFin().year()));
+					}
+
+					final Declaration di = migrateDeclaration(dossier, exercice.getDateDebut(), exercice.getDateFin(), mr);
+					unireg.addDeclaration(di);
+				}
 			}
 		});
 
