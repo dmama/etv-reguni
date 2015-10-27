@@ -666,11 +666,17 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case BANK_ACCOUNTS:
-			case CAPITALS:
 			case CORPORATION_STATUSES:
+				results.add(TiersDAO.Parts.ETATS_FISCAUX);
+				break;
+			case CAPITALS:
 			case LEGAL_FORMS:
+				results.add(TiersDAO.Parts.DONNEES_RC);
+				break;
 			case TAX_SYSTEMS:
+				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
+				break;
+			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -723,11 +729,17 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case BANK_ACCOUNTS:
-			case CAPITALS:
 			case CORPORATION_STATUSES:
+				results.add(TiersDAO.Parts.ETATS_FISCAUX);
+				break;
+			case CAPITALS:
 			case LEGAL_FORMS:
+				results.add(TiersDAO.Parts.DONNEES_RC);
+				break;
 			case TAX_SYSTEMS:
+				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
+				break;
+			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 				// rien à faire
 				break;
@@ -784,11 +796,17 @@ public abstract class DataHelper {
 			case IMMOVABLE_PROPERTIES:
 				results.add(TiersDAO.Parts.IMMEUBLES);
 				break;
-			case BANK_ACCOUNTS:
-			case CAPITALS:
 			case CORPORATION_STATUSES:
+				results.add(TiersDAO.Parts.ETATS_FISCAUX);
+				break;
+			case CAPITALS:
 			case LEGAL_FORMS:
+				results.add(TiersDAO.Parts.DONNEES_RC);
+				break;
 			case TAX_SYSTEMS:
+				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
+				break;
+			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 				// rien à faire
@@ -849,10 +867,17 @@ public abstract class DataHelper {
 			case TAX_LIGHTENINGS:
 				results.add(TiersDAO.Parts.ALLEGEMENTS_FISCAUX);
 				break;
-			case BANK_ACCOUNTS:
+			case CORPORATION_STATUSES:
+				results.add(TiersDAO.Parts.ETATS_FISCAUX);
+				break;
 			case CAPITALS:
 			case LEGAL_FORMS:
+				results.add(TiersDAO.Parts.DONNEES_RC);
+				break;
 			case TAX_SYSTEMS:
+				results.add(TiersDAO.Parts.REGIMES_FISCAUX);
+				break;
+			case BANK_ACCOUNTS:
 			case LEGAL_SEATS:
 			case EBILLING_STATUSES:
 				// rien à faire

@@ -538,6 +538,78 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 			associate(session, allegements, tiers, getter, setter);
 		}
 
+		if (parts != null && parts.contains(Parts.ETATS_FISCAUX)) {
+			// on charge les états fiscaux en vrac
+			final List<EtatEntreprise> etats = queryObjectsByIds("from EtatEntreprise as ee where ee.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<EtatEntreprise> getter = new TiersIdGetter<EtatEntreprise>() {
+				@Override
+				public Long getTiersId(EtatEntreprise entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<EtatEntreprise> setter = new EntitySetSetter<EtatEntreprise>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<EtatEntreprise> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setEtats(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, etats, tiers, getter, setter);
+		}
+
+		if (parts != null && parts.contains(Parts.REGIMES_FISCAUX)) {
+			// on charge les régimes fiscaux en vrac
+			final List<RegimeFiscal> regimes = queryObjectsByIds("from RegimeFiscal as rf where rf.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<RegimeFiscal> getter = new TiersIdGetter<RegimeFiscal>() {
+				@Override
+				public Long getTiersId(RegimeFiscal entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<RegimeFiscal> setter = new EntitySetSetter<RegimeFiscal>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<RegimeFiscal> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setRegimesFiscaux(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, regimes, tiers, getter, setter);
+		}
+
+		if (parts != null && parts.contains(Parts.DONNEES_RC)) {
+			// on charge les états fiscaux en vrac
+			final List<DonneesRegistreCommerce> donnees = queryObjectsByIds("from DonneesRegistreCommerce as rc where rc.entreprise.id in (:ids)", ids, session);
+
+			final TiersIdGetter<DonneesRegistreCommerce> getter = new TiersIdGetter<DonneesRegistreCommerce>() {
+				@Override
+				public Long getTiersId(DonneesRegistreCommerce entity) {
+					return entity.getEntreprise().getId();
+				}
+			};
+
+			final EntitySetSetter<DonneesRegistreCommerce> setter = new EntitySetSetter<DonneesRegistreCommerce>() {
+				@Override
+				public void setEntitySet(Tiers tiers, Set<DonneesRegistreCommerce> set) {
+					if (tiers instanceof Entreprise) {
+						((Entreprise) tiers).setDonneesRC(set);
+					}
+				}
+			};
+
+			// associations manuelles
+			associate(session, donnees, tiers, getter, setter);
+		}
+
 		return tiers;
 	}
 

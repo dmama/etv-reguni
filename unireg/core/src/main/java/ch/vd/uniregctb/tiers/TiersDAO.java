@@ -58,7 +58,10 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 		DECLARATIONS,
 		PERIODICITES,
 		IMMEUBLES,
-		ALLEGEMENTS_FISCAUX;
+		ALLEGEMENTS_FISCAUX,
+		ETATS_FISCAUX,
+		DONNEES_RC,
+		REGIMES_FISCAUX;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);
