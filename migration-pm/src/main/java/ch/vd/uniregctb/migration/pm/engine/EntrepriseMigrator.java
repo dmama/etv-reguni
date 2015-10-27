@@ -2275,10 +2275,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			// TODO que faire si la date de bouclement futur est nulle ?
 
 			if (dateBouclementFutur != null) {
-				if (dateFinDernierExercice.addYears(1).compareTo(dateBouclementFutur) < 0) {
-					final RegDate dateEstimee = dateBouclementFutur.addYears(-1);
-					mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-					              String.format("Prise en compte d'une date de bouclement estimée au %s (un an avant la date de bouclement futur).", RegDateHelper.dateToDisplayString(dateEstimee)));
+				RegDate bouclementFutur = dateBouclementFutur;
+				while (dateFinDernierExercice.addYears(1).compareTo(bouclementFutur) < 0) {
+					final RegDate dateEstimee = bouclementFutur.addYears(-1);
+					if (bouclementFutur == dateBouclementFutur) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Prise en compte d'une date de bouclement estimée au %s (un an avant la date de bouclement futur).", RegDateHelper.dateToDisplayString(dateEstimee)));
+					}
+					else {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+						              String.format("Prise en compte d'une date de bouclement estimée au %s (encore un an avant).", RegDateHelper.dateToDisplayString(dateEstimee)));
+					}
+					bouclementFutur = dateEstimee;
 					additionalDatesStreamBuilder.accept(dateEstimee);
 				}
 				additionalDatesStreamBuilder.accept(dateBouclementFutur);
