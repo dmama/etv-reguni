@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -572,6 +573,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	}
 
 	/**
+	 * @param src une map source (n'est pas modifiée par le traitement)
+	 * @param equalator un prédicat qui détermine si deux valeurs sont égales
+	 * @param <T> le type des valeurs
+	 * @return une nouvelle map qui ne contient pas les associations qui n'apportent rien (= dont la valeur est la même, au sens de l'équalator, que la valeur associée à la clé précédente)
+	 */
+	private static <T> NavigableMap<RegDate, T> purgeNoOpTransitions(NavigableMap<RegDate, T> src, BiPredicate<T, T> equalator) {
+		if (src == null) {
+			return null;
+		}
+		if (src.size() < 2) {
+			return src;
+		}
+		final NavigableMap<RegDate, T> dest = new TreeMap<>(src);
+		final Iterator<Map.Entry<RegDate, T>> cursor = dest.entrySet().iterator();
+		while (cursor.hasNext()) {
+			final Map.Entry<RegDate, T> currentEntry = cursor.next();
+			final Map.Entry<RegDate, T> previousEntry = dest.lowerEntry(currentEntry.getKey());
+			if (previousEntry != null && equalator.test(previousEntry.getValue(), currentEntry.getValue())) {
+				cursor.remove();
+			}
+		}
+		return dest;
+	}
+
+	/**
 	 * Retrouve les données valides de la raison sociale d'une entreprise
 	 * @param entreprise entreprise dont on veut extraire la raison sociale courante
 	 * @param mr collecteur de messages de suivi et manipulateur de contexte de log
@@ -642,7 +668,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// si on a quelque chose, on s'arrête là
 			if (!reduced.isEmpty()) {
-				return new RaisonSocialeHistoData(reduced);
+				return new RaisonSocialeHistoData(purgeNoOpTransitions(reduced, Objects::equals));
 			}
 
 			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
@@ -731,7 +757,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					                          TreeMap::new));
 
 			// encapsulation dans la structure officielle
-			return new CapitalHistoData(reduced);
+			return new CapitalHistoData(purgeNoOpTransitions(reduced, Objects::equals));
 		});
 	}
 
@@ -800,7 +826,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 			// si on a des informations, pas de probléme, on renvoie ça
 			if (!reduced.isEmpty()) {
-				return new FormeJuridiqueHistoData(reduced);
+				return new FormeJuridiqueHistoData(purgeNoOpTransitions(reduced, (o1, o2) -> Objects.equals(o1.getCode(), o2.getCode())));
 			}
 
 			// si on n'a pas trouvé de raison sociale mais qu'il y avait un ou des cas avec date de début nulle, on va quand-même essayer d'en prendre une
