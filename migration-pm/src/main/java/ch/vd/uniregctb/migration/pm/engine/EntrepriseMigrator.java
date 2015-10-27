@@ -2202,8 +2202,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final RegDate brutto = regpm.getDateBouclementFutur();
 			final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
 			if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
-				final RegpmExerciceCommercial dernierExcerciceConnu = exercicesCommerciaux.last();
-				if (brutto != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
+
+				// recherche du dernier exercice commercial (non-annulé) connu
+				RegpmExerciceCommercial dernierExcerciceConnu = null;
+				for (RegpmExerciceCommercial candidat : CollectionsUtils.revertedOrder(new ArrayList<>(exercicesCommerciaux))) {
+					if (candidat != null && candidat.getDossierFiscal() != null && candidat.getDossierFiscal().getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
+						continue;
+					}
+					dernierExcerciceConnu = candidat;
+					break;
+				}
+
+				if (brutto != null && dernierExcerciceConnu != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
 					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
 					              String.format("Date de bouclement futur (%s) ignorée car antérieure à la date de fin du dernier exercice commercial connu (%s).",
 					                            StringRenderers.DATE_RENDERER.toString(brutto),
