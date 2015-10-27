@@ -231,6 +231,14 @@ public class BouclementServiceImpl implements BouclementService {
 		}
 	}
 
+	/**
+	 * @param reference une date de référence
+	 * @return le premier jour du mois de la date de référence
+	 */
+	private static RegDate getDebutMois(RegDate reference) {
+		return RegDate.get(reference.year(), reference.month(), 1);
+	}
+
 	@Override
 	public List<Bouclement> extractBouclementsDepuisDates(Collection<RegDate> datesBouclements, int periodeMoisFinale) {
 
@@ -266,21 +274,58 @@ public class BouclementServiceImpl implements BouclementService {
 				}
 
 				// plage possible pour le changement de direction ?
-				final RegDate dateMax = RegDateHelper.minimum(dateCourante, dateAttendueSansChangement.getOneDayBefore(), NullDateBehavior.LATEST);
-				final RegDate dateMin = datePrecedente.getOneDayAfter();
-				final RegDate dateDebutMoisMax = RegDate.get(dateMax.year(), dateMax.month(), 1);
-				if (dateDebutMoisMax.isAfterOrEqual(dateMin)) {
-					// on essaie de mettre les dates de début en début de mois quand c'est possible
-					dateDebutChoisie = dateDebutMoisMax;
+				{
+					final RegDate max = RegDateHelper.minimum(dateCourante, dateAttendueSansChangement.getOneDayBefore(), NullDateBehavior.LATEST);
+					final RegDate min = datePrecedente.getOneDayAfter();
+					final RegDate dateDebutMoisMax = getDebutMois(max);
+					if (dateDebutMoisMax.isAfterOrEqual(min)) {
+						// on essaie de mettre les dates de début en début de mois quand c'est possible
+						dateDebutChoisie = dateDebutMoisMax;
+					}
+					else {
+						// début de mois pas possible : on prend la date minimale qui fait le boulot
+						dateDebutChoisie = min;
+					}
 				}
-				else {
-					// début de mois pas possible : on prend la date minimale qui fait le boulot
-					dateDebutChoisie = dateMin;
+
+				// allons-nous y arriver comme ça ?
+				if (DayMonth.get(dateCourante).nextAfterOrEqual(dateDebutChoisie) != dateCourante) {
+					// a priori, cela signifie que l'axe de changement de direction est plus sur la longueur de la période
+					// -> on va se replacer avant la date précédente et poser un changement de longueur de période là
+					final RegDate debut;
+					{
+						final RegDate min = snap.getPreviousBeforePrevious() != null ? snap.getPreviousBeforePrevious().getOneDayAfter() : getDebutMois(datePrecedente);
+						final RegDate debutMoisMax = getDebutMois(datePrecedente);
+						debut = debutMoisMax.isAfterOrEqual(min) ? debutMoisMax : min;
+					}
+
+					// on introduit un bouclement qui fait faire le saut directement
+					final int periode = getMonths(datePrecedente, dateCourante);
+					tmp = new Bouclement();
+					tmp.setDateDebut(debut);
+					tmp.setAncrage(DayMonth.get(datePrecedente));
+					tmp.setPeriodeMois(periode);
+					liste.add(tmp);
+
+					// si on était sur la dernière date et que l'appelant veut une période finale différente de la période active,
+					// il faut redresser le cap sur la fin
+					if (dateSuivante == null && periode != periodeMoisFinale) {
+						final RegDate min = datePrecedente.getOneDayAfter();
+						final RegDate debutMoisMax = getDebutMois(dateCourante);
+						final RegDate debutDernier = debutMoisMax.isAfterOrEqual(min) ? debutMoisMax : min;
+						tmp = new Bouclement();
+						tmp.setDateDebut(debutDernier);
+						tmp.setAncrage(DayMonth.get(dateCourante));
+						tmp.setPeriodeMois(periodeMoisFinale);
+						liste.add(tmp);
+					}
+
+					continue;
 				}
 			}
 			else {
 				// on essaie de mettre les dates de début en début de mois
-				dateDebutChoisie = RegDate.get(dateCourante.year(), dateCourante.month(), 1);
+				dateDebutChoisie = getDebutMois(dateCourante);
 			}
 
 			// écart entre la date courante et la suivante ?

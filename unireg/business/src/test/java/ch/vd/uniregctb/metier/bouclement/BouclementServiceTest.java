@@ -791,4 +791,92 @@ public class BouclementServiceTest extends WithoutSpringTest {
 			Assert.assertNull(b.getEntreprise());
 		}
 	}
+
+	/**
+	 * Cas de saut avec deux dates, un trou, une date
+	 */
+	@Test
+	public void testExtractionBouclementsSautPeriodeDeuxTrouUn() throws Exception {
+		// il manque 31.12.2013 dans la liste
+		final List<RegDate> dates = Arrays.asList(date(2011, 12, 31), date(2012, 12, 31), date(2014, 12, 31));
+		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
+		Assert.assertNotNull(bouclements);
+		checkDatesFinBouclementRegenerees(dates, bouclements, date(2015, 12, 31));
+
+		Assert.assertEquals(3, bouclements.size());
+		{
+			final Bouclement b = bouclements.get(0);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2011, 12, 1), b.getDateDebut());
+			Assert.assertEquals(12, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+		{
+			final Bouclement b = bouclements.get(1);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2012, 12, 1), b.getDateDebut());
+			Assert.assertEquals(24, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+		{
+			final Bouclement b = bouclements.get(2);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2014, 12, 1), b.getDateDebut());
+			Assert.assertEquals(12, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+	}
+
+	/**
+	 * Cas de saut avec deux dates, un trou, deux dates
+	 */
+	@Test
+	public void testExtractionBouclementsSautPeriodeDeuxTrouDeux() throws Exception {
+		// il manque 31.12.2013 dans la liste
+		final List<RegDate> dates = Arrays.asList(date(2011, 12, 31), date(2012, 12, 31), date(2014, 12, 31), date(2015, 12, 31));
+		final List<Bouclement> bouclements = service.extractBouclementsDepuisDates(dates, 12);
+		Assert.assertNotNull(bouclements);
+		checkDatesFinBouclementRegenerees(dates, bouclements, date(2016, 12, 31));
+
+		Assert.assertEquals(3, bouclements.size());
+		{
+			final Bouclement b = bouclements.get(0);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2011, 12, 1), b.getDateDebut());
+			Assert.assertEquals(12, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+		{
+			final Bouclement b = bouclements.get(1);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2012, 12, 1), b.getDateDebut());
+			Assert.assertEquals(24, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+		{
+			final Bouclement b = bouclements.get(2);
+			Assert.assertNotNull(b);
+			Assert.assertFalse(b.isAnnule());
+			Assert.assertEquals(DayMonth.get(12, 31), b.getAncrage());
+			Assert.assertEquals(date(2015, 12, 1), b.getDateDebut());
+			Assert.assertEquals(12, b.getPeriodeMois());
+			Assert.assertNull(b.getId());
+			Assert.assertNull(b.getEntreprise());
+		}
+	}
 }
