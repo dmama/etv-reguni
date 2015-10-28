@@ -313,6 +313,10 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			copyColl(to.getCapitals(), from.getCapitals());
 		}
 
+		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
+			copyColl(to.getCorporationStatuses(), from.getCorporationStatuses());
+		}
+
 		if (parts != null && parts.contains(PartyPart.TAX_SYSTEMS)) {
 			copyColl(to.getTaxSystemsVD(), from.getTaxSystemsVD());
 			copyColl(to.getTaxSystemsCH(), from.getTaxSystemsCH());
