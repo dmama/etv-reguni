@@ -103,7 +103,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element maxOccurs="unbounded" minOccurs="0" name="statuses" type="corporation:corporationStatusType">
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="corporationStatuses" type="corporation:corporationStatusType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>

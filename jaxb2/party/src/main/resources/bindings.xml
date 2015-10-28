@@ -332,6 +332,9 @@
 		<jxb:bindings node="//xs:complexType[@name='taxLighteningType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
 		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='corporationStatusType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v2.DateRange</inheritance:implements>
+		</jxb:bindings>
 		<jxb:bindings>
 			<namespace:prefix name="corp-4" />
 		</jxb:bindings>
