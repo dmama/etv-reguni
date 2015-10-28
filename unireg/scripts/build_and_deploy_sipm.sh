@@ -99,6 +99,10 @@ function deploy_app() {
   ssh $user "mkdir -p $appDir/config"
   ssh $user "config=\$(find ${upDir}/explode -name config -type d); cp \${config}/${env}/* $appDir/config"
 
+  # modification du lieu de stockage des fichiers de log (pour l'accès avec logapp)
+  local appName=$(basename $appDir)
+  ssh $user "sed -e '/\bFile\b/ s/\([a-z-]\+\)\.log/\\\${ch.vd.projectDir}\/app\/$appName\/logs\/\1-\\\${ch.vd.serverName}.log/' -i $appDir/config/unireg-log4j.xml"
+
   # copie du war
   ssh $user "mkdir -p $deployDir/deployment"
   ssh $user "depl=\$(find ${upDir}/explode -name deployment -type d); cp \${depl}/*.war $deployDir/deployment/"
