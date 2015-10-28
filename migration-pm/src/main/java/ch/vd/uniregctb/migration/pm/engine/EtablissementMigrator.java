@@ -589,9 +589,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		}
 
 		// TODO usage de l'adresse = COURRIER ou plutôt DOMICILE ?
-		// TODO enseigne dans le complément d'adresse ?
-		final String complementAdresse = regpm.getChez() == null ? regpm.getEnseigne() : regpm.getChez();
-		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(rangeAdresse), mr, complementAdresse, false);
+		final AdresseTiers adresse = adresseHelper.buildAdresse(regpm.getAdresse(rangeAdresse), mr, regpm.getChez(), false);
 		if (adresse != null) {
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			unireg.addAdresseTiers(adresse);
