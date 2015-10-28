@@ -5,13 +5,13 @@
 ENVIRONMENT=$1
 OLD_NEW=$2
 if [ -z "$ENVIRONMENT" ]; then
-        echo "Syntaxe : $(basename "$0") <env> [old] avec <env> l'un de PR, PO, VA, PP, FO" >&2
+        echo "Syntaxe : $(basename "$0") <env> [old] avec <env> l'un de PR, VA, PP, TE" >&2
         exit 1
-elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
-        echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
+elif [[ ! "$ENVIRONMENT" =~ ^(PR|VA|PP|TE)$ ]]; then
+        echo "Pour l'environnement, seuls PR, VA, PP et TE sont acceptés (trouvé : '$ENVIRONMENT')" >&2
         exit 1
 elif [ -n "$OLD_NEW" -a "$OLD_NEW" != "old" ]; then
-        echo "Syntaxe : $(basename "$0") <env> [old] avec <env> l'un de PR, PO, VA, PP, FO" >&2
+        echo "Syntaxe : $(basename "$0") <env> [old] avec <env> l'un de PR, VA, PP, TE" >&2
         exit 1
 fi
 

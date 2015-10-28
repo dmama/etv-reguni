@@ -5,10 +5,10 @@ TODAY=$(date +%Y%m%d)
 ENVIRONMENT=$1
 DAY=$2
 if [ -z "$ENVIRONMENT" -o -z "$DAY" ]; then
-        echo "Syntaxe : $(basename "$0") <env> AAAAMMJJ toto@vd.ch [titi@vd.ch ...] avec <env> l'un de PR, PO, VA, PP, FO" >&2
+        echo "Syntaxe : $(basename "$0") <env> AAAAMMJJ toto@vd.ch [titi@vd.ch ...] avec <env> l'un de PR, VA, PP, TE" >&2
         exit 1
-elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
-        echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
+elif [[ ! "$ENVIRONMENT" =~ ^(PR|VA|PP|TE)$ ]]; then
+        echo "Pour l'environnement, seuls PR, VA, PP et TE sont acceptés (trouvé : '$ENVIRONMENT')" >&2
         exit 1
 elif [[ ! "$DAY" =~ ^[0-9]{8}$ ]]; then
         echo "La date des logs à analyser doit être composée de 8 chiffres, sous la forme AAAAMMJJ (trouvé : '$DAY')" >&2
