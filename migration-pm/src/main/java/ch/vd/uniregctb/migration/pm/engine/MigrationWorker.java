@@ -44,6 +44,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	private final AtomicInteger nbEnCours = new AtomicInteger(0);
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
+	private BlockingQueue<Runnable> queue;
 	private ExecutorService executor;
 	private CompletionService<MigrationResultMessageProvider> completionService;
 	private GatheringThread gatheringThread;
@@ -135,8 +136,9 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		this.queue = new ArrayBlockingQueue<>(20);
 		this.executor = new ThreadPoolExecutor(nbThreads, nbThreads, 0L, TimeUnit.SECONDS,
-		                                       new ArrayBlockingQueue<>(20),
+		                                       queue,
 		                                       new DefaultThreadFactory(new DefaultThreadNameGenerator("Migrator")),
 		                                       MigrationWorker::rejectionExecutionHandler);
 
@@ -296,5 +298,19 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 			res.addMessage(LogCategory.EXCEPTIONS, LogLevel.ERROR, msg);
 			return res;
 		}
+	}
+
+	/**
+	 * @return le nombre de graphe actuellement en attente de traitement dans la file d'attente
+	 */
+	public int getTailleFileAttente() {
+		return queue != null ? queue.size() : 0;
+	}
+
+	/**
+	 * @return le nombre de graphes actuellement en cours de traitement
+	 */
+	public int getNombreMigrationsEnCours() {
+		return nbEnCours.intValue();
 	}
 }

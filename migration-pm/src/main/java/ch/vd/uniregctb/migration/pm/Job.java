@@ -46,7 +46,8 @@ public class Job {
 		                                                                                  "classpath:spring/database.xml",
 		                                                                                  "classpath:spring/validation.xml",
 		                                                                                  "classpath:spring/services.xml",
-		                                                                                  "classpath:spring/regpm.xml");
+		                                                                                  "classpath:spring/regpm.xml",
+		                                                                                  "classpath:spring/jmx.xml");
 		context.registerShutdownHook();
 
 		// rechargement des propriétés pour dump dans les logs
