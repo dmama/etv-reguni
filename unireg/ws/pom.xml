@@ -119,7 +119,7 @@
 			<!-- dépendance vers unireg-jaxb2-ech 2.5+ nécessaire pour le mode "direct" à cause du service UPI -->
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-ech</artifactId>
-			<version>4.1</version>
+			<version>4.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>

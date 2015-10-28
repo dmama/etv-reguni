@@ -110,7 +110,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 
 		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
-			to.getStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
+			to.getCorporationStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
 		}
 
 		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
