@@ -1284,10 +1284,11 @@ public class BusinessWebServiceCacheTest extends WebserviceTest {
 		boolean checkParents = PartyPart.PARENTS == p;
 		boolean checkWithholdingTaxDeclarationPeriods = PartyPart.WITHHOLDING_TAXATION_PERIODS == p;
 		boolean checkEbillingStatuses = PartyPart.EBILLING_STATUSES == p;
+		boolean checkCorporationStatuses = PartyPart.CORPORATION_STATUSES == p;
 		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
 				              || checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
 				              || checkTaxLightenings || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
-				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses, "La partie [" + p + "] est inconnue");
+				              checkChildren || checkParents || checkWithholdingTaxDeclarationPeriods || checkEbillingStatuses || checkCorporationStatuses, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
 		assertNullOrNotNull(checkAddresses, tiers.getResidenceAddresses(), "residenceAddresses");
