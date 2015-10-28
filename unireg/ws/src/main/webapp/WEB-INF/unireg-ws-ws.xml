@@ -245,7 +245,6 @@
 						<value>classpath:ws/unireg-ws-party-6.xsd</value>
 						<value>classpath:ws/unireg-ws-deadline-6.xsd</value>
 						<value>classpath:ws/unireg-ws-ack-6.xsd</value>
-						<value>classpath:ws/unireg-ws-searchcorporationevent-6.xsd</value>
 					</util:list>
 				</property>
 			</bean>

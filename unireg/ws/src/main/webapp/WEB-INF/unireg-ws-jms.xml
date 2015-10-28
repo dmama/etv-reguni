@@ -61,12 +61,10 @@
 		<property name="resourceResolver"><bean class="ch.vd.unireg.xml.tools.ClasspathCatalogResolver"/></property>
 		<property name="sources">
 			<list>
-				<value>classpath:xsd/civil/**/*.xsd</value>
-				<value>classpath:xsd/editique/**/*.xsd</value>
+				<value>classpath*:ws/*.xsd</value>
+				<value>classpath*:party/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
-				<value>classpath:xsd/identification/**/*.xsd</value>
-				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
 			</list>
 		</property>
 	</bean>
