@@ -311,6 +311,6 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	 * @return le nombre de graphes actuellement en cours de traitement
 	 */
 	public int getNombreMigrationsEnCours() {
-		return nbEnCours.intValue();
+		return Math.max(0, nbEnCours.intValue() - getTailleFileAttente());
 	}
 }
