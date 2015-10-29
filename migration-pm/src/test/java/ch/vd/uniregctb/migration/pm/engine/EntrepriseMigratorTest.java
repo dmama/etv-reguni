@@ -2275,6 +2275,83 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 	}
 
 	/**
+	 * Dans RegPM, les exercices commerciaux n'étaient mappés que si une DI était envoyée (et retournée), donc en particulier
+	 * il pouvait ne pas y en avoir pendant plusieurs années si l'assujettissement était interrompu.
+	 * Ici, on est dans le cas où l'assujettissement recommence juste maintenant et que la première DI après redémarrage de
+	 * l'assujettissement n'est pas encore revenue (= l'exercice commcercial de RegPM n'a pas encore été créé)
+	 */
+	@Test
+	public void testExercicesCommerciauxAbsentsPendantPlusieursAnneeAvantDateBouclementFutur() throws Exception {
+
+		final long noEntreprise = 24671L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegpmAssujettissement assujettissement1998 = addAssujettissement(e, RegDate.get(1997, 4, 1), RegDate.get(1998, 3, 31), RegpmTypeAssujettissement.LILIC);
+		addForPrincipalSuisse(e, RegDate.get(1997, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BALE);
+		final RegpmDossierFiscal df1998 = addDossierFiscal(e, assujettissement1998, 1998, RegDate.get(1998, 4, 21), RegpmModeImposition.POST);
+		addExerciceCommercial(e, df1998, RegDate.get(1997, 4, 1), RegDate.get(1998, 3, 31));
+
+		addAssujettissement(e, RegDate.get(2007, 5, 21), null, RegpmTypeAssujettissement.LILIC);
+		e.setDateBouclementFutur(RegDate.get(2008, 3, 31));
+
+		// ajout des périodes fiscales dans Unireg
+		doInUniregTransaction(false, status -> {
+			for (int pf = 1998; pf < 2014; ++pf) {
+				addPeriodeFiscale(pf);
+			}
+		});
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base de données (surtout pour les bouclements..)
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = (Entreprise) getTiersDAO().get(noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final Set<Bouclement> bouclements = entreprise.getBouclements();
+			Assert.assertNotNull(bouclements);
+			Assert.assertEquals(1, bouclements.size());
+
+			final Bouclement bouclement = bouclements.iterator().next();
+			Assert.assertNotNull(bouclement);
+			Assert.assertFalse(bouclement.isAnnule());
+			Assert.assertEquals(DayMonth.get(3, 31), bouclement.getAncrage());
+			Assert.assertEquals(RegDate.get(1998, 3, 1), bouclement.getDateDebut());
+			Assert.assertEquals(12, bouclement.getPeriodeMois());
+
+			// pas d'établissement principal généré (pas de siège!!)
+			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
+			Assert.assertNotNull(etablissements);
+			Assert.assertEquals(0, etablissements.size());
+		});
+
+		// vérification des messages dans le contexte "SUIVI"
+		final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.SUIVI);
+		Assert.assertNotNull(messages);
+		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+		Assert.assertEquals(13, textes.size());
+		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2007 (un an avant la date de bouclement futur).", textes.get(1));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2006 (encore un an avant).", textes.get(2));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2005 (encore un an avant).", textes.get(3));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2004 (encore un an avant).", textes.get(4));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2003 (encore un an avant).", textes.get(5));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2002 (encore un an avant).", textes.get(6));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2001 (encore un an avant).", textes.get(7));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.2000 (encore un an avant).", textes.get(8));
+		Assert.assertEquals("Prise en compte d'une date de bouclement estimée au 31.03.1999 (encore un an avant).", textes.get(9));
+		Assert.assertEquals("Cycle de bouclements créé, applicable dès le 01.03.1998 : tous les 12 mois, à partir du premier 31.03.", textes.get(10));
+		Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(11));
+		Assert.assertEquals("Entreprise migrée : 246.71.", textes.get(12));
+	}
+
+	/**
 	 * Cas de la PM 32414, pour laquelle la date de bouclement futur est en 1992, alors que le for vaudois et les assujettissements sont toujours ouverts,
 	 * et que le seul exercice commercial existant est en 2001
 	 */
