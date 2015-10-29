@@ -477,19 +477,19 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                    messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(11, msgs.size());
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";" + noContribuableEtablissementSecondaireMandataire.longValue() + ";;;" + idEntrepriseMandataire + ";;;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaireMandataire.longValue()) + ".", msgs.get(
-					0));
+			Assert.assertEquals(12, msgs.size());
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";" + noContribuableEtablissementSecondaireMandataire.longValue() + ";;;" + idEntrepriseMandataire + ";;;;;;;;Etablissement migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementSecondaireMandataire.longValue()) + ".", msgs.get(0));
 			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(1));
-			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
-			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
-			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Le mandat 1 de l'entreprise mandante " + idEntrepriseMandante + " vers l'entité mandataire " + idEtablissementMandataire + " de type ETABLISSEMENT est ignoré car sa date de résiliation est antérieure au 01.01.2008 (31.12.2006).", msgs.get(4));
-			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandante) + ".", msgs.get(5));
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(6));
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(7));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " d'après le siège 1.", msgs.get(8));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " : [02.02.1990 -> ?] sur PAYS_HS/8215.", msgs.get(9));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandataire) + ".", msgs.get(10));
+			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Le mandat 1 de l'entreprise mandante " + idEntrepriseMandante + " vers l'entité mandataire " + idEtablissementMandataire + " de type ETABLISSEMENT est ignoré car sa date de résiliation est antérieure au 01.01.2008 (31.12.2006).", msgs.get(5));
+			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandante) + ".", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(7));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(8));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " d'après le siège 1.", msgs.get(9));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableEtablissementPrincipalMandataire.longValue()) + " : [02.02.1990 -> ?] sur PAYS_HS/8215.", msgs.get(10));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntrepriseMandataire) + ".", msgs.get(11));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
@@ -1201,11 +1201,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
-			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
-			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(3));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(1));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + noEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(noEntreprise) + ".", msgs.get(4));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -2464,12 +2465,32 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals(25, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 28.09.2010.", msgs.get(1));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2015 : tous les 12 mois, à partir du premier 31.12.", msgs.get(2));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2013 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2012 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2011 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(5));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2010 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(6));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2009 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(7));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2008 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(8));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2007 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(9));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2006 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(10));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2005 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(11));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2004 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(12));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2003 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(13));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2002 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(14));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2001 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(15));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2000 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(16));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.1999 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(17));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.1998 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(18));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.1997 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(19));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.1996 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(20));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.1995 pour combler l'absence d'exercice commercial dans RegPM sur la période [17.05.1995 -> 31.12.2015].", msgs.get(21));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.1995 : tous les 12 mois, à partir du premier 31.12.", msgs.get(22));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(23));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(24));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -2533,11 +2554,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
@@ -2587,12 +2609,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(5, msgs.size());
+			Assert.assertEquals(6, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 27.12.2014.", msgs.get(1));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(4));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(5));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
@@ -2643,11 +2666,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(4, msgs.size());
+			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(2));
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(3));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni for principal.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
@@ -3093,7 +3117,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
 			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Prise en compte d'une date de bouclement estimée au 31.12.2014 (un an avant la date de bouclement futur).", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2014 -> 31.12.2015].", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2013 : tous les 12 mois, à partir du premier 31.12.", msgs.get(2));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
@@ -3221,7 +3245,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(6, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Date de fin d'activité proposée (date de réquisition de radiation) : 31.12.2013.", msgs.get(1));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Prise en compte d'une date de bouclement estimée au 31.12.2014 (un an avant la date de bouclement futur).", msgs.get(2));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Ajout d'une date de bouclement estimée au 31.12.2014 pour combler l'absence d'exercice commercial dans RegPM sur la période [01.01.2014 -> 31.12.2015].", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Cycle de bouclements créé, applicable dès le 01.12.2013 : tous les 12 mois, à partir du premier 31.12.", msgs.get(3));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Pas de siège associé, pas d'établissement principal créé.", msgs.get(4));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(5));

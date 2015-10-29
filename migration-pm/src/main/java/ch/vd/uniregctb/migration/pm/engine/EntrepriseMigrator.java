@@ -2261,81 +2261,77 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private void migrateExercicesCommerciaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
 
 		final RegDate dateBouclementFutur = mr.getExtractedData(DateBouclementFuturData.class, buildEntrepriseKey(regpm)).date;
-		final List<RegDate> datesBouclements;
-		final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
-		if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+		final List<RegDate> datesBouclements = new LinkedList<>();
+		final List<RegpmExerciceCommercial> exercicesCommerciaux = getExercicesCommerciauxNonAnnules(regpm);
 
-			final Stream.Builder<RegDate> additionalDatesStreamBuilder = Stream.builder();
+		// on s'intéresse à une période en particulier (= ce que l'on voit par la lorgnette, d'où le nom...)
+		// qui va du début de l'existence connue de l'entreprise à son activité connue la plus récente (voire même future)
+
+		final RegDate dateDebutLorgnette = Stream.of(getDateDebutActivite(regpm, mr),
+		                                             exercicesCommerciaux.isEmpty() ? null : exercicesCommerciaux.get(0).getDateDebut())
+				.filter(Objects::nonNull)
+				.min(Comparator.naturalOrder())
+				.orElse(null);
+
+		final RegDate dateFinLorgnette = Stream.of(dateBouclementFutur,
+		                                           exercicesCommerciaux.isEmpty() ? null : exercicesCommerciaux.get(exercicesCommerciaux.size() - 1).getDateFin())
+				.filter(Objects::nonNull)
+				.max(Comparator.naturalOrder())
+				.orElse(null);
+
+		if (dateDebutLorgnette == null) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise sans exercice commercial ni for principal.");
+		}
+		if (dateFinLorgnette == null) {
+			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise sans exercice commercial ni date de bouclement futur.");
+		}
+		if (dateDebutLorgnette != null && dateFinLorgnette != null) {
 
 			// dans RegPM, les exercices commerciaux ne sont instanciés que quand une DI est retournée, ce qui a pour conséquence immédiate qu'en l'absence
 			// d'assujettissement, aucune DI n'est bien-sûr envoyée, encore moins retournée, et donc aucun exercice commercial n'est créé en base...
 			// donc, si on trouve des trous dans les exercices commerciaux en base, cela correspond à une interruption de l'assujettissement, et il faut le combler
 			// (on va supposer des exercices commerciaux annuels, faute de mieux, dans la période non-mappée)
 
-			final RegpmExerciceCommercial dernierConnu = exercicesCommerciaux.last();
-			final RegDate dateFinDernierExercice = dernierConnu.getDateFin();
-
 			// période totale maximale couverte (potentiellement partiellement, c'est justement ce qui nous intéresse ici...) par des exercices commerciaux de regpm
-			final DateRange lifespan = new DateRangeHelper.Range(exercicesCommerciaux.first().getDateDebut(), dateFinDernierExercice);
+			final DateRange lifespan = new DateRangeHelper.Range(dateDebutLorgnette, dateFinLorgnette);
 			final List<DateRange> mapped = exercicesCommerciaux.stream().map(ex -> new DateRangeHelper.Range(ex.getDateDebut(), ex.getDateFin())).collect(Collectors.toList());
 			final List<DateRange> notMapped = DateRangeHelper.subtract(lifespan, mapped);
 			if (!notMapped.isEmpty()) {
 
 				// il y a bien au moins une (peut-être plusieurs...) période qui n'est pas mappée...
-				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du dernier exercice avant le trou) pour combler
+				// pour chacune d'entre elles, on va supposer des exercices commerciaux annuels (à la date d'ancrage du premier exercice après le trou) pour combler
 				for (DateRange range : notMapped) {
 
 					// on sait que la fin du range est forcément une date de bouclement (puisqu'un exercice commercial débute au lendemain)
 					// et ensuite on case autant d'années que nécessaire pour boucher le trou
 					for (RegDate bouclement = range.getDateFin(); bouclement.isAfterOrEqual(range.getDateDebut()); bouclement = bouclement.addYears(-1)) {
-						additionalDatesStreamBuilder.accept(bouclement);
 
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Ajout d'une date de bouclement estimée au %s pour combler l'absence d'exercice commercial dans RegPM sur la période %s.",
-						                            StringRenderers.DATE_RENDERER.toString(bouclement),
-						                            StringRenderers.DATE_RANGE_RENDERER.toString(range)));
+						// la date de bouclement futur est de toute façon ajoutée par la suite, et ne mérite pas le log d'ajout d'une date "estimée"...
+						if (bouclement != dateBouclementFutur) {
+							datesBouclements.add(bouclement);
+
+							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
+							              String.format("Ajout d'une date de bouclement estimée au %s pour combler l'absence d'exercice commercial dans RegPM sur la période %s.",
+							                            StringRenderers.DATE_RENDERER.toString(bouclement),
+							                            StringRenderers.DATE_RANGE_RENDERER.toString(range)));
+						}
 					}
 				}
 			}
-
-			// c'est apparemment le cas qui apparaît tout le temps :
-			// la déclaration (= dossier fiscal) de la PF précédente a déjà été envoyée, mais aucun exercice commercial
-			// n'a encore été généré, et la date de bouclement futur correspond déjà à la fin de la PF courante)
-			// -> je dois bien créer un exercice commercial dans Unireg entre les deux (= pour la DI envoyée)
-
-			// TODO que faire si la date de bouclement futur est nulle ?
-
-			if (dateBouclementFutur != null) {
-				RegDate bouclementFutur = dateBouclementFutur;
-				while (dateFinDernierExercice.addYears(1).compareTo(bouclementFutur) < 0) {
-					final RegDate dateEstimee = bouclementFutur.addYears(-1);
-					if (bouclementFutur == dateBouclementFutur) {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Prise en compte d'une date de bouclement estimée au %s (un an avant la date de bouclement futur).", RegDateHelper.dateToDisplayString(dateEstimee)));
-					}
-					else {
-						mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
-						              String.format("Prise en compte d'une date de bouclement estimée au %s (encore un an avant).", RegDateHelper.dateToDisplayString(dateEstimee)));
-					}
-					bouclementFutur = dateEstimee;
-					additionalDatesStreamBuilder.accept(dateEstimee);
-				}
-				additionalDatesStreamBuilder.accept(dateBouclementFutur);
-			}
-			final Stream<RegDate> additionalDatesStream = additionalDatesStreamBuilder.build();
-
-			// la liste des dates à prendre en compte pour le calcul des bouclements à la sauce Unireg
-			datesBouclements = Stream.concat(exercicesCommerciaux.stream().map(RegpmExerciceCommercial::getDateFin), additionalDatesStream)
-					.collect(Collectors.toList());
 		}
-		else if (dateBouclementFutur != null) {
-			// aucun exercice commercial, mais une date de bouclement futur -> ce sera le premier bouclement connu
-			datesBouclements = Collections.singletonList(dateBouclementFutur);
-		}
-		else {
-			// entreprise sans exercice commercial ni bouclement futur -> ça se log...
-			mr.addMessage(LogCategory.SUIVI, LogLevel.WARN, "Entreprise sans exercice commercial ni date de bouclement futur.");
-			datesBouclements = Collections.emptyList();
+
+		// on ajoute les dates de bouclement connues (car un exercice commercial existe effectivement)
+		exercicesCommerciaux.stream()
+				.map(RegpmExerciceCommercial::getDateFin)
+				.forEach(datesBouclements::add);
+
+		// quand la déclaration (= dossier fiscal) de la PF précédente a déjà été envoyée (mais pas encore retournée, donc aucun exercice commercial
+		// n'a encore été généré, et la date de bouclement futur correspond déjà à la fin de la PF courante)
+		// -> je dois bien créer un exercice commercial dans Unireg entre les deux (= pour la DI envoyée)
+
+		// TODO que faire si la date de bouclement futur est nulle ?
+		if (dateBouclementFutur != null) {
+			datesBouclements.add(dateBouclementFutur);
 		}
 
 		// calcul des périodicités...
