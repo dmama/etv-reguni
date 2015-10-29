@@ -2228,18 +2228,11 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey key = buildEntityKey(regpm);
 		return doInLogContext(key, mr, idMapper, () -> {
 			final RegDate brutto = regpm.getDateBouclementFutur();
-			final SortedSet<RegpmExerciceCommercial> exercicesCommerciaux = regpm.getExercicesCommerciaux();
-			if (exercicesCommerciaux != null && !exercicesCommerciaux.isEmpty()) {
+			final List<RegpmExerciceCommercial> exercicesCommerciaux = getExercicesCommerciauxNonAnnules(regpm);
+			if (!exercicesCommerciaux.isEmpty()) {
 
 				// recherche du dernier exercice commercial (non-annulé) connu
-				RegpmExerciceCommercial dernierExcerciceConnu = null;
-				for (RegpmExerciceCommercial candidat : CollectionsUtils.revertedOrder(new ArrayList<>(exercicesCommerciaux))) {
-					if (candidat != null && candidat.getDossierFiscal() != null && candidat.getDossierFiscal().getEtat() == RegpmTypeEtatDossierFiscal.ANNULE) {
-						continue;
-					}
-					dernierExcerciceConnu = candidat;
-					break;
-				}
+				final RegpmExerciceCommercial dernierExcerciceConnu = exercicesCommerciaux.get(exercicesCommerciaux.size() - 1);
 
 				if (brutto != null && dernierExcerciceConnu != null && brutto.isBefore(dernierExcerciceConnu.getDateFin())) {
 					mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
@@ -2251,6 +2244,18 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			return new DateBouclementFuturData(brutto);
 		});
+	}
+
+	/**
+	 * Méthode centralisée pour extraire la liste triée des exercices commerciaux non-annulés d'une entreprise dans RegPM
+	 * @param regpm l'entreprise en question
+	 * @return la liste triée des exercices commerciaux non-annulés de l'entreprise
+	 */
+	@NotNull
+	private static List<RegpmExerciceCommercial> getExercicesCommerciauxNonAnnules(RegpmEntreprise regpm) {
+		return regpm.getExercicesCommerciaux().stream()
+				.filter(ex -> ex.getDossierFiscal() == null || ex.getDossierFiscal().getEtat() != RegpmTypeEtatDossierFiscal.ANNULE)
+				.collect(Collectors.toList());
 	}
 
 	private void migrateExercicesCommerciaux(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
@@ -2521,9 +2526,8 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						                          TreeMap::new));
 
 				// indexation des exercices commerciaux connus par pf
-				final NavigableMap<Integer, RegpmExerciceCommercial> mapDernierExerciceCommercial = data.regpm.getExercicesCommerciaux().stream()
-						.filter(ex -> ex.getDossierFiscal() == null || ex.getDossierFiscal().getEtat() != RegpmTypeEtatDossierFiscal.ANNULE)
-						.collect(Collectors.toMap(ex -> ex.getDateDebut().year(),
+				final NavigableMap<Integer, RegpmExerciceCommercial> mapDernierExerciceCommercial = getExercicesCommerciauxNonAnnules(data.regpm).stream()
+						.collect(Collectors.toMap(ex -> ex.getDateFin().year(),
 						                          Function.identity(),
 						                          (ex1, ex2) -> Stream.of(ex1, ex2).max(Comparator.comparing(RegpmExerciceCommercial::getDateFin)).get(),
 						                          TreeMap::new));
