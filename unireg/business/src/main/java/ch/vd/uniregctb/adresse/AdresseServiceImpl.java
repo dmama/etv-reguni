@@ -470,14 +470,12 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Etablissement) {
 			final Etablissement etb = (Etablissement) tiers;
+			if (fillFormulePolitesse) {
+				adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE); // [UNIREG-2302]
+			}
 
-			// le nom d'enseigne en priorité, sinon la raison sociale
-			if (StringUtils.isNotBlank(etb.getEnseigne())) {
-				adresse.addRaisonSociale(etb.getEnseigne());
-			}
-			else {
-				adresse.addRaisonSociale(etb.getRaisonSociale());
-			}
+			// [SIFISC-16876] On n'utilise que la raison sociale pour l'adresse, l'enseigne ne sert que pour la recherche
+			adresse.addRaisonSociale(etb.getRaisonSociale());
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
