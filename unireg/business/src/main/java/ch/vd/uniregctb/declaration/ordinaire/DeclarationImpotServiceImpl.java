@@ -692,7 +692,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             StatusManager statusManager) throws DeclarationException {
 		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
-		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
+		                                                                                tailleLot, transactionManager, parametres, adresseService, evenementFiscalService, ticketService);
 		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}
 }

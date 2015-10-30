@@ -22,6 +22,10 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -47,6 +51,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 
 	private EnvoiDeclarationsPMProcessor processor;
 	private TacheDAO tacheDAO;
+	private EvenementFiscalDAO evenementFiscalDAO;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -61,11 +66,13 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
 		processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService, diService, assujettissementService,
-		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, adresseService, ticketService);
+		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, adresseService, evenementFiscalService, ticketService);
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
+		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
 	}
 
 	@Test
@@ -232,6 +239,21 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertEquals(TypeEtatTache.TRAITE, tidipm.getEtat());
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tidipm.getTypeContribuable());
 					Assert.assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tidipm.getTypeDocument());
+
+					// vérification de la présence d'un événement fiscal
+					final List<EvenementFiscal> all = evenementFiscalDAO.getAll();
+					Assert.assertNotNull(all);
+					Assert.assertEquals(1, all.size());
+
+					final EvenementFiscal evtFiscal = all.get(0);
+					Assert.assertNotNull(evtFiscal);
+					Assert.assertFalse(evtFiscal.isAnnule());
+					Assert.assertSame(evtFiscal.getTiers(), e);
+					Assert.assertEquals(EvenementFiscalDeclaration.class, evtFiscal.getClass());
+
+					final EvenementFiscalDeclaration evtFiscalDeclaration = (EvenementFiscalDeclaration) evtFiscal;
+					Assert.assertSame(declaration, evtFiscalDeclaration.getDeclaration());
+					Assert.assertEquals(EvenementFiscalDeclaration.TypeAction.EMISSION, evtFiscalDeclaration.getTypeAction());
 				}
 			});
 		}

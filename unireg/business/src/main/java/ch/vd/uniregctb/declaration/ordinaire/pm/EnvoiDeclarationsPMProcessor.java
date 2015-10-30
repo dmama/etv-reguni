@@ -52,6 +52,7 @@ import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -87,10 +88,11 @@ public class EnvoiDeclarationsPMProcessor {
 	private final ParametreAppService parametres;
 	private final AdresseService adresseService;
 	private final TicketService ticketService;
+	private final EvenementFiscalService evenementFiscalService;
 
 	public EnvoiDeclarationsPMProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO, PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService declarationImpotService,
 	                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, int tailleLot, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-	                                    AdresseService adresseService, TicketService ticketService) {
+	                                    AdresseService adresseService, EvenementFiscalService evenementFiscalService, TicketService ticketService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -103,6 +105,7 @@ public class EnvoiDeclarationsPMProcessor {
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.adresseService = adresseService;
+		this.evenementFiscalService = evenementFiscalService;
 		this.ticketService = ticketService;
 	}
 
@@ -308,6 +311,9 @@ public class EnvoiDeclarationsPMProcessor {
 
 		// emvoyer le document à l'éditique
 		// TODO composition du document et envoi...
+
+		// envoi de l'événement fiscal
+		evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(savedDi, dateTraitement);
 
 		informationsFiscales.addNouvelleDeclaration(pm, savedDi);
 		rapport.addDiEnvoyee(pm.getNumero(), tache.getDateDebut(), tache.getDateFin());
