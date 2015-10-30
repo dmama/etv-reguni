@@ -142,7 +142,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		grapheMigrator.setEntrepriseMigrator(new EntrepriseMigrator(uniregStore, activityManager, infraService, bouclementService, assujettissementService, rcEntAdapter, adresseHelper,
 		                                                            fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, periodeImpositionService, parametreAppService, doublonProvider));
 		grapheMigrator.setEtablissementMigrator(new EtablissementMigrator(uniregStore, activityManager, infraService, rcEntAdapter, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
-		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
+		grapheMigrator.setIndividuMigrator(new IndividuMigrator(uniregStore, activityManager, infraService, tiersDAO, rcpersClient, nonHabitantIndex, adresseHelper, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres));
 		grapheMigrator.setUniregStore(uniregStore);
 		grapheMigrator.setUniregTransactionManager(getUniregTransactionManager());
 		grapheMigrator.setValidationInterceptor(validationInterceptor);
@@ -494,7 +494,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";" + noContribuableEtablissementSecondaireMandataire.longValue() + ";;;" + idEntrepriseMandataire + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntrepriseMandataire + ";Active;;;" + idEtablissementMandataire + ";" + noContribuableEtablissementSecondaireMandataire.longValue() + ";;;" + idEntrepriseMandataire + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -727,8 +727,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -951,8 +951,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement1 + ";" + noContribuableEtablissementSecondaire1.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement2 + ";" + noContribuableEtablissementSecondaire2.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -1778,7 +1778,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -2861,7 +2861,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
+			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;" + idEtablissement + ";" + noContribuableEtablissementSecondaire.longValue() + ";;;" + idEntreprise + ";;;;;;;;;;;;8100;Adresse trouvée sans rue ni localité postale.", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);

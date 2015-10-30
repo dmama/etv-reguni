@@ -74,14 +74,12 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtablissementMigrator.class);
 
 	private final RCEntAdapter rcEntAdapter;
-	private final AdresseHelper adresseHelper;
 
 	public EtablissementMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
 	                             RCEntAdapter rcEntAdapter, AdresseHelper adresseHelper, FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
 	                             DatesParticulieres datesParticulieres) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.rcEntAdapter = rcEntAdapter;
-		this.adresseHelper = adresseHelper;
 	}
 
 	private static List<Pair<RegpmCommune, CollatableDateRange>> buildPeriodesForsSecondaires(NavigableMap<RegDate, RegpmDomicileEtablissement> domicilesValides, DateRange range, MigrationResultProduction mr) {

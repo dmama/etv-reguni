@@ -74,8 +74,8 @@ public abstract class LogStructure {
 		// Dans le log des fors, le contexte impose le niveau de log en première colonne puis les données de l'entreprise
 		map.put(LogCategory.FORS, Arrays.asList(donneesNiveau, donneesEntreprise));
 
-		// Dans le log des adresses, le contexte impose le niveau de log en première colonne puis les données de l'entreprise et de l'établissement (cela peut venir de l'un ou de l'autre...)
-		map.put(LogCategory.ADRESSES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement, donneesAdresse));
+		// Dans le log des adresses, le contexte impose le niveau de log en première colonne puis les données de l'entreprise, de l'établissement et de l'individu (cela peut venir de l'un ou de l'autre...)
+		map.put(LogCategory.ADRESSES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement, donneesIndividu, donneesAdresse));
 
 		// Dans le log des coordonnées financières, le contexte impose le niveau de log en première colonne puis les données de l'entreprise et de l'établissement (cela peut venir de l'un ou de l'autre...)
 		map.put(LogCategory.COORDONNEES_FINANCIERES, Arrays.asList(donneesNiveau, donneesEntreprise, donneesEtablissement));

@@ -50,13 +50,13 @@
 		<constructor-arg name="fusionCommunesProvider" ref="fusionCommunesProvider"/>
 		<constructor-arg name="fractionsCommuneProvider" ref="fractionsCommuneProvider"/>
 		<constructor-arg name="datesParticulieres" ref="datesParticulieres"/>
+		<constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>
 
 	<bean id="entrepriseMigrator" class="ch.vd.uniregctb.migration.pm.engine.EntrepriseMigrator" parent="entityMigrator">
         <constructor-arg name="bouclementService" ref="bouclementService"/>
 		<constructor-arg name="assujettissementService" ref="assujettissementService"/>
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
-        <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 		<constructor-arg name="periodeImpositionService" ref="periodeImpositionService"/>
 		<constructor-arg name="parametreAppService" ref="parametreAppService"/>
 		<constructor-arg name="doublonProvider" ref="doublonProvider"/>
@@ -64,7 +64,6 @@
 
 	<bean id="etablissementMigrator" class="ch.vd.uniregctb.migration.pm.engine.EtablissementMigrator" parent="entityMigrator">
         <constructor-arg name="rcEntAdapter" ref="rcEntAdapter"/>
-        <constructor-arg name="adresseHelper" ref="adresseHelper"/>
 	</bean>
 
     <bean id="adresseHelper" class="ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper">

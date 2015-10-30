@@ -33,8 +33,18 @@ public class RegpmAdresseIndividu extends RegpmEntity implements AdresseAvecRue 
 	@Embeddable
 	public static class PK implements Serializable {
 
+		private static final long serialVersionUID = 3621608262579948917L;
+
 		private Integer noSequence;
 		private Long noIndividu;
+
+		public PK() {
+		}
+
+		public PK(Integer noSequence, Long noIndividu) {
+			this.noSequence = noSequence;
+			this.noIndividu = noIndividu;
+		}
 
 		@Column(name = "NO_SEQUENCE")
 		public Integer getNoSequence() {

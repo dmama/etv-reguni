@@ -38,6 +38,7 @@ import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.engine.data.DonneesMandats;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
@@ -80,16 +81,18 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 	protected final FusionCommunesProvider fusionCommunesProvider;
 	protected final FractionsCommuneProvider fractionsCommuneProvider;
 	protected final DatesParticulieres datesParticulieres;
+	protected final AdresseHelper adresseHelper;
 
 	public AbstractEntityMigrator(UniregStore uniregStore, ActivityManager activityManager, ServiceInfrastructureService infraService,
 	                              FusionCommunesProvider fusionCommunesProvider, FractionsCommuneProvider fractionsCommuneProvider,
-	                              DatesParticulieres datesParticulieres) {
+	                              DatesParticulieres datesParticulieres, AdresseHelper adresseHelper) {
 		this.uniregStore = uniregStore;
 		this.activityManager = activityManager;
 		this.infraService = infraService;
 		this.fusionCommunesProvider = fusionCommunesProvider;
 		this.fractionsCommuneProvider = fractionsCommuneProvider;
 		this.datesParticulieres = datesParticulieres;
+		this.adresseHelper = adresseHelper;
 	}
 
 	protected static final BinaryOperator<List<DateRange>> DATE_RANGE_LIST_MERGER =

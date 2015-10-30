@@ -172,7 +172,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	private final PeriodeImpositionService periodeImpositionService;
 	private final ParametreAppService parametreAppService;
 	private final RCEntAdapter rcEntAdapter;
-	private final AdresseHelper adresseHelper;
 	private final DoublonProvider doublonProvider;
 
 	public EntrepriseMigrator(UniregStore uniregStore,
@@ -188,11 +187,10 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	                          PeriodeImpositionService periodeImpositionService,
 	                          ParametreAppService parametreAppService,
 	                          DoublonProvider doublonProvider) {
-		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres);
+		super(uniregStore, activityManager, infraService, fusionCommunesProvider, fractionsCommuneProvider, datesParticulieres, adresseHelper);
 		this.bouclementService = bouclementService;
 		this.assujettissementService = assujettissementService;
 		this.rcEntAdapter = rcEntAdapter;
-		this.adresseHelper = adresseHelper;
 		this.periodeImpositionService = periodeImpositionService;
 		this.parametreAppService = parametreAppService;
 		this.doublonProvider = doublonProvider;

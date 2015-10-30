@@ -6,21 +6,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultCollector;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
+import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmLocalitePostale;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeMandat;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
@@ -28,6 +35,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 
@@ -49,6 +57,7 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 				getBean(TiersDAO.class, "tiersDAO"),
 				getBean(RcPersClient.class, "rcpersClient"),
 				nonHabitantIndex,
+				getBean(AdresseHelper.class, "adresseHelper"),
 				getBean(FusionCommunesProvider.class, "fusionCommunesProvider"),
 				getBean(FractionsCommuneProvider.class, "fractionsCommuneProvider"),
 				getBean(DatesParticulieres.class, "datesParticulieres"));
@@ -66,8 +75,23 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		// initialisation des collections à des collections vides tout comme on les trouverait avec une entité
 		// extraite de la base de données
 		individu.setMandants(new HashSet<>());
+		individu.setAdresses(new HashSet<>());
 
 		return individu;
+	}
+
+	static RegpmAdresseIndividu addAdresse(RegpmIndividu individu, RegpmTypeAdresseIndividu type, RegDate dateDebut, @Nullable RegDate dateFin, String nomRue, String noPolice, RegpmLocalitePostale localitePostale) {
+		final RegpmAdresseIndividu adresse = new RegpmAdresseIndividu();
+		assignMutationVisa(adresse, REGPM_VISA, REGPM_MODIF);
+		adresse.setId(new RegpmAdresseIndividu.PK(computeNewSeqNo(individu.getAdresses(), x -> x.getId().getNoSequence()), individu.getId()));
+		adresse.setDateDebut(dateDebut);
+		adresse.setDateFin(dateFin);
+		adresse.setType(type);
+		adresse.setLocalitePostale(localitePostale);
+		adresse.setNomRue(nomRue);
+		adresse.setNoPolice(noPolice);
+		individu.getAdresses().add(adresse);
+		return adresse;
 	}
 
 	@Test
@@ -410,5 +434,151 @@ public class IndividuMigratorTest extends AbstractEntityMigratorTest {
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bTrouvé personne physique existante [0-9.]+\\.$");
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
+	}
+
+	@Test
+	public void testMigrationAdresseOuverte() throws Exception {
+
+		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
+		final long noIndividuRegpm = 7484841141411857L;
+		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+		addAdresse(individu, RegpmTypeAdresseIndividu.COURRIER, RegDate.get(1995, 4, 1), null, "Rue du pont aux arts", "18b", LocalitePostale.RENENS);
+		addAdresse(individu, RegpmTypeAdresseIndividu.PRINCIPALE, RegDate.get(1996, 4, 1), null, "Rue des alouettes", "5", LocalitePostale.RENENS);
+
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
+		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(individu, migrator, mr, linkCollector, idMapper);
+
+		// vérification de ce que l'on a créé en base
+		final long ppId = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			Assert.assertNotNull(ids.get(0));
+
+			final PersonnePhysique pp = (PersonnePhysique) getTiersDAO().get(ids.get(0));
+			Assert.assertNotNull(pp);
+			Assert.assertEquals("Edmond", pp.getPrenomUsuel());
+			Assert.assertEquals("Edmond Alexandre", pp.getTousPrenoms());
+			Assert.assertEquals("Dantès", pp.getNom());
+			Assert.assertEquals(RegDate.get(1978, 5, 12), pp.getDateNaissance());
+			Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+			Assert.assertFalse(pp.isAnnule());
+			Assert.assertFalse(pp.isConnuAuCivil());
+
+			final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseSuisse adresse = (AdresseSuisse) adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(RegDate.get(1995, 4, 1), adresse.getDateDebut());
+			Assert.assertNull(adresse.getDateFin());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			Assert.assertEquals("Rue du pont aux arts", adresse.getRue());
+			Assert.assertEquals("18b", adresse.getNumeroMaison());
+			Assert.assertFalse(adresse.isPermanente());
+
+			return pp.getNumero();
+		});
+
+		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividuRegpm));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI, LogCategory.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse .* conservée en texte libre\\.$");
+	}
+
+	@Test
+	public void testMigrationAdresseFermee() throws Exception {
+
+		// on construit un individu simple (qui n'existe pas dans Unireg, ni dans RCPers, avec un numéro comme ça...), et on le migre
+		final long noIndividuRegpm = 7484841141411857L;
+		final RegpmIndividu individu = buildBaseIndividu(noIndividuRegpm, "Dantès", "Edmond Alexandre", RegDate.get(1978, 5, 12), Sexe.MASCULIN);
+		addAdresse(individu, RegpmTypeAdresseIndividu.COURRIER, RegDate.get(1995, 4, 1), RegDate.get(2000, 1, 2), "Rue du pont aux arts", "18b", LocalitePostale.RENENS);
+		addAdresse(individu, RegpmTypeAdresseIndividu.PRINCIPALE, RegDate.get(1996, 4, 1), RegDate.get(2003, 4, 1), "Rue des alouettes", "5", LocalitePostale.RENENS);
+
+		// rôle mandataire pour faire fonctionner la migration
+		final long idEntreprise = 4521L;
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2000, 1, 1), RegDate.get(2014, 12, 4));
+
+		// migration de l'individu RepPM -> la personne physique ne doit pas être nouvellement créée
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         null,
+		                                         Collections.singletonList(individu));
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(individu, migrator, mr, linkCollector, idMapper);
+
+		// vérification de ce que l'on a créé en base
+		final long ppId = doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+			Assert.assertNotNull(ids.get(0));
+
+			final PersonnePhysique pp = (PersonnePhysique) getTiersDAO().get(ids.get(0));
+			Assert.assertNotNull(pp);
+			Assert.assertEquals("Edmond", pp.getPrenomUsuel());
+			Assert.assertEquals("Edmond Alexandre", pp.getTousPrenoms());
+			Assert.assertEquals("Dantès", pp.getNom());
+			Assert.assertEquals(RegDate.get(1978, 5, 12), pp.getDateNaissance());
+			Assert.assertEquals(Sexe.MASCULIN, pp.getSexe());
+			Assert.assertFalse(pp.isAnnule());
+			Assert.assertFalse(pp.isConnuAuCivil());
+
+			final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+			Assert.assertNotNull(adresses);
+			Assert.assertEquals(1, adresses.size());
+
+			final AdresseSuisse adresse = (AdresseSuisse) adresses.iterator().next();
+			Assert.assertNotNull(adresse);
+			Assert.assertFalse(adresse.isAnnule());
+			Assert.assertEquals(RegDate.get(1996, 4, 1), adresse.getDateDebut());
+			Assert.assertEquals(RegDate.get(2003, 4, 1), adresse.getDateFin());
+			Assert.assertEquals(TypeAdresseTiers.COURRIER, adresse.getUsage());
+			Assert.assertEquals("Rue des alouettes", adresse.getRue());
+			Assert.assertEquals("5", adresse.getNumeroMaison());
+			Assert.assertFalse(adresse.isPermanente());
+
+			return pp.getNumero();
+		});
+
+		Assert.assertEquals(ppId, idMapper.getIdUniregIndividu(noIndividuRegpm));
+		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
+
+		final Set<LogCategory> expectedCategories = EnumSet.of(LogCategory.INDIVIDUS_PM, LogCategory.SUIVI, LogCategory.ADRESSES);
+		mr.getMessages().keySet().stream()
+				.filter(cat -> !expectedCategories.contains(cat))
+				.findAny()
+				.ifPresent(cat -> Assert.fail(String.format("Il ne devrait pas y avoir de message dans la catégorie %s", cat)));
+
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bAucun résultat dans RCPers pour le nom (.*), prénom (.*), sexe (.*) et date de naissance (.*)\\.$");
+		assertExistMessageWithContent(mr, LogCategory.INDIVIDUS_PM, "\\bCréation de la personne physique [0-9.]+ pour correspondre à l'individu RegPM\\.$");
+		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bIndividu migré : [0-9.]+\\.$");
+		assertExistMessageWithContent(mr, LogCategory.ADRESSES, "\\bAdresse .* conservée en texte libre\\.$");
 	}
 }
