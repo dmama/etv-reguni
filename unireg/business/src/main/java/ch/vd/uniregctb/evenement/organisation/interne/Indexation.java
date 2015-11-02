@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -18,6 +21,8 @@ import ch.vd.uniregctb.tiers.Entreprise;
  */
 public class Indexation extends EvenementOrganisationInterne {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Indexation.class);
+
 	EvenementOrganisation event;
 
 	public Indexation(EvenementOrganisation evenement, Organisation organisation, Entreprise entreprise,
@@ -32,6 +37,7 @@ public class Indexation extends EvenementOrganisationInterne {
 		final Entreprise pm = getEntreprise();
 		if (pm != null) {
 			// TODO: Plutôt que cet appel direct qui entraîne une réindexation immédiate, appeler l'intercepteur et lui passer l'entité
+			LOGGER.info("Déclenchement de la réindexation pour l'entreprise {}.", pm.getNumero());
 			context.getIndexer().schedule(pm.getNumero());
 		}
 		// Cet événement reste en status REDONDANT. Utiliser la classe dérivée IndexationPure pour obtenir un statut TRAITE.

@@ -113,9 +113,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		 * Aucun événement n'est créé, indexation seulement, le status sera TRAITE.
 		 */
 		if (evenements.size() == 0) {
+			LOGGER.info("Pas de changement ni d'événement fiscal. L'entité sera simplement réindexée (si connue).");
 			return new IndexationPure(event, organisation, entreprise, context, options);
 		}
 		/* Indexation obligatoire pour toute entité connue d'Unireg. Le status sera inchangé. */
+		LOGGER.info("L'entité sera (re)indexée.");
 		evenements.add(new Indexation(event, organisation, entreprise, context, options));
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
