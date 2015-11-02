@@ -59,6 +59,7 @@
                             </xs:annotation>
                         </xs:element>
                         <xs:element name="adresseRaisonSociale" type="typeAdresse"> </xs:element>
+                        <xs:element name="adresseRetour" type="typeAdresse"> </xs:element>
                         <xs:element name="dateLimiteRetour" type="xs:date">
                             <xs:annotation>
                                 <xs:documentation>AAAAMMJJ</xs:documentation>

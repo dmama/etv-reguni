@@ -10,10 +10,10 @@
 
 	<jxb:bindings schemaLocation="http://www.vd.ch/xmlns/editique/pm/UniregPM_FichierImpression.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.editique.pm.unireg" />
+			<jxb:package name="ch.vd.editique.unireg" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="edi-unireg-pm-imp" />
+			<namespace:prefix name="edi-unireg" />
 		</jxb:bindings>
 	</jxb:bindings>
 
