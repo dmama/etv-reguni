@@ -120,6 +120,7 @@
 		<value>ch.vd.uniregctb.document.ImportImmeublesRapport</value>
 		<value>ch.vd.uniregctb.document.DeterminationDIsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiDIsPPRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiDIsPMRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport</value>
 		<value>ch.vd.uniregctb.document.EchoirDIsRapport</value>
 		<value>ch.vd.uniregctb.document.MajoriteRapport</value>
