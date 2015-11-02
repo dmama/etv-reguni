@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.interne.formejuridique;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -20,6 +23,8 @@ import ch.vd.uniregctb.tiers.Entreprise;
  * @author Raphaël Marmier, 2015-10-15
  */
 public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrategy {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementFormeJuridiqueStrategy.class);
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
@@ -56,17 +61,20 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 			final CategorieEntreprise categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);
 
 			if (categoryAvant == CategorieEntreprise.APM && categoryApres == CategorieEntreprise.PM) {
+				LOGGER.info("La forme juridique passe de {} à {}. Changement de catégorie: APM -> PM. ", formeLegaleAvant, formeLegaleApres);
 				return new ChangementCategorieAPMVersPM(event, organisation, entreprise, context, options);
 			} else
 			if (categoryAvant != null && categoryAvant == categoryApres) {
+				LOGGER.info("La forme juridique passe de {} à {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
 				return new ChangementNeutreFormeJuridique(event, organisation, entreprise, context, options);
 			}
 
 			return new TraitementManuel(event, organisation, null, context, options,
-			                            String.format("Changement de catégorie d'entreprise non pris en charge: %s vers %s. Veuillez traiter manuellement.",
-			                                          defaultCategorie(categoryAvant), defaultCategorie(categoryApres))
+			                            String.format("La forme juridique passe de %s à %s, entraînant un changement de catégorie d'entreprise non pris en charge: %s vers %s. Veuillez traiter manuellement.",
+			                                          formeLegaleAvant, formeLegaleApres, defaultCategorie(categoryAvant), defaultCategorie(categoryApres))
 			);
 		}
+		LOGGER.info("La forme juridique n'a pas changée. Avant: {}, après: {}. Pas de changement de catégorie.", formeLegaleAvant, formeLegaleApres);
 		return null;
 	}
 

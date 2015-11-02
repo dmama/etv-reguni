@@ -319,4 +319,96 @@ public class ChangementFormeJuridiqueProcessorTest extends AbstractEvenementOrga
 		                             }
 		);
 	}
+
+	@Test(timeout = 10000L)
+	public void testPasDeChangement() throws Exception {
+
+		// Mise en place service mock
+		final Long noOrganisation = 101202100L;
+		final Long noSite = noOrganisation + 1000000;
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = MockOrganisationFactory.createOrganisation(noOrganisation, noSite, "Synergy SA", RegDate.get(2010, 6, 24), null, FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE,
+				                                                                        TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF,
+				                                                                        TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE);
+				addOrganisation(org);
+
+			}
+		});
+
+		// Création de l'entreprise
+
+		doInNewTransactionAndSession(new TransactionCallback<Entreprise>() {
+			@Override
+			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
+				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
+
+				return entreprise;
+			}
+		});
+
+		// Création de l'événement
+		final Long evtId = 12344321L;
+
+		// Persistence événement
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final EvenementOrganisation event = createEvent(evtId, noOrganisation, TypeEvenementOrganisation.FOSC_AUTRE_MUTATION, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut");
+				return hibernateTemplate.merge(event).getId();
+			}
+		});
+
+		// Traitement synchrone de l'événement
+		traiterEvenements(noOrganisation);
+
+		// Vérification du traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			                             @Override
+			                             public Object doInTransaction(TransactionStatus status) {
+
+				                             final EvenementOrganisation evt = evtOrganisationDAO.get(evtId);
+				                             Assert.assertNotNull(evt);
+				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
+
+				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
+
+				                             List<RegimeFiscal> regimesFiscaux = entreprise.getRegimesFiscauxNonAnnulesTries();
+				                             List<RegimeFiscal> regimesFiscauxCH = new ArrayList<>();
+				                             List<RegimeFiscal> regimesFiscauxVD = new ArrayList<>();
+				                             for (RegimeFiscal regime : regimesFiscaux) {
+					                             switch (regime.getPortee()) {
+					                             case CH: regimesFiscauxCH.add(regime);
+						                             break;
+					                             case VD: regimesFiscauxVD.add(regime);
+						                             break;
+					                             }
+				                             }
+
+				                             {
+					                             RegimeFiscal regimeAvant = DateRangeHelper.rangeAt(regimesFiscauxCH, RegDate.get(2015, 6, 23));
+					                             RegimeFiscal regimeApres = DateRangeHelper.rangeAt(regimesFiscauxCH, RegDate.get(2015, 6, 24));
+					                             Assert.assertEquals(regimeAvant, regimeApres);
+				                             }
+				                             {
+					                             RegimeFiscal regimeAvant = DateRangeHelper.rangeAt(regimesFiscauxVD, RegDate.get(2015, 6, 23));
+					                             RegimeFiscal regimeApres = DateRangeHelper.rangeAt(regimesFiscauxVD, RegDate.get(2015, 6, 24));
+					                             Assert.assertEquals(regimeAvant, regimeApres);
+				                             }
+
+				                             // vérification des événements fiscaux
+				                             final List<EvenementFiscal> evtsFiscaux = evtFiscalDAO.getAll();
+				                             Assert.assertNotNull(evtsFiscaux);
+				                             Assert.assertEquals(0, evtsFiscaux.size());
+
+				                             return null;
+			                             }
+		                             }
+		);
+	}
 }

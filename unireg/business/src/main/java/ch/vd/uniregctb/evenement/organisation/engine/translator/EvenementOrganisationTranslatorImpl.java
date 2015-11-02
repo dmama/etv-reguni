@@ -45,11 +45,6 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EvenementOrganisationTranslatorImpl.class);
 
-	/**
-	 * Stratégie par défaut tant que certains traitements ne sont pas encore implémentés (de manière politiquement correcte, il faut dire "implémentés en traitement manuel")
-	 */
-	private static final EvenementOrganisationTranslationStrategy NOT_IMPLEMENTED = new TraitementManuelOrganisationTranslationStrategy();
-
 	private ServiceOrganisationService serviceOrganisationService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private TiersDAO tiersDAO;

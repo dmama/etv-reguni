@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.interne.creation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -18,6 +21,8 @@ import ch.vd.uniregctb.tiers.Entreprise;
 public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 	private static final String MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE = "Création automatique non prise en charge.";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreateOrganisationStrategy.class);
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne {@link CreateEntreprise} est
@@ -57,46 +62,57 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 
 				// On ne crée pas d'entreprise pour les entreprises individuelles
 				case PP:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
 					return null;
 
 				// Sociétés de personnes
 				case SP:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseSP(event, organisation, null, context, options);
 
 				// Personnes morales
 				case PM:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntreprisePM(event, organisation, null, context, options);
 				// Associations personne morale
 				case APM:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseAPM(event, organisation, null, context, options);
 
 				// Fonds de placements
 				case FDS_PLAC:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options);
 
 				// Personnes morales de droit public
 				case DP_PM:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
 				case DP_APM:
 				default:
+					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
 			} else if (hasSiteVD(organisation, event.getDateEvenement())) {
 				switch (category) {
 
 				case PP:
+					LOGGER.info("L'entité organisation {} a une présence secondaire sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
 					return null;
 				default:
+					LOGGER.info("L'entité organisation {} a une présence secondaire sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseHorsVD(event, organisation, null, context, options);
 				}
 			} else {
-				return null; // Pas de siège sur Vaud, pas de création
+				LOGGER.info("L'entité organisation {} n'a pas de présence connue sur Vaud. Catégorie [{}] -> Pas de création.", organisation.getNumeroOrganisation(), category);
+				return null;
 			}
 		}
 
 		// Catchall traitement manuel
+		LOGGER.info("L'entité organisation {} est de catégorie indéterminée. Traitement manuel.", organisation.getNumeroOrganisation());
 		return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 	}
 }

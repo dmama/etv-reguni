@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -16,6 +19,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * @author Raphaël Marmier, 2015-09-02
  */
 public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est pertinente.
@@ -53,22 +58,28 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 			throw new EvenementOrganisationException("Les changements de siège impliquant un/des sièges hors Suisse ne sont pas pris en charge. Veuillez traiter manuellement.");
 		}
 		else if (communeDeSiegeAvant.getNoOfs() == communeDeSiegeApres.getNoOfs()) { // Pas un changement, pas de traitement
+			LOGGER.info("Pas de changement d'autorité politique. La commune d'autorité fiscale reste no {}", communeDeSiegeAvant.getNoOfs());
 			return null;
 		}
 		else if (isDemenagementVD(communeDeSiegeAvant, communeDeSiegeApres)) {
+			LOGGER.info("Déménagement VD -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
 			return new DemenagementVD(event, organisation, entreprise, context, options);
 		}
 		else if (isDemenagementHC(communeDeSiegeAvant, communeDeSiegeApres)) {
+			LOGGER.info("Déménagement HC -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
 			return new DemenagementHC(event, organisation, entreprise, context, options);
 		}
 		else if (isDepart(communeDeSiegeAvant, communeDeSiegeApres)) {
+			LOGGER.info("Départ VD -> HC: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
 			return new DemenagementDepart(event, organisation, entreprise, context, options);
 		}
 		else if (isArrivee(communeDeSiegeAvant, communeDeSiegeApres)) {
+			LOGGER.info("Arrivée HC -> VD: commune {} vers commune {}.", communeDeSiegeAvant.getNoOfs(), communeDeSiegeApres.getNoOfs());
 			return new DemenagementArrivee(event, organisation, entreprise, context, options);
 		}
 		else {
-			throw new EvenementOrganisationException("Il existe un type de siège dont Unireg n'a pas pleinement connaissance. Impossible de continuer.");
+			throw new EvenementOrganisationException(String.format("Il existe un type de siège dont Unireg n'a pas pleinement connaissance. Type avant: %s. Type après: %s. Impossible de continuer.",
+			                                                       communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale()));
 		}
 	}
 
