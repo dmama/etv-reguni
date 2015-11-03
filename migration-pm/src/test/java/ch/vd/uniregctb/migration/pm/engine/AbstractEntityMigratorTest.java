@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,8 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmImmeuble;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmRattachementProprietaire;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngineTest {
@@ -86,5 +91,23 @@ public abstract class AbstractEntityMigratorTest extends AbstractMigrationEngine
 		rrp.setImmeuble(immeuble);
 		groupe.getRattachementsProprietaires().add(rrp);
 		return rrp;
+	}
+
+	static <T extends RapportEntreTiers> Collection<T> getRapportsSujets(Tiers tiers, Class<T> clazz) {
+		return filtrerRapports(tiers.getRapportsSujet(), clazz);
+	}
+
+	static <T extends RapportEntreTiers> Collection<T> getRapportsObjets(Tiers tiers, Class<T> clazz) {
+		return filtrerRapports(tiers.getRapportsObjet(), clazz);
+	}
+
+	private static <T extends RapportEntreTiers> Collection<T> filtrerRapports(Set<RapportEntreTiers> rapports, Class<T> clazz) {
+		final List<T> filtres = new ArrayList<>(rapports.size());
+		for (RapportEntreTiers ret : rapports) {
+			if (clazz.isAssignableFrom(ret.getClass())) {
+				filtres.add((T) ret);
+			}
+		}
+		return filtres;
 	}
 }

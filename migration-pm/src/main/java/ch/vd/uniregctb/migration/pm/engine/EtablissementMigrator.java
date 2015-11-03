@@ -483,7 +483,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 				if (!datesEtablissementsStables.isEmpty()) {
 					// création des liens (= rapports entre tiers)
 					datesEtablissementsStables.stream()
-							.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin()))
+							.map(range -> new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, range.getDateDebut(), range.getDateFin(), false))
 							.forEach(linkCollector::addLink);
 
 					// génération de l'information pour la création des fors secondaires associés à ces établissements stables
@@ -502,7 +502,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 					}
 
 					// et le lien, pour finir
-					linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, rangeMandats.getDateDebut(), rangeMandats.getDateFin()));
+					linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(moi, entiteJuridique, rangeMandats.getDateDebut(), rangeMandats.getDateFin(), false));
 				}
 			}
 			else {
@@ -526,7 +526,6 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());
 		unireg.setRaisonSociale(extractRaisonSociale(regpm));
-		unireg.setPrincipal(false);
 		unireg.setNumeroEtablissement(null);        // TODO à voir avec RCEnt
 
 		// domiciles de l'établissement

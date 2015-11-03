@@ -752,7 +752,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Mon enseigne", etab.getTitulaireCompteBancaire());     // priorité au nom d'enseigne
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("Mon enseigne", etab.getEnseigne());
 			Assert.assertEquals("Ma Petite Entreprise", etab.getRaisonSociale());
 			Assert.assertEquals(0, etab.getDomiciles().size());
@@ -803,7 +802,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Ma Petite Entreprise", etab.getTitulaireCompteBancaire());     // utilisation de la raison sociale de l'établissement en absence d'enseigne
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertNull(etab.getEnseigne());
 			Assert.assertEquals("Ma Petite Entreprise", etab.getRaisonSociale());
 			Assert.assertEquals(0, etab.getDomiciles().size());
@@ -862,7 +860,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getTitulaireCompteBancaire());
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("La rouge musaraigne", etab.getEnseigne());
 			Assert.assertEquals(0, etab.getDomiciles().size());
 
@@ -930,7 +927,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getTitulaireCompteBancaire());
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("La verte mangouste", etab.getEnseigne());
 
 			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);
@@ -1007,7 +1003,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getTitulaireCompteBancaire());
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("Le jaune éléphant", etab.getEnseigne());
 
 			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);
@@ -1084,7 +1079,6 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertNull(etab.getTitulaireCompteBancaire());
 
 			Assert.assertNull(etab.getNumeroEtablissement());
-			Assert.assertFalse(etab.isPrincipal());
 			Assert.assertEquals("L'orange pie", etab.getEnseigne());
 
 			final List<DomicileEtablissement> domiciles = etab.getSortedDomiciles(true);

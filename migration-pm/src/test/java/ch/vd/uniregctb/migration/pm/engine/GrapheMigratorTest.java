@@ -3,6 +3,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -303,13 +304,22 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(2, etablissements.size());
 
 			// tri en mettant l'établissement secondaire d'abord...
-			final List<Etablissement> etablissementsTries = etablissements.stream().sorted(Comparator.comparing(Etablissement::isPrincipal)).collect(Collectors.toList());
+			final List<Pair<Etablissement, ActiviteEconomique>> etablissementsTries = etablissements.stream()
+					.map(etb -> Pair.of(etb, AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class)))
+					.peek(pair -> Assert.assertEquals(1, pair.getRight().size()))
+					.map(pair -> Pair.of(pair.getLeft(), pair.getRight().iterator().next()))
+					.sorted(Comparator.comparing(pair -> pair.getRight().isPrincipal()))
+					.collect(Collectors.toList());
 
 			// établissement secondaire du mandataire
 			{
-				final Etablissement etb = etablissementsTries.get(0);
+				final Pair<Etablissement, ActiviteEconomique> pair = etablissementsTries.get(0);
+				final Etablissement etb = pair.getLeft();
 				Assert.assertEquals(0, etb.getRapportsSujet().size());
-				Assert.assertFalse(etb.isPrincipal());
+
+				final ActiviteEconomique activite = pair.getRight();
+				Assert.assertNotNull(activite);
+				Assert.assertFalse(activite.isPrincipal());
 
 				noContribuableEtablissementSecondaireMandataire.setValue(etb.getNumero());
 
@@ -371,9 +381,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 			// établissement principal de l'entreprise mandataire
 			{
-				final Etablissement etb = etablissementsTries.get(1);
+				final Pair<Etablissement, ActiviteEconomique> pair = etablissementsTries.get(1);
+				final Etablissement etb = pair.getLeft();
 				Assert.assertEquals(0, etb.getRapportsSujet().size());
-				Assert.assertTrue(etb.isPrincipal());
+
+				final ActiviteEconomique activite = pair.getRight();
+				Assert.assertNotNull(activite);
+				Assert.assertTrue(activite.isPrincipal());
 
 				// récupération du numéro de contribuable de l'établissement principal pour le test des messages plus bas
 				noContribuableEtablissementPrincipalMandataire.setValue(etb.getNumero());
@@ -629,7 +643,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbPrn);
 				Assert.assertNotNull(etb);
 				Assert.assertEquals("Smart zoo", etb.getEnseigne());
-				Assert.assertTrue(etb.isPrincipal());
+
+				final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class);
+				Assert.assertNotNull(rapportsActiviteEconomique);
+				Assert.assertEquals(1, rapportsActiviteEconomique.size());
+				Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
 
 				// mémorisation de la valeur...
 				noContribuableEtablissementPrincipalCree.setValue(idEtbPrn);
@@ -650,7 +668,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbSec1);
 				Assert.assertNotNull(etb);
 				Assert.assertEquals("Le chat qui fume", etb.getEnseigne());
-				Assert.assertFalse(etb.isPrincipal());
+
+				final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class);
+				Assert.assertNotNull(rapportsActiviteEconomique);
+				Assert.assertEquals(1, rapportsActiviteEconomique.size());
+				Assert.assertFalse(rapportsActiviteEconomique.iterator().next().isPrincipal());
 
 				// mémorisation de la valeur
 				noContribuableEtablissementSecondaire1.setValue(etb.getNumero());
@@ -681,7 +703,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 				final Etablissement etb = uniregStore.getEntityFromDb(Etablissement.class, idEtbSec2);
 				Assert.assertNotNull(etb);
 				Assert.assertEquals("Le chien qui pête", etb.getEnseigne());
-				Assert.assertFalse(etb.isPrincipal());
+
+				final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class);
+				Assert.assertNotNull(rapportsActiviteEconomique);
+				Assert.assertEquals(1, rapportsActiviteEconomique.size());
+				Assert.assertFalse(rapportsActiviteEconomique.iterator().next().isPrincipal());
 
 				// mémorisation de la valeur
 				noContribuableEtablissementSecondaire2.setValue(etb.getNumero());
@@ -826,9 +852,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// pour tester la cohérence avec le message de suivi par la suite
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
 			noContribuableEtablissementPrincipalCree.setValue(etablissements.stream()
-					                                                  .filter(Etablissement::isPrincipal)
+					                                                  .map(etb -> AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class))
+					                                                  .flatMap(Collection::stream)
+					                                                  .filter(ActiviteEconomique::isPrincipal)
 					                                                  .findAny()
-					                                                  .map(Etablissement::getNumero)
+					                                                  .map(ActiviteEconomique::getObjetId)
 					                                                  .orElseThrow(() -> new IllegalStateException("Aucun établissement principal trouvé!")));
 			noContribuableEtablissementSecondaire1.setValue(etablissements.stream()
 					                                                .filter(etb -> etb.getEnseigne().equals("Le chat qui fume"))
@@ -1271,7 +1299,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, etablissements.size());
 			final Etablissement etbPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etbPrincipal);
-			Assert.assertTrue(etbPrincipal.isPrincipal());
+
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etbPrincipal, ActiviteEconomique.class);
+			Assert.assertNotNull(rapportsActiviteEconomique);
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+			Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
+
 			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
 
 			final ForsParType fpt = entreprise.getForsParType(true);
@@ -1408,7 +1441,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, etablissements.size());
 			final Etablissement etbPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etbPrincipal);
-			Assert.assertTrue(etbPrincipal.isPrincipal());
+
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etbPrincipal, ActiviteEconomique.class);
+			Assert.assertNotNull(rapportsActiviteEconomique);
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+			Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
+
 			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
 
 			final ForsParType fpt = entreprise.getForsParType(true);
@@ -1521,7 +1559,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(1, etablissements.size());
 			final Etablissement etbPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etbPrincipal);
-			Assert.assertTrue(etbPrincipal.isPrincipal());
+
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etbPrincipal, ActiviteEconomique.class);
+			Assert.assertNotNull(rapportsActiviteEconomique);
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+			Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
+
 			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
 
 			final ForsParType fpt = entreprise.getForsParType(true);
@@ -1677,9 +1720,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			// pour tester la cohérence avec le message de suivi par la suite
 			final List<Etablissement> etablissements = uniregStore.getEntitiesFromDb(Etablissement.class, null);
 			noContribuableEtablissementPrincipalCree.setValue(etablissements.stream()
-					                                                  .filter(Etablissement::isPrincipal)
+					                                                  .map(etb -> AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class))
+					                                                  .flatMap(Collection::stream)
+					                                                  .filter(ActiviteEconomique::isPrincipal)
 					                                                  .findAny()
-					                                                  .map(Etablissement::getNumero)
+					                                                  .map(ActiviteEconomique::getObjetId)
 					                                                  .orElseThrow(() -> new IllegalStateException("Aucun établissement principal trouvé!")));
 			noContribuableEtablissementSecondaire.setValue(etablissements.stream()
 					                                               .filter(etb -> etb.getEnseigne().equals("Le chat qui fume"))
@@ -1867,7 +1912,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 			final Etablissement etbPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etbPrincipal);
-			Assert.assertTrue(etbPrincipal.isPrincipal());
+
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etbPrincipal, ActiviteEconomique.class);
+			Assert.assertNotNull(rapportsActiviteEconomique);
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+			Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
+
 			noContribuableEtablissementPrincipalCree.setValue(etbPrincipal.getNumero());
 
 			final List<ForFiscal> fors = e.getForsFiscauxSorted();
@@ -2263,7 +2313,12 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 			final Etablissement etablissement = etablissements.get(0);
 			Assert.assertNotNull(etablissement);
-			Assert.assertTrue(etablissement.isPrincipal());
+
+			final Collection<ActiviteEconomique> rapportsActiviteEconomique = AbstractEntityMigratorTest.getRapportsObjets(etablissement, ActiviteEconomique.class);
+			Assert.assertNotNull(rapportsActiviteEconomique);
+			Assert.assertEquals(1, rapportsActiviteEconomique.size());
+			Assert.assertTrue(rapportsActiviteEconomique.iterator().next().isPrincipal());
+
 			noEtablissementPrincipal.setValue(etablissement.getNumero());
 
 			// domicile de l'établissement principal
@@ -2727,7 +2782,25 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertNotNull(e);
 			Assert.assertEquals(2, etbs.size());
 			final Map<Boolean, Long> idsEtablissement = etbs.stream()
-					.collect(Collectors.toMap(Etablissement::isPrincipal, Etablissement::getId));
+					.map(etb -> Pair.of(etb, AbstractEntityMigratorTest.getRapportsObjets(etb, ActiviteEconomique.class)))
+					.map(pair -> {
+						final List<ActiviteEconomique> activites = new ArrayList<>(pair.getRight());
+						Assert.assertNotEquals(0, activites.size());
+						Boolean principal = null;
+						for (ActiviteEconomique activite : activites) {
+							Assert.assertNotNull(activite);
+							Assert.assertEquals((Long) idEntreprise, activite.getSujetId());
+							Assert.assertEquals(pair.getLeft().getNumero(), activite.getObjetId());
+							if (principal == null) {
+								principal = activite.isPrincipal();
+							}
+							else {
+								Assert.assertEquals(principal, activite.isPrincipal());     // vérification que tous les liens concernent le même type d'activité (prn vs sec)
+							}
+						}
+						return Pair.of(principal, pair.getLeft().getNumero());
+					})
+					.collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
 			noContribuableEtablissementPrincipal.setValue(idsEtablissement.get(Boolean.TRUE));
 			noContribuableEtablissementSecondaire.setValue(idsEtablissement.get(Boolean.FALSE));
 			Assert.assertNotNull(noContribuableEtablissementPrincipal.getValue());

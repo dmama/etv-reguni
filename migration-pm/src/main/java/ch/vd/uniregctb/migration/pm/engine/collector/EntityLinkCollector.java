@@ -148,12 +148,16 @@ public class EntityLinkCollector {
 
 	public static final class EtablissementEntiteJuridiqueLink<T extends Contribuable> extends EntityLink<Etablissement, T, RapportEntreTiers> {
 
-		public EtablissementEntiteJuridiqueLink(KeyedSupplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
+		private final boolean principal;
+
+		public EtablissementEntiteJuridiqueLink(KeyedSupplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin, boolean principal) {
 			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
+			this.principal = principal;
 		}
 
-		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin) {
+		public EtablissementEntiteJuridiqueLink(Supplier<Etablissement> etablissement, KeyedSupplier<T> entiteJuridique, RegDate dateDebut, RegDate dateFin, boolean principal) {
 			super(LinkType.ETABLISSEMENT_ENTITE_JURIDIQUE, etablissement, entiteJuridique, dateDebut, dateFin);
+			this.principal = principal;
 		}
 
 		public Etablissement resolveEtablissement() {
@@ -166,7 +170,7 @@ public class EntityLinkCollector {
 
 		@Override
 		public RapportEntreTiers toRapportEntreTiers() {
-			return new ActiviteEconomique(getDateDebut(), getDateFin(), resolveEntiteJuridique(), resolveEtablissement());
+			return new ActiviteEconomique(getDateDebut(), getDateFin(), resolveEntiteJuridique(), resolveEtablissement(), principal);
 		}
 	}
 

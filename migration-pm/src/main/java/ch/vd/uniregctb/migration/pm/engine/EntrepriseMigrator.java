@@ -2114,7 +2114,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final Supplier<Etablissement> etbPrincipalSupplier = getEtablissementByUniregIdSupplier(etbPrincipal.getNumero());
 		etbPrincipal.setEnseigne(regpm.getEnseigne());
 		etbPrincipal.setRaisonSociale(raisonSociale);
-		etbPrincipal.setPrincipal(true);
 
 		// un peu de log pour indiquer la création de l'établissement principal
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Création de l'établissement principal %s d'après le siège %d.",
@@ -2124,7 +2123,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// lien entre l'établissement principal et son entreprise
 		final KeyedSupplier<Entreprise> entrepriseSupplier = getEntrepriseSupplier(idMapper, regpm);
 		final RegDate dateFinActivite = mr.getExtractedData(DateFinActiviteData.class, moi).date;
-		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesSiegeReference.getKey(), dateFinActivite));
+		linkCollector.addLink(new EntityLinkCollector.EtablissementEntiteJuridiqueLink<>(etbPrincipalSupplier, entrepriseSupplier, donneesSiegeReference.getKey(), dateFinActivite, true));
 
 		// domiciles selon les localisations trouvées plus haut (pour l'instant, sans date de fin... qui seront assignées juste après...)
 		final CommuneOuPays cop = buildCommuneOuPays(siege.getDateValidite(), siege::getCommune, siege::getNoOfsPays, "siège", mr, LogCategory.SUIVI);

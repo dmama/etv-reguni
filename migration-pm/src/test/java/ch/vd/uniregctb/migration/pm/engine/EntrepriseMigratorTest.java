@@ -2080,7 +2080,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
@@ -2253,7 +2252,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
@@ -2795,7 +2793,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final Etablissement etablissement = etablissements.get(0);
 			Assert.assertNotNull(etablissement);
 			Assert.assertFalse(etablissement.isAnnule());
-			Assert.assertTrue(etablissement.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissement.getNumero());
 
 			final Set<DomicileEtablissement> domiciles = etablissement.getDomiciles();
@@ -2887,7 +2884,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			final Etablissement etablissement = etablissements.get(0);
 			Assert.assertNotNull(etablissement);
 			Assert.assertFalse(etablissement.isAnnule());
-			Assert.assertTrue(etablissement.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissement.getNumero());
 
 			final Set<DomicileEtablissement> domiciles = etablissement.getDomiciles();
@@ -3047,7 +3043,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 
 			// vérification du domicile généré
@@ -3159,7 +3154,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 
 			// vérification du domicile généré
@@ -3312,7 +3306,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 
 			// vérification du domicile généré
@@ -3424,7 +3417,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
@@ -3890,7 +3882,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 			final Etablissement etablissementPrincipal = etablissements.get(0);
 			Assert.assertNotNull(etablissementPrincipal);
-			Assert.assertTrue(etablissementPrincipal.isPrincipal());
 			noEtablissementPrincipal.setValue(etablissementPrincipal.getNumero());
 
 			// cet établissement ne doit avoir qu'un seul domicile (on ne prend que le premier)
