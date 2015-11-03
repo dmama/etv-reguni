@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.Predicate;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -13,6 +15,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
@@ -71,31 +74,44 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 			}
 		}
 
-		// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
 		if (sujets != null) {
-			List<RapportEntreTiers> representations = null;
-			for (RapportEntreTiers rapport : sujets) {
-				if (rapport.isAnnule()) {
-					continue;
+			// [SIFISC-719] on s'assure que les rapports de représentation conventionnels ne se chevauchent pas
+			checkNonOverlap(sujets, results, "représentation conventionnelle", new Predicate<RapportEntreTiers>() {
+				@Override
+				public boolean evaluate(RapportEntreTiers object) {
+					return object instanceof RepresentationConventionnelle;
 				}
-				if (rapport instanceof RepresentationConventionnelle) {
-					if (representations == null) {
-						representations = new ArrayList<>();
-					}
-					representations.add(rapport);
-				}
-			}
+			});
 
-			final List<DateRange> intersections = DateRangeHelper.overlaps(representations);
-			if (intersections != null) {
-				// génération des messages d'erreur
-				for (DateRange range : intersections) {
-					results.addError(String.format("La période %s est couverte par plusieurs représentations conventionnelles", DateRangeHelper.toDisplayString(range)));
+			// de même on s'assure que les établissements principaux ne sont pas plusieurs à un moment donné
+			checkNonOverlap(sujets, results, "activité économique principale", new Predicate<RapportEntreTiers>() {
+				@Override
+				public boolean evaluate(RapportEntreTiers object) {
+					return object instanceof ActiviteEconomique && ((ActiviteEconomique) object).isPrincipal();
 				}
-			}
+			});
 		}
 
 		return results;
+	}
+
+	private static void checkNonOverlap(Set<RapportEntreTiers> rapports, ValidationResults results, String descripion, Predicate<RapportEntreTiers> filtre) {
+		if (rapports != null && rapports.size() > 1) {
+			final List<RapportEntreTiers> concernes = new ArrayList<>(rapports.size());
+			for (RapportEntreTiers ret : rapports) {
+				if (!ret.isAnnule() && filtre.evaluate(ret)) {
+					concernes.add(ret);
+				}
+			}
+
+			final List<DateRange> intersections = DateRangeHelper.overlaps(concernes);
+			if (intersections != null) {
+				// génération des messages d'erreur
+				for (DateRange range : intersections) {
+					results.addError(String.format("La période %s est couverte par plusieurs rapports de type '%s'.", DateRangeHelper.toDisplayString(range), descripion));
+				}
+			}
+		}
 	}
 
 	protected ValidationResults validateDeclarations(T tiers) {

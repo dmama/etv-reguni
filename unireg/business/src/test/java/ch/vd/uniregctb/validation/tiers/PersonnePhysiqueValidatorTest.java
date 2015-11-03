@@ -1075,7 +1075,7 @@ public class PersonnePhysiqueValidatorTest extends AbstractValidatorTest<Personn
 
 		final List<String> errors = results.getErrors();
 		assertEquals(1, errors.size());
-		assertEquals("La période [01.07.2005 ; 31.12.2005] est couverte par plusieurs représentations conventionnelles", errors.get(0));
+		assertEquals("La période [01.07.2005 ; 31.12.2005] est couverte par plusieurs rapports de type 'représentation conventionnelle'.", errors.get(0));
 	}
 
 	// [SIFISC-2533] Vérifie que les rapports d'appartenance ménage ne se chevauchent pas
