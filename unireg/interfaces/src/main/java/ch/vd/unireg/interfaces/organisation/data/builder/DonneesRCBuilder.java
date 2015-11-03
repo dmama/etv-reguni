@@ -19,17 +19,21 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	private List<DateRanged<StatusInscriptionRC>> statusInscription;
 	private List<Capital> capital;
 	private List<AdresseRCEnt> adresseLegale;
+	private List<DateRanged<String>> buts;
+	private List<DateRanged<RegDate>> dateStatus;
 
 	public DonneesRCBuilder() {}
 
-	public DonneesRCBuilder(@NotNull List<DateRanged<StatusRC>> status, @NotNull List<DateRanged<String>> nom) {
+	public DonneesRCBuilder(@NotNull List<DateRanged<StatusRC>> status, @NotNull List<DateRanged<String>> nom, List<DateRanged<String>> buts, List<DateRanged<RegDate>> dateStatus) {
 		this.status = status;
 		this.nom = nom;
+		this.buts = buts;
+		this.dateStatus = dateStatus;
 	}
 
 	@Override
 	public DonneesRC build() {
-		return new DonneesRC(adresseLegale, status, nom, statusInscription, capital);
+		return new DonneesRC(adresseLegale, status, nom, statusInscription, capital, buts, dateStatus);
 	}
 
 	public DonneesRCBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRC valeur) {
@@ -54,6 +58,16 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder addAdresseLegale(@NotNull AdresseRCEnt valeur) {
 		adresseLegale = BuilderHelper.addValueToList(adresseLegale, valeur);
+		return this;
+	}
+
+	public DonneesRCBuilder addButs(@NotNull DateRanged<String> buts) {
+		this.buts = BuilderHelper.addValueToList(this.buts, buts);
+		return this;
+	}
+
+	public DonneesRCBuilder addDateStatus(@NotNull DateRanged<RegDate> dateStatus) {
+		this.dateStatus = BuilderHelper.addValueToList(this.dateStatus, dateStatus);
 		return this;
 	}
 

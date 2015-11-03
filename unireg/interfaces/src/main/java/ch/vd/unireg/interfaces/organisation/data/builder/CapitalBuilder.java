@@ -13,6 +13,7 @@ public class CapitalBuilder {
 	private BigDecimal capitalAmount;
 	private TypeDeCapital typeOfCapital;
 	private String currency;
+	private String division;
 
 	public CapitalBuilder() {
 	}
@@ -32,6 +33,11 @@ public class CapitalBuilder {
 		return this;
 	}
 
+	public CapitalBuilder withDivision(String division) {
+		this.division = division;
+		return this;
+	}
+
 	public CapitalBuilder withDateDebut(RegDate dateDebut) {
 		this.dateDebut = dateDebut;
 		return this;
@@ -43,6 +49,6 @@ public class CapitalBuilder {
 	}
 
 	public Capital build() {
-		return new Capital(dateDebut, dateFin, typeOfCapital, currency, capitalAmount);
+		return new Capital(dateDebut, dateFin, typeOfCapital, currency, capitalAmount, division);
 	}
 }

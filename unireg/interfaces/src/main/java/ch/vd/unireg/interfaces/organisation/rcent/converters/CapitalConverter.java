@@ -17,6 +17,7 @@ public class CapitalConverter extends RangedToRangeBaseConverter<ch.vd.evd0022.v
 		                   range.getDateFin(),
 		                   TYPE_OF_CAPITAL_CONVERTER.apply(capital.getTypeOfCapital()),
 		                   capital.getCurrency(),
-		                   capital.getCashedInAmount());        // c'est le capital libéré qui passe dans Unireg...
+		                   capital.getCashedInAmount(),   // c'est le capital libéré qui passe dans Unireg...
+		                   capital.getDivision());
 	}
 }
