@@ -13,7 +13,7 @@
 			<jxb:package name="ch.vd.editique.unireg" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="edi-unireg" />
+			<namespace:prefix name="" />
 		</jxb:bindings>
 	</jxb:bindings>
 

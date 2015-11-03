@@ -58,9 +58,9 @@
                                 <xs:documentation>X12345</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="adresseRaisonSociale" type="typeAdresse"> </xs:element>
-                        <xs:element name="adresseRetour" type="typeAdresse"> </xs:element>
-                        <xs:element name="dateLimiteRetour" type="xs:date">
+                        <xs:element name="adresseRaisonSociale" type="CTypeAdresse"> </xs:element>
+                        <xs:element name="adresseRetour" type="CTypeAdresse"> </xs:element>
+                        <xs:element name="dateLimiteRetour" type="STypeDate">
                             <xs:annotation>
                                 <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
@@ -74,12 +74,12 @@
                         </xs:element>
                         <xs:element name="siege" type="xs:string"/>
                         <xs:element minOccurs="0" name="administrationEffective" type="xs:string"/>
-                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="xs:date">
+                        <xs:element minOccurs="1" name="debutExerciceCommercial" type="STypeDate">
                             <xs:annotation>
                                 <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element minOccurs="1" name="finExerciceCommercial" type="xs:date">
+                        <xs:element minOccurs="1" name="finExerciceCommercial" type="STypeDate">
                             <xs:annotation>
                                 <xs:documentation>AAAAMMJJ</xs:documentation>
                             </xs:annotation>
@@ -99,7 +99,8 @@
     </xs:group>
     <xs:complexType name="CTypeAdresse">
         <xs:sequence>
-            <xs:element maxOccurs="6" minOccurs="1" name="adresseLigne" nillable="false"/>
+            <xs:element maxOccurs="6" minOccurs="1" name="adresseLigne" nillable="false"
+                type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="CTypeCleRgp">
@@ -163,15 +164,10 @@
                     <xs:documentation>Identifiant FOLDERS du document </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="datTravail">
+            <xs:element name="datTravail" type="STypeDate">
                 <xs:annotation>
                     <xs:documentation>Date de travail, au format AAAAMMJJ : date d'expédition d'une correspondance</xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="STypeDate">
-                        <xs:pattern value="\d{8}"/>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
@@ -248,7 +244,7 @@ PMP30000TECHN
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:token">
-                        <xs:length value="10"/>
+                        <xs:maxLength value="10"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
@@ -331,7 +327,7 @@ PMP30000TECHN
                     <xs:documentation>AAAAMMJJ</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="notreReference" type="xs:string" minOccurs="1">
+            <xs:element name="notreReference" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation/>
                 </xs:annotation>
@@ -392,11 +388,6 @@ PMP30000ROUTE</xs:documentation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    <xs:complexType name="typeAdresse">
-        <xs:sequence>
-            <xs:element maxOccurs="6" minOccurs="1" name="adresseLigne"/>
-        </xs:sequence>
-    </xs:complexType>
     <xs:simpleType name="STypePrefixeTECHN">
         <xs:restriction base="xs:string">
             <xs:pattern value="PMPU[0-9]{4}TECHN"/>
@@ -437,6 +428,7 @@ PMP30000ROUTE</xs:documentation>
             <xs:enumeration value="N"/>
             <xs:enumeration value="C"/>
             <xs:pattern value="[A-Z]"/>
+            <xs:enumeration value=" "/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeTypeDoc">
@@ -512,12 +504,12 @@ PMP30000ROUTE</xs:documentation>
     </xs:simpleType>
     <xs:simpleType name="STypeNumTelFax">
         <xs:restriction base="xs:string">
-            <xs:length value="25"/>
+            <xs:maxLength value="25"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeNumCCP">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9]{2}-[0-9]{6}-[0-9]"/>
+            <xs:pattern value="[0-9]{1,2}-[0-9]{1,6}-[0-9]"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeNumIBAN">
