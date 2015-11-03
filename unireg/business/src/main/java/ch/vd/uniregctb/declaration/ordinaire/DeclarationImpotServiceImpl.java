@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.TicketService;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -49,7 +50,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
@@ -102,7 +103,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private DelaisService delaisService;
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
-	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
+	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
 	private ImpressionSommationDIHelper impressionSommationDIHelper;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TiersService tiersService;
@@ -123,7 +124,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                   TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
-	                                   TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
+	                                   TiersService tiersService, ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper, PlatformTransactionManager transactionManager,
 	                                   ParametreAppService parametres, ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService,
 	                                   EvenementFiscalService evenementFiscalService, EvenementDeclarationSender evenementDeclarationSender, PeriodeImpositionService periodeImpositionService,
 	                                   AssujettissementService assujettissementService, TicketService ticketService) {
@@ -135,7 +136,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.delaisService = delaisService;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
-		this.impressionDIHelper = impressionDIHelper;
+		this.impressionDIPPHelper = impressionDIPPHelper;
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
@@ -184,12 +185,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.infraService = infraService;
 	}
 
-	public ImpressionDeclarationImpotOrdinaireHelper getImpressionDIHelper() {
-		return impressionDIHelper;
+	public ImpressionDeclarationImpotPersonnesPhysiquesHelper getImpressionDIPPHelper() {
+		return impressionDIPPHelper;
 	}
 
-	public void setImpressionDIHelper(ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper) {
-		this.impressionDIHelper = impressionDIHelper;
+	public void setImpressionDIPPHelper(ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper) {
+		this.impressionDIPPHelper = impressionDIPPHelper;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -382,6 +383,17 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			evenementDeclarationSender.sendEmissionEvent(tiers.getNumero(), declaration.getPeriode().getAnnee(), dateEvenement, declaration.getCodeControle(), codeSegmentString);
 		}
 		catch (EditiqueException | EvenementDeclarationException e) {
+			throw new DeclarationException(e);
+		}
+	}
+
+	@Override
+	public void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
+		try {
+			editiqueCompositionService.imprimeDIForBatch(declaration);
+			evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(declaration, dateEvenement);
+		}
+		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
 	}
@@ -692,7 +704,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	                                             StatusManager statusManager) throws DeclarationException {
 		final EnvoiDeclarationsPMProcessor processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
-		                                                                                tailleLot, transactionManager, parametres, adresseService, evenementFiscalService, ticketService);
+		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
 		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
 	}
 }

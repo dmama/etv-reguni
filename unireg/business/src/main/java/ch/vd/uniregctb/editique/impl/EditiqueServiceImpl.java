@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -83,6 +84,11 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	}
 
 	@Override
+	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive, String description) throws EditiqueException {
+		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new InboxRoutingTimeoutManager(nomDocument, description));
+	}
+
+	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive) throws EditiqueException {
 		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
 			@Override
@@ -110,6 +116,38 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
 	private EditiqueResultat creerDocumentImmediatement(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, XmlObject document, boolean archive, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
+
+		// envoi de la demande
+		if (LOGGER.isDebugEnabled()) {
+			final String msg = String.format("Demande d'impression locale du document %s (%s)", nomDocument, typeDocument);
+			LOGGER.debug(msg);
+		}
+		final String id = sender.envoyerDocumentImmediatement(nomDocument, typeDocument, document, typeFormat, archive);
+
+		// demande envoyée, attente de la réponse
+		if (LOGGER.isDebugEnabled()) {
+			final String msg = String.format("Demande d'impression locale du document %s (%s) envoyée : %s", nomDocument, typeDocument, id);
+			LOGGER.debug(msg);
+		}
+
+		return getRetourEditique(nomDocument, typeDocument, secTimeout, timeoutManager);
+	}
+
+	/**
+	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression directe. La gestion du timeout
+	 * est faite par le timeoutManager passé en paramètre
+	 *
+	 * @param nomDocument le nom du document à transmettre à Editique.
+	 * @param typeDocument le type de document
+	 * @param typeFormat le format souhaité
+	 * @param document document XML à envoyer à éditique
+	 * @param archive indicateur d'archivage
+	 * @param secTimeout timeout à utiliser, en secondes
+	 * @param timeoutManager sera lancé en cas de timeout
+	 * @return le document imprimé ou <b>null</b> si éditique n'a pas répondu dans les temps
+	 * @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
+	 */
+	private EditiqueResultat creerDocumentImmediatement(String nomDocument, TypeDocumentEditique typeDocument, FormatDocumentEditique typeFormat, FichierImpression document, boolean archive, int secTimeout, TimeoutManager timeoutManager) throws EditiqueException {
 
 		// envoi de la demande
 		if (LOGGER.isDebugEnabled()) {
@@ -161,6 +199,11 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 
 	@Override
 	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, XmlObject document, boolean archive) throws EditiqueException {
+		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
+	}
+
+	@Override
+	public void creerDocumentParBatch(String nomDocument, TypeDocumentEditique typeDocument, FichierImpression document, boolean archive) throws EditiqueException {
 		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
 	}
 

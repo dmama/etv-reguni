@@ -13,19 +13,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import ch.vd.editique.unireg.FichierImpression;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelperParams;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelper;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperParams;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
@@ -57,7 +60,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	private EditiqueService editiqueService;
 
-	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
+	private ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper;
+	private ImpressionDeclarationImpotPersonnesMoralesHelper impressionDIPMHelper;
 	private ImpressionListeRecapHelper impressionLRHelper;
 	private ImpressionSommationDIHelper impressionSommationDIHelper;
 	private ImpressionSommationLRHelper impressionSommationLRHelper;
@@ -72,8 +76,12 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setImpressionDIHelper(ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper) {
-		this.impressionDIHelper = impressionDIHelper;
+	public void setImpressionDIPPHelper(ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper) {
+		this.impressionDIPPHelper = impressionDIPPHelper;
+	}
+
+	public void setImpressionDIPMHelper(ImpressionDeclarationImpotPersonnesMoralesHelper impressionDIPMHelper) {
+		this.impressionDIPMHelper = impressionDIPMHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -162,7 +170,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	                                         boolean isDuplicata) throws EditiqueException, JMSException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
+		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, typeDocument, annexes);
 		final TypFichierImpression.Document[] documents;
 		if (isDuplicata || typeDocument == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			documents = new TypFichierImpression.Document[1];
@@ -174,8 +182,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			documents[1] = document;
 		}
 		editiqueDI.setDocumentArray(documents);
-		final TypeDocumentEditique typeDocumentMessage = impressionDIHelper.getTypeDocumentEditique(typeDocument);
-		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
+		final TypeDocumentEditique typeDocumentMessage = impressionDIPPHelper.getTypeDocumentEditique(typeDocument);
+		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
 
 		final String description = String.format("Document '%s %d' du contribuable %s",
 		                                         typeDocument.getDescription(),
@@ -188,8 +196,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException {
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
-		final TypeDocumentEditique typeDocument = impressionDIHelper.getTypeDocumentEditique(declaration);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
+		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(declaration);
+		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(declaration, editiqueDI, null, buildDefaultAnnexes(declaration));
 		final TypFichierImpression.Document[] documents;
 		Assert.notNull(document);
 		if (declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
@@ -202,8 +210,18 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			documents[1] = document;
 		}
 		editiqueDI.setDocumentArray(documents);
-		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
+		final String nomDocument = impressionDIPPHelper.construitIdDocument(declaration);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
+	}
+
+	@Override
+	public void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
+		final FichierImpression root = new FichierImpression();
+		final FichierImpression.Document document = impressionDIPMHelper.buildDocument(declaration);
+		root.getDocument().add(document);
+		final TypeDocumentEditique typeDocument = impressionDIPMHelper.getTypeDocumentEditique(declaration);
+		final String nomDocument = impressionDIPMHelper.getIdDocument(declaration);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, root, false);
 	}
 
 	@Override
@@ -212,15 +230,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 		final TypFichierImpression editiqueDI = mainDocument.addNewFichierImpression();
 		final TypeDocument typeDoc = infosDocument.getTypeDocument();
-		final TypeDocumentEditique typeDocument = impressionDIHelper.getTypeDocumentEditique(typeDoc);
-		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeuble), true);
+		final TypeDocumentEditique typeDocument = impressionDIPPHelper.getTypeDocumentEditique(typeDoc);
+		final TypFichierImpression.Document document = impressionDIPPHelper.remplitEditiqueSpecifiqueDI(infosDocument, editiqueDI, buildAnnexesImmeuble(listeModele, nombreAnnexesImmeuble), true);
 		Assert.notNull(document);
 		final TypFichierImpression.Document[] documents = new TypFichierImpression.Document[]{document};
 		editiqueDI.setDocumentArray(documents);
 		final int annee = infosDocument.getAnnee();
 		final Integer idDoc = infosDocument.getIdDocument();
 		final Tiers tiers = infosDocument.getTiers();
-		final String nomDocument = impressionDIHelper.construitIdDocument(annee, idDoc, tiers);
+		final String nomDocument = impressionDIPPHelper.construitIdDocument(annee, idDoc, tiers);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
 		return nombreAnnexesImmeuble;
 	}

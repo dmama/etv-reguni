@@ -102,7 +102,6 @@
 		<property name="sources">
 			<list>
 				<value>classpath:xsd/civil/**/*.xsd</value>
-				<value>classpath:xsd/database/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:event/fiscal/evt-fiscal-2.xsd</value>
 				<value>classpath:xsd/identification/**/*.xsd</value>
@@ -111,6 +110,7 @@
 				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
 				<value>classpath:event/lr/evtQuittanceListe-v1.xsd</value>
 				<value>classpath:eVD-0025-1-2.xsd</value>
+				<value>classpath:editique/UniregPM_FichierImpression.xsd</value>
 			</list>
 		</property>
 	</bean>

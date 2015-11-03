@@ -67,9 +67,9 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotOrdinaireHelper {
+public class ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl extends EditiqueAbstractHelper implements ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperImpl.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl.class);
 
 	private static final Integer NBRE_COPIE_ANNEXE_DEFAUT = 1;
 
@@ -83,11 +83,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	private ServiceInfrastructureService infraService;
 	private SituationFamilleService situationFamilleService;
 
-	public ImpressionDeclarationImpotOrdinaireHelperImpl() {
+	public ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl() {
 	}
 
-	public ImpressionDeclarationImpotOrdinaireHelperImpl(ServiceInfrastructureService infraService, AdresseService adresseService, TiersService tiersService,
-	                                                     SituationFamilleService situationFamilleService, EditiqueHelper editiqueHelper) {
+	public ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl(ServiceInfrastructureService infraService, AdresseService adresseService, TiersService tiersService,
+	                                                              SituationFamilleService situationFamilleService, EditiqueHelper editiqueHelper) {
 		this.infraService = infraService;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;

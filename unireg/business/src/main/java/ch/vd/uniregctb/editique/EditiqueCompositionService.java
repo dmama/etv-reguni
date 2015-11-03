@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -47,15 +48,26 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeDuplicataDIOnline(DeclarationImpotOrdinairePP declaration, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime la déclaration spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
+	 * Imprime la déclaration PP spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
 	 * déclaration.
 	 * <p/>
 	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
-	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinaire, RegDate)}.
+	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
 	 *
 	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
 	 */
 	void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException;
+
+	/**
+	 * Imprime la déclaration PM spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la
+	 * déclaration.
+	 * <p/>
+	 * <b>Note:</b> cette méthode n'envoie pas d'événement fiscal et ne devrait pas être appelée directement. Il faut utiliser la méthode {@link
+	 * DeclarationImpotService#envoiDIForBatch(DeclarationImpotOrdinairePP, RegDate)}.
+	 *
+	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 */
+	void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException;
 
 	/**
 	 * Imprime la lr spécifiée pour un envoi en masse. Cette méthode retourne immédiatement et du moment que la transaction est committée, il est de la responsabilité d'éditique d'imprimer la

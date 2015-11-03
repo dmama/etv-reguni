@@ -13,7 +13,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public interface ImpressionDeclarationImpotOrdinaireHelper {
+public interface ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 
 	/**
 	 * Construit le champ idDocument

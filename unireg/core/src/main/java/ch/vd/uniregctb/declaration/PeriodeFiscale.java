@@ -235,11 +235,15 @@ public class PeriodeFiscale extends HibernateEntity {
 	}
 
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {
-		for (ModeleDocument modele : getModelesDocument())  {
+		return get(typeDocument) != null;
+	}
+
+	public ModeleDocument get(TypeDocument typeDocument) {
+		for (ModeleDocument modele : getModelesDocument()) {
 			if (typeDocument == modele.getTypeDocument()) {
-				return true;
+				return modele;
 			}
 		}
-		return false;
+		return null;
 	}
 }

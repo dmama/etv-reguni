@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MimeTypeHelper;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -41,6 +42,10 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 
 	@Override
 	public void imprimeDIForBatch(DeclarationImpotOrdinairePP declaration) throws EditiqueException {
+	}
+
+	@Override
+	public void imprimeDIForBatch(DeclarationImpotOrdinairePM declaration) throws EditiqueException {
 	}
 
 	@Override

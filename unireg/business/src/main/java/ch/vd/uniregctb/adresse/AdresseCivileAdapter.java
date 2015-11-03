@@ -17,6 +17,8 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -47,7 +49,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.adresse = adresse;
 		this.debutValiditeSurcharge = null;
 		this.finValiditeSurcharge = null;
-		this.source = new Source(SourceType.CIVILE_PERS, tiers);
+		this.source = new Source((tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ORG : SourceType.CIVILE_PERS, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 

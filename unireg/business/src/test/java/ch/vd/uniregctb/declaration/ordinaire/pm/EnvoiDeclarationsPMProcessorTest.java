@@ -25,7 +25,6 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalDeclaration;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -66,10 +65,9 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 		final TicketService ticketService = getBean(TicketService.class, "ticketService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
-		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
 		processor = new EnvoiDeclarationsPMProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService, diService, assujettissementService,
-		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, adresseService, evenementFiscalService, ticketService);
+		                                             periodeImpositionService, TAILLE_LOT, transactionManager, parametreAppService, adresseService, ticketService);
 
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");

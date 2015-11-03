@@ -12,7 +12,7 @@ import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class MockImpressionDeclarationImpotOrdinaireHelper implements ImpressionDeclarationImpotOrdinaireHelper {
+public class MockImpressionDeclarationImpotPersonnesPhysiquesHelper implements ImpressionDeclarationImpotPersonnesPhysiquesHelper {
 	@Override
 	public String construitIdDocument(DeclarationImpotOrdinairePP declaration) {
 		throw new IllegalArgumentException("no meant to be called");

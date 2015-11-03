@@ -52,7 +52,6 @@ import ch.vd.uniregctb.declaration.ParametrePeriodeFiscalePM;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -88,11 +87,10 @@ public class EnvoiDeclarationsPMProcessor {
 	private final ParametreAppService parametres;
 	private final AdresseService adresseService;
 	private final TicketService ticketService;
-	private final EvenementFiscalService evenementFiscalService;
 
 	public EnvoiDeclarationsPMProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO, PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService declarationImpotService,
 	                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, int tailleLot, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-	                                    AdresseService adresseService, EvenementFiscalService evenementFiscalService, TicketService ticketService) {
+	                                    AdresseService adresseService, TicketService ticketService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -105,7 +103,6 @@ public class EnvoiDeclarationsPMProcessor {
 		this.transactionManager = transactionManager;
 		this.parametres = parametres;
 		this.adresseService = adresseService;
-		this.evenementFiscalService = evenementFiscalService;
 		this.ticketService = ticketService;
 	}
 
@@ -288,9 +285,10 @@ public class EnvoiDeclarationsPMProcessor {
 		if (tache.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_PM) {
 			di.setCodeControle(getNewCodeControle(pm, informationsFiscales));
 		}
-		di.setPeriode(informationsFiscales.getPeriodeFiscale());
 
-		// TODO le type de document doit passer dans le modèle de document choisi...
+		final PeriodeFiscale periodeFiscale = informationsFiscales.getPeriodeFiscale();
+		di.setPeriode(periodeFiscale);
+		di.setModeleDocument(periodeFiscale.get(tache.getTypeDocument()));
 
 		final DeclarationImpotOrdinairePM savedDi = hibernateTemplate.merge(di);
 
@@ -301,7 +299,9 @@ public class EnvoiDeclarationsPMProcessor {
 		// TODO prendre en compte la présence de mandataire général...
 		final boolean hasMandatGeneral = false;
 		final DatesDelaiInitial datesDelaiInitial = getDelaiInitialRetour(tache.getTypeContribuable(), hasMandatGeneral,
-		                                                                  tache.getDateFin(), dateTraitement, informationsFiscales.getPeriodeFiscale());
+		                                                                  tache.getDateFin(), dateTraitement, periodeFiscale);
+		savedDi.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
+
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
 		delaiInitial.setConfirmationEcrite(Boolean.FALSE);
 		delaiInitial.setDateDemande(dateTraitement);
@@ -310,10 +310,7 @@ public class EnvoiDeclarationsPMProcessor {
 		savedDi.addDelai(delaiInitial);
 
 		// emvoyer le document à l'éditique
-		// TODO composition du document et envoi...
-
-		// envoi de l'événement fiscal
-		evenementFiscalService.publierEvenementFiscalEmissionDeclarationImpot(savedDi, dateTraitement);
+		declarationImpotService.envoiDIForBatch(savedDi, dateTraitement);
 
 		informationsFiscales.addNouvelleDeclaration(pm, savedDi);
 		rapport.addDiEnvoyee(pm.getNumero(), tache.getDateDebut(), tache.getDateFin());

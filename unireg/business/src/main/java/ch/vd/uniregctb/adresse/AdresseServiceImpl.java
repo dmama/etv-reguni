@@ -964,13 +964,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	private static AdresseGenerique.Source getSourceCivilePourTiers(Tiers tiers) {
-		final SourceType sourceType;
-		if (tiers instanceof Entreprise || tiers instanceof Etablissement) {
-			sourceType = SourceType.CIVILE_ORG;
-		}
-		else {
-			sourceType = SourceType.CIVILE_PERS;
-		}
+		final SourceType sourceType = (tiers instanceof Entreprise || tiers instanceof Etablissement) ? SourceType.CIVILE_ORG : SourceType.CIVILE_PERS;
 		return new AdresseGenerique.Source(sourceType, tiers);
 	}
 

@@ -35,6 +35,7 @@ public abstract class EditiqueAbstractHelper {
 	protected static final String LOGO_CANTON = "CANT";
 	protected static final String POPULATION_PP = "PP";
 	protected static final String POPULATION_IS = "IS";
+	protected static final String POPULATION_PM = "PM";
 
 	protected AdresseService adresseService;
 	protected TiersService tiersService;

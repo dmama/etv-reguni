@@ -188,6 +188,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
+		return target.getACIOIPM();
+	}
+
+	@Override
 	public CollectiviteAdministrative getCEDI() throws ServiceInfrastructureException {
 		return target.getCEDI();
 	}

@@ -247,6 +247,12 @@ public interface ServiceInfrastructureService {
 	CollectiviteAdministrative getACISuccessions() throws ServiceInfrastructureException;
 
 	/**
+	 * @return la collectivite administrative OIPM, service de l'ACI
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException;
+
+	/**
 	 * @return la collectivite administrative du CEDI
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */

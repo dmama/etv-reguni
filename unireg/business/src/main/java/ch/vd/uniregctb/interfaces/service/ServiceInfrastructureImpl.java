@@ -59,6 +59,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	private CollectiviteAdministrative aci;
 	private CollectiviteAdministrative aciSuccessions;
 	private CollectiviteAdministrative aciImpotSource;
+	private CollectiviteAdministrative aciOfficeImpotPersonnesMorales;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
 	private Map<Integer, List<Localite>> allLocaliteCommune;
@@ -79,6 +80,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		this.aci = null;
 		this.aciSuccessions = null;
 		this.aciImpotSource = null;
+		this.aciOfficeImpotPersonnesMorales = null;
 		this.cedi = null;
 		this.cat = null;
 		this.allLocaliteCommune = null;
@@ -271,6 +273,14 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 			aciSuccessions = rawService.getCollectivite(ServiceInfrastructureService.noACISuccessions);
 		}
 		return aciSuccessions;
+	}
+
+	@Override
+	public CollectiviteAdministrative getACIOIPM() throws ServiceInfrastructureException {
+		if (aciOfficeImpotPersonnesMorales == null) {
+			aciOfficeImpotPersonnesMorales = rawService.getCollectivite(ServiceInfrastructureService.noOIPM);
+		}
+		return aciOfficeImpotPersonnesMorales;
 	}
 
 	@Override

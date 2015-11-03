@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNull;
 
 public class ImpressionSommationDIHelperTest extends BusinessTest {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperTest.class);
 
 	private ImpressionSommationDIHelperImpl impressionSommationDIHelper;
 	private AdresseService adresseService;

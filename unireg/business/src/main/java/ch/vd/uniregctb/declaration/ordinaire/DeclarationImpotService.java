@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -135,10 +136,19 @@ public interface DeclarationImpotService {
 	 * Envoie à l'impression la déclaration spécifiée pour un envoi en masse, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est
 	 * committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
 	 *
-	 * @param declaration   la déclaration d'impôt ordinaire à imprimer
+	 * @param declaration   la déclaration d'impôt ordinaire PP à imprimer
 	 * @param dateEvenement la date d'impression
 	 */
 	void envoiDIForBatch(DeclarationImpotOrdinairePP declaration, RegDate dateEvenement) throws DeclarationException;
+
+	/**
+	 * Envoie à l'impression la déclaration spécifiée pour un envoi en masse, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est
+	 * committée, il est de la responsabilité d'éditique d'imprimer la déclaration.
+	 *
+	 * @param declaration   la déclaration d'impôt ordinaire PM à imprimer
+	 * @param dateEvenement la date d'impression
+	 */
+	void envoiDIForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,

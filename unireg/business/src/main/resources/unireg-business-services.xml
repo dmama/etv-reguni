@@ -222,11 +222,16 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="impressionDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelperImpl">
+	<bean id="impressionDIPPHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelperImpl">
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
-	
+
+	<bean id="impressionDIPMHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pm.ImpressionDeclarationImpotPersonnesMoralesHelperImpl">
+		<property name="ibanValidator" ref="ibanValidator"/>
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
 	<bean id="impressionSommationDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionSommationDIHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="delaisService" ref="delaisService" />		 

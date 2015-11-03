@@ -1584,8 +1584,16 @@ public interface TiersService {
 
     /**
      * @param entreprise une entreprise fiscale
-     * @return les données civiles de l'entreprise, où <code>null</code> si cette entreprise est inconnue dans les registres civils
+     * @return les données civiles de l'entreprise, ou <code>null</code> si cette entreprise est inconnue dans les registres civils
      */
     Organisation getOrganisation(@NotNull Entreprise entreprise);
+
+    /**
+     *
+     * @param entreprise une entreprise fiscale
+     * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
+     */
+    @Nullable
+    String getNumeroIDE(@NotNull Entreprise entreprise);
 }
 

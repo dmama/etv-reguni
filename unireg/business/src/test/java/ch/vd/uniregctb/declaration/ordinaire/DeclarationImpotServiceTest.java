@@ -38,7 +38,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsAEmettreProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotOrdinaireHelper;
+import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
@@ -114,7 +114,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		tiersService = getBean(TiersService.class, "tiersService");
-		final ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper = getBean(ImpressionDeclarationImpotOrdinaireHelper.class, "impressionDIHelper");
+		final ImpressionDeclarationImpotPersonnesPhysiquesHelper impressionDIPPHelper = getBean(ImpressionDeclarationImpotPersonnesPhysiquesHelper.class, "impressionDIPPHelper");
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		parametres = getBean(ParametreAppService.class, "parametreAppService");
 		final ServiceCivilCacheWarmer cacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
@@ -131,7 +131,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		 * création du service à la main de manière à pouvoir appeler les méthodes protégées (= en passant par Spring on se prend un proxy
 		 * et seule l'interface publique est accessible)
 		 */
-		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIHelper,
+		service = new DeclarationImpotServiceImpl(editiqueService, hibernateTemplate, periodeDAO, tacheDAO, modeleDAO, delaisService, infraService, tiersService, impressionDIPPHelper,
 		                                          transactionManager, parametres, cacheWarmer, validationService, evenementFiscalService, evenementDeclarationSender, periodeImpositionService,
 		                                          assujettissementService, ticketService);
 

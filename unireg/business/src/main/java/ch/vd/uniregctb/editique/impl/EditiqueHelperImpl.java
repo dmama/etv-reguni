@@ -52,7 +52,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	/**
 	 * Alimente la partie Destinataire du document
-	 *
 	 */
 	@Override
 	public Destinataire remplitDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -267,21 +268,11 @@ public class TiersServiceImpl implements TiersService {
         return tiersDAO.getEntrepriseByNumeroOrganisation(numeroOrganisation);
     }
 
-	/**
-	 * TODO utiliser le predicat fournit par le JDK dès que le niveau de compilation sera le bon...
-	 * Pour l'instant, nous n'avons pas le droit (le niveau de compilation n'est pas le bon, il faut JDK8)
-	 * d'utiliser la classe Predicate fournie par le JDK...
-	 * @param <T> valeur à tester
-	 */
-	private interface Predicate<T> {
-		boolean test(T value);
-	}
-
 	@Override
 	public List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise) {
 		return getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
 			@Override
-			public boolean test(ActiviteEconomique value) {
+			public boolean evaluate(ActiviteEconomique value) {
 				return value.isPrincipal();
 			}
 		});
@@ -291,7 +282,7 @@ public class TiersServiceImpl implements TiersService {
 	public List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise) {
 		return getEtablissementsEntreprise(entreprise, true, new Predicate<ActiviteEconomique>() {
 			@Override
-			public boolean test(ActiviteEconomique value) {
+			public boolean evaluate(ActiviteEconomique value) {
 				return !value.isPrincipal();
 			}
 		});
@@ -301,13 +292,13 @@ public class TiersServiceImpl implements TiersService {
 		final Set<RapportEntreTiers> sujets = entreprise.getRapportsSujet();
 		final List<DateRanged<Etablissement>> etablissements = new LinkedList<>();
 		for (RapportEntreTiers ret : sujets) {
-			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && filtre.test((ActiviteEconomique) ret)) {
+			if (!ret.isAnnule() && ret instanceof ActiviteEconomique && filtre.evaluate((ActiviteEconomique) ret)) {
 				final Etablissement etb = (Etablissement) getTiers(ret.getObjetId());
 				if (etb != null) {
 					etablissements.add(new DateRanged<>(ret.getDateDebut(), ret.getDateFin(), etb));
 				}
 				else {
-					LOGGER.warn(String.format("Etablissement tiers non trouvé (%d) sur le rapport %d.", ret.getObjetId(), ret.getId()));
+					LOGGER.warn(String.format("Etablissement non trouvé (%d) sur le rapport %d.", ret.getObjetId(), ret.getId()));
 				}
 			}
 		}
@@ -5430,5 +5421,18 @@ public class TiersServiceImpl implements TiersService {
 
 		final long numeroOrganisation = entreprise.getNumeroEntreprise();
 		return serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
+	}
+
+	@Nullable
+	@Override
+	public String getNumeroIDE(@NotNull Entreprise entreprise) {
+		final Organisation org = getOrganisation(entreprise);
+		if (org == null) {
+			// TODO devrait-on chercher dans notre base ?
+			return null;
+		}
+
+		final List<DateRanged<String>> liste = org.getNumeroIDE();
+		return liste == null || liste.isEmpty() ? null : liste.get(liste.size() - 1).getPayload();
 	}
 }

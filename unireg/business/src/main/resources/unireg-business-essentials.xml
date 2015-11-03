@@ -157,7 +157,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="editiqueService" ref="editiqueService" />
-		<property name="impressionDIHelper" ref="impressionDIHelper" />
+		<property name="impressionDIPPHelper" ref="impressionDIPPHelper" />
 		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
 		<property name="periodeDAO" ref="periodeFiscaleDAO" />
 		<property name="tacheDAO" ref="tacheDAO" />

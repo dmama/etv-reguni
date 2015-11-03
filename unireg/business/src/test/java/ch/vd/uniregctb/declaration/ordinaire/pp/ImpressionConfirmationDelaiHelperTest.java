@@ -15,7 +15,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 
 public class ImpressionConfirmationDelaiHelperTest extends BusinessTest {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpressionDeclarationImpotPersonnesPhysiquesHelperTest.class);
 
 	private ImpressionConfirmationDelaiHelperImpl impressionConfirmationDelaiHelper;
 
