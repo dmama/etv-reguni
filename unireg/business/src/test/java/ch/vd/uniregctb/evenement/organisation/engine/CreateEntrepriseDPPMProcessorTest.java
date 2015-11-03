@@ -90,12 +90,18 @@ public class CreateEntrepriseDPPMProcessorTest extends AbstractEvenementOrganisa
 				                             Assert.assertEquals(GenreImpot.BENEFICE_CAPITAL, forFiscalPrincipal.getGenreImpot());
 				                             Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale().intValue());
 
-				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
-				                             Assert.assertEquals(1, etablissements.size());
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissements.get(0).getDateDebut());
+				                             {
+					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+					                             Assert.assertEquals(1, etbsPrns.size());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etbsPrns.get(0).getDateDebut());
 
-				                             final Etablissement etablissement = etablissements.get(0).getPayload();
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+					                             final Etablissement etablissement = etbsPrns.get(0).getPayload();
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissement.getDomiciles().iterator().next().getDateDebut());
+				                             }
+				                             {
+					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
+					                             Assert.assertEquals(0, etbsSecs.size());
+				                             }
 
 				                             return null;
 			                             }

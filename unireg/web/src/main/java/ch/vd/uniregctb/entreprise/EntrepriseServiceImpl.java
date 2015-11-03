@@ -15,7 +15,6 @@ import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.CollectionsUtils;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
@@ -23,6 +22,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
 /**
@@ -30,10 +30,10 @@ import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
  *
  * @author xcifde
  */
-public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.EntrepriseService {
+public class EntrepriseServiceImpl implements EntrepriseService {
 
 	private ServiceOrganisationService serviceOrganisationService;
-	private ServiceInfrastructureService serviceInfra;
+	private TiersService tiersService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceOrganisationService(ServiceOrganisationService serviceOrganisationService) {
@@ -41,8 +41,8 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
-		this.serviceInfra = serviceInfra;
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 	 * @return un objet EntrepriseView
 	 */
 	@Override
-	public EntrepriseView get(Entreprise entreprise, List<DateRanged<Etablissement>> etablissements) {
+	public EntrepriseView get(Entreprise entreprise) {
 
 		EntrepriseView entrepriseView = new EntrepriseView();
 
@@ -93,7 +93,7 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 			Collections.sort(donneesRC, new DateRangeComparator<>());
 
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
-			entrepriseView.setSieges(extractSieges(etablissements));
+			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
 			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));
 			entrepriseView.setCapitaux(extractCapitaux(donneesRC));
 		}
@@ -130,24 +130,10 @@ public class EntrepriseServiceImpl implements ch.vd.uniregctb.entreprise.Entrepr
 		return views;
 	}
 
-	private List<DateRanged<Etablissement>> extractPrincipals(List<DateRanged<Etablissement>> etablissements) {
-		if (etablissements != null) {
-			List<DateRanged<Etablissement>> principals = new ArrayList<>();
-			for (DateRanged<Etablissement> etablissement : etablissements) {
-				if (etablissement.getPayload().isPrincipal()) {
-					principals.add(etablissement);
-				}
-			}
-			return principals;
-		}
-		return null;
-	}
-
-	private List<SiegeView> extractSieges(List<DateRanged<Etablissement>> etablissements) {
-		if (etablissements != null) {
-			List<DateRanged<Etablissement>> principals = extractPrincipals(etablissements);
-			List<DomicileEtablissement> siegeIds = new ArrayList<>();
-			for (DateRanged<Etablissement> principal : principals) {
+	private List<SiegeView> extractSieges(List<DateRanged<Etablissement>> principaux) {
+		if (principaux != null) {
+			final List<DomicileEtablissement> siegeIds = new ArrayList<>(principaux.size());
+			for (DateRanged<Etablissement> principal : principaux) {
 				// FIXME: Extraire et trier spéciallement les domiciles annulés !!
 				List<DomicileEtablissement> extractedDomiciles = DateRangeHelper.extract(principal.getPayload().getSortedDomiciles(false),
 				                                                                         principal.getDateDebut(),

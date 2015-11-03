@@ -87,11 +87,10 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				etablissement.setPrincipal(true);
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
+				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
 				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
@@ -125,7 +124,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsForEntreprise(entreprise).get(0).getPayload();
+				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 											 Assert.assertEquals(2, etablissement.getDomiciles().size());
 				                             Assert.assertEquals(RegDate.get(2015, 6, 23), etablissement.getSortedDomiciles(false).get(0).getDateFin());
 
@@ -210,11 +209,10 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				etablissement.setPrincipal(true);
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
+				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
 				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
@@ -259,7 +257,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evtOrganisationDAO.get(evtId1).getNoOrganisation());
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsForEntreprise(entreprise).get(0).getPayload();
+				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 											 Assert.assertEquals(2, etablissement.getDomiciles().size());
 				                             Assert.assertEquals(RegDate.get(2015, 6, 23), etablissement.getSortedDomiciles(false).get(0).getDateFin());
 
@@ -343,11 +341,10 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				etablissement.setPrincipal(true);
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
+				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
 				                MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
@@ -381,7 +378,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsForEntreprise(entreprise).get(0).getPayload();
+				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertEquals(2, etablissement.getDomiciles().size());
 				                             Assert.assertEquals(RegDate.get(2015, 6, 23), etablissement.getSortedDomiciles(false).get(0).getDateFin());
 
@@ -475,11 +472,10 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 				Etablissement etablissement = addEtablissement();
 				etablissement.setNumeroEtablissement(noSite);
-				etablissement.setPrincipal(true);
 
 				addDomicileEtablissement(etablissement, RegDate.get(2010, 6, 24), null, MockCommune.Lausanne);
 
-				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null);
+				addActiviteEconomique(entreprise, etablissement, RegDate.get(2010, 6, 24), null, true);
 
 				addForPrincipal(entreprise, RegDate.get(2010, 6, 24), MotifFor.DEBUT_EXPLOITATION, null, null,
 				                MockCommune.Zurich.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE, GenreImpot.BENEFICE_CAPITAL);
@@ -513,7 +509,7 @@ public class DemenagementTest extends AbstractEvenementOrganisationProcessorTest
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
 
-				                             final Etablissement etablissement = tiersService.getEtablissementsForEntreprise(entreprise).get(0).getPayload();
+				                             final Etablissement etablissement = tiersService.getEtablissementsPrincipauxEntreprise(entreprise).get(0).getPayload();
 				                             Assert.assertEquals(2, etablissement.getDomiciles().size());
 				                             Assert.assertEquals(RegDate.get(2015, 6, 23), etablissement.getSortedDomiciles(false).get(0).getDateFin());
 

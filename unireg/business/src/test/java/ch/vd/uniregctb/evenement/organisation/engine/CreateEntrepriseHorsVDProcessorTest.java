@@ -95,14 +95,20 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 
 				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
 
-				                             final List<DateRanged<Etablissement>> etablissements = tiersService.getEtablissementsForEntreprise(entreprise);
-				                             Assert.assertEquals(1, etablissements.size());
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), etablissements.get(0).getDateDebut());
+				                             {
+					                             final List<DateRanged<Etablissement>> etbsPrns = tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
+					                             Assert.assertEquals(1, etbsPrns.size());
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), etbsPrns.get(0).getDateDebut());
 
-				                             final Etablissement etablissement = etablissements.get(0).getPayload();
-				                             DomicileEtablissement domicile = etablissement.getDomiciles().iterator().next();
-				                             Assert.assertEquals(RegDate.get(2015, 6, 25), domicile.getDateDebut());
-				                             Assert.assertEquals(domicile.getNumeroOfsAutoriteFiscale().longValue(), MockCommune.Zurich.getNoOFS());
+					                             final Etablissement etablissement = etbsPrns.get(0).getPayload();
+					                             DomicileEtablissement domicile = etablissement.getDomiciles().iterator().next();
+					                             Assert.assertEquals(RegDate.get(2015, 6, 25), domicile.getDateDebut());
+					                             Assert.assertEquals(domicile.getNumeroOfsAutoriteFiscale().longValue(), MockCommune.Zurich.getNoOFS());
+				                             }
+				                             {
+					                             final List<DateRanged<Etablissement>> etbsSecs = tiersService.getEtablissementsSecondairesEntreprise(entreprise);
+					                             Assert.assertEquals(0, etbsSecs.size());
+				                             }
 
 				                             return null;
 			                             }

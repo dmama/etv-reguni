@@ -85,7 +85,7 @@ public class EtablissementValidatorTest extends AbstractValidatorTest<Etablissem
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2000, 1, 1), date(2000, 12, 31));
+				addActiviteEconomique(pp, etb, date(2000, 1, 1), date(2000, 12, 31), true);
 
 				final ValidationResults results = validate(etb);
 				Assert.assertFalse(results.toString(), results.hasErrors());
@@ -98,7 +98,7 @@ public class EtablissementValidatorTest extends AbstractValidatorTest<Etablissem
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2002, 1, 1), null);
+				addActiviteEconomique(pp, etb, date(2002, 1, 1), null, true);
 
 				final ValidationResults results = validate(etb);
 				Assert.assertFalse(results.hasErrors());
@@ -111,7 +111,7 @@ public class EtablissementValidatorTest extends AbstractValidatorTest<Etablissem
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
 				final Etablissement etb = (Etablissement) tiersDAO.get(ids.idEtb);
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ids.idPP);
-				addActiviteEconomique(pp, etb, date(2000, 10, 1), date(2002, 2, 28));
+				addActiviteEconomique(pp, etb, date(2000, 10, 1), date(2002, 2, 28), true);
 
 				final ValidationResults results = validate(etb);
 				Assert.assertNotNull(results);

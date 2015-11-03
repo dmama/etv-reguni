@@ -344,11 +344,11 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		// L'établissement
-		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite, principal));
+		Etablissement etablissement = (Etablissement) context.getTiersDAO().save(createEtablissement(numeroSite));
 		// Le domicile
 		context.getTiersDAO().addAndSave(etablissement, new DomicileEtablissement(dateDebut, null, autoriteFiscale.getTypeAutoriteFiscale(), autoriteFiscale.getNoOfs(), etablissement));
 		// L'activité économique
-		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement), getEntreprise(), etablissement);
+		getContext().getTiersService().addRapport(new ActiviteEconomique(dateDebut, null, entreprise, etablissement, principal), getEntreprise(), etablissement);
 
 		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
 
@@ -362,10 +362,9 @@ public abstract class EvenementOrganisationInterne {
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	private Etablissement createEtablissement(Long numeroSite, boolean principal) {
+	private Etablissement createEtablissement(Long numeroSite) {
 		final Etablissement etablissement = new Etablissement();
 		etablissement.setNumeroEtablissement(numeroSite);
-		etablissement.setPrincipal(principal);
 		return (Etablissement) context.getTiersDAO().save(etablissement);
 	}
 

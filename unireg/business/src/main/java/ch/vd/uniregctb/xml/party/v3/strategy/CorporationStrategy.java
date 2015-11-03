@@ -226,20 +226,18 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	@NotNull
 	private List<LegalSeat> extractSieges(Entreprise entreprise, Context context) {
 		final List<LegalSeat> liste = new ArrayList<>();
-		final List<DateRanged<Etablissement>> etablissements = context.tiersService.getEtablissementsForEntreprise(entreprise);
+		final List<DateRanged<Etablissement>> etablissements = context.tiersService.getEtablissementsPrincipauxEntreprise(entreprise);
 		for (DateRanged<Etablissement> etb : etablissements) {
-			if (etb.getPayload().isPrincipal()) {
-				final List<DomicileEtablissement> domiciles = etb.getPayload().getSortedDomiciles(false);
-				for (DomicileEtablissement domicile : domiciles) {
-					final DateRange intersection = DateRangeHelper.intersection(domicile, etb);
-					if (intersection != null) {
-						final LegalSeat seat = new LegalSeat();
-						seat.setDateFrom(DataHelper.coreToXMLv2(intersection.getDateDebut()));
-						seat.setDateTo(DataHelper.coreToXMLv2(intersection.getDateFin()));
-						seat.setFsoId(domicile.getNumeroOfsAutoriteFiscale());
-						seat.setType(EnumHelper.coreToXMLLegalSeatv3(domicile.getTypeAutoriteFiscale()));
-						liste.add(seat);
-					}
+			final List<DomicileEtablissement> domiciles = etb.getPayload().getSortedDomiciles(false);
+			for (DomicileEtablissement domicile : domiciles) {
+				final DateRange intersection = DateRangeHelper.intersection(domicile, etb);
+				if (intersection != null) {
+					final LegalSeat seat = new LegalSeat();
+					seat.setDateFrom(DataHelper.coreToXMLv2(intersection.getDateDebut()));
+					seat.setDateTo(DataHelper.coreToXMLv2(intersection.getDateFin()));
+					seat.setFsoId(domicile.getNumeroOfsAutoriteFiscale());
+					seat.setType(EnumHelper.coreToXMLLegalSeatv3(domicile.getTypeAutoriteFiscale()));
+					liste.add(seat);
 				}
 			}
 		}

@@ -69,7 +69,7 @@
 
 	<bean id="entrepriseService" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
-		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">

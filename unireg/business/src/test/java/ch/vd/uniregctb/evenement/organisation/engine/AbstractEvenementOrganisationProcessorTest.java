@@ -15,8 +15,6 @@ import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisa
 import ch.vd.uniregctb.evenement.organisation.engine.processor.EvenementOrganisationProcessorInternal;
 import ch.vd.uniregctb.evenement.organisation.engine.translator.EvenementOrganisationTranslator;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
@@ -148,22 +146,6 @@ public abstract class AbstractEvenementOrganisationProcessorTest extends Busines
 		event.setIdentiteEmetteur(emetteur);
 		event.setRefDataEmetteur(refDataEmetteur);
 		return event;
-	}
-
-	@NotNull
-	protected static Entreprise createEntreprise(Long noOrganisation) {
-		final Entreprise e = new Entreprise();
-		e.setNumeroEntreprise(noOrganisation);
-		return e;
-	}
-
-
-	@NotNull
-	protected static Etablissement createEtablissement(Long numeroSite, boolean principal) {
-		final Etablissement etablissement = new Etablissement();
-		etablissement.setNumeroEtablissement(numeroSite);
-		etablissement.setPrincipal(principal);
-		return etablissement;
 	}
 
 }

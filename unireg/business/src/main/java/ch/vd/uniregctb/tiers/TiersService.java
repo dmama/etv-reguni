@@ -70,9 +70,15 @@ public interface TiersService {
 
     /**
      * @param entreprise entreprise
-     * @return la liste des établissements qui la composent
+     * @return la liste des établissements principaux (avec leurs dates de validité) associés à l'entreprise
      */
-    List<DateRanged<Etablissement>> getEtablissementsForEntreprise(Entreprise entreprise);
+    List<DateRanged<Etablissement>> getEtablissementsPrincipauxEntreprise(Entreprise entreprise);
+
+    /**
+     * @param entreprise l'entreprise ciblée
+     * @return la liste des établissements secondaires (avec leurs dates de validité) associés à l'entreprise
+     */
+    List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise);
 
     /**
      * Retourne un tiers en fonction de son numéro de tiers.

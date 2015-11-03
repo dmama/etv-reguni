@@ -969,16 +969,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected ActiviteEconomique addActiviteEconomique(PersonnePhysique pp, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin) {
-		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, pp, etb);
+	protected ActiviteEconomique addActiviteEconomique(PersonnePhysique pp, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
+		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, pp, etb, principal);
 		rapport = merge(rapport);
 		pp.addRapportSujet(rapport);
 		etb.addRapportObjet(rapport);
 		return rapport;
 	}
 
-	protected ActiviteEconomique addActiviteEconomique(Entreprise entreprise, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin) {
-		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, entreprise, etb);
+	protected ActiviteEconomique addActiviteEconomique(Entreprise entreprise, Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
+		ActiviteEconomique rapport = new ActiviteEconomique(dateDebut, dateFin, entreprise, etb, principal);
 		rapport = merge(rapport);
 		entreprise.addRapportSujet(rapport);
 		etb.addRapportObjet(rapport);
@@ -1046,8 +1046,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return merge(etb);
 	}
 
-	protected ActiviteEconomique addLienActiviteEconomique(Contribuable ctb, Etablissement etablissement, RegDate dateDebut, @Nullable RegDate dateFin) {
-		final ActiviteEconomique ret = new ActiviteEconomique(dateDebut, dateFin, ctb, etablissement);
+	protected ActiviteEconomique addLienActiviteEconomique(Contribuable ctb, Etablissement etablissement, RegDate dateDebut, @Nullable RegDate dateFin, boolean principal) {
+		final ActiviteEconomique ret = new ActiviteEconomique(dateDebut, dateFin, ctb, etablissement, principal);
 		return merge(ret);
 	}
 

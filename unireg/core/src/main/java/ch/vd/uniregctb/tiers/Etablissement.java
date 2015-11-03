@@ -40,7 +40,6 @@ public class Etablissement extends Contribuable {
 	private Long numeroEtablissement;
 	private String enseigne;
 	private String raisonSociale;
-	private boolean principal;
 	private Set<DomicileEtablissement> domiciles;
 
 	@Column(name = "NUMERO_ETABLISSEMENT")
@@ -69,15 +68,6 @@ public class Etablissement extends Contribuable {
 
 	public void setRaisonSociale(String raisonSociale) {
 		this.raisonSociale = raisonSociale;
-	}
-
-	@Column(name = "ETB_PRINCIPAL")
-	public boolean isPrincipal() {
-		return principal;
-	}
-
-	public void setPrincipal(boolean principal) {
-		this.principal = principal;
 	}
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -166,8 +156,7 @@ public class Etablissement extends Contribuable {
 		final Etablissement other = (Etablissement) obj;
 		return ComparisonHelper.areEqual(numeroEtablissement, other.numeroEtablissement)
 				&& ComparisonHelper.areEqual(domiciles, other.domiciles)
-				&& ComparisonHelper.areEqual(enseigne, other.enseigne)
-				&& ComparisonHelper.areEqual(principal, other.principal);
+				&& ComparisonHelper.areEqual(enseigne, other.enseigne);
 	}
 
 	@Transient
