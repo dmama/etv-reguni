@@ -51,7 +51,6 @@
 		<column>NH_NO_OFS_NATIONALITE</column>
 		<column>NH_PRENOM</column>
 		<column>NH_SEXE</column>
-		<column>ETB_PRINCIPAL</column>
 		<row>
 			<value>Entreprise</value>
 			<value>37</value>
@@ -74,7 +73,6 @@
 			<null />
 			<null />
 			<value>Fiduciaire Pierre Terrier</value>
-			<null />
 			<null />
 			<null />
 			<null />
@@ -156,7 +154,6 @@
 			<null />
 			<null />
 			<null />
-			<null />
 		</row>
 		<row>
 			<value>Entreprise</value>
@@ -173,7 +170,6 @@
 			<null />
 			<value>0</value>
 			<value>1</value>
-			<null />
 			<null />
 			<null />
 			<null />
@@ -262,7 +258,6 @@
 			<null />
 			<null />
 			<null />
-			<null />
 		</row>
 		<row>
 			<value>Entreprise</value>
@@ -279,7 +274,6 @@
 			<null />
 			<value>0</value>
 			<value>1</value>
-			<null />
 			<null />
 			<null />
 			<null />
@@ -368,7 +362,6 @@
 			<null />
 			<null />
 			<null />
-			<value>1</value>
 		</row>
 	</table>
 	<table name="ADRESSE_TIERS">
@@ -681,6 +674,7 @@
 		<column>DATE_FIN_DER_ELE_IMP</column>
 		<column>EXTENSION_EXECUTION_FORCEE</column>
 		<column>TIERS_TUTEUR_ID</column>
+		<column>ETB_PRINCIPAL</column>
 		<row>
 			<value>ActiviteEconomique</value>
 			<value>1</value>
@@ -695,6 +689,7 @@
 			<null/>
 			<null/>
 			<null/>
+			<value>1</value>
 		</row>
 	</table>
 	<table name="DOMICILE_ETABLISSEMENT">
