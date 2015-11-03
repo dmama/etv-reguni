@@ -256,6 +256,20 @@ public class RCEntAdapterTest {
 			assertThat(organisation.getLocationData().get(0).getName().get(2).getDateFin(), nullValue());
 			assertThat(organisation.getLocationData().get(0).getName().get(2).getPayload(), equalTo("ZeroXX S.A."));
 		}
+		{
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(0).getDateFin(), equalTo(RegDate.get(2015, 4, 30)));
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(0).getPayload(), equalTo("Vendre des copieurs."));
+
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 1)));
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(1).getDateFin(), nullValue());
+			assertThat(organisation.getLocationData().get(0).getRc().getPurpose().get(1).getPayload(), equalTo("Vendre des copieurs super rapides."));
+		}
+		{
+			assertThat(organisation.getLocationData().get(0).getRc().getByLawsDate().get(0).getDateDebut(), equalTo(RegDate.get(2015, 4, 29)));
+			assertThat(organisation.getLocationData().get(0).getRc().getByLawsDate().get(0).getDateFin(), nullValue());
+			assertThat(organisation.getLocationData().get(0).getRc().getByLawsDate().get(0).getPayload(), equalTo(RegDate.get(2015, 4, 29)));
+		}
 
 
 		Map<String, List<DateRangeHelper.Ranged<String>>> identifierMap = organisation.getLocationData().get(0).getIdentifiers();

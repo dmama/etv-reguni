@@ -93,16 +93,21 @@ public class OrganisationLocation {
 		private final List<DateRangeHelper.Ranged<Capital>> capital;
 		private final List<DateRangeHelper.Ranged<Address>> legalAddress;
 		private final List<DateRangeHelper.Ranged<RegDate>> entryDate;
+		private final List<DateRangeHelper.Ranged<String>> purpose;
+		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
 
 		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status,
 		                   List<DateRangeHelper.Ranged<String>> name, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> entryStatus,
-		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress, List<DateRangeHelper.Ranged<RegDate>> entryDate) {
+		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress, List<DateRangeHelper.Ranged<RegDate>> entryDate,
+		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate) {
 			this.status = status;
 			this.name = name;
 			this.entryStatus = entryStatus;
 			this.capital = capital;
 			this.legalAddress = legalAddress;
 			this.entryDate = entryDate;
+			this.purpose = purpose;
+			this.byLawsDate = byLawsDate;
 		}
 
 		public List<DateRangeHelper.Ranged<Capital>> getCapital() {
@@ -127,6 +132,14 @@ public class OrganisationLocation {
 
 		public List<DateRangeHelper.Ranged<RegDate>> getEntryDate() {
 			return entryDate;
+		}
+
+		public List<DateRangeHelper.Ranged<String>> getPurpose() {
+			return purpose;
+		}
+
+		public List<DateRangeHelper.Ranged<RegDate>> getByLawsDate() {
+			return byLawsDate;
 		}
 	}
 

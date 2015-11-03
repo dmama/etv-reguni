@@ -43,8 +43,10 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationFunctionsExtra
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationIdentifiersExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationNamesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationOtherNamesExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcByLawsDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcEntryDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcNameExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcPurposeExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationReplacedByExtractor;
@@ -158,6 +160,12 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, Capital, BigInteger> locationRcCapitalCollector = new SingleValueIndexedDataCollector<>(new CapitalExtractor(),
 		                                                                                                                                      new CapitalEqualator()
 		);
+		final IndexedDataCollector<Organisation, String, BigInteger> locationRcPurposeCollector = new SingleValueIndexedDataCollector<>(new LocationRcPurposeExtractor(),
+		                                                                                                                                Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, RegDate, BigInteger> locationRcByLawsDateCollector = new SingleValueIndexedDataCollector<>(new LocationRcByLawsDateExtractor(),
+		                                                                                                                                   Equalator.DEFAULT
+		);
 
 		// IDE
 
@@ -195,6 +203,8 @@ public class OrganisationHistorizer {
 		                                                    locationKindsOfLocationCollector,
 		                                                    locationSeatsCollector,
 		                                                    locationFunctionCollector,
+		                                                    locationRcPurposeCollector,
+		                                                    locationRcByLawsDateCollector,
 
 		                                                    locationRcNameCollector,
 		                                                    locationRcStatusCollector,
@@ -231,6 +241,8 @@ public class OrganisationHistorizer {
 				locationRcEntryDateCollector.getCollectedData(),
 				locationRcCapitalCollector.getCollectedData(),
 
+				locationRcPurposeCollector.getCollectedData(),
+				locationRcByLawsDateCollector.getCollectedData(),
 				locationUidStatus.getCollectedData(),
 				locationUidTypeOfOrganisation.getCollectedData(),
 				locationUidEffectiveAddressCollector.getCollectedData(),

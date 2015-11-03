@@ -38,6 +38,9 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital;
     private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate;
+
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>>> uidTypeOfOrganisation;
@@ -57,11 +60,14 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>>> entryStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose, Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidPostalBoxAddresses,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterLiquidationReason>>> uidLiquidationReason) {
+		this.purpose = purpose;
+		this.byLawsDate = byLawsDate;
 		this.uidTypeOfOrganisation = uidTypeOfOrganisation;
 		this.uidPostalBoxAddresses = uidPostalBoxAddresses;
 		this.identifiers = identifiers;
@@ -90,8 +96,9 @@ public class OrganisationLocationBuilder {
 				                                                                        entryStatus.get(e.getKey()),
 				                                                                        capital.get(e.getKey()),
 				                                                                        rcLegalAddresses.get(e.getKey()),
-				                                                                        entryDate.get(e.getKey())
-				                                   ),
+				                                                                        entryDate.get(e.getKey()),
+				                                                                        purpose.get(e.getKey()),
+				                                                                        byLawsDate.get(e.getKey())),
 				                                   new OrganisationLocation.RCEntUIDData(uidEffectiveAddesses.get(e.getKey()),
 				                                                                         uidStatus.get(e.getKey()),
 				                                                                         uidTypeOfOrganisation.get(e.getKey()),
