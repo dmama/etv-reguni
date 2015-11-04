@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.passeplat;
+package ch.vd.uniregctb.evenement.organisation.interne.information;
 
 import org.springframework.util.Assert;
 
@@ -19,13 +19,13 @@ import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplem
 /**
  * @author Raphaël Marmier, 2015-10-15
  */
-public class PassePlat extends EvenementOrganisationInterne {
+public class InformationComplementaire extends EvenementOrganisationInterne {
 
 	private final TypeInformationComplementaire typeInfo;
 
-	protected PassePlat(EvenementOrganisation evenement, Organisation organisation,
-	                    Entreprise entreprise, EvenementOrganisationContext context,
-	                    EvenementOrganisationOptions options, TypeInformationComplementaire typeInfo) throws EvenementOrganisationException {
+	protected InformationComplementaire(EvenementOrganisation evenement, Organisation organisation,
+	                                    Entreprise entreprise, EvenementOrganisationContext context,
+	                                    EvenementOrganisationOptions options, TypeInformationComplementaire typeInfo) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options);
 		this.typeInfo = typeInfo;
 	}

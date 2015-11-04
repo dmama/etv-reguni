@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.passeplat;
+package ch.vd.uniregctb.evenement.organisation.interne.information;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -35,7 +35,7 @@ import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 /**
  * @author Raphaël Marmier, 2015-10-16
  */
-public class PassePlatStrategyTest extends WithoutSpringTest {
+public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 
 	private static class MockServiceOrganisationService implements ServiceOrganisationService {
 		@Override
@@ -60,7 +60,7 @@ public class PassePlatStrategyTest extends WithoutSpringTest {
 		}
 	}
 
-	private final PassePlatStrategy strategy = new PassePlatStrategy();
+	private final FailliteConcordatStrategy strategy = new FailliteConcordatStrategy();
 
 	private final EvenementOrganisationContext context = new EvenementOrganisationContext(new MockServiceOrganisationService(), null, null);
 
@@ -132,14 +132,14 @@ public class PassePlatStrategyTest extends WithoutSpringTest {
 	}
 
 	private void assertEvenementFiscalAvecImpact(TypeInformationComplementaire envoye, TypeEvenementOrganisation recu) throws EvenementOrganisationException {
-		PassePlat evtinterne = createEventAndMatch(recu);
-		Assert.assertEquals(PassePlatAVerifier.class, evtinterne.getClass());
+		InformationComplementaire evtinterne = createEventAndMatch(recu);
+		Assert.assertEquals(InformationComplementaireAVerifier.class, evtinterne.getClass());
 		Assert.assertEquals(envoye, evtinterne.getTypeInfo());
 	}
 
 	private void assertEvenementFiscalSansImpact(TypeInformationComplementaire envoye, TypeEvenementOrganisation recu) throws EvenementOrganisationException {
-		PassePlat evtinterne = createEventAndMatch(recu);
-		Assert.assertEquals(PassePlat.class, evtinterne.getClass());
+		InformationComplementaire evtinterne = createEventAndMatch(recu);
+		Assert.assertEquals(InformationComplementaire.class, evtinterne.getClass());
 		Assert.assertEquals(envoye, evtinterne.getTypeInfo());
 	}
 
@@ -155,8 +155,8 @@ public class PassePlatStrategyTest extends WithoutSpringTest {
 		);
 	}
 
-	private PassePlat createEventAndMatch(TypeEvenementOrganisation typeEvt) throws EvenementOrganisationException {
-		return (PassePlat) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut"), organisation, entreprise, context, options);
+	private InformationComplementaire createEventAndMatch(TypeEvenementOrganisation typeEvt) throws EvenementOrganisationException {
+		return (InformationComplementaire) strategy.matchAndCreate(createEvent(1000000L, 1L, typeEvt, RegDate.get(2015, 6, 24), A_TRAITER, FOSC, "rcent-ut"), organisation, entreprise, context, options);
 	}
 
 	@NotNull

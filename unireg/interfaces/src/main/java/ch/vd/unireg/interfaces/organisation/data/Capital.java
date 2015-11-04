@@ -39,6 +39,17 @@ public class Capital implements Serializable, DateRange, DateRangeLimitable<Capi
 		                   this.division);
 	}
 
+	/**
+	 * Teste l'identité de valeur avec un autre capital. Les dates de début et de fin sont ignorées. C'est un equals() sans la notion de temps.
+	 * @param capital Le capital à comparer
+	 * @return
+	 */
+	public boolean identicalTo(@Nullable Capital capital) {
+		return this == capital ||
+				(capital != null && this.getCapitalAmount().equals(capital.getCapitalAmount()) && this.getCurrency().equals(capital.getCurrency()) &&
+				 this.getTypeOfCapital().equals(capital.getTypeOfCapital()) && this.getDivision().equals(capital.getDivision()));
+	}
+
 	public BigDecimal getCapitalAmount() {
 		return capitalAmount;
 	}

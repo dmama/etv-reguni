@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.organisation.interne.passeplat;
+package ch.vd.uniregctb.evenement.organisation.interne.information;
 
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -14,11 +14,11 @@ import static ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplem
 /**
  * @author Raphaël Marmier, 2015-10-15
  */
-public class PassePlatAVerifier extends PassePlat {
+public class InformationComplementaireAVerifier extends InformationComplementaire {
 
-	protected PassePlatAVerifier(EvenementOrganisation evenement, Organisation organisation,
-	                             Entreprise entreprise, EvenementOrganisationContext context,
-	                             EvenementOrganisationOptions options, TypeInformationComplementaire typeInfo) throws EvenementOrganisationException {
+	protected InformationComplementaireAVerifier(EvenementOrganisation evenement, Organisation organisation,
+	                                             Entreprise entreprise, EvenementOrganisationContext context,
+	                                             EvenementOrganisationOptions options, TypeInformationComplementaire typeInfo) throws EvenementOrganisationException {
 		super(evenement, organisation, entreprise, context, options, typeInfo);
 	}
 
