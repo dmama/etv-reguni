@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.formejuridique.ChangementF
 import ch.vd.uniregctb.evenement.organisation.interne.information.FailliteConcordatStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationButsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCapitalStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationStatutsStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -81,6 +82,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new FailliteConcordatStrategy());
 		strategies.add(new ModificationCapitalStrategy());
 		strategies.add(new ModificationButsStrategy());
+		strategies.add(new ModificationStatutsStrategy());
 	}
 
 	/**

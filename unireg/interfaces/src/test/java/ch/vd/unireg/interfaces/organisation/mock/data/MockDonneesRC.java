@@ -134,7 +134,7 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	@Override
-	public List<DateRanged<RegDate>> getDateStatus() {
+	public List<DateRanged<RegDate>> getDateStatuts() {
 		return MockOrganisationHelper.getHisto(dateStatus);
 	}
 

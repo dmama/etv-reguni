@@ -20,6 +20,6 @@ public interface DonneesRC {
 
 	List<DateRanged<String>> getButs();
 
-	List<DateRanged<RegDate>> getDateStatus();
+	List<DateRanged<RegDate>> getDateStatuts();
 
 }
