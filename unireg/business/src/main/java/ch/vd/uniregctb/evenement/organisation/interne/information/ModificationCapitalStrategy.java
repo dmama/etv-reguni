@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne.information;
 
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +64,10 @@ public class ModificationCapitalStrategy extends AbstractOrganisationStrategy {
 		}
 	}
 
-	private boolean changementCapital(Capital capitalAvant, Capital capitalApres) {
+	private boolean changementCapital(@Nullable Capital capitalAvant, @Nullable Capital capitalApres) {
 		if (capitalAvant == null) {
 			return capitalApres != null;
 		}
-		return capitalApres.identicalTo(capitalAvant);
+		return ! capitalAvant.identicalTo(capitalApres);
 	}
 }

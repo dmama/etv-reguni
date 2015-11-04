@@ -227,7 +227,7 @@ public class InformationComplementaireProcessorTest extends AbstractEvenementOrg
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
-				rc.addCapital(RegDate.get(2010, 7, 5), null, new Capital(RegDate.get(2010, 7, 5), null, TypeDeCapital.CAPITAL_ACTIONS, "CHF", BigDecimal.valueOf(100000), ""));
+				rc.addCapital(RegDate.get(2015, 7, 5), null, new Capital(RegDate.get(2015, 7, 5), null, TypeDeCapital.CAPITAL_ACTIONS, "CHF", BigDecimal.valueOf(100000), ""));
 				addOrganisation(organisation);
 
 			}

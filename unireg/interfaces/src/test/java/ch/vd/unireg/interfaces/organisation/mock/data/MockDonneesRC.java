@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -46,10 +47,18 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	public void changeAdresseLegale(RegDate date, AdresseRCEnt nouvelleAdresseLegale) {
-		MockOrganisationHelper.changeRangedData(adresseLegale, date, nouvelleAdresseLegale);
+		throw new UnsupportedOperationException();
 	}
 
 	public void addAdresseLegale(RegDate dateDebut, @Nullable RegDate dateFin, AdresseRCEnt nouvelleAdresseLegale) {
+		final Map.Entry<RegDate, AdresseRCEnt> previousEntry = adresseLegale.lastEntry();
+		if (previousEntry != null) {
+			final AdresseRCEnt previous = previousEntry.getValue();
+			adresseLegale.put(previous.getDateDebut(), (new AdresseRCEnt(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getLocalite(), previous.getNumero(),
+			                                                             previous.getNumeroAppartement(), previous.getNumeroOrdrePostal(), previous.getNumeroPostal(),
+			                                                             previous.getNumeroPostalComplementaire(), previous.getNoOfsPays(), previous.getRue(),
+			                                                             previous.getTitre(), previous.getTypeAdresse(), previous.getEgid(), previous.getCasePostale())));
+		}
 		MockOrganisationHelper.addRangedData(adresseLegale, dateDebut, dateFin, nouvelleAdresseLegale);
 	}
 
@@ -59,10 +68,16 @@ public class MockDonneesRC implements DonneesRC {
 	}
 
 	public void changeCapital(RegDate date, Capital nouveauCapital) {
-		MockOrganisationHelper.changeRangedData(capital, date, nouveauCapital);
+		throw new UnsupportedOperationException();
 	}
 
 	public void addCapital(RegDate dateDebut, @Nullable RegDate dateFin, Capital nouveauCapital) {
+		final Map.Entry<RegDate, Capital> previousEntry = capital.lastEntry();
+		if (previousEntry != null) {
+			final Capital previous = previousEntry.getValue();
+			capital.put(previous.getDateDebut(), new Capital(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getTypeOfCapital(), previous.getCurrency(),
+			                                                 previous.getCapitalAmount(), previous.getDivision()));
+		}
 		MockOrganisationHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
 	}
 
