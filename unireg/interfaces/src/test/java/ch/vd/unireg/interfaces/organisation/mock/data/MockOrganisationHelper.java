@@ -33,6 +33,7 @@ public abstract class MockOrganisationHelper {
 
 	/**
 	 * Explose si un autre changement a déjà été demandé entre les dates de début et de fin...
+	 * L'ajout d'une valeur nulle permet de "terminer" la valeur à la date de la veille.
 	 */
 	public static <T> void addRangedData(NavigableMap<RegDate, T> map, @NotNull RegDate dateDebut, RegDate dateFin, @Nullable T newValue) {
 		final Map.Entry<RegDate, T> previous = map.floorEntry(dateDebut);

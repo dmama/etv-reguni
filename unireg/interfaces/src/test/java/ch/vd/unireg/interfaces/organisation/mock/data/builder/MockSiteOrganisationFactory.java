@@ -5,15 +5,14 @@ import java.math.BigDecimal;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
-import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRCBuilder;
 import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -56,16 +55,17 @@ public abstract class MockSiteOrganisationFactory {
 	                                           @Nullable BigDecimal capitalAmount,
 	                                           @Nullable String capitalCurrency) {
 
-		final DonneesRC donneesRC;
-		final DonneesRCBuilder rcBuilder = new DonneesRCBuilder();
+		final MockDonneesRC donneesRC = new MockDonneesRC();
 		if (statusRC != null) {
-			rcBuilder.addNom(dateDebut, dateFin, nom);
-			rcBuilder.addStatus(dateDebut, dateFin, statusRC);
+			donneesRC.addStatus(dateDebut, dateFin, statusRC);
+			donneesRC.addNom(dateDebut, dateFin, nom);
 			if (statusInscriptionRC != null) {
-				rcBuilder.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
+				donneesRC.addStatusInscription(dateDebut, dateFin, statusInscriptionRC);
 			}
 			if (capitalAmount != null) {
-				rcBuilder.addCapital(new CapitalBuilder()
+				donneesRC.addCapital(dateDebut,
+				                     dateFin,
+				                     new CapitalBuilder()
 						                     .withDateDebut(dateDebut)
 						                     .withCapitalAmount(capitalAmount)
 						                     .withCurrency(capitalCurrency)
@@ -73,7 +73,6 @@ public abstract class MockSiteOrganisationFactory {
 				);
 			}
 		}
-		donneesRC = rcBuilder.build();
 
 		final DonneesRegistreIDE donneesRegistreIDE;
 		if (statusIde != null) {

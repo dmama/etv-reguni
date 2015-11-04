@@ -9,6 +9,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 
@@ -32,8 +33,8 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	}
 
 	@Override
-	public DonneesRC build() {
-		return new DonneesRC(adresseLegale, status, nom, statusInscription, capital, buts, dateStatus);
+	public DonneesRCRCEnt build() {
+		return new DonneesRCRCEnt(adresseLegale, status, nom, statusInscription, capital, buts, dateStatus);
 	}
 
 	public DonneesRCBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRC valeur) {

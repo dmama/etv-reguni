@@ -1,58 +1,25 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
-import java.io.Serializable;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class DonneesRC implements Serializable {
+/**
+ * @author Raphaël Marmier, 2015-11-04
+ */
+public interface DonneesRC {
+	List<AdresseRCEnt> getAdresseLegale();
 
-	private static final long serialVersionUID = -3503458098121748151L;
+	List<Capital> getCapital();
 
-	private final List<DateRanged<StatusRC>> status;
-	private final List<DateRanged<String>> nom;
-	private final List<DateRanged<StatusInscriptionRC>> statusInscription;
-	private final List<Capital> capital;
-	private final List<AdresseRCEnt> adresseLegale;
-	private final List<DateRanged<String>> buts;
-	private final List<DateRanged<RegDate>> dateStatus;
+	List<DateRanged<String>> getNom();
 
-	public DonneesRC(List<AdresseRCEnt> adresseLegale, List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
-	                 List<DateRanged<StatusInscriptionRC>> statusInscription, List<Capital> capital, List<DateRanged<String>> buts, List<DateRanged<RegDate>> dateStatus) {
-		this.adresseLegale = adresseLegale;
-		this.status = status;
-		this.nom = nom;
-		this.statusInscription = statusInscription;
-		this.capital = capital;
-		this.buts = buts;
-		this.dateStatus = dateStatus;
-	}
+	List<DateRanged<StatusRC>> getStatus();
 
-	public List<AdresseRCEnt> getAdresseLegale() {
-		return adresseLegale;
-	}
+	List<DateRanged<StatusInscriptionRC>> getStatusInscription();
 
-	public List<Capital> getCapital() {
-		return capital;
-	}
+	List<DateRanged<String>> getButs();
 
-	public List<DateRanged<String>> getNom() {
-		return nom;
-	}
+	List<DateRanged<RegDate>> getDateStatus();
 
-	public List<DateRanged<StatusRC>> getStatus() {
-		return status;
-	}
-
-	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
-		return statusInscription;
-	}
-
-	public List<DateRanged<String>> getButs() {
-		return buts;
-	}
-
-	public List<DateRanged<RegDate>> getDateStatus() {
-		return dateStatus;
-	}
 }

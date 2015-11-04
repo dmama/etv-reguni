@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.rcent;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
@@ -47,7 +48,7 @@ public class RCEntSiteOrganisationHelper {
 	}
 
 	private static DonneesRC createDonneesRC(OrganisationLocation.RCEntRCData rc) {
-		return new DonneesRC(
+		return new DonneesRCRCEnt(
 				RCEntHelper.convertAndFlatmap(rc.getLegalAddress(), ADDRESS_CONVERTER),
 				RCEntHelper.convertAndMap(rc.getStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convert(rc.getName()),
