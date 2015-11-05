@@ -60,7 +60,7 @@ public abstract class IbanExtractor {
 
 		// si on a un compte bancaire, on le convertit
 		else if (StringUtils.isNotBlank(coordonneesFinancieres.getNoCompteBancaire())) {
-			iban = extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere());
+			iban = extractIbanFromCompteBancaire(coordonneesFinancieres.getNoCompteBancaire(), coordonneesFinancieres.getInstitutionFinanciere(), mr);
 			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.INFO, String.format("IBAN extrait du numéro de compte '%s' et du clearing '%s' : %s.",
 			                                                                                coordonneesFinancieres.getNoCompteBancaire(),
 			                                                                                coordonneesFinancieres.getInstitutionFinanciere().getNoClearing(),
@@ -97,7 +97,7 @@ public abstract class IbanExtractor {
 
 	}
 
-	private static String extractIbanFromCompteBancaire(String noCompteBancaire, RegpmInstitutionFinanciere institutionFinanciere) throws IbanExtratorException {
+	private static String extractIbanFromCompteBancaire(String noCompteBancaire, RegpmInstitutionFinanciere institutionFinanciere, MigrationResultProduction mr) throws IbanExtratorException {
 		if (institutionFinanciere == null || StringUtils.isBlank(institutionFinanciere.getNoClearing())) {
 			throw new IbanExtratorException("Clearing inconnu pour le numéro de compte '" + noCompteBancaire + "'");
 		}
@@ -108,7 +108,20 @@ public abstract class IbanExtractor {
 		}
 		final int clearing = Integer.parseInt(institutionFinanciere.getNoClearing());
 		final String noCompteCanonique = noCompteBancaire.replaceAll("[^a-zA-Z0-9]+", StringUtils.EMPTY);
-		return buildIban(clearing, noCompteCanonique);
+
+		// [SIFISC-16925] certains numéros de compte font plus de 12 caractères, on les tronque
+		final String noCompteEffectif;
+		if (noCompteCanonique.length() > 12) {
+			noCompteEffectif = noCompteCanonique.substring(0, 12);
+			mr.addMessage(LogCategory.COORDONNEES_FINANCIERES, LogLevel.WARN,
+			              String.format("Le numéro de compte bancaire '%s' comporte trop (%d) de caractères significatifs, il sera tronqué aux 12 premiers.",
+			                            noCompteBancaire, noCompteCanonique.length()));
+		}
+		else {
+			noCompteEffectif = noCompteCanonique;
+		}
+
+		return buildIban(clearing, noCompteEffectif);
 	}
 
 	private static String extractIbanFromCCP(String ccp) throws IbanExtratorException {
