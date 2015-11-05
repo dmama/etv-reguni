@@ -3097,6 +3097,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final long idEntreprise = 46545L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, RegDate.get(2013, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, RegDate.get(2013, 1, 1), "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addCapital(entreprise, RegDate.get(2013, 1, 1), 10000L);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2013, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), null, RegpmTypeAssujettissement.LILIC);
 		final RegpmDossierFiscal df2013 = EntrepriseMigratorTest.addDossierFiscal(entreprise, assujettissement, 2013, RegDate.get(2014, 1, 3), RegpmModeImposition.POST);
@@ -3214,7 +3217,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> ?], raison sociale (Toto SA), capital (10000 CHF) et forme juridique (SA).", msgs.get(0));
 		}
 	}
 	@Test
@@ -3222,6 +3225,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		final long idEntreprise = 46545L;
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, RegDate.get(2013, 1, 1), EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, RegDate.get(2013, 1, 1), "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addCapital(entreprise, RegDate.get(2013, 1, 1), 10000L);
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2013, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.LAUSANNE);
 		entreprise.setDateRequisitionRadiation(RegDate.get(2013, 12, 31));
 		final RegpmAssujettissement assujettissement = EntrepriseMigratorTest.addAssujettissement(entreprise, RegDate.get(2013, 1, 1), RegDate.get(2013, 12, 31), RegpmTypeAssujettissement.LILIC);
@@ -3342,7 +3348,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("ERROR;" + idEntreprise + ";Active;;;;;;;;;Impossible de déterminer la date de début des données du registre du commerce (aucune donnée de raison sociale et/ou de forme juridique).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> 31.12.2013], raison sociale (Toto SA), capital (10000 CHF) et forme juridique (SA).", msgs.get(0));
 		}
 	}
 

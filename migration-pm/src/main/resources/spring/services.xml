@@ -19,6 +19,7 @@
 			<set>
 				<value>getExercicesCommerciaux</value>
 				<value>getPeriodesNonSocieteDePersonnes</value>
+				<value>getCategorieEntreprise</value>
 			</set>
 		</property>
 	</bean>
