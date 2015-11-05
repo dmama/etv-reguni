@@ -1,5 +1,8 @@
 package ch.vd.unireg.interfaces.organisation.rcent;
 
+import org.apache.commons.collections4.Predicate;
+
+import ch.vd.evd0022.v1.Capital;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
@@ -7,6 +10,7 @@ import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
+import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalPredicate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterEntryStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CommercialRegisterStatusConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.KindOfLocationConverter;
@@ -28,6 +32,7 @@ public class RCEntSiteOrganisationHelper {
 	private static final UidRegisterStatusConverter UID_REGISTER_STATUS_CONVERTER = new UidRegisterStatusConverter();
 	private static final UidRegisterTypeOfOrganisationConverter UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER = new UidRegisterTypeOfOrganisationConverter();
 	private static final UidRegisterLiquidationReasonConverter UID_REGISTER_LIQUIDATION_REASON_CONVERTER = new UidRegisterLiquidationReasonConverter();
+	private static final Predicate<Capital> CAPITAL_PREDICATE = new CapitalPredicate();
 
 	public static SiteOrganisationRCEnt get(OrganisationLocation rcEntLocation, ServiceInfrastructureRaw infraService) {
 
@@ -53,7 +58,7 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(rc.getStatus(), COMMERCIAL_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convert(rc.getName()),
 				RCEntHelper.convertAndMap(rc.getEntryStatus(), COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER),
-				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER),
+				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),
 				RCEntHelper.convert(rc.getByLawsDate()));
 	}

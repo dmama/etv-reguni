@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.Converter;
@@ -249,6 +251,121 @@ public class RCEntHelperTest {
 			assertThat(rangesResult3.get(2).getDateDebut(), equalTo(RegDate.get(2015, 5, 29)));
 			assertThat(rangesResult3.get(2).getDateFin(), equalTo(RegDate.get(2015, 5, 30)));
 			assertThat(rangesResult3.get(2).getPayload(), equalTo("DATA33_CONVERTED"));
+		}
+	}
+
+	@Test
+	public void testConvertAndFlatMapList() throws Exception {
+
+		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
+		);
+
+		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndFlatmap(ranges, new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
+			@Override
+			public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
+				return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(), converter.apply(stringRanged.getPayload()));
+			}
+		});
+
+		{
+			assertThat(rangesResult.get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
+			assertThat(rangesResult.get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 26)));
+			assertThat(rangesResult.get(0).getData(), equalTo("DATA1_CONVERTED"));
+		}
+		{
+			assertThat(rangesResult.get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 27)));
+			assertThat(rangesResult.get(1).getDateFin(), equalTo(RegDate.get(2015, 5, 28)));
+			assertThat(rangesResult.get(1).getData(), equalTo("DATA2_CONVERTED"));
+		}
+		{
+			assertThat(rangesResult.get(2).getDateDebut(), equalTo(RegDate.get(2015, 5, 29)));
+			assertThat(rangesResult.get(2).getDateFin(), equalTo(RegDate.get(2015, 5, 30)));
+			assertThat(rangesResult.get(2).getData(), equalTo("DATA3_CONVERTED"));
+		}
+		{
+			assertThat(rangesResult.get(3).getDateDebut(), equalTo(RegDate.get(2015, 5, 31)));
+			assertThat(rangesResult.get(3).getDateFin(), equalTo(RegDate.get(2015, 6, 1)));
+			assertThat(rangesResult.get(3).getData(), equalTo("DATA4_CONVERTED"));
+		}
+	}
+
+	@Test
+	public void testConvertAndFlatMapListAvecPredicat() throws Exception {
+
+		List<DateRangeHelper.Ranged<String>> ranges = Arrays.asList(
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 25), RegDate.get(2015, 5, 26), "DATA1"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 27), RegDate.get(2015, 5, 28), "DATA2"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 29), RegDate.get(2015, 5, 30), "DATA3"),
+				new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 31), RegDate.get(2015, 6, 1), "DATA4")
+		);
+
+		List<FlatMapResultTestData> rangesResult = RCEntHelper.convertAndFlatmap(ranges,
+		                                                                         new Converter<DateRangeHelper.Ranged<String>, FlatMapResultTestData>() {
+			                                                                         @Override
+			                                                                         public FlatMapResultTestData apply(DateRangeHelper.Ranged<String> stringRanged) {
+				                                                                         return new FlatMapResultTestData(stringRanged.getDateDebut(), stringRanged.getDateFin(),
+				                                                                                                          converter.apply(stringRanged.getPayload()));
+			                                                                         }
+		                                                                         },
+		                                                                         new Predicate<String>() {
+			                                                                         @Override
+			                                                                         public boolean evaluate(String s) {
+				                                                                         return ! "DATA3".equals(s);
+			                                                                         }
+		                                                                         }
+		);
+
+		{
+			assertThat(rangesResult.get(0).getDateDebut(), equalTo(RegDate.get(2015, 5, 25)));
+			assertThat(rangesResult.get(0).getDateFin(), equalTo(RegDate.get(2015, 5, 26)));
+			assertThat(rangesResult.get(0).getData(), equalTo("DATA1_CONVERTED"));
+		}
+		{
+			assertThat(rangesResult.get(1).getDateDebut(), equalTo(RegDate.get(2015, 5, 27)));
+			assertThat(rangesResult.get(1).getDateFin(), equalTo(RegDate.get(2015, 5, 28)));
+			assertThat(rangesResult.get(1).getData(), equalTo("DATA2_CONVERTED"));
+		}
+		{
+			assertThat(rangesResult.get(2).getDateDebut(), equalTo(RegDate.get(2015, 5, 31)));
+			assertThat(rangesResult.get(2).getDateFin(), equalTo(RegDate.get(2015, 6, 1)));
+			assertThat(rangesResult.get(2).getData(), equalTo("DATA4_CONVERTED"));
+		}
+	}
+
+	/**
+	 * Represente une donnée "flatmappée".
+	 */
+	static class FlatMapResultTestData implements DateRange {
+
+		private final RegDate dateDebut;
+		private final RegDate dateFin;
+		private final String data;
+
+		FlatMapResultTestData(RegDate dateDebut, RegDate dateFin, String data) {
+			this.dateDebut = dateDebut;
+			this.dateFin = dateFin;
+			this.data = data;
+		}
+
+		@Override
+		public boolean isValidAt(RegDate regDate) {
+			return regDate.isAfterOrEqual(dateDebut) || regDate.isBeforeOrEqual(dateFin);
+		}
+
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		public RegDate getDateFin() {
+			return dateFin;
+		}
+
+		public String getData() {
+			return data;
 		}
 	}
 

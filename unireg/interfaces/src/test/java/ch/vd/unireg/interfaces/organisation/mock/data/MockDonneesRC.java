@@ -75,8 +75,8 @@ public class MockDonneesRC implements DonneesRC {
 		final Map.Entry<RegDate, Capital> previousEntry = capital.lastEntry();
 		if (previousEntry != null) {
 			final Capital previous = previousEntry.getValue();
-			capital.put(previous.getDateDebut(), new Capital(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getTypeOfCapital(), previous.getCurrency(),
-			                                                 previous.getCapitalAmount(), previous.getDivision()));
+			capital.put(previous.getDateDebut(), new Capital(previous.getDateDebut(), dateDebut.getOneDayBefore(), previous.getTypeDeCapital(), previous.getDevise(),
+			                                                 previous.getCapitalLibere(), previous.getRepartition()));
 		}
 		MockOrganisationHelper.addRangedData(capital, dateDebut, dateFin, nouveauCapital);
 	}

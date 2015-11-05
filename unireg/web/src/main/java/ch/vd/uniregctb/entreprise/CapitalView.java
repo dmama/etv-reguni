@@ -24,7 +24,7 @@ public class CapitalView implements CollatableDateRange {
 	public CapitalView(Capital capital) {
 		this(capital.getDateDebut(),
 		     capital.getDateFin(),
-		     buildMontantMonetaire(capital.getCapitalAmount(), capital.getCurrency()));
+		     buildMontantMonetaire(capital.getCapitalLibere(), capital.getDevise()));
 	}
 
 	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere) {

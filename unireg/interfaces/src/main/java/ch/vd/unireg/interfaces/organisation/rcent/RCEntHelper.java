@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
@@ -124,8 +127,19 @@ public class RCEntHelper {
 		return map;
 	}
 
+	/**
+	 * Converti une liste de DateRanged RCEnt en liste d'entité Unireg. En principe, la donnée Unireg reprend le début et la fin de chaque
+	 * période DateRanged. On peut préfiltrer les données sur la base d'un prédicat optionnel.
+	 * @param source Une liste de DateRanged RCEnt.
+	 * @param flatMapper Une fonction de transformation des données.
+	 * @param filterPredicate Un prédicat de filtrage sur le type S des données en entrée.
+	 * @param <S> Le type des données en entrée.
+	 * @param <D> Le type des données en sortie.
+	 * @return Une nouvelle liste contenant les données transformées.
+	 */
 	public static <S, D extends DateRange> List<D> convertAndFlatmap(List<? extends DateRangeHelper.Ranged<S>> source,
-	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
+	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper,
+	                                                                 @Nullable Predicate<S> filterPredicate) {
 		if (source == null) {
 			return null;
 		}
@@ -135,11 +149,22 @@ public class RCEntHelper {
 
 		final List<D> resultat = new ArrayList<>(source.size());
 		for (DateRangeHelper.Ranged<S> src : source) {
-			final D mapped = flatMapper.apply(src);
-			if (mapped != null) {
-				resultat.add(mapped);
+			if (shouldMap(filterPredicate, src)) {
+				final D mapped = flatMapper.apply(src);
+				if (mapped != null) {
+					resultat.add(mapped);
+				}
 			}
 		}
 		return resultat;
+	}
+
+	private static <S> boolean shouldMap(@Nullable Predicate<S> filterPredicate, DateRangeHelper.Ranged<S> src) {
+		return filterPredicate == null || filterPredicate.evaluate(src.getPayload());
+	}
+
+	public static <S, D extends DateRange> List<D> convertAndFlatmap(List<? extends DateRangeHelper.Ranged<S>> source,
+	                                                                 Converter<? super DateRangeHelper.Ranged<S>, ? extends D> flatMapper) {
+		return convertAndFlatmap(source, flatMapper, null);
 	}
 }

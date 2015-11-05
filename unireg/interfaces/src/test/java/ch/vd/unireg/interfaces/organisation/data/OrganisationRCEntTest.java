@@ -257,8 +257,8 @@ public class OrganisationRCEntTest {
 
 	@Test
 	public void testGetCapitaux() throws Exception {
-		Assert.assertEquals(25000, organisation.getCapitaux().get(0).getCapitalAmount().intValue());
-		Assert.assertEquals(50000, organisation.getCapitaux().get(1).getCapitalAmount().intValue());
+		Assert.assertEquals(25000, organisation.getCapitaux().get(0).getCapitalLibere().intValue());
+		Assert.assertEquals(50000, organisation.getCapitaux().get(1).getCapitalLibere().intValue());
 	}
 
 	@Test

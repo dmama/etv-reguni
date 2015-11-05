@@ -16,27 +16,27 @@ public class Capital implements Serializable, DateRange, DateRangeLimitable<Capi
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final TypeDeCapital typeOfCapital;
-    private final String currency;
-    private final BigDecimal capitalAmount;
-	private final String division;
+	private final TypeDeCapital typeDeCapital;
+    private final String devise;
+    private final BigDecimal capitalLibere;
+	private final String repartition;
 
-	public Capital(RegDate dateDebut, @Nullable RegDate dateFin, TypeDeCapital typeOfCapital, String currency, BigDecimal capitalAmount, String division) {
+	public Capital(RegDate dateDebut, @Nullable RegDate dateFin, TypeDeCapital typeDeCapital, String devise, BigDecimal capitalLibere, String repartition) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.typeOfCapital = typeOfCapital;
-		this.currency = currency;
-		this.capitalAmount = capitalAmount;
-		this.division = division;
+		this.typeDeCapital = typeDeCapital;
+		this.devise = devise;
+		this.capitalLibere = capitalLibere;
+		this.repartition = repartition;
 	}
 
 	public Capital limitTo(@Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		return new Capital(dateDebut == null ? this.dateDebut : dateDebut,
 		                   dateFin == null ? this.dateFin : dateFin,
-		                   this.typeOfCapital,
-		                   this.currency,
-		                   this.capitalAmount,
-		                   this.division);
+		                   this.typeDeCapital,
+		                   this.devise,
+		                   this.capitalLibere,
+		                   this.repartition);
 	}
 
 	/**
@@ -46,24 +46,24 @@ public class Capital implements Serializable, DateRange, DateRangeLimitable<Capi
 	 */
 	public boolean identicalTo(@Nullable Capital capital) {
 		return this == capital ||
-				(capital != null && this.getCapitalAmount().equals(capital.getCapitalAmount()) && this.getCurrency().equals(capital.getCurrency()) &&
-				 this.getTypeOfCapital().equals(capital.getTypeOfCapital()) && this.getDivision().equals(capital.getDivision()));
+				(capital != null && this.getCapitalLibere().equals(capital.getCapitalLibere()) && this.getDevise().equals(capital.getDevise()) &&
+				 this.getTypeDeCapital().equals(capital.getTypeDeCapital()) && this.getRepartition().equals(capital.getRepartition()));
 	}
 
-	public BigDecimal getCapitalAmount() {
-		return capitalAmount;
+	public BigDecimal getCapitalLibere() {
+		return capitalLibere;
 	}
 
-	public String getCurrency() {
-		return currency;
+	public String getDevise() {
+		return devise;
 	}
 
-	public TypeDeCapital getTypeOfCapital() {
-		return typeOfCapital;
+	public TypeDeCapital getTypeDeCapital() {
+		return typeDeCapital;
 	}
 
-	public String getDivision() {
-		return division;
+	public String getRepartition() {
+		return repartition;
 	}
 
 	@Override
