@@ -20,8 +20,8 @@ public enum TypeDocumentEditique {
 	// Autour des déclarations d'impôt des personnes morales
 	//
 
-	DI_PM("PMPU0000", null, "impressionDI"),        // TODO il manque le code document complet
-	DI_APM("PMPU0001", null, "impressionDI"),       // TODO il manque le code document complet
+	DI_PM("PMPU1501", null, "impressionDI"),
+	DI_APM("PMPU1502", null, "impressionDI"),
 
 	//
 	// Autour des listes récapitulatives IS
