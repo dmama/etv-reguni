@@ -24,7 +24,7 @@ import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediService;
 import ch.vd.uniregctb.evenement.cedi.V1Handler;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.tache.sync.AddDI;
+import ch.vd.uniregctb.tache.sync.AddDIPP;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
@@ -114,7 +114,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 					final List<SynchronizeAction> list = tacheService.determineSynchronizeActionsForDIs(ralf);
 					assertNotNull(list);
 					assertEquals(1, list.size());
-					final AddDI action = (AddDI) list.get(0);
+					final AddDIPP action = (AddDIPP) list.get(0);
 					assertEquals(date(2008, 1, 1), action.periodeImposition.getDateDebut());
 					assertEquals(date(2008, 12, 31), action.periodeImposition.getDateFin());
 				}

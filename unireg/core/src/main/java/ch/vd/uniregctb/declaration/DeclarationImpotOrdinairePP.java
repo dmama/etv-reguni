@@ -10,7 +10,6 @@ import org.hibernate.annotations.Type;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeContribuable;
 
 @Entity
 @DiscriminatorValue("DI")
@@ -23,24 +22,12 @@ public class DeclarationImpotOrdinairePP extends DeclarationImpotOrdinaire {
 
 	private Integer numeroOfsForGestion;
 
-	private TypeContribuable typeContribuable;
-
 	private Qualification qualification;
 
 	/**
 	 * [SIFISC-2100] Code de segmentation, ou Code Segment, fourni par TAO et utilisé lors de l'émission de la DI suivante
 	 */
 	private Integer codeSegment;
-
-	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
-	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
-	public TypeContribuable getTypeContribuable() {
-		return typeContribuable;
-	}
-
-	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
-		typeContribuable = theTypeContribuable;
-	}
 
 	@Column(name = "QUALIFICATION", length = LengthConstants.DI_QUALIF)
 	@Type(type = "ch.vd.uniregctb.hibernate.QualificationUserType")

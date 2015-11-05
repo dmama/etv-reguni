@@ -26,6 +26,7 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.rattrapage.ancienshabitants.RecuperationDonneesAnciensHabitantsResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -1589,11 +1590,17 @@ public interface TiersService {
     Organisation getOrganisation(@NotNull Entreprise entreprise);
 
     /**
-     *
      * @param entreprise une entreprise fiscale
      * @return le numéro IDE associé à l'entreprise, ou <code>null</code> si on n'en connait aucun
      */
     @Nullable
     String getNumeroIDE(@NotNull Entreprise entreprise);
+
+    /**
+     * @param entreprise une entreprise (fiscale)
+     * @param date une date de référence (si <code>null</code>, on prendra la date du jour)
+     * @return la catégorie d'entreprise associée, à la date donnée, à l'entreprise donnée
+     */
+    CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date);
 }
 

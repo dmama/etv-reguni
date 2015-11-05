@@ -1,18 +1,12 @@
-package ch.vd.uniregctb.evenement.organisation.interne.helper;
+package ch.vd.uniregctb.tiers;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.APM;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.DP_APM;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.DP_PM;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.FDS_PLAC;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.PM;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.PP;
-import static ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise.SP;
+import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 /**
  * @author Raphaël Marmier, 2015-09-08
@@ -26,34 +20,35 @@ public class CategorieEntrepriseHelper {
 	 * - La forme légale ne correspond à aucune catégorie (On accepte les catégories inconnues)
 	 * - La forme légale n'a pas été fournie en entrée (null)
 	 *
-	 * @param formeLegale
+	 * @param formeLegale la forme légale en provenance de RCEnt
 	 * @return la catégorie, ou null si pas de correspondance ou pas forme légale en entrée.
 	 */
+	@Nullable
 	public static CategorieEntreprise map(@Nullable FormeLegale formeLegale) {
 		if (formeLegale != null) {
 			switch (formeLegale) {
 			/* Personne Physique */
 			case N_0101_ENTREPRISE_INDIVIDUELLE:
-				return PP;
+				return CategorieEntreprise.PP;
 			/* Société de personnes */
 			case N_0103_SOCIETE_NOM_COLLECIF:
 			case N_0104_SOCIETE_EN_COMMANDITE:
-				return SP;
+				return CategorieEntreprise.SP;
 			/* Personne morale */
 			case N_0105_SOCIETE_EN_COMMANDITE_PAR_ACTIONS:
 			case N_0106_SOCIETE_ANONYME:
 			case N_0107_SOCIETE_A_RESPONSABILITE_LIMITE:
 			case N_0108_SOCIETE_COOPERATIVE:
-				return PM;
+				return CategorieEntreprise.PM;
 			/* Association et Fondation */
 			case N_0109_ASSOCIATION:
 			case N_0110_FONDATION:
-				return APM;
+				return CategorieEntreprise.APM;
 			/* Fonds de placement */
 			case N_0114_SOCIETE_EN_COMMANDITE_POUR_PLACEMENTS_CAPITAUX:
 			case N_0115_SOCIETE_INVESTISSEMENT_CAPITAL_VARIABLE:
 			case N_0116_SOCIETE_INVESTISSEMENT_CAPITAL_FIXE:
-				return FDS_PLAC;
+				return CategorieEntreprise.FP;
 			/* PM de droit public */
 			case N_0117_INSTITUT_DE_DROIT_PUBLIC:
 			case N_0220_ADMINISTRATION_CONFEDERATION:
@@ -61,12 +56,12 @@ public class CategorieEntrepriseHelper {
 			case N_0222_ADMINISTRATION_DISTRICT:
 			case N_0223_ADMINISTRATION_COMMUNE:
 			case N_0224_CORPORATION_DE_DROIT_PUBLIC_ADMINISTRATION:
-				return DP_APM;
+				return CategorieEntreprise.DP;
 			/* APM de droit public */
 			case N_0234_CORPORATION_DE_DROIT_PUBLIC_ENTREPRISE:
-				return DP_PM;
+				return CategorieEntreprise.DPPM;
 			default:
-				return null;
+				return CategorieEntreprise.AUTRE;
 			}
 		}
 		return null;
@@ -76,5 +71,47 @@ public class CategorieEntrepriseHelper {
 	@Nullable
 	public static CategorieEntreprise getCategorieEntreprise(Organisation organisation, RegDate date) {
 		return CategorieEntrepriseHelper.map(organisation.getFormeLegale(date));
+	}
+
+	/**
+	 * @param formeJuridique une forme juridique "fiscale"
+	 * @return la catégorie d'entreprise correspondante
+	 */
+	@Nullable
+	public static CategorieEntreprise map(FormeJuridiqueEntreprise formeJuridique) {
+		if (formeJuridique == null) {
+			return null;
+		}
+
+		switch (formeJuridique) {
+		case EI:
+			return CategorieEntreprise.PP;
+		case SC:
+		case SNC:
+			return CategorieEntreprise.SP;
+		case SCA:
+		case SA:
+		case SARL:
+		case SCOOP:
+			return CategorieEntreprise.PM;
+		case ASSOCIATION:
+		case FONDATION:
+			return CategorieEntreprise.APM;
+		case SCPC:
+		case SICAF:
+		case SICAV:
+			return CategorieEntreprise.FP;
+		case IDP:
+		case ADM_CH:
+		case ADM_CO:
+		case ADM_CT:
+		case ADM_DI:
+		case CORP_DP_ADM:
+			return CategorieEntreprise.DP;
+		case CORP_DP_ENT:
+			return CategorieEntreprise.DPPM;
+		default:
+			return CategorieEntreprise.AUTRE;
+		}
 	}
 }

@@ -112,6 +112,7 @@ import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProce
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.origine.RecuperationOriginesNonHabitantsResults;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -5434,5 +5435,20 @@ public class TiersServiceImpl implements TiersService {
 
 		final List<DateRanged<String>> liste = org.getNumeroIDE();
 		return liste == null || liste.isEmpty() ? null : liste.get(liste.size() - 1).getPayload();
+	}
+
+	@Override
+	public CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date) {
+		final RegDate dateEffective = date == null ? RegDate.get() : date;
+		final Organisation org = getOrganisation(entreprise);
+		if (org != null) {
+			// données extraites des informations civiles
+			return CategorieEntrepriseHelper.map(org.getFormeLegale(dateEffective));
+		}
+		else {
+			// recherches dans les données fiscales
+			final DonneesRegistreCommerce rc = DateRangeHelper.rangeAt(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(), dateEffective);
+			return CategorieEntrepriseHelper.map(rc != null ? rc.getFormeJuridique() : null);
+		}
 	}
 }

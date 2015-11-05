@@ -192,14 +192,6 @@ public abstract class PeriodeImposition implements CollatableDateRange {
 	}
 
 	/**
-	 * @param anneeReference période fiscale de référence
-	 * @return <code>true</code> si la période d'imposition concerne une période fiscale antérieure à la période fiscale de référence
-	 */
-	public boolean isPeriodePassee(int anneeReference) {
-		return getPeriodeFiscale() < anneeReference;
-	}
-
-	/**
 	 * @return <code>true</code> si la période d'imposition se termine avant la fin de la période fiscale
 	 */
 	public boolean isFermetureAnticipee() {

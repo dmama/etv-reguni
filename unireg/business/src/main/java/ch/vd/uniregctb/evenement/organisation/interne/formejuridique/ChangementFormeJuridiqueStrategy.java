@@ -13,9 +13,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * Detection du changement de forme juridique et action.

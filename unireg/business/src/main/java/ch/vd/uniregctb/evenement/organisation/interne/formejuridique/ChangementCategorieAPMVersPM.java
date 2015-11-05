@@ -11,10 +11,10 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * Classe de base implémentant détection de changement de catégorie.

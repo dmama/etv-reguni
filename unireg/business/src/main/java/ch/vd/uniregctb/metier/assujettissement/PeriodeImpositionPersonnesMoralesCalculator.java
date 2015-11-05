@@ -9,13 +9,16 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 
 /**
  * Calculateur des périodes d'imposition des entreprises
@@ -75,21 +78,9 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 						causeFermeture = null;
 					}
 
-					// détermination du type de contribuable
-					final TypeContribuable typeContribuable;
-					switch (assujettissement.getType()) {
-					case HORS_CANTON:
-						typeContribuable = TypeContribuable.HORS_CANTON;
-						break;
-					case HORS_SUISSE:
-						typeContribuable = TypeContribuable.HORS_SUISSE;
-						break;
-					case VAUDOIS_ORDINAIRE:
-						typeContribuable = TypeContribuable.VAUDOIS_ORDINAIRE;
-						break;
-					default:
-						throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'assujettissement : " + assujettissement.getType());
-					}
+					// détermination du type de contribuable et du type de document
+					final TypeContribuable typeContribuable = computeTypeContribuable(assujettissement);
+					final TypeDocument typeDocument = computeTypeDocument(entreprise, intersection.getDateFin());
 
 					// création de la structure pour la période d'imposition
 					resultat.add(new PeriodeImpositionPersonnesMorales(intersection.getDateDebut(),
@@ -101,12 +92,38 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 					                                                   null,
 					                                                   exercices,
 					                                                   typeContribuable,
-					                                                   null));      // TODO un type de document PM sera nécessaire
+					                                                   typeDocument));
 				}
 			}
 		}
 
 		return DateRangeHelper.collate(resultat);
+	}
+
+	private static TypeContribuable computeTypeContribuable(Assujettissement assujettissement) {
+		switch (assujettissement.getType()) {
+		case HORS_CANTON:
+			return TypeContribuable.HORS_CANTON;
+		case HORS_SUISSE:
+			return TypeContribuable.HORS_SUISSE;
+		case VAUDOIS_ORDINAIRE:
+			return TypeContribuable.VAUDOIS_ORDINAIRE;
+		default:
+			throw new IllegalArgumentException("Type d'assujettissement PM non-supporté dans le calculateur de périodes d'assujettissement : " + assujettissement.getType());
+		}
+	}
+
+	private TypeDocument computeTypeDocument(Entreprise pm, RegDate dateFinPeriode) {
+		final CategorieEntreprise categorie = tiersService.getCategorieEntreprise(pm, dateFinPeriode);
+		switch (categorie) {
+		case APM:
+			return TypeDocument.DECLARATION_IMPOT_APM;
+		case PM:
+		case DPPM:
+			return TypeDocument.DECLARATION_IMPOT_PM;
+		default:
+			throw new IllegalArgumentException("Type de catégorie d'entreprise non-supportée dans le calculateur de périodes d'imposition : " + categorie);
+		}
 	}
 
 	/**

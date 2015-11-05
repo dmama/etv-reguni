@@ -2,13 +2,11 @@ package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.type.TypeContribuable;
 
-/**
- * Action permettant de mettre-à-jour les dates de début/fin et le type de contribuable d'une déclaration d'impôt.
- */
 public class UpdateDI extends SynchronizeAction {
 
 	public final PeriodeImposition periodeImposition;
@@ -19,7 +17,7 @@ public class UpdateDI extends SynchronizeAction {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 
-	public UpdateDI(PeriodeImposition periodeImposition, DeclarationImpotOrdinairePP declaration) {
+	public UpdateDI(PeriodeImposition periodeImposition, DeclarationImpotOrdinaire declaration) {
 		this.periodeImposition = periodeImposition;
 		this.diId = declaration.getId();
 		this.typeContribuable = declaration.getTypeContribuable();
@@ -53,8 +51,9 @@ public class UpdateDI extends SynchronizeAction {
 		// [UNIREG-3031] Certaines anciennes DIs ne possèdent pas de type de contribuable connu
 		final String descriptionTypeContribuable = (typeContribuable == null ? "de type inconnu" : typeContribuable.description());
 		return String.format("mise-à-jour de la déclaration d'impôt %s existante couvrant la période du %s au %s pour qu'elle devienne %s et qu'elle couvre la période du %s au %s",
-				descriptionTypeContribuable, RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin),
-				periodeImposition.getTypeContribuable().description(), RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()),
-				RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));
+		                     descriptionTypeContribuable, RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin),
+		                     periodeImposition.getTypeContribuable().description(), RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()),
+		                     RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));
 	}
+
 }

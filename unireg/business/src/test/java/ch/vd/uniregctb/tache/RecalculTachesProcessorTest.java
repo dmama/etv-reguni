@@ -107,7 +107,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = resFull.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(ppId, info.ctbId);
-			assertEquals(String.format("création d'une tâche d'émission de déclaration d'impôt ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
+			assertEquals(String.format("création d'une tâche d'émission de déclaration d'impôt PP ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
 		}
 
 		// vérification que la tâche d'envoi de DI est bien là
@@ -204,7 +204,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = res.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(ppId, info.ctbId);
-			assertEquals(String.format("annulation de la tâche d'envoi de la déclaration d'impôt ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
+			assertEquals(String.format("annulation de la tâche d'envoi de la déclaration d'impôt PP ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée
@@ -301,7 +301,7 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 			final TacheSyncResults.ActionInfo info = res.getActions().get(0);
 			assertNotNull(info);
 			assertEquals(ppId, info.ctbId);
-			assertEquals(String.format("annulation de la tâche d'envoi de la déclaration d'impôt ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
+			assertEquals(String.format("annulation de la tâche d'envoi de la déclaration d'impôt PP ordinaire couvrant la période du %s au 31.12.%d", RegDateHelper.dateToDisplayString(dateArrivee), year - 1), info.actionMsg);
 		}
 
 		// vérification que la tâche d'envoi de DI est maintenant annulée

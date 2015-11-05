@@ -51,6 +51,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -164,7 +165,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected TiersDAO tiersDAO;
 	protected SessionFactory sessionFactory;
 
-	public static enum ProducerType {
+	public enum ProducerType {
 		Flat,
 		Cvs,
 		Xml,
@@ -749,7 +750,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return assignerNumeroSequenceEtSaveDeclarationImpot(tiers, d);
 	}
 
-	protected DeclarationImpotOrdinairePP assignerNumeroSequenceEtSaveDeclarationImpot(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di) {
+	protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
 
 		int numero = 0;
 		final int annee = di.getPeriode().getAnnee();
@@ -769,6 +770,21 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		ctb.addDeclaration(di);
 		return di;
 	}
+
+
+	protected DeclarationImpotOrdinairePM addDeclarationImpot(ContribuableImpositionPersonnesMorales pm, PeriodeFiscale periode, RegDate debut, RegDate fin,
+	                                                          CollectiviteAdministrative retourCollectiviteAdministrative,
+	                                                          TypeContribuable typeContribuable, ModeleDocument modele) {
+		final DeclarationImpotOrdinairePM d = new DeclarationImpotOrdinairePM();
+		d.setPeriode(periode);
+		d.setDateDebut(debut);
+		d.setDateFin(fin);
+		d.setTypeContribuable(typeContribuable);
+		d.setModeleDocument(modele);
+		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
+		return assignerNumeroSequenceEtSaveDeclarationImpot(pm, d);
+	}
+
 
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt PP avec les paramètres spécifiés.

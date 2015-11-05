@@ -32,6 +32,7 @@ import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -888,7 +889,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     /**
-     * Ajoute une déclaration d'impôt ordinaire sur le contribuable spécifié.
+     * Ajoute une déclaration d'impôt ordinaire PP sur le contribuable spécifié.
      */
     protected DeclarationImpotOrdinairePP addDeclarationImpot(ContribuableImpositionPersonnesPhysiques tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
                                                               @Nullable TypeContribuable typeC, ModeleDocument modele) {
@@ -900,10 +901,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     @Override
-    protected DeclarationImpotOrdinairePP assignerNumeroSequenceEtSaveDeclarationImpot(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di) {
+    protected <T extends DeclarationImpotOrdinaire> T assignerNumeroSequenceEtSaveDeclarationImpot(Contribuable ctb, T di) {
         if (useTiersServiceToCreateDeclarationImpot()) {
-            return (DeclarationImpotOrdinairePP) tiersDAO.addAndSave(ctb, di);
-        } else {
+            //noinspection unchecked
+            return (T) tiersDAO.addAndSave(ctb, di);
+        }
+        else {
             return super.assignerNumeroSequenceEtSaveDeclarationImpot(ctb, di);
         }
     }

@@ -11,8 +11,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
@@ -60,7 +60,7 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
 		}
 
-		Assert.state(getCategory() == CategorieEntreprise.DP_PM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+		Assert.state(getCategory() == CategorieEntreprise.DPPM, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 
 		if (!hasCapital()) {
 			erreurs.addErreur(String.format("Création impossible, capital introuvable. %s", getOrganisationDescription()));

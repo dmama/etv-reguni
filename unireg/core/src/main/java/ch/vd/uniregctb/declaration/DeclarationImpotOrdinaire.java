@@ -11,6 +11,7 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 @Entity
@@ -26,6 +27,8 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 	private RegDate delaiRetourImprime;
 
 	private Long retourCollectiviteAdministrativeId;
+
+	private TypeContribuable typeContribuable;
 
 	/**
 	 * <code>true</code> si la DI a été créée comme une "di libre", c'est-à-dire une DI sur la période courante (au moment de sa création) sans fin d'assujettissement connue (comme un décès ou un départ
@@ -84,6 +87,16 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 
 	public void setDelaiRetourImprime(RegDate delaiRetourImprime) {
 		this.delaiRetourImprime = delaiRetourImprime;
+	}
+
+	@Column(name = "TYPE_CTB", length = LengthConstants.DI_TYPE_CTB)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeContribuableUserType")
+	public TypeContribuable getTypeContribuable() {
+		return typeContribuable;
+	}
+
+	public void setTypeContribuable(TypeContribuable theTypeContribuable) {
+		typeContribuable = theTypeContribuable;
 	}
 
 	@Column(name = "LIBRE")

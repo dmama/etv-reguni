@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
@@ -50,17 +50,23 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesMorales;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
+import ch.vd.uniregctb.tache.sync.AddDIPM;
+import ch.vd.uniregctb.tache.sync.AddDIPP;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.Context;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
+import ch.vd.uniregctb.tache.sync.DeleteDIPM;
+import ch.vd.uniregctb.tache.sync.DeleteDIPP;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -74,7 +80,7 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -588,7 +594,6 @@ public class TacheServiceImpl implements TacheService {
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
 			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, pfDAO);
-
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
 				results.addAction(ctbId, action);
@@ -636,33 +641,148 @@ public class TacheServiceImpl implements TacheService {
 		final Map<Long, List<SynchronizeAction>> map = new HashMap<>();
 		for (Long id : ctbIds) {
 			final Tiers tiers = tiersService.getTiers(id);
-			if (tiers instanceof ContribuableImpositionPersonnesPhysiques) {
-				List<SynchronizeAction> actions;
+			if (tiers instanceof Contribuable) {
 				try {
-					actions = determineSynchronizeActionsForDIs((ContribuableImpositionPersonnesPhysiques) tiers);
+					final List<SynchronizeAction> actions = determineSynchronizeActionsForDIs((Contribuable) tiers);
+					if (actions != null && !actions.isEmpty()) {
+						map.put(id, actions);
+					}
 				}
 				catch (AssujettissementException e) {
 					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
-							+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
-							+ " aucune action n'est effectuée.");
+							           + " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
+							           + " aucune action n'est effectuée.");
 					LOGGER.warn(e.getMessage(), e);
-					actions = null;
-				}
-				if (actions != null && !actions.isEmpty()) {
-					map.put(id, actions);
 				}
 			}
 		}
 		return map;
 	}
 
+	/**
+	 * Les différentes mutations possibles détectées lors de la comparaison entre une DI existante
+	 * et une période d'imposition calculée
+	 */
+	private enum Mutation {
+		/**
+		 * Aucune différence constatée, rien à faire, tout est en ordre
+		 */
+		AUCUNE,
+
+		/**
+		 * Différence compatible constatée -> il suffit de mettre à jour la DI
+		 */
+		COMPATIBLE,
+
+		/**
+		 * Différence trop importante constatée -> il faut impérativement annuler la DI existante et la remplacer
+		 */
+		MAJEURE
+	}
+
+	/**
+	 * Le domaine de contribuable :
+	 * <br/>
+	 * <ul>
+	 *     <li>imposition des personnes physiques&nbsp;</li>
+	 *     <li>imposition des personnes morales.</li>
+	 * </ul>
+	 */
+	private enum DomaineContribuable {
+
+		PERSONNES_PHYSIQUES {
+			@Override
+			public AddDIPP newAddDI(PeriodeImposition pi) {
+				return new AddDIPP((PeriodeImpositionPersonnesPhysiques) pi);
+			}
+
+			@Override
+			public DeleteDIPP newDeleteDI(DeclarationImpotOrdinaire di) {
+				return new DeleteDIPP((DeclarationImpotOrdinairePP) di);
+			}
+
+			@Override
+			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
+				if (di.getTypeContribuable() == pi.getTypeContribuable() && DateRangeHelper.equals(di, pi)) {
+					return Mutation.AUCUNE;
+				}
+				else if (peutMettreAJourDeclarationExistante(di, pi, dateReference)) {
+					return Mutation.COMPATIBLE;
+				}
+				else {
+					return Mutation.MAJEURE;
+				}
+			}
+		},
+
+		PERSONNES_MORALES {
+			@Override
+			public AddDIPM newAddDI(PeriodeImposition pi) {
+				return new AddDIPM((PeriodeImpositionPersonnesMorales) pi);
+			}
+
+			@Override
+			public DeleteDIPM newDeleteDI(DeclarationImpotOrdinaire di) {
+				return new DeleteDIPM((DeclarationImpotOrdinairePM) di);
+			}
+
+			@Override
+			public Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference) {
+				if (di.getTypeDeclaration() != pi.getTypeDocumentDeclaration()) {
+					return Mutation.MAJEURE;
+				}
+				else if (di.getTypeContribuable() != pi.getTypeContribuable()) {
+					return Mutation.COMPATIBLE;
+				}
+				else {
+					return Mutation.AUCUNE;
+				}
+			}
+		};
+
+		static DomaineContribuable of(Contribuable contribuable) {
+			if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+				return PERSONNES_PHYSIQUES;
+			}
+			if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+				return PERSONNES_MORALES;
+			}
+			throw new IllegalArgumentException("Type de contribuable non-supporté : " + contribuable.getClass().getName());
+		}
+
+		/**
+		 * Création d'une nouvelle action de création de tâche d'envoi de DI d'après la période d'imposition donnée
+		 * @param pi la période d'imposition
+		 * @return une nouvelle tâche d'envoi de DI
+		 * @throws ClassCastException si la période d'imposition n'est pas du type attendu par la catégorie
+		 */
+		public abstract AddDI<?> newAddDI(PeriodeImposition pi);
+
+		/**
+		 * Création d'une nouvelle action de création de tâche d'annulation de la DI donnée
+		 * @param di la déclaration à annuler
+		 * @return une nouvelle tâche d'annulation de DI
+		 * @throws ClassCastException si la déclaration d'impôt n'est pas du type attendu par la catégorie
+		 */
+		public abstract DeleteDI<?> newDeleteDI(DeclarationImpotOrdinaire di);
+
+		/**
+		 * Détection du type d'adéquation entre une DI (= existante) et une PI (= théorique) sans prendre en compte les dates.
+		 * @param di la déclaration d'impôt existante
+		 * @param pi la période d'imposition calculée
+		 * @param dateReference date de référence pour la comparaison
+		 * @return le type de différence constatée entre l'existant et le théorique
+		 */
+		public abstract Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference);
+	}
+
 	@Override
-	public List<SynchronizeAction> determineSynchronizeActionsForDIs(ContribuableImpositionPersonnesPhysiques contribuable) throws AssujettissementException {
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
 		// On récupère les données brutes
 		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
-		final List<DeclarationImpotOrdinairePP> declarations = getDeclarationsActives(contribuable);
-		final List<TacheEnvoiDeclarationImpotPP> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
+		final List<DeclarationImpotOrdinaire> declarations = getDeclarationsActives(contribuable);
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
 		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
 		final List<AddDI> addActions = new ArrayList<>();
@@ -670,58 +790,48 @@ public class TacheServiceImpl implements TacheService {
 		final List<DeleteDI> deleteActions = new ArrayList<>();
 		final List<AnnuleTache> annuleActions = new ArrayList<>();
 
-		final int anneeCourante = RegDate.get().year();
+		final RegDate today = RegDate.get();
+		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
 
 		//
 		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante
 		//
 
 		for (PeriodeImposition periode : periodes) {
-			final List<DeclarationImpotOrdinairePP> dis = getIntersectingRangeAt(declarations, periode);
+			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
 				if (periode.isDeclarationMandatory()) {
 					// on ajoute une DI si elle est obligatoire
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
-					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
-						if (periode instanceof PeriodeImpositionPersonnesPhysiques) {
-							addActions.add(new AddDI((PeriodeImpositionPersonnesPhysiques) periode));
-						}
-						else {
-							// TODO [SIPM] et les PM ? on verra plus tard
-							throw new NotImplementedException("Pas implémenté pour les PM...");
-						}
+					if (peutCreerTacheEnvoiDI(periode, today)) {
+						addActions.add(domaine.newAddDI(periode));
 					}
 				}
 			}
 			else {
 				Assert.isFalse(dis.isEmpty());
-				DeclarationImpotOrdinairePP toUpdate = null;
+				DeclarationImpotOrdinaire toUpdate = null;
 				PeriodeImposition toAdd = null;
 
-				for (DeclarationImpotOrdinairePP di : dis) {
+				for (DeclarationImpotOrdinaire di : dis) {
 					if (DateRangeHelper.equals(di, periode)) {
 						// la durée de la déclaration et de la période d'imposition correspondent parfaitement
-						if (di.getTypeContribuable() == periode.getTypeContribuable()) {
-							// les types correspondent, rien à faire
-						}
-						else {
-							// les types ne correspondent pas
-							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
-								// le type de contribuable peut être mis-à-jour
-								if (toUpdate != null) {
-									deleteActions.add(new DeleteDI(toUpdate));
-								}
-								toUpdate = di;
-								toAdd = null;
+						final Mutation mutation = domaine.compare(di, periode, today);
+						if (mutation == Mutation.COMPATIBLE) {
+							// mise à jour possible
+							if (toUpdate != null) {
+								deleteActions.add(domaine.newDeleteDI(toUpdate));
 							}
-							else {
-								// le type de contribuable ne peut pas être mis-à-jour : la déclaration doit être annulée
-								deleteActions.add(new DeleteDI(di));
-								if (toUpdate == null) {
-									// on prévoit de recréer la déclaration
-									toAdd = periode;
-								}
+							toUpdate = di;
+							toAdd = null;
+						}
+						else if (mutation == Mutation.MAJEURE) {
+							// on doit passer par une annulation / ré-émission
+							deleteActions.add(domaine.newDeleteDI(di));
+							if (toUpdate == null) {
+								// on prévoit de recréer la déclaration
+								toAdd = periode;
 							}
 						}
 					}
@@ -729,17 +839,18 @@ public class TacheServiceImpl implements TacheService {
 						// la durée de la déclaration et de la période d'imposition ne correspondent pas
 						if (toUpdate != null) {
 							// il y a déjà une déclaration compatible pouvant être mise-à-jour, inutile de chercher plus loin
-							deleteActions.add(new DeleteDI(di));
+							deleteActions.add(domaine.newDeleteDI(di));
 						}
 						else {
-							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
+							final Mutation mutation = domaine.compare(di, periode, today);
+							if (mutation == Mutation.AUCUNE || mutation == Mutation.COMPATIBLE) {
 								// si les types sont compatibles, on adapte la déclaration
 								toUpdate = di;
 								toAdd = null;
 							}
-							else if (!isDiLibreSurPeriodeCourante(di, anneeCourante)) {
+							else if (!isDiLibreSurPeriodeCourante(di, today)) {
 								// si les types sont incompatibles, on annule et on prévoit de recréer la déclaration
-								deleteActions.add(new DeleteDI(di));
+								deleteActions.add(domaine.newDeleteDI(di));
 								toAdd = periode;
 							}
 						}
@@ -750,14 +861,8 @@ public class TacheServiceImpl implements TacheService {
 				}
 				else if (toAdd != null) {
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
-					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
-						if (toAdd instanceof PeriodeImpositionPersonnesPhysiques) {
-							addActions.add(new AddDI((PeriodeImpositionPersonnesPhysiques) toAdd));
-						}
-						else {
-							// TODO [SIPM] et les PM ? on verra plus tard
-							throw new NotImplementedException("Pas implémenté pour les PM...");
-						}
+					if (peutCreerTacheEnvoiDI(periode, today)) {
+						addActions.add(domaine.newAddDI(toAdd));
 					}
 				}
 			}
@@ -767,7 +872,7 @@ public class TacheServiceImpl implements TacheService {
 		if (!addActions.isEmpty()) {
 			for (int i = addActions.size() - 1; i >= 0; i--) {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
-				final TacheEnvoiDeclarationImpotPP envoi = getMatchingRangeAt(tachesEnvoi, periode);
+				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
 				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocumentDeclaration()) {
 					addActions.remove(i);
 				}
@@ -778,12 +883,12 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
 		//
 
-		for (DeclarationImpotOrdinairePP declaration : declarations) {
+		for (DeclarationImpotOrdinaire declaration : declarations) {
 			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
 			if (ps == null) {
 				if (!isDeclarationToBeUpdated(updateActions, declaration)) { // [UNIREG-3028]
 					// il n'y a pas de période correspondante
-					deleteActions.add(new DeleteDI(declaration));
+					deleteActions.add(domaine.newDeleteDI(declaration));
 				}
 			}
 			else {
@@ -809,14 +914,14 @@ public class TacheServiceImpl implements TacheService {
 		//  On détermine la liste des tâches qui ne sont plus valides vis-à-vis des périodes d'imposition et des déclarations existantes
 		//
 
-		for (TacheEnvoiDeclarationImpotPP envoi : tachesEnvoi) {
+		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
 			if (!isTacheEnvoiValide(envoi, periodes, declarations, updateActions)) {
 				annuleActions.add(new AnnuleTache(envoi));
 			}
 		}
 
 		for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-			if (!isTacheAnnulationValide(annulation, periodes, updateActions, anneeCourante)) {
+			if (!isTacheAnnulationValide(annulation, periodes, updateActions, today)) {
 				annuleActions.add(new AnnuleTache(annulation));
 			}
 		}
@@ -844,7 +949,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpotPP envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinairePP> declarations, List<UpdateDI> updateActions) {
+	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
 		if (periode == null || !periode.isDeclarationMandatory()) {
@@ -863,7 +968,7 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
-		final DeclarationImpotOrdinairePP declaration = getMatchingRangeAt(declarations, periode);
+		final DeclarationImpotOrdinaire declaration = getMatchingRangeAt(declarations, periode);
 		if (declaration == null) {
 			// il n'y a pas de déclaration, la tâche est donc valide
 			return true;
@@ -889,12 +994,12 @@ public class TacheServiceImpl implements TacheService {
 	 * @param annulation    une tâche d'annulation
 	 * @param periodes      les périodes d'imposition théorique du contribuable
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
-	 * @param anneeCourante l'année courante
+	 * @param dateReference date de référence
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, int anneeCourante) {
+	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, RegDate dateReference) {
 
-		final DeclarationImpotOrdinairePP declaration = (DeclarationImpotOrdinairePP) annulation.getDeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
 		if (declaration.isAnnule()) {
 			// la déclaration est déjà annulée
 			return false;
@@ -912,7 +1017,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 
 		//noinspection RedundantIfStatement
-		if (periode.getTypeContribuable() == declaration.getTypeContribuable() || peutMettreAJourDeclarationExistante(declaration, periode, anneeCourante)) { // [UNIREG-3028]
+		if (periode.getTypeContribuable() == declaration.getTypeContribuable() || peutMettreAJourDeclarationExistante(declaration, periode, dateReference)) { // [UNIREG-3028]
 			// le type de contribuable de la période et de la déclaration correspondent, la tâche d'annulation est donc invalide.
 			return false;
 		}
@@ -944,38 +1049,38 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param diExistante   la DI potentiellement à mettre à jour
 	 * @param periode       la période d'imposition avec laquelle la DI serait mise à jour
-	 * @param anneeCourante année de la période dite "courante"
+	 * @param dateReference date de référence
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
 	 */
 	@SuppressWarnings({"UnusedParameters"})
-	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
-		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, RegDate dateReference) {
+		return isPeriodePasseeOuCouranteIncomplete(periode, dateReference);
 	}
 
-	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, int anneeCourante) {
-		return di.isLibre() && di.getPeriode().getAnnee() == anneeCourante;
+	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, RegDate dateReference) {
+		return di.isLibre() && di.isValidAt(dateReference);
 	}
 
 	/**
 	 * On peut créer une tache d'envoi de DI pour toute période d'imposition dans une année passée.<br/>
-	 * Sur la période courante, il faut que la période d'imposition se termine avant la fin de l'année (= fin d'assujettissement)
+	 * Sur la période courante, il faut que la période d'imposition se termine avant la date de référence.
 	 * @param periode période d'imposition pour laquelle on voudrait peut-être créer une tâche d'envoi de DI
-	 * @param anneeCourante année de la période dite "courante"
+	 * @param dateReference date de référence
 	 * @return <code>true</code> si la création de la tâche est autorisée, <code>false</code> sinon
 	 */
-	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, int anneeCourante) {
-		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, RegDate dateReference) {
+		return isPeriodePasseeOuCouranteIncomplete(periode, dateReference);
 	}
 
 	/**
 	 * Une période d'imposition est dite passée si elle fait référence à une année qui n'est pas l'année courante.<br/>
 	 * Une période d'imposition est dite incomplète si elle se termine avant la fin de l'année civile
 	 * @param periode période d'imposition à tester
-	 * @param anneeCourante année considérée comme l'année courante
+	 * @param dateReference date de référence
 	 * @return <code>true</code> si la période est passée ou courante incomplète, <code>false</code> sinon (courante complète ou, pourquoi pas, future)
 	 */
-	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, int anneeCourante) {
-		return periode.isPeriodePassee(anneeCourante) || (periode.getPeriodeFiscale() == anneeCourante && periode.isFermetureAnticipee());
+	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, RegDate dateReference) {
+		return periode.getDateFin().isBefore(dateReference) || periode.isFermetureAnticipee();
 	}
 
 	/**
@@ -988,41 +1093,47 @@ public class TacheServiceImpl implements TacheService {
 	 * @return l'office d'impôt du contribuable.
 	 */
 	protected CollectiviteAdministrative getOfficeImpot(Contribuable contribuable) {
-		CollectiviteAdministrative collectivite = tiersService.getOfficeImpotAt(contribuable, null);
-		if (collectivite == null) {
+		CollectiviteAdministrative collectivite;
+		if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+			collectivite = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM, true);
+		}
+		else {
+			collectivite = tiersService.getOfficeImpotAt(contribuable, null);
+			if (collectivite == null) {
 
-			// [UNIREG-3285] On analyse les fors fiscaux du contribuable à la recherche d'un for qui puisse être utilisé pour déterminer un OID convenable
-			ForFiscal dernierForFiscalVaudois = null;
-			ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
+				// [UNIREG-3285] On analyse les fors fiscaux du contribuable à la recherche d'un for qui puisse être utilisé pour déterminer un OID convenable
+				ForFiscal dernierForFiscalVaudois = null;
+				ForFiscal dernierForFiscalVaudoisNonSourceAnnule = null;
 
-			final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
-			if (fors != null) {
-				for (int i = fors.size() - 1; i >= 0; --i) {
-					final ForFiscal f = fors.get(i);
-					if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						if (dernierForFiscalVaudois == null) {
-							dernierForFiscalVaudois = f;
-						}
-						if (f.isAnnule()) {
-							if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
-								dernierForFiscalVaudoisNonSourceAnnule = f;
-								break;
+				final List<ForFiscal> fors = contribuable.getForsFiscauxSorted();
+				if (fors != null) {
+					for (int i = fors.size() - 1; i >= 0; --i) {
+						final ForFiscal f = fors.get(i);
+						if (f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+							if (dernierForFiscalVaudois == null) {
+								dernierForFiscalVaudois = f;
+							}
+							if (f.isAnnule()) {
+								if (f instanceof ForFiscalSecondaire || (f.isPrincipal() && ((ForFiscalPrincipalPP) f).getModeImposition() != ModeImposition.SOURCE)) {
+									dernierForFiscalVaudoisNonSourceAnnule = f;
+									break;
+								}
 							}
 						}
 					}
 				}
-			}
 
-			final ForFiscal forConvenable = (dernierForFiscalVaudoisNonSourceAnnule != null ? dernierForFiscalVaudoisNonSourceAnnule : dernierForFiscalVaudois);
-			if (forConvenable == null) {
-				throw new IllegalArgumentException("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°" + contribuable.getNumero());
-			}
+				final ForFiscal forConvenable = (dernierForFiscalVaudoisNonSourceAnnule != null ? dernierForFiscalVaudoisNonSourceAnnule : dernierForFiscalVaudois);
+				if (forConvenable == null) {
+					throw new IllegalArgumentException("Impossible de trouver un for fiscal convenable pour la détermination de l'OID du contribuable n°" + contribuable.getNumero());
+				}
 
-			final Integer oid = tiersService.getOfficeImpotId(forConvenable.getNumeroOfsAutoriteFiscale());
-			if (oid == null) {
-				throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
+				final Integer oid = tiersService.getOfficeImpotId(forConvenable.getNumeroOfsAutoriteFiscale());
+				if (oid == null) {
+					throw new IllegalArgumentException("Impossible de déterminer l'OID pour la commune avec le numéro Ofs n°" + forConvenable.getNumeroOfsAutoriteFiscale());
+				}
+				collectivite = tiersService.getCollectiviteAdministrative(oid);
 			}
-			collectivite = tiersService.getCollectiviteAdministrative(oid);
 		}
 
 		Assert.notNull(collectivite);
@@ -1035,17 +1146,17 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<DeclarationImpotOrdinairePP> getDeclarationsActives(ContribuableImpositionPersonnesPhysiques contribuable) {
+	private List<DeclarationImpotOrdinaire> getDeclarationsActives(Contribuable contribuable) {
 		final Set<Declaration> declarations = contribuable.getDeclarations();
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}
-		final List<DeclarationImpotOrdinairePP> list = new ArrayList<>(declarations.size());
+		final List<DeclarationImpotOrdinaire> list = new ArrayList<>(declarations.size());
 		for (Declaration d : declarations) {
 			if (d.isAnnule()) {
 				continue;
 			}
-			list.add((DeclarationImpotOrdinairePP) d);
+			list.add((DeclarationImpotOrdinaire) d);
 		}
 		Collections.sort(list, new DateRangeComparator<>());
 		return list;
@@ -1073,23 +1184,34 @@ public class TacheServiceImpl implements TacheService {
 		return tachesAnnulation;
 	}
 
-	private List<TacheEnvoiDeclarationImpotPP> getTachesEnvoiEnInstance(ContribuableImpositionPersonnesPhysiques contribuable) {
-		final List<TacheEnvoiDeclarationImpotPP> tachesEnvoi;
-		{
-			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setContribuable(contribuable);
-			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPP);
+	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable) {
+		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+			return getTachesEnvoiEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPP);
+		}
+		if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+			return getTachesEnvoiEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPM);
+		}
+		return Collections.emptyList();
+	}
 
-			final List<Tache> list = tacheDAO.find(criterion, true);
-			if (list.isEmpty()) {
-				tachesEnvoi = Collections.emptyList();
-			}
-			else {
-				tachesEnvoi = new ArrayList<>(list.size());
-				for (Tache t : list) {
-					tachesEnvoi.add((TacheEnvoiDeclarationImpotPP) t);
-				}
+	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable, TypeTache typeTacheEnvoi) {
+		Assert.isTrue(typeTacheEnvoi == TypeTache.TacheEnvoiDeclarationImpotPM || typeTacheEnvoi == TypeTache.TacheEnvoiDeclarationImpotPP);
+
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setContribuable(contribuable);
+		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+		criterion.setTypeTache(typeTacheEnvoi);
+		criterion.setInclureTachesAnnulees(false);
+
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi;
+		final List<Tache> list = tacheDAO.find(criterion, true);
+		if (list.isEmpty()) {
+			tachesEnvoi = Collections.emptyList();
+		}
+		else {
+			tachesEnvoi = new ArrayList<>(list.size());
+			for (Tache t : list) {
+				tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
 			}
 		}
 		return tachesEnvoi;

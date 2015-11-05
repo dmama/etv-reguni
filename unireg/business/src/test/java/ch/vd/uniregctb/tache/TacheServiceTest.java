@@ -32,6 +32,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
@@ -51,16 +53,19 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
+import ch.vd.uniregctb.tache.sync.DeleteDIPP;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tache;
@@ -69,9 +74,12 @@ import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -3069,7 +3077,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(actions);
 		assertEquals(2, actions.size());
 		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
-		assertDeleteDI(di, false, actions.get(1));
+		assertDeleteDIPP(di, false, actions.get(1));
 	}
 
 	@Test
@@ -3178,7 +3186,7 @@ public class TacheServiceTest extends BusinessTest {
 		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
 		assertNotNull(actions);
 		assertEquals(1, actions.size());
-		assertDeleteDI(di, true, actions.get(0)); // direct=true -> parce que la déclaration est seulement émise
+		assertDeleteDIPP(di, true, actions.get(0)); // direct=true -> parce que la déclaration est seulement émise
 	}
 
 	@Test
@@ -3261,7 +3269,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(actions);
 		assertEquals(2, actions.size());
 		assertUpdateDI(di1, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
-		assertDeleteDI(di0, false, actions.get(1));
+		assertDeleteDIPP(di0, false, actions.get(1));
 	}
 
 	@Test
@@ -3289,7 +3297,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(actions);
 		assertEquals(2, actions.size());
 		assertUpdateDI(di0, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
-		assertDeleteDI(di1, false, actions.get(1));
+		assertDeleteDIPP(di1, false, actions.get(1));
 	}
 
 	@Test
@@ -3316,7 +3324,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(actions);
 		assertEquals(2, actions.size());
 		assertUpdateDI(di0, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
-		assertDeleteDI(di1, false, actions.get(1));
+		assertDeleteDIPP(di1, false, actions.get(1));
 	}
 
 	@Test
@@ -3348,7 +3356,7 @@ public class TacheServiceTest extends BusinessTest {
 		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
 		assertNotNull(actions);
 		assertEquals(1, actions.size());
-		assertDeleteDI(di1, false, actions.get(0));
+		assertDeleteDIPP(di1, false, actions.get(0));
 	}
 
 	/**
@@ -4084,13 +4092,21 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(typeContribuable, update.periodeImposition.getTypeContribuable());
 	}
 
-	private static void assertDeleteDI(DeclarationImpotOrdinaire di, boolean direct, SynchronizeAction action) {
+	private static void assertDeleteDIPP(DeclarationImpotOrdinaire di, boolean direct, SynchronizeAction action) {
+		assertNotNull(action);
+		assertInstanceOf(DeleteDIPP.class, action);
+
+		final DeleteDIPP delete = (DeleteDIPP) action;
+		assertEquals(di.getId(), delete.diId);
+		assertEquals(direct, delete.directAnnulation);
+	}
+
+	private static void assertDeleteDI(DeclarationImpotOrdinaire di, SynchronizeAction action) {
 		assertNotNull(action);
 		assertInstanceOf(DeleteDI.class, action);
 
 		final DeleteDI delete = (DeleteDI) action;
 		assertEquals(di.getId(), delete.diId);
-		assertEquals(direct, delete.directAnnulation);
 	}
 
 	private static void assertAnnuleTache(Tache tache, SynchronizeAction action) {
@@ -5427,7 +5443,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * [UNIREG-820] [SIFISC-8197]
 	 */
 	@Test
-	public void testTypeDeclarationImpotDansTacheEnvoi() throws Exception {
+	public void testTypeDeclarationImpotDansTacheEnvoiPP() throws Exception {
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -5520,6 +5536,188 @@ public class TacheServiceTest extends BusinessTest {
 				assertEquals(date(dateDebutActivite.year() + 1, 12, 31), tacheDi.getDateFin());
 				assertEquals(TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
 				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, tacheDi.getTypeDocument());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testTacheAutomatiqueEnvoiPM() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
+			}
+		});
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// là non plus, rien...
+			}
+		});
+
+		// mise en place fiscale
+		final RegDate dateDebutActivite = date(RegDate.get().year() - 2, 6, 15);
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+				addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+				addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+				return pm.getNumero();
+			}
+		});
+
+		// vérification des tâches d'envoi
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pm);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());
+
+				for (Tache tache : taches) {
+					assertNotNull(tache);
+
+					final TacheEnvoiDeclarationImpotPM tacheDi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
+					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+				}
+				return null;
+			}
+		});
+
+		// maintenant, on rajoute la DI de la première année
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, pf);
+				addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				return null;
+			}
+		});
+
+		// et on vérifie les tâches résultantes (il ne devrait en rester qu'une en instance, dont le type de document a été recalculé en fonction de la nouvelle DI créée)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pm);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+				criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
+				criteria.setInclureTachesAnnulees(false);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheEnvoiDeclarationImpotPM tacheDi = (TacheEnvoiDeclarationImpotPM) taches.get(0);
+				assertEquals(date(dateDebutActivite.year() + 1, 1, 1), tacheDi.getDateDebut());
+				assertEquals(date(dateDebutActivite.year() + 1, 12, 31), tacheDi.getDateFin());
+				assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testTacheAutomatiqueEnvoiPMChangementTypeDocument() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
+			}
+		});
+
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				// là non plus, rien...
+			}
+		});
+
+		// mise en place fiscale
+		final RegDate dateDebutActivite = date(RegDate.get().year() - 1, 6, 15);
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// entreprise
+				final Entreprise pm = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+				addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+				addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+
+				// avec DI du mauvais type de document (on imagine que la DI a été émise puis la forme juridique modifiée...)
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, pf);        // <-- ce n'est pas le bon type de document pour une SARL
+				addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+
+				return pm.getNumero();
+			}
+		});
+
+		// vérification des tâches autour des DI
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+				assertNotNull(pm);
+
+				// une tâche d'annulation de la DI existante
+				{
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					criteria.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+
+					final TacheAnnulationDeclarationImpot tacheDi = (TacheAnnulationDeclarationImpot) tache;
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
+					assertNotNull(tacheDi.getDeclarationImpotOrdinaire());
+				}
+				// une tâche d'envoi avec le bon type de document
+				{
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final Tache tache = taches.get(0);
+					assertNotNull(tache);
+
+					final TacheEnvoiDeclarationImpotPM tacheDi = (TacheEnvoiDeclarationImpotPM) tache;
+					assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
+					assertEquals(TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+				}
 				return null;
 			}
 		});

@@ -11,8 +11,8 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * Evénement interne de création d'entreprise de catégorie "Fonds de placement" (FDS PLAC)
@@ -46,6 +46,6 @@ public class CreateEntrepriseFDSPLAC extends CreateEntreprise {
 			erreurs.addErreur(String.format("Catégorie introuvable pour l'organisation no %s de forme juridique %s, en date du %s.", getOrganisation().getNumeroOrganisation(),
 			                                formeLegale != null ? formeLegale : "inconnue", RegDateHelper.dateToDisplayString(getDateDeDebut())));
 		}
-		Assert.state(getCategory() == CategorieEntreprise.FDS_PLAC, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
+		Assert.state(getCategory() == CategorieEntreprise.FP, String.format("Catégorie d'entreprise non supportée! %s", getCategory()));
 	}
 }

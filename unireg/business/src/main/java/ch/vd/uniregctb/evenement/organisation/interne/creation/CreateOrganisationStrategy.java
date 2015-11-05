@@ -11,9 +11,9 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.interne.AbstractOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.TraitementManuel;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntreprise;
-import ch.vd.uniregctb.evenement.organisation.interne.helper.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  * @author Raphaël Marmier, 2015-09-02
@@ -80,17 +80,17 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					return new CreateEntrepriseAPM(event, organisation, null, context, options);
 
 				// Fonds de placements
-				case FDS_PLAC:
+				case FP:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseFDSPLAC(event, organisation, null, context, options);
 
 				// Personnes morales de droit public
-				case DP_PM:
+				case DPPM:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Création.", organisation.getNumeroOrganisation(), category);
 					return new CreateEntrepriseDPPM(event, organisation, null, context, options);
 
 				// Catégories qu'on ne peut pas traiter automatiquement, catégories éventuellement inconnues.
-				case DP_APM:
+				case DP:
 				default:
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);

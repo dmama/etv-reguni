@@ -37,7 +37,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeTache;
 
-public class AddDITest extends BusinessTest {
+public class AddDIPPTest extends BusinessTest {
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotService diService;
@@ -59,7 +59,7 @@ public class AddDITest extends BusinessTest {
 	/**
 	 * Classe utilisée ici pour les tests à la place de la vraie classe pour simuler la date du jour
 	 */
-	private static final class MyAddDI extends AddDI {
+	private static final class MyAddDIPP extends AddDIPP {
 
 		private final RegDate today;
 
@@ -67,7 +67,7 @@ public class AddDITest extends BusinessTest {
 		 * @param periodeImposition la période d'imposition qui conduit à l'ajout de la tâche
 		 * @param today la date du jour à considérer (si <code>null</code>, alors la vraie implémentation de la classe de base sera utilisée)
 		 */
-		public MyAddDI(@NotNull PeriodeImpositionPersonnesPhysiques periodeImposition, RegDate today) {
+		public MyAddDIPP(@NotNull PeriodeImpositionPersonnesPhysiques periodeImposition, RegDate today) {
 			super(periodeImposition);
 			this.today = today;
 		}
@@ -137,7 +137,7 @@ public class AddDITest extends BusinessTest {
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-				final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
 			}
@@ -229,7 +229,7 @@ public class AddDITest extends BusinessTest {
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-				final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 				add.execute(ctx);
 				return null;
 			}
@@ -312,7 +312,7 @@ public class AddDITest extends BusinessTest {
 				assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
 				final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-				final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+				final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 				add.execute(ctx);
 				return null;
 			}
@@ -426,7 +426,7 @@ public class AddDITest extends BusinessTest {
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
 					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-					final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
 
@@ -442,7 +442,7 @@ public class AddDITest extends BusinessTest {
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
 					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-					final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
+					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, ref);
 					add.execute(ctx);
 				}
 
@@ -576,7 +576,7 @@ public class AddDITest extends BusinessTest {
 					Assert.assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, periodeImposition.getTypeContribuable());
 
 					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-					final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}
 
@@ -592,7 +592,7 @@ public class AddDITest extends BusinessTest {
 					Assert.assertEquals(TypeContribuable.VAUDOIS_DEPENSE, periodeImposition.getTypeContribuable());
 
 					final Context ctx = new Context(pp, ca, tacheDAO, diService, caSuccessions, diDAO,  pfDAO);
-					final AddDI add = new MyAddDI((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
+					final AddDIPP add = new MyAddDIPP((PeriodeImpositionPersonnesPhysiques) periodeImposition, dateReference);
 					add.execute(ctx);
 				}
 
