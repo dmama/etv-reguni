@@ -35,7 +35,11 @@
     </xs:element>
     <xs:group name="typeDocument">
         <xs:choice>
-            <xs:group ref="DI"/>
+            <xs:group ref="DI">
+                <xs:annotation>
+                    <xs:documentation>DI PM : CodDoc=1501, typDoc=DI, prefixeInfoDocument=PMPU1501DOCUM</xs:documentation>
+                </xs:annotation>
+            </xs:group>
         </xs:choice>
     </xs:group>
     <xs:group name="DI">
@@ -438,7 +442,7 @@ PMP30000ROUTE</xs:documentation>
     </xs:simpleType>
     <xs:simpleType name="STypeCodeDoc">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[A-Z]{4}"/>
+            <xs:maxLength value="32"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="STypeGenreDecision">
