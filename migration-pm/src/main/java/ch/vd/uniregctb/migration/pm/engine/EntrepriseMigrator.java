@@ -1208,7 +1208,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 					.filter(ff -> {
 						if (ff.getDateValidite() == null) {
 							mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
-							              String.format("Le for principal %d est ignoré car il a une date de début nulle.", ff.getId().getSeqNo()));
+							              String.format("Le for principal %d est ignoré car il a une date de début nulle (ou antérieure au 01.08.1291).", ff.getId().getSeqNo()));
 							return false;
 						}
 						return true;
@@ -3107,7 +3107,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.filter(rf -> {
 					if (rf.getDateDebut() == null) {
 						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
-						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début nulle.",
+						              String.format("Régime fiscal %s %s ignoré en raison de sa date de début nulle (ou antérieure au 01.08.1291).",
 						                            portee,
 						                            rf.getType()));
 						return false;

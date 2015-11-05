@@ -1551,7 +1551,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(3, textesFors.size());
 		Assert.assertEquals("Plusieurs (2) fors principaux de même type (SIEGE) mais sur des autorités fiscales différentes (COMMUNE_OU_FRACTION_VD/5586, COMMUNE_OU_FRACTION_VD/5518) ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
-		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début nulle (ou antérieure au 01.08.1291).", textesFors.get(1));
 		Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5642 [07.05.2005 -> ?] généré.", textesFors.get(2));
 	}
 
@@ -1589,7 +1589,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<String> textesFors = messagesFors.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(2, textesFors.size());
 		Assert.assertEquals("Plusieurs (2) fors principaux de même type (SIEGE) mais sur des autorités fiscales différentes (COMMUNE_OU_FRACTION_VD/5586, COMMUNE_OU_FRACTION_VD/5518) ont une date de début identique au ? : seul le dernier sera pris en compte.", textesFors.get(0));
-		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début nulle.", textesFors.get(1));
+		Assert.assertEquals("Le for principal 2 est ignoré car il a une date de début nulle (ou antérieure au 01.08.1291).", textesFors.get(1));
 
 		// .. et dans le contexte "SUIVI"
 		assertExistMessageWithContent(mr, LogCategory.SUIVI, "\\bPas de siège associé, pas d'établissement principal créé\\.");
@@ -1624,8 +1624,8 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
 		Assert.assertEquals(7, textes.size());
 		Assert.assertEquals("L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", textes.get(0));
-		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textes.get(1));
-		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle.", textes.get(2));
+		Assert.assertEquals("Régime fiscal CH _01_ORDINAIRE ignoré en raison de sa date de début nulle (ou antérieure au 01.08.1291).", textes.get(1));
+		Assert.assertEquals("Régime fiscal VD _01_ORDINAIRE ignoré en raison de sa date de début nulle (ou antérieure au 01.08.1291).", textes.get(2));
 		Assert.assertEquals("Entreprise sans exercice commercial ni for principal.", textes.get(3));
 		Assert.assertEquals("Entreprise sans exercice commercial ni date de bouclement futur.", textes.get(4));
 		Assert.assertEquals("Pas de siège associé, pas d'établissement principal créé.", textes.get(5));
