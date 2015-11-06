@@ -22,11 +22,11 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	public DonneesRegistreIDE ide;
 
 	private final long numeroSite;
-	private Map<String,List<DateRanged<String>>> autresIdentifiants;
-	private List<DateRanged<String>> nomsAdditionnels;
+	private Map<String, List<DateRanged<String>>> autresIdentifiants;
+	private Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private List<DateRanged<TypeDeSite>> typesDeSite;
 	private List<Siege> sieges;
-	private List<DateRanged<FonctionOrganisation>> fonction;
+	private Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 
 	public SiteOrganisationBuilder(long numeroSite) {
 		this.numeroSite = numeroSite;
@@ -47,8 +47,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		nomsAdditionnels = BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addNomAdditionnel(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		nomsAdditionnels = BuilderHelper.addValueToMapOfList(nomsAdditionnels, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -62,8 +62,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder addFonction(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FonctionOrganisation valeur) {
-		fonction = BuilderHelper.addValueToList(fonction, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public SiteOrganisationBuilder addFonction(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FonctionOrganisation valeur) {
+		fonction = BuilderHelper.addValueToMapOfList(fonction, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -77,7 +77,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder withFonctions(List<DateRanged<FonctionOrganisation>> fonction) {
+	public SiteOrganisationBuilder withFonctions(Map<String, List<DateRanged<FonctionOrganisation>>> fonction) {
 		this.fonction = fonction;
 		return this;
 	}
@@ -87,7 +87,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 		return this;
 	}
 
-	public SiteOrganisationBuilder withNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+	public SiteOrganisationBuilder withNomsAdditionnels(Map<String, List<DateRanged<String>>> nomsAdditionnels) {
 		this.nomsAdditionnels = nomsAdditionnels;
 		return this;
 	}

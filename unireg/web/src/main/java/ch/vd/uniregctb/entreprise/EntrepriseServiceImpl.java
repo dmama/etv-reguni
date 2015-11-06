@@ -70,7 +70,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			//Organisation organisation = HorribleMockOrganisationService.getOrg(); // FIXME: Faire le ménage
 
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(organisation.getNom()).getPayload());
-			entrepriseView.setAutresRaisonsSociales(getNomsAdditionnels(organisation));
+			entrepriseView.setAutresRaisonsSociales(organisation.getNomsAdditionnels(RegDate.get()));
 
 			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
@@ -215,19 +215,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		                                                                                    });
 		Collections.reverse(views);
 		return views;
-	}
-
-	private static List<String> getNomsAdditionnels(Organisation organisation) {
-		List<String> l = new ArrayList<>();
-		List<DateRanged<String>> nomsAdditionels = organisation.getNomsAdditionels();
-		if (nomsAdditionels != null) {
-			for (DateRanged dr : nomsAdditionels) {
-				if (dr.isValidAt(RegDate.get())) {
-					l.add((String) dr.getPayload());
-				}
-			}
-		}
-		return l;
 	}
 
 	private List<SiegeView> getSiegesFromOrganisation(List<Siege> sieges) {

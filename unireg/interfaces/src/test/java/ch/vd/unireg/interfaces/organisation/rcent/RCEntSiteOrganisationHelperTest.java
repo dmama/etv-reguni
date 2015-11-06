@@ -47,12 +47,14 @@ public class RCEntSiteOrganisationHelperTest {
 		nom.add(new Ranged<>(refDate, null, "Ma boîte"));
 
 		final Map<String, List<Ranged<String>>> identifiers = new HashMap<>();
-		final List<Ranged<String>> otherNames = new ArrayList<>();
+		final Map<String, List<Ranged<String>>> otherNames = new HashMap<>();
 		final List<Ranged<KindOfLocation>> kindOfLocation = new ArrayList<>();
 		kindOfLocation.add(new Ranged<>(refDate, null, KindOfLocation.ETABLISSEMENT_PRINCIPAL));
 		final List<Ranged<Integer>> seat = new ArrayList<>();
 		seat.add(new Ranged<>(refDate, null, MockCommune.Lausanne.getNoOFS()));
-		final List<Ranged<OrganisationFunction>> function = new ArrayList<>();
+		final Map<String, List<Ranged<OrganisationFunction>>> function = new HashMap<>();
+		final List<Ranged<Long>> replacedBy = new ArrayList<>();
+		final Map<Long, List<Ranged<Long>>> inReplacementOf = new HashMap<>();
 
 		final List<Ranged<CommercialRegisterStatus>> status = new ArrayList<>(1);
 		status.add(new Ranged<>(refDate, null, CommercialRegisterStatus.INSCRIT));
@@ -69,7 +71,7 @@ public class RCEntSiteOrganisationHelperTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, otherNames, kindOfLocation, seat, function);
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, otherNames, kindOfLocation, seat, function, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);
@@ -94,12 +96,14 @@ public class RCEntSiteOrganisationHelperTest {
 		nom.add(new Ranged<>(refDate, null, "Ma boîte"));
 
 		final Map<String, List<Ranged<String>>> identifiers = new HashMap<>();
-		final List<Ranged<String>> otherNames = new ArrayList<>();
+		final Map<String, List<Ranged<String>>> otherNames = new HashMap<>();
 		final List<Ranged<KindOfLocation>> kindOfLocation = new ArrayList<>();
 		kindOfLocation.add(new Ranged<>(refDate, null, KindOfLocation.ETABLISSEMENT_PRINCIPAL));
 		final List<Ranged<Integer>> seat = new ArrayList<>();
 		seat.add(new Ranged<>(refDate, null, MockCommune.Lausanne.getNoOFS()));
-		final List<Ranged<OrganisationFunction>> function = new ArrayList<>();
+		final Map<String, List<Ranged<OrganisationFunction>>> function = new HashMap<>();
+		final List<Ranged<Long>> replacedBy = new ArrayList<>();
+		final Map<Long, List<Ranged<Long>>> inReplacementOf = new HashMap<>();
 
 		final List<Ranged<CommercialRegisterStatus>> status = new ArrayList<>(1);
 		status.add(new Ranged<>(refDate, null, CommercialRegisterStatus.INSCRIT));
@@ -116,7 +120,7 @@ public class RCEntSiteOrganisationHelperTest {
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
 		final OrganisationLocation.RCEntUIDData uid = new OrganisationLocation.RCEntUIDData(null, statusIde, null, null, null);
 
-		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, otherNames, kindOfLocation, seat, function);
+		final OrganisationLocation loc = new OrganisationLocation(4567, nom, rc, uid, identifiers, otherNames, kindOfLocation, seat, function, replacedBy, inReplacementOf);
 
 		// Conversion
 		final SiteOrganisation site = RCEntSiteOrganisationHelper.get(loc, serviceInfra);

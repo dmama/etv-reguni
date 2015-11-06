@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 
@@ -23,29 +24,29 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@NotNull
 	private final List<DateRanged<String>> nom;
-	private final List<DateRanged<String>> nomsAdditionels;
+	private final Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private final List<DateRanged<FormeLegale>> formeLegale;
 
 	@NotNull
 	private final Map<Long, SiteOrganisation> donneesSites;
 
-	private final List<DateRanged<Long>> transfereA;
-	private final List<DateRanged<Long>> transferDe;
+	private final Map<Long, List<DateRanged<Long>>> transfereA;
+	private final Map<Long, List<DateRanged<Long>>> transferDe;
 	private final List<DateRanged<Long>> remplacePar;
-	private final List<DateRanged<Long>> enRemplacementDe;
+	private final Map<Long, List<DateRanged<Long>>> enRemplacementDe;
 
 	public OrganisationRCEnt(long numeroOrganisation,
 	                         @NotNull Map<String, List<DateRanged<String>>> identifiants,
 	                         @NotNull List<DateRanged<String>> nom,
-	                         List<DateRanged<String>> nomsAdditionels,
+	                         Map<String, List<DateRanged<String>>> nomsAdditionnels,
 	                         List<DateRanged<FormeLegale>> formeLegale,
 	                         @NotNull Map<Long, SiteOrganisation> donneesSites,
-	                         List<DateRanged<Long>> transfereA, List<DateRanged<Long>> transferDe,
-	                         List<DateRanged<Long>> remplacePar, List<DateRanged<Long>> enRemplacementDe) {
+	                         Map<Long, List<DateRanged<Long>>> transfereA, Map<Long, List<DateRanged<Long>>> transferDe,
+	                         List<DateRanged<Long>> remplacePar, Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
 		this.numeroOrganisation = numeroOrganisation;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(identifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
-		this.nomsAdditionels = nomsAdditionels;
+		this.nomsAdditionnels = nomsAdditionnels;
 		this.formeLegale = formeLegale;
 		this.donneesSites = donneesSites;
 		this.transfereA = transfereA;
@@ -131,8 +132,18 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getEnRemplacementDe() {
+	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
 		return enRemplacementDe;
+	}
+
+	@Override
+	public List<Long> getEnRemplacementDe(RegDate date) {
+		final RegDate theDate= date != null ? date : RegDate.get();
+
+		if (enRemplacementDe != null) {
+			return OrganisationHelper.valuesForDate(enRemplacementDe, theDate);
+		}
+		return null;
 	}
 
 	@Override
@@ -152,8 +163,18 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	@Override
-	public List<DateRanged<String>> getNomsAdditionels() {
-		return nomsAdditionels;
+	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
+		return nomsAdditionnels;
+	}
+
+	@Override
+	public List<String> getNomsAdditionnels(RegDate date) {
+		final RegDate theDate= date != null ? date : RegDate.get();
+
+		if (nomsAdditionnels != null) {
+			return OrganisationHelper.valuesForDate(nomsAdditionnels, theDate);
+		}
+		return null;
 	}
 
 	@Override
@@ -162,12 +183,17 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getTransferDe() {
+	public Long getRemplacePar(RegDate date) {
+		return date != null ? DateRangeHelper.rangeAt(remplacePar, date).getPayload() : DateRangeHelper.rangeAt(remplacePar, RegDate.get()).getPayload();
+	}
+
+	@Override
+	public Map<Long, List<DateRanged<Long>>> getTransferDe() {
 		return transferDe;
 	}
 
 	@Override
-	public List<DateRanged<Long>> getTransfereA() {
+	public Map<Long, List<DateRanged<Long>>> getTransfereA() {
 		return transfereA;
 	}
 

@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,20 +23,20 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	public final DonneesRC rc;
 	public final DonneesRegistreIDE ide;
 
-	private final List<DateRanged<String>> nomsAdditionnels;
+	private final Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private final List<DateRanged<TypeDeSite>> typeDeSite;
 
 	private final List<Siege> siege;
-	private final List<DateRanged<FonctionOrganisation>> fonction;
+	private final Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 
 	public SiteOrganisationRCEnt(long numeroSite,
 	                             Map<String, List<DateRanged<String>>> autresIdentifiants,
 	                             List<DateRanged<String>> nom,
 	                             DonneesRC rc,
 	                             DonneesRegistreIDE ide,
-	                             List<DateRanged<String>> nomsAdditionnels,
+	                             Map<String, List<DateRanged<String>>> nomsAdditionnels,
 	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Siege> siege,
-	                             List<DateRanged<FonctionOrganisation>> fonction) {
+	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction) {
 		this.numeroSite = numeroSite;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
@@ -52,7 +53,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return numeroSite;
 	}
 
-	public List<DateRanged<FonctionOrganisation>> getFonction() {
+	public Map<String, List<DateRanged<FonctionOrganisation>>> getFonction() {
 		return fonction;
 	}
 
@@ -70,8 +71,22 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return nom;
 	}
 
-	public List<DateRanged<String>> getNomsAdditionnels() {
+	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
 		return nomsAdditionnels;
+	}
+
+	public List<String> getNomsAdditionnels(RegDate date) {
+		final RegDate theDate= date != null ? date : RegDate.get();
+		List<String> na = new ArrayList<>();
+
+		if (nomsAdditionnels != null) {
+			for (Map.Entry<String, List<DateRanged<String>>> histoNom : nomsAdditionnels.entrySet()) {
+				if (DateRangeHelper.rangeAt(histoNom.getValue(), theDate) != null) {
+					na.add(histoNom.getKey());
+				}
+			}
+		}
+		return na;
 	}
 
 	public DonneesRC getDonneesRC() {

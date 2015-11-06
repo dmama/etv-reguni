@@ -34,9 +34,9 @@ public class OrganisationRCEntTest {
 				.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")
 				.addNom(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "Springbok Ski Tours S.A.")
 				.addNom(RegDate.get(2015, 10, 1), null, "Springbok Ski Tours S.A., en liquidation")
-				.addNomAdditionnel(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "SST S.A.R.L.")
-				.addNomAdditionnel(RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
-				.addNomAdditionnel(RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
+				.addNomAdditionnel("SST S.A.R.L.", RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "SST S.A.R.L.")
+				.addNomAdditionnel("SST S.A.", RegDate.get(2015, 5, 30), RegDate.get(2015, 9, 30), "SST S.A.")
+				.addNomAdditionnel("SST S.A., en liquidation", RegDate.get(2015, 10, 1), null, "SST S.A., en liquidation")
 
 				.addAutreIdentifiant(OrganisationConstants.CLE_IDE, RegDate.get(2015, 4, 29), null, "CHE543257199")
 				.addAutreIdentifiant("CH.RC", RegDate.get(2015, 4, 29), null, "CHE123456199")

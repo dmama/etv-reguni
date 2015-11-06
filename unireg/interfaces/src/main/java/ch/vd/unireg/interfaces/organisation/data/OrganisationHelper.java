@@ -24,6 +24,25 @@ import ch.vd.unireg.interfaces.common.Adresse;
 public abstract class OrganisationHelper {
 
 	/**
+	 * Retourne la liste des la liste des valeurs valides pour une date donnée d'un champ multivaleur.
+	 * @param map
+	 * @param theDate
+	 * @param <K>
+	 * @param <V>
+	 * @return
+	 */
+	public static <K, V> List<V> valuesForDate(Map<K, List<DateRanged<V>>> map, RegDate theDate) {
+		List<V> na = new ArrayList<>();
+		for (Map.Entry<K, List<DateRanged<V>>> entry : map.entrySet()) {
+			final DateRanged<V> vDateRanged = DateRangeHelper.rangeAt(entry.getValue(), theDate);
+			if (vDateRanged != null) {
+				na.add(vDateRanged.getPayload());
+			}
+		}
+		return na;
+	}
+
+	/**
 	 * @param identifiants map d'identifiants datés triés par une clé qui indique leur type (numéro IDE, identifiant cantonal...)
 	 * @param cle la clé en question (CT.VD.PARTY pour l'identifiant cantonal, CH.IDE pour le numéro IDE)
 	 * @return la liste historisée des valeurs de ce type
@@ -255,5 +274,4 @@ public abstract class OrganisationHelper {
 			}
 		};
 	}
-
 }

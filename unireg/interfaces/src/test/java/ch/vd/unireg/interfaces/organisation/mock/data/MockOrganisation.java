@@ -11,7 +11,6 @@ import java.util.TreeMap;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -38,7 +37,9 @@ public class MockOrganisation implements Organisation {
 
 	private final long idOrganisation;
 	private final NavigableMap<RegDate, String> nom = new TreeMap<>();
+	private final NavigableMap<RegDate, Long> remplacePar = new TreeMap<>();
 	private final NavigableMap<RegDate, List<String>> nomsAdditionnels = new TreeMap<>();
+	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
 	private final List<MockSiteOrganisation> sites = new ArrayList<>();
@@ -98,7 +99,14 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getEnRemplacementDe() {
+	public List<Long> getEnRemplacementDe(RegDate date) {
+		RegDate theDate= date != null ? date : RegDate.get();
+		final List<DateRanged<List<Long>>> histo = MockOrganisationHelper.getHisto(enRemplacementDe);
+		return DateRangeHelper.rangeAt(histo, theDate).getPayload();
+	}
+
+	@Override
+	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
 		throw new NotImplementedException();
 	}
 
@@ -128,38 +136,13 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<DateRanged<String>> getNomsAdditionels() {
-		// un peu de calcul...
+	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
+		return MockOrganisationHelper.reconstitueMultiValeur(this.nomsAdditionnels);
+	}
 
-		// on commence par regrouper les noms entre eux
-		final Map<String, List<DateRange>> noms = new HashMap<>();
-		final List<DateRanged<List<String>>> histo = MockOrganisationHelper.getHisto(nomsAdditionnels);
-		for (DateRanged<List<String>> range : histo) {
-			for (String nom : range.getPayload()) {
-				final List<DateRange> rangesPourNom;
-				if (!noms.containsKey(nom)) {
-					rangesPourNom = new ArrayList<>();
-					noms.put(nom, rangesPourNom);
-				}
-				else {
-					rangesPourNom = noms.get(nom);
-				}
-				rangesPourNom.add(range);
-			}
-		}
-
-		// puis on reconstitue tous les ranges pour les noms
-		final List<DateRanged<String>> result = new ArrayList<>();
-		for (Map.Entry<String, List<DateRange>> entry : noms.entrySet()) {
-			final List<DateRange> merged = DateRangeHelper.merge(entry.getValue());
-			for (DateRange range : merged) {
-				result.add(new DateRanged<>(range.getDateDebut(), range.getDateFin(), entry.getKey()));
-			}
-		}
-
-		// et on trie tout ça
-		Collections.sort(result, new DateRangeComparator<>());
-		return result;
+	@Override
+	public List<String> getNomsAdditionnels(RegDate date) {
+		return null;
 	}
 
 	@Override
@@ -173,12 +156,17 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<DateRanged<Long>> getTransferDe() {
+	public Long getRemplacePar(RegDate date) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<DateRanged<Long>> getTransfereA() {
+	public Map<Long, List<DateRanged<Long>>> getTransferDe() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Map<Long, List<DateRanged<Long>>> getTransfereA() {
 		throw new NotImplementedException();
 	}
 

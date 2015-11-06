@@ -35,15 +35,15 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private Map<String, List<DateRanged<String>>> autresIdentifiants;
 
 	private List<DateRanged<String>> nom;
-	private List<DateRanged<String>> nomsAdditionnels;
+	private Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private List<DateRanged<FormeLegale>> formeLegale;
 
 	private Map<Long, SiteOrganisation> donneesSites;
 
-	private List<DateRanged<Long>> transfereA;
-	private List<DateRanged<Long>> transferDe;
+	private Map<Long, List<DateRanged<Long>>> transfereA;
+	private Map<Long, List<DateRanged<Long>>> transferDe;
 	private List<DateRanged<Long>> remplacePar;
-	private List<DateRanged<Long>> enRemplacementDe;
+	private Map<Long, List<DateRanged<Long>>> enRemplacementDe;
 
 	public OrganisationBuilder(long numeroOrganisation) {
 		this.numeroOrganisation = numeroOrganisation;
@@ -65,8 +65,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder addNomAdditionnel(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
-		nomsAdditionnels = BuilderHelper.addValueToList(nomsAdditionnels, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public OrganisationBuilder addNomAdditionnel(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
+		nomsAdditionnels = BuilderHelper.addValueToMapOfList(nomsAdditionnels, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -80,13 +80,13 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder addTransfereA(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		transfereA = BuilderHelper.addValueToList(transfereA, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public OrganisationBuilder addTransfereA(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		transfereA = BuilderHelper.addValueToMapOfList(transfereA, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
-	public OrganisationBuilder addTransferDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		transferDe = BuilderHelper.addValueToList(transferDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public OrganisationBuilder addTransferDe(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		transferDe = BuilderHelper.addValueToMapOfList(transferDe, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -95,8 +95,8 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder addEnRemplacementDe(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
-		enRemplacementDe = BuilderHelper.addValueToList(enRemplacementDe, new DateRanged<>(dateDebut, dateDeFin, valeur));
+	public OrganisationBuilder addEnRemplacementDe(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		enRemplacementDe = BuilderHelper.addValueToMapOfList(enRemplacementDe, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -105,7 +105,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder withEnRemplacementDe(List<DateRanged<Long>> enRemplacementDe) {
+	public OrganisationBuilder withEnRemplacementDe(Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
 		this.enRemplacementDe = enRemplacementDe;
 		return this;
 	}
@@ -120,7 +120,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder withNomsAdditionnels(List<DateRanged<String>> nomsAdditionnels) {
+	public OrganisationBuilder withNomsAdditionnels(Map<String, List<DateRanged<String>>> nomsAdditionnels) {
 		this.nomsAdditionnels = nomsAdditionnels;
 		return this;
 	}
@@ -130,12 +130,12 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 		return this;
 	}
 
-	public OrganisationBuilder withTransferDe(List<DateRanged<Long>> transferDe) {
+	public OrganisationBuilder withTransferDe(Map<Long, List<DateRanged<Long>>> transferDe) {
 		this.transferDe = transferDe;
 		return this;
 	}
 
-	public OrganisationBuilder withTransfereA(List<DateRanged<Long>> transfereA) {
+	public OrganisationBuilder withTransfereA(Map<Long, List<DateRanged<Long>>> transfereA) {
 		this.transfereA = transfereA;
 		return this;
 	}

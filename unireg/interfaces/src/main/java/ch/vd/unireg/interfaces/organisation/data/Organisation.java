@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
@@ -18,6 +19,8 @@ public interface Organisation {
 	 * @return Liste des sites de l'organisation
 	 */
 	List<SiteOrganisation> getDonneesSites();
+
+	List<Long> getEnRemplacementDe(RegDate date);
 
 	/**
 	 * @return historique des formes juridiques de l'organisation
@@ -39,7 +42,9 @@ public interface Organisation {
 	/**
 	 * @return historiques des noms additionnels de l'organisation
 	 */
-	List<DateRanged<String>> getNomsAdditionels();
+	Map<String, List<DateRanged<String>>> getNomsAdditionnels();
+
+	List<String> getNomsAdditionnels(RegDate date);
 
 	Siege getSiegePrincipal(RegDate date);
 
@@ -51,13 +56,15 @@ public interface Organisation {
 
 	List<Adresse> getAdresses();
 
-	List<DateRanged<Long>> getEnRemplacementDe();
+	Map<Long, List<DateRanged<Long>>> getEnRemplacementDe();
 
 	List<DateRanged<Long>> getRemplacePar();
 
-	List<DateRanged<Long>> getTransferDe();
+	Long getRemplacePar(RegDate date);
 
-	List<DateRanged<Long>> getTransfereA();
+	Map<Long, List<DateRanged<Long>>> getTransferDe();
+
+	Map<Long, List<DateRanged<Long>>> getTransfereA();
 
 	List<DateRanged<SiteOrganisation>> getSitePrincipaux();
 

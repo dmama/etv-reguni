@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 
@@ -17,7 +18,7 @@ public interface SiteOrganisation {
 	/**
 	 * @return les fonctions associées à cet établissement
 	 */
-	List<DateRanged<FonctionOrganisation>> getFonction();
+	Map<String, List<DateRanged<FonctionOrganisation>>> getFonction();
 
 	/**
 	 * @return historique des identifiants IDE

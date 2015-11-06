@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -84,7 +85,7 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
-	public List<DateRanged<FonctionOrganisation>> getFonction() {
+	public Map<String, List<DateRanged<FonctionOrganisation>>> getFonction() {
 		throw new NotImplementedException();
 	}
 

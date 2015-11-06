@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.organisation.mock.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -10,6 +12,8 @@ import java.util.TreeMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -79,4 +83,49 @@ public abstract class MockOrganisationHelper {
 		return histo;
 	}
 
+	@NotNull
+	public static <T> Map<T, List<DateRanged<T>>> reconstitueMultiValeur(NavigableMap<RegDate, List<T>> dataMap) {
+		// un peu de calcul...
+
+		// on commence par regrouper les noms entre eux
+		final Map<T, List<DateRange>> noms = new HashMap<>();
+		final List<DateRanged<List<T>>> histo = MockOrganisationHelper.getHisto(dataMap);
+		for (DateRanged<List<T>> range : histo) {
+			for (T nom : range.getPayload()) {
+				final List<DateRange> rangesPourNom;
+				if (!noms.containsKey(nom)) {
+					rangesPourNom = new ArrayList<>();
+					noms.put(nom, rangesPourNom);
+				}
+				else {
+					rangesPourNom = noms.get(nom);
+				}
+				rangesPourNom.add(range);
+			}
+		}
+
+		// puis on reconstitue tous les ranges pour les noms
+		final List<DateRanged<T>> intermediate = new ArrayList<>();
+		for (Map.Entry<T, List<DateRange>> entry : noms.entrySet()) {
+			final List<DateRange> merged = DateRangeHelper.merge(entry.getValue());
+			for (DateRange range : merged) {
+				intermediate.add(new DateRanged<>(range.getDateDebut(), range.getDateFin(), entry.getKey()));
+			}
+		}
+
+		// et on trie tout ça
+		Collections.sort(intermediate, new DateRangeComparator<>());
+
+		// On on rebalance ca dans une map...
+		Map<T, List<DateRanged<T>>> resultMap = new HashMap<>();
+		for (DateRanged<T> nomRange : intermediate) {
+			List<DateRanged<T>> list = resultMap.get(nomRange.getPayload());
+			if (list == null) {
+				list = new ArrayList<>();
+				resultMap.put(nomRange.getPayload(), list);
+			}
+			list.add(nomRange);
+		}
+		return resultMap;
+	}
 }
