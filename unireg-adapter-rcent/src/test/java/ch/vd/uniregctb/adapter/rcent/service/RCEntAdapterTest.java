@@ -6,7 +6,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -357,22 +356,17 @@ public class RCEntAdapterTest {
 		List<DateRangeHelper.Ranged<RegDate>> locationRcEntryDate = organisation.getLocationData().get(0).getRc().getEntryDate();
 		assertEquals(RegDate.get(2007, 4, 16), locationRcEntryDate.get(0).getPayload());
 
-		List<DateRangeHelper.Ranged<OrganisationFunction>> locationFunctions = organisation.getLocationData().get(0).getFunction();
+		Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> locationFunctions = organisation.getLocationData().get(0).getFunction();
 		assertEquals(2, locationFunctions.size()); // S'il y en a plus, c'est que l'Historizer ne sait pas identifier proprement les fonctions qu'on doit considérer identiques.
-		Map<String, DateRangeHelper.Ranged<OrganisationFunction>> functionMap = new HashMap<>();
-		DateRangeHelper.Ranged<OrganisationFunction> function0 = locationFunctions.get(0);
-		functionMap.put(function0.getPayload().getName(), function0);
-		DateRangeHelper.Ranged<OrganisationFunction> function1 = locationFunctions.get(1);
-		functionMap.put(function1.getPayload().getName(), function1);
 
-		assertEquals("Harrison Ford", functionMap.get("Harrison Ford").getPayload().getName());
-		assertEquals(RegDate.get(2015, 7, 7), functionMap.get("Harrison Ford").getDateDebut());
-		assertEquals("Président du Conseil d'Administration", functionMap.get("Harrison Ford").getPayload().getFunctionText());
-		assertEquals(Authorisation.SIG_INDIVIDUELLE, functionMap.get("Harrison Ford").getPayload().getAuthorisation());
-		assertNull(functionMap.get("Harrison Ford").getDateFin());
+		assertEquals("Harrison Ford", locationFunctions.get("Harrison Ford").get(0).getPayload().getName());
+		assertEquals(RegDate.get(2015, 7, 7), locationFunctions.get("Harrison Ford").get(0).getDateDebut());
+		assertEquals("Président du Conseil d'Administration", locationFunctions.get("Harrison Ford").get(0).getPayload().getFunctionText());
+		assertEquals(Authorisation.SIG_INDIVIDUELLE, locationFunctions.get("Harrison Ford").get(0).getPayload().getAuthorisation());
+		assertNull(locationFunctions.get("Harrison Ford").get(0).getDateFin());
 
-		assertEquals("Harring", functionMap.get("Harring").getPayload().getName());
-		assertEquals(RegDate.get(2015, 8, 5), functionMap.get("Harring").getDateDebut());
-		assertNull(functionMap.get("Harring").getDateFin());
+		assertEquals("Harring", locationFunctions.get("Harring").get(0).getPayload().getName());
+		assertEquals(RegDate.get(2015, 8, 5), locationFunctions.get("Harring").get(0).getDateDebut());
+		assertNull(locationFunctions.get("Harring").get(0).getDateFin());
 	}
 }

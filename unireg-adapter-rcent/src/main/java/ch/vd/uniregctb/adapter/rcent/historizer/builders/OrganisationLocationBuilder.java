@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.adapter.rcent.historizer.builders;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,7 +38,7 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>>> entryStatus;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital;
-    private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate;
 
@@ -117,26 +115,14 @@ public class OrganisationLocationBuilder {
 				                                   otherNames.get(e.getKey()),
 				                                   kindOfLocations.get(e.getKey()),
 				                                   seats.get(e.getKey()),
-				                                   convertOrganisationFunction(function.get(e.getKey())),
+				                                   function.get(e.getKey()) == null ? null : MultivalueListConverter
+						                                   .toMapOfListsOfDateRangedValues(function.get(e.getKey()), f -> f.getParty().getPerson().getName(), OrganisationFunction::new),
 				                                   replacedBy.get(e.getKey()) == null ? null : DateRangedConvertor.convert(replacedBy.get(e.getKey()), BigInteger::longValue),
 				                                   inReplacementOf.get(e.getKey()) == null ? null :
 						                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(inReplacementOf.get(e.getKey()), BigInteger::longValue,
 						                                                                                          BigInteger::longValue)
 				     )
 				)
-						.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
-
-	private List<DateRangeHelper.Ranged<OrganisationFunction>> convertOrganisationFunction(List<DateRangeHelper.Ranged<Function>> dateRangeds) {
-		if (dateRangeds != null) {
-			List<DateRangeHelper.Ranged<OrganisationFunction>> functions = new ArrayList<>(dateRangeds.size());
-			for (DateRangeHelper.Ranged<Function> rf : dateRangeds) {
-				functions.add(new DateRangeHelper.Ranged<>(rf.getDateDebut(), rf.getDateFin(), new OrganisationFunction(rf.getPayload())));
-			}
-			return functions;
-		}
-		return Collections.emptyList();
-	}
-
-
 }

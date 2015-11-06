@@ -32,14 +32,14 @@ public class OrganisationLocation {
 	private final List<DateRangeHelper.Ranged<String>> otherNames;
 	private final List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation;
 	private final List<DateRangeHelper.Ranged<Integer>> seat;
-	private final List<DateRangeHelper.Ranged<OrganisationFunction>> function;
+	private final Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function;
 	private final List<DateRangeHelper.Ranged<Long>> replacedBy;
 	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            Map<String,List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> otherNames,
 	                            List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation, List<DateRangeHelper.Ranged<Integer>> seat,
-	                            List<DateRangeHelper.Ranged<OrganisationFunction>> function,  List<DateRangeHelper.Ranged<Long>> replacedBy,
+	                            Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function, List<DateRangeHelper.Ranged<Long>> replacedBy,
 	                            Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.name = name;
@@ -58,7 +58,18 @@ public class OrganisationLocation {
 		return cantonalId;
 	}
 
-	public List<DateRangeHelper.Ranged<OrganisationFunction>> getFunction() {
+	/**
+	 * Historique des personnes associées à l'organisation dans le cadre d'une fonction. L'historique
+	 * de chaque personne est séparé et indexé par son nom.
+	 *
+	 * Pourquoi son nom? Parce que c'est le seul champ obligatoire dont on dispose. L'historique d'une personne sera donc
+	 * discontinu en cas de changement de nom suite à changement d'état civil ou correction. Mais c'est mieux que d'avoir des trous.
+	 *
+	 * Ce champ est donc essentiellement un champ de consultation.
+	 *
+	 * @return La Map des historiques, ou null si aucune fonction.
+	 */
+	public Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> getFunction() {
 		return function;
 	}
 
