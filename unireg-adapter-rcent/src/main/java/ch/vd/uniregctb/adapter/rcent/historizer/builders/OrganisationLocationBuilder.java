@@ -112,7 +112,9 @@ public class OrganisationLocationBuilder {
 				                                   ),
 				                                   MultivalueListConverter.toMapOfListsOfDateRangedValues(identifiers.get(e.getKey()), Identifier::getIdentifierCategory,
 				                                                                                          Identifier::getIdentifierValue),
-				                                   otherNames.get(e.getKey()),
+				                                   otherNames.get(e.getKey()) == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(otherNames.get(e.getKey()),
+				                                                                                                                                      java.util.function.Function.identity(),
+				                                                                                                                                      java.util.function.Function.identity()),
 				                                   kindOfLocations.get(e.getKey()),
 				                                   seats.get(e.getKey()),
 				                                   function.get(e.getKey()) == null ? null : MultivalueListConverter

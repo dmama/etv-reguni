@@ -20,7 +20,7 @@ public class Organisation {
 
 	@NotNull
 	private final List<DateRangeHelper.Ranged<String>> organisationName;
-	private final List<DateRangeHelper.Ranged<String>> organisationAdditionalName;
+	private final Map<String, List<DateRangeHelper.Ranged<String>>> organisationAdditionalName;
 	private final List<DateRangeHelper.Ranged<LegalForm>> legalForm;
 
 	private final List<DateRangeHelper.Ranged<Long>> locations;
@@ -32,7 +32,7 @@ public class Organisation {
 	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf;
 
 	public Organisation(long cantonalId, @NotNull Map<String, List<DateRangeHelper.Ranged<String>>> organisationIdentifiers,
-	                    @NotNull List<DateRangeHelper.Ranged<String>> organisationName, List<DateRangeHelper.Ranged<String>> organisationAdditionalName,
+	                    @NotNull List<DateRangeHelper.Ranged<String>> organisationName, Map<String, List<DateRangeHelper.Ranged<String>>> organisationAdditionalName,
 	                    List<DateRangeHelper.Ranged<LegalForm>> legalForm, List<DateRangeHelper.Ranged<Long>> locations, List<OrganisationLocation> locationData,
 	                    Map<Long, List<DateRangeHelper.Ranged<Long>>> transferTo, Map<Long, List<DateRangeHelper.Ranged<Long>>> transferFrom, List<DateRangeHelper.Ranged<Long>> replacedBy,
 	                    Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf) {
@@ -65,7 +65,7 @@ public class Organisation {
 		return locations;
 	}
 
-	public List<DateRangeHelper.Ranged<String>> getOrganisationAdditionalName() {
+	public Map<String, List<DateRangeHelper.Ranged<String>>> getOrganisationAdditionalName() {
 		return organisationAdditionalName;
 	}
 

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adapter.rcent.historizer.builders;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.function.Function;
 
 import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.LegalForm;
@@ -53,7 +54,7 @@ private final List<OrganisationLocation> locationsData;
 		return new Organisation(cantonalId.longValue(),
 		                        MultivalueListConverter.toMapOfListsOfDateRangedValues(organisationIdentifiers, Identifier::getIdentifierCategory, Identifier::getIdentifierValue),
 		                        nomsEntreprise,
-		                        nomsAdditionnelsEntreprise,
+		                        MultivalueListConverter.toMapOfListsOfDateRangedValues(nomsAdditionnelsEntreprise, Function.identity(), Function.identity()),
 		                        formesJuridiques,
 		                        DateRangedConvertor.convert(locations, BigInteger::longValue),
 		                        locationsData,

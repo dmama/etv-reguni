@@ -29,7 +29,7 @@ public class OrganisationLocation {
 	public final RCEntUIDData uid;
 
 	private final Map<String,List<DateRangeHelper.Ranged<String>>> identifiers;
-	private final List<DateRangeHelper.Ranged<String>> otherNames;
+	private final Map<String, List<DateRangeHelper.Ranged<String>>> otherNames;
 	private final List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation;
 	private final List<DateRangeHelper.Ranged<Integer>> seat;
 	private final Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function;
@@ -37,7 +37,7 @@ public class OrganisationLocation {
 	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
-	                            Map<String,List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> otherNames,
+	                            Map<String,List<DateRangeHelper.Ranged<String>>> identifiers, Map<String, List<DateRangeHelper.Ranged<String>>> otherNames,
 	                            List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation, List<DateRangeHelper.Ranged<Integer>> seat,
 	                            Map<String, List<DateRangeHelper.Ranged<OrganisationFunction>>> function, List<DateRangeHelper.Ranged<Long>> replacedBy,
 	                            Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf) {
@@ -86,7 +86,11 @@ public class OrganisationLocation {
 		return name;
 	}
 
-	public List<DateRangeHelper.Ranged<String>> getOtherNames() {
+	/**
+	 * Historique multivaleur des autres noms, indexés par eux-même.
+	 * @return La Map des autres noms, ou null si aucun historique.
+	 */
+	public Map<String, List<DateRangeHelper.Ranged<String>>> getOtherNames() {
 		return otherNames;
 	}
 
