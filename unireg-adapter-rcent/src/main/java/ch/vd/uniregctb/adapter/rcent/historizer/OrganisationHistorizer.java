@@ -41,12 +41,14 @@ import ch.vd.uniregctb.adapter.rcent.historizer.extractor.CapitalExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.KindOfLocationExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationFunctionsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationIdentifiersExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationNamesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationOtherNamesExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcByLawsDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcEntryDateExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcNameExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationRcPurposeExtractor;
+import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationReplacedByExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.LocationsExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationInReplacementOfExtractor;
 import ch.vd.uniregctb.adapter.rcent.historizer.extractor.OrganisationReplacedByExtractor;
@@ -138,6 +140,13 @@ public class OrganisationHistorizer {
 		final IndexedDataCollector<Organisation, Function, BigInteger> locationFunctionCollector = new MultiValueIndexedDataCollector<>(new LocationFunctionsExtractor(),
 		                                                                                                                                new OrganisationFunctionEqualator(),
 		                                                                                                                                k -> new OrganisationFunction(k.getValue())
+		);
+		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationReplacedByCollector = new SingleValueIndexedDataCollector<>(new LocationReplacedByExtractor(),
+		                                                                                                                                  Equalator.DEFAULT
+		);
+		final IndexedDataCollector<Organisation, BigInteger, BigInteger> locationInReplacementOfCollector = new MultiValueIndexedDataCollector<>(new LocationInReplacementOfExtractor(),
+		                                                                                                                                      Equalator.DEFAULT,
+		                                                                                                                                      java.util.function.Function.identity()
 		);
 
 		// RC
@@ -233,6 +242,8 @@ public class OrganisationHistorizer {
 				locationKindsOfLocationCollector.getCollectedData(),
 				locationSeatsCollector.getCollectedData(),
 				locationFunctionCollector.getCollectedData(),
+				locationReplacedByCollector.getCollectedData(),
+				locationInReplacementOfCollector.getCollectedData(),
 
 				locationRcNameCollector.getCollectedData(),
 				locationRcLegalAddressCollector.getCollectedData(),

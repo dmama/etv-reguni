@@ -16,7 +16,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class IdentifierListConverterTest {
+public class MultivalueListConverterTest {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -29,7 +29,7 @@ public class IdentifierListConverterTest {
 		rl.add(new DateRangeHelper.Ranged<>(RegDate.get(2015, 4, 2), RegDate.get(2015, 4, 6), new Identifier("CHE_GUEVARA", "DATA1")));
 		rl.add(new DateRangeHelper.Ranged<>(RegDate.get(2015, 4, 9), null, new Identifier("CHE_GUEVARA", "DATA2")));
 
-		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = IdentifierListConverter.toMapOfListsOfDateRangedValues(rl);
+		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = MultivalueListConverter.toMapOfListsOfDateRangedValues(rl, Identifier::getIdentifierCategory, Identifier::getIdentifierValue);
 
 		List<DateRangeHelper.Ranged<String>> che_list = identifiersMap.get("CHE");
 		assertThat(che_list.size(), equalTo(2));
@@ -65,8 +65,8 @@ public class IdentifierListConverterTest {
 		rl.add(new DateRangeHelper.Ranged<>(RegDate.get(2015, 4, 2), null, new Identifier("CHE", "DATA2")));
 
 		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Found overlapping range in list of Identifiers of category CHE:");
-		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = IdentifierListConverter.toMapOfListsOfDateRangedValues(rl);
+		thrown.expectMessage("Found overlapping range in list for key CHE:");
+		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = MultivalueListConverter.toMapOfListsOfDateRangedValues(rl, Identifier::getIdentifierCategory, Identifier::getIdentifierValue);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class IdentifierListConverterTest {
 		rl.add(new DateRangeHelper.Ranged<>(RegDate.get(2015, 5, 2), null, new Identifier("CHE_GUEVARA", "DATA2")));
 
 		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Found overlapping range in list of Identifiers of category CHE_GUEVARA:");
-		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = IdentifierListConverter.toMapOfListsOfDateRangedValues(rl);
+		thrown.expectMessage("Found overlapping range in list for key CHE_GUEVARA:");
+		Map<String, List<DateRangeHelper.Ranged<String>>> identifiersMap = MultivalueListConverter.toMapOfListsOfDateRangedValues(rl, Identifier::getIdentifierCategory, Identifier::getIdentifierValue);
 	}
 }

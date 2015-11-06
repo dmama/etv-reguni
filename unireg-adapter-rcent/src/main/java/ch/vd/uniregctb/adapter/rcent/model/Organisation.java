@@ -26,16 +26,16 @@ public class Organisation {
 	private final List<DateRangeHelper.Ranged<Long>> locations;
 	private final List<OrganisationLocation> locationData;
 
-	private final List<DateRangeHelper.Ranged<Long>> transferTo;
-	private final List<DateRangeHelper.Ranged<Long>> transferFrom;
+	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> transferTo;
+	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> transferFrom;
 	private final List<DateRangeHelper.Ranged<Long>> replacedBy;
-	private final List<DateRangeHelper.Ranged<Long>> inReplacementOf;
+	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf;
 
-	public Organisation(long cantonalId, @NotNull Map<String,List<DateRangeHelper.Ranged<String>>> organisationIdentifiers,
+	public Organisation(long cantonalId, @NotNull Map<String, List<DateRangeHelper.Ranged<String>>> organisationIdentifiers,
 	                    @NotNull List<DateRangeHelper.Ranged<String>> organisationName, List<DateRangeHelper.Ranged<String>> organisationAdditionalName,
 	                    List<DateRangeHelper.Ranged<LegalForm>> legalForm, List<DateRangeHelper.Ranged<Long>> locations, List<OrganisationLocation> locationData,
-	                    List<DateRangeHelper.Ranged<Long>> transferTo, List<DateRangeHelper.Ranged<Long>> transferFrom, List<DateRangeHelper.Ranged<Long>> replacedBy,
-	                    List<DateRangeHelper.Ranged<Long>> inReplacementOf) {
+	                    Map<Long, List<DateRangeHelper.Ranged<Long>>> transferTo, Map<Long, List<DateRangeHelper.Ranged<Long>>> transferFrom, List<DateRangeHelper.Ranged<Long>> replacedBy,
+	                    Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.organisationIdentifiers = organisationIdentifiers;
 		this.organisationName = organisationName;
@@ -51,10 +51,6 @@ public class Organisation {
 
 	public long getCantonalId() {
 		return cantonalId;
-	}
-
-	public List<DateRangeHelper.Ranged<Long>> getInReplacementOf() {
-		return inReplacementOf;
 	}
 
 	public List<DateRangeHelper.Ranged<LegalForm>> getLegalForm() {
@@ -73,6 +69,10 @@ public class Organisation {
 		return organisationAdditionalName;
 	}
 
+	/**
+	 * Historique multivaleur des identifiants de l'entreprises, indexés par catégorie.
+	 * @return La Map des identifiants de l'entreprises, ou null si aucun historique.
+	 */
 	@NotNull
 	public Map<String,List<DateRangeHelper.Ranged<String>>> getOrganisationIdentifiers() {
 		return organisationIdentifiers;
@@ -83,15 +83,31 @@ public class Organisation {
 		return organisationName;
 	}
 
+	/**
+	 * Historique multivaleur des entreprises remplacées, indexés par leur identifiant cantonal.
+	 * @return La Map des entreprises remplacées, ou null si aucun historique.
+	 */
+	public Map<Long, List<DateRangeHelper.Ranged<Long>>> getInReplacementOf() {
+		return inReplacementOf;
+	}
+
 	public List<DateRangeHelper.Ranged<Long>> getReplacedBy() {
 		return replacedBy;
 	}
 
-	public List<DateRangeHelper.Ranged<Long>> getTransferFrom() {
+	/**
+	 * Historique multivaleur des entreprises reprises, indexés par leur identifiant cantonal.
+	 * @return La Map des entreprises reprises, ou null si aucun historique.
+	 */
+	public Map<Long, List<DateRangeHelper.Ranged<Long>>> getTransferFrom() {
 		return transferFrom;
 	}
 
-	public List<DateRangeHelper.Ranged<Long>> getTransferTo() {
+	/**
+	 * Historique multivaleur des entreprises reprenantes, indexés par leur identifiant cantonal.
+	 * @return La Map des entreprises reprenantes, ou null si aucun historique.
+	 */
+	public Map<Long, List<DateRangeHelper.Ranged<Long>>> getTransferTo() {
 		return transferTo;
 	}
 }

@@ -33,11 +33,14 @@ public class OrganisationLocation {
 	private final List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation;
 	private final List<DateRangeHelper.Ranged<Integer>> seat;
 	private final List<DateRangeHelper.Ranged<OrganisationFunction>> function;
+	private final List<DateRangeHelper.Ranged<Long>> replacedBy;
+	private final Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf;
 
 	public OrganisationLocation(long cantonalId, @NotNull List<DateRangeHelper.Ranged<String>> name, RCEntRCData rc, RCEntUIDData uid,
 	                            Map<String,List<DateRangeHelper.Ranged<String>>> identifiers, List<DateRangeHelper.Ranged<String>> otherNames,
 	                            List<DateRangeHelper.Ranged<KindOfLocation>> kindOfLocation, List<DateRangeHelper.Ranged<Integer>> seat,
-	                            List<DateRangeHelper.Ranged<OrganisationFunction>> function) {
+	                            List<DateRangeHelper.Ranged<OrganisationFunction>> function,  List<DateRangeHelper.Ranged<Long>> replacedBy,
+	                            Map<Long, List<DateRangeHelper.Ranged<Long>>> inReplacementOf) {
 		this.cantonalId = cantonalId;
 		this.name = name;
 		this.rc = rc;
@@ -47,6 +50,8 @@ public class OrganisationLocation {
 		this.kindOfLocation = kindOfLocation;
 		this.seat = seat;
 		this.function = function;
+		this.replacedBy = replacedBy;
+		this.inReplacementOf = inReplacementOf;
 	}
 
 	public long getCantonalId() {
@@ -84,6 +89,18 @@ public class OrganisationLocation {
 
 	public RCEntUIDData getUid() {
 		return uid;
+	}
+
+	public List<DateRangeHelper.Ranged<Long>> getReplacedBy() {
+		return replacedBy;
+	}
+
+	/**
+	 * Historique multivaleur des établissements remplacés, indexés par leur identifiant cantonal.
+	 * @return La Map des établissements remplacés, ou null si aucun historique.
+	 */
+	public Map<Long, List<DateRangeHelper.Ranged<Long>>> getInReplacementOf() {
+		return inReplacementOf;
 	}
 
 	public static class RCEntRCData {

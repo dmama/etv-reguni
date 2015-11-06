@@ -7,7 +7,7 @@ import ch.vd.evd0022.v1.Identifier;
 import ch.vd.evd0022.v1.LegalForm;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.uniregctb.adapter.rcent.historizer.convertor.DateRangedConvertor;
-import ch.vd.uniregctb.adapter.rcent.historizer.convertor.IdentifierListConverter;
+import ch.vd.uniregctb.adapter.rcent.historizer.convertor.MultivalueListConverter;
 import ch.vd.uniregctb.adapter.rcent.model.Organisation;
 import ch.vd.uniregctb.adapter.rcent.model.OrganisationLocation;
 
@@ -51,15 +51,15 @@ private final List<OrganisationLocation> locationsData;
 
 	public Organisation build() {
 		return new Organisation(cantonalId.longValue(),
-		                        IdentifierListConverter.toMapOfListsOfDateRangedValues(organisationIdentifiers),
+		                        MultivalueListConverter.toMapOfListsOfDateRangedValues(organisationIdentifiers, Identifier::getIdentifierCategory, Identifier::getIdentifierValue),
 		                        nomsEntreprise,
 		                        nomsAdditionnelsEntreprise,
 		                        formesJuridiques,
 		                        DateRangedConvertor.convert(locations, BigInteger::longValue),
 		                        locationsData,
-		                        DateRangedConvertor.convert(transfereA, BigInteger::longValue),
-		                        DateRangedConvertor.convert(transfereDe, BigInteger::longValue),
-		                        DateRangedConvertor.convert(remplacePar, BigInteger::longValue),
-		                        DateRangedConvertor.convert(enRemplacementDe, BigInteger::longValue));
+		                        transfereA == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(transfereA, BigInteger::longValue, BigInteger::longValue),
+		                        transfereDe == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(transfereDe, BigInteger::longValue, BigInteger::longValue),
+		                        remplacePar == null ? null : DateRangedConvertor.convert(remplacePar, BigInteger::longValue),
+		                        enRemplacementDe == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(enRemplacementDe, BigInteger::longValue, BigInteger::longValue));
 	}
 }
