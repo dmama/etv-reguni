@@ -12,7 +12,7 @@ public enum JobCategory {
 	OID("OID"),
 	RF("Registre foncier"),
 	TIERS("Tiers"),
-	TACHE("Taches"),
+	TACHE("Tâches"),
 	IDENTIFICATION("Identification"),
 	EVENTS("Evénements"),
 	LR("Listes récapitulatives"),
