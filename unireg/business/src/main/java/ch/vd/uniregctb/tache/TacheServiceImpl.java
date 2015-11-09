@@ -713,6 +713,20 @@ public class TacheServiceImpl implements TacheService {
 					return Mutation.MAJEURE;
 				}
 			}
+
+			@Override
+			public List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService) {
+				// il n'y a pas, pour les personnes physiques, de différence entre les périodes calculées et celles
+				// sur lesquelles l'algorithme de calcul automatique est applicable
+				return periodes;
+			}
+
+			@Override
+			public List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService) {
+				// il n'y a pas, pour les personnes physiques, de différence entre les périodes calculées et celles
+				// sur lesquelles l'algorithme de calcul automatique est applicable
+				return declarations;
+			}
 		},
 
 		PERSONNES_MORALES {
@@ -737,6 +751,30 @@ public class TacheServiceImpl implements TacheService {
 				else {
 					return Mutation.AUCUNE;
 				}
+			}
+
+			@Override
+			public List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService) {
+				final List<PeriodeImposition> apresFiltre = new ArrayList<>(periodes.size());
+				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+				for (PeriodeImposition pi : periodes) {
+					if (pi.getPeriodeFiscale() >= premierePeriode) {
+						apresFiltre.add(pi);
+					}
+				}
+				return apresFiltre;
+			}
+
+			@Override
+			public List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService) {
+				final List<DeclarationImpotOrdinaire> apresFiltre = new ArrayList<>(declarations.size());
+				final int premierePeriode = paramService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+				for (DeclarationImpotOrdinaire di : declarations) {
+					if (di.getPeriode().getAnnee() >= premierePeriode) {
+						apresFiltre.add(di);
+					}
+				}
+				return apresFiltre;
 			}
 		};
 
@@ -774,14 +812,29 @@ public class TacheServiceImpl implements TacheService {
 		 * @return le type de différence constatée entre l'existant et le théorique
 		 */
 		public abstract Mutation compare(DeclarationImpotOrdinaire di, PeriodeImposition pi, RegDate dateReference);
+
+		/**
+		 * @param periodes une liste des périodes d'impositions brutes
+		 * @param paramService le service des paramètres applicatifs
+		 * @return une liste des périodes d'impositions utiles pour le calcul des tâches d'envoi/annulation de DI
+		 */
+		public abstract List<PeriodeImposition> filtrerPeriodes(List<PeriodeImposition> periodes, ParametreAppService paramService);
+
+		/**
+		 * @param declarations une liste des déclarations brutes
+		 * @param paramService le service des paramètres applicatifs
+		 * @return une liste des déclarations utiles pour le calcul des tâches d'envoi/annulation de DI
+		 */
+		public abstract List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService);
 	}
 
 	@Override
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
 		// On récupère les données brutes
-		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
-		final List<DeclarationImpotOrdinaire> declarations = getDeclarationsActives(contribuable);
+		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
+		final List<PeriodeImposition> periodes = domaine.filtrerPeriodes(getPeriodesImpositionHisto(contribuable), parametres);
+		final List<DeclarationImpotOrdinaire> declarations = domaine.filtrerDeclarations(getDeclarationsActives(contribuable), parametres);
 		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
 		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
@@ -791,7 +844,6 @@ public class TacheServiceImpl implements TacheService {
 		final List<AnnuleTache> annuleActions = new ArrayList<>();
 
 		final RegDate today = RegDate.get();
-		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
 
 		//
 		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante

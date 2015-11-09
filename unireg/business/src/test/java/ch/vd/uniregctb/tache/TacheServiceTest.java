@@ -50,6 +50,7 @@ import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
@@ -147,6 +148,7 @@ public class TacheServiceTest extends BusinessTest {
 	private DeclarationImpotOrdinaireDAO  diDAO;
 	private PeriodeImpositionService periodeImpositionService;
 	private PeriodeFiscaleDAO pfDAO;
+	private ParametreAppService paramAppService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -159,6 +161,7 @@ public class TacheServiceTest extends BusinessTest {
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		pfDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
+		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -5558,59 +5561,69 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		// mise en place fiscale
-		final RegDate dateDebutActivite = date(RegDate.get().year() - 2, 6, 15);
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
-				addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
-				addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
-				return pm.getNumero();
-			}
-		});
+		final int thisYear = RegDate.get().year();
+		final RegDate dateDebutActivite = date(thisYear - 2, 6, 15);
 
-		// vérification des tâches d'envoi
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
-				assertNotNull(pm);
-
-				final TacheCriteria criteria = new TacheCriteria();
-				criteria.setContribuable(pm);
-				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
-				final List<Tache> taches = tacheDAO.find(criteria);
-				assertNotNull(taches);
-				assertEquals(2, taches.size());
-
-				for (Tache tache : taches) {
-					assertNotNull(tache);
-
-					final TacheEnvoiDeclarationImpotPM tacheDi = (TacheEnvoiDeclarationImpotPM) tache;
-					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
-					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
-					assertFalse(tache.isAnnule());
-					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+		final int oldPremierePeriodeDIPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(thisYear - 2);
+		final long pmId;
+		try {
+			// mise en place fiscale
+			pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final Entreprise pm = addEntrepriseInconnueAuCivil();
+					addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+					return pm.getNumero();
 				}
-				return null;
-			}
-		});
+			});
 
-		// maintenant, on rajoute la DI de la première année
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
-				assertNotNull(pm);
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, pf);
-				addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
-				return null;
-			}
-		});
+			// vérification des tâches d'envoi
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+					assertNotNull(pm);
+
+					final TacheCriteria criteria = new TacheCriteria();
+					criteria.setContribuable(pm);
+					criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpotPM);
+					final List<Tache> taches = tacheDAO.find(criteria);
+					assertNotNull(taches);
+					assertEquals(2, taches.size());
+
+					for (Tache tache : taches) {
+						assertNotNull(tache);
+
+						final TacheEnvoiDeclarationImpotPM tacheDi = (TacheEnvoiDeclarationImpotPM) tache;
+						assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.VAUDOIS_ORDINAIRE, tacheDi.getTypeContribuable());
+						assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+						assertFalse(tache.isAnnule());
+						assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeDocument.DECLARATION_IMPOT_PM, tacheDi.getTypeDocument());
+					}
+					return null;
+				}
+			});
+
+			// maintenant, on rajoute la DI de la première année
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final Entreprise pm = (Entreprise) tiersService.getTiers(pmId);
+					assertNotNull(pm);
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, pf);
+					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+					return null;
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
+		}
 
 		// et on vérifie les tâches résultantes (il ne devrait en rester qu'une en instance, dont le type de document a été recalculé en fonction de la nouvelle DI créée)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -5655,26 +5668,34 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		// mise en place fiscale
-		final RegDate dateDebutActivite = date(RegDate.get().year() - 1, 6, 15);
-		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction(TransactionStatus status) {
-				// entreprise
-				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
-				addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
-				addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
+		final int oldPremierePeriodeDIPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+		final long pmId;
+		try {
+			// mise en place fiscale
+			final RegDate dateDebutActivite = date(RegDate.get().year() - 1, 6, 15);
+			pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					// entreprise
+					final Entreprise pm = addEntrepriseInconnueAuCivil();
+					addDonneesRegistreCommerce(pm, dateDebutActivite, null, "Ma petite entreprise", FormeJuridiqueEntreprise.SARL, new MontantMonetaire(10000L, MontantMonetaire.CHF));
+					addForPrincipal(pm, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bussigny);
+					addBouclement(pm, dateDebutActivite, DayMonth.get(12, 31), 12);
 
-				// avec DI du mauvais type de document (on imagine que la DI a été émise puis la forme juridique modifiée...)
-				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
-				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, pf);        // <-- ce n'est pas le bon type de document pour une SARL
-				addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
+					// avec DI du mauvais type de document (on imagine que la DI a été émise puis la forme juridique modifiée...)
+					final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noOIPM);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+					final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_APM, pf);        // <-- ce n'est pas le bon type de document pour une SARL
+					addDeclarationImpot(pm, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, md);
 
-				return pm.getNumero();
-			}
-		});
+					return pm.getNumero();
+				}
+			});
+		}
+		finally {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(oldPremierePeriodeDIPM);
+		}
 
 		// vérification des tâches autour des DI
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

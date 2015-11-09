@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
@@ -36,6 +37,9 @@ import static org.junit.Assert.assertTrue;
 })
 public class RecalculTachesProcessorTest extends BusinessTest {
 
+	private ParametreAppService paramAppService;
+	private Integer premierePeriodeFiscaleDeclarationPM;
+
 	private RecalculTachesProcessor processor;
 	private TacheDAO tacheDAO;
 
@@ -57,6 +61,18 @@ public class RecalculTachesProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		paramAppService = getBean(ParametreAppService.class, "parametreAppService");
+		premierePeriodeFiscaleDeclarationPM = paramAppService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+		paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(2014);
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		if (premierePeriodeFiscaleDeclarationPM != null) {
+			paramAppService.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(premierePeriodeFiscaleDeclarationPM);
+		}
+		super.onTearDown();
 	}
 
 	@Test
