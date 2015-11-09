@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +39,14 @@ public class RecalculTachesProcessor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RecalculTachesProcessor.class);
 	private static final int BATCH_SIZE = 100;
+
+	/**
+	 * Détermine le scope de recalcul des tâches d'envoi/d'annulation de DI
+	 */
+	public enum Scope {
+		PP,
+		PM
+	}
 
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
@@ -87,12 +95,12 @@ public class RecalculTachesProcessor {
 		this.tacheSynchronizerInterceptor = tacheSynchronizerInterceptor;
 	}
 
-	public TacheSyncResults run(boolean existingTasksCleanup, int nbThreads, @Nullable StatusManager s) {
+	public TacheSyncResults run(boolean existingTasksCleanup, int nbThreads, Scope scope, @Nullable StatusManager s) {
 		final StatusManager status = s != null ? s : new LoggingStatusManager(LOGGER);
 		final TacheSyncResults finalResults = new TacheSyncResults(existingTasksCleanup);
 
-		final List<Long> ctbIds = getCtbIds(existingTasksCleanup);
-		LOGGER.info(String.format("%d contribuable(s) concernés par le traitement de recalcul de tâche", ctbIds.size()));
+		final List<Long> ctbIds = getCtbIds(existingTasksCleanup, scope);
+		LOGGER.info(String.format("%d contribuable(s) %s concerné(s) par le traitement de recalcul de tâches", ctbIds.size(), scope));
 
 		final BatchIterator<Long> iterator = new StandardBatchIterator<>(ctbIds, BATCH_SIZE);
 		boolean interrupted = false;
@@ -166,32 +174,45 @@ public class RecalculTachesProcessor {
 			else {
 				// on essaie un par un
 				for (Long id : ids) {
-					results.addAll(doRunWithRetry(Arrays.asList(id)));
+					results.addAll(doRunWithRetry(Collections.singletonList(id)));
 				}
 			}
 			return results;
 		}
 	}
 
-	private List<Long> getCtbIds(final boolean existingTasksCleanup) {
+	private List<Long> getCtbIds(final boolean existingTasksCleanup, final Scope scope) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-				return extractCtbIds(existingTasksCleanup);
+				return extractCtbIds(existingTasksCleanup, scope);
 			}
 		});
 	}
 
-	private List<Long> extractCtbIds(boolean existingTasksCleanup) {
+	private List<Long> extractCtbIds(boolean existingTasksCleanup, Scope scope) {
+		final String ctbClassPart = scope == Scope.PP
+				? "(PersonnePhysique, MenageCommun)"
+				: "(Entreprise)";
+
+
 		final String hql;
 		if (existingTasksCleanup) {
-			hql = "select distinct t.contribuable.id from Tache as t where etat = '" + TypeEtatTache.EN_INSTANCE.name() + "' and t.annulationDate is null order by t.contribuable.id";
+			hql = String.format("select distinct t.contribuable.id from Tache as t where etat = '%s' and t.annulationDate is null and t.contribuable.class in %s order by t.contribuable.id",
+			                    TypeEtatTache.EN_INSTANCE.name(),
+			                    ctbClassPart);
 		}
 		else {
-			hql = "select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in (ForFiscalPrincipalPP, ForFiscalSecondaire) and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' order by ctb.id";
+			final String forClassPart = scope == Scope.PP
+					? "(ForFiscalPrincipalPP, ForFiscalSecondaire)"
+					: "(ForFiscalPrincipalPM, ForFiscalSecondaire)";
+
+			hql = String.format("select distinct ctb.id from Contribuable as ctb inner join ctb.forsFiscaux as for where for.class in %s and for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD' and ctb.class in %s order by ctb.id",
+		                        forClassPart,
+		                        ctbClassPart);
 		}
 
 		return hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
