@@ -82,6 +82,14 @@
 		            </td>
 					<td><sf:errors path="premierePeriodeFiscalePersonnesMorales" cssClass="erreur"/></td>
 		        </tr>
+				<tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.premierePeriodeFiscaleDeclaration.pm"/></td>
+		            <td class="nombre">NA</td>
+		            <td class="valeur">
+		                <sf:input path="premierePeriodeFiscaleDeclarationPersonnesMorales" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4" readonly="true"/>
+		            </td>
+					<td><sf:errors path="premierePeriodeFiscaleDeclarationPersonnesMorales" cssClass="erreur"/></td>
+		        </tr>
 		        <tr class="separator"><th colspan="4" ></th></tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.noel"/></td>

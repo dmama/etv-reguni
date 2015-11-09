@@ -29,6 +29,8 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
@@ -36,13 +38,13 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsAEmettreProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleEnMasseProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsEnMasseProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
@@ -252,26 +254,27 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.tailleLot = tailleLot;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, @Nullable StatusManager status)
-			throws DeclarationException {
-
-		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-				parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
+	public DeterminationDIsPPResults determineDIsPPAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, @Nullable StatusManager status) throws DeclarationException {
+		final DeterminationDIsPPAEmettreProcessor processer = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
+		                                                                                              parametres, tiersService, transactionManager, validationService,
+		                                                                                              periodeImpositionService, adresseService);
 		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
+	public DeterminationDIsPMResults determineDIsPMAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException {
+		final DeterminationDIsPMAEmettreProcessor processer = new DeterminationDIsPMAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
+		                                                                                              parametres, tiersService, transactionManager, validationService,
+		                                                                                              periodeImpositionService, adresseService);
+		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
+	}
+
 	@Override
 	public EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
 	                                             int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
-		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
+		final EnvoiDIsPPEnMasseProcessor processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 		                                                                        delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService, ticketService);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}

@@ -139,7 +139,7 @@ public abstract class ContribuableValidator<T extends Contribuable> extends Tier
 				}
 			}
 			catch (Exception e) {
-				results.addWarning("Impossible de calculer les périodes d'imposition", e);
+				results.addWarning("Impossible de calculer les périodes d'imposition: ", e);
 			}
 		}
 

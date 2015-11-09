@@ -47,6 +47,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -909,7 +910,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			declarations = new HashSet<>();
 		}
 
-		if (declaration instanceof DeclarationImpotOrdinairePP) {
+		if (declaration instanceof DeclarationImpotOrdinaire) {
 
 			final int annee = declaration.getPeriode().getAnnee();
 
@@ -917,7 +918,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			 * Les déclarations d'impôt ordinaires possèdent un numéro de séquence (unique par année) qui doit être calculé au moment de
 			 * l'insertion.
 			 */
-			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) declaration;
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 			if (di.getNumero() == null) {
 				int numero = 0;
 				for (Declaration d : declarations) {
@@ -928,35 +929,48 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				di.setNumero(numero + 1);
 			}
 
-			// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
-			// être générée/assigné au moment de l'insertion
-			if (annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE && di.getCodeControle() == null) {
-				final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
+			// les déclarations d'impôt ordinaires se voient parfois affublées d'un code de contrôle
+			if (di.getCodeControle() == null) {
 
-				// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
-				String codeControle = null;
-				if (declsPeriode != null) {
-					for (Declaration d : declsPeriode) {
-						final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-						if (dio.getCodeControle() != null) {
-							codeControle = dio.getCodeControle();
-							break;
-						}
-					}
-				}
+				// cas des déclarations PP depuis 2011
+				if (di instanceof DeclarationImpotOrdinairePP && annee >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+					// [SIFISC-1368] Les déclaration d'impôt ordinaires possèdent un code contrôle (un pour chaque pair contribuable/période fiscale) qui doit
+					// être générée/assigné au moment de l'insertion
 
-				if (codeControle == null) {
-					// pas de code déjà généré : on en génère un nouveau
-					codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+					final List<Declaration> declsPeriode = getDeclarationsForPeriode(annee, true); // on veut les déclarations annulées !
+
+					// on recherche un code de contrôle déjà généré sur les déclarations préexistantes de la période
+					String codeControle = null;
 					if (declsPeriode != null) {
-						// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
 						for (Declaration d : declsPeriode) {
 							final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
-							dio.setCodeControle(codeControle);
+							if (dio.getCodeControle() != null) {
+								codeControle = dio.getCodeControle();
+								break;
+							}
 						}
 					}
+
+					if (codeControle == null) {
+						// pas de code déjà généré : on en génère un nouveau
+						codeControle = DeclarationImpotOrdinairePP.generateCodeControle();
+						if (declsPeriode != null) {
+							// on profite pour assigner le code de contrôle généré à toutes les déclarations préexistantes de la période (= rattrapage de données)
+							for (Declaration d : declsPeriode) {
+								final DeclarationImpotOrdinairePP dio = (DeclarationImpotOrdinairePP) d;
+								dio.setCodeControle(codeControle);
+							}
+						}
+					}
+
+					di.setCodeControle(codeControle);
 				}
-				di.setCodeControle(codeControle);
+
+				// cas des déclarations PM
+				else if (di instanceof DeclarationImpotOrdinairePM) {
+					// nouveau numéro pour chaque déclaration
+					di.setCodeControle(DeclarationImpotOrdinairePM.generateCodeControle());
+				}
 			}
 		}
 		

@@ -208,9 +208,9 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
-    <bean id="determineDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.DeterminerDIsJob">
+    <bean id="determineDIsPPJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.DeterminerDIsPPJob">
         <constructor-arg value="400"/>
-        <constructor-arg value="Déterminer les déclarations d'impôt à envoyer et créer des tâches en instance"/>
+        <constructor-arg value="Déterminer les déclarations d'impôt PP à envoyer et créer des tâches en instance"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
@@ -267,6 +267,13 @@
         <constructor-arg value="409"/>
         <constructor-arg value="Importer les codes 'segment' fournis par TAO avant l'envoi des déclarations d'impôt en masse"/>
         <property name="diService" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
+    <bean id="determinesDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.DeterminerDIsPMJob">
+        <constructor-arg value="450"/>
+        <constructor-arg value="Déterminer les déclarations d'impôt PM à envoyer et créer des tâches en instance"/>
+        <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 

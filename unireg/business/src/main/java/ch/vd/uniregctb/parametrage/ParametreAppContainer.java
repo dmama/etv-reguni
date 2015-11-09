@@ -226,6 +226,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
+	public Integer getPremierePeriodeFiscaleDeclarationsPersonnesMorales() {
+		return Integer.parseInt(get(ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales));
+	}
+
+	@Override
 	public Integer[] getDateExclusionDecedeEnvoiDI() {
 		return getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum.dateExclusionDecedeEnvoiDI);
 	}
@@ -374,6 +379,11 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setPremierePeriodeFiscalePersonnesMorales(Integer val) {
 		setValeur(ParametreEnum.premierePeriodeFiscalePersonnesMorales, val.toString());
+	}
+
+	@Override
+	public void setPremierePeriodeFiscaleDeclarationsPersonnesMorales(Integer val) {
+		setValeur(ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales, val.toString());
 	}
 
 	@Override

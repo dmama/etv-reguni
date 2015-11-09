@@ -62,8 +62,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final AdresseService adresseService;
 	private final TicketService ticketService;
 
-	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
-	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
+	private DeterminationDIsPPAEmettreProcessor determinationDIsAEmettreProcessor;
+	private EnvoiDIsPPEnMasseProcessor envoiDIsEnMasseProcessor;
 
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                          ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
@@ -90,9 +90,9 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres,
+		this.envoiDIsEnMasseProcessor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres,
 		                                                             serviceCivilCacheWarmer, adresseService, ticketService);
-		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
+		this.determinationDIsAEmettreProcessor = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
 		                                                                               periodeImpositionService, adresseService);
 
 		final ListeDIsPPNonEmises rapportFinal = new ListeDIsPPNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
@@ -133,7 +133,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
 
-		final EnvoiDIsEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final EnvoiDIsPPEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
 		// Récupère la période fiscale
 		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
@@ -148,7 +148,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	}
 
-	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
+	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsPPEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException, AssujettissementException {
 
 		r.nbCtbsTotal++;
 
@@ -169,7 +169,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	}
 
 	private void traiterDetails(PeriodeImpositionPersonnesPhysiques details, ContribuableImpositionPersonnesPhysiques contribuable,
-	                            PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException {
+	                            PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsPPEnMasseProcessor.Cache cache, ListeDIsPPNonEmises r) throws DeclarationException {
 		
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 
@@ -182,7 +182,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		TacheEnvoiDeclarationImpotPP tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details, null);
 		if (tache == null) {
-			final DeterminationDIsAEmettreProcessor.ExistenceResults<TacheEnvoiDeclarationImpotPP> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
+			final DeterminationDIsPPAEmettreProcessor.ExistenceResults<TacheEnvoiDeclarationImpotPP> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
 			if (res == null) {
 				r.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
 				return;
@@ -206,7 +206,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		final List<Long> ids = new ArrayList<>();
 		ids.add(contribuable.getId());
-		final EnvoiDIsEnMasseProcessor.DeclarationsCache dcache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
+		final EnvoiDIsPPEnMasseProcessor.DeclarationsCache dcache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
 
 		final boolean tacheTraitee = envoiDIsEnMasseProcessor.traiterTache(tache, dateTraitement, r, cache, dcache, true);
 		if (tacheTraitee) {

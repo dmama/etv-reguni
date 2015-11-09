@@ -17,11 +17,11 @@ import ch.vd.uniregctb.type.TypeDocument;
 /**
  * Contient les données brutes permettant de générer le document de rapport de l'exécution du processeur.
  */
-public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsResults> {
+public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIsPPResults> {
 
 	public enum ErreurType {
 		CTB_INVALIDE("le contribuable ne valide pas."), // -----------------------------------------------------
-		DONNEES_INCOHERENTES("les données sont incohérente"), // -----------------------------------------------
+		DONNEES_INCOHERENTES("les données sont incohérentes"), // ----------------------------------------------
 		EXCEPTION(EXCEPTION_DESCRIPTION), // -------------------------------------------------------------------
 		COLLISION_DECLARATION("une DI existe déjà, mais elle ne correspond pas à la période d'imposition calculée");
 
@@ -86,8 +86,8 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 
 	public enum TraiteType {
 		TACHE_ENVOI_CREEE("Une tâche d'envoi de déclaration a été créée."),
-		TACHE_ENVOI_ANNULEE("La tâche d'envoi de déclaration préexistante a été annulée."),
-		TACHE_ANNULATION_CREE("Une tâche d'annulation de la déclaration préexistante a été créée.");
+		TACHE_ENVOI_ANNULEE("La tâche d'envoi de déclaration pré-existante a été annulée."),
+		TACHE_ANNULATION_CREE("Une tâche d'annulation de la déclaration pré-existante a été créée.");
 
 		private final String description;
 
@@ -124,16 +124,18 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 
 	public final int annee;
 	public final RegDate dateTraitement;
+	public final int nbThreads;
 	public int nbCtbsTotal;
 	public final List<Traite> traites = new ArrayList<>();
 	public final List<Ignore> ignores = new ArrayList<>();
 	public final List<Erreur> erreurs = new ArrayList<>();
 	public boolean interrompu;
 
-	public DeterminationDIsResults(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public DeterminationDIsPPResults(int annee, RegDate dateTraitement, int nbThreads, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
+		this.nbThreads = nbThreads;
 	}
 
 	public void addTacheEnvoiCreee(ContribuableImpositionPersonnesPhysiques ctb, TacheEnvoiDeclarationImpotPP tache) {
@@ -199,7 +201,7 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	}
 
 	@Override
-	public void addAll(DeterminationDIsResults right) {
+	public void addAll(DeterminationDIsPPResults right) {
 		this.nbCtbsTotal += right.nbCtbsTotal;
 		this.traites.addAll(right.traites);
 		this.ignores.addAll(right.ignores);

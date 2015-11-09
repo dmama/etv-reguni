@@ -14,9 +14,10 @@ import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
@@ -29,55 +30,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.AcomptesRapport;
-import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
-import ch.vd.uniregctb.document.CalculParentesRapport;
-import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
-import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
-import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
-import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
-import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
-import ch.vd.uniregctb.document.DeterminationDIsRapport;
-import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
-import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
-import ch.vd.uniregctb.document.DocumentService;
-import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
-import ch.vd.uniregctb.document.EchoirDIsRapport;
-import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
-import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
-import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
-import ch.vd.uniregctb.document.EnvoiLRsRapport;
-import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
-import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
-import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
-import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.document.IdentifierContribuableRapport;
-import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
-import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.ListeAssujettisRapport;
-import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
-import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
-import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
-import ch.vd.uniregctb.document.ListeNoteRapport;
-import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
-import ch.vd.uniregctb.document.ListesNominativesRapport;
-import ch.vd.uniregctb.document.MajoriteRapport;
-import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
-import ch.vd.uniregctb.document.RapprocherCtbRapport;
-import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
-import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
-import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
-import ch.vd.uniregctb.document.ResolutionAdresseRapport;
-import ch.vd.uniregctb.document.RolesCommunesRapport;
-import ch.vd.uniregctb.document.RolesOIDsRapport;
-import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
-import ch.vd.uniregctb.document.StatistiquesDIsRapport;
-import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
-import ch.vd.uniregctb.document.SuppressionOIDRapport;
-import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
-import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -137,20 +90,46 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public DeterminationDIsRapport generateRapport(final DeterminationDIsResults results, StatusManager s) throws DeclarationException {
+	public DeterminationDIsPPRapport generateRapport(final DeterminationDIsPPResults results, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportDetermDIs" + results.annee;
-		final String description = String.format("Rapport du job de détermination des DIs à émettre pour l'année %d. Date de traitement = %s", results.annee, RegDateHelper.dateToDisplayString(
-				results.dateTraitement));
+		final String description = String.format("Rapport du job de détermination des DIs PP à émettre pour l'année %d. Date de traitement = %s",
+		                                         results.annee,
+		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(DeterminationDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsRapport>() {
+			return docService.newDoc(DeterminationDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPPRapport>() {
 				@Override
-				public void writeDoc(DeterminationDIsRapport doc, OutputStream os) throws Exception {
-					PdfDeterminationDIsRapport document = new PdfDeterminationDIsRapport();
+				public void writeDoc(DeterminationDIsPPRapport doc, OutputStream os) throws Exception {
+					final PdfDeterminationDIsPPRapport document = new PdfDeterminationDIsPPRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new DeclarationException(e);
+		}
+	}
+
+	@Override
+	public DeterminationDIsPMRapport generateRapport(final DeterminationDIsPMResults results, StatusManager s) throws DeclarationException {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportDetermDIsPM" + results.annee;
+		final String description = String.format("Rapport du job de détermination des DIs PM à émettre pour l'année %d. Date de traitement = %s",
+		                                         results.annee,
+		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(DeterminationDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminationDIsPMRapport>() {
+				@Override
+				public void writeDoc(DeterminationDIsPMRapport doc, OutputStream os) throws Exception {
+					final PdfDeterminationDIsPMRapport document = new PdfDeterminationDIsPMRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

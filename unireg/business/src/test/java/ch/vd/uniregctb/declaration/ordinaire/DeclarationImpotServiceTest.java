@@ -35,8 +35,8 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsAEmettreProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionDeclarationImpotPersonnesPhysiquesHelper;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
@@ -213,7 +213,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
 			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
 
-			DeterminationDIsAEmettreProcessor processor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
+			DeterminationDIsPPAEmettreProcessor processor = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
 					parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
 
 			// Lance et interrompt l'envoi en masse après 2 contribuables (message de démarrage + message d'envoi de la DI d'eric)
@@ -250,7 +250,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		assertTrue(validationService.validate(john).hasErrors());
 
 		// Détermine les DIs à émettre : le contribuable invalide ne devrait pas être pris en compte
-		assertResults(1, service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, null));
+		assertResults(1, service.determineDIsPPAEmettre(2007, date(2008, 1, 20), 1, null));
 
 		List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 		assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
@@ -265,7 +265,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	public void testDetermineDIsAEmettrePasDePeriodeFiscale() throws Exception {
 
 		try {
-			service.determineDIsAEmettre(2007, date(2008, 1, 15), 1, null);
+			service.determineDIsPPAEmettre(2007, date(2008, 1, 15), 1, null);
 			fail("Il ne devrait pas être possible de créer des tâches sans que la période fiscale considérée existe.");
 		}
 		catch (DeclarationException expected) {
@@ -289,7 +289,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		try {
-			service.determineDIsAEmettre(2007, date(2007, 12, 1), 1, null);
+			service.determineDIsPPAEmettre(2007, date(2007, 12, 1), 1, null);
 			fail("Il ne devrait pas être possible de créer des tâches avant la fin de la période fiscale considérée.");
 		}
 		catch (DeclarationException expected) {
@@ -298,7 +298,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		final RegDate finPeriodeEnvoi = date(2008, 1, 31);
 		try {
-			service.determineDIsAEmettre(2007, finPeriodeEnvoi.getOneDayAfter(), 1, null);
+			service.determineDIsPPAEmettre(2007, finPeriodeEnvoi.getOneDayAfter(), 1, null);
 			fail("Il ne devrait pas être possible de créer des tâches après la fin de la période d'envoi de masse considérée.");
 		}
 		catch (DeclarationException expected) {
@@ -369,7 +369,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 					}
 				}
 			};
-			assertResults(1, service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, status));
+			assertResults(1, service.determineDIsPPAEmettre(2007, date(2008, 1, 20), 1, status));
 
 			List<TacheEnvoiDeclarationImpotPP> taches = getTachesEnvoiDeclarationImpot(eric, 2007);
 			assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31),
@@ -633,7 +633,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(10, service.determineDIsAEmettre(2007, date(2008, 1, 15), 1, null)); // toutes sauf marc, jacky et lionel
+				assertResults(10, service.determineDIsPPAEmettre(2007, date(2008, 1, 15), 1, null)); // toutes sauf marc, jacky et lionel
 				return null;
 			}
 		});
@@ -1500,7 +1500,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final PersonnePhysique lionel = hibernateTemplate.get(PersonnePhysique.class, ids.lionelId);
 
 			// Envoi en masse 2007 pour les contribuables hors Suisse
-			service.determineDIsAEmettre(2007, date(2008, 1, 15), 1, null);
+			service.determineDIsPPAEmettre(2007, date(2008, 1, 15), 1, null);
 
 			assertEmpty(getTachesEnvoiDeclarationImpot(jacky, 2007)); // au forfait en 2007
 			// [UNIREG-1349] le contribuable possède un immeuble bien avant son départ HS: une tâche doit être générée immédiatement lors du
@@ -1561,7 +1561,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		});
 
 		{
-			service.determineDIsAEmettre(2007, date(2008, 1, 20), 1, null);
+			service.determineDIsPPAEmettre(2007, date(2008, 1, 20), 1, null);
 
 			final PersonnePhysique eric = hibernateTemplate.get(PersonnePhysique.class, ids.ericId);
 			final PersonnePhysique john = hibernateTemplate.get(PersonnePhysique.class, ids.johnId);
@@ -1597,7 +1597,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		return hibernateTemplate.find(query, params, null);
 	}
 
-	private static void assertResults(int ctbsTraites, DeterminationDIsResults results) {
+	private static void assertResults(int ctbsTraites, DeterminationDIsPPResults results) {
 		assertEquals(ctbsTraites, results.traites.size());
 	}
 

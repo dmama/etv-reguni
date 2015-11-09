@@ -13,12 +13,13 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
@@ -45,14 +46,26 @@ public interface DeclarationImpotService {
 	int VALEUR_DEFAUT_CODE_SEGMENT = 0;
 
 	/**
-	 * Détermine les déclaration d'impôts ordinaires à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais
+	 * Détermine les déclaration d'impôts PP ordinaires à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais
 	 * aucune déclaration d'impôt n'est créée ou modifiée.
 	 *
 	 * @param anneePeriode   l'année de la période fiscale considérée.
 	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
-	 * @return le nombre de tâches en instance créées.
+	 * @param nbThreads      le degré de parallélisme demandé pour le calcul
+	 * @return le rapport d'exécution du traitement
 	 */
-	DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
+	DeterminationDIsPPResults determineDIsPPAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
+
+	/**
+	 * Détermine les déclaration d'impôts PM à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais
+	 * aucune déclaration d'impôt n'est créée ou modifiée.
+	 *
+	 * @param anneePeriode   l'année de la période fiscale considérée.
+	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @param nbThreads      le degré de parallélisme demandé pour le calcul
+	 * @return le rapport d'exécution du traitement
+	 */
+	DeterminationDIsPMResults determineDIsPMAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
 
 	/**
 	 * Envoie (en masse) à l'impression les déclarations d'impôts ordinaires à partir des tâches en instances pré-existantes. En cas de succès, les tâches concernées sont considérées comme "traitées" et

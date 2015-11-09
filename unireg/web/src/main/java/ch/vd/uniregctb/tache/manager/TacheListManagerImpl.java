@@ -35,11 +35,12 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
+import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -137,25 +138,29 @@ public class TacheListManagerImpl implements TacheListManager {
 			catch (IndividuNotFoundException e) {
 				// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Arrays.asList("<erreur: individu introuvable>"));
+				tacheView.setNomCourrier(Collections.singletonList("<erreur: individu introuvable>"));
+			}
+			catch (OrganisationNotFoundException e) {
+				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
+				tacheView.setNomCourrier(Collections.singletonList("<erreur: organisation introuvable>"));
 			}
 			catch (Exception e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de la tâche n°" + tache.getId(), e);
-				tacheView.setNomCourrier(Arrays.asList("<erreur: " + e.getMessage() + '>'));
+				tacheView.setNomCourrier(Collections.singletonList("<erreur: " + e.getMessage() + '>'));
 			}
 
 			tacheView.setTypeTache(tache.getClass().getSimpleName());
 			tacheView.setEtatTache(tache.getEtat());
 
-			if (tache instanceof TacheEnvoiDeclarationImpotPP) {
-				final TacheEnvoiDeclarationImpotPP tedi = (TacheEnvoiDeclarationImpotPP) tache;
+			if (tache instanceof TacheEnvoiDeclarationImpot) {
+				final TacheEnvoiDeclarationImpot tedi = (TacheEnvoiDeclarationImpot) tache;
 				final int annee = tedi.getDateDebut().year();
 				tacheView.setAnnee(annee);
 				tacheView.setDateDebutImposition(tedi.getDateDebut());
 				tacheView.setDateFinImposition(tedi.getDateFin());
 				tacheView.setTypeContribuable(tedi.getTypeContribuable());
 				tacheView.setTypeDocument(tedi.getTypeDocument());
-				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);
+				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
 			}
 			else if (tache instanceof TacheAnnulationDeclarationImpot) {
 				final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;

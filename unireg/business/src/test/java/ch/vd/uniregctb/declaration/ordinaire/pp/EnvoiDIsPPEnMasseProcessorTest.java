@@ -46,7 +46,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.pp.AbstractEnvoiDIsPPResults.Ignore;
 import ch.vd.uniregctb.declaration.ordinaire.pp.AbstractEnvoiDIsPPResults.IgnoreType;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsEnMasseProcessor.DeclarationsCache;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor.DeclarationsCache;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -80,11 +80,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
-public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
+public class EnvoiDIsPPEnMasseProcessorTest extends BusinessTest {
 
 	private static final int TAILLE_LOT = 100;
 
-	private EnvoiDIsEnMasseProcessor processor;
+	private EnvoiDIsPPEnMasseProcessor processor;
 	private ParametreAppService parametreAppService;
 	private AdresseService adresseService;
 	private ModificationInterceptor modificationInterceptor;
@@ -109,7 +109,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		validationService = getBean(ValidationService.class, "validationService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
+		processor = new EnvoiDIsPPEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
 		                                         diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService, ticketService);
 	}
 
@@ -154,27 +154,27 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// Contribuable sans for fiscal
 		PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(erich, null));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estIndigent(erich, null));
 
 		// Contribuable avec for fiscal et mode d'imposition normal
 		PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Orbe);
-		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(maxwell, null));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estIndigent(maxwell, null));
 
 		// Contribuable avec for fiscal et mode d'imposition indigent
 		PersonnePhysique job = addNonHabitant("Job", "Berger", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(job, date(1980, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.LesClees, ModeImposition.INDIGENT);
-		assertTrue(EnvoiDIsEnMasseProcessor.estIndigent(job, null));
+		assertTrue(EnvoiDIsPPEnMasseProcessor.estIndigent(job, null));
 
 		// Contribuable avec plusieurs fors fiscaux, indigents ou non
 		PersonnePhysique girou = addNonHabitant("Girou", "Ette", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(girou, date(1973, 1, 1), MotifFor.MAJORITE, date(1979, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees);
 		addForPrincipal(girou, date(1980, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, date(1982, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees, ModeImposition.INDIGENT);
 		addForPrincipal(girou, date(1983, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.LesClees);
-		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(girou, date(1975, 1, 1)));
-		assertTrue(EnvoiDIsEnMasseProcessor.estIndigent(girou, date(1981, 1, 1)));
-		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(girou, date(2000, 1, 1)));
-		assertFalse(EnvoiDIsEnMasseProcessor.estIndigent(girou, null));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estIndigent(girou, date(1975, 1, 1)));
+		assertTrue(EnvoiDIsPPEnMasseProcessor.estIndigent(girou, date(1981, 1, 1)));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estIndigent(girou, date(2000, 1, 1)));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estIndigent(girou, null));
 	}
 
 	@Test
@@ -183,23 +183,23 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// Contribuable sans for fiscal
 		PersonnePhysique erich = addNonHabitant("Erich", "Honekker", date(1934, 1, 1), Sexe.MASCULIN);
-		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(erich, null));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estAssujettiDansLeCanton(erich, null));
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
 		PersonnePhysique maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
-		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(maxwell, null));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estAssujettiDansLeCanton(maxwell, null));
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne
 		PersonnePhysique felicien = addNonHabitant("Félicien", "Bolomey", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(felicien, date(1980, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-		assertTrue(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(felicien, null));
+		assertTrue(EnvoiDIsPPEnMasseProcessor.estAssujettiDansLeCanton(felicien, null));
 
 		// Contribuable avec un for fiscal principal fermé à Lausanne
 		PersonnePhysique bernard = addNonHabitant("Bernard", "Bidon", date(1955, 1, 1), Sexe.MASCULIN);
 		addForPrincipal(bernard, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		assertTrue(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(bernard, date(1985, 1, 1)));
-		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(bernard, null));
+		assertTrue(EnvoiDIsPPEnMasseProcessor.estAssujettiDansLeCanton(bernard, date(1985, 1, 1)));
+		assertFalse(EnvoiDIsPPEnMasseProcessor.estAssujettiDansLeCanton(bernard, null));
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = date(2008, 1, 23);
 		final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 		final DeclarationsCache dcache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
-		final EnvoiDIsEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 		final TacheEnvoiDeclarationImpotPP tache = hibernateTemplate.get(TacheEnvoiDeclarationImpotPP.class, ids.tache);
 
 		assertNull(processor.creeDI(tache, rapport, cache, dcache, false));
@@ -540,7 +540,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 			final RegDate dateTraitement = date(2009, 1, 15);
 			final DeclarationsCache dcache = processor.new DeclarationsCache(2008, idsList);
-			final EnvoiDIsEnMasseProcessor.Cache cache = processor.initCache(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+			final EnvoiDIsPPEnMasseProcessor.Cache cache = processor.initCache(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
 			final EnvoiDIsPPResults rapport = new EnvoiDIsPPResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 

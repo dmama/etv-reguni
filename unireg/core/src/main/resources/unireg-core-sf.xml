@@ -118,7 +118,8 @@
 		<value>ch.vd.uniregctb.document.DatabaseDump</value>
 		<value>ch.vd.uniregctb.document.ImportCodesSegmentRapport</value>
 		<value>ch.vd.uniregctb.document.ImportImmeublesRapport</value>
-		<value>ch.vd.uniregctb.document.DeterminationDIsRapport</value>
+		<value>ch.vd.uniregctb.document.DeterminationDIsPPRapport</value>
+		<value>ch.vd.uniregctb.document.DeterminationDIsPMRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiDIsPPRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiDIsPMRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport</value>

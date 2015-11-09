@@ -31,6 +31,7 @@ public class ParamApplicationView {
 	private String feteNationale;
 	private String premierePeriodeFiscalePersonnesPhysiques;
 	private String premierePeriodeFiscalePersonnesMorales;
+	private String premierePeriodeFiscaleDeclarationPersonnesMorales;
 	private String anneeMinimaleForDebiteur;
 	private String delaiAttenteDeclarationImpotPersonneDecedee;
 	private String delaiRetourDeclarationImpotEmiseManuellement;
@@ -60,6 +61,7 @@ public class ParamApplicationView {
 		this.feteNationale = ParametreEnum.feteNationale.convertirValeurTypeeVersString(service.getFeteNationale());
 		this.premierePeriodeFiscalePersonnesPhysiques = ParametreEnum.premierePeriodeFiscalePersonnesPhysiques.convertirValeurTypeeVersString(service.getPremierePeriodeFiscalePersonnesPhysiques());
 		this.premierePeriodeFiscalePersonnesMorales = ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscalePersonnesMorales());
+		this.premierePeriodeFiscaleDeclarationPersonnesMorales = ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirValeurTypeeVersString(service.getPremierePeriodeFiscaleDeclarationsPersonnesMorales());
 		this.anneeMinimaleForDebiteur = ParametreEnum.anneeMinimaleForDebiteur.convertirValeurTypeeVersString(service.getAnneeMinimaleForDebiteur());
 		this.delaiAttenteDeclarationImpotPersonneDecedee =
 				ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirValeurTypeeVersString(service.getDelaiAttenteDeclarationImpotPersonneDecedee());
@@ -90,6 +92,7 @@ public class ParamApplicationView {
 		service.setFeteNationale((Integer[]) ParametreEnum.feteNationale.convertirStringVersValeurTypee(this.feteNationale));
 		service.setPremierePeriodeFiscalePersonnesPhysiques((Integer) ParametreEnum.premierePeriodeFiscalePersonnesPhysiques.convertirStringVersValeurTypee(this.premierePeriodeFiscalePersonnesPhysiques));
 		service.setPremierePeriodeFiscalePersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscalePersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscalePersonnesMorales));
+		service.setPremierePeriodeFiscaleDeclarationsPersonnesMorales((Integer) ParametreEnum.premierePeriodeFiscaleDeclarationPersonnesMorales.convertirStringVersValeurTypee(this.premierePeriodeFiscaleDeclarationPersonnesMorales));
 		service.setAnneeMinimaleForDebiteur((Integer) ParametreEnum.anneeMinimaleForDebiteur.convertirStringVersValeurTypee(this.anneeMinimaleForDebiteur));
 		service.setDelaiAttenteDeclarationImpotPersonneDecedee(
 				(Integer) ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee.convertirStringVersValeurTypee(this.delaiAttenteDeclarationImpotPersonneDecedee));
@@ -162,6 +165,14 @@ public class ParamApplicationView {
 
 	public void setPremierePeriodeFiscalePersonnesMorales(String premierePeriodeFiscalePersonnesMorales) {
 		this.premierePeriodeFiscalePersonnesMorales = premierePeriodeFiscalePersonnesMorales;
+	}
+
+	public String getPremierePeriodeFiscaleDeclarationPersonnesMorales() {
+		return premierePeriodeFiscaleDeclarationPersonnesMorales;
+	}
+
+	public void setPremierePeriodeFiscaleDeclarationPersonnesMorales(String premierePeriodeFiscaleDeclarationPersonnesMorales) {
+		this.premierePeriodeFiscaleDeclarationPersonnesMorales = premierePeriodeFiscaleDeclarationPersonnesMorales;
 	}
 
 	public String getAnneeMinimaleForDebiteur() {

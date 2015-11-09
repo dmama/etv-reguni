@@ -19,12 +19,12 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class DetermineDIsJobTest extends JobTest {
+public class DeterminerDIsPPJobTest extends JobTest {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(DetermineDIsJobTest.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(DeterminerDIsPPJobTest.class);
 
 	// Copie du fichier tiers-basic sans les données relatives aux déclarations
-	private static final String DB_UNIT_DATA_FILE = "DetermineDIsJobTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "DetermineDIsPPJobTest.xml";
 
 	private BatchScheduler batchScheduler;
 
@@ -70,11 +70,11 @@ public class DetermineDIsJobTest extends JobTest {
 		UniregModeHelper testMode = getBean(UniregModeHelper.class, "uniregModeHelper");
 		testMode.setTestMode("true");//sinon la date de traitement ne sera pas utilisée
 		HashMap<String, Object> params = new HashMap<>();
-		params.put(DeterminerDIsJob.PERIODE_FISCALE, Integer.valueOf(2008));
-		params.put(DeterminerDIsJob.NB_THREADS, 1);
-		params.put(DeterminerDIsJob.DATE_TRAITEMENT, date(2009, 1, 16));
+		params.put(DeterminerDIsPPJob.PERIODE_FISCALE, Integer.valueOf(2008));
+		params.put(DeterminerDIsPPJob.NB_THREADS, 1);
+		params.put(DeterminerDIsPPJob.DATE_TRAITEMENT, date(2009, 1, 16));
 
-		JobDefinition job = batchScheduler.startJob(DeterminerDIsJob.NAME, params);
+		JobDefinition job = batchScheduler.startJob(DeterminerDIsPPJob.NAME, params);
 
 		int count = 0;
 		while (job.isRunning()) {

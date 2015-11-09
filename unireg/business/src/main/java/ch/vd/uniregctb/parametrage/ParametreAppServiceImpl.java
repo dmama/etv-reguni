@@ -212,6 +212,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
+	public Integer getPremierePeriodeFiscaleDeclarationsPersonnesMorales() {
+		return container.getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+	}
+
+	@Override
 	public Integer[] getDateExclusionDecedeEnvoiDI() {
 		return container.getDateExclusionDecedeEnvoiDI();
 	}
@@ -334,6 +339,11 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setPremierePeriodeFiscalePersonnesMorales(Integer val) {
 		container.setPremierePeriodeFiscalePersonnesMorales(val);
+	}
+
+	@Override
+	public void setPremierePeriodeFiscaleDeclarationsPersonnesMorales(Integer val) {
+		container.setPremierePeriodeFiscaleDeclarationsPersonnesMorales(val);
 	}
 
 	@Override

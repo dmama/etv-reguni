@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -18,7 +18,7 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 /**
  * Job qui détermine les déclaration d'impôts à envoyer et crée des tâches en instance.
  */
-public class DeterminerDIsJob extends JobDefinition {
+public class DeterminerDIsPPJob extends JobDefinition {
 
 	private DeclarationImpotService service;
 	private RapportService rapportService;
@@ -27,7 +27,7 @@ public class DeterminerDIsJob extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String NB_THREADS = "NB_THREADS";
 
-	public DeterminerDIsJob(int sortOrder, String description) {
+	public DeterminerDIsPPJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		final RegDate today = RegDate.get();
@@ -78,11 +78,11 @@ public class DeterminerDIsJob extends JobDefinition {
 
 		// Exécution du job dans une transaction.
 		final StatusManager status = getStatusManager();
-		final DeterminationDIsResults results = service.determineDIsAEmettre(annee, dateTraitement, nbThreads, status);
-		final DeterminationDIsRapport rapport = rapportService.generateRapport(results, status);
+		final DeterminationDIsPPResults results = service.determineDIsPPAEmettre(annee, dateTraitement, nbThreads, status);
+		final DeterminationDIsPPRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La détermination des DIs à envoyer pour l'année " + annee + " à la date du "
+		Audit.success("La détermination des DIs PP à envoyer pour l'année " + annee + " à la date du "
 				+ RegDateHelper.dateToDisplayString(dateTraitement) + " est terminée.", rapport);
 	}
 }

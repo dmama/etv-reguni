@@ -44,6 +44,11 @@
 							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPP'}">
 								<a href="../di/imprimer.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>
+							<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpotPM'}">
+								<!-- TODO gérer cette url... spécifique PM ? -->
+								<unireg:numCTB numero="${tache.numero}" />
+								<!--a href="../di/imprimer.do?depuisTache=true&tiersId=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDocument=${tache.typeDocument}" ><unireg:numCTB numero="${tache.numero}" /></a-->
+							</c:when>
 							<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot'}">
 								<a href="../di/editer.do?id=${tache.idDI}&tacheId=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 							</c:when>

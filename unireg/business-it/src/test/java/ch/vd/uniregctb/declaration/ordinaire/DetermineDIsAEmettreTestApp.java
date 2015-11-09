@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTestApplication;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 
 /**
  * Programme de test des performances des batch de traitement des déclaration. Il s'agit d'un programme stand-alone car le plugin jProfiler
@@ -56,8 +56,8 @@ public class DetermineDIsAEmettreTestApp extends BusinessItTestApplication {
 
 	private void determineDIsAEmettre() throws Exception {
 		LOGGER.info("Running job...");
-		DeterminationDIsResults results = service.determineDIsAEmettre(2009, RegDate.get(2010, 1, 15), 1, null);
-		for (DeterminationDIsResults.Erreur erreur : results.erreurs) {
+		DeterminationDIsPPResults results = service.determineDIsPPAEmettre(2009, RegDate.get(2010, 1, 15), 1, null);
+		for (DeterminationDIsPPResults.Erreur erreur : results.erreurs) {
 			LOGGER.error(erreur.getDescriptionRaison() + ": " + erreur.details);
 		}
 	}

@@ -46,6 +46,8 @@ public interface ParametreAppAccessor {
 
 	Integer getPremierePeriodeFiscalePersonnesMorales();
 
+	Integer getPremierePeriodeFiscaleDeclarationsPersonnesMorales();
+
 	Integer[] getDateExclusionDecedeEnvoiDI();
 
 	Integer getDelaiMinimalRetourDeclarationImpotPM();
@@ -100,6 +102,8 @@ public interface ParametreAppAccessor {
 	void setPremierePeriodeFiscalePersonnesPhysiques(Integer val);
 
 	void setPremierePeriodeFiscalePersonnesMorales(Integer val);
+
+	void setPremierePeriodeFiscaleDeclarationsPersonnesMorales(Integer val);
 
 	void setAnneeMinimaleForDebiteur(Integer val);
 

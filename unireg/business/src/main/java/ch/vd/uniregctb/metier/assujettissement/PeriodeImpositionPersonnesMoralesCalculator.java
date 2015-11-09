@@ -6,10 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -113,8 +116,23 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 		}
 	}
 
-	private TypeDocument computeTypeDocument(Entreprise pm, RegDate dateFinPeriode) {
+	@Nullable
+	private TypeDocument computeTypeDocument(Entreprise pm, RegDate dateFinPeriode) throws AssujettissementException {
+
+		// Avant cette année-là, Unireg n'enverra jamais de déclaration, donc au final le type de
+		// document n'a aucune importance... De plus, on se heurte-là à des problèmes de données issues
+		// de RegPM
+		if (dateFinPeriode.year() < parametreService.getPremierePeriodeFiscaleDeclarationsPersonnesMorales()) {
+			return null;
+		}
+
 		final CategorieEntreprise categorie = tiersService.getCategorieEntreprise(pm, dateFinPeriode);
+		if (categorie == null) {
+			throw new AssujettissementException(String.format("Impossible de déterminer la catégorie de l'entreprise %s au %s.",
+			                                                  FormatNumeroHelper.numeroCTBToDisplay(pm.getNumero()),
+			                                                  RegDateHelper.dateToDisplayString(dateFinPeriode)));
+		}
+
 		switch (categorie) {
 		case APM:
 			return TypeDocument.DECLARATION_IMPOT_APM;

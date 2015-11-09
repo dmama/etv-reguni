@@ -24,7 +24,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsAEmettreProcessor.ExistenceResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor.ExistenceResults;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -64,9 +64,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
-public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
+public class DeterminationDIsPPAEmettreProcessorTest extends BusinessTest {
 
-	private DeterminationDIsAEmettreProcessor service;
+	private DeterminationDIsPPAEmettreProcessor service;
 	private TacheDAO tacheDAO;
 	private PeriodeImpositionService periodeImpositionService;
 	private AdresseService adresseService;
@@ -83,7 +83,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
+		service = new DeterminationDIsPPAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
 				adresseService);
 
 	}
@@ -264,7 +264,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiProblemeRequeteSql() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		// Un tiers sans aucun for
 		PersonnePhysique frederic = addNonHabitant("Frédéric", "Ragnar", date(1988, 10, 2), Sexe.MASCULIN);
@@ -324,7 +324,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiCasDesDiplomates() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		// Un diplomate suisse en mission hors Suisse ne recoivent pas de DIs
 		{
@@ -356,7 +356,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		loadDatabase("TestDetermineDetailsEnvoiProblemeIncoherenceDonnees.xml");
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		/*
 		 * Un tiers sans for principal mais avec immeuble et une adresse de résidence dans le canton (=> il devrait posséder un for
@@ -407,7 +407,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersAvecForPrincipal() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 		ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
@@ -455,7 +455,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourTiersAvecForsSecondaires() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		// contribuable hors canton ayant une activité indépendante dans le canton
 		PersonnePhysique jean = addNonHabitant("Jean", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
@@ -526,7 +526,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addDeclarationImpot(laurent, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationComplete);
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		assertZeroDeclaration(service.determineDetailsEnvoi(laurent, 2007, r), r);
 		assertAbsenceTachesAnnulationDI(laurent,2006);
 	}
@@ -539,7 +539,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal f = addForPrincipal(eric, date(2007, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		f.setMotifOuverture(null); // hack pour bypasser la validation
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(eric,
 				2007, r));
 	}
@@ -557,7 +557,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2007, 5, 30), MotifFor.VENTE_IMMOBILIER,
 				MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		// [UNIREG-1742] pas de déclaration envoyée pour les contribuables domiciliés dans un autre canton dont le rattachement
 		// économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
 		assertZeroDeclaration(service.determineDetailsEnvoi(eric, 2007, r), r);
@@ -567,7 +567,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoiPourHorsSuisseAvecImmeuble() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(1000, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(1000, RegDate.get(), 1, tiersService, adresseService);
 
 		{
 			// [UNIREG-465] Contribuable hors-suisse depuis toujours avec immeuble dans le canton
@@ -611,14 +611,14 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final PersonnePhysique tyler = createHorsCantonAvecFinActiviteIndependante(dateFin);
 		{
-			final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 30), tiersService, adresseService);
+			final DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008, 1, 30), 1, tiersService, adresseService);
 			assertZeroDeclaration(service.determineDetailsEnvoi(tyler, 2007, rapport), rapport); // déclaration remplacée par une note à l'administration fiscale
 			assertEquals(1, rapport.ignores.size());
-			final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
-			assertEquals(DeterminationDIsResults.IgnoreType.REMPLACEE_PAR_NOTE, ignore.raison);
+			final DeterminationDIsPPResults.Ignore ignore = rapport.ignores.get(0);
+			assertEquals(DeterminationDIsPPResults.IgnoreType.REMPLACEE_PAR_NOTE, ignore.raison);
 		}
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		final PersonnePhysique ralf = createDepartHorsCanton(date(2007, 7, 1));
 		assertZeroDeclaration(service.determineDetailsEnvoi(ralf, 2007, r), r);  // pas de déclaration dans ce cas
@@ -638,7 +638,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final Range activite2 = new Range(date(2007, 8, 1), date(2007, 11, 15));
 		final PersonnePhysique armand = createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(activite1, activite2);
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 		final List<PeriodeImpositionPersonnesPhysiques> details = service.determineDetailsEnvoi(armand, 2007, r);
 		assertNotNull(details);
 		assertEquals(2, details.size());
@@ -719,7 +719,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			final PeriodeImposition periodeImposition = periodes.get(0);
 			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+			final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 			TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheEric);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -736,7 +736,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			final PeriodeImposition periodeImposition = periodes.get(0);
 			assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-			final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+			final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 			TacheEnvoiDeclarationImpotPP tacheJohn = service.traiterPeriodeImposition(john, periode, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 			assertNotNull(tacheJohn);
 			assertTache(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -773,7 +773,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final PeriodeImposition periodeImposition = periodes.get(0);
 		assertInstanceOf(PeriodeImpositionPersonnesPhysiques.class, periodeImposition);
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2009, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2009, RegDate.get(), 1, tiersService, adresseService);
 		TacheEnvoiDeclarationImpotPP tacheEric = service.traiterPeriodeImposition(eric, periode2009, (PeriodeImpositionPersonnesPhysiques) periodeImposition, r);
 		assertNotNull(tacheEric);
 		assertTache(TypeEtatTache.EN_INSTANCE, date(2010, 1, 31), date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -803,7 +803,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                  TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, null, null, colAdm);
 		hibernateTemplate.flush();
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		// Nouvelle tâches avec assujettissement sur toute l'année 2007
 		{
@@ -835,7 +835,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDetailsEnvoi() throws Exception {
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2007, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2007, RegDate.get(), 1, tiersService, adresseService);
 
 		// Contribuable vaudois sans aucun for
 		{
@@ -1187,22 +1187,22 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(malko, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
 
 		// ignoré parce que pas assujetti
 		assertEquals(1, rapport.ignores.size());
-		final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
+		final DeterminationDIsPPResults.Ignore ignore = rapport.ignores.get(0);
 		assertNotNull(ignore);
-		assertEquals(DeterminationDIsResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
 
 		// une nouvelle tâche d'annulation de la déclaration doit avoir été créée
 		assertEquals(1, rapport.traites.size());
-		final DeterminationDIsResults.Traite traite = rapport.traites.get(0);
+		final DeterminationDIsPPResults.Traite traite = rapport.traites.get(0);
 		assertNotNull(traite);
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ANNULATION_CREE, traite.raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ANNULATION_CREE, traite.raison);
 	}
 
 	/**
@@ -1227,7 +1227,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 3, 21), di, malko, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008, 1, 15), 1, tiersService, adresseService);
 		service.traiterContribuable(malko, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
@@ -1235,8 +1235,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// ignoré 2 fois parce que pas assujetti + parce que la tâche d'annulation de la DI existe déjà
 		assertEquals(2, rapport.ignores.size());
-		assertEquals(DeterminationDIsResults.IgnoreType.PAS_ASSUJETTI, rapport.ignores.get(0).raison);
-		assertEquals(DeterminationDIsResults.IgnoreType.TACHE_ANNULATION_DEJA_EXISTANTE, rapport.ignores.get(1).raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.PAS_ASSUJETTI, rapport.ignores.get(0).raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.TACHE_ANNULATION_DEJA_EXISTANTE, rapport.ignores.get(1).raison);
 	}
 
 	@Test
@@ -1258,7 +1258,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                  eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(eric, periode2007, rapport);
 
 
@@ -1266,15 +1266,15 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// ignoré parce que pas assujetti
 		assertEquals(1, rapport.ignores.size());
-		final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
+		final DeterminationDIsPPResults.Ignore ignore = rapport.ignores.get(0);
 		assertNotNull(ignore);
-		assertEquals(DeterminationDIsResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
 
 		// une nouvelle tâche d'annulation de la déclaration doit avoir été créée
 		assertEquals(1, rapport.traites.size());
-		final DeterminationDIsResults.Traite traite = rapport.traites.get(0);
+		final DeterminationDIsPPResults.Traite traite = rapport.traites.get(0);
 		assertNotNull(traite);
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_ANNULEE, traite.raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_ANNULEE, traite.raison);
 	}
 
 	@Test
@@ -1299,22 +1299,22 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                  Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(arnold, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
 
 		// la tâche existante valide est ignorée
 		assertEquals(1, rapport.ignores.size());
-		final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
+		final DeterminationDIsPPResults.Ignore ignore = rapport.ignores.get(0);
 		assertNotNull(ignore);
-		assertEquals(DeterminationDIsResults.IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, ignore.raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, ignore.raison);
 
 		// la tâche d'envoi doit avoir été annulée
 		assertEquals(1, rapport.traites.size());
-		final DeterminationDIsResults.Traite traite = rapport.traites.get(0);
+		final DeterminationDIsPPResults.Traite traite = rapport.traites.get(0);
 		assertNotNull(traite);
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_ANNULEE, traite.raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_ANNULEE, traite.raison);
 	}
 
 	/**
@@ -1339,16 +1339,16 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(eric, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
 
 		// ignoré parce que pas assujetti
 		assertEquals(1, rapport.ignores.size());
-		final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
+		final DeterminationDIsPPResults.Ignore ignore = rapport.ignores.get(0);
 		assertNotNull(ignore);
-		assertEquals(DeterminationDIsResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
+		assertEquals(DeterminationDIsPPResults.IgnoreType.PAS_ASSUJETTI, ignore.raison);
 
 		// la tâche ne doit pas avoir été annulée
 		assertNull(tache.getAnnulationDate());
@@ -1378,7 +1378,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(eric, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
@@ -1386,8 +1386,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// une nouvelle tâche créée + une tâche annulée
 		assertEquals(2, rapport.traites.size());
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_ANNULEE, rapport.traites.get(1).raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_ANNULEE, rapport.traites.get(1).raison);
 
 		// la tâche doit avoir été annulée
 		assertNotNull(tache.getAnnulationDate());
@@ -1416,7 +1416,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		                                                     TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(eric, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
@@ -1425,7 +1425,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		// une nouvelle tâche d'envoi de DI doit avoir été créée (ce n'est pas parce qu'une tâche d'envoi de DI déjà traitée préexiste que la DI a été bien envoyée:
 		// la DI a pu être annulée. Il est donc nécessaire de créer cette nouvelle tâche).
 		assertEquals(1, rapport.traites.size());
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
 
 		// la tâche ne doit pas avoir été annulée
 		assertNull(tache.getAnnulationDate());
@@ -1452,7 +1452,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		di.setAnnule(true);
 		hibernateTemplate.flush();
 
-		final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
+		final DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2007, date(2008,1,15), 1, tiersService, adresseService);
 		service.traiterContribuable(eric, periode2007, rapport);
 
 		assertEmpty(rapport.erreurs);
@@ -1460,7 +1460,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		// une nouvelle tâche d'envoi de DI doit avoir été créée (la DI pré-existante a été annulée).
 		assertEquals(1, rapport.traites.size());
-		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+		assertEquals(DeterminationDIsPPResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
 	}
 
 	/**
@@ -1485,12 +1485,12 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		hibernateTemplate.flush();
 
-		final DeterminationDIsResults r = new DeterminationDIsResults(2009, RegDate.get(), tiersService, adresseService);
+		final DeterminationDIsPPResults r = new DeterminationDIsPPResults(2009, RegDate.get(), 1, tiersService, adresseService);
 		assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2009,1,1), date(2009,12,31), service.determineDetailsEnvoi(marc, 2009, r));
 	}
 
 	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws DeclarationException, AssujettissementException {
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2008, date(2009, 1, 15), tiersService, adresseService);
+		DeterminationDIsPPResults rapport = new DeterminationDIsPPResults(2008, date(2009, 1, 15), 1, tiersService, adresseService);
 		final ContribuableImpositionPersonnesPhysiques ctb = hibernateTemplate.get(ContribuableImpositionPersonnesPhysiques.class, ctbId);
 		assertNotNull(ctb);
 		service.traiterContribuable(ctb, periodeFiscale, rapport);
@@ -1512,7 +1512,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertEquals(dateFin, details.getDateFin());
 	}
 
-	private void assertZeroDeclaration(List<PeriodeImpositionPersonnesPhysiques> periodes, DeterminationDIsResults r) {
+	private void assertZeroDeclaration(List<PeriodeImpositionPersonnesPhysiques> periodes, DeterminationDIsPPResults r) {
 		if (periodes != null) {
 			for (PeriodeImpositionPersonnesPhysiques p : periodes) {
 				assertFalse(service.needsDeclaration(p, r));
@@ -1580,7 +1580,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			}
 		});
 
-		final DeterminationDIsResults results = service.run(2011, date(2012, 1, 5), 1, null);
+		final DeterminationDIsPPResults results = service.run(2011, date(2012, 1, 5), 1, null);
 		assertNotNull(results);
 		assertEquals(3, results.traites.size());
 

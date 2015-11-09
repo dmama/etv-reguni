@@ -44,7 +44,7 @@ public class DocumentServiceImpl implements DocumentService {
 	private static final Map<String, Class<? extends Document>> docType = new HashMap<>();
 	static {
 		docType.put(DatabaseDump.class.getSimpleName().toLowerCase(), DatabaseDump.class);
-		docType.put(DeterminationDIsRapport.class.getSimpleName().toLowerCase(), DeterminationDIsRapport.class);
+		docType.put(DeterminationDIsPPRapport.class.getSimpleName().toLowerCase(), DeterminationDIsPPRapport.class);
 		docType.put(EnvoiDIsPPRapport.class.getSimpleName().toLowerCase(), EnvoiDIsPPRapport.class);
 		docType.put(MajoriteRapport.class.getSimpleName().toLowerCase(), MajoriteRapport.class);
 		docType.put(FusionDeCommunesRapport.class.getSimpleName().toLowerCase(), FusionDeCommunesRapport.class);

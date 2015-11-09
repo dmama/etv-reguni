@@ -5,9 +5,10 @@ import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
@@ -28,7 +29,8 @@ import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
-import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
+import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
 import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
 import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
 import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
@@ -109,13 +111,18 @@ import ch.vd.uniregctb.validation.ValidationJobResults;
 public interface RapportService {
 
 	/**
-	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs à émettre.
-	 *
-	 * @param results
-	 *            le résultat d'exécution du job de déterminatin des DIs à émettre.
+	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs PP à émettre.
+	 * @param results le résultat d'exécution du job de détermination des DIs PP à émettre.
 	 * @return un document de rapport
 	 */
-	DeterminationDIsRapport generateRapport(DeterminationDIsResults results, StatusManager status) throws DeclarationException;
+	DeterminationDIsPPRapport generateRapport(DeterminationDIsPPResults results, StatusManager status) throws DeclarationException;
+
+	/**
+	 * Génère le rapport (PDF) d'exécution du job de déterminatin des DIs PM à émettre.
+	 * @param results le résultat d'exécution du job de détermination des DIs PM à émettre.
+	 * @return un document de rapport
+	 */
+	DeterminationDIsPMRapport generateRapport(DeterminationDIsPMResults results, StatusManager status) throws DeclarationException;
 
 	/**
 	 * Génère un document le rapport (PDF) d'exécution du job d'envoi des DIs PP en masse.

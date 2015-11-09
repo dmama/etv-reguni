@@ -12,14 +12,14 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 
 /**
- * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
+ * Rapport PDF contenant les résultats de l'exécution d'un job de détermination des tâches des DIs PP.
  */
-public class PdfDeterminationDIsRapport extends PdfRapport {
+public class PdfDeterminationDIsPPRapport extends PdfRapport {
 
-	public void write(final DeterminationDIsResults results, final String nom, final String description, final Date dateGeneration,
+	public void write(final DeterminationDIsPPResults results, final String nom, final String description, final Date dateGeneration,
 	                  OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
@@ -41,6 +41,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Période fiscale considérée:", String.valueOf(results.annee));
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+					table.addLigne("Nombre de threads:", String.valueOf(results.nbThreads));
 				}
 			});
 		}
@@ -101,11 +102,11 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private TemporaryFile traitesAsCsvFile(List<DeterminationDIsResults.Traite> list, String filename, StatusManager status) {
+	private TemporaryFile traitesAsCsvFile(List<DeterminationDIsPPResults.Traite> list, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		int size = list.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<DeterminationDIsResults.Traite>() {
+			contenu = CsvHelper.asCsvTemporaryFile(list, filename, status, new CsvHelper.FileFiller<DeterminationDIsPPResults.Traite>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'office d'impôt").append(COMMA);
@@ -119,7 +120,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, DeterminationDIsResults.Traite info) {
+				public boolean fillLine(CsvHelper.LineFiller b, DeterminationDIsPPResults.Traite info) {
 					b.append(info.officeImpotID).append(COMMA);
 					b.append(info.noCtb).append(COMMA);
 					b.append(info.dateDebut).append(COMMA);

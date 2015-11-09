@@ -593,8 +593,33 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, @Nullable CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpotPM tache) {
+		assertNotNull(tache);
+		assertEquals(etat, tache.getEtat());
+		assertEquals(dateEcheance, tache.getDateEcheance());
+		assertEquals(dateDebut, tache.getDateDebut());
+		assertEquals(dateFin, tache.getDateFin());
+		assertEquals(typeCtb, tache.getTypeContribuable());
+		assertEquals(typeDoc, tache.getTypeDocument());
+		if (collectivite != null) {
+			assertEquals(collectivite, tache.getCollectiviteAdministrativeAssignee());
+		}
+	}
+
+	/**
+	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
+	 */
+	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
 	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpotPP tache) {
 		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour, null, tache);
+	}
+
+	/**
+	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
+	 */
+	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TacheEnvoiDeclarationImpotPM tache) {
+		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, null, tache);
 	}
 
 	/**

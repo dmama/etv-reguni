@@ -22,7 +22,7 @@ public class EnvoiDIsJobTest extends JobTest {
 	private final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsJobTest.class);
 
 	// Copie du fichier tiers-basic sans les données relatives aux déclarations
-	private static final String DB_UNIT_DATA_FILE = "EnvoiDIsJobTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "EnvoiDIsPPJobTest.xml";
 
 	private BatchScheduler batchScheduler;
 

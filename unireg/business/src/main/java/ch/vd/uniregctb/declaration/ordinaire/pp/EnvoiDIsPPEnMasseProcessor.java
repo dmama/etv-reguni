@@ -75,9 +75,9 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
-public class EnvoiDIsEnMasseProcessor {
+public class EnvoiDIsPPEnMasseProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsEnMasseProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiDIsPPEnMasseProcessor.class);
 
 	private final TiersService tiersService;
 
@@ -118,10 +118,10 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 	}
 
-	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
-	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
-	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService,
-	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService, TicketService ticketService) {
+	public EnvoiDIsPPEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
+	                                  PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
+	                                  PlatformTransactionManager transactionManager, ParametreAppService parametreService,
+	                                  ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService, TicketService ticketService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
