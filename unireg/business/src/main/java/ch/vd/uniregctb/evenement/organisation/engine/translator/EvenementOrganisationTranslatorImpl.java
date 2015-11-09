@@ -26,6 +26,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.Indexation;
 import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.formejuridique.ChangementFormeJuridiqueStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.FailliteConcordatStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationButsStrategy;
@@ -83,6 +84,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new ModificationCapitalStrategy());
 		strategies.add(new ModificationButsStrategy());
 		strategies.add(new ModificationStatutsStrategy());
+		strategies.add(new DoublonEntrepriseStrategy());
 	}
 
 	/**
@@ -103,6 +105,10 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		Audit.info(event.getId(), String.format("Organisation trouvée: %s", createOrganisationDescription(organisation, event.getDateEvenement())));
+
+		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
+		// TODO: S'assurer que tous les sites de l'organisation ont une forme juridique
+		// TODO: S'assurer que tous les sites de l'organisation ont une autorité fiscale (seat)
 
 		final List<EvenementOrganisationInterne> evenements = new ArrayList<>();
 		/*
