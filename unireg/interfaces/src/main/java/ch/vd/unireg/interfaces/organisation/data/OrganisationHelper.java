@@ -24,22 +24,54 @@ import ch.vd.unireg.interfaces.common.Adresse;
 public abstract class OrganisationHelper {
 
 	/**
-	 * Retourne la liste des la liste des valeurs valides pour une date donnée d'un champ multivaleur.
+	 * Détermine les valeurs en cours à une date donnée, ou la date du jour si pas de date fournie.
 	 * @param map
-	 * @param theDate
-	 * @param <K>
-	 * @param <V>
-	 * @return
+	 * @param date
+	 * @param <K> Type de la clé identifiant la valeur
+	 * @param <V> Type de la valeur
+	 * @return La liste des valeurs pour la date fournie ou la date du jour si non fournie. null si map était null
 	 */
-	public static <K, V> List<V> valuesForDate(Map<K, List<DateRanged<V>>> map, RegDate theDate) {
+	public static <K, V> List<V> valuesForDate(@Nullable Map<K, List<DateRanged<V>>> map, @Nullable RegDate date) {
+		if (map == null) {
+			return null;
+		}
 		List<V> na = new ArrayList<>();
 		for (Map.Entry<K, List<DateRanged<V>>> entry : map.entrySet()) {
-			final DateRanged<V> vDateRanged = DateRangeHelper.rangeAt(entry.getValue(), theDate);
+			final DateRanged<V> vDateRanged = DateRangeHelper.rangeAt(entry.getValue(), defaultDate(date));
 			if (vDateRanged != null) {
 				na.add(vDateRanged.getPayload());
 			}
 		}
 		return na;
+	}
+
+	/**
+	 * Détermine la valeur en cours à une date donnée, ou la date du jour si pas de date fournie.
+	 * @param list
+	 * @param date Date de valeur
+	 * @param <V> Type de la valeur
+	 * @return La valeur pour la date fournie, ou null si pas de valeur à cette date.
+	 */
+	public static <V> V valueForDate(@Nullable List<DateRanged<V>> list, @Nullable RegDate date) {
+		if (list == null) {
+			return null;
+		}
+		DateRanged<V> item = DateRangeHelper.rangeAt(list, defaultDate(date));
+		return item != null ? item.getPayload() : null;
+	}
+
+	/**
+	 * Détermine la valeur en cours à une date donnée, ou la date du jour si pas de date fournie.
+	 * @param list
+	 * @param date Date de valeur
+	 * @param <V> Type de la valeur
+	 * @return La valeur pour la date fournie, ou null si pas de valeur à cette date.
+	 */
+	public static <V extends DateRange> V dateRangeForDate(@Nullable List<V> list, @Nullable RegDate date) {
+		if (list == null) {
+			return null;
+		}
+		return  DateRangeHelper.rangeAt(list, defaultDate(date));
 	}
 
 	/**
@@ -51,10 +83,6 @@ public abstract class OrganisationHelper {
 	public static List<DateRanged<String>> extractIdentifiant(Map<String, List<DateRanged<String>>> identifiants, String cle) {
 		final List<DateRanged<String>> extracted = identifiants.get(cle);
 		return extracted == null || extracted.isEmpty() ? null : extracted;
-	}
-
-	public static String getNom(Organisation organisation, @Nullable RegDate date) {
-		return DateRangeHelper.rangeAt(organisation.getNom(), defaultDate(date)).getPayload();
 	}
 
 	/**
@@ -180,10 +208,6 @@ public abstract class OrganisationHelper {
 				return site.getSieges();
 			}
 		});
-	}
-
-	public static Siege getSiegePrincipal(Organisation organisation, RegDate date) {
-		return DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), defaultDate(date));
 	}
 
 	public static boolean isInscritAuRC(Organisation organisation, RegDate date) {

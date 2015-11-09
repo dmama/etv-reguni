@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
+ *
+ *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
+ */
 public class DonneesRegistreIDE implements Serializable {
 
 	private static final long serialVersionUID = -6444917918127810542L;

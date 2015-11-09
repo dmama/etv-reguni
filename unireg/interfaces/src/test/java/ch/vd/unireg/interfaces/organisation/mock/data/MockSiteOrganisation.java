@@ -8,13 +8,13 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.FonctionOrganisation;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
@@ -26,6 +26,16 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * - Il rend modifiables les champs de l'entité.
  * - Il implémente éventuellement des mutations spécifiques, nécessaires dans un
  *   contexte de test.
+ *
+ *   Utilisez les méthodes des helpers pour produire les données des accesseurs. Dans le cas
+ *   présent (Mock), les données sont stockées sous formes d'instantanés. C'est pratique pour la
+ *   construction de l'objet, mais nécessite que l'on reconstitue les données sous forme de range.
+ *
+ *   Les méthodes MockOrganisationHelper.getHisto() et MockOrganisationHelper.reconstitueMultiValeur() sont
+ *   là pour ça.
+ *
+ *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class MockSiteOrganisation implements SiteOrganisation {
 
@@ -127,10 +137,5 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	// Implémentation identique à la classe SiteOrganisation
 	@Override
 	public Siege getSiege(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
-		if (getSieges() != null) {
-			return DateRangeHelper.rangeAt(getSieges(), theDate);
-		}
-		return null;
-	}
+		return OrganisationHelper.dateRangeForDate(getSieges(), date);	}
 }

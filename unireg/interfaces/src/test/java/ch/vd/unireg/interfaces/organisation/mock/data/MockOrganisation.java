@@ -32,6 +32,16 @@ import ch.vd.unireg.interfaces.organisation.data.TypeDeSite;
  * - Il rend modifiables les champs de l'entité.
  * - Il implémente éventuellement des mutations spécifiques, nécessaires dans un
  *   contexte de test.
+ *
+ *   Utilisez les méthodes des helpers pour produire les données des accesseurs. Dans le cas
+ *   présent (Mock), les données sont stockées sous formes d'instantanés. C'est pratique pour la
+ *   construction de l'objet, mais nécessite que l'on reconstitue les données sous forme de range.
+ *
+ *   Les méthodes MockOrganisationHelper.getHisto() et MockOrganisationHelper.reconstitueMultiValeur() sont
+ *   là pour ça.
+ *
+ *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
  */
 public class MockOrganisation implements Organisation {
 
@@ -83,6 +93,14 @@ public class MockOrganisation implements Organisation {
 		MockOrganisationHelper.addRangedData(nomsAdditionnels, dateDebut, dateFin, nouveauxNomsAdditionnels != null ? Arrays.asList(nouveauxNomsAdditionnels) : Collections.<String>emptyList());
 	}
 
+	public void addRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
+		MockOrganisationHelper.addRangedData(remplacePar, dateDebut, dateFin, nouveauRemplacePar);
+	}
+
+	public void addEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, List<Long> nouveauEnRemplacementDe) {
+		MockOrganisationHelper.addRangedData(enRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
+	}
+
 	public void addAdresse(MockAdresse adresse) {
 		this.adresses.add(adresse);
 		Collections.sort(this.adresses, new DateRangeComparator<>());
@@ -99,15 +117,13 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
-	public List<Long> getEnRemplacementDe(RegDate date) {
-		RegDate theDate= date != null ? date : RegDate.get();
-		final List<DateRanged<List<Long>>> histo = MockOrganisationHelper.getHisto(enRemplacementDe);
-		return DateRangeHelper.rangeAt(histo, theDate).getPayload();
+	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
+		return MockOrganisationHelper.reconstitueMultiValeur(enRemplacementDe);
 	}
 
 	@Override
-	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
-		throw new NotImplementedException();
+	public List<Long> getEnRemplacementDe(RegDate date) {
+		return OrganisationHelper.valuesForDate(getEnRemplacementDe(), date);
 	}
 
 	@Override
@@ -117,7 +133,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.getFormeLegale(this, date);
+		return OrganisationHelper.valueForDate(getFormeLegale(), date);
 	}
 
 	@Override
@@ -132,7 +148,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public String getNom(RegDate date) {
-		return OrganisationHelper.getNom(this, date);
+		return OrganisationHelper.valueForDate(getNom(), date);
 	}
 
 	@Override
@@ -142,22 +158,22 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<String> getNomsAdditionnels(RegDate date) {
-		return null;
+		return OrganisationHelper.valuesForDate(getNomsAdditionnels(), date);
 	}
 
 	@Override
 	public Siege getSiegePrincipal(RegDate date) {
-		return OrganisationHelper.getSiegePrincipal(this, date);
+		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
 	}
 
 	@Override
 	public List<DateRanged<Long>> getRemplacePar() {
-		throw new NotImplementedException();
+		return MockOrganisationHelper.getHisto(remplacePar);
 	}
 
 	@Override
 	public Long getRemplacePar(RegDate date) {
-		throw new NotImplementedException();
+		return OrganisationHelper.valueForDate(getRemplacePar(), date);
 	}
 
 	@Override
@@ -178,7 +194,7 @@ public class MockOrganisation implements Organisation {
 	// Implémentation identique à la classe Organisation
 	@Override
 	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		return OrganisationHelper.getSitePrincipal(this, date);
+		return OrganisationHelper.dateRangeForDate(getSitePrincipaux(), date);
 	}
 
 	// Implémentation identique à la classe Organisation
@@ -198,7 +214,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public Capital getCapital(RegDate date) {
-		return OrganisationHelper.getCapital(this, date);
+		return OrganisationHelper.dateRangeForDate(getCapitaux(), date);
 	}
 
 	@Override

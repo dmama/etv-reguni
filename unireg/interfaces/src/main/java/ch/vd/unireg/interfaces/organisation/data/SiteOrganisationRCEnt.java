@@ -1,13 +1,18 @@
 package ch.vd.unireg.interfaces.organisation.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 
+/**
+ *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
+ *
+ *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
+
+ */
 public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	private static final long serialVersionUID = 4000453604399268480L;
@@ -76,17 +81,7 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	}
 
 	public List<String> getNomsAdditionnels(RegDate date) {
-		final RegDate theDate= date != null ? date : RegDate.get();
-		List<String> na = new ArrayList<>();
-
-		if (nomsAdditionnels != null) {
-			for (Map.Entry<String, List<DateRanged<String>>> histoNom : nomsAdditionnels.entrySet()) {
-				if (DateRangeHelper.rangeAt(histoNom.getValue(), theDate) != null) {
-					na.add(histoNom.getKey());
-				}
-			}
-		}
-		return na;
+		return OrganisationHelper.valuesForDate(nomsAdditionnels, date);
 	}
 
 	public DonneesRC getDonneesRC() {
@@ -103,10 +98,6 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 
 	@Override
 	public Siege getSiege(RegDate date) {
-		final RegDate theDate= date != null ? date : RegDate.get();
-		if (getSieges() != null) {
-			return DateRangeHelper.rangeAt(getSieges(), theDate);
-		}
-		return null;
+		return OrganisationHelper.dateRangeForDate(getSieges(), date);
 	}
 }

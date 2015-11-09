@@ -7,10 +7,17 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.common.Adresse;
 
+/**
+ *
+ *   Utilisez les méthodes des helpers pour produire les données des accesseurs.
+ *
+ *   OrganisationHelper fournit les méthodes nécessaires à l'accès par date:
+ *   valuesForDate(), valueForDate() et dateRangeForDate(), à utiliser en priorité.
+
+ */
 public class OrganisationRCEnt implements Organisation, Serializable {
 
 	private static final long serialVersionUID = -1369195090559377725L;
@@ -89,7 +96,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public Siege getSiegePrincipal(RegDate date) {
-		return OrganisationHelper.getSiegePrincipal(this, date);
+		return OrganisationHelper.dateRangeForDate(getSiegesPrincipaux(), date);
 	}
 
 	/**
@@ -101,7 +108,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public FormeLegale getFormeLegale(RegDate date) {
-		return OrganisationHelper.getFormeLegale(this, date);
+		return OrganisationHelper.valueForDate(formeLegale, date);
 	}
 
 	/**
@@ -122,7 +129,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public Capital getCapital(RegDate date) {
-		return OrganisationHelper.getCapital(this, date);
+		return OrganisationHelper.dateRangeForDate(getCapitaux(), date);
 	}
 
 	@Override
@@ -138,12 +145,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public List<Long> getEnRemplacementDe(RegDate date) {
-		final RegDate theDate= date != null ? date : RegDate.get();
-
-		if (enRemplacementDe != null) {
-			return OrganisationHelper.valuesForDate(enRemplacementDe, theDate);
-		}
-		return null;
+		return OrganisationHelper.valuesForDate(enRemplacementDe, date);
 	}
 
 	@Override
@@ -159,7 +161,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public String getNom(RegDate date) {
-		return OrganisationHelper.getNom(this, date);
+		return OrganisationHelper.valueForDate(nom, date);
 	}
 
 	@Override
@@ -169,12 +171,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public List<String> getNomsAdditionnels(RegDate date) {
-		final RegDate theDate= date != null ? date : RegDate.get();
-
-		if (nomsAdditionnels != null) {
-			return OrganisationHelper.valuesForDate(nomsAdditionnels, theDate);
-		}
-		return null;
+		return OrganisationHelper.valuesForDate(nomsAdditionnels, date);
 	}
 
 	@Override
@@ -184,7 +181,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 
 	@Override
 	public Long getRemplacePar(RegDate date) {
-		return date != null ? DateRangeHelper.rangeAt(remplacePar, date).getPayload() : DateRangeHelper.rangeAt(remplacePar, RegDate.get()).getPayload();
+		return OrganisationHelper.valueForDate(remplacePar, date);
 	}
 
 	@Override
@@ -212,7 +209,6 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		return OrganisationHelper.getSitePrincipaux(this);
 	}
 
-	// TODO: A générer dans l'adapter?
 	/**
 	 * Le site principal à une date donnée. Si la date est nulle, la date du jour est utilisée.
 	 * @param date
@@ -220,7 +216,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	 */
 	@Override
 	public DateRanged<SiteOrganisation> getSitePrincipal(RegDate date) {
-		return OrganisationHelper.getSitePrincipal(this, date);
+		return OrganisationHelper.dateRangeForDate(getSitePrincipaux(), date);
 	}
 
 	/**
