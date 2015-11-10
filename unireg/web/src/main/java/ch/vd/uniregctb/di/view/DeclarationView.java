@@ -10,7 +10,7 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -56,8 +56,8 @@ public class DeclarationView implements Annulable {
 		}
 
 		this.annule = decl.isAnnule();
-		if (decl instanceof DeclarationImpotOrdinairePP) {
-			final DeclarationImpotOrdinairePP di = (DeclarationImpotOrdinairePP) decl;
+		if (decl instanceof DeclarationImpotOrdinaire) {
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
 			this.codeControle = di.getCodeControle();
 			this.typeDocument = di.getTypeDeclaration();
 			if (this.typeDocument != null) {
