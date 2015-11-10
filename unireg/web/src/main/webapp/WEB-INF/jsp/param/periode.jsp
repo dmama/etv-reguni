@@ -186,175 +186,76 @@
 					<table>
 						<tr>
 							<th class="colonneTitreParametres">&nbsp;</th>
-							<th><fmt:message key="label.param.entete.VD"/></th>
-							<th><fmt:message key="label.param.entete.HC"/></th>
-							<th><fmt:message key="label.param.entete.HS"/></th>
+							<th><fmt:message key="label.param.entete.VD"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+							<th><fmt:message key="label.param.entete.HC"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+							<th><fmt:message key="label.param.entete.HS"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
 						</tr>
 						<tr>
-							<th><fmt:message key="label.param.pm.delai.imprime.sans.mandataire"/></th>
+							<th><fmt:message key="label.param.pm.delai.imprime"/></th>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMVaud.delaiImprimeDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMVaud.delaiImprimeDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
+								<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeMoisDepuisBouclement != null}">
+									${parametrePeriodeFiscalePMVaud.delaiImprimeMoisDepuisBouclement}
+									<fmt:message key="label.param.pm.delai.mois"/>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsCanton.delaiImprimeDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
+								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMoisDepuisBouclement != null}">
+									${parametrePeriodeFiscalePMHorsCanton.delaiImprimeMoisDepuisBouclement}
+									<fmt:message key="label.param.pm.delai.mois"/>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
+								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMoisDepuisBouclement != null}">
+									${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeMoisDepuisBouclement}
+									<fmt:message key="label.param.pm.delai.mois"/>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 						</tr>
 						<tr>
-							<th><fmt:message key="label.param.pm.delai.imprime.avec.mandataire"/></th>
+							<th><fmt:message key="label.param.pm.delai.tolerance"/></th>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMVaud.delaiImprimeAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMVaud.delaiImprimeAvecMandataireDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMVaud.delaiToleranceJoursEffective != null}">
+									${parametrePeriodeFiscalePMVaud.delaiToleranceJoursEffective}
 									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMVaud.delaiImprimeAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
+										<c:when test="${parametrePeriodeFiscalePMVaud.delaiToleranceJoursEffective == 1}">
+											<fmt:message key="label.param.pm.delai.jour"/>
 										</c:when>
 										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
+											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMVaud.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsCanton.delaiImprimeAvecMandataireDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiToleranceJoursEffective != null}">
+									${parametrePeriodeFiscalePMHorsCanton.delaiToleranceJoursEffective}
 									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsCanton.delaiImprimeAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
+										<c:when test="${parametrePeriodeFiscalePMHorsCanton.delaiToleranceJoursEffective == 1}">
+											<fmt:message key="label.param.pm.delai.jour"/>
 										</c:when>
 										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
+											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeAvecMandataireDepuisBouclement}
+								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiToleranceJoursEffective != null}">
+									${parametrePeriodeFiscalePMHorsSuisse.delaiToleranceJoursEffective}
 									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsSuisse.delaiImprimeAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
+										<c:when test="${parametrePeriodeFiscalePMHorsSuisse.delaiToleranceJoursEffective == 1}">
+											<fmt:message key="label.param.pm.delai.jour"/>
 										</c:when>
 										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
+											<fmt:message key="label.param.pm.delai.jours"/>
 										</c:otherwise>
 									</c:choose>
-								</c:if>
-							</td>
-						</tr>
-						<tr>
-							<th><fmt:message key="label.param.pm.delai.effectif.sans.mandataire"/></th>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMVaud.delaiEffectifDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMVaud.delaiEffectifDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMVaud.delaiEffectifDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</td>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiEffectifDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsCanton.delaiEffectifDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsCanton.delaiEffectifDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</td>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</td>
-						</tr>
-						<tr>
-							<th><fmt:message key="label.param.pm.delai.effectif.avec.mandataire"/></th>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMVaud.delaiEffectifAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMVaud.delaiEffectifAvecMandataireDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMVaud.delaiEffectifAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</td>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsCanton.delaiEffectifAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsCanton.delaiEffectifAvecMandataireDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsCanton.delaiEffectifAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</td>
-							<td>
-								<c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifAvecMandataireDepuisBouclement != null}">
-									${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifAvecMandataireDepuisBouclement}
-									<c:choose>
-										<c:when test="${parametrePeriodeFiscalePMHorsSuisse.delaiEffectifAvecMandataireDepuisBouclement == 1}">
-											<fmt:message key="label.param.pm.delai.unite.singulier"/>
-										</c:when>
-										<c:otherwise>
-											<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-										</c:otherwise>
-									</c:choose>
+									&nbsp;/&nbsp;<input type="checkbox" readonly="readonly" disabled="disabled" <c:if test="${parametrePeriodeFiscalePMHorsSuisse.delaiTolereRepousseFinDeMois}">checked="checked"</c:if>/>
 								</c:if>
 							</td>
 						</tr>

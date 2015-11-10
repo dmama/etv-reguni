@@ -203,7 +203,7 @@ public class PeriodeFiscale extends HibernateEntity {
 		                                 RegDate.get(this.getAnnee() + 1, 3, 31), // valeur par défaut du terme reglementaire pour les sommations au 31 mars
 		                                 RegDate.get(this.getAnnee() + 1, 4, 30)     // valeur par défaut du terme effectif pour les sommations au 30 avril
 		);
-		addAllPeriodeFiscaleParametresPM(210, 255, 210, 255);
+		addAllPeriodeFiscaleParametresPM(6, false, 75, false);
 	}
 
 	/**
@@ -223,15 +223,16 @@ public class PeriodeFiscale extends HibernateEntity {
 
 	/**
 	 * Ajoute les {@link ParametrePeriodeFiscalePM} avec les dates initialisées aux valeurs les arguments de la méthode
-	 * @param delaiImprime le délai imprimé sur la DI envoyée
-	 * @param delaiImprimeAvecMandataire le délai imprimé sur la DI envoyée à une PM avec un mandataire général
-	 * @param delaiEffectif le délai effectif utilisé pour les DI de PM
-	 * @param delaiEffectifAvecMandataire le délai effectif utilisé pour les DI de PM avec mandataire général
+	 * @param delaiImprimeMois le délai imprimé sur la DI envoyée
+	 * @param delaiImprimeRepousseFinDeMois <code>true</code> si le délai effectivement imprimé doit être repoussé à la fin du mois
+	 * @param toleranceJours le délai effectif utilisé pour les DI de PM
+	 * @param delaiTolereRepousseFinDeMois <code>true</code> si le délai effectivement pris en compte (avec tolérance) doit être repoussé à la fin du mois
 	 */
-	public void addAllPeriodeFiscaleParametresPM(int delaiImprime, int delaiImprimeAvecMandataire, int delaiEffectif, int delaiEffectifAvecMandataire) {
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE, delaiImprime, delaiImprimeAvecMandataire, delaiEffectif, delaiEffectifAvecMandataire, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON, delaiImprime, delaiImprimeAvecMandataire, delaiEffectif, delaiEffectifAvecMandataire, this));
-		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE, delaiImprime, delaiImprimeAvecMandataire, delaiEffectif, delaiEffectifAvecMandataire, this));
+	public void addAllPeriodeFiscaleParametresPM(int delaiImprimeMois, boolean delaiImprimeRepousseFinDeMois,
+	                                             int toleranceJours, boolean delaiTolereRepousseFinDeMois) {
+		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
+		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
+		addParametrePeriodeFiscale(new ParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE, delaiImprimeMois, delaiImprimeRepousseFinDeMois, toleranceJours, delaiTolereRepousseFinDeMois, this));
 	}
 
 	public boolean possedeTypeDocument(TypeDocument typeDocument) {

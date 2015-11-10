@@ -1056,10 +1056,10 @@
     <column>TYPE_CTB</column>
     <column>PERIODE_ID</column>
     <column>PPF_TYPE</column>
-    <column>PM_DELAI_IMPRIME</column>
-    <column>PM_DELAI_IMPRIME_MANDATAIRE</column>
-    <column>PM_DELAI_EFF</column>
-    <column>PM_DELAI_EFF_MANDATAIRE</column>
+    <column>PM_DELAI_IMPRIME_MOIS</column>
+    <column>PM_DELAI_IMPRIME_FIN_MOIS</column>
+    <column>PM_TOLERANCE_JOURS</column>
+    <column>PM_TOLERANCE_FIN_MOIS</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>

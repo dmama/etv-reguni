@@ -538,7 +538,7 @@ public class TacheDAOTest extends CoreDAOTest {
 				pf0 = hibernateTemplate.merge(pf0);
 			}
 			if (typeCtb.isUsedForPM()) {
-				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, 210, 255, 210, 255, pf0);
+				final ParametrePeriodeFiscalePM ppf = new ParametrePeriodeFiscalePM(typeCtb, 6, false, 75, false, pf0);
 				ppf.setLogModifDate(new Timestamp(1199142000000L));
 				pf0.addParametrePeriodeFiscale(ppf);
 				pf0 = hibernateTemplate.merge(pf0);

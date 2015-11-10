@@ -24,21 +24,22 @@ public class ParametrePeriodeFiscalePMValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		final ParametrePeriodeFiscalePMEditView view = (ParametrePeriodeFiscalePMEditView) target;
-		final String[] champsDelai = {
-				"delaiImprimeSansMandataireVaud",
-				"delaiImprimeAvecMandataireVaud",
-				"delaiEffectifSansMandataireVaud",
-				"delaiEffectifAvecMandataireVaud",
-				"delaiImprimeSansMandataireHorsCanton",
-				"delaiImprimeAvecMandataireHorsCanton",
-				"delaiEffectifSansMandataireHorsCanton",
-				"delaiEffectifAvecMandataireHorsCanton",
-				"delaiImprimeSansMandataireHorsSuisse",
-				"delaiImprimeAvecMandataireHorsSuisse",
-				"delaiEffectifSansMandataireHorsSuisse",
-				"delaiEffectifAvecMandataireHorsSuisse"
+		final String[] champsDelaiMois = {
+				"delaiImprimeMoisVaud",
+				"delaiImprimeMoisHorsCanton",
+				"delaiImprimeMoisHorsSuisse"
 		};
-		for (String champ : champsDelai) {
+		final String[] champsDelaiJours = {
+				"toleranceJoursVaud",
+				"toleranceJoursHorsCanton",
+				"toleranceJoursHorsSuisse"
+		};
+		checkDelais(champsDelaiMois, 24, view, errors);
+		checkDelais(champsDelaiJours, 180, view, errors);
+	}
+
+	private void checkDelais(String[] champs, int maxValue, ParametrePeriodeFiscalePMEditView view, Errors errors) {
+		for (String champ : champs) {
 			try {
 				if (PropertyUtils.getProperty(view, champ) == null) {
 					errors.rejectValue(champ, "error.champ.obligatoire");
@@ -46,7 +47,7 @@ public class ParametrePeriodeFiscalePMValidator implements Validator {
 				else if (((Integer) PropertyUtils.getProperty(view, champ)) < 0) {
 					errors.rejectValue(champ, "error.delai.negatif.interdit");
 				}
-				else if (((Integer) PropertyUtils.getProperty(view, champ)) > 720) {
+				else if (((Integer) PropertyUtils.getProperty(view, champ)) > maxValue) {
 					errors.rejectValue(champ, "error.delai.trop.grand");
 				}
 			}

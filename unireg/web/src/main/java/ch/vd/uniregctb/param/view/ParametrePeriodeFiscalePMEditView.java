@@ -5,20 +5,20 @@ public class ParametrePeriodeFiscalePMEditView {
 	private Long idPeriodeFiscale;
 	private Integer anneePeriodeFiscale;
 
-	private Integer delaiImprimeSansMandataireVaud;
-	private Integer delaiImprimeAvecMandataireVaud;
-	private Integer delaiEffectifSansMandataireVaud;
-	private Integer delaiEffectifAvecMandataireVaud;
+	private Integer delaiImprimeMoisVaud;
+	private Boolean delaiImprimeRepousseFinDeMoisVaud;
+	private Integer toleranceJoursVaud;
+	private Boolean toleranceRepousseeFinDeMoisVaud;
 
-	private Integer delaiImprimeSansMandataireHorsCanton;
-	private Integer delaiImprimeAvecMandataireHorsCanton;
-	private Integer delaiEffectifSansMandataireHorsCanton;
-	private Integer delaiEffectifAvecMandataireHorsCanton;
+	private Integer delaiImprimeMoisHorsCanton;
+	private Boolean delaiImprimeRepousseFinDeMoisHorsCanton;
+	private Integer toleranceJoursHorsCanton;
+	private Boolean toleranceRepousseeFinDeMoisHorsCanton;
 
-	private Integer delaiImprimeSansMandataireHorsSuisse;
-	private Integer delaiImprimeAvecMandataireHorsSuisse;
-	private Integer delaiEffectifSansMandataireHorsSuisse;
-	private Integer delaiEffectifAvecMandataireHorsSuisse;
+	private Integer delaiImprimeMoisHorsSuisse;
+	private Boolean delaiImprimeRepousseFinDeMoisHorsSuisse;
+	private Integer toleranceJoursHorsSuisse;
+	private Boolean toleranceRepousseeFinDeMoisHorsSuisse;
 
 	public Long getIdPeriodeFiscale() {
 		return idPeriodeFiscale;
@@ -36,99 +36,99 @@ public class ParametrePeriodeFiscalePMEditView {
 		this.anneePeriodeFiscale = anneePeriodeFiscale;
 	}
 
-	public Integer getDelaiImprimeSansMandataireVaud() {
-		return delaiImprimeSansMandataireVaud;
+	public Integer getDelaiImprimeMoisVaud() {
+		return delaiImprimeMoisVaud;
 	}
 
-	public void setDelaiImprimeSansMandataireVaud(Integer delaiImprimeSansMandataireVaud) {
-		this.delaiImprimeSansMandataireVaud = delaiImprimeSansMandataireVaud;
+	public void setDelaiImprimeMoisVaud(Integer delaiImprimeMoisVaud) {
+		this.delaiImprimeMoisVaud = delaiImprimeMoisVaud;
 	}
 
-	public Integer getDelaiImprimeAvecMandataireVaud() {
-		return delaiImprimeAvecMandataireVaud;
+	public Boolean getDelaiImprimeRepousseFinDeMoisVaud() {
+		return delaiImprimeRepousseFinDeMoisVaud;
 	}
 
-	public void setDelaiImprimeAvecMandataireVaud(Integer delaiImprimeAvecMandataireVaud) {
-		this.delaiImprimeAvecMandataireVaud = delaiImprimeAvecMandataireVaud;
+	public void setDelaiImprimeRepousseFinDeMoisVaud(Boolean delaiImprimeRepousseFinDeMoisVaud) {
+		this.delaiImprimeRepousseFinDeMoisVaud = delaiImprimeRepousseFinDeMoisVaud;
 	}
 
-	public Integer getDelaiEffectifSansMandataireVaud() {
-		return delaiEffectifSansMandataireVaud;
+	public Integer getToleranceJoursVaud() {
+		return toleranceJoursVaud;
 	}
 
-	public void setDelaiEffectifSansMandataireVaud(Integer delaiEffectifSansMandataireVaud) {
-		this.delaiEffectifSansMandataireVaud = delaiEffectifSansMandataireVaud;
+	public void setToleranceJoursVaud(Integer toleranceJoursVaud) {
+		this.toleranceJoursVaud = toleranceJoursVaud;
 	}
 
-	public Integer getDelaiEffectifAvecMandataireVaud() {
-		return delaiEffectifAvecMandataireVaud;
+	public Boolean getToleranceRepousseeFinDeMoisVaud() {
+		return toleranceRepousseeFinDeMoisVaud;
 	}
 
-	public void setDelaiEffectifAvecMandataireVaud(Integer delaiEffectifAvecMandataireVaud) {
-		this.delaiEffectifAvecMandataireVaud = delaiEffectifAvecMandataireVaud;
+	public void setToleranceRepousseeFinDeMoisVaud(Boolean toleranceRepousseeFinDeMoisVaud) {
+		this.toleranceRepousseeFinDeMoisVaud = toleranceRepousseeFinDeMoisVaud;
 	}
 
-	public Integer getDelaiImprimeSansMandataireHorsCanton() {
-		return delaiImprimeSansMandataireHorsCanton;
+	public Integer getDelaiImprimeMoisHorsCanton() {
+		return delaiImprimeMoisHorsCanton;
 	}
 
-	public void setDelaiImprimeSansMandataireHorsCanton(Integer delaiImprimeSansMandataireHorsCanton) {
-		this.delaiImprimeSansMandataireHorsCanton = delaiImprimeSansMandataireHorsCanton;
+	public void setDelaiImprimeMoisHorsCanton(Integer delaiImprimeMoisHorsCanton) {
+		this.delaiImprimeMoisHorsCanton = delaiImprimeMoisHorsCanton;
 	}
 
-	public Integer getDelaiImprimeAvecMandataireHorsCanton() {
-		return delaiImprimeAvecMandataireHorsCanton;
+	public Boolean getDelaiImprimeRepousseFinDeMoisHorsCanton() {
+		return delaiImprimeRepousseFinDeMoisHorsCanton;
 	}
 
-	public void setDelaiImprimeAvecMandataireHorsCanton(Integer delaiImprimeAvecMandataireHorsCanton) {
-		this.delaiImprimeAvecMandataireHorsCanton = delaiImprimeAvecMandataireHorsCanton;
+	public void setDelaiImprimeRepousseFinDeMoisHorsCanton(Boolean delaiImprimeRepousseFinDeMoisHorsCanton) {
+		this.delaiImprimeRepousseFinDeMoisHorsCanton = delaiImprimeRepousseFinDeMoisHorsCanton;
 	}
 
-	public Integer getDelaiEffectifSansMandataireHorsCanton() {
-		return delaiEffectifSansMandataireHorsCanton;
+	public Integer getToleranceJoursHorsCanton() {
+		return toleranceJoursHorsCanton;
 	}
 
-	public void setDelaiEffectifSansMandataireHorsCanton(Integer delaiEffectifSansMandataireHorsCanton) {
-		this.delaiEffectifSansMandataireHorsCanton = delaiEffectifSansMandataireHorsCanton;
+	public void setToleranceJoursHorsCanton(Integer toleranceJoursHorsCanton) {
+		this.toleranceJoursHorsCanton = toleranceJoursHorsCanton;
 	}
 
-	public Integer getDelaiEffectifAvecMandataireHorsCanton() {
-		return delaiEffectifAvecMandataireHorsCanton;
+	public Boolean getToleranceRepousseeFinDeMoisHorsCanton() {
+		return toleranceRepousseeFinDeMoisHorsCanton;
 	}
 
-	public void setDelaiEffectifAvecMandataireHorsCanton(Integer delaiEffectifAvecMandataireHorsCanton) {
-		this.delaiEffectifAvecMandataireHorsCanton = delaiEffectifAvecMandataireHorsCanton;
+	public void setToleranceRepousseeFinDeMoisHorsCanton(Boolean toleranceRepousseeFinDeMoisHorsCanton) {
+		this.toleranceRepousseeFinDeMoisHorsCanton = toleranceRepousseeFinDeMoisHorsCanton;
 	}
 
-	public Integer getDelaiImprimeSansMandataireHorsSuisse() {
-		return delaiImprimeSansMandataireHorsSuisse;
+	public Integer getDelaiImprimeMoisHorsSuisse() {
+		return delaiImprimeMoisHorsSuisse;
 	}
 
-	public void setDelaiImprimeSansMandataireHorsSuisse(Integer delaiImprimeSansMandataireHorsSuisse) {
-		this.delaiImprimeSansMandataireHorsSuisse = delaiImprimeSansMandataireHorsSuisse;
+	public void setDelaiImprimeMoisHorsSuisse(Integer delaiImprimeMoisHorsSuisse) {
+		this.delaiImprimeMoisHorsSuisse = delaiImprimeMoisHorsSuisse;
 	}
 
-	public Integer getDelaiImprimeAvecMandataireHorsSuisse() {
-		return delaiImprimeAvecMandataireHorsSuisse;
+	public Boolean getDelaiImprimeRepousseFinDeMoisHorsSuisse() {
+		return delaiImprimeRepousseFinDeMoisHorsSuisse;
 	}
 
-	public void setDelaiImprimeAvecMandataireHorsSuisse(Integer delaiImprimeAvecMandataireHorsSuisse) {
-		this.delaiImprimeAvecMandataireHorsSuisse = delaiImprimeAvecMandataireHorsSuisse;
+	public void setDelaiImprimeRepousseFinDeMoisHorsSuisse(Boolean delaiImprimeRepousseFinDeMoisHorsSuisse) {
+		this.delaiImprimeRepousseFinDeMoisHorsSuisse = delaiImprimeRepousseFinDeMoisHorsSuisse;
 	}
 
-	public Integer getDelaiEffectifSansMandataireHorsSuisse() {
-		return delaiEffectifSansMandataireHorsSuisse;
+	public Integer getToleranceJoursHorsSuisse() {
+		return toleranceJoursHorsSuisse;
 	}
 
-	public void setDelaiEffectifSansMandataireHorsSuisse(Integer delaiEffectifSansMandataireHorsSuisse) {
-		this.delaiEffectifSansMandataireHorsSuisse = delaiEffectifSansMandataireHorsSuisse;
+	public void setToleranceJoursHorsSuisse(Integer toleranceJoursHorsSuisse) {
+		this.toleranceJoursHorsSuisse = toleranceJoursHorsSuisse;
 	}
 
-	public Integer getDelaiEffectifAvecMandataireHorsSuisse() {
-		return delaiEffectifAvecMandataireHorsSuisse;
+	public Boolean getToleranceRepousseeFinDeMoisHorsSuisse() {
+		return toleranceRepousseeFinDeMoisHorsSuisse;
 	}
 
-	public void setDelaiEffectifAvecMandataireHorsSuisse(Integer delaiEffectifAvecMandataireHorsSuisse) {
-		this.delaiEffectifAvecMandataireHorsSuisse = delaiEffectifAvecMandataireHorsSuisse;
+	public void setToleranceRepousseeFinDeMoisHorsSuisse(Boolean toleranceRepousseeFinDeMoisHorsSuisse) {
+		this.toleranceRepousseeFinDeMoisHorsSuisse = toleranceRepousseeFinDeMoisHorsSuisse;
 	}
 }

@@ -36,80 +36,50 @@
 			<table>
 			<tr>
 				<th></th>
-				<th><fmt:message key="label.param.entete.VD"/></th>
-				<th><fmt:message key="label.param.entete.HC"/></th>
-				<th><fmt:message key="label.param.entete.HS"/></th>
+				<th><fmt:message key="label.param.entete.VD"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+				<th><fmt:message key="label.param.entete.HC"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
+				<th><fmt:message key="label.param.entete.HS"/> / <fmt:message key="label.param.entete.report.fin.mois"/></th>
 			</tr>
 			<tr>
-				<th><fmt:message key="label.param.pm.delai.imprime.sans.mandataire"/></th>
+				<th><fmt:message key="label.param.pm.delai.imprime"/></th>
 				<td>
-					<form:input path="delaiImprimeSansMandataireVaud"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeSansMandataireVaud" cssClass="error"/>
+					<form:input path="delaiImprimeMoisVaud"/>
+					<fmt:message key="label.param.pm.delai.mois"/>
+					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisVaud"/>
+					<form:errors path="delaiImprimeMoisVaud" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiImprimeSansMandataireHorsCanton"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeSansMandataireHorsCanton" cssClass="error"/>
+					<form:input path="delaiImprimeMoisHorsCanton"/>
+					<fmt:message key="label.param.pm.delai.mois"/>
+					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsCanton"/>
+					<form:errors path="delaiImprimeMoisHorsCanton" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiImprimeSansMandataireHorsSuisse"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeSansMandataireHorsSuisse" cssClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<th><fmt:message key="label.param.pm.delai.imprime.avec.mandataire"/></th>
-				<td>
-					<form:input path="delaiImprimeAvecMandataireVaud"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeAvecMandataireVaud" cssClass="error"/>
-				</td>
-				<td>
-					<form:input path="delaiImprimeAvecMandataireHorsCanton"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeAvecMandataireHorsCanton" cssClass="error"/>
-				</td>
-				<td>
-					<form:input path="delaiImprimeAvecMandataireHorsSuisse"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiImprimeAvecMandataireHorsSuisse" cssClass="error"/>
+					<form:input path="delaiImprimeMoisHorsSuisse"/>
+					<fmt:message key="label.param.pm.delai.mois"/>
+					&nbsp;/&nbsp;<form:checkbox path="delaiImprimeRepousseFinDeMoisHorsSuisse"/>
+					<form:errors path="delaiImprimeMoisHorsSuisse" cssClass="error"/>
 				</td>
 			</tr>
 			<tr>
-				<th><fmt:message key="label.param.pm.delai.effectif.sans.mandataire"/></th>
+				<th><fmt:message key="label.param.pm.delai.tolerance"/></th>
 				<td>
-					<form:input path="delaiEffectifSansMandataireVaud"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifSansMandataireVaud" cssClass="error"/>
+					<form:input path="toleranceJoursVaud"/>
+					<fmt:message key="label.param.pm.delai.jours"/>
+					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisVaud"/>
+					<form:errors path="toleranceJoursVaud" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiEffectifSansMandataireHorsCanton"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifSansMandataireHorsCanton" cssClass="error"/>
+					<form:input path="toleranceJoursHorsCanton"/>
+					<fmt:message key="label.param.pm.delai.jours"/>
+					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisHorsCanton"/>
+					<form:errors path="toleranceJoursHorsCanton" cssClass="error"/>
 				</td>
 				<td>
-					<form:input path="delaiEffectifSansMandataireHorsSuisse"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifSansMandataireHorsSuisse" cssClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<th><fmt:message key="label.param.pm.delai.effectif.avec.mandataire"/></th>
-				<td>
-					<form:input path="delaiEffectifAvecMandataireVaud"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifAvecMandataireVaud" cssClass="error"/>
-				</td>
-				<td>
-					<form:input path="delaiEffectifAvecMandataireHorsCanton"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifAvecMandataireHorsCanton" cssClass="error"/>
-				</td>
-				<td>
-					<form:input path="delaiEffectifAvecMandataireHorsSuisse"/>
-					<fmt:message key="label.param.pm.delai.unite.pluriel"/>
-					<form:errors path="delaiEffectifAvecMandataireHorsSuisse" cssClass="error"/>
+					<form:input path="toleranceJoursHorsSuisse"/>
+					<fmt:message key="label.param.pm.delai.jours"/>
+					&nbsp;/&nbsp;<form:checkbox path="toleranceRepousseeFinDeMoisHorsSuisse"/>
+					<form:errors path="toleranceJoursHorsSuisse" cssClass="error"/>
 				</td>
 			</tr>
 		</table>

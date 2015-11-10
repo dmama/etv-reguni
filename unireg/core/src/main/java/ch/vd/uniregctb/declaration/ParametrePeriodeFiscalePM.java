@@ -10,22 +10,24 @@ import ch.vd.uniregctb.type.TypeContribuable;
 @DiscriminatorValue(value = "PM")
 public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 
-	private int delaiImprimeDepuisBouclement;
-	private int delaiImprimeAvecMandataireDepuisBouclement;
-	private int delaiEffectifDepuisBouclement;
-	private int delaiEffectifAvecMandataireDepuisBouclement;
+	private int delaiImprimeMoisDepuisBouclement;           // en mois
+	private boolean delaiImprimeRepousseFinDeMois;
+	private int delaiToleranceJoursEffective;                // en jours
+	private boolean delaiTolereRepousseFinDeMois;
 
 	// nécessaire pour hibernate
 	protected ParametrePeriodeFiscalePM() {
 	}
 
-	public ParametrePeriodeFiscalePM(TypeContribuable typeContribuable, int delaiImprimeDepuisBouclement, int delaiImprimeAvecMandataireDepuisBouclement, int delaiEffectifDepuisBouclement,
-	                                 int delaiEffectifAvecMandataireDepuisBouclement, PeriodeFiscale periodefiscale) {
+	public ParametrePeriodeFiscalePM(TypeContribuable typeContribuable,
+	                                 int delaiImprimeMoisDepuisBouclement, boolean delaiImprimeRepousseFinDeMois,
+	                                 int delaiToleranceJoursEffective, boolean delaiTolereRepousseFinDeMois,
+	                                 PeriodeFiscale periodefiscale) {
 		super(periodefiscale, typeContribuable);
-		this.delaiImprimeDepuisBouclement = delaiImprimeDepuisBouclement;
-		this.delaiImprimeAvecMandataireDepuisBouclement = delaiImprimeAvecMandataireDepuisBouclement;
-		this.delaiEffectifDepuisBouclement = delaiEffectifDepuisBouclement;
-		this.delaiEffectifAvecMandataireDepuisBouclement = delaiEffectifAvecMandataireDepuisBouclement;
+		this.delaiImprimeMoisDepuisBouclement = delaiImprimeMoisDepuisBouclement;
+		this.delaiImprimeRepousseFinDeMois = delaiImprimeRepousseFinDeMois;
+		this.delaiToleranceJoursEffective = delaiToleranceJoursEffective;
+		this.delaiTolereRepousseFinDeMois = delaiTolereRepousseFinDeMois;
 		checkTypeContribuable(typeContribuable);
 	}
 
@@ -41,39 +43,39 @@ public class ParametrePeriodeFiscalePM extends ParametrePeriodeFiscale {
 		super.setTypeContribuable(typeContribuable);
 	}
 
-	@Column(name = "PM_DELAI_IMPRIME")
-	public int getDelaiImprimeDepuisBouclement() {
-		return delaiImprimeDepuisBouclement;
+	@Column(name = "PM_DELAI_IMPRIME_MOIS")
+	public int getDelaiImprimeMoisDepuisBouclement() {
+		return delaiImprimeMoisDepuisBouclement;
 	}
 
-	public void setDelaiImprimeDepuisBouclement(int delaiImprimeDepuisBouclement) {
-		this.delaiImprimeDepuisBouclement = delaiImprimeDepuisBouclement;
+	public void setDelaiImprimeMoisDepuisBouclement(int delaiImprimeMoisDepuisBouclement) {
+		this.delaiImprimeMoisDepuisBouclement = delaiImprimeMoisDepuisBouclement;
 	}
 
-	@Column(name = "PM_DELAI_IMPRIME_MANDATAIRE")
-	public int getDelaiImprimeAvecMandataireDepuisBouclement() {
-		return delaiImprimeAvecMandataireDepuisBouclement;
+	@Column(name = "PM_DELAI_IMPRIME_FIN_MOIS")
+	public boolean isDelaiImprimeRepousseFinDeMois() {
+		return delaiImprimeRepousseFinDeMois;
 	}
 
-	public void setDelaiImprimeAvecMandataireDepuisBouclement(int delaiImprimeAvecMandataireDepuisBouclement) {
-		this.delaiImprimeAvecMandataireDepuisBouclement = delaiImprimeAvecMandataireDepuisBouclement;
+	public void setDelaiImprimeRepousseFinDeMois(boolean delaiImprimeRepousseFinDeMois) {
+		this.delaiImprimeRepousseFinDeMois = delaiImprimeRepousseFinDeMois;
 	}
 
-	@Column(name = "PM_DELAI_EFF")
-	public int getDelaiEffectifDepuisBouclement() {
-		return delaiEffectifDepuisBouclement;
+	@Column(name = "PM_TOLERANCE_JOURS")
+	public int getDelaiToleranceJoursEffective() {
+		return delaiToleranceJoursEffective;
 	}
 
-	public void setDelaiEffectifDepuisBouclement(int delaiEffectifDepuisBouclement) {
-		this.delaiEffectifDepuisBouclement = delaiEffectifDepuisBouclement;
+	public void setDelaiToleranceJoursEffective(int delaiToleranceJoursEffective) {
+		this.delaiToleranceJoursEffective = delaiToleranceJoursEffective;
 	}
 
-	@Column(name = "PM_DELAI_EFF_MANDATAIRE")
-	public int getDelaiEffectifAvecMandataireDepuisBouclement() {
-		return delaiEffectifAvecMandataireDepuisBouclement;
+	@Column(name = "PM_TOLERANCE_FIN_MOIS")
+	public boolean isDelaiTolereRepousseFinDeMois() {
+		return delaiTolereRepousseFinDeMois;
 	}
 
-	public void setDelaiEffectifAvecMandataireDepuisBouclement(int delaiEffectifAvecMandataireDepuisBouclement) {
-		this.delaiEffectifAvecMandataireDepuisBouclement = delaiEffectifAvecMandataireDepuisBouclement;
+	public void setDelaiTolereRepousseFinDeMois(boolean delaiTolereRepousseFinDeMois) {
+		this.delaiTolereRepousseFinDeMois = delaiTolereRepousseFinDeMois;
 	}
 }

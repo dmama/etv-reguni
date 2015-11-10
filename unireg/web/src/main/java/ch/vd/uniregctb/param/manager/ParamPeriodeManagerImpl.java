@@ -195,26 +195,26 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		final ParametrePeriodeFiscalePM hc = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_CANTON);
 		if (hc != null) {
-			ppfv.setDelaiEffectifAvecMandataireHorsCanton(hc.getDelaiEffectifAvecMandataireDepuisBouclement());
-			ppfv.setDelaiEffectifSansMandataireHorsCanton(hc.getDelaiEffectifDepuisBouclement());
-			ppfv.setDelaiImprimeAvecMandataireHorsCanton(hc.getDelaiImprimeAvecMandataireDepuisBouclement());
-			ppfv.setDelaiImprimeSansMandataireHorsCanton(hc.getDelaiImprimeDepuisBouclement());
+			ppfv.setDelaiImprimeMoisHorsCanton(hc.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeRepousseFinDeMoisHorsCanton(hc.isDelaiImprimeRepousseFinDeMois());
+			ppfv.setToleranceJoursHorsCanton(hc.getDelaiToleranceJoursEffective());
+			ppfv.setToleranceRepousseeFinDeMoisHorsCanton(hc.isDelaiTolereRepousseFinDeMois());
 		}
 
 		final ParametrePeriodeFiscalePM hs = pf.getParametrePeriodeFiscalePM(TypeContribuable.HORS_SUISSE);
 		if (hs != null) {
-			ppfv.setDelaiEffectifAvecMandataireHorsSuisse(hs.getDelaiEffectifAvecMandataireDepuisBouclement());
-			ppfv.setDelaiEffectifSansMandataireHorsSuisse(hs.getDelaiEffectifDepuisBouclement());
-			ppfv.setDelaiImprimeAvecMandataireHorsSuisse(hs.getDelaiImprimeAvecMandataireDepuisBouclement());
-			ppfv.setDelaiImprimeSansMandataireHorsSuisse(hs.getDelaiImprimeDepuisBouclement());
+			ppfv.setDelaiImprimeMoisHorsSuisse(hs.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeRepousseFinDeMoisHorsSuisse(hs.isDelaiImprimeRepousseFinDeMois());
+			ppfv.setToleranceJoursHorsSuisse(hs.getDelaiToleranceJoursEffective());
+			ppfv.setToleranceRepousseeFinDeMoisHorsSuisse(hs.isDelaiTolereRepousseFinDeMois());
 		}
 
 		final ParametrePeriodeFiscalePM vd = pf.getParametrePeriodeFiscalePM(TypeContribuable.VAUDOIS_ORDINAIRE);
 		if (vd != null) {
-			ppfv.setDelaiEffectifAvecMandataireVaud(vd.getDelaiEffectifAvecMandataireDepuisBouclement());
-			ppfv.setDelaiEffectifSansMandataireVaud(vd.getDelaiEffectifDepuisBouclement());
-			ppfv.setDelaiImprimeAvecMandataireVaud(vd.getDelaiImprimeAvecMandataireDepuisBouclement());
-			ppfv.setDelaiImprimeSansMandataireVaud(vd.getDelaiImprimeDepuisBouclement());
+			ppfv.setDelaiImprimeMoisVaud(vd.getDelaiImprimeMoisDepuisBouclement());
+			ppfv.setDelaiImprimeRepousseFinDeMoisVaud(vd.isDelaiImprimeRepousseFinDeMois());
+			ppfv.setToleranceJoursVaud(vd.getDelaiToleranceJoursEffective());
+			ppfv.setToleranceRepousseeFinDeMoisVaud(vd.isDelaiTolereRepousseFinDeMois());
 		}
 
 		return ppfv;
@@ -316,9 +316,15 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		};
 
 		final int[][] delais = new int[][] {
-				{view.getDelaiImprimeSansMandataireVaud(), view.getDelaiImprimeAvecMandataireVaud(), view.getDelaiEffectifSansMandataireVaud(), view.getDelaiEffectifAvecMandataireVaud()},
-				{view.getDelaiImprimeSansMandataireHorsCanton(), view.getDelaiImprimeAvecMandataireHorsCanton(), view.getDelaiEffectifSansMandataireHorsCanton(), view.getDelaiEffectifAvecMandataireHorsCanton()},
-				{view.getDelaiImprimeSansMandataireHorsSuisse(), view.getDelaiImprimeAvecMandataireHorsSuisse(), view.getDelaiEffectifSansMandataireHorsSuisse(), view.getDelaiEffectifAvecMandataireHorsSuisse()}
+				{view.getDelaiImprimeMoisVaud(), view.getToleranceJoursVaud()},
+				{view.getDelaiImprimeMoisHorsCanton(), view.getToleranceJoursHorsCanton()},
+				{view.getDelaiImprimeMoisHorsSuisse(), view.getToleranceJoursHorsSuisse()}
+		};
+
+		final boolean[][] reportsFinDeMois = new boolean[][] {
+				{view.getDelaiImprimeRepousseFinDeMoisVaud(), view.getToleranceRepousseeFinDeMoisVaud()},
+				{view.getDelaiImprimeRepousseFinDeMoisHorsCanton(), view.getToleranceRepousseeFinDeMoisHorsCanton()},
+				{view.getDelaiImprimeRepousseFinDeMoisHorsSuisse(), view.getToleranceRepousseeFinDeMoisHorsSuisse()}
 		};
 
 		// On verifie que tous les parametres de periode fiscale ne soient pas null
@@ -332,10 +338,10 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 		// mise à jour des paramètres
 		for (int i = 0 ; i < ppfs.length ; ++ i) {
-			ppfs[i].setDelaiImprimeDepuisBouclement(delais[i][0]);
-			ppfs[i].setDelaiImprimeAvecMandataireDepuisBouclement(delais[i][1]);
-			ppfs[i].setDelaiEffectifDepuisBouclement(delais[i][2]);
-			ppfs[i].setDelaiEffectifAvecMandataireDepuisBouclement(delais[i][3]);
+			ppfs[i].setDelaiImprimeMoisDepuisBouclement(delais[i][0]);
+			ppfs[i].setDelaiImprimeRepousseFinDeMois(reportsFinDeMois[i][0]);
+			ppfs[i].setDelaiToleranceJoursEffective(delais[i][1]);
+			ppfs[i].setDelaiTolereRepousseFinDeMois(reportsFinDeMois[i][1]);
 		}
 	}
 

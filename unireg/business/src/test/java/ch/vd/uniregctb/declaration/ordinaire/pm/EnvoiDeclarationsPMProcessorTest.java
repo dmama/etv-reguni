@@ -214,7 +214,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf + 1, 1, 31), delai.getDelaiAccordeAu());        // 210 jour + fin de mois après la le 30.06.pf
+					Assert.assertEquals(date(pf, 6, 30).addMonths(6).addDays(75), delai.getDelaiAccordeAu());       // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
@@ -426,7 +426,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf + 1, 1, 31), delai.getDelaiAccordeAu());        // 210 jour + fin de mois après la le 30.06.pf
+					Assert.assertEquals(date(pf, 6, 30).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;
@@ -536,7 +536,7 @@ public class EnvoiDeclarationsPMProcessorTest extends BusinessTest {
 					Assert.assertFalse(delai.isAnnule());
 					Assert.assertEquals(dateTraitement, delai.getDateDemande());
 					Assert.assertEquals(dateTraitement, delai.getDateTraitement());
-					Assert.assertEquals(date(pf + 1, 1, 31), delai.getDelaiAccordeAu());        // 210 jour + fin de mois après la le 30.06.pf
+					Assert.assertEquals(date(pf, 6, 15).addMonths(6).addDays(75), delai.getDelaiAccordeAu());        // 6 mois + 75 jours de tolérance
 
 					Assert.assertEquals(DeclarationImpotOrdinairePM.class, declaration.getClass());
 					final DeclarationImpotOrdinairePM di = (DeclarationImpotOrdinairePM) declaration;

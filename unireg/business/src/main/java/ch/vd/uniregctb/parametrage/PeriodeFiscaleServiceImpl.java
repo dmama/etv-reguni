@@ -78,10 +78,10 @@ public class PeriodeFiscaleServiceImpl implements PeriodeFiscaleService, Initial
 		@Override
 		public ParametrePeriodeFiscalePM createFrom(ParametrePeriodeFiscalePM previous, PeriodeFiscale nvellePeriodeFiscale) {
 			return new ParametrePeriodeFiscalePM(previous.getTypeContribuable(),
-			                                     previous.getDelaiImprimeDepuisBouclement(),
-			                                     previous.getDelaiImprimeAvecMandataireDepuisBouclement(),
-			                                     previous.getDelaiEffectifDepuisBouclement(),
-			                                     previous.getDelaiEffectifAvecMandataireDepuisBouclement(),
+			                                     previous.getDelaiImprimeMoisDepuisBouclement(),
+			                                     previous.isDelaiImprimeRepousseFinDeMois(),
+			                                     previous.getDelaiToleranceJoursEffective(),
+			                                     previous.isDelaiTolereRepousseFinDeMois(),
 			                                     nvellePeriodeFiscale);
 		}
 	}

@@ -75,7 +75,7 @@ create table MOUVEMENT_DOSSIER (MVT_TYPE nvarchar2(31) not null, id number(19,0)
 
 create table PARAMETRE (nom nvarchar2(255) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), valeur nvarchar2(255), primary key (nom));
 
-create table PARAMETRE_PERIODE_FISCALE (PPF_TYPE nvarchar2(5) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_FIN_ENVOI_MASSE number(10,0), TERME_GEN_SOMM_EFFECT number(10,0), TERME_GEN_SOMM_REGL number(10,0), TYPE_CTB nvarchar2(17), PERIODE_ID number(19,0), PM_DELAI_IMPRIME NUMBER(10,0), PM_DELAI_IMPRIME_MANDATAIRE NUMBER(10,0), PM_DELAI_EFF NUMBER(10,0), PM_DELAI_EFF_MANDATAIRE NUMBER(10,0), primary key (id));
+create table PARAMETRE_PERIODE_FISCALE (PPF_TYPE nvarchar2(5) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_FIN_ENVOI_MASSE number(10,0), TERME_GEN_SOMM_EFFECT number(10,0), TERME_GEN_SOMM_REGL number(10,0), TYPE_CTB nvarchar2(17), PERIODE_ID number(19,0), PM_DELAI_IMPRIME_MOIS NUMBER(10,0), PM_TOLERANCE_JOURS NUMBER(10,0), PM_DELAI_IMPRIME_FIN_MOIS NUMBER(1,0), PM_TOLERANCE_FIN_MOIS NUMBER(1,0), primary key (id));
 
 create table PERIODE_FISCALE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), ANNEE number(10,0) not null unique, CODE_CTRL_SOMM_DI_PP number(1,0) not null, primary key (id));
 

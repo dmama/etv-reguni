@@ -297,10 +297,7 @@ public class EnvoiDeclarationsPMProcessor {
 		savedDi.addEtat(new EtatDeclarationEmise(dateTraitement));
 
 		// ajout du délai initial de retour
-		// TODO prendre en compte la présence de mandataire général...
-		final boolean hasMandatGeneral = false;
-		final DatesDelaiInitial datesDelaiInitial = getDelaiInitialRetour(tache.getTypeContribuable(), hasMandatGeneral,
-		                                                                  tache.getDateFin(), dateTraitement, periodeFiscale);
+		final DatesDelaiInitial datesDelaiInitial = getDelaiInitialRetour(tache.getTypeContribuable(), tache.getDateFin(), dateTraitement, periodeFiscale);
 		savedDi.setDelaiRetourImprime(datesDelaiInitial.getDateImprimee());
 
 		final DelaiDeclaration delaiInitial = new DelaiDeclaration();
@@ -359,47 +356,60 @@ public class EnvoiDeclarationsPMProcessor {
 	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission,
 	 * qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
 	 * @param typeContribuable type de contribuable : VD, HC, HS
-	 * @param hasMandatGeneral <code>true</code> si la personne morale possède un mandataire général pour la PF, <code>false</code> sinon
 	 * @param dateBouclement date de bouclement (= date de fin de la période d'imposition)
 	 * @param pf la période fiscale de la DI émise
 	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
 	 */
 	@NotNull
-	private DatesDelaiInitial getDelaiInitialBrutRetour(TypeContribuable typeContribuable, boolean hasMandatGeneral, RegDate dateBouclement, PeriodeFiscale pf) throws DeclarationException {
+	private DatesDelaiInitial getDelaiInitialBrutRetour(TypeContribuable typeContribuable, RegDate dateBouclement, PeriodeFiscale pf) throws DeclarationException {
 		final ParametrePeriodeFiscalePM params = pf.getParametrePeriodeFiscalePM(typeContribuable);
 		if (params == null) {
 			throw new DeclarationException("Pas de paramètrage trouvé pour le type de contribuable " + typeContribuable + " et la PF " + pf.getAnnee());
 		}
-		final RegDate delaiImprime = appliquerDelaiEnJour(dateBouclement, hasMandatGeneral ? params.getDelaiImprimeAvecMandataireDepuisBouclement() : params.getDelaiImprimeDepuisBouclement());
-		final RegDate delaiEffectif = appliquerDelaiEnJour(dateBouclement, hasMandatGeneral ? params.getDelaiEffectifAvecMandataireDepuisBouclement() : params.getDelaiEffectifDepuisBouclement());
+		final RegDate delaiImprime = appliquerDelaiEnMois(dateBouclement, params.getDelaiImprimeMoisDepuisBouclement(), params.isDelaiImprimeRepousseFinDeMois());
+		final RegDate delaiEffectif = appliquerDelaiEnJour(delaiImprime, params.getDelaiToleranceJoursEffective(), params.isDelaiTolereRepousseFinDeMois());
 		return new DatesDelaiInitial(delaiImprime, delaiEffectif);
 	}
 
 	/**
-	 * Applique le délai donné (en jours) et se place ensuite à la fin du mois
+	 * Applique le délai donné (en jours) et se place ensuite à la fin du mois si nécessaire
 	 * @param dateSource date de départ du délai
 	 * @param jours nombre de jours à utiliser
+	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
 	 * @return date à utiliser comme date limite
 	 */
 	@NotNull
-	private static RegDate appliquerDelaiEnJour(RegDate dateSource, int jours) {
-		return dateSource.addDays(jours).getLastDayOfTheMonth();
+	private static RegDate appliquerDelaiEnJour(RegDate dateSource, int jours, boolean reportFinMois) {
+		final RegDate dateDecalee = dateSource.addDays(jours);
+		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
+	}
+
+	/**
+	 * Applique le délai donné (en mois) et se place ensuite à la fin du mois si nécessaire
+	 * @param dateSource date de départ du délai
+	 * @param mois nombre de mois à utiliser
+	 * @param reportFinMois <code>true</code> si un report à la fin du mois doit être appliqué
+	 * @return date à utiliser comme date limite
+	 */
+	@NotNull
+	private static RegDate appliquerDelaiEnMois(RegDate dateSource, int mois, boolean reportFinMois) {
+		final RegDate dateDecalee = dateSource.addMonths(mois);
+		return reportFinMois ? dateDecalee.getLastDayOfTheMonth() : dateDecalee;
 	}
 
 	/**
 	 * Calcul de la date initiale limite de retour (brutte, car uniquement basée sur la date de bouclement, sans tenir compte de la date d'émission,
 	 * qui pourrait en théorie être très éloignée de la date de bouclement en cas de rattrapage)
 	 * @param typeContribuable type de contribuable : VD, HC, HS
-	 * @param hasMandatGeneral <code>true</code> si la personne morale possède un mandataire général pour la PF, <code>false</code> sinon
 	 * @param dateBouclement date de bouclement (= date de fin de la période d'imposition)
 	 * @param dateEmission date de l'émission de la DI
 	 * @param pf la période fiscale de la DI émise
 	 * @return le couple de date (imprimée/effective) à utiliser pour le délai initial de retour
 	 */
 	@NotNull
-	private DatesDelaiInitial getDelaiInitialRetour(TypeContribuable typeContribuable, boolean hasMandatGeneral, RegDate dateBouclement, RegDate dateEmission, PeriodeFiscale pf) throws DeclarationException {
+	private DatesDelaiInitial getDelaiInitialRetour(TypeContribuable typeContribuable, RegDate dateBouclement, RegDate dateEmission, PeriodeFiscale pf) throws DeclarationException {
 		final RegDate dateMinimale = dateEmission.addMonths(parametres.getDelaiMinimalRetourDeclarationImpotPM());
-		final DatesDelaiInitial brut = getDelaiInitialBrutRetour(typeContribuable, hasMandatGeneral, dateBouclement, pf);
+		final DatesDelaiInitial brut = getDelaiInitialBrutRetour(typeContribuable, dateBouclement, pf);
 		return brut.auPlusTot(dateMinimale);
 	}
 
