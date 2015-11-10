@@ -56,7 +56,7 @@ private final List<OrganisationLocation> locationsData;
 		                        nomsEntreprise,
 		                        MultivalueListConverter.toMapOfListsOfDateRangedValues(nomsAdditionnelsEntreprise, Function.identity(), Function.identity()),
 		                        formesJuridiques,
-		                        DateRangedConvertor.convert(locations, BigInteger::longValue),
+		                        MultivalueListConverter.toMapOfListsOfDateRangedValues(locations, BigInteger::longValue, BigInteger::longValue),
 		                        locationsData,
 		                        transfereA == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(transfereA, BigInteger::longValue, BigInteger::longValue),
 		                        transfereDe == null ? null : MultivalueListConverter.toMapOfListsOfDateRangedValues(transfereDe, BigInteger::longValue, BigInteger::longValue),

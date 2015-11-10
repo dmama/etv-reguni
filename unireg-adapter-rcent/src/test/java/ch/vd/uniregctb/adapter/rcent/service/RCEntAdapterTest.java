@@ -80,7 +80,7 @@ public class RCEntAdapterTest {
 
 		// Locations
 		assertThat(organisation.getLocations().size(), equalTo(1));
-		assertThat(organisation.getLocations().get(0).getPayload(), equalTo(101072745L));
+		assertThat(organisation.getLocations().values().iterator().next().get(0).getPayload(), equalTo(101072745L));
 
 		assertThat(organisation.getLocationData().size(), equalTo(1));
 		assertThat(organisation.getLocationData().get(0).getCantonalId(), equalTo(101072745L));
@@ -237,7 +237,7 @@ public class RCEntAdapterTest {
 
 		// Locations
 		assertThat(organisation.getLocations().size(), equalTo(1));
-		assertThat(organisation.getLocations().get(0).getPayload(), equalTo(101072728L));
+		assertThat(organisation.getLocations().values().iterator().next().get(0).getPayload(), equalTo(101072728L));
 
 		assertThat(organisation.getLocationData().size(), equalTo(1));
 		assertThat(organisation.getLocationData().get(0).getCantonalId(), equalTo(101072728L));
