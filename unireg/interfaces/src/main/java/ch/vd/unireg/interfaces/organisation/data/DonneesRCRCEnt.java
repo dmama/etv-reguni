@@ -34,30 +34,38 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		this.dateStatuts = dateStatuts;
 	}
 
+	@Override
 	public List<AdresseRCEnt> getAdresseLegale() {
 		return adresseLegale;
 	}
 
+	@Override
 	public List<Capital> getCapital() {
 		return capital;
 	}
 
+
+	@Override
 	public List<DateRanged<String>> getNom() {
 		return nom;
 	}
 
+	@Override
 	public List<DateRanged<StatusRC>> getStatus() {
 		return status;
 	}
 
+	@Override
 	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
 		return statusInscription;
 	}
 
+	@Override
 	public List<DateRanged<String>> getButs() {
 		return buts;
 	}
 
+	@Override
 	public List<DateRanged<RegDate>> getDateStatuts() {
 		return dateStatuts;
 	}
