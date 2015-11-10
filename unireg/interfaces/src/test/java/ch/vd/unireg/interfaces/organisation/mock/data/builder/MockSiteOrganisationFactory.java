@@ -5,14 +5,13 @@ import java.math.BigDecimal;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.builder.CapitalBuilder;
-import ch.vd.unireg.interfaces.organisation.data.builder.DonneesRegistreIDEBuilder;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRC;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockDonneesRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.MockSiteOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -74,17 +73,13 @@ public abstract class MockSiteOrganisationFactory {
 			}
 		}
 
-		final DonneesRegistreIDE donneesRegistreIDE;
+		MockDonneesRegistreIDE donneesRegistreIDE = null;
 		if (statusIde != null) {
-			final DonneesRegistreIDEBuilder idebuilder = new DonneesRegistreIDEBuilder()
-					.addStatus(dateDebut, dateFin, statusIde);
+			donneesRegistreIDE = new MockDonneesRegistreIDE();
+			donneesRegistreIDE.addStatus(dateDebut, statusIde);
 			if (typeIde != null) {
-				idebuilder.addTypeOrganisation(dateDebut, dateFin, typeIde);
+				donneesRegistreIDE.addTypeOrganisation(dateDebut, typeIde);
 			}
-			donneesRegistreIDE = idebuilder.build();
-		}
-		else {
-			donneesRegistreIDE = null;
 		}
 
 		final MockSiteOrganisation mock = new MockSiteOrganisation(cantonalId, donneesRegistreIDE, donneesRC);

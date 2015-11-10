@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
+import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
 
@@ -99,6 +100,11 @@ public class MockDonneesRC implements DonneesRC {
 		return MockOrganisationHelper.getHisto(status);
 	}
 
+	@Override
+	public StatusRC getStatus(RegDate date) {
+		return OrganisationHelper.valueForDate(getStatus(), date);
+	}
+
 	public void changeStatus(RegDate date, StatusRC nouveauStatus) {
 		MockOrganisationHelper.changeRangedData(status, date, nouveauStatus);
 	}
@@ -110,6 +116,11 @@ public class MockDonneesRC implements DonneesRC {
 	@Override
 	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
 		return MockOrganisationHelper.getHisto(statusInscription);
+	}
+
+	@Override
+	public StatusInscriptionRC getStatusInscription(RegDate date) {
+		return OrganisationHelper.valueForDate(getStatusInscription(), date);
 	}
 
 	public void changeStatusInscription(RegDate date, StatusInscriptionRC nouveauStatusInscription) {

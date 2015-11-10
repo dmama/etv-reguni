@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRC;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRCRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisationRCEnt;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.AddressConverter;
 import ch.vd.unireg.interfaces.organisation.rcent.converters.CapitalConverter;
@@ -66,7 +67,7 @@ public class RCEntSiteOrganisationHelper {
 	}
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {
-		return new DonneesRegistreIDE(
+		return new DonneesRegistreIDERCEnt(
 				RCEntHelper.convertAndFlatmap(uid.getPostOfficeBoxAddress(), ADDRESS_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getStatus(), UID_REGISTER_STATUS_CONVERTER),
 				RCEntHelper.convertAndMap(uid.getTypeOfOrganisation(), UID_REGISTER_TYPE_OF_ORGANISATION_CONVERTER),

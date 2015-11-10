@@ -44,7 +44,6 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		return capital;
 	}
 
-
 	@Override
 	public List<DateRanged<String>> getNom() {
 		return nom;
@@ -56,8 +55,18 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	}
 
 	@Override
+	public StatusRC getStatus(RegDate date) {
+		return OrganisationHelper.valueForDate(status, date);
+	}
+
+	@Override
 	public List<DateRanged<StatusInscriptionRC>> getStatusInscription() {
 		return statusInscription;
+	}
+
+	@Override
+	public StatusInscriptionRC getStatusInscription(RegDate date) {
+		return OrganisationHelper.valueForDate(statusInscription, date);
 	}
 
 	@Override

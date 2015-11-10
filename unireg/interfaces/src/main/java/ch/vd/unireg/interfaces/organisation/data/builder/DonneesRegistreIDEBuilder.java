@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.AdresseRCEnt;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.DonneesRegistreIDERCEnt;
 import ch.vd.unireg.interfaces.organisation.data.RaisonLiquidationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
@@ -28,7 +29,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 
 	@Override
 	public DonneesRegistreIDE build() {
-		return new DonneesRegistreIDE(adresseBoitePostale, status, typeOrganisation, adresseEffective, raisonDeLiquidation);
+		return new DonneesRegistreIDERCEnt(adresseBoitePostale, status, typeOrganisation, adresseEffective, raisonDeLiquidation);
 	}
 
 	public DonneesRegistreIDEBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRegistreIDE valeur) {
