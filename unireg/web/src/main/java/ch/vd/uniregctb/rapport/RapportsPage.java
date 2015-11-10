@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
+import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
@@ -44,7 +45,7 @@ public class RapportsPage {
 			this.dateDebut = RegDateHelper.dateToDisplayString(rapport.getDateDebut());
 			this.dateFin = RegDateHelper.dateToDisplayString(rapport.getDateFin());
 			this.annule = rapport.isAnnule();
-			this.type = initType(rapport.getType(), sens, messageSource);
+			this.type = initType(rapport, sens, messageSource);
 			this.numeroAutreTiers = (sens == SensRapportEntreTiers.SUJET ? rapport.getObjetId() : rapport.getSujetId());
 			this.nomCourrier = ch.vd.uniregctb.rapport.view.RapportView.buildNomCourrier(getTiers(this.numeroAutreTiers, tiersService), adresseService);
 
@@ -77,8 +78,16 @@ public class RapportsPage {
 			return numeroTiers != null ? tiersService.getTiers(numeroTiers) : null;
 		}
 
-		private static String initType(TypeRapportEntreTiers type, SensRapportEntreTiers sens, MessageSource messageSource) {
-			return messageSource.getMessage("option.rapport.entre.tiers." + sens.name() + "." + type.name(), null, WebContextUtils.getDefaultLocale());
+		private static String initType(RapportEntreTiers rapport, SensRapportEntreTiers sens, MessageSource messageSource) {
+			final String code;
+			final TypeRapportEntreTiers type = rapport.getType();
+			if (type == TypeRapportEntreTiers.ACTIVITE_ECONOMIQUE && sens == SensRapportEntreTiers.SUJET && ((ActiviteEconomique) rapport).isPrincipal()) {
+				code = "option.rapport.entre.tiers." + sens.name() + "." + type.name() + ".principal";
+			}
+			else {
+				code = "option.rapport.entre.tiers." + sens.name() + "." + type.name();
+			}
+			return messageSource.getMessage(code, null, WebContextUtils.getDefaultLocale());
 		}
 
 		public Long getId() {
