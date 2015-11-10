@@ -33,6 +33,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProces
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
@@ -46,8 +48,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleEnMasseProces
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImpressionConfirmationDelaiHelper;
@@ -401,17 +403,20 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void envoiSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
+	public void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
 		try {
 			editiqueCompositionService.imprimeSommationDIForBatch(declaration, miseSousPliImpossible, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
+		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
+	}
+
+	@Override
+	public void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException {
+		// TODO [SIPM] faire l'envoi éditique...
 		evenementFiscalService.publierEvenementFiscalSommationDeclarationImpot(declaration, dateEvenement);
 	}
 
@@ -508,9 +513,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
+	public EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
-		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
+		EnvoiSommationsDIsPPProcessor processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
 				periodeImpositionService, adresseService);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 	}
@@ -709,5 +714,13 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		                                                                                delaisService, this, assujettissementService, periodeImpositionService,
 		                                                                                tailleLot, transactionManager, parametres, adresseService, ticketService);
 		return processor.run(periodeFiscale, typeDeclaration, dateLimiteBouclements, nbMaxEnvois, dateTraitement, nbThreads, statusManager);
+	}
+
+	@Override
+	public EnvoiSommationsDIsPMResults envoyerSommationsPM(RegDate dateTraitement, Integer nombreMax, StatusManager statusManager) {
+		final EnvoiSommationsDIsPMProcessor processor = new EnvoiSommationsDIsPMProcessor(hibernateTemplate, diDAO, delaisService, this, tiersService, transactionManager,
+		                                                                                  periodeImpositionService, adresseService);
+
+		return processor.run(dateTraitement, nombreMax, statusManager);
 	}
 }

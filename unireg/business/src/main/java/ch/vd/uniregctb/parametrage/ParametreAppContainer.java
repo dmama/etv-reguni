@@ -144,8 +144,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiEnvoiSommationDeclarationImpot() {
-		return Integer.parseInt(get(ParametreEnum.delaiEnvoiSommationDeclarationImpot));
+	public Integer getDelaiEnvoiSommationDeclarationImpotPP() {
+		return Integer.parseInt(get(ParametreEnum.delaiEnvoiSommationDeclarationImpotPP));
+	}
+
+	@Override
+	public Integer getDelaiEnvoiSommationDeclarationImpotPM() {
+		return Integer.parseInt(get(ParametreEnum.delaiEnvoiSommationDeclarationImpotPM));
 	}
 
 	@Override
@@ -308,8 +313,8 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public void setDelaiEnvoiSommationDeclarationImpot(Integer val) {
-		setValeur(ParametreEnum.delaiEnvoiSommationDeclarationImpot, val.toString());
+	public void setDelaiEnvoiSommationDeclarationImpotPP(Integer val) {
+		setValeur(ParametreEnum.delaiEnvoiSommationDeclarationImpotPP, val.toString());
 	}
 
 	@Override
@@ -423,5 +428,10 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	@Override
 	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
 		setValeur(ParametreEnum.delaiMinimalRetourDeclarationImpotPM, val.toString());
+	}
+
+	@Override
+	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
+		setValeur(ParametreEnum.delaiEnvoiSommationDeclarationImpotPM, val.toString());
 	}
 }

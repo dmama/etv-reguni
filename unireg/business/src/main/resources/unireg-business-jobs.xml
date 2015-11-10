@@ -284,6 +284,13 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+    <bean id="envoiSommationsDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMJob">
+        <constructor-arg value="452"/>
+        <constructor-arg value="Envoyer à l'impression les sommations de déclarations d'impôt PM (en fonction des délais de retour attendus)"/>
+        <property name="service" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
     <bean id="ouvertureForsContribuablesMajeursJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.OuvertureForsContribuablesMajeursJob">
         <constructor-arg value="500"/>
         <constructor-arg value="Ouvrir les fors des habitants majeurs domiciliés dans le canton"/>

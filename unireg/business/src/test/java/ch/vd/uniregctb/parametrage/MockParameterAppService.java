@@ -48,8 +48,13 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public Integer getDelaiEnvoiSommationDeclarationImpot() {
-		return container.getDelaiEnvoiSommationDeclarationImpot();
+	public Integer getDelaiEnvoiSommationDeclarationImpotPP() {
+		return container.getDelaiEnvoiSommationDeclarationImpotPP();
+	}
+
+	@Override
+	public Integer getDelaiEnvoiSommationDeclarationImpotPM() {
+		return container.getDelaiEnvoiSommationDeclarationImpotPM();
 	}
 
 	@Override
@@ -193,8 +198,8 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public void setDelaiEnvoiSommationDeclarationImpot(Integer val) {
-		container.setDelaiEnvoiSommationDeclarationImpot(val);
+	public void setDelaiEnvoiSommationDeclarationImpotPP(Integer val) {
+		container.setDelaiEnvoiSommationDeclarationImpotPP(val);
 	}
 
 	@Override
@@ -295,5 +300,10 @@ public final class MockParameterAppService implements ParametreAppService {
 	@Override
 	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
 		container.setDelaiMinimalRetourDeclarationImpotPM(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
+		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
 	}
 }

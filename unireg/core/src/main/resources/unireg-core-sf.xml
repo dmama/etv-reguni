@@ -132,7 +132,8 @@
 		<value>ch.vd.uniregctb.document.StatistiquesCtbsRapport</value>
 		<value>ch.vd.uniregctb.document.ListeDIsNonEmisesRapport</value>
 		<value>ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport</value>
-		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPPRapport</value>
+		<value>ch.vd.uniregctb.document.EnvoiSommationsDIsPMRapport</value>
 		<value>ch.vd.uniregctb.document.ValidationJobRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiLRsRapport</value>
 		<value>ch.vd.uniregctb.document.EnvoiSommationLRsRapport</value>

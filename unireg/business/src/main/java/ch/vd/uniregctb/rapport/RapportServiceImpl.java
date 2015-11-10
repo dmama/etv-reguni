@@ -16,12 +16,13 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
@@ -385,15 +386,35 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public EnvoiSommationsDIsRapport generateRapport(final EnvoiSommationsDIsResults results, final StatusManager statusManager) {
-		final String nom = "RapportSommationDI" + results.getDateTraitement().index();
-		final String description = String.format("Rapport de l'envoi de sommation des DIs. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+	public EnvoiSommationsDIsPPRapport generateRapport(final EnvoiSommationsDIsPPResults results, final StatusManager statusManager) {
+		final String nom = "RapportSommationDIPP" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'envoi de sommation des DIs PP. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 		try {
-			return docService.newDoc(EnvoiSommationsDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsRapport>() {
+			return docService.newDoc(EnvoiSommationsDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPPRapport>() {
 				@Override
-				public void writeDoc(EnvoiSommationsDIsRapport doc, OutputStream os) throws Exception {
-					PdfEnvoiSommationsDIsRapport document = new PdfEnvoiSommationsDIsRapport();
+				public void writeDoc(EnvoiSommationsDIsPPRapport doc, OutputStream os) throws Exception {
+					PdfEnvoiSommationsDIsPPRapport document = new PdfEnvoiSommationsDIsPPRapport();
+					document.write(results, nom, description, dateGeneration, os, statusManager);
+
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public EnvoiSommationsDIsPMRapport generateRapport(final EnvoiSommationsDIsPMResults results, final StatusManager statusManager) {
+		final String nom = "RapportSommationDIPM" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'envoi de sommation des DIs PM. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+		try {
+			return docService.newDoc(EnvoiSommationsDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EnvoiSommationsDIsPMRapport>() {
+				@Override
+				public void writeDoc(EnvoiSommationsDIsPMRapport doc, OutputStream os) throws Exception {
+					final PdfEnvoiSommationsDIsPMRapport document = new PdfEnvoiSommationsDIsPMRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 
 				}

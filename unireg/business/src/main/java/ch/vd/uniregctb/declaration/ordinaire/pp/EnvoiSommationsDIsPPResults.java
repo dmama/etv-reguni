@@ -18,7 +18,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsResults> {
+public class EnvoiSommationsDIsPPResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsPPResults> {
 
 	public static class Info {
 		protected static final String COMMA = ";";
@@ -142,12 +142,12 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private final List<Info> disOptionnelles = new LinkedList<>();
 	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<>();
 
-	public EnvoiSommationsDIsResults(TiersService tiersService, AdresseService adresseService) {
+	public EnvoiSommationsDIsPPResults(TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 	}
 
 	@Override
-	public void addAll(EnvoiSommationsDIsResults right) {
+	public void addAll(EnvoiSommationsDIsPPResults right) {
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
 		this.disContribuablesIndigents.addAll(right.disContribuablesIndigents);

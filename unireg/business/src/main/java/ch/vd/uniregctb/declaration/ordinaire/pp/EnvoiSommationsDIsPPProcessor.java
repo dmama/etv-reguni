@@ -41,18 +41,19 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class EnvoiSommationsDIsProcessor  {
+public class EnvoiSommationsDIsPPProcessor {
 
 	/**
-	 * Un logger pour {@link EnvoiSommationsDIsProcessor}
+	 * Un logger pour {@link EnvoiSommationsDIsPPProcessor}
 	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiSommationsDIsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EnvoiSommationsDIsPPProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 
@@ -66,7 +67,7 @@ public class EnvoiSommationsDIsProcessor  {
 	private final PeriodeImpositionService periodeImpositionService;
 	private final AdresseService adresseService;
 
-	public EnvoiSommationsDIsProcessor(
+	public EnvoiSommationsDIsPPProcessor(
 			HibernateTemplate hibernateTemplate,
 			DeclarationImpotOrdinaireDAO declarationImpotOrdinaireDAO,
 			DelaisService delaisService,
@@ -104,37 +105,37 @@ public class EnvoiSommationsDIsProcessor  {
 		return isSourcierPur;
 	}
 
-	public EnvoiSommationsDIsResults run(final RegDate dateTraitement, final boolean miseSousPliImpossible, final int nombreMax, StatusManager statusManager) {
+	public EnvoiSommationsDIsPPResults run(final RegDate dateTraitement, final boolean miseSousPliImpossible, final int nombreMax, StatusManager statusManager) {
 
 		if (statusManager == null) {
 			statusManager = new LoggingStatusManager(LOGGER);
 		}
 		final StatusManager status = statusManager;
 
-		final EnvoiSommationsDIsResults rapportFinal = new EnvoiSommationsDIsResults(tiersService, adresseService);
+		final EnvoiSommationsDIsPPResults rapportFinal = new EnvoiSommationsDIsPPResults(tiersService, adresseService);
 		rapportFinal.setDateTraitement(dateTraitement);
 		rapportFinal.setMiseSousPliImpossible(miseSousPliImpossible);
 		rapportFinal.setNombreMaxSommations(nombreMax);
 
 		status.setMessage(
 			String.format(
-				"Envoi des sommations pour les DI au %s (Récupération de la liste de DI)",
+				"Envoi des sommations pour les DI PP au %s (Récupération de la liste de DI)",
 				RegDateHelper.dateToDisplayString(dateTraitement))
 		);
 
 		final List<IdentifiantDeclaration> dis = retrieveListIdDIs(dateTraitement);
 
-		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationsDIsResults>
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EnvoiSommationsDIsPPResults>
 				t = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
-		t.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiSommationsDIsResults>() {
+		t.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EnvoiSommationsDIsPPResults>() {
 
 			@Override
-			public EnvoiSommationsDIsResults createSubRapport() {
-				return new EnvoiSommationsDIsResults(tiersService, adresseService);
+			public EnvoiSommationsDIsPPResults createSubRapport() {
+				return new EnvoiSommationsDIsPPResults(tiersService, adresseService);
 			}
 
 			@Override
-			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsResults r) {
+			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsPPResults r) {
 				final List<Long> numerosDis = getListNumerosDis(batch);
 				final Set<DeclarationImpotOrdinairePP> declarations = declarationImpotOrdinaireDAO.getDeclarationsImpotPPForSommation(numerosDis);
 				final Iterator<DeclarationImpotOrdinairePP> iter = declarations.iterator();
@@ -156,7 +157,7 @@ public class EnvoiSommationsDIsProcessor  {
 		}, null);
 
 		final String msg = String.format(
-				"Envoi des sommations pour les DI au %s (traitement terminé; %d sommées, %d en erreur))",
+				"Envoi des sommations pour les DI PP au %s (traitement terminé; %d sommées, %d en erreur))",
 				RegDateHelper.dateToDisplayString(dateTraitement),
 				rapportFinal.getTotalDisSommees(),
 				rapportFinal.getTotalSommationsEnErreur());
@@ -176,11 +177,11 @@ public class EnvoiSommationsDIsProcessor  {
 		return ids;
 	}
 
-	protected void traiterDI(DeclarationImpotOrdinairePP di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+	protected void traiterDI(DeclarationImpotOrdinairePP di, EnvoiSommationsDIsPPResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 		// Verification des pré-requis avant la sommation
 		if (checkEtat(di, r) && checkDateDelai(di, r) && checkContribuable(di, r)) {
 
-			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
+			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpotPP(di.getDelaiAccordeAu());
 			if (finDelai.isBefore(dateTraitement)) {
 				try {
 					final List<Assujettissement> assujettissements = assujettissementService.determine(di.getTiers(), di.getPeriode().getAnnee());
@@ -244,7 +245,7 @@ public class EnvoiSommationsDIsProcessor  {
 		}
 	}
 
-	private boolean checkDateDelai(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
+	private boolean checkDateDelai(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPPResults r) {
 		if (di.getDelaiAccordeAu() == null) {
 			// Ce cas ne devrait plus se produire, toute les di devraient avoir un délai
 			final String msg = String.format("La di [id: %s] n'a pas de délai, cela ne devrait pas être possible !", di.getNumero());
@@ -255,10 +256,9 @@ public class EnvoiSommationsDIsProcessor  {
 		return true;
 	}
 
-	private boolean checkContribuable(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
-		if (!(di.getTiers() instanceof Contribuable)) {
-			// Ce cas ne devrait pas se produire, une di est forcement rattaché à un tiers qui est un contribuable.
-			final String msg = String.format("Le tiers [%s] n'est pas un contribuable, on ne peut pas calculer son assujettisement", di.getId().toString());
+	private boolean checkContribuable(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPPResults r) {
+		if (!(di.getTiers() instanceof ContribuableImpositionPersonnesPhysiques)) {
+			final String msg = String.format("Le tiers [%s] n'est pas un contribuable PP, il n'est donc pas concerné par ce traitement.", di.getId().toString());
 			LOGGER.error(msg);
 			r.addError(di, msg);
 			return false;
@@ -266,7 +266,7 @@ public class EnvoiSommationsDIsProcessor  {
 		return true;
 	}
 
-	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
+	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsPPResults r) {
 		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
 			// Ce cas pourrait eventuellement se produire dans le cas ou une di aurait 2 états à la même date,
 			// il s'agirait alors de donnée corrompue ...
@@ -286,7 +286,7 @@ public class EnvoiSommationsDIsProcessor  {
 		etat.setAnnule(false);
 		di.addEtat(etat);
 
-		diService.envoiSommationDIForBatch(di, miseSousPliImpossible, dateTraitement);
+		diService.envoiSommationDIPPForBatch(di, miseSousPliImpossible, dateTraitement);
 	}
 
 	/**

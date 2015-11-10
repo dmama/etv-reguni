@@ -7,12 +7,13 @@ import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeNoteResults;
@@ -21,55 +22,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.AcomptesRapport;
-import ch.vd.uniregctb.document.AssujettiParSubstitutionRapport;
-import ch.vd.uniregctb.document.CalculParentesRapport;
-import ch.vd.uniregctb.document.ComparerForFiscalEtCommuneRapport;
-import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
-import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
-import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
-import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
-import ch.vd.uniregctb.document.DeterminationDIsPMRapport;
-import ch.vd.uniregctb.document.DeterminationDIsPPRapport;
-import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
-import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
-import ch.vd.uniregctb.document.DumpPeriodesImpositionImpotSourceRapport;
-import ch.vd.uniregctb.document.EchoirDIsRapport;
-import ch.vd.uniregctb.document.EnvoiAnnexeImmeubleRapport;
-import ch.vd.uniregctb.document.EnvoiDIsPMRapport;
-import ch.vd.uniregctb.document.EnvoiDIsPPRapport;
-import ch.vd.uniregctb.document.EnvoiLRsRapport;
-import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
-import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
-import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
-import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
-import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.document.IdentifierContribuableRapport;
-import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
-import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.ListeAssujettisRapport;
-import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
-import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
-import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
-import ch.vd.uniregctb.document.ListeNoteRapport;
-import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
-import ch.vd.uniregctb.document.ListesNominativesRapport;
-import ch.vd.uniregctb.document.MajoriteRapport;
-import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
-import ch.vd.uniregctb.document.RapprocherCtbRapport;
-import ch.vd.uniregctb.document.RecalculTachesRapport;
-import ch.vd.uniregctb.document.RecuperationDonneesAnciensHabitantsRapport;
-import ch.vd.uniregctb.document.RecuperationOriginesNonHabitantsRapport;
-import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
-import ch.vd.uniregctb.document.ResolutionAdresseRapport;
-import ch.vd.uniregctb.document.RolesCommunesRapport;
-import ch.vd.uniregctb.document.RolesOIDsRapport;
-import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
-import ch.vd.uniregctb.document.StatistiquesDIsRapport;
-import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
-import ch.vd.uniregctb.document.SuppressionOIDRapport;
-import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
-import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
@@ -227,14 +180,20 @@ public interface RapportService {
 	ListeDIsNonEmisesRapport generateRapport(final ListeDIsPPNonEmises results, StatusManager status);
 
 	/**
-	 * Genère le rapport (PDF) pour l'envoi des sommations de DI
+	 * Genère le rapport (PDF) pour l'envoi des sommations de DI PP
 	 *
-	 * @param results
-	 *            le résultat de l'exécution du job de sommation des DIs.
-	 *
+	 * @param results le résultat de l'exécution du job de sommation des DIs.
 	 * @return le rapport
 	 */
-	EnvoiSommationsDIsRapport generateRapport(EnvoiSommationsDIsResults results, StatusManager statusManager);
+	EnvoiSommationsDIsPPRapport generateRapport(EnvoiSommationsDIsPPResults results, StatusManager statusManager);
+
+	/**
+	 * Genère le rapport (PDF) pour l'envoi des sommations de DI PP
+	 *
+	 * @param results le résultat de l'exécution du job de sommation des DIs.
+	 * @return le rapport
+	 */
+	EnvoiSommationsDIsPMRapport generateRapport(EnvoiSommationsDIsPMResults results, StatusManager statusManager);
 
 	/**
 	 * Genère le rapport (PDF) du job de vérification de la validation des tiers.

@@ -15,6 +15,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
@@ -23,7 +24,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ImportCodesSegmentResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.InformationsDocumentAdapter;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ListeDIsPPNonEmises;
@@ -57,17 +58,6 @@ public interface DeclarationImpotService {
 	DeterminationDIsPPResults determineDIsPPAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
 
 	/**
-	 * Détermine les déclaration d'impôts PM à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais
-	 * aucune déclaration d'impôt n'est créée ou modifiée.
-	 *
-	 * @param anneePeriode   l'année de la période fiscale considérée.
-	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
-	 * @param nbThreads      le degré de parallélisme demandé pour le calcul
-	 * @return le rapport d'exécution du traitement
-	 */
-	DeterminationDIsPMResults determineDIsPMAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
-
-	/**
 	 * Envoie (en masse) à l'impression les déclarations d'impôts ordinaires à partir des tâches en instances pré-existantes. En cas de succès, les tâches concernées sont considérées comme "traitées" et
 	 * les déclarations d'impôts correspondantes sont insérées dans la base de données.
 	 *
@@ -81,8 +71,9 @@ public interface DeclarationImpotService {
 	 * @param nbThreads      le nombre de threads sur lesquels doit s'effectuer le traitement
 	 * @return le nombre de déclarations envoyées.
 	 */
-	EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes, int nbThreads, StatusManager status)
-			throws DeclarationException;
+	EnvoiDIsPPResults envoyerDIsPPEnMasse(int anneePeriode, CategorieEnvoiDI categorie,
+	                                      Long noCtbMin, Long noCtbMax,
+	                                      int nbMax, RegDate dateTraitement, boolean exclureDecedes, int nbThreads, StatusManager status) throws DeclarationException;
 
 
 	EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement, List<ContribuableAvecImmeuble> listeCtb,
@@ -171,7 +162,16 @@ public interface DeclarationImpotService {
 	 * @param miseSousPliImpossible true si la mise sous pli automatique est impossible pour des raisons techniques
 	 * @param dateEvenement         la date d'impression
 	 */
-	void envoiSommationDIForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
+	void envoiSommationDIPPForBatch(DeclarationImpotOrdinairePP declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException;
+
+	/**
+	 * Envoie à l'impression la sommation pour la déclaration spécifiée, et envoie un événement fiscal correspondant. Cette méthode retourne immédiatement et du moment que la transaction est committée,
+	 * il est de la responsabilité d'éditique d'imprimer la déclaration.
+	 *
+	 * @param declaration           la déclaration d'impôt ordinaire à imprimer
+	 * @param dateEvenement         la date d'impression
+	 */
+	void envoiSommationDIPMForBatch(DeclarationImpotOrdinairePM declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Fait passer la déclaration à l'état <i>échu</i>, et envoie un événement fiscal correspondant.
@@ -218,14 +218,13 @@ public interface DeclarationImpotService {
 	void desannulationDI(ContribuableImpositionPersonnesPhysiques ctb, DeclarationImpotOrdinairePP di, RegDate dateEvenement);
 
 	/**
-	 * Envoye des sommations à la date donnée
+	 * Envoi des sommations de DI PP à la date donnée
 	 *
 	 * @param dateTraitement        date de traitement pour l'envoi des sommations
 	 * @param miseSousPliImpossible boolean a true si la mise sous pli est impossible (les sommations sont envoyées aux offices emetteurs et non au contribuable)
 	 * @param nombreMax             Le nombre maximal de sommation que le batch peut emettre. 0 = pas de limite.
 	 */
-	EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager status);
-
+	EnvoiSommationsDIsPPResults envoyerSommationsPP(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager status);
 
 	/**
 	 * Récupère la copie conforme de la sommation éditée pour la DI donnée
@@ -288,6 +287,17 @@ public interface DeclarationImpotService {
 	ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s);
 
 	/**
+	 * Détermine les déclaration d'impôts PM à émettre et crée des tâches en instances pour chacunes d'elles. En cas de succès, de nouvelles tâches sont insérées dans la base de données, mais
+	 * aucune déclaration d'impôt n'est créée ou modifiée.
+	 *
+	 * @param anneePeriode   l'année de la période fiscale considérée.
+	 * @param dateTraitement la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @param nbThreads      le degré de parallélisme demandé pour le calcul
+	 * @return le rapport d'exécution du traitement
+	 */
+	DeterminationDIsPMResults determineDIsPMAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status) throws DeclarationException;
+
+	/**
 	 * Lancement du job multi-threadé d'envoi des DI des personnes morales
 	 * @param periodeFiscale la période fiscale cible
 	 * @param typeDeclaration le type de déclaration à envoyer
@@ -299,4 +309,15 @@ public interface DeclarationImpotService {
 	 * @return les données du rapport d'exécution du job
 	 */
 	EnvoiDIsPMResults envoyerDIsPMEnMasse(int periodeFiscale, TypeDeclarationImpotPM typeDeclaration, RegDate dateLimiteBouclements, @Nullable Integer nbMaxEnvois, RegDate dateTraitement, int nbThreads, StatusManager statusManager) throws DeclarationException;
+
+	/**
+	 * Envoi des sommations de DI PM à la date donnée
+	 *
+	 * @param dateTraitement        date de traitement pour l'envoi des sommations
+	 * @param nombreMax             Le nombre maximal de sommation que le batch peut emettre. 0 = pas de limite.
+	 * @param statusManager status manager
+	 * @return les données du rapport d'exécution du job
+	 */
+	EnvoiSommationsDIsPMResults envoyerSommationsPM(RegDate dateTraitement, Integer nombreMax, StatusManager statusManager);
+
 }

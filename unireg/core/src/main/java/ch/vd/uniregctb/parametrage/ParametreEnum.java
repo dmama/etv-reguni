@@ -23,10 +23,11 @@ public enum ParametreEnum {
 	delaiAttenteDeclarationImpotPersonneDecedee("30", Type.delaisEnJour, true),
 	delaiRetourDeclarationImpotEmiseManuellement("60", Type.delaisEnJour, true),
 	delaiCadevImpressionDeclarationImpot("3", Type.delaisEnJour, true),
-	delaiEnvoiSommationDeclarationImpot("15", Type.delaisEnJour, true),
+	delaiEnvoiSommationDeclarationImpotPP("15", Type.delaisEnJour, true),
 	delaiEcheanceSommationDeclarationImpot("30", Type.delaisEnJour, true),
 
 	delaiMinimalRetourDeclarationImpotPM("3", Type.delaisEnMois, true),
+	delaiEnvoiSommationDeclarationImpotPM("15", Type.delaisEnJour, true),
 
 	jourDuMoisEnvoiListesRecapitulatives("20", Type.jourDansMois, true),
  	delaiCadevImpressionListesRecapitulatives("3", Type.delaisEnJour, true),

@@ -35,9 +35,9 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
+public class EnvoiSommationsDIsPPProcessorTest extends BusinessTest {
 
-	private EnvoiSommationsDIsProcessor processor;
+	private EnvoiSommationsDIsPPProcessor processor;
 	private DeclarationImpotOrdinaireDAO diDao;
 	private DeclarationImpotService diService;
 	private DelaisService delaisService;
@@ -55,7 +55,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		adresseService = getBean(AdresseService.class, "adresseService");
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
+		processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
 				adresseService);
 	}
 
@@ -86,7 +86,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
 		Assert.assertEquals("La DI n'aurait même pas dû être vue", 0, results.getTotalDisTraitees());
 
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -129,7 +129,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
 		Assert.assertEquals("La DI n'aurait même pas dû être vue", 0, results.getTotalDisTraitees());
 
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -170,7 +170,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addDays(5);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(1, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -210,7 +210,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(1, results.getTotalDisSommees());
 		Assert.assertEquals(1, results.getTotalSommations(anneePf));
@@ -250,7 +250,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -295,7 +295,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -335,7 +335,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -376,7 +376,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -418,7 +418,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(1, results.getTotalDisSommees());
@@ -463,16 +463,16 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService) {
+		processor = new EnvoiSommationsDIsPPProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService) {
 			@Override
-			protected void traiterDI(DeclarationImpotOrdinairePP di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+			protected void traiterDI(DeclarationImpotOrdinairePP di, EnvoiSommationsDIsPPResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 				throw new RuntimeException("Exception de test");
 			}
 		};
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
-		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
+		final List<EnvoiSommationsDIsPPResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
 		Assert.assertEquals(1, infoListErreur.size());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -480,7 +480,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final DeclarationImpotOrdinaire declaration = diDao.get(diId);
 
-				final EnvoiSommationsDIsResults.ErrorInfo error = infoListErreur.get(0);
+				final EnvoiSommationsDIsPPResults.ErrorInfo error = infoListErreur.get(0);
 				Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
 				Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
 				return null;
@@ -527,7 +527,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -574,7 +574,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(0, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -617,7 +617,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = delaiInitial.addYears(1);
-		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(0, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
@@ -665,17 +665,17 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
+		final EnvoiSommationsDIsPPResults results = processor.run(RegDate.get(), false, 0, null);
 		Assert.assertNotNull(results);
 		Assert.assertEquals(1, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getSommations().size());
 
-		final List<EnvoiSommationsDIsResults.ErrorInfo> erreurs = results.getListeSommationsEnErreur();
+		final List<EnvoiSommationsDIsPPResults.ErrorInfo> erreurs = results.getListeSommationsEnErreur();
 		Assert.assertNotNull(erreurs);
 		Assert.assertEquals(1, erreurs.size());
 
 		final String expectedError = String.format("La di [id: %d] n'a pas été sommée car le contribuable [%s] est un ménage commun dont les membres sont inconnus", ids.diId, ids.mcId);
-		final EnvoiSommationsDIsResults.ErrorInfo erreur = erreurs.get(0);
+		final EnvoiSommationsDIsPPResults.ErrorInfo erreur = erreurs.get(0);
 		Assert.assertNotNull(erreur);
 		Assert.assertEquals((Long) ids.mcId, erreur.getNumeroTiers());
 		Assert.assertEquals(expectedError, erreur.getCause());

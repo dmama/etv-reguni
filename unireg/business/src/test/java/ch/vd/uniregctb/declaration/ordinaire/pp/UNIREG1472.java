@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.TiersServiceImpl;
 
 public class UNIREG1472 {
 	
-	private EnvoiSommationsDIsProcessor processor;
+	private EnvoiSommationsDIsPPProcessor processor;
 
 	@Before
 	public void init () throws Exception {
@@ -31,7 +31,7 @@ public class UNIREG1472 {
 		periodeImpositionService.setTiersService(new TiersServiceImpl());
 		periodeImpositionService.setParametreAppService(new MockParameterAppService());
 		periodeImpositionService.afterPropertiesSet();
-		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService, null);
+		processor = new EnvoiSommationsDIsPPProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService, null);
 	}
 	
 	@Test

@@ -168,13 +168,22 @@
 					 <td><sf:errors path="delaiCadevImpressionDeclarationImpot" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
-		            <td><fmt:message key="label.param.delaiEnvoiSommationDeclarationImpot"/></td>
-					<%--@elvariable id="delaiEnvoiSommationDeclarationImpotParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${delaiEnvoiSommationDeclarationImpotParDefaut}</td>
+		            <td><fmt:message key="label.param.delaiEnvoiSommationDeclarationImpot.pp"/></td>
+					<%--@elvariable id="delaiEnvoiSommationDeclarationImpotPPParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEnvoiSommationDeclarationImpotPPParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="delaiEnvoiSommationDeclarationImpot" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		                <sf:input path="delaiEnvoiSommationDeclarationImpotPP" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
-					 <td><sf:errors path="delaiEnvoiSommationDeclarationImpot" cssClass="erreur"/></td>
+					 <td><sf:errors path="delaiEnvoiSommationDeclarationImpotPP" cssClass="erreur"/></td>
+		        </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiEnvoiSommationDeclarationImpot.pm"/></td>
+					<%--@elvariable id="delaiEnvoiSommationDeclarationImpotPMParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEnvoiSommationDeclarationImpotPMParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiEnvoiSommationDeclarationImpotPM" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					 <td><sf:errors path="delaiEnvoiSommationDeclarationImpotPM" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.delaiEcheanceSommationDeclarationImpot"/></td>

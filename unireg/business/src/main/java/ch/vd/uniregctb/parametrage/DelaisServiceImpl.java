@@ -26,14 +26,10 @@ public class DelaisServiceImpl implements DelaisService {
 	/**
 	 * Set de {@link RegDate} partielles contenant les années pour lesquelles les jours fériés ont
 	 * été initialisés
-	 *   
 	 */
 	private static final Set<RegDate> joursFeriesInitialisesPourAnnees = new HashSet<>();
 	
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getFinDelai(ch.vd.registre.base.date.RegDate, int, boolean, boolean)
-	 */
 	@Override
 	public RegDate getFinDelai(RegDate dateDebut, int delai, boolean joursOuvres, boolean repousseAuProchainJourOuvre) {
 		
@@ -62,9 +58,6 @@ public class DelaisServiceImpl implements DelaisService {
 	}
 	 
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getFinDelai(ch.vd.registre.base.date.RegDate, int)
-	 */
 	@Override
 	public RegDate getFinDelai(RegDate date, int delaiEnJour) {
 		return getFinDelai(date, delaiEnJour, false, true);
@@ -76,9 +69,7 @@ public class DelaisServiceImpl implements DelaisService {
 	 * @return
 	 */
 	private boolean isOuvre(RegDate date) {
-		return 
-			date.getWeekDay().isWorkingDay() &&
-			!getJoursFeries(date.year()).contains(date);
+		return date.getWeekDay().isWorkingDay() && !getJoursFeries(date.year()).contains(date);
 	}
 	
 	/**
@@ -98,92 +89,63 @@ public class DelaisServiceImpl implements DelaisService {
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiAttenteDeclarationImpotPersonneDecedee(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiAttenteDeclarationImpotPersonneDecedee(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiAttenteDeclarationImpotPersonneDecedee());		
 	}
 	
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiAttenteDeclarationImpotPersonneDecedee(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiRetourDeclarationImpotEmiseManuellement());		
 	}	
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiCadevImpressionDeclarationImpot(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiCadevImpressionDeclarationImpot(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiCadevImpressionDeclarationImpot());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiCadevImpressionListesRecapitulatives(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiCadevImpressionListesRecapitulatives(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiCadevImpressionListesRecapitulatives());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiEcheanceSommationDeclarationImpot(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiEcheanceSommationDeclarationImpot(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationDeclarationImpot());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiEcheanceSommationListeRecapitualtive(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiEcheanceSommationListeRecapitualtive(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationListeRecapitualtive());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiEnvoiSommationDeclarationImpot(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
-	public RegDate getDateFinDelaiEnvoiSommationDeclarationImpot(RegDate dateDebut){
-		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationDeclarationImpot());
+	public RegDate getDateFinDelaiEnvoiSommationDeclarationImpotPP(RegDate dateDebut){
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationDeclarationImpotPP());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiEnvoiSommationListeRecapitulative(ch.vd.registre.base.date.RegDate)
-	 */
+	@Override
+	public RegDate getDateFinDelaiEnvoiSommationDeclarationImpotPM(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationDeclarationImpotPM());
+	}
+
 	@Override
 	public RegDate getDateFinDelaiEnvoiSommationListeRecapitulative(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationListeRecapitulative());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiRetentionRapportTravailInactif(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiRetentionRapportTravailInactif(RegDate dateDebut){
 		// ATTENTION : Ce paramètre de délai est exprimé en nombre de mois 
-		RegDate dateFin = dateDebut.addMonths(parametreAppService.getDelaiRetentionRapportTravailInactif());
-		return dateFin;
+		return dateDebut.addMonths(parametreAppService.getDelaiRetentionRapportTravailInactif());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiRetourListeRecapitulative(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiRetourListeRecapitulative(RegDate dateEmissionLr, RegDate dateFinPeriodeLr) {
 		final RegDate dateReference = dateEmissionLr.isAfter(dateFinPeriodeLr) ? dateEmissionLr : dateFinPeriodeLr;
 		return getFinDelai(dateReference, parametreAppService.getDelaiRetourListeRecapitulative());
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiRetourSommationListeRecapitulative(ch.vd.registre.base.date.RegDate)
-	 */
 	@Override
 	public RegDate getDateFinDelaiRetourSommationListeRecapitulative(RegDate dateDebut){
 		return getFinDelai(dateDebut, parametreAppService.getDelaiRetourSommationListeRecapitulative());

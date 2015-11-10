@@ -137,8 +137,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public Integer getDelaiEnvoiSommationDeclarationImpot() {
-		return container.getDelaiEnvoiSommationDeclarationImpot();
+	public Integer getDelaiEnvoiSommationDeclarationImpotPP() {
+		return container.getDelaiEnvoiSommationDeclarationImpotPP();
+	}
+
+	@Override
+	public Integer getDelaiEnvoiSommationDeclarationImpotPM() {
+		return container.getDelaiEnvoiSommationDeclarationImpotPM();
 	}
 
 	@Override
@@ -272,8 +277,8 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public void setDelaiEnvoiSommationDeclarationImpot(Integer val) {
-		container.setDelaiEnvoiSommationDeclarationImpot(val);
+	public void setDelaiEnvoiSommationDeclarationImpotPP(Integer val) {
+		container.setDelaiEnvoiSommationDeclarationImpotPP(val);
 	}
 
 	@Override
@@ -374,5 +379,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	@Override
 	public void setDelaiMinimalRetourDeclarationImpotPM(Integer val) {
 		container.setDelaiMinimalRetourDeclarationImpotPM(val);
+	}
+
+	@Override
+	public void setDelaiEnvoiSommationDeclarationImpotPM(Integer val) {
+		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
 	}
 }

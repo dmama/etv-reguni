@@ -16,7 +16,9 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiEcheanceSommationListeRecapitualtive();
 
-	Integer getDelaiEnvoiSommationDeclarationImpot();
+	Integer getDelaiEnvoiSommationDeclarationImpotPP();
+
+	Integer getDelaiEnvoiSommationDeclarationImpotPM();
 
 	Integer getDelaiEnvoiSommationListeRecapitulative();
 
@@ -75,7 +77,9 @@ public interface ParametreAppAccessor {
 
 	void setDelaiEcheanceSommationListeRecapitualtive(Integer val);
 
-	void setDelaiEnvoiSommationDeclarationImpot(Integer val);
+	void setDelaiEnvoiSommationDeclarationImpotPP(Integer val);
+
+	void setDelaiEnvoiSommationDeclarationImpotPM(Integer val);
 
 	void setDelaiEnvoiSommationListeRecapitulative(Integer val);
 

@@ -13,17 +13,17 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 
 
 /**
- * Rapport PDF concernant l'execution du batch des sommations DI 
+ * Rapport PDF concernant l'execution du batch des sommations DI PM
  */
-public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
+public class PdfEnvoiSommationsDIsPMRapport extends PdfRapport {
 
 
-    public void write(final EnvoiSommationsDIsResults results, final String nom, final String description, final Date dateGeneration,
-                          OutputStream os, StatusManager status) throws Exception {
+    public void write(final EnvoiSommationsDIsPMResults results, final String nom, final String description, final Date dateGeneration,
+                      OutputStream os, StatusManager status) throws Exception {
 
         Assert.notNull(status);
 
@@ -34,16 +34,15 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
         addEnteteUnireg();
 
         // Titre
-        addTitrePrincipal("Sommation des déclarations d'impôt");
+        addTitrePrincipal("Sommation des déclarations d'impôt PM");
 
         // Paramètres
         addEntete1("Paramètres");
-        addTableSimple(new float[] {70, 30}, new PdfRapport.TableSimpleCallback() {
+        addTableSimple(new float[] {70, 30}, new TableSimpleCallback() {
             @Override
             public void fillTable(PdfTableSimple table) throws DocumentException {
                 table.addLigne("Date de traitement: ", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-                table.addLigne("Mise sous pli impossible: ", Boolean.toString(results.isMiseSousPliImpossible()));
-	            if (results.getNombreMaxSommations() > 0) {
+	            if (results.getNombreMaxSommations() != null && results.getNombreMaxSommations() > 0) {
 		            table.addLigne("Nombre maximal de sommations à émettre: ", Integer.toString(results.getNombreMaxSommations()));
 	            }
             }
@@ -56,7 +55,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
                         + "les valeurs ci-dessous sont donc incomplètes.");
             }
 
-            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+            addTableSimple(2, new TableSimpleCallback() {
                 @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total de DI sommées:", String.valueOf(results.getTotalDisSommees()));
@@ -65,8 +64,6 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
                     }
                     table.addLigne("Nombre de DI non sommées pour cause de délai effectif non-échu :", String.valueOf(results.getTotalDelaisEffectifsNonEchus()));
                     table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
-                    table.addLigne("Nombre de DI non sommées pour cause de contribuable indigent :", String.valueOf(results.getTotalIndigent()));
-	                table.addLigne("Nombre de DI non sommées pour cause de contribuable sourcier Pur :", String.valueOf(results.getTotalSourcierPur()));
                     table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
                     table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
 	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
@@ -105,26 +102,6 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 	        }
         }
 
-        // DI avec contribuables indigents.
-        {
-            String filename = "indigents.csv";
-            String titre = "Liste des déclarations dont les contribuables sont indigents";
-	        String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
-	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
-
-	     // DI avec contribuables sourcier purs.
-        {
-            String filename = "sourciersPurs.csv";
-            String titre = "Liste des déclarations dont les contribuables sont sourciers";
-	        String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
-	        try (TemporaryFile contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status)) {
-		        addListeDetaillee(writer, titre, listVide, filename, contenu);
-	        }
-        }
-
         // DI optionnelles
         {
             String filename = "optionnelles.csv";
@@ -150,17 +127,17 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
     }
 
 	@SuppressWarnings({"unchecked"})
-	private TemporaryFile asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsResults.Info> list, String filename, StatusManager status) {
+	private TemporaryFile asCsvFileSommationDI(final List<? extends EnvoiSommationsDIsPMResults.Info> list, String filename, StatusManager status) {
 		final TemporaryFile content;
 		if (!list.isEmpty()) {
-			content = CsvHelper.asCsvTemporaryFile((List<EnvoiSommationsDIsResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsResults.Info>() {
+			content = CsvHelper.asCsvTemporaryFile((List<EnvoiSommationsDIsPMResults.Info>) list, filename,  status, new CsvHelper.FileFiller<EnvoiSommationsDIsPMResults.Info>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append(list.get(0).getCsvEntete());
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, EnvoiSommationsDIsResults.Info elt) {
+				public boolean fillLine(CsvHelper.LineFiller b, EnvoiSommationsDIsPMResults.Info elt) {
 					final String csv = elt.getCsv();
 					if (StringUtils.isNotBlank(csv)) {
 						b.append(elt.getCsv());

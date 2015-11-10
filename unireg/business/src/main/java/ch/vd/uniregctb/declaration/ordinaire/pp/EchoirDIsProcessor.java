@@ -201,6 +201,6 @@ public class EchoirDIsProcessor {
 	private RegDate getSeuilEcheanceSommation(RegDate dateSommation) {
 		// [UNIREG-1468] L'échéance de sommation = date sommation + 30 jours (délai normal) + 15 jours (délai administratif)
 		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpot(dateSommation); // 30 jours
-		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(delaiTemp); // 15 jours
+		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpotPP(delaiTemp); // 15 jours
 	}
 }
