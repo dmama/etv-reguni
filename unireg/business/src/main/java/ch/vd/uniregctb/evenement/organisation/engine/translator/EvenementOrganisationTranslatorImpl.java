@@ -27,6 +27,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.IndexationPure;
 import ch.vd.uniregctb.evenement.organisation.interne.creation.CreateOrganisationStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.demenagement.DemenagementSiegeStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEntrepriseStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.doublon.DoublonEtablissementStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.formejuridique.ChangementFormeJuridiqueStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.FailliteConcordatStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationButsStrategy;
@@ -85,6 +86,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new ModificationButsStrategy());
 		strategies.add(new ModificationStatutsStrategy());
 		strategies.add(new DoublonEntrepriseStrategy());
+		strategies.add(new DoublonEtablissementStrategy());
 	}
 
 	/**
