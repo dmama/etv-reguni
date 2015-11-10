@@ -13,9 +13,9 @@ import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults.Echue;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults.Erreur;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults.ErreurType;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.Echue;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.Erreur;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults.ErreurType;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -27,9 +27,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class EchoirDIsProcessorTest extends BusinessTest {
+public class EchoirDIsPPProcessorTest extends BusinessTest {
 
-	private EchoirDIsProcessor processor;
+	private EchoirDIsPPProcessor processor;
 	private AdresseService adresseService;
 
 	private static final String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/pp/echoirDiTiersInvalide.xml";
@@ -43,14 +43,14 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager, tiersService, adresseService);
+		processor = new EchoirDIsPPProcessor(hibernateTemplate, delaisService, diService, transactionManager, tiersService, adresseService);
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDINull() {
 		try {
-			processor.traiterDI(null, new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
+			processor.traiterDI(null, new EchoirDIsPPResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -63,7 +63,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDIInexistante() {
 		try {
-			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
+			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsPPResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -91,7 +91,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		try {
 			DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 			IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
-			processor.traiterDI(ident, new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
+			processor.traiterDI(ident, new EchoirDIsPPResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -119,7 +119,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
+		final EchoirDIsPPResults rapport = new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);
 		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
 		processor.traiterDI(ident, rapport);
@@ -152,7 +152,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EchoirDIsResults rapport = processor.run(dateTraitement, null);
+		final EchoirDIsPPResults rapport = processor.run(dateTraitement, null);
 
 		assertEquals(0, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
@@ -181,7 +181,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		});
 
 		// la date de traitement (1er août 2008) est avant le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
-		final EchoirDIsResults rapport = processor.run(dateTraitement, null);
+		final EchoirDIsPPResults rapport = processor.run(dateTraitement, null);
 
 		assertEquals(0, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
@@ -210,7 +210,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		});
 
 		// la date de traitement (1er septembre 2008) est après le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
-		final EchoirDIsResults rapport = processor.run(dateTraitement, null);
+		final EchoirDIsPPResults rapport = processor.run(dateTraitement, null);
 
 		assertEquals(1, rapport.nbDIsTotal);
 		assertEquals(1, rapport.disEchues.size());
@@ -240,7 +240,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		// la date de traitement (1er septembre 2008) est après le délai (dateSommation + 30 jours + 15 jours = 15 août 2008)
-		final EchoirDIsResults rapport = processor.run(dateTraitement, null);
+		final EchoirDIsPPResults rapport = processor.run(dateTraitement, null);
 
 		assertEquals(1, rapport.nbDIsTotal);
 		assertEmpty(rapport.disEchues);
@@ -275,7 +275,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
+		final EchoirDIsPPResults rapport = new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);
 		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
 		processor.traiterDI(ident, rapport);

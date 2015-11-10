@@ -228,9 +228,9 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="echoirDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsJob">
+    <bean id="echoirDIsPPJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPJob">
         <constructor-arg value="403"/>
-        <constructor-arg value="Faire passer à l'état 'échue' les déclarations sommées dont le délai de retour est dépassé"/>
+        <constructor-arg value="Faire passer à l'état 'échue' les déclarations PP sommées dont le délai de retour est dépassé"/>
         <property name="declarationImpotService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
@@ -288,6 +288,13 @@
         <constructor-arg value="452"/>
         <constructor-arg value="Envoyer à l'impression les sommations de déclarations d'impôt PM (en fonction des délais de retour attendus)"/>
         <property name="service" ref="diService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
+    <bean id="echoirDIsPMJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMJob">
+        <constructor-arg value="453"/>
+        <constructor-arg value="Faire passer à l'état 'échue' les déclarations PM sommées dont le délai de retour est dépassé"/>
+        <property name="declarationImpotService" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
 

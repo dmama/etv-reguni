@@ -15,11 +15,12 @@ import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
@@ -556,20 +557,44 @@ public class RapportServiceImpl implements RapportService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EchoirDIsRapport generateRapport(final EchoirDIsResults results, StatusManager s) {
+	public EchoirDIsPPRapport generateRapport(final EchoirDIsPPResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final String nom = "RapportEchoirDIs" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = %s.",
+		final String nom = "RapportEchoirDIsPP" + results.dateTraitement.index();
+		final String description = String.format("Rapport d'exécution du job de passage des DIs PP sommées à l'état échu. Date de traitement = %s.",
 		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
-			return docService.newDoc(EchoirDIsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsRapport>() {
+			return docService.newDoc(EchoirDIsPPRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPPRapport>() {
 				@Override
-				public void writeDoc(EchoirDIsRapport doc, OutputStream os) throws Exception {
-					PdfEchoirDIsRapport document = new PdfEchoirDIsRapport();
+				public void writeDoc(EchoirDIsPPRapport doc, OutputStream os) throws Exception {
+					final PdfEchoirDIsPPRapport document = new PdfEchoirDIsPPRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public EchoirDIsPMRapport generateRapport(final EchoirDIsPMResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportEchoirDIsPM" + results.dateTraitement.index();
+		final String description = String.format("Rapport d'exécution du job de passage des DIs PM sommées à l'état échu. Date de traitement = %s.",
+		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(EchoirDIsPMRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<EchoirDIsPMRapport>() {
+				@Override
+				public void writeDoc(EchoirDIsPMRapport doc, OutputStream os) throws Exception {
+					final PdfEchoirDIsPMRapport document = new PdfEchoirDIsPMRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

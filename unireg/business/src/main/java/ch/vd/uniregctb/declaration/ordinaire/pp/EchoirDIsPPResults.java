@@ -11,7 +11,7 @@ import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
-public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirDIsResults> {
+public class EchoirDIsPPResults extends JobResults<IdentifiantDeclaration, EchoirDIsPPResults> {
 
 	public enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION), ETAT_DECLARATION_INCOHERENT("L'état de la déclaration est incohérent");
@@ -69,7 +69,7 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 
 	public boolean interrompu;
 
-	public EchoirDIsResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+	public EchoirDIsPPResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
@@ -93,7 +93,7 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 	}
 
 	@Override
-	public void addAll(EchoirDIsResults rapport) {
+	public void addAll(EchoirDIsPPResults rapport) {
 		nbDIsTotal += rapport.nbDIsTotal;
 		disEchues.addAll(rapport.disEchues);
 		disEnErrors.addAll(rapport.disEnErrors);

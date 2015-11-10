@@ -6,11 +6,12 @@ import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
@@ -251,13 +252,22 @@ public interface RapportService {
 	ExtractionDonneesRptRapport generateRapport(ExtractionDonneesRptResults results, StatusManager statusManager);
 
 	/**
-	 * Genère le rapport (PDF) pour les déclarations ayant été passées à l'état échues.
+	 * Genère le rapport (PDF) pour les déclarations PP ayant été passées à l'état échues.
 	 *
 	 * @param results
 	 *            le résultat de l'exécution du job
 	 * @return le rapport
 	 */
-	EchoirDIsRapport generateRapport(EchoirDIsResults results, StatusManager status);
+	EchoirDIsPPRapport generateRapport(EchoirDIsPPResults results, StatusManager status);
+
+	/**
+	 * Genère le rapport (PDF) pour les déclarations PM ayant été passées à l'état échues.
+	 *
+	 * @param results
+	 *            le résultat de l'exécution du job
+	 * @return le rapport
+	 */
+	EchoirDIsPMRapport generateRapport(EchoirDIsPMResults results, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) pour la réinitialisation des barèmes double-gain

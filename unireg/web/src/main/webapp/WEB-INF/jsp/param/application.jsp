@@ -186,13 +186,22 @@
 					 <td><sf:errors path="delaiEnvoiSommationDeclarationImpotPM" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
-		            <td><fmt:message key="label.param.delaiEcheanceSommationDeclarationImpot"/></td>
-					<%--@elvariable id="delaiEcheanceSommationDeclarationImpotParDefaut" type="java.lang.String"--%>
-					<td class="nombre">${delaiEcheanceSommationDeclarationImpotParDefaut}</td>
+		            <td><fmt:message key="label.param.delaiEcheanceSommationDeclarationImpot.pp"/></td>
+					<%--@elvariable id="delaiEcheanceSommationDeclarationImpotPPParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEcheanceSommationDeclarationImpotPPParDefaut}</td>
 		            <td class="valeur">
-		                <sf:input path="delaiEcheanceSommationDeclarationImpot" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		                <sf:input path="delaiEcheanceSommationDeclarationImpotPP" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
 		            </td>
-					 <td><sf:errors path="delaiEcheanceSommationDeclarationImpot" cssClass="erreur"/></td>
+					 <td><sf:errors path="delaiEcheanceSommationDeclarationImpotPP" cssClass="erreur"/></td>
+		        </tr>
+		        <tr class="<unireg:nextRowClass/>">
+		            <td><fmt:message key="label.param.delaiEcheanceSommationDeclarationImpot.pm"/></td>
+					<%--@elvariable id="delaiEcheanceSommationDeclarationImpotPMParDefaut" type="java.lang.String"--%>
+					<td class="nombre">${delaiEcheanceSommationDeclarationImpotPMParDefaut}</td>
+		            <td class="valeur">
+		                <sf:input path="delaiEcheanceSommationDeclarationImpotPM" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="3"/>
+		            </td>
+					 <td><sf:errors path="delaiEcheanceSommationDeclarationImpotPM" cssClass="erreur"/></td>
 		        </tr>
 		        <tr class="<unireg:nextRowClass/>">
 		            <td><fmt:message key="label.param.jourDuMoisEnvoiListesRecapitulatives"/></td>

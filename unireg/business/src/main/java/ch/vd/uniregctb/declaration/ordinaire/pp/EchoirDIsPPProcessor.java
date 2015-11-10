@@ -35,15 +35,15 @@ import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
- * Processeur qui permet de faire passer les déclarations d'impôt ordinaires sommées à l'état <i>ECHUES</i> lorsque le délai de retour est
+ * Processeur qui permet de faire passer les déclarations d'impôt ordinaires PP sommées à l'état <i>ECHUES</i> lorsque le délai de retour est
  * dépassé.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  * @see la spécification "Etablir la liste des sommations DI échues" (SCU-EtablirListeSommationsDIEchues.doc)
  */
-public class EchoirDIsProcessor {
+public class EchoirDIsPPProcessor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EchoirDIsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EchoirDIsPPProcessor.class);
 
 	private static final int BATCH_SIZE = 100;
 
@@ -54,8 +54,8 @@ public class EchoirDIsProcessor {
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
-	public EchoirDIsProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService, PlatformTransactionManager transactionManager,
-	                          TiersService tiersService, AdresseService adresseService) {
+	public EchoirDIsPPProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService, PlatformTransactionManager transactionManager,
+	                            TiersService tiersService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.delaisService = delaisService;
 		this.diService = diService;
@@ -64,29 +64,29 @@ public class EchoirDIsProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public EchoirDIsResults run(final RegDate dateTraitement, StatusManager s) throws DeclarationException {
+	public EchoirDIsPPResults run(final RegDate dateTraitement, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
 		status.setMessage("Récupération des déclarations d'impôt...");
 
-		final EchoirDIsResults rapportFinal = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
+		final EchoirDIsPPResults rapportFinal = new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);
 		final List<IdentifiantDeclaration> dis = retrieveListDIsSommeesCandidates(dateTraitement);
 
 		status.setMessage("Analyse des déclarations d'impôt...");
 
 		final SimpleProgressMonitor progressMonitor = new SimpleProgressMonitor();
-		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EchoirDIsResults>
+		final BatchTransactionTemplateWithResults<IdentifiantDeclaration, EchoirDIsPPResults>
 				template = new BatchTransactionTemplateWithResults<>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status);
-		template.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EchoirDIsResults>() {
+		template.execute(rapportFinal, new BatchWithResultsCallback<IdentifiantDeclaration, EchoirDIsPPResults>() {
 
 			@Override
-			public EchoirDIsResults createSubRapport() {
-				return new EchoirDIsResults(dateTraitement, tiersService, adresseService);
+			public EchoirDIsPPResults createSubRapport() {
+				return new EchoirDIsPPResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override
-			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EchoirDIsResults r) throws Exception {
+			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EchoirDIsPPResults r) throws Exception {
 				status.setMessage(String.format("Déclarations d'impôt analysées : %d/%d", rapportFinal.nbDIsTotal, dis.size()), progressMonitor.getProgressInPercent());
 				traiterBatch(batch, r, status);
 				return !status.interrupted();
@@ -102,10 +102,10 @@ public class EchoirDIsProcessor {
 	 * Traite tout le batch des déclarations, une par une.
 	 *
 	 * @param batch le batch des déclarations à traiter
-	 * @param rapport le rapport à remplir, voir {@link EchoirDIsProcessor#traiterDI(IdentifiantDeclaration, EchoirDIsResults)}.
+	 * @param rapport le rapport à remplir, voir {@link EchoirDIsPPProcessor#traiterDI(IdentifiantDeclaration, EchoirDIsPPResults)}.
 	 * @param statusManager utilisé pour tester l'interruption
 	 */
-	private void traiterBatch(List<IdentifiantDeclaration> batch, EchoirDIsResults rapport, StatusManager statusManager) {
+	private void traiterBatch(List<IdentifiantDeclaration> batch, EchoirDIsPPResults rapport, StatusManager statusManager) {
 		for (IdentifiantDeclaration id : batch) {
 			traiterDI(id, rapport);
 			if (statusManager.interrupted()) {
@@ -121,7 +121,7 @@ public class EchoirDIsProcessor {
 	 * @param ident l'id de la déclaration à traiter
 	 * @param rapport rapport à remplir
 	 */
-	protected void traiterDI(IdentifiantDeclaration ident, EchoirDIsResults rapport) {
+	protected void traiterDI(IdentifiantDeclaration ident, EchoirDIsPPResults rapport) {
 
 		Assert.notNull(ident, "L'id doit être spécifié.");
 
@@ -200,7 +200,7 @@ public class EchoirDIsProcessor {
 
 	private RegDate getSeuilEcheanceSommation(RegDate dateSommation) {
 		// [UNIREG-1468] L'échéance de sommation = date sommation + 30 jours (délai normal) + 15 jours (délai administratif)
-		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpot(dateSommation); // 30 jours
+		final RegDate delaiTemp = delaisService.getDateFinDelaiEcheanceSommationDeclarationImpotPP(dateSommation); // 30 jours
 		return delaisService.getDateFinDelaiEnvoiSommationDeclarationImpotPP(delaiTemp); // 15 jours
 	}
 }

@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EchoirDIsPPRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobCategory;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -18,14 +18,14 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EchoirDIsJob extends JobDefinition {
+public class EchoirDIsPPJob extends JobDefinition {
 
 	private DeclarationImpotService diService;
 	private RapportService rapportService;
 
 	public static final String NAME = "EchoirDIsJob";
 
-	public EchoirDIsJob(int sortOrder, String description) {
+	public EchoirDIsPPJob(int sortOrder, String description) {
 		super(NAME, JobCategory.DI_PP, sortOrder, description);
 
 		final JobParam param = new JobParam();
@@ -34,6 +34,12 @@ public class EchoirDIsJob extends JobDefinition {
 		param.setMandatory(false);
 		param.setType(new JobParamRegDate());
 		addParameterDefinition(param, null);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		getParameterDefinition(DATE_TRAITEMENT).setEnabled(isTesting());
 	}
 
 	public void setDeclarationImpotService(DeclarationImpotService service) {
@@ -50,11 +56,11 @@ public class EchoirDIsJob extends JobDefinition {
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager status = getStatusManager();
 
-		final EchoirDIsResults results = diService.echoirDIsHorsDelai(dateTraitement, status);
-		final EchoirDIsRapport rapport = rapportService.generateRapport(results, status);
+		final EchoirDIsPPResults results = diService.echoirDIsPPHorsDelai(dateTraitement, status);
+		final EchoirDIsPPRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("Le passage à l'état 'échu' des DIs sommées est terminée.", rapport);
+		Audit.success("Le passage à l'état 'échu' des DIs PP sommées est terminé.", rapport);
 	}
 
 }

@@ -110,8 +110,13 @@ public class DelaisServiceImpl implements DelaisService {
 	}
 
 	@Override
-	public RegDate getDateFinDelaiEcheanceSommationDeclarationImpot(RegDate dateDebut){
-		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationDeclarationImpot());
+	public RegDate getDateFinDelaiEcheanceSommationDeclarationImpotPP(RegDate dateDebut){
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationDeclarationImpotPP());
+	}
+
+	@Override
+	public RegDate getDateFinDelaiEcheanceSommationDeclarationImpotPM(RegDate dateDebut) {
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationDeclarationImpotPM());
 	}
 
 	@Override

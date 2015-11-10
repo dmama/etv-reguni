@@ -186,12 +186,12 @@ CREATE SEQUENCE S_PM START WITH 80000 INCREMENT BY 1;
 
 --
 -- Nouveautés dans les paramétrages
+-- Renommage de paramètres pour distinguer entre le cas des personnes physiques et celui des personnes morales
 --
 
--- Renommage du paramètre "premierePeriodeFiscale" pour distinguer entre le cas des personnes physiques et celui des personnes morales
 UPDATE PARAMETRE SET NOM='premierePeriodeFiscalePersonnesPhysiques', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='premierePeriodeFiscale';
---Renommage du paramètre "delaiEnvoiSommationDeclarationImpot" pour distinguer entre le cas des personnes physiques et celui des personnes morales
 UPDATE PARAMETRE SET NOM='delaiEnvoiSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEnvoiSommationDeclarationImpot';
+UPDATE PARAMETRE SET NOM='delaiEcheanceSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEcheanceSommationDeclarationImpot';
 
 --
 -- Nouvelle mouture des événements fiscaux

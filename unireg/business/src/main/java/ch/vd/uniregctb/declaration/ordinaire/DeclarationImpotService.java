@@ -14,6 +14,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiSommationsDIsPPResults;
@@ -107,13 +108,13 @@ public interface DeclarationImpotService {
 	ListeDIsPPNonEmises produireListeDIsNonEmises(Integer annee, RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
-	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires sommées et dont le délai de retour est dépassé.
+	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
 	 *
 	 * @param dateTraitement la date de traitement pour vérifier le dépassement du délai de retour, et - le cas échéant - pour définir la date d'obtention de l'état échu.
 	 * @param statusManager
 	 * @return les résultats détaillés des DIs qui ont été traitées.
 	 */
-	EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
+	EchoirDIsPPResults echoirDIsPPHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression la déclaration spécifiée pour une visualisation on-line, et envoie un événement fiscal correspondant. Cette méthode retourne directement le document d'impression
@@ -179,7 +180,7 @@ public interface DeclarationImpotService {
 	 * @param declaration    la déclaration d'impôt ordinaire à échoir
 	 * @param dateTraitement la date de passage à l'état échu de la déclaration.
 	 */
-	void echoirDI(DeclarationImpotOrdinairePP declaration, RegDate dateTraitement);
+	void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement);
 
 	/**
 	 * Quittance une déclaration d'impôt ordinaire. C'est-à-dire : ajoute un état 'retourné' sur la déclaration et envoi un événement fiscal.
@@ -319,5 +320,14 @@ public interface DeclarationImpotService {
 	 * @return les données du rapport d'exécution du job
 	 */
 	EnvoiSommationsDIsPMResults envoyerSommationsPM(RegDate dateTraitement, Integer nombreMax, StatusManager statusManager);
+
+	/**
+	 * Fait passer à l'état <i>ECHUE</i> toutes les déclarations d'imposition ordinaires PP sommées et dont le délai de retour est dépassé.
+	 *
+	 * @param dateTraitement la date de traitement pour vérifier le dépassement du délai de retour, et - le cas échéant - pour définir la date d'obtention de l'état échu.
+	 * @param statusManager
+	 * @return les résultats détaillés des DIs qui ont été traitées.
+	 */
+	EchoirDIsPMResults echoirDIsPMHorsDelai(RegDate dateTraitement, StatusManager statusManager) throws DeclarationException;
 
 }

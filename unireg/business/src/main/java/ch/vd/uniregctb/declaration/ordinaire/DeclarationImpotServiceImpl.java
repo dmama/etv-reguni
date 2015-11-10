@@ -31,6 +31,8 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMAEmettreProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDeclarationsPMProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMProcessor;
@@ -42,8 +44,8 @@ import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPAEmettreProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsProcessor;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPProcessor;
+import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleEnMasseProcessor;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiDIsPPEnMasseProcessor;
@@ -325,8 +327,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final EchoirDIsProcessor processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
+	public EchoirDIsPPResults echoirDIsPPHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final EchoirDIsPPProcessor processor = new EchoirDIsPPProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
+		return processor.run(dateTraitement, status);
+	}
+
+	@Override
+	public EchoirDIsPMResults echoirDIsPMHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
+		final EchoirDIsPMProcessor processor = new EchoirDIsPMProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, status);
 	}
 
@@ -424,8 +432,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void echoirDI(DeclarationImpotOrdinairePP declaration, RegDate dateTraitement) {
-		EtatDeclaration etat = new EtatDeclarationEchue();
+	public void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement) {
+		final EtatDeclaration etat = new EtatDeclarationEchue();
 		etat.setDateObtention(dateTraitement);
 		declaration.addEtat(etat);
 		evenementFiscalService.publierEvenementFiscalEcheanceDeclarationImpot(declaration, dateTraitement);

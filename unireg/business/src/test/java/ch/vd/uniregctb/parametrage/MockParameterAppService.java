@@ -38,8 +38,13 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public Integer getDelaiEcheanceSommationDeclarationImpot() {
-		return container.getDelaiEcheanceSommationDeclarationImpot();
+	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
+		return container.getDelaiEcheanceSommationDeclarationImpotPP();
+	}
+
+	@Override
+	public Integer getDelaiEcheanceSommationDeclarationImpotPM() {
+		return container.getDelaiEcheanceSommationDeclarationImpotPM();
 	}
 
 	@Override
@@ -188,8 +193,13 @@ public final class MockParameterAppService implements ParametreAppService {
 	}
 
 	@Override
-	public void setDelaiEcheanceSommationDeclarationImpot(Integer val) {
-		container.setDelaiEcheanceSommationDeclarationImpot(val);
+	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
+		container.setDelaiEcheanceSommationDeclarationImpotPP(val);
+	}
+
+	@Override
+	public void setDelaiEcheanceSommationDeclarationImpotPM(Integer val) {
+		container.setDelaiEnvoiSommationDeclarationImpotPM(val);
 	}
 
 	@Override

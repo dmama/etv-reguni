@@ -12,14 +12,14 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.shared.batchtemplate.StatusManager;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.TemporaryFile;
-import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 
 /**
- * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
+ * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs PM.
  */
-public class PdfEchoirDIsRapport extends PdfRapport {
+public class PdfEchoirDIsPMRapport extends PdfRapport {
 
-	public void write(final EchoirDIsResults results, final String nom, final String description, final Date dateGeneration,
+	public void write(final EchoirDIsPMResults results, final String nom, final String description, final Date dateGeneration,
 	                  OutputStream os, StatusManager status) throws Exception {
 
 		Assert.notNull(status);
@@ -31,12 +31,12 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution du job de passage des DIs sommées à l'état échu");
+		addTitrePrincipal("Rapport d'exécution du job de passage des DIs PM sommées à l'état échu");
 
 		// Paramètres
 		addEntete1("Paramètres");
 		{
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+			addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
@@ -52,7 +52,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 						+ "les valeurs ci-dessous sont donc incomplètes.");
 			}
 
-			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+			addTableSimple(2, new TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de déclarations inspectées:", String.valueOf(results.nbDIsTotal));
@@ -90,18 +90,18 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 	}
 
 
-	private TemporaryFile disEchuesAsCsvFile(List<EchoirDIsResults.Echue> disEchues, String filename, StatusManager status) {
+	private TemporaryFile disEchuesAsCsvFile(List<EchoirDIsPMResults.Echue> disEchues, String filename, StatusManager status) {
 		TemporaryFile contenu = null;
 		final int size = disEchues.size();
 		if (size > 0) {
-			contenu = CsvHelper.asCsvTemporaryFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsResults.Echue>() {
+			contenu = CsvHelper.asCsvTemporaryFile(disEchues, filename, status, new CsvHelper.FileFiller<EchoirDIsPMResults.Echue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("OID").append(COMMA).append("CTB_ID").append(COMMA).append("DI_ID").append(COMMA).append("DEBUT_PERIODE").append(COMMA).append("FIN_PERIODE");
 				}
 
 				@Override
-				public boolean fillLine(CsvHelper.LineFiller b, EchoirDIsResults.Echue info) {
+				public boolean fillLine(CsvHelper.LineFiller b, EchoirDIsPMResults.Echue info) {
 					b.append(info.officeImpotID).append(COMMA);
 					b.append(info.ctbId).append(COMMA);
 					b.append(info.diId).append(COMMA);

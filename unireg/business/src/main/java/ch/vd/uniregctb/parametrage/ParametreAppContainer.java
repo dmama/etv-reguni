@@ -134,8 +134,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public Integer getDelaiEcheanceSommationDeclarationImpot() {
-		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationDeclarationImpot));
+	public Integer getDelaiEcheanceSommationDeclarationImpotPP() {
+		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP));
+	}
+
+	@Override
+	public Integer getDelaiEcheanceSommationDeclarationImpotPM() {
+		return Integer.parseInt(get(ParametreEnum.delaiEcheanceSommationDeclarationImpotPM));
 	}
 
 	@Override
@@ -303,8 +308,13 @@ class ParametreAppContainer implements ParametreAppAccessor {
 	}
 
 	@Override
-	public void setDelaiEcheanceSommationDeclarationImpot(Integer val) {
-		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpot, val.toString());
+	public void setDelaiEcheanceSommationDeclarationImpotPP(Integer val) {
+		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpotPP, val.toString());
+	}
+
+	@Override
+	public void setDelaiEcheanceSommationDeclarationImpotPM(Integer val) {
+		setValeur(ParametreEnum.delaiEcheanceSommationDeclarationImpotPM, val.toString());
 	}
 
 	@Override

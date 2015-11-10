@@ -12,7 +12,9 @@ public interface ParametreAppAccessor {
 
 	Integer getDelaiCadevImpressionListesRecapitulatives();
 
-	Integer getDelaiEcheanceSommationDeclarationImpot();
+	Integer getDelaiEcheanceSommationDeclarationImpotPP();
+
+	Integer getDelaiEcheanceSommationDeclarationImpotPM();
 
 	Integer getDelaiEcheanceSommationListeRecapitualtive();
 
@@ -73,7 +75,9 @@ public interface ParametreAppAccessor {
 
 	void setDelaiCadevImpressionListesRecapitulatives(Integer val);
 
-	void setDelaiEcheanceSommationDeclarationImpot(Integer val);
+	void setDelaiEcheanceSommationDeclarationImpotPP(Integer val);
+
+	void setDelaiEcheanceSommationDeclarationImpotPM(Integer val);
 
 	void setDelaiEcheanceSommationListeRecapitualtive(Integer val);
 

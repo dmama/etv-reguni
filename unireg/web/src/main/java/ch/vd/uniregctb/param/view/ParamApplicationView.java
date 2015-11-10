@@ -37,7 +37,8 @@ public class ParamApplicationView {
 	private String delaiRetourDeclarationImpotEmiseManuellement;
 	private String delaiEnvoiSommationDeclarationImpotPP;
 	private String delaiEnvoiSommationDeclarationImpotPM;
-	private String delaiEcheanceSommationDeclarationImpot;
+	private String delaiEcheanceSommationDeclarationImpotPP;
+	private String delaiEcheanceSommationDeclarationImpotPM;
 	private String jourDuMoisEnvoiListesRecapitulatives;
 	private String delaiCadevImpressionDeclarationImpot;
 	private String delaiCadevImpressionListesRecapitulatives;
@@ -69,7 +70,7 @@ public class ParamApplicationView {
 		this.delaiRetourDeclarationImpotEmiseManuellement =
 				ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirValeurTypeeVersString(service.getDelaiRetourDeclarationImpotEmiseManuellement());
 		this.delaiEnvoiSommationDeclarationImpotPP = ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPP());
-		this.delaiEcheanceSommationDeclarationImpot = ParametreEnum.delaiEcheanceSommationDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpot());
+		this.delaiEcheanceSommationDeclarationImpotPP = ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPP());
 		this.jourDuMoisEnvoiListesRecapitulatives = ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirValeurTypeeVersString(service.getJourDuMoisEnvoiListesRecapitulatives());
 		this.delaiCadevImpressionDeclarationImpot = ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirValeurTypeeVersString(service.getDelaiCadevImpressionDeclarationImpot());
 		this.delaiCadevImpressionListesRecapitulatives = ParametreEnum.delaiCadevImpressionListesRecapitulatives.convertirValeurTypeeVersString(service.getDelaiCadevImpressionListesRecapitulatives());
@@ -85,6 +86,7 @@ public class ParamApplicationView {
 		this.ageRentierHomme = ParametreEnum.ageRentierHomme.convertirValeurTypeeVersString(service.getAgeRentierHomme());
 		this.delaiMinimalRetourDeclarationImpotPM = ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiMinimalRetourDeclarationImpotPM());
 		this.delaiEnvoiSommationDeclarationImpotPM = ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEnvoiSommationDeclarationImpotPM());
+		this.delaiEcheanceSommationDeclarationImpotPM = ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationDeclarationImpotPM());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -101,7 +103,7 @@ public class ParamApplicationView {
 		service.setDelaiRetourDeclarationImpotEmiseManuellement(
 				(Integer) ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement.convertirStringVersValeurTypee(this.delaiRetourDeclarationImpotEmiseManuellement));
 		service.setDelaiEnvoiSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPP));
-		service.setDelaiEcheanceSommationDeclarationImpot((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpot.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpot));
+		service.setDelaiEcheanceSommationDeclarationImpotPP((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPP.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPP));
 		service.setJourDuMoisEnvoiListesRecapitulatives((Integer) ParametreEnum.jourDuMoisEnvoiListesRecapitulatives.convertirStringVersValeurTypee(this.jourDuMoisEnvoiListesRecapitulatives));
 		service.setDelaiCadevImpressionDeclarationImpot((Integer) ParametreEnum.delaiCadevImpressionDeclarationImpot.convertirStringVersValeurTypee(this.delaiCadevImpressionDeclarationImpot));
 		service.setDelaiCadevImpressionListesRecapitulatives(
@@ -120,6 +122,7 @@ public class ParamApplicationView {
 		service.setAgeRentierHomme((Integer) ParametreEnum.ageRentierHomme.convertirStringVersValeurTypee(this.ageRentierHomme));
 		service.setDelaiMinimalRetourDeclarationImpotPM((Integer) ParametreEnum.delaiMinimalRetourDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiMinimalRetourDeclarationImpotPM));
 		service.setDelaiEnvoiSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEnvoiSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEnvoiSommationDeclarationImpotPM));
+		service.setDelaiEcheanceSommationDeclarationImpotPM((Integer) ParametreEnum.delaiEcheanceSommationDeclarationImpotPM.convertirStringVersValeurTypee(this.delaiEcheanceSommationDeclarationImpotPM));
 	}
 
 	public String getNoel() {
@@ -210,12 +213,12 @@ public class ParamApplicationView {
 		this.delaiEnvoiSommationDeclarationImpotPP = delaiEnvoiSommationDeclarationImpotPP;
 	}
 
-	public String getDelaiEcheanceSommationDeclarationImpot() {
-		return delaiEcheanceSommationDeclarationImpot;
+	public String getDelaiEcheanceSommationDeclarationImpotPP() {
+		return delaiEcheanceSommationDeclarationImpotPP;
 	}
 
-	public void setDelaiEcheanceSommationDeclarationImpot(String delaiEcheanceSommationDeclarationImpot) {
-		this.delaiEcheanceSommationDeclarationImpot = delaiEcheanceSommationDeclarationImpot;
+	public void setDelaiEcheanceSommationDeclarationImpotPP(String delaiEcheanceSommationDeclarationImpotPP) {
+		this.delaiEcheanceSommationDeclarationImpotPP = delaiEcheanceSommationDeclarationImpotPP;
 	}
 
 	public String getJourDuMoisEnvoiListesRecapitulatives() {
@@ -336,5 +339,13 @@ public class ParamApplicationView {
 
 	public void setDelaiEnvoiSommationDeclarationImpotPM(String delaiEnvoiSommationDeclarationImpotPM) {
 		this.delaiEnvoiSommationDeclarationImpotPM = delaiEnvoiSommationDeclarationImpotPM;
+	}
+
+	public String getDelaiEcheanceSommationDeclarationImpotPM() {
+		return delaiEcheanceSommationDeclarationImpotPM;
+	}
+
+	public void setDelaiEcheanceSommationDeclarationImpotPM(String delaiEcheanceSommationDeclarationImpotPM) {
+		this.delaiEcheanceSommationDeclarationImpotPM = delaiEcheanceSommationDeclarationImpotPM;
 	}
 }
