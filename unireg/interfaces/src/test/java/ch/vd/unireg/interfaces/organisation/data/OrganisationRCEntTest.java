@@ -44,6 +44,10 @@ public class OrganisationRCEntTest {
 				.addFormeLegale(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE)
 				.addFormeLegale(RegDate.get(2015, 5, 30), null, FormeLegale.N_0106_SOCIETE_ANONYME)
 
+				.addSite(101072613L, RegDate.get(2015, 4, 29), null, 101072613L)
+				.addSite(101072656L, RegDate.get(2015, 4, 29), null, 101072656L)
+				.addSite(12345678L, RegDate.get(2015, 5, 30), null, 12345678L)
+
 				.addDonneesSite(
 						new SiteOrganisationBuilder(101072613L)
 								.addNom(RegDate.get(2015, 4, 29), RegDate.get(2015, 5, 29), "Springbok Ski Tours S.A.R.L.")

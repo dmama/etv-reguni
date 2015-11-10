@@ -52,7 +52,7 @@ public class MockOrganisation implements Organisation {
 	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
 	private final NavigableMap<RegDate, FormeLegale> formeLegale = new TreeMap<>();
 	private final NavigableMap<RegDate, String> ide = new TreeMap<>();
-	private final List<MockSiteOrganisation> sites = new ArrayList<>();
+	private final Map<Long, MockSiteOrganisation> sites = new HashMap<>();
 	private final List<Adresse> adresses = new ArrayList<>();
 
 	public MockOrganisation(long idOrganisation, RegDate dateDebut, String nom, FormeLegale formeLegale) {
@@ -86,7 +86,7 @@ public class MockOrganisation implements Organisation {
 	}
 
 	public void addDonneesSite(MockSiteOrganisation site) {
-		sites.add(site);
+		sites.put(site.getNumeroSite(), site);
 	}
 
 	public void addNomsAdditionnels(RegDate dateDebut, RegDate dateFin, String... nouveauxNomsAdditionnels) {
@@ -113,7 +113,7 @@ public class MockOrganisation implements Organisation {
 
 	@Override
 	public List<SiteOrganisation> getDonneesSites() {
-		return new ArrayList<SiteOrganisation>(sites);
+		return new ArrayList<SiteOrganisation>(sites.values());
 	}
 
 	@Override
@@ -204,9 +204,14 @@ public class MockOrganisation implements Organisation {
 	}
 
 	@Override
+	public SiteOrganisation getSiteForNo(Long noSite) {
+		return sites.get(noSite);
+	}
+
+	@Override
 	public List<Capital> getCapitaux() {
 		Map<Long, SiteOrganisation> sitesMap = new HashMap<>();
-		for (MockSiteOrganisation mock : sites) {
+		for (MockSiteOrganisation mock : sites.values()) {
 			sitesMap.put(mock.getNumeroSite(), mock);
 		}
 		return OrganisationHelper.getCapitaux(sitesMap);
@@ -225,7 +230,7 @@ public class MockOrganisation implements Organisation {
 	@Override
 	public List<Siege> getSiegesPrincipaux() {
 		final List<Siege> sieges = new ArrayList<>();
-		for (MockSiteOrganisation site : sites) {
+		for (MockSiteOrganisation site : sites.values()) {
 			for (DateRanged<TypeDeSite> typeSite : site.getTypeDeSite()) {
 				if (typeSite.getPayload() == TypeDeSite.ETABLISSEMENT_PRINCIPAL) {
 					sieges.addAll(site.getSieges());

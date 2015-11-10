@@ -27,6 +27,8 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 	private List<DateRanged<TypeDeSite>> typesDeSite;
 	private List<Siege> sieges;
 	private Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
+	private List<DateRanged<Long>> remplacePar;
+	private Map<Long, List<DateRanged<Long>>> enRemplacementDe;
 
 	public SiteOrganisationBuilder(long numeroSite) {
 		this.numeroSite = numeroSite;
@@ -34,7 +36,7 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	@NotNull
 	public SiteOrganisationRCEnt build() {
-		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, sieges, fonction);
+		return new SiteOrganisationRCEnt(numeroSite, autresIdentifiants, nom, rc, ide, nomsAdditionnels, typesDeSite, sieges, fonction, remplacePar, enRemplacementDe);
 	}
 
 	public SiteOrganisationBuilder addAutreIdentifiant(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
@@ -49,6 +51,16 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	public SiteOrganisationBuilder addNomAdditionnel(@NotNull String cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull String valeur) {
 		nomsAdditionnels = BuilderHelper.addValueToMapOfList(nomsAdditionnels, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addRemplacePar(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		remplacePar = BuilderHelper.addValueToList(remplacePar, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public SiteOrganisationBuilder addEnRemplacementDe(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		enRemplacementDe = BuilderHelper.addValueToMapOfList(enRemplacementDe, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -84,6 +96,16 @@ public class SiteOrganisationBuilder implements DataBuilder<SiteOrganisationRCEn
 
 	public SiteOrganisationBuilder withAutresIdentifiants(Map<String, List<DateRanged<String>>> autresIdentifiants) {
 		this.autresIdentifiants = autresIdentifiants;
+		return this;
+	}
+
+	public SiteOrganisationBuilder withRemplacePar(List<DateRanged<Long>> remplacePar) {
+		this.remplacePar = remplacePar;
+		return this;
+	}
+
+	public SiteOrganisationBuilder withEnRemplacementDe(Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
+		this.enRemplacementDe = enRemplacementDe;
 		return this;
 	}
 

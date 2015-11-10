@@ -20,6 +20,7 @@ public class RCEntOrganisationHelper {
 				RCEntHelper.convert(organisation.getOrganisationName()),
 				RCEntHelper.convert(organisation.getOrganisationAdditionalName()),
 				RCEntHelper.convertAndMap(organisation.getLegalForm(), new LegalFormConverter()),
+				RCEntHelper.convert(organisation.getLocations()),
 				convertLocations(organisation.getLocationData(), infraService),
 				RCEntHelper.convert(organisation.getTransferTo()),
 				RCEntHelper.convert(organisation.getTransferFrom()),

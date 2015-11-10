@@ -35,6 +35,9 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	private final List<DateRanged<FormeLegale>> formeLegale;
 
 	@NotNull
+	private final Map<Long, List<DateRanged<Long>>> sites;
+
+	@NotNull
 	private final Map<Long, SiteOrganisation> donneesSites;
 
 	private final Map<Long, List<DateRanged<Long>>> transfereA;
@@ -47,6 +50,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	                         @NotNull List<DateRanged<String>> nom,
 	                         Map<String, List<DateRanged<String>>> nomsAdditionnels,
 	                         List<DateRanged<FormeLegale>> formeLegale,
+	                         @NotNull Map<Long, List<DateRanged<Long>>> sites,
 	                         @NotNull Map<Long, SiteOrganisation> donneesSites,
 	                         Map<Long, List<DateRanged<Long>>> transfereA, Map<Long, List<DateRanged<Long>>> transferDe,
 	                         List<DateRanged<Long>> remplacePar, Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
@@ -55,6 +59,7 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 		this.nom = nom;
 		this.nomsAdditionnels = nomsAdditionnels;
 		this.formeLegale = formeLegale;
+		this.sites = sites;
 		this.donneesSites = donneesSites;
 		this.transfereA = transfereA;
 		this.transferDe = transferDe;
@@ -227,5 +232,15 @@ public class OrganisationRCEnt implements Organisation, Serializable {
 	@Override
 	public List<SiteOrganisation> getSitesSecondaires(RegDate date) {
 		return OrganisationHelper.getSitesSecondaires(this, date);
+	}
+
+	@NotNull
+	public Map<Long, List<DateRanged<Long>>> getSites() {
+		return sites;
+	}
+
+	@Override
+	public SiteOrganisation getSiteForNo(Long noSite) {
+		return donneesSites.get(noSite);
 	}
 }

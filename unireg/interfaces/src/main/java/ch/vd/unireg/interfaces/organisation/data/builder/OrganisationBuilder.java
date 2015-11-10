@@ -38,6 +38,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 	private Map<String, List<DateRanged<String>>> nomsAdditionnels;
 	private List<DateRanged<FormeLegale>> formeLegale;
 
+	private Map<Long, List<DateRanged<Long>>> sites;
 	private Map<Long, SiteOrganisation> donneesSites;
 
 	private Map<Long, List<DateRanged<Long>>> transfereA;
@@ -51,7 +52,7 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	@Override
 	public OrganisationRCEnt build() {
-		return new OrganisationRCEnt(numeroOrganisation, autresIdentifiants, nom, nomsAdditionnels, formeLegale,
+		return new OrganisationRCEnt(numeroOrganisation, autresIdentifiants, nom, nomsAdditionnels, formeLegale, sites,
 		                             donneesSites, transfereA, transferDe, remplacePar, enRemplacementDe);
 	}
 
@@ -72,6 +73,11 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	public OrganisationBuilder addFormeLegale(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull FormeLegale valeur) {
 		formeLegale = BuilderHelper.addValueToList(formeLegale, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public OrganisationBuilder addSite(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
+		sites = BuilderHelper.addValueToMapOfList(sites, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
 		return this;
 	}
 
@@ -97,6 +103,11 @@ public class OrganisationBuilder implements DataBuilder<Organisation> {
 
 	public OrganisationBuilder addEnRemplacementDe(@NotNull Long cle, @NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull Long valeur) {
 		enRemplacementDe = BuilderHelper.addValueToMapOfList(enRemplacementDe, cle, new DateRanged<>(dateDebut, dateDeFin, valeur));
+		return this;
+	}
+
+	public OrganisationBuilder withSites(Map<Long, List<DateRanged<Long>>> sites) {
+		this.sites = sites;
 		return this;
 	}
 

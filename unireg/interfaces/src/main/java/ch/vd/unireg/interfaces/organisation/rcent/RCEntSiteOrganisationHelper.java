@@ -48,7 +48,9 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convert(rcEntLocation.getOtherNames()),
 				RCEntHelper.convertAndMap(rcEntLocation.getKindOfLocation(), KIND_OF_LOCATION_CONVERTER),
 				RCEntHelper.convertAndFlatmap(rcEntLocation.getSeat(), new SeatConverter(infraService)),
-				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER)
+				RCEntHelper.convertAndMap(rcEntLocation.getFunction(), FUNCTION_CONVERTER),
+				RCEntHelper.convert(rcEntLocation.getReplacedBy()),
+				RCEntHelper.convert(rcEntLocation.getInReplacementOf())
 		);
 	}
 

@@ -53,4 +53,12 @@ public interface SiteOrganisation {
 	 * @return Le siège, ou null si aucun siège valide à la date donnée
 	 */
 	Siege getSiege(RegDate date);
+
+	List<DateRanged<Long>> getRemplacePar();
+
+	Long getRemplacePar(RegDate date);
+
+	Map<Long, List<DateRanged<Long>>> getEnRemplacementDe();
+
+	List<Long> getEnRemplacementDe(RegDate date);
 }

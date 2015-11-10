@@ -71,4 +71,6 @@ public interface Organisation {
 	DateRanged<SiteOrganisation> getSitePrincipal(RegDate date);
 
 	List<SiteOrganisation> getSitesSecondaires(RegDate date);
+
+	SiteOrganisation getSiteForNo(Long noSite);
 }

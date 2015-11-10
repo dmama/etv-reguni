@@ -34,6 +34,9 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	private final List<Siege> siege;
 	private final Map<String, List<DateRanged<FonctionOrganisation>>> fonction;
 
+	private final List<DateRanged<Long>> remplacePar;
+	private final Map<Long, List<DateRanged<Long>>> enRemplacementDe;
+
 	public SiteOrganisationRCEnt(long numeroSite,
 	                             Map<String, List<DateRanged<String>>> autresIdentifiants,
 	                             List<DateRanged<String>> nom,
@@ -41,7 +44,9 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	                             DonneesRegistreIDE ide,
 	                             Map<String, List<DateRanged<String>>> nomsAdditionnels,
 	                             List<DateRanged<TypeDeSite>> typeDeSite, List<Siege> siege,
-	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction) {
+	                             Map<String, List<DateRanged<FonctionOrganisation>>> fonction,
+	                             List<DateRanged<Long>> remplacePar,
+	                             Map<Long, List<DateRanged<Long>>> enRemplacementDe) {
 		this.numeroSite = numeroSite;
 		this.numeroIDE = OrganisationHelper.extractIdentifiant(autresIdentifiants, OrganisationConstants.CLE_IDE);
 		this.nom = nom;
@@ -51,6 +56,8 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		this.typeDeSite = typeDeSite;
 		this.siege = siege;
 		this.fonction = fonction;
+		this.remplacePar = remplacePar;
+		this.enRemplacementDe = enRemplacementDe;
 	}
 
 	@Override
@@ -99,5 +106,25 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 	@Override
 	public Siege getSiege(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSieges(), date);
+	}
+
+	@Override
+	public List<DateRanged<Long>> getRemplacePar() {
+		return remplacePar;
+	}
+
+	@Override
+	public Long getRemplacePar(RegDate date) {
+		return OrganisationHelper.valueForDate(remplacePar, date);
+	}
+
+	@Override
+	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
+		return enRemplacementDe;
+	}
+
+	@Override
+	public List<Long> getEnRemplacementDe(RegDate date) {
+		return OrganisationHelper.valuesForDate(enRemplacementDe, date);
 	}
 }

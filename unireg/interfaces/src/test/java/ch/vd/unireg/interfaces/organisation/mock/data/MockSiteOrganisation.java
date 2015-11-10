@@ -7,6 +7,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -46,6 +47,8 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	private final NavigableMap<RegDate, TypeDeSite> typeDeSite = new TreeMap<>();
 	private final DonneesRegistreIDE donneesRegistreIDE;
 	private final DonneesRC donneesRC;
+	private final NavigableMap<RegDate, Long> remplacePar = new TreeMap<>();
+	private final NavigableMap<RegDate, List<Long>> enRemplacementDe = new TreeMap<>();
 
 	public MockSiteOrganisation(long numeroSite, DonneesRegistreIDE donneesRegistreIDE, DonneesRC donneesRC) {
 		this.numeroSite = numeroSite;
@@ -67,6 +70,14 @@ public class MockSiteOrganisation implements SiteOrganisation {
 
 	public void addNumeroIDE(RegDate dateDebut, RegDate dateFin, String nouveauNumeroIDE) {
 		MockOrganisationHelper.addRangedData(ide, dateDebut, dateFin, nouveauNumeroIDE);
+	}
+
+	public void addRemplacePar(RegDate dateDebut, @Nullable RegDate dateFin, Long nouveauRemplacePar) {
+		MockOrganisationHelper.addRangedData(remplacePar, dateDebut, dateFin, nouveauRemplacePar);
+	}
+
+	public void addEnRemplacementDe(RegDate dateDebut, @Nullable RegDate dateFin, List<Long> nouveauEnRemplacementDe) {
+		MockOrganisationHelper.addRangedData(enRemplacementDe, dateDebut, dateFin, nouveauEnRemplacementDe);
 	}
 
 	public void changeSiege(RegDate date, TypeAutoriteFiscale typeAutoriteFiscale, Integer ofs) {
@@ -138,4 +149,24 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	@Override
 	public Siege getSiege(RegDate date) {
 		return OrganisationHelper.dateRangeForDate(getSieges(), date);	}
+
+	@Override
+	public List<DateRanged<Long>> getRemplacePar() {
+		return MockOrganisationHelper.getHisto(remplacePar);
+	}
+
+	@Override
+	public Long getRemplacePar(RegDate date) {
+		return OrganisationHelper.valueForDate(getRemplacePar(), date);
+	}
+
+	@Override
+	public Map<Long, List<DateRanged<Long>>> getEnRemplacementDe() {
+		return MockOrganisationHelper.reconstitueMultiValeur(enRemplacementDe);
+	}
+
+	@Override
+	public List<Long> getEnRemplacementDe(RegDate date) {
+		return OrganisationHelper.valuesForDate(getEnRemplacementDe(), date);
+	}
 }
