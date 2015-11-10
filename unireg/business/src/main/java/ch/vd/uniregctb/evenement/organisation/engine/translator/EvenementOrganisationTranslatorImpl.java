@@ -33,10 +33,12 @@ import ch.vd.uniregctb.evenement.organisation.interne.information.FailliteConcor
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationButsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCapitalStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationStatutsStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.MetierServicePM;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -59,6 +61,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
+	private AssujettissementService assujettissementService;
 	private ParametreAppService parametreAppService;
 
 	/*
@@ -70,7 +73,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementOrganisationContext(serviceOrganisationService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierServicePM, tiersDAO, adresseService,
-		                                           evenementFiscalService, parametreAppService);
+		                                           evenementFiscalService, assujettissementService, parametreAppService);
 
 		// Construction des stratégies
 		strategies = new ArrayList<>();
@@ -87,6 +90,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new ModificationStatutsStrategy());
 		strategies.add(new DoublonEntrepriseStrategy());
 		strategies.add(new DoublonEtablissementStrategy());
+		strategies.add(new RadiationStrategy());
 	}
 
 	/**
@@ -204,6 +208,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setAssujettissementService(AssujettissementService assujettissementService) {
+		this.assujettissementService = assujettissementService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -15,6 +15,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
 

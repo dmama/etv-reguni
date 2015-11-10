@@ -7,6 +7,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.metier.MetierServicePM;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -22,6 +23,7 @@ public class EvenementOrganisationContext {
 	private final MetierServicePM metierServicePM;
 	private final AdresseService adresseService;
 	private final EvenementFiscalService evenementFiscalService;
+	private final AssujettissementService assujettissementService;
 	private final ParametreAppService parametreAppService;
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
@@ -34,11 +36,13 @@ public class EvenementOrganisationContext {
 		this.metierServicePM = null;
 		this.adresseService = null;
 		this.evenementFiscalService = null;
+		this.assujettissementService = null;
 		this.parametreAppService = null;
 	}
 
 	public EvenementOrganisationContext(ServiceOrganisationService serviceOrganisation, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, ParametreAppService parametreAppService) {
+	                             MetierServicePM metierServicePM, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService,  AssujettissementService assujettissementService,
+	                                    ParametreAppService parametreAppService) {
 		this.serviceOrganisation = serviceOrganisation;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -48,6 +52,7 @@ public class EvenementOrganisationContext {
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.evenementFiscalService = evenementFiscalService;
+		this.assujettissementService = assujettissementService;
 		this.parametreAppService = parametreAppService;
 	}
 
@@ -71,7 +76,7 @@ public class EvenementOrganisationContext {
 		return tiersService;
 	}
 
-	public MetierServicePM getMetierServicePMPM() {
+	public MetierServicePM getMetierServicePM() {
 		return metierServicePM;
 	}
 
@@ -85,6 +90,10 @@ public class EvenementOrganisationContext {
 
 	public EvenementFiscalService getEvenementFiscalService() {
 		return evenementFiscalService;
+	}
+
+	public AssujettissementService getAssujettissementService() {
+		return assujettissementService;
 	}
 
 	public ParametreAppService getParametreAppService() {

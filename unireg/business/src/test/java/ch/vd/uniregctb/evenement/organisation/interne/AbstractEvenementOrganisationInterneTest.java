@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.metier.MetierServicePM;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 
 public abstract class AbstractEvenementOrganisationInterneTest extends BusinessTest {
@@ -28,6 +29,7 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	protected EvenementOrganisationContext context;
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
+	protected AssujettissementService assujettissementService;
 	protected EvenementOrganisationOptions options;
 	protected ParametreAppService parametreAppService;
 
@@ -39,11 +41,12 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		metierService = getBean(MetierServicePM.class, "metierServicePM");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		eventSender.count = 0;
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementOrganisationContext(serviceOrganisation, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
+		context = new EvenementOrganisationContext(serviceOrganisation, serviceInfra, dataEventService, tiersService, globalTiersIndexer, metierService, tiersDAO, adresseService, evenementFiscalService, assujettissementService, parametreAppService);
 		options = buildOptions();
 	}
 

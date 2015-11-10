@@ -31,7 +31,7 @@ import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
 
 /**
- * @author Raphaël Marmier, 2015-10-16
+ * @author Raphaël Marmier, 2015-11-09
  */
 public class DoublonsProcessorTest extends AbstractEvenementOrganisationProcessorTest {
 
