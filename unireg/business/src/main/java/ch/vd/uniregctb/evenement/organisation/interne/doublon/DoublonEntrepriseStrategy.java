@@ -53,12 +53,13 @@ public class DoublonEntrepriseStrategy extends AbstractOrganisationStrategy {
 		final Long remplaceParApres = organisation.getRemplacePar(dateApres);
 
 		if (remplaceParAvant == null && remplaceParApres!= null) {
+
 			final String message = String.format("Situation de doublon d'organisation détectée. Organisation remplacée (civil): %s, remplaçante: %s.",
 			                                    organisation.getNumeroOrganisation(), remplaceParApres);
 			LOGGER.info(message);
 			return new TraitementManuel(event, organisation, entreprise, context, options, "Traitement manuel requis: " + message);
 		}
-		LOGGER.info("Pas de situation de doublon d'organisation détectée.");
+		LOGGER.info("Pas de doublon d'organisation.");
 		return null;
 	}
 }
