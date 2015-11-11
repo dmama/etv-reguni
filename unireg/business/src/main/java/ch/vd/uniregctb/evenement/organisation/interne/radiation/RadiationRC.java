@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
+import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -25,6 +26,7 @@ public class RadiationRC extends EvenementOrganisationInterne {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		warnings.addWarning(String.format("Une vérification est requise pour contrôler la radiation de l'entreprise %s (civil: %s).",
 		                                  getEntreprise().getNumero(), getEntreprise().getNumeroEntreprise()));
+		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
 	@Override
