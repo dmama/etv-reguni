@@ -73,9 +73,8 @@ public abstract class MockSiteOrganisationFactory {
 			}
 		}
 
-		MockDonneesRegistreIDE donneesRegistreIDE = null;
+		MockDonneesRegistreIDE donneesRegistreIDE = new MockDonneesRegistreIDE();
 		if (statusIde != null) {
-			donneesRegistreIDE = new MockDonneesRegistreIDE();
 			donneesRegistreIDE.addStatus(dateDebut, statusIde);
 			if (typeIde != null) {
 				donneesRegistreIDE.addTypeOrganisation(dateDebut, typeIde);

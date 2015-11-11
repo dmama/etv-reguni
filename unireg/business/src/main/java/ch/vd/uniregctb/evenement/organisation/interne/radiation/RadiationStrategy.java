@@ -63,32 +63,43 @@ public class RadiationStrategy extends AbstractOrganisationStrategy {
 		final StatusInscriptionRC statusInscriptionRCApres = sitePrincipalApres.getDonneesRC().getStatusInscription(dateApres);
 		final StatusRegistreIDE statusRegistreIDEApres = sitePrincipalApres.getDonneesRegistreIDE().getStatus(dateApres);
 
-		if (statusRCApres != null && statusRCApres == StatusRC.INSCRIT &&
-				statusRegistreIDEApres != null && (statusRegistreIDEApres == StatusRegistreIDE.RADIE || statusRegistreIDEApres == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
+		try {
+			if (statusRCApres != null && statusRCApres == StatusRC.INSCRIT &&
+					statusRegistreIDEApres != null && (statusRegistreIDEApres == StatusRegistreIDE.RADIE || statusRegistreIDEApres == StatusRegistreIDE.DEFINITIVEMENT_RADIE)) {
 
-			if (statusInscriptionRCApres != null && statusInscriptionRCApres != StatusInscriptionRC.RADIE) {
-				throw new EvenementOrganisationException(String.format("Entreprise %sradiée à l'IDE mais pas au RC!", entreprise));
-			}
-
-			try {
-				List<Assujettissement> assujettissements = context.getAssujettissementService().determine(entreprise);
-				Assujettissement assujettissement;
-				if (assujettissements != null && !assujettissements.isEmpty()) {
-					assujettissement = DateRangeHelper.rangeAt(assujettissements, dateApres);
-					if (assujettissement != null) {
-						return new TraitementManuel(event, organisation, entreprise, context, options,
-						                            String.format("Entreprise %s radiée. Assujettissement en cours!", entreprise.getNumero()));
-					}
+				if (statusInscriptionRCApres != null && statusInscriptionRCApres != StatusInscriptionRC.RADIE) {
+					throw new EvenementOrganisationException(String.format("L'entreprise %s est radiée à l'IDE mais pas au RC!", entreprise));
 				}
-			} catch (AssujettissementException e) {
-				throw new EvenementOrganisationException(String.format("L'entreprise est radiée mais impossible de déterminer son assujetissement: %s", e.getMessage()), e);
-			}
 
-			LOGGER.info(String.format("Entreprise %s radiée. Pas d'assujettissement en cours.", entreprise.getNumero()));
-			return new RadiationRC(event, organisation, entreprise, context, options);
-		} else {
-			LOGGER.info("Pas de radiation de l'entreprise.");
-			return null;
+				if (isAssujetti(entreprise, dateApres, context)) {
+					return new TraitementManuel(event, organisation, entreprise, context, options,
+					                            String.format("Entreprise %s radiée. Assujettissement en cours!", entreprise.getNumero()));
+				}
+
+				LOGGER.info(String.format("Entreprise %s radiée. Pas d'assujettissement en cours.", entreprise.getNumero()));
+				return new RadiationRC(event, organisation, entreprise, context, options);
+			}
+			else if (statusRCApres != null && statusRCApres == StatusRC.INSCRIT &&
+					statusRegistreIDEApres == null && statusInscriptionRCApres != null && statusInscriptionRCApres == StatusInscriptionRC.RADIE) {
+				String message = String.format("Le status de l'entreprise %s est indéterminé à l'IDE, mais radiée au RC. %s",
+				                               entreprise.getNumero(), isAssujetti(entreprise, dateApres, context) ? "De plus, l'entreprise est toujours assujettie." : "");
+				return new TraitementManuel(event, organisation, entreprise, context, options, message);
+			}
 		}
+		catch (AssujettissementException e) {
+			throw new EvenementOrganisationException(String.format("Impossible de déterminer si l'entreprise %s est assujettie: %s", entreprise.getNumero(), e.getMessage()), e);
+		}
+
+		LOGGER.info("Pas de radiation de l'entreprise.");
+		return null;
+	}
+
+	private boolean isAssujetti(Entreprise entreprise, RegDate date, EvenementOrganisationContext context) throws AssujettissementException {
+		List<Assujettissement> assujettissements = context.getAssujettissementService().determine(entreprise);
+		Assujettissement assujettissement = null;
+		if (assujettissements != null && !assujettissements.isEmpty()) {
+			assujettissement = DateRangeHelper.rangeAt(assujettissements, date);
+		}
+		return assujettissement != null;
 	}
 }
