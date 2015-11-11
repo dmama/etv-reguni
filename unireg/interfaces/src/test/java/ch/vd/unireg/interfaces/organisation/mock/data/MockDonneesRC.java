@@ -28,11 +28,13 @@ public class MockDonneesRC implements DonneesRC {
 	private NavigableMap<RegDate, AdresseRCEnt> adresseLegale = new TreeMap<>();
 	private NavigableMap<RegDate, String> buts = new TreeMap<>();
 	private NavigableMap<RegDate, RegDate> dateStatus = new TreeMap<>();
+	private NavigableMap<RegDate, RegDate> dateRadiation = new TreeMap<>();
 
 	public MockDonneesRC() {};
 
 	public MockDonneesRC(NavigableMap<RegDate, StatusRC> status, NavigableMap<RegDate, String> nom, NavigableMap<RegDate, StatusInscriptionRC> statusInscription,
-	                     NavigableMap<RegDate, Capital> capital, NavigableMap<RegDate, AdresseRCEnt> adresseLegale, NavigableMap<RegDate, String> buts, NavigableMap<RegDate, RegDate> dateStatus) {
+	                     NavigableMap<RegDate, Capital> capital, NavigableMap<RegDate, AdresseRCEnt> adresseLegale, NavigableMap<RegDate, String> buts,
+	                     NavigableMap<RegDate, RegDate> dateStatus, NavigableMap<RegDate, RegDate> dateRadiation) {
 		this.status = status;
 		this.nom = nom;
 		this.statusInscription = statusInscription;
@@ -40,6 +42,7 @@ public class MockDonneesRC implements DonneesRC {
 		this.adresseLegale = adresseLegale;
 		this.buts = buts;
 		this.dateStatus = dateStatus;
+		this.dateRadiation = dateRadiation;
 	}
 
 	@Override
@@ -156,4 +159,18 @@ public class MockDonneesRC implements DonneesRC {
 	public void addDateStatus(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateStatus) {
 		MockOrganisationHelper.addRangedData(dateStatus, dateDebut, dateFin, nouvelleDateStatus);
 	}
+
+	@Override
+	public List<DateRanged<RegDate>> getDateRadiation() {
+		return MockOrganisationHelper.getHisto(dateRadiation);
+	}
+
+	public void changeDateRadiation(RegDate date, RegDate nouvelleDateRadiation) {
+		MockOrganisationHelper.changeRangedData(dateRadiation, date, nouvelleDateRadiation);
+	}
+
+	public void addDateRadiation(RegDate dateDebut, @Nullable RegDate dateFin, RegDate nouvelleDateRadiation) {
+		MockOrganisationHelper.addRangedData(dateRadiation, dateDebut, dateFin, nouvelleDateRadiation);
+	}
+
 }

@@ -63,7 +63,8 @@ public class RCEntSiteOrganisationHelper {
 				RCEntHelper.convertAndMap(rc.getEntryStatus(), COMMERCIAL_REGISTER_ENTRY_STATUS_CONVERTER),
 				RCEntHelper.convertAndFlatmap(rc.getCapital(), CAPITAL_CONVERTER, CAPITAL_PREDICATE),
 				RCEntHelper.convert(rc.getPurpose()),
-				RCEntHelper.convert(rc.getByLawsDate()));
+				RCEntHelper.convert(rc.getByLawsDate()),
+				RCEntHelper.convert(rc.getCancellationDate()));
 	}
 
 	private static DonneesRegistreIDE createDonneesIDE(final OrganisationLocation.RCEntUIDData uid) {

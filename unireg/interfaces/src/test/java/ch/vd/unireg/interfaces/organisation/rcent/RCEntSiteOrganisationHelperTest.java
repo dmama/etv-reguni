@@ -65,7 +65,7 @@ public class RCEntSiteOrganisationHelperTest {
 		// Capital libéré correctement réglés, les autres champs sont optionels jusqu'à preuve du contraire.
 		capital.add(new Ranged<>(refDate, null, new Capital(null, null, null, BigDecimal.valueOf(100000), null)));
 
-		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(status, nom, statusInscription, capital, null, null, null, null);
+		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(status, nom, statusInscription, capital, null, null, null, null, null);
 
 		final List<Ranged<UidRegisterStatus>> statusIde = new ArrayList<>();
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));
@@ -114,7 +114,7 @@ public class RCEntSiteOrganisationHelperTest {
 		// Capital libéré et devise correctement réglés
 		capital.add(new Ranged<>(refDate, null, new Capital(null, null, BigDecimal.valueOf(100000), null, null)));
 
-		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(status, nom, statusInscription, capital, null, null, null, null);
+		final OrganisationLocation.RCEntRCData rc = new OrganisationLocation.RCEntRCData(status, nom, statusInscription, capital, null, null, null, null, null);
 
 		final List<Ranged<UidRegisterStatus>> statusIde = new ArrayList<>();
 		statusIde.add(new Ranged<>(refDate, null, UidRegisterStatus.DEFINITIF));

@@ -22,9 +22,11 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	private final List<AdresseRCEnt> adresseLegale;
 	private final List<DateRanged<String>> buts;
 	private final List<DateRanged<RegDate>> dateStatuts;
+	private final List<DateRanged<RegDate>> dateRadiation;
 
 	public DonneesRCRCEnt(List<AdresseRCEnt> adresseLegale, List<DateRanged<StatusRC>> status, List<DateRanged<String>> nom,
-	                 List<DateRanged<StatusInscriptionRC>> statusInscription, List<Capital> capital, List<DateRanged<String>> buts, List<DateRanged<RegDate>> dateStatuts) {
+	                      List<DateRanged<StatusInscriptionRC>> statusInscription, List<Capital> capital, List<DateRanged<String>> buts,
+	                      List<DateRanged<RegDate>> dateStatuts, List<DateRanged<RegDate>> dateRadiation) {
 		this.adresseLegale = adresseLegale;
 		this.status = status;
 		this.nom = nom;
@@ -32,6 +34,7 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 		this.capital = capital;
 		this.buts = buts;
 		this.dateStatuts = dateStatuts;
+		this.dateRadiation = dateRadiation;
 	}
 
 	@Override
@@ -77,5 +80,10 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	@Override
 	public List<DateRanged<RegDate>> getDateStatuts() {
 		return dateStatuts;
+	}
+
+	@Override
+	public List<DateRanged<RegDate>> getDateRadiation() {
+		return dateRadiation;
 	}
 }

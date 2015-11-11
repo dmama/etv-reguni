@@ -22,6 +22,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 	private List<AdresseRCEnt> adresseLegale;
 	private List<DateRanged<String>> buts;
 	private List<DateRanged<RegDate>> dateStatus;
+	private List<DateRanged<RegDate>> dateRadiation;
 
 	public DonneesRCBuilder() {}
 
@@ -34,7 +35,7 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	@Override
 	public DonneesRCRCEnt build() {
-		return new DonneesRCRCEnt(adresseLegale, status, nom, statusInscription, capital, buts, dateStatus);
+		return new DonneesRCRCEnt(adresseLegale, status, nom, statusInscription, capital, buts, dateStatus, dateRadiation);
 	}
 
 	public DonneesRCBuilder addStatus(@NotNull RegDate dateDebut, RegDate dateDeFin, @NotNull StatusRC valeur) {
@@ -69,6 +70,11 @@ public class DonneesRCBuilder implements DataBuilder<DonneesRC> {
 
 	public DonneesRCBuilder addDateStatus(@NotNull DateRanged<RegDate> dateStatus) {
 		this.dateStatus = BuilderHelper.addValueToList(this.dateStatus, dateStatus);
+		return this;
+	}
+
+	public DonneesRCBuilder addDateRadiation(@NotNull DateRanged<RegDate> dateRadiation) {
+		this.dateRadiation = BuilderHelper.addValueToList(this.dateRadiation, dateRadiation);
 		return this;
 	}
 

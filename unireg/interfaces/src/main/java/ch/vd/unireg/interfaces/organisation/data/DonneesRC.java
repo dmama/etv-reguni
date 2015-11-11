@@ -26,4 +26,5 @@ public interface DonneesRC {
 
 	List<DateRanged<RegDate>> getDateStatuts();
 
+	List<DateRanged<RegDate>> getDateRadiation();
 }
