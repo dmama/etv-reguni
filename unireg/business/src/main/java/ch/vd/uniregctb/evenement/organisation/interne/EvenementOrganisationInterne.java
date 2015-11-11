@@ -290,7 +290,7 @@ public abstract class EvenementOrganisationInterne {
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
-		Audit.info(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		Audit.info(getNumeroEvenement(), String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
@@ -301,7 +301,7 @@ public abstract class EvenementOrganisationInterne {
 		// Le régime fiscal VD + CH
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE, dateDebut);
 		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE, dateDebut);
-		Audit.info(String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -310,7 +310,7 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
 		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
 
-		Audit.info(String.format("Régimes fiscaux ordinaires VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -352,7 +352,7 @@ public abstract class EvenementOrganisationInterne {
 
 		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
 
-		Audit.info(String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
+		Audit.info(getNumeroEvenement(), String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
 		                         principal ? "principal" : "secondaire",
 		                         etablissement.getNumero(),
 		                         numeroSite,

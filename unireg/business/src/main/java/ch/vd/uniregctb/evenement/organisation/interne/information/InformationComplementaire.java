@@ -40,7 +40,7 @@ public class InformationComplementaire extends EvenementOrganisationInterne {
 	}
 
 	private void emetEvenementInformation() {
-		Audit.info(String.format("Envoi d'un événement d'information: %s. Entreprise %s (civil: %s).", typeInfo.name(), getEntreprise().getNumero(), getNoOrganisation()));
+		Audit.info(getNumeroEvenement(), String.format("Envoi d'un événement d'information: %s. Entreprise %s (civil: %s).", typeInfo.name(), getEntreprise().getNumero(), getNoOrganisation()));
 		context.getEvenementFiscalService().publierEvenementFiscalInformationComplementaire(getEntreprise(), typeInfo, getDateEvt());
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
