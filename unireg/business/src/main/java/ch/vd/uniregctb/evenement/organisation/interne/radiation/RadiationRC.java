@@ -1,10 +1,6 @@
 package ch.vd.uniregctb.evenement.organisation.interne.radiation;
 
-import org.springframework.util.Assert;
-
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -33,10 +29,5 @@ public class RadiationRC extends EvenementOrganisationInterne {
 
 	@Override
 	protected void validateSpecific(EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		final RegDate dateApres = getDateEvt();
-
-		final SiteOrganisation sitePrincipalApres = getOrganisation().getSitePrincipal(dateApres).getPayload();
-
-		Assert.notNull(sitePrincipalApres.getDonneesRC().getStatus(dateApres));
 	}
 }
