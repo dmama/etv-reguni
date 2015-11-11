@@ -127,11 +127,12 @@ public class OrganisationLocation {
 		private final List<DateRangeHelper.Ranged<RegDate>> entryDate;
 		private final List<DateRangeHelper.Ranged<String>> purpose;
 		private final List<DateRangeHelper.Ranged<RegDate>> byLawsDate;
+		private final List<DateRangeHelper.Ranged<RegDate>> cancellationDate;
 
 		public RCEntRCData(List<DateRangeHelper.Ranged<CommercialRegisterStatus>> status,
 		                   List<DateRangeHelper.Ranged<String>> name, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>> entryStatus,
 		                   List<DateRangeHelper.Ranged<Capital>> capital, List<DateRangeHelper.Ranged<Address>> legalAddress, List<DateRangeHelper.Ranged<RegDate>> entryDate,
-		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate) {
+		                   List<DateRangeHelper.Ranged<String>> purpose, List<DateRangeHelper.Ranged<RegDate>> byLawsDate, List<DateRangeHelper.Ranged<RegDate>> cancellationDate) {
 			this.status = status;
 			this.name = name;
 			this.entryStatus = entryStatus;
@@ -140,6 +141,7 @@ public class OrganisationLocation {
 			this.entryDate = entryDate;
 			this.purpose = purpose;
 			this.byLawsDate = byLawsDate;
+			this.cancellationDate = cancellationDate;
 		}
 
 		public List<DateRangeHelper.Ranged<Capital>> getCapital() {
@@ -172,6 +174,10 @@ public class OrganisationLocation {
 
 		public List<DateRangeHelper.Ranged<RegDate>> getByLawsDate() {
 			return byLawsDate;
+		}
+
+		public List<DateRangeHelper.Ranged<RegDate>> getCancellationDate() {
+			return cancellationDate;
 		}
 	}
 

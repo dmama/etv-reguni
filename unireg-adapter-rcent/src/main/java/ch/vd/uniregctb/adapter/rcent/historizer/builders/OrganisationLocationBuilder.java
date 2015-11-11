@@ -41,6 +41,7 @@ public class OrganisationLocationBuilder {
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> rcLegalAddresses;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose;
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate;
+	private final Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate;
 
 
 	private final Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus;
@@ -63,7 +64,9 @@ public class OrganisationLocationBuilder {
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<CommercialRegisterEntryStatus>>> entryStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> entryDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Capital>>> capital,
-	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose, Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<String>>> purpose,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> byLawsDate,
+	                                   Map<BigInteger, List<DateRangeHelper.Ranged<RegDate>>> cancellationDate,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterStatus>>> uidStatus,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<UidRegisterTypeOfOrganisation>>> uidTypeOfOrganisation,
 	                                   Map<BigInteger, List<DateRangeHelper.Ranged<Address>>> uidEffectiveAddesses,
@@ -90,6 +93,7 @@ public class OrganisationLocationBuilder {
 		this.uidStatus = uidStatus;
 		this.uidEffectiveAddesses = uidEffectiveAddesses;
 		this.uidLiquidationReason = uidLiquidationReason;
+		this.cancellationDate = cancellationDate;
 	}
 
 	public List<OrganisationLocation> build() {
@@ -103,7 +107,8 @@ public class OrganisationLocationBuilder {
 				                                                                        rcLegalAddresses.get(e.getKey()),
 				                                                                        entryDate.get(e.getKey()),
 				                                                                        purpose.get(e.getKey()),
-				                                                                        byLawsDate.get(e.getKey())),
+				                                                                        byLawsDate.get(e.getKey()),
+				                                                                        cancellationDate.get(e.getKey())),
 				                                   new OrganisationLocation.RCEntUIDData(uidEffectiveAddesses.get(e.getKey()),
 				                                                                         uidStatus.get(e.getKey()),
 				                                                                         uidTypeOfOrganisation.get(e.getKey()),
