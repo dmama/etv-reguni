@@ -8,20 +8,28 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.OrdinaryTaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v4.PartnershipForm;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v4.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.v4.PartyPart;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
-	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 
 		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
@@ -40,7 +48,7 @@ public class TaxDeclarationBuilder {
 
 		Integer cs = declaration.getCodeSegment();
 		// SIFISC-3873 : Code segment 0 par défaut pour les DI >= 2011
-		if (cs == null && declaration.getPeriode().getAnnee() >= ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+		if (cs == null && declaration.getPeriode().getAnnee() >= DeclarationImpotOrdinairePP.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
 			cs = DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT;
 		}
 		d.setSegmentationCode(cs); // SIFISC-2528
@@ -48,7 +56,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM declaration, @Nullable Set<PartyPart> parts) {
+	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(DeclarationImpotOrdinairePM declaration, @Nullable Set<PartyPart> parts) {
 		final OrdinaryTaxDeclaration d = new OrdinaryTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
 		fillTaxDeclarationParts(d, declaration, parts);
@@ -57,7 +65,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static WithholdingTaxDeclaration newWithholdingTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotSource declaration, @Nullable Set<PartyPart> parts) {
+	public static WithholdingTaxDeclaration newWithholdingTaxDeclaration(DeclarationImpotSource declaration, @Nullable Set<PartyPart> parts) {
 		final WithholdingTaxDeclaration d = new WithholdingTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
 		fillTaxDeclarationParts(d, declaration, parts);
@@ -66,7 +74,14 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	private static void fillTaxDeclarationBase(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration) {
+	public static PartnershipForm newPartnershipForm(QuestionnaireSNC declaration, @Nullable Set<PartyPart> parts) {
+		final PartnershipForm f = new PartnershipForm();
+		fillTaxDeclarationBase(f, declaration);
+		fillTaxDeclarationParts(f, declaration, parts);
+		return f;
+	}
+
+	private static void fillTaxDeclarationBase(TaxDeclaration d, Declaration declaration) {
 		d.setId(declaration.getId()); // [SIFISC-2392]
 		d.setDateFrom(DataHelper.coreToXMLv2(declaration.getDateDebut()));
 		d.setDateTo(DataHelper.coreToXMLv2(declaration.getDateFin()));
@@ -74,7 +89,7 @@ public class TaxDeclarationBuilder {
 		d.setTaxPeriod(TaxPeriodBuilder.newTaxPeriod(declaration.getPeriode()));
 	}
 
-	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
+	private static void fillTaxDeclarationParts(TaxDeclaration d, Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
 			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsSorted()) {
 				d.getStatuses().add(newTaxDeclarationStatus(etat));
@@ -97,7 +112,7 @@ public class TaxDeclarationBuilder {
 		return d;
 	}
 
-	public static TaxDeclarationStatus newTaxDeclarationStatus(ch.vd.uniregctb.declaration.EtatDeclaration etat) {
+	public static TaxDeclarationStatus newTaxDeclarationStatus(EtatDeclaration etat) {
 		final TaxDeclarationStatus e = new TaxDeclarationStatus();
 		e.setType(EnumHelper.coreToXMLv4(etat.getEtat()));
 		e.setDateFrom(DataHelper.coreToXMLv2(getAdjustedStatusDateFrom(etat)));
@@ -114,10 +129,10 @@ public class TaxDeclarationBuilder {
 	 * @param etatDeclaration etat de la déclaration
 	 * @return valeur de la date à mettre dans le champ {@link ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus#dateFrom}
 	 */
-	private static RegDate getAdjustedStatusDateFrom(ch.vd.uniregctb.declaration.EtatDeclaration etatDeclaration) {
+	private static RegDate getAdjustedStatusDateFrom(EtatDeclaration etatDeclaration) {
 		final RegDate date;
-		if (etatDeclaration instanceof ch.vd.uniregctb.declaration.EtatDeclarationSommee) {
-			final ch.vd.uniregctb.declaration.EtatDeclarationSommee etatSommee = (ch.vd.uniregctb.declaration.EtatDeclarationSommee) etatDeclaration;
+		if (etatDeclaration instanceof EtatDeclarationSommee) {
+			final EtatDeclarationSommee etatSommee = (EtatDeclarationSommee) etatDeclaration;
 			date = etatSommee.getDateEnvoiCourrier();
 		}
 		else {
