@@ -177,11 +177,37 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="partnershipFormType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations relative à un questionnaire SNC émis sur une société de personnes.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxdeclaration:taxDeclarationType">
+				<xs:sequence>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="taxPeriodType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Une période fiscale couvre la période du 1er janvier au 31 décembre (compris) de l'année considérée.</jxb:javadoc>
+					<jxb:javadoc>Une période fiscale est rattachée à une année civile, mais n'en possède pas forcément toutes les caractéristiques, notamment au niveau des dates limites.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
