@@ -74,6 +74,7 @@
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="diDAO" ref="diDAO" />
+		<property name="questionnaireSNCDAO" ref="questionnaireSNCDAO"/>
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="diService" ref="diService" />
 		<property name="parametres" ref="parametreAppService" />

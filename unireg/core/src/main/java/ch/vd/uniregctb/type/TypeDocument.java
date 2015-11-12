@@ -15,8 +15,15 @@ public enum TypeDocument {
 	//
 	// Déclarations d'impôt pour les contribuables assimilés "Personnes Morales"
 	//
+
 	DECLARATION_IMPOT_PM("déclaration d'impôt PM"),
 	DECLARATION_IMPOT_APM("déclaration d'impôt APM"),
+
+	//
+	// Questionnaire SNC
+	//
+
+	QUESTIONNAIRE_SNC("questionnaire SNC"),
 
 	//
 	// Documents IS

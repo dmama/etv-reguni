@@ -41,7 +41,7 @@ public class RecalculTachesProcessor {
 	private static final int BATCH_SIZE = 100;
 
 	/**
-	 * Détermine le scope de recalcul des tâches d'envoi/d'annulation de DI
+	 * Détermine le scope de recalcul des tâches d'envoi/d'annulation de documents
 	 */
 	public enum Scope {
 		PP,
@@ -162,7 +162,7 @@ public class RecalculTachesProcessor {
 
 	private TacheSyncResults doRunWithRetry(List<Long> ids) {
 		try {
-			return tacheService.synchronizeTachesDIs(ids);
+			return tacheService.synchronizeTachesDeclarations(ids);
 		}
 		catch (RuntimeException e) {
 			final TacheSyncResults results = new TacheSyncResults(false);

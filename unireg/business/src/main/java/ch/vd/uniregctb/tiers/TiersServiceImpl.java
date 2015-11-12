@@ -5451,4 +5451,38 @@ public class TiersServiceImpl implements TiersService {
 			return CategorieEntrepriseHelper.map(rc != null ? rc.getFormeJuridique() : null);
 		}
 	}
+
+	@Override
+	public List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise) {
+		final Organisation org = getOrganisation(entreprise);
+		final List<CategorieEntrepriseHisto> ces;
+		if (org != null) {
+			// données extraites des informations civiles
+			final List<DateRanged<FormeLegale>> fls = org.getFormeLegale();
+			if (fls != null && !fls.isEmpty()) {
+				ces = new ArrayList<>(fls.size());
+				for (DateRanged<FormeLegale> fl : fls) {
+					ces.add(new CategorieEntrepriseHisto(fl.getDateDebut(), fl.getDateFin(), CategorieEntrepriseHelper.map(fl.getPayload())));
+				}
+			}
+			else {
+				ces = Collections.emptyList();
+			}
+		}
+		else {
+			// données extraites des informations fiscales
+			final List<DonneesRegistreCommerce> rcs = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+			if (rcs.isEmpty()) {
+				ces = Collections.emptyList();
+			}
+			else {
+				ces = new ArrayList<>(rcs.size());
+				for (DonneesRegistreCommerce rc : rcs) {
+					ces.add(new CategorieEntrepriseHisto(rc.getDateDebut(), rc.getDateFin(), CategorieEntrepriseHelper.map(rc.getFormeJuridique())));
+				}
+			}
+		}
+
+		return DateRangeHelper.collate(ces);
+	}
 }

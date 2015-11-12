@@ -31,8 +31,6 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @DiscriminatorValue("LR")
 public class DeclarationImpotSource extends Declaration {
 
-	private static final long serialVersionUID = 8852365449351996537L;
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -149,4 +147,15 @@ public class DeclarationImpotSource extends Declaration {
 		return dateSommation;
 	}
 
+	@Transient
+	@Override
+	public boolean isSommable() {
+		return true;
+	}
+
+	@Transient
+	@Override
+	public boolean isRappelable() {
+		return false;
+	}
 }

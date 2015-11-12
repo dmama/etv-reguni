@@ -1602,5 +1602,11 @@ public interface TiersService {
      * @return la catégorie d'entreprise associée, à la date donnée, à l'entreprise donnée
      */
     CategorieEntreprise getCategorieEntreprise(@NotNull Entreprise entreprise, RegDate date);
+
+    /**
+     * @param entreprise une entreprise (fiscale)
+     * @return l'historique des catégories d'entreprise
+     */
+    List<CategorieEntrepriseHisto> getCategoriesEntrepriseHisto(@NotNull Entreprise entreprise);
 }
 

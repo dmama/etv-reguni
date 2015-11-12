@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.tache;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.shared.batchtemplate.StatusManager;
@@ -56,13 +59,14 @@ public class MockTacheService implements TacheService {
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
-	public TacheSyncResults synchronizeTachesDIs(Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDeclarations(Collection<Long> ctbIds) {
 		return new TacheSyncResults(false);
 	}
 

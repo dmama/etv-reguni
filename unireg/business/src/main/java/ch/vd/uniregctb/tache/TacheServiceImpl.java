@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.QuestionnaireSNC;
+import ch.vd.uniregctb.declaration.QuestionnaireSNCDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
@@ -57,17 +60,22 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AddDIPM;
 import ch.vd.uniregctb.tache.sync.AddDIPP;
+import ch.vd.uniregctb.tache.sync.AddQSNC;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
 import ch.vd.uniregctb.tache.sync.Context;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
 import ch.vd.uniregctb.tache.sync.DeleteDIPM;
 import ch.vd.uniregctb.tache.sync.DeleteDIPP;
+import ch.vd.uniregctb.tache.sync.DeleteQSNC;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
+import ch.vd.uniregctb.tache.sync.UpdateQSNC;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHisto;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPP;
@@ -76,15 +84,19 @@ import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
+import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -101,6 +113,7 @@ public class TacheServiceImpl implements TacheService {
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;
+	private QuestionnaireSNCDAO qsncDAO;
 	private PeriodeFiscaleDAO pfDAO;
 	private DeclarationImpotService diService;
 	private ParametreAppService parametres;
@@ -121,6 +134,10 @@ public class TacheServiceImpl implements TacheService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
+	}
+
+	public void setQuestionnaireSNCDAO(QuestionnaireSNCDAO qsncDAO) {
+		this.qsncDAO = qsncDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -499,22 +516,22 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	@Override
-	public TacheSyncResults synchronizeTachesDIs(final Collection<Long> ctbIds) {
+	public TacheSyncResults synchronizeTachesDeclarations(final Collection<Long> ctbIds) {
 
-		final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>();
 		final TacheSyncResults results = new TacheSyncResults(false);
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		template.execute(new TransactionCallback<Object>() {
+		final Map<Long, List<SynchronizeAction>> entityActions = template.execute(new TransactionCallback<Map<Long, List<SynchronizeAction>>>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
+			public Map<Long, List<SynchronizeAction>> doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback<Map<Long, List<SynchronizeAction>>>() {
 					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					public Map<Long, List<SynchronizeAction>> doInHibernate(Session session) throws HibernateException, SQLException {
 
-						// détermine tous les actions à effectuer sur les contribuables
-						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActionsForDIs(ctbIds);
+						// détermine toutes les actions à effectuer sur les contribuables
+						final Map<Long, List<SynchronizeAction>> actions = determineAllSynchronizeActions(ctbIds);
 						final Map<Long, List<SynchronizeAction>> tacheActions = new HashMap<>(actions.size());
+						final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<>(actions.size());
 						splitActions(actions, tacheActions, entityActions);
 
 						// on exécute toutes les actions sur les tâches dans la transaction courante, car - sauf bug -
@@ -522,10 +539,9 @@ public class TacheServiceImpl implements TacheService {
 						if (!tacheActions.isEmpty()) {
 							results.addAll(executeTacheActions(tacheActions));
 						}
-						return null;
+						return entityActions;
 					}
 				});
-				return null;
 			}
 		});
 
@@ -593,7 +609,7 @@ public class TacheServiceImpl implements TacheService {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
-			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, pfDAO);
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, qsncDAO, pfDAO);
 			for (SynchronizeAction action : actions) {
 				action.execute(context);
 				results.addAction(ctbId, action);
@@ -603,7 +619,7 @@ public class TacheServiceImpl implements TacheService {
 
 	private static void splitActions(Map<Long, List<SynchronizeAction>> actions, Map<Long, List<SynchronizeAction>> tacheActions, Map<Long, List<SynchronizeAction>> entityActions) {
 		for (Map.Entry<Long, List<SynchronizeAction>> entry : actions.entrySet()) {
-			final SplittedActions splittedActions = splitBetweenTaskAndEntityActions(entry.getValue());
+			final SplittedActions splittedActions = SplittedActions.splitFrom(entry.getValue());
 			if (!splittedActions.taskActions.isEmpty()) {
 				tacheActions.put(entry.getKey(), splittedActions.taskActions);
 			}
@@ -621,32 +637,32 @@ public class TacheServiceImpl implements TacheService {
 			this.taskActions = taskActions;
 			this.entityActions = entityActions;
 		}
-	}
 
-	private static SplittedActions splitBetweenTaskAndEntityActions(List<SynchronizeAction> actions) {
-		final List<SynchronizeAction> taches = new ArrayList<>(actions.size());
-		final List<SynchronizeAction> entites = new ArrayList<>(actions.size());
-		for (SynchronizeAction action : actions) {
-			if (action.willChangeEntity()) {
-				entites.add(action);
+		public static SplittedActions splitFrom(List<SynchronizeAction> actions) {
+			final List<SynchronizeAction> taches = new ArrayList<>(actions.size());
+			final List<SynchronizeAction> entites = new ArrayList<>(actions.size());
+			for (SynchronizeAction action : actions) {
+				if (action.willChangeEntity()) {
+					entites.add(action);
+				}
+				else {
+					taches.add(action);
+				}
 			}
-			else {
-				taches.add(action);
-			}
+			return new SplittedActions(taches, entites);
 		}
-		return new SplittedActions(taches, entites);
 	}
 
-	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActionsForDIs(Collection<Long> ctbIds) {
-		final Map<Long, List<SynchronizeAction>> map = new HashMap<>();
+	private Map<Long, List<SynchronizeAction>> determineAllSynchronizeActions(Collection<Long> ctbIds) {
+		final Map<Long, List<SynchronizeAction>> map = new HashMap<>(ctbIds.size());
 		for (Long id : ctbIds) {
 			final Tiers tiers = tiersService.getTiers(id);
+			final List<SynchronizeAction> actions = new LinkedList<>();
+
+			// d'abord les tâches autour des déclarations d'impôt
 			if (tiers instanceof Contribuable) {
 				try {
-					final List<SynchronizeAction> actions = determineSynchronizeActionsForDIs((Contribuable) tiers);
-					if (actions != null && !actions.isEmpty()) {
-						map.put(id, actions);
-					}
+					actions.addAll(determineSynchronizeActionsForDIs((Contribuable) tiers));
 				}
 				catch (AssujettissementException e) {
 					Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + id
@@ -655,8 +671,240 @@ public class TacheServiceImpl implements TacheService {
 					LOGGER.warn(e.getMessage(), e);
 				}
 			}
+
+			// ... puis éventuellement les tâches autour des questionnaires SNC
+			if (tiers instanceof Entreprise) {
+				actions.addAll(determineSynchronizeActionsForQSNCs((Entreprise) tiers));
+			}
+
+			// si quelque action a été collectée, on la garde pour plus tard
+			if (!actions.isEmpty()) {
+				map.put(id, actions);
+			}
 		}
 		return map;
+	}
+
+	@NotNull
+	private List<SynchronizeAction> determineSynchronizeActionsForQSNCs(Entreprise entreprise) {
+
+		// le critère de présence d'un questionnaire SNC est l'existence d'un for vaudois ouvert sur une année civile
+		final List<DateRange> periodesSNC = getPeriodesQuestionnaireSNC(entreprise);
+		final List<QuestionnaireSNC> questionnairesExistants = getQuestionnairesSNCExistants(entreprise);
+		final List<TacheEnvoiQuestionnaireSNC> tachesEnvoi = getTachesEnvoiQuestionnairesSNCEnInstance(entreprise);
+		final List<TacheAnnulationQuestionnaireSNC> tachesAnnulation = getTachesAnnulationQuestionnairesSNCEnInstance(entreprise);
+
+		// maintenant il faut comparer les deux
+
+		// si tout est vide... facile, il n'y a rien à faire
+		if (periodesSNC.isEmpty() && questionnairesExistants.isEmpty() && tachesEnvoi.isEmpty() && tachesAnnulation.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// ok, l'une au moins des deux collections n'est pas vide... ça devient intéressant.
+
+		final List<AddQSNC> adds = new ArrayList<>(periodesSNC.size());
+		final List<DeleteQSNC> deletes = new ArrayList<>(questionnairesExistants.size());
+		final List<UpdateQSNC> updates = new ArrayList<>(questionnairesExistants.size());
+		final List<AnnuleTache> cancels = new ArrayList<>();
+
+		final RegDate today = RegDate.get();
+
+		// on va boucler sur les périodes théoriques pour comparer à l'existant
+		for (DateRange periode : periodesSNC) {
+			final List<QuestionnaireSNC> questionnaires = getIntersectingRangeAt(questionnairesExistants, periode);
+			if (questionnaires == null) {
+				// il n'y a pas de questionnaire pour la période
+
+				// Le mécanisme ne doit pas créer de tâche d'émission de questionnaire pour l'année en cours (sauf si la
+				// période théorique est interrompue avant la fin de l'année)
+				final int anneePeriode = periode.getDateDebut().year();
+				if (anneePeriode < today.year() || (anneePeriode == today.year() && DayMonth.get(periode.getDateFin()) != DayMonth.get(12, 31))) {
+					adds.add(new AddQSNC(periode));
+				}
+			}
+			else {
+				Assert.isFalse(questionnaires.isEmpty());
+				QuestionnaireSNC toUpdate = null;
+
+				for (QuestionnaireSNC q : questionnaires) {
+					if (!DateRangeHelper.equals(q, periode)) {
+						// la durée du questionnaire et de la période d'imposition ne correspondent pas
+						if (toUpdate != null) {
+							// il y a déjà un questionnaire compatible pouvant être mis-à-jour, inutile de chercher plus loin
+							deletes.add(new DeleteQSNC(q));
+						}
+						else {
+							toUpdate = q;
+						}
+					}
+				}
+				if (toUpdate != null) {
+					updates.add(new UpdateQSNC(toUpdate, periode));
+				}
+			}
+		}
+
+		//
+		// on retranche les actions d'ajout pour lesquelles il existe déjà une tâche d'envoi
+		//
+
+		if (!adds.isEmpty()) {
+			for (int i = adds.size() - 1; i >= 0; i--) {
+				final DateRange periode = adds.get(i).range;
+				final TacheEnvoiQuestionnaireSNC envoi = getMatchingRangeAt(tachesEnvoi, periode);
+				if (envoi != null) {
+					adds.remove(i);
+				}
+			}
+		}
+
+		//
+		// On détermine tous les questionnaires qui ne sont pas valides vis-à-vis des ranges théoriques
+		//
+
+		for (QuestionnaireSNC questionnaire : questionnairesExistants) {
+			final List<DateRange> ps = getIntersectingRangeAt(periodesSNC, questionnaire);
+			if (ps == null) {
+				if (!isQuestionnaireToBeUpdated(updates, questionnaire)) { // [UNIREG-3028]
+					// il n'y a pas de période correspondante
+					deletes.add(new DeleteQSNC(questionnaire));
+				}
+			}
+			else {
+				Assert.isFalse(ps.isEmpty());
+				// s'il y a une intersection entre la déclaration et une période d'imposition, le cas a déjà été traité à partir des périodes d'imposition -> rien d'autre à faire
+			}
+		}
+
+		// on retranche les demandes d'annulation pour lesquelles la tâche d'annulation existe déjà
+		if (!deletes.isEmpty()) {
+			for (int i = deletes.size() - 1; i >= 0; i--) {
+				final Long questionnaireId = deletes.get(i).questionnaireId;
+				for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
+					if (annulation.getQuestionnaireSNC().getId().equals(questionnaireId)) {
+						deletes.remove(i);
+						break;      // pas la peine de l'enlever plusieurs fois...
+					}
+				}
+			}
+		}
+
+		//
+		//  On détermine la liste des tâches qui ne sont plus valides vis-à-vis des périodes d'imposition et des déclarations existantes
+		//
+
+		for (TacheEnvoiQuestionnaireSNC envoi : tachesEnvoi) {
+			if (!isTacheEnvoiQuestionnaireSNCValide(envoi, periodesSNC, questionnairesExistants, updates)) {
+				cancels.add(new AnnuleTache(envoi));
+			}
+		}
+
+		for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
+			if (!isTacheAnnulationQuestionnaireSNCValide(annulation, periodesSNC, updates, today)) {
+				cancels.add(new AnnuleTache(annulation));
+			}
+		}
+
+		final int size = adds.size() + updates.size() + deletes.size() + cancels.size();
+		if (size == 0) {
+			return Collections.emptyList();
+		}
+		else {
+			final List<SynchronizeAction> actions = new ArrayList<>(size);
+			actions.addAll(adds);
+			actions.addAll(updates);
+			actions.addAll(deletes);
+			actions.addAll(cancels);
+			return actions;
+		}
+	}
+
+	/**
+	 * @param entreprise Une entreprise
+	 * @return la liste des questionnaires SNC existants, non-annulés, triés
+	 */
+	private List<QuestionnaireSNC> getQuestionnairesSNCExistants(Entreprise entreprise) {
+		final List<Declaration> declarations = entreprise.getDeclarationsSorted();
+		final List<QuestionnaireSNC> questionnaires = new ArrayList<>(declarations.size());
+		for (Declaration declaration : declarations) {
+			if (!declaration.isAnnule() && declaration instanceof QuestionnaireSNC) {
+				questionnaires.add((QuestionnaireSNC) declaration);
+			}
+		}
+		return questionnaires;
+	}
+
+	/**
+	 * @param entreprise une entreprise
+	 * @return la liste des périodes temporelles pour lesquelles Unireg devrait posséder un questionnaire SNC
+	 */
+	@NotNull
+	private List<DateRange> getPeriodesQuestionnaireSNC(Entreprise entreprise) {
+
+		// allons donc chercher les périodes de couverture des fors vaudois qui intersectent :
+		// 1. les années civiles pour lesquelles Unireg doit envoyer les questionnaires SNC (entre la première PF de déclaration PM et l'année courante)
+		// 2. les périodes pendant lesquelles l'entreprise a une forme juridique de type SP
+
+		// quand a-t-on du SP ?
+		final List<CategorieEntrepriseHisto> categories = tiersService.getCategoriesEntrepriseHisto(entreprise);
+		final List<DateRange> rangesSP = new ArrayList<>(categories.size());
+		for (CategorieEntrepriseHisto cat : categories) {
+			if (cat.getCategorie() == CategorieEntreprise.SP) {
+				rangesSP.add(cat);
+			}
+		}
+
+		// y en a-t-il ?
+		if (rangesSP.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// quand génère-t-on des questionnaires SNC ?
+		final DateRange periodeGestionUnireg = new DateRangeHelper.Range(RegDate.get(parametres.getPremierePeriodeFiscaleDeclarationsPersonnesMorales(), 1, 1), null);
+
+		// a-t-on des catégories d'entreprise SP dans la période de gestion par Unireg ?
+		final List<DateRange> spDansPeriodeGestion = DateRangeHelper.intersections(periodeGestionUnireg, rangesSP);
+		if (spDansPeriodeGestion == null || spDansPeriodeGestion.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// couverture des fors vaudois ?
+		final List<ForFiscal> forsFiscaux = entreprise.getForsFiscauxNonAnnules(true);
+		final List<ForFiscal> forsVaudois = new ArrayList<>(forsFiscaux.size());
+		for (ForFiscal ff : forsFiscaux) {
+			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				forsVaudois.add(ff);
+			}
+		}
+		final List<DateRange> couvertureVaudoiseFors = DateRangeHelper.merge(forsVaudois);
+		if (couvertureVaudoiseFors == null || couvertureVaudoiseFors.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// couverture des fors vaudois pendant les périodes SP intéressantes ?
+		final List<DateRange> spVaudois = DateRangeHelper.intersections(couvertureVaudoiseFors, spDansPeriodeGestion);
+		if (spVaudois == null || spVaudois.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// découpons maintenant par année civile ce qui nous reste
+		final List<DateRange> ranges = new LinkedList<>();
+		for (DateRange r : spVaudois) {
+			final RegDate dateFin = r.getDateFin() == null ? RegDate.get(RegDate.get().year(), 12, 31) : r.getDateFin();
+			final RegDate dateDebut = r.getDateDebut();
+			if (dateFin.year() == dateDebut.year()) {
+				ranges.add(r);
+			}
+			else {
+				ranges.add(new DateRangeHelper.Range(dateDebut, RegDate.get(dateDebut.year(), 12, 31)));
+				for (int year = dateDebut.year() + 1; year < dateFin.year() ; ++ year) {
+					ranges.add(new DateRangeHelper.Range(RegDate.get(year, 1, 1), RegDate.get(year, 12, 31)));
+				}
+				ranges.add(new DateRangeHelper.Range(RegDate.get(dateFin.year(), 1, 1), dateFin));
+			}
+		}
+		return ranges;
 	}
 
 	/**
@@ -828,6 +1076,7 @@ public class TacheServiceImpl implements TacheService {
 		public abstract List<DeclarationImpotOrdinaire> filtrerDeclarations(List<DeclarationImpotOrdinaire> declarations, ParametreAppService paramService);
 	}
 
+	@NotNull
 	@Override
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
@@ -835,8 +1084,8 @@ public class TacheServiceImpl implements TacheService {
 		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
 		final List<PeriodeImposition> periodes = domaine.filtrerPeriodes(getPeriodesImpositionHisto(contribuable), parametres);
 		final List<DeclarationImpotOrdinaire> declarations = domaine.filtrerDeclarations(getDeclarationsActives(contribuable), parametres);
-		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
-		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiDIsEnInstance(contribuable);
+		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationDIsEnInstance(contribuable);
 
 		final List<AddDI> addActions = new ArrayList<>();
 		final List<UpdateDI> updateActions = new ArrayList<>();
@@ -967,13 +1216,13 @@ public class TacheServiceImpl implements TacheService {
 		//
 
 		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
-			if (!isTacheEnvoiValide(envoi, periodes, declarations, updateActions)) {
+			if (!isTacheEnvoiDIValide(envoi, periodes, declarations, updateActions)) {
 				annuleActions.add(new AnnuleTache(envoi));
 			}
 		}
 
 		for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-			if (!isTacheAnnulationValide(annulation, periodes, updateActions, today)) {
+			if (!isTacheAnnulationDIValide(annulation, periodes, updateActions, today)) {
 				annuleActions.add(new AnnuleTache(annulation));
 			}
 		}
@@ -993,6 +1242,38 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
+	 * Détermine si la tâche d'envoi d'un questionnaire SNC est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
+	 *
+	 * @param envoi         une tâche d'envoi
+	 * @param periodes      les périodes théoriques du contribuable
+	 * @param questionnaires les déclarations existantes
+	 * @param updates les actions prévues de mise-à-jour des questionnaires
+	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
+	 */
+	private static boolean isTacheEnvoiQuestionnaireSNCValide(TacheEnvoiQuestionnaireSNC envoi, List<DateRange> periodes, List<QuestionnaireSNC> questionnaires, List<UpdateQSNC> updates) {
+
+		final DateRange periode = getMatchingRangeAt(periodes, envoi);
+		if (periode == null) {
+			// pas de période correspondante -> la tâche n'est plus valable
+			return false;
+		}
+
+		final QuestionnaireSNC questionnaire = getMatchingRangeAt(questionnaires, periode);
+		if (questionnaire == null) {
+			// il n'y a pas de questionnaire, la tâche est donc valide
+			return true;
+		}
+
+		if (isQuestionnaireToBeUpdated(updates, questionnaire)) { // [SIFISC-1288]
+			// le questionnaire existant va être mise-à-jour, la tâche est donc invalide
+			return false;
+		}
+
+		// la tâche est valide
+		return true;
+	}
+
+	/**
 	 * Détermine si la tâche d'envoi d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
 	 *
 	 * @param envoi         une tâche d'envoi
@@ -1001,7 +1282,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheEnvoiValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
+	private static boolean isTacheEnvoiDIValide(TacheEnvoiDeclarationImpot envoi, List<PeriodeImposition> periodes, List<DeclarationImpotOrdinaire> declarations, List<UpdateDI> updateActions) {
 
 		final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
 		if (periode == null || !periode.isDeclarationMandatory()) {
@@ -1045,11 +1326,43 @@ public class TacheServiceImpl implements TacheService {
 	 *
 	 * @param annulation    une tâche d'annulation
 	 * @param periodes      les périodes d'imposition théorique du contribuable
+	 * @param updates les actions prévues de mise-à-jour des déclarations
+	 * @param dateReference date de référence
+	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
+	 */
+	private static boolean isTacheAnnulationQuestionnaireSNCValide(TacheAnnulationQuestionnaireSNC annulation, List<DateRange> periodes, List<UpdateQSNC> updates, RegDate dateReference) {
+
+		final QuestionnaireSNC questionnaire = annulation.getQuestionnaireSNC();
+		if (questionnaire.isAnnule()) {
+			// la déclaration est déjà annulée -> la tâche ne sert à rien
+			return false;
+		}
+
+		if (isQuestionnaireToBeUpdated(updates, questionnaire)) { // [UNIREG-3028]
+			// la déclaration va être mise-à-jour, la tâche d'annulation est donc invalide
+			return false;
+		}
+
+		final DateRange periode = getMatchingRangeAt(periodes, questionnaire);
+		if (periode == null) {
+			// il n'y a pas de questionnaire théorique correspondant, la tâche d'annulation est donc valide
+			return true;
+		}
+
+		// finalement, la tâche est valide
+		return true;
+	}
+
+	/**
+	 * Détermine si la tâche d'annulation d'une déclaration d'impôt est (toujours) valide en se mettant dans la position où les actions prévues ont été effectuées.
+	 *
+	 * @param annulation    une tâche d'annulation
+	 * @param periodes      les périodes d'imposition théorique du contribuable
 	 * @param updateActions les actions prévues de mise-à-jour des déclarations
 	 * @param dateReference date de référence
 	 * @return <b>vrai</b> si la tâche est valide; <b>faux</b> si elle est invalide et doit être annulée.
 	 */
-	private static boolean isTacheAnnulationValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, RegDate dateReference) {
+	private static boolean isTacheAnnulationDIValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, RegDate dateReference) {
 
 		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
 		if (declaration.isAnnule()) {
@@ -1087,6 +1400,24 @@ public class TacheServiceImpl implements TacheService {
 		if (!updateActions.isEmpty()) {
 			for (UpdateDI updateAction : updateActions) {
 				if (updateAction.diId.equals(declaration.getId())) {
+					declarationUpdated = true;
+					break;
+				}
+			}
+		}
+		return declarationUpdated;
+	}
+
+	/**
+	 * @param updateActions la liste des actions de mise-à-jour
+	 * @param questionnaire   un questionnaire SNC
+	 * @return <b>vrai</b> si le questionnaire spécifié est référencé dans la liste d'actions de mise-à-jour; <b>faux</b> si ce n'est pas le cas.
+	 */
+	private static boolean isQuestionnaireToBeUpdated(List<UpdateQSNC> updateActions, QuestionnaireSNC questionnaire) {
+		boolean declarationUpdated = false;
+		if (!updateActions.isEmpty()) {
+			for (UpdateQSNC updateAction : updateActions) {
+				if (updateAction.questionnaireId == questionnaire.getId()) {
 					declarationUpdated = true;
 					break;
 				}
@@ -1214,48 +1545,36 @@ public class TacheServiceImpl implements TacheService {
 		return list;
 	}
 
-	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationEnInstance(Contribuable contribuable) {
-		final List<TacheAnnulationDeclarationImpot> tachesAnnulation;
-		{
-			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setContribuable(contribuable);
-			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-
-			final List<Tache> list = tacheDAO.find(criterion, true);
-			if (list.isEmpty()) {
-				tachesAnnulation = Collections.emptyList();
-			}
-			else {
-				tachesAnnulation = new ArrayList<>(list.size());
-				for (Tache t : list) {
-					tachesAnnulation.add((TacheAnnulationDeclarationImpot) t);
-				}
-			}
-		}
-		return tachesAnnulation;
+	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationDIsEnInstance(Contribuable contribuable) {
+		return getTachesEnInstance(contribuable, TypeTache.TacheAnnulationDeclarationImpot);
 	}
 
-	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable) {
+	private List<TacheAnnulationQuestionnaireSNC> getTachesAnnulationQuestionnairesSNCEnInstance(Entreprise entreprise) {
+		return getTachesEnInstance(entreprise, TypeTache.TacheAnnulationQuestionnaireSNC);
+	}
+
+	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiDIsEnInstance(Contribuable contribuable) {
 		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
-			return getTachesEnvoiEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPP);
+			return getTachesEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPP);
 		}
 		if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
-			return getTachesEnvoiEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPM);
+			return getTachesEnInstance(contribuable, TypeTache.TacheEnvoiDeclarationImpotPM);
 		}
 		return Collections.emptyList();
 	}
 
-	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable, TypeTache typeTacheEnvoi) {
-		Assert.isTrue(typeTacheEnvoi == TypeTache.TacheEnvoiDeclarationImpotPM || typeTacheEnvoi == TypeTache.TacheEnvoiDeclarationImpotPP);
+	private List<TacheEnvoiQuestionnaireSNC> getTachesEnvoiQuestionnairesSNCEnInstance(Entreprise entreprise) {
+		return getTachesEnInstance(entreprise, TypeTache.TacheEnvoiQuestionnaireSNC);
+	}
 
+	private <T extends Tache> List<T> getTachesEnInstance(Contribuable contribuable, TypeTache typeTache) {
 		final TacheCriteria criterion = new TacheCriteria();
 		criterion.setContribuable(contribuable);
 		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criterion.setTypeTache(typeTacheEnvoi);
+		criterion.setTypeTache(typeTache);
 		criterion.setInclureTachesAnnulees(false);
 
-		final List<TacheEnvoiDeclarationImpot> tachesEnvoi;
+		final List<T> tachesEnvoi;
 		final List<Tache> list = tacheDAO.find(criterion, true);
 		if (list.isEmpty()) {
 			tachesEnvoi = Collections.emptyList();
@@ -1263,7 +1582,7 @@ public class TacheServiceImpl implements TacheService {
 		else {
 			tachesEnvoi = new ArrayList<>(list.size());
 			for (Tache t : list) {
-				tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
+				tachesEnvoi.add((T) t);
 			}
 		}
 		return tachesEnvoi;

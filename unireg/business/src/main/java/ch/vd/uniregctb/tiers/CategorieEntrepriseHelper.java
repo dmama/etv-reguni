@@ -13,6 +13,7 @@ import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
  */
 public class CategorieEntrepriseHelper {
 
+
 	/**
 	 * Détermine la catégorie métier en fonction de la forme juridique.
 	 *

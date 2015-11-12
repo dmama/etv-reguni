@@ -23,6 +23,7 @@
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP</value>
 		<value>ch.vd.uniregctb.declaration.DeclarationImpotSource</value>
+		<value>ch.vd.uniregctb.declaration.QuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
@@ -93,12 +94,14 @@
 		<value>ch.vd.uniregctb.tiers.Tiers</value>
 		<value>ch.vd.uniregctb.tiers.Tache</value>
 		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>
+		<value>ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.tiers.TacheControleDossier</value>
 		<value>ch.vd.uniregctb.tiers.TacheTransmissionDossier</value>
 		<value>ch.vd.uniregctb.tiers.TacheEnvoiDocument</value>
 		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot</value>
 		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPP</value>
 		<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpotPM</value>
+		<value>ch.vd.uniregctb.tiers.TacheEnvoiQuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.tiers.TacheNouveauDossier</value>
 		<value>ch.vd.uniregctb.tiers.DroitAcces</value>
 		<value>ch.vd.uniregctb.tiers.Remarque</value>

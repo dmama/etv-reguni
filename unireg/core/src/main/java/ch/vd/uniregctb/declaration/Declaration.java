@@ -450,4 +450,18 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return tiers == null ? null : Collections.singletonList(tiers);
 	}
+
+	/**
+	 * @return <code>true</code> si la déclaration est d'un type qui supporte les sommations
+	 * @see #isRappelable()
+	 */
+	@Transient
+	public abstract boolean isSommable();
+
+	/**
+	 * @return <code>true</code> si la déclaration est d'un type qui supporte les rappels
+	 * @see #isSommable()
+	 */
+	@Transient
+	public abstract boolean isRappelable();
 }

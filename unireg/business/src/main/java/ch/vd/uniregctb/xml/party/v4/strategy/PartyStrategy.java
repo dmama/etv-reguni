@@ -421,6 +421,8 @@ public abstract class PartyStrategy<T extends Party> {
 			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM) declaration, parts));
 			}
+
+			// TODO doit-on exposer, à terme, les questionnaires SNC ?
 		}
 	}
 

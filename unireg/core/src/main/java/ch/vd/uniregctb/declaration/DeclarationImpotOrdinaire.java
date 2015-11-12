@@ -160,4 +160,16 @@ public abstract class DeclarationImpotOrdinaire extends Declaration {
 		final int number = (int) (100000 * Math.random());
 		return String.format("%s%05d", CODE_LETTERS[letter_index], number);
 	}
+
+	@Transient
+	@Override
+	public boolean isSommable() {
+		return true;
+	}
+
+	@Transient
+	@Override
+	public boolean isRappelable() {
+		return false;
+	}
 }

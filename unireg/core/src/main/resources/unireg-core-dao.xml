@@ -38,6 +38,8 @@
 	</bean>
 	<bean id="diDAO" class="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAOImpl" parent="hibernateDao">
 	</bean>
+	<bean id="questionnaireSNCDAO" class="ch.vd.uniregctb.declaration.QuestionnaireSNCDAOImpl" parent="hibernateDao">
+	</bean>
 	<bean id="mouvementDossierDAO" class="ch.vd.uniregctb.mouvement.MouvementDossierDAOImpl" parent="hibernateDao">
 	</bean>
 	<bean id="bordereauMouvementDossierDAO" class="ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAOImpl" parent="hibernateDao">
