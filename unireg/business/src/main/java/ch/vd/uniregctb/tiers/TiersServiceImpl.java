@@ -2617,6 +2617,11 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Réouvre le for et l'assigne au tiers.
+     *
+     * Le for fiscal doit avoir été annulé précédemment.
+     *
+     * @param ff    un for fiscal déjà annulé
+     * @param tiers un tiers à qui doit être assigné le nouveau for.
      */
     @Override
     public void reopenFor(ForFiscal ff, Tiers tiers) {
