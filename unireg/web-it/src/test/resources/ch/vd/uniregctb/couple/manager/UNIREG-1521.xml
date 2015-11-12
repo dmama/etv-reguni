@@ -4700,7 +4700,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>NOM_DOCUMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
     <column>NUMERO</column>
     <column>NO_OFS_FOR_GESTION</column>
@@ -4726,7 +4725,6 @@
       <value>[Coherence-di-periode-imposition]</value>
       <value>20070101</value>
       <value>20071231</value>
-      <null/>
       <value><![CDATA[2009-07-13 00:00:00.0]]></value>
       <value>1</value>
       <value>5405</value>
@@ -4753,7 +4751,6 @@
       <value>[Rattrapage-qualif-di]</value>
       <value>20080101</value>
       <value>20081231</value>
-      <null/>
       <null/>
       <value>1</value>
       <value>5886</value>

@@ -1333,7 +1333,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>NOM_DOCUMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
     <column>DELAI_RETOUR_IMPRIME</column>
     <column>NUMERO</column>

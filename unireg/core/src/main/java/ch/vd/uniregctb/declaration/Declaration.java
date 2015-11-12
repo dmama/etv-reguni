@@ -118,20 +118,6 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 	}
 
 	/**
-	 * Clef du document necessaire pour l'editique
-	 */
-	private String nomDocument;
-
-	@Column(name = "NOM_DOCUMENT")
-	public String getNomDocument() {
-		return nomDocument;
-	}
-
-	public void setNomDocument(String nomDocument) {
-		this.nomDocument = nomDocument;
-	}
-
-	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the tiers

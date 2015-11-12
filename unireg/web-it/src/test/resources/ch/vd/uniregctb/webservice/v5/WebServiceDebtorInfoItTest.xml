@@ -1366,7 +1366,6 @@
 		<column>LOG_MUSER</column>
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
-		<column>NOM_DOCUMENT</column>
 		<column>CODE_CONTROLE</column>
 		<column>CODE_SEGMENT</column>
 		<column>DATE_IMPR_CHEMISE_TO</column>
@@ -1394,7 +1393,6 @@
 			<null />
 			<value>20090101</value>
 			<value>20090131</value>
-			<null />
 			<null />
 			<null />
 			<null />

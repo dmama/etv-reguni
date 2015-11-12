@@ -3813,7 +3813,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>NOM_DOCUMENT</column>
     <column>CODE_CONTROLE</column>
     <column>CODE_SEGMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
@@ -3851,7 +3850,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>PAPIER</value>
       <value>MENSUEL</value>
       <null/>
@@ -3870,7 +3868,6 @@
       <null/>
       <value>20080101</value>
       <value>20080331</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3899,7 +3896,6 @@
       <null/>
       <value>20080101</value>
       <value>20080331</value>
-      <null/>
       <null/>
       <null/>
       <null/>

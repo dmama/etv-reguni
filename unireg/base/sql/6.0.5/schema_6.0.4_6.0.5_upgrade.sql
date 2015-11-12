@@ -43,5 +43,13 @@ INSERT INTO PARAMETRE_PERIODE_FISCALE (ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_
 --
 -- Nouveaux paramétrages pour les DI PM (distinction du délai administratif PP / PM)
 --
+
 UPDATE PARAMETRE SET NOM='delaiEnvoiSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEnvoiSommationDeclarationImpot';
 UPDATE PARAMETRE SET NOM='delaiEcheanceSommationDeclarationImpotPP', LOG_MDATE=CURRENT_DATE, LOG_MUSER='[system-sipm]' WHERE NOM='delaiEcheanceSommationDeclarationImpot';
+
+--
+-- Ménage sur la table des déclarations, des tiers
+--
+
+ALTER TABLE DECLARATION DROP COLUMN NOM_DOCUMENT;
+ALTER TABLE TIERS DROP COLUMN REMARQUE;

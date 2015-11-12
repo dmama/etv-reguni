@@ -10836,7 +10836,6 @@
     <column>LOG_MUSER</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>NOM_DOCUMENT</column>
     <column>CODE_CONTROLE</column>
     <column>CODE_SEGMENT</column>
     <column>DATE_IMPR_CHEMISE_TO</column>
@@ -10874,7 +10873,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>PAPIER</value>
       <value>TRIMESTRIEL</value>
       <null/>
@@ -10893,7 +10891,6 @@
       <value>tiers-basic</value>
       <value>20050101</value>
       <value>20051231</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -10926,7 +10923,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>1</value>
       <value>5652</value>
@@ -10951,7 +10947,6 @@
       <value>tiers-basic</value>
       <value>20070101</value>
       <value>20071231</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -10990,7 +10985,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>PAPIER</value>
       <value>TRIMESTRIEL</value>
       <null/>
@@ -11009,7 +11003,6 @@
       <value>tiers-basic</value>
       <value>20080401</value>
       <value>20080630</value>
-      <null/>
       <null/>
       <null/>
       <null/>
