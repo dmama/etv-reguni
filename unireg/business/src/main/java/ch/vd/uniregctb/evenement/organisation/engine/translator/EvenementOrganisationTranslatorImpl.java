@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
@@ -110,9 +111,11 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
-		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
+		sanityCheck(event, organisation);
 
 		Audit.info(event.getId(), String.format("Organisation trouvée: %s", createOrganisationDescription(organisation, event.getDateEvenement())));
+
+		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
 		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
 		// TODO: S'assurer que tous les sites de l'organisation ont une forme juridique
@@ -142,6 +145,33 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		return new EvenementOrganisationInterneComposite(event, organisation, evenements.get(0).getEntreprise(), context, options, evenements);
 	}
 
+	// Selon SIFISC-16998 : mise en erreur des annonces sans données obligatoires
+	private void sanityCheck(EvenementOrganisation event, Organisation organisation) throws EvenementOrganisationException {
+		final RegDate dateEvenement = event.getDateEvenement();
+
+		List<DateRanged<String>> noms = organisation.getNom();
+		if (noms.size() > 0) {
+			if (dateEvenement.isBefore(noms.get(0).getDateDebut())) {
+				throw new EvenementOrganisationException(
+						String.format("Erreur fatale: la date de l'événement %s (%s) est antérieure à la date de création (%s) de l'organisation telle que rapportée par RCEnt. No civil: %s, nom: %s.",
+						              event.getId(), dateEvenement, noms.get(0).getDateDebut(), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
+			}
+			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
+			Siege siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
+			if (formeLegale == null || siegePrincipal == null) {
+				StringBuilder champs = new StringBuilder();
+				if (formeLegale == null) champs.append("[legalForm] ");
+				if (siegePrincipal == null) champs.append("[seat] ");
+				throw new EvenementOrganisationException(String.format("Donnée RCEnt invalide, champ(s) nécessaires manquant(s): %s.", champs));
+			}
+
+		} else {
+			throw new EvenementOrganisationException(
+					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %s",
+					              organisation.getNumeroOrganisation()));
+		}
+	}
+
 	/**
 	 * Description générique de l'organisation pour une certaine date.
 	 *
@@ -162,7 +192,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
 		                     nom != null ? nom : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
-		                     commune,
+		                     commune != null ? commune : null,
 		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
 		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}
