@@ -86,4 +86,9 @@ public class DonneesRCRCEnt implements DonneesRC, Serializable {
 	public List<DateRanged<RegDate>> getDateRadiation() {
 		return dateRadiation;
 	}
+
+	@Override
+	public RegDate getDateRadiation(RegDate date) {
+		return OrganisationHelper.valueForDate(dateRadiation, date);
+	}
 }

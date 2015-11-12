@@ -2623,6 +2623,9 @@ public class TiersServiceImpl implements TiersService {
         ForFiscal nouveauForFiscal = ff.duplicate();
         nouveauForFiscal.setAnnule(false);
         nouveauForFiscal.setDateFin(null);
+	    if (nouveauForFiscal instanceof ForFiscalAvecMotifs) {
+		    ((ForFiscalAvecMotifs) nouveauForFiscal).setMotifFermeture(null);
+	    }
         nouveauForFiscal = tiersDAO.addAndSave(tiers, nouveauForFiscal);
         // exécution des règles événements fiscaux
         if (validationService.validate(tiers).errorsCount() == 0) {

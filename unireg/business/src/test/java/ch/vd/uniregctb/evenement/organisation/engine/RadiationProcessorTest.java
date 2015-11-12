@@ -88,7 +88,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(RegDate.get(2015, 7, 5), StatusInscriptionRC.RADIE);
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.addStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
+				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
 
 			}
@@ -177,7 +177,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 				MockDonneesRC rc = (MockDonneesRC) organisation.getDonneesSites().get(0).getDonneesRC();
 				rc.changeStatusInscription(RegDate.get(2015, 7, 5), StatusInscriptionRC.RADIE);
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.addStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
+				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
 
 			}
@@ -294,7 +294,7 @@ public class RadiationProcessorTest extends AbstractEvenementOrganisationProcess
 						                                           StatusRegistreIDE.DEFINITIF,
 						                                           TypeOrganisationRegistreIDE.PERSONNE_JURIDIQUE, BigDecimal.valueOf(50000), "CHF");
 				MockDonneesRegistreIDE donneesRegistreIDE = (MockDonneesRegistreIDE) organisation.getDonneesSites().get(0).getDonneesRegistreIDE();
-				donneesRegistreIDE.addStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
+				donneesRegistreIDE.changeStatus(RegDate.get(2015, 7, 5), StatusRegistreIDE.RADIE);
 				addOrganisation(organisation);
 
 			}

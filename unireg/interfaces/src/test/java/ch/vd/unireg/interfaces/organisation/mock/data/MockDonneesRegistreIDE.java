@@ -92,8 +92,8 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 		MockOrganisationHelper.changeRangedData(raisonDeLiquidation, date, nouvelleRaisonDeLiquidation);
 	}
 
-	public void addRaisonDeLiquidation(RegDate date, RaisonLiquidationRegistreIDE nouvelleRaisonDeLiquidation) {
-		MockOrganisationHelper.changeRangedData(raisonDeLiquidation, date, nouvelleRaisonDeLiquidation);
+	public void addRaisonDeLiquidation(RegDate dateDebut, RegDate dateFin, RaisonLiquidationRegistreIDE nouvelleRaisonDeLiquidation) {
+		MockOrganisationHelper.addRangedData(raisonDeLiquidation, dateDebut, dateFin, nouvelleRaisonDeLiquidation);
 	}
 
 	@NotNull
@@ -111,8 +111,8 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 		MockOrganisationHelper.changeRangedData(status, date, nouveauStatus);
 	}
 
-	public void addStatus(RegDate date, StatusRegistreIDE nouveauStatus) {
-		MockOrganisationHelper.changeRangedData(status, date, nouveauStatus);
+	public void addStatus(RegDate dateDebut, RegDate dateFin, StatusRegistreIDE nouveauStatus) {
+		MockOrganisationHelper.addRangedData(status, dateDebut, dateFin, nouveauStatus);
 	}
 
 	@Override
@@ -124,8 +124,8 @@ public class MockDonneesRegistreIDE implements DonneesRegistreIDE {
 		MockOrganisationHelper.changeRangedData(typeOrganisation, date, nouveauType);
 	}
 
-	public void addTypeOrganisation(RegDate date, TypeOrganisationRegistreIDE nouveauType) {
-		MockOrganisationHelper.changeRangedData(typeOrganisation, date, nouveauType);
+	public void addTypeOrganisation(RegDate dateDebut, RegDate dateFin, TypeOrganisationRegistreIDE nouveauType) {
+		MockOrganisationHelper.addRangedData(typeOrganisation, dateDebut, dateFin, nouveauType);
 	}
 
 }

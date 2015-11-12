@@ -439,6 +439,16 @@ public abstract class EvenementOrganisationInterne {
 		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
 	}
 
+	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal) {
+		Audit.info(getNumeroEvenement(), String.format("Réouverture du for principal pour l'entreprise %s (civil: %s), qui commençait le %s%s.",
+		                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+		                                               forFiscalPrincipal.getDateDebut(),
+		                                               forFiscalPrincipal.getDateFin() != null ? ", et terminait le " + forFiscalPrincipal.getDateFin() : ""));
+		context.getTiersService().annuleForFiscal(forFiscalPrincipal);
+		context.getTiersService().reopenFor(forFiscalPrincipal, forFiscalPrincipal.getTiers());
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
 	/**
 	 * Ajoute un bouclement en bonne et due forme.
 	 * @param dateDebut Date de début du bouclement

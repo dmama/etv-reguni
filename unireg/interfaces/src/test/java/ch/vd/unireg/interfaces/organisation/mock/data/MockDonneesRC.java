@@ -165,6 +165,11 @@ public class MockDonneesRC implements DonneesRC {
 		return MockOrganisationHelper.getHisto(dateRadiation);
 	}
 
+	@Override
+	public RegDate getDateRadiation(RegDate date) {
+		return OrganisationHelper.valueForDate(getDateRadiation(), date);
+	}
+
 	public void changeDateRadiation(RegDate date, RegDate nouvelleDateRadiation) {
 		MockOrganisationHelper.changeRangedData(dateRadiation, date, nouvelleDateRadiation);
 	}

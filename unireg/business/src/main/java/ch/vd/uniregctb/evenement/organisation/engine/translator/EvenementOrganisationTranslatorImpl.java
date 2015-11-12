@@ -34,6 +34,7 @@ import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationBu
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationCapitalStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.information.ModificationStatutsStrategy;
 import ch.vd.uniregctb.evenement.organisation.interne.radiation.RadiationStrategy;
+import ch.vd.uniregctb.evenement.organisation.interne.reinscription.ReinscriptionStrategy;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
@@ -82,7 +83,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 			L'ordre des stratégies est important.
 		 */
 		strategies.add(new CreateOrganisationStrategy());
-		strategies.add(new DemenagementSiegeStrategy());
+		strategies.add(new ReinscriptionStrategy());
 		strategies.add(new ChangementFormeJuridiqueStrategy());
 		strategies.add(new FailliteConcordatStrategy());
 		strategies.add(new ModificationCapitalStrategy());
@@ -90,6 +91,7 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 		strategies.add(new ModificationStatutsStrategy());
 		strategies.add(new DoublonEntrepriseStrategy());
 		strategies.add(new DoublonEtablissementStrategy());
+		strategies.add(new DemenagementSiegeStrategy());
 		strategies.add(new RadiationStrategy());
 	}
 
