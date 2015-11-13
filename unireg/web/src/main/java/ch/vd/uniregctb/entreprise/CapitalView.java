@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.uniregctb.common.MontantMonetaireView;
+import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 
 public class CapitalView implements CollatableDateRange {
@@ -20,21 +21,28 @@ public class CapitalView implements CollatableDateRange {
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final MontantMonetaireView capitalLibere;
+	private final CapitalHisto.Source source;
 
 	public CapitalView(Capital capital) {
 		this(capital.getDateDebut(),
 		     capital.getDateFin(),
-		     buildMontantMonetaire(capital.getCapitalLibere(), capital.getDevise()));
+		     buildMontantMonetaire(capital.getCapitalLibere(), capital.getDevise()),
+		     CapitalHisto.Source.CIVILE);
 	}
 
-	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere) {
-		this(dateDebut, dateFin, buildMontantMonetaire(capitalLibere));
+	public CapitalView(CapitalHisto capital) {
+		this(capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
 	}
 
-	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere) {
+	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, CapitalHisto.Source source) {
+		this(dateDebut, dateFin, buildMontantMonetaire(capitalLibere), source);
+	}
+
+	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, CapitalHisto.Source source) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.capitalLibere = capitalLibere;
+		this.source = source;
 	}
 
 	@Nullable
@@ -67,6 +75,10 @@ public class CapitalView implements CollatableDateRange {
 		return capitalLibere;
 	}
 
+	public CapitalHisto.Source getSource() {
+		return source;
+	}
+
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
@@ -76,7 +88,8 @@ public class CapitalView implements CollatableDateRange {
 	public boolean isCollatable(DateRange next) {
 		return DateRangeHelper.isCollatable(this, next)
 				&& next instanceof CapitalView
-				&& isSameValue(capitalLibere, ((CapitalView) next).capitalLibere);
+				&& isSameValue(capitalLibere, ((CapitalView) next).capitalLibere)
+				&& source == ((CapitalView) next).source;
 	}
 
 	private static boolean isSameValue(MontantMonetaireView one, MontantMonetaireView two) {
@@ -88,6 +101,6 @@ public class CapitalView implements CollatableDateRange {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Ranges are not collatable!");
 		}
-		return new CapitalView(dateDebut, next.getDateFin(), capitalLibere);
+		return new CapitalView(dateDebut, next.getDateFin(), capitalLibere, source);
 	}
 }

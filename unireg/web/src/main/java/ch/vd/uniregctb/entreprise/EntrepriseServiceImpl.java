@@ -9,19 +9,18 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
+import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.EtatEntrepriseView;
 
@@ -74,7 +73,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 			entrepriseView.setSieges(getSiegesFromOrganisation(organisation.getSiegesPrincipaux()));
 			entrepriseView.setFormesJuridiques(getFormesJuridiques(organisation.getFormeLegale()));
-			entrepriseView.setCapitaux(extractCapitaux(organisation));
 			//entrepriseView.setEtats(getEtatsPM(pm.getEtats()));
 			List<DateRanged<String>> noIdeList = organisation.getNumeroIDE();
 			if (noIdeList != null && noIdeList.size() > 0) {
@@ -95,8 +93,9 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			entrepriseView.setRaisonSociale(CollectionsUtils.getLastElement(donneesRC).getRaisonSociale());
 			entrepriseView.setSieges(extractSieges(tiersService.getEtablissementsPrincipauxEntreprise(entreprise)));
 			entrepriseView.setFormesJuridiques(extractFormesJuridiques(donneesRC));
-			entrepriseView.setCapitaux(extractCapitaux(donneesRC));
 		}
+
+		entrepriseView.setCapitaux(extractCapitaux(tiersService.getCapitaux(entreprise)));
 
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
@@ -126,6 +125,18 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			                                                       etat.getType(),
 			                                                       etat.isAnnule());
 			views.add(view);
+		}
+		return views;
+	}
+
+	private static List<CapitalView> extractCapitaux(List<CapitalHisto> capitaux) {
+		if (capitaux == null || capitaux.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<CapitalView> views = new ArrayList<>(capitaux.size());
+		for (CapitalHisto capital : capitaux) {
+			views.add(new CapitalView(capital));
 		}
 		return views;
 	}
@@ -178,24 +189,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 	                                                                                                    ExtractorDonneesRegistreCommerce<? extends T> extractor) {
 		final List<T> nonCollatedData = extractFromDonneesRegistreCommerce(source, extractor);
 		return DateRangeHelper.collate(nonCollatedData);
-	}
-
-	private static List<CapitalView> extractCapitaux(List<DonneesRegistreCommerce> donneesRC) {
-		final List<CapitalView> views = extractAndCollateFromDonneesRegistreCommerce(donneesRC,
-		                                                                             new ExtractorDonneesRegistreCommerce<CapitalView>() {
-			                                                                             @Override
-			                                                                             public CapitalView extract(DonneesRegistreCommerce source) {
-				                                                                             final MontantMonetaire capitalLibere = source.getCapital();
-				                                                                             if (capitalLibere != null) {
-					                                                                             return new CapitalView(source.getDateDebut(), source.getDateFin(), capitalLibere);
-				                                                                             }
-				                                                                             else {
-					                                                                             return null;
-				                                                                             }
-			                                                                             }
-		                                                                             });
-		Collections.reverse(views);
-		return views;
 	}
 
 	private static List<FormeJuridiqueView> extractFormesJuridiques(List<DonneesRegistreCommerce> donneesRC) {
@@ -253,21 +246,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 			list.add(new FormeJuridiqueView(formeLegale));
 		}
 		Collections.sort(list, new DateRangeComparator<FormeJuridiqueView>());
-		Collections.reverse(list);
-		return list;
-	}
-
-	private static List<CapitalView> extractCapitaux(Organisation organisation) {
-		final List<Capital> capitaux = organisation.getCapitaux();
-		if (capitaux == null) {
-			return null;
-		}
-		final List<CapitalView> list = new ArrayList<>(capitaux.size());
-		for (Capital capital : capitaux) {
-			final CapitalView view = new CapitalView(capital);
-			list.add(view);
-		}
-		Collections.sort(list, new DateRangeComparator<CapitalView>());
 		Collections.reverse(list);
 		return list;
 	}

@@ -103,6 +103,11 @@
 				<unireg:currency value="${capitaux.capitalLibere.montant}"/>&nbsp;<c:out value="${capitaux.capitalLibere.monnaie}"/>
 			</c:if>
 		</display:column>
+		<c:if test="${command.entreprise.source == 'RCENT'}" >
+			<display:column titleKey="label.source">
+				<fmt:message key="option.capital.source.${capitaux.source}"/>
+			</display:column>
+		</c:if>
 	</display:table>
 
 </fieldset>
