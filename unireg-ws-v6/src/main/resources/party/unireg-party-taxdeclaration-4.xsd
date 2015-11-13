@@ -7,33 +7,6 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/withholding/1" schemaLocation="unireg-party-withholding-1.xsd" />
 
-	<xs:simpleType name="taxDeclarationTypeType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Type de déclaration</jxb:javadoc>
-				</jxb:typesafeEnumClass>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="ORDINARY_TAX_DECLARATION">
-				<xs:annotation>
-					<xs:documentation>Déclaration d'impôt ordinaire.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="WITHHOLDING_TAX_DECLARATION">
-				<xs:annotation>
-					<xs:documentation>Liste récapitulative IS.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="PARTNERSHIP_FORM">
-				<xs:annotation>
-					<xs:documentation>Questionnaire SNC.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
-
 	<xs:complexType name="taxDeclarationType">
 		<xs:sequence>
 			<xs:element name="id" type="xs:long">
@@ -204,37 +177,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="partnershipFormType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:class>
-					<jxb:javadoc>Contient les informations relative à un questionnaire SNC émis sur une société de personnes.</jxb:javadoc>
-				</jxb:class>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="taxdeclaration:taxDeclarationType">
-				<xs:sequence>
-					<xs:element name="padding" type="xs:int">
-						<xs:annotation>
-							<xs:appinfo>
-								<jxb:property>
-									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
-								</jxb:property>
-							</xs:appinfo>
-						</xs:annotation>
-					</xs:element>
-					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-
 	<xs:complexType name="taxPeriodType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Une période fiscale est rattachée à une année civile, mais n'en possède pas forcément toutes les caractéristiques, notamment au niveau des dates limites.</jxb:javadoc>
+					<jxb:javadoc>Une période fiscale couvre la période du 1er janvier au 31 décembre (compris) de l'année considérée.</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
@@ -368,7 +315,7 @@
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Statut possible d'une déclaration d'impôt.</jxb:javadoc>
+					<jxb:javadoc>Statuts possibles d'une déclaration.</jxb:javadoc>
 				</jxb:typesafeEnumClass>
 			</xs:appinfo>
 		</xs:annotation>
@@ -380,12 +327,22 @@
 			</xs:enumeration>
 			<xs:enumeration value="SUMMONS_SENT">
 				<xs:annotation>
-					<xs:documentation>Déclaration sommée.</xs:documentation>
+					<xs:documentation>Sommation envoyée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REMINDER_SENT">
+				<xs:annotation>
+					<xs:documentation>Rappel envoyé.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="EXPIRED">
 				<xs:annotation>
 					<xs:documentation>Déclaration échue.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUSPENDED">
+				<xs:annotation>
+					<xs:documentation>Déclaration suspendue.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="RETURNED">
