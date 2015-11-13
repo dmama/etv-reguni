@@ -7,6 +7,33 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/2" schemaLocation="../unireg-common-2.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/withholding/1" schemaLocation="unireg-party-withholding-1.xsd" />
 
+	<xs:simpleType name="taxDeclarationTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Type de déclaration</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ORDINARY_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Déclaration d'impôt ordinaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WITHHOLDING_TAX_DECLARATION">
+				<xs:annotation>
+					<xs:documentation>Liste récapitulative IS.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARTNERSHIP_FORM">
+				<xs:annotation>
+					<xs:documentation>Questionnaire SNC.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:complexType name="taxDeclarationType">
 		<xs:sequence>
 			<xs:element name="id" type="xs:long">
