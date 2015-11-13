@@ -1597,6 +1597,12 @@ public interface TiersService {
     String getNumeroIDE(@NotNull Entreprise entreprise);
 
     /**
+     * @param entreprise une entreprise fiscale
+     * @return la liste des données de capital de l'entreprise (en tenant compte des données civiles et d'éventuelles surcharges fiscales)
+     */
+    List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise);
+
+    /**
      * @param entreprise une entreprise (fiscale)
      * @param date une date de référence (si <code>null</code>, on prendra la date du jour)
      * @return la catégorie d'entreprise associée, à la date donnée, à l'entreprise donnée

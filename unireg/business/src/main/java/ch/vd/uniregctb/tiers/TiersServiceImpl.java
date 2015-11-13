@@ -55,6 +55,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
@@ -5443,6 +5444,60 @@ public class TiersServiceImpl implements TiersService {
 
 		final List<DateRanged<String>> liste = org.getNumeroIDE();
 		return liste == null || liste.isEmpty() ? null : liste.get(liste.size() - 1).getPayload();
+	}
+
+	@Override
+	public List<CapitalHisto> getCapitaux(@NotNull Entreprise entreprise) {
+		final List<CapitalHisto> donneesCiviles = extractCapitauxCivils(entreprise);
+		final List<CapitalHisto> donneesFiscales = extractCapitauxFiscaux(entreprise);
+
+		return DateRangeHelper.override(donneesCiviles, donneesFiscales, new DateRangeHelper.AdapterCallbackExtended<CapitalHisto>() {
+			@Override
+			public CapitalHisto duplicate(CapitalHisto range) {
+				return range.duplicate();
+			}
+
+			@Override
+			public CapitalHisto adapt(CapitalHisto range, RegDate debut, CapitalHisto sourceSurchargeDebut, RegDate fin, CapitalHisto sourceSurchargeFin) {
+				return new CapitalHisto(sourceSurchargeDebut != null ? debut : range.getDateDebut(),
+				                        sourceSurchargeFin != null ? fin : range.getDateFin(),
+				                        range.getMontant().duplicate(),
+				                        range.getSource());
+			}
+
+			@Override
+			public CapitalHisto adapt(CapitalHisto range, RegDate debut, RegDate fin) {
+				throw new IllegalStateException("Ne devrait pas être appelé...");
+			}
+		});
+	}
+
+	@NotNull
+	private List<CapitalHisto> extractCapitauxCivils(@NotNull Entreprise entreprise) {
+		final Organisation org = getOrganisation(entreprise);
+		if (org != null) {
+			final List<Capital> capitaux = org.getCapitaux();
+			if (capitaux != null && !capitaux.isEmpty()) {
+				final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
+				for (Capital capital : capitaux) {
+					liste.add(new CapitalHisto(capital.getDateDebut(), capital.getDateFin(), new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise()), CapitalHisto.Source.CIVILE));
+				}
+				return DateRangeHelper.collate(liste);
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	@NotNull
+	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise) {
+		final List<DonneesRegistreCommerce> donnees = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
+		final List<CapitalHisto> liste = new ArrayList<>(donnees.size());
+		for (DonneesRegistreCommerce drc : donnees) {
+			if (drc.getCapital() != null) {
+				liste.add(new CapitalHisto(drc.getDateDebut(), drc.getDateFin(), drc.getCapital(), CapitalHisto.Source.FISCALE));
+			}
+		}
+		return DateRangeHelper.collate(liste);
 	}
 
 	@Override

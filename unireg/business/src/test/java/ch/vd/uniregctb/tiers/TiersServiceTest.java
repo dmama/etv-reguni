@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,8 +50,15 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRC;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.unireg.interfaces.organisation.data.TypeOrganisationRegistreIDE;
 import ch.vd.unireg.interfaces.organisation.mock.MockServiceOrganisation;
+import ch.vd.unireg.interfaces.organisation.mock.data.MockOrganisation;
 import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockOrganisationFactory;
+import ch.vd.unireg.interfaces.organisation.mock.data.builder.MockSiteOrganisationFactory;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -68,6 +76,7 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.DayMonth;
+import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -9536,6 +9545,77 @@ debut PF                                                                        
 					Assert.assertNotNull(ex);
 					Assert.assertEquals(date(2006, 7, 1), ex.getDateDebut());
 					Assert.assertEquals(date(2006, 12, 5), ex.getDateFin());
+				}
+			}
+		});
+	}
+
+	@Test
+	public void testGetCapitaux() throws Exception {
+
+		final long noOrganisation = 48518745L;
+		final long noSite = 346742L;
+		final RegDate dateDebut = date(2000, 1, 1);
+		final RegDate dateDebutSurchargeCapital = date(2005, 3, 1);
+		final RegDate dateFinSurchargeCapital = date(2012, 6, 30);
+
+		// mise en place civile
+		serviceOrganisation.setUp(new MockServiceOrganisation() {
+			@Override
+			protected void init() {
+				final MockOrganisation org = addOrganisation(noOrganisation, dateDebut, "Turlututu SARL", FormeLegale.N_0107_SOCIETE_A_RESPONSABILITE_LIMITE);
+				MockSiteOrganisationFactory.addSite(noSite, org, dateDebut, null, "Turlututu SARL", true,
+				                                    TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(),
+				                                    StatusRC.INSCRIT, StatusInscriptionRC.ACTIF, StatusRegistreIDE.DEFINITIF, TypeOrganisationRegistreIDE.SITE,
+				                                    BigDecimal.valueOf(10000000L), MontantMonetaire.CHF);
+			}
+		});
+
+		// mise en place fiscale
+		final long pmId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
+				addDonneesRegistreCommerce(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, "Turlututu", FormeJuridiqueEntreprise.SARL,
+				                           new MontantMonetaire(42L, MontantMonetaire.CHF));
+				return entreprise.getNumero();
+			}
+		});
+
+		// récupération des capitaux d'après le tiers service
+		doInNewTransactionAndSession(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final Entreprise entreprise = (Entreprise) tiersDAO.get(pmId);
+				final List<CapitalHisto> capitaux = tiersService.getCapitaux(entreprise);
+				Assert.assertNotNull(capitaux);
+				Assert.assertEquals(3, capitaux.size());
+				{
+					final CapitalHisto capital = capitaux.get(0);
+					Assert.assertNotNull(capital);
+					Assert.assertEquals(dateDebut, capital.getDateDebut());
+					Assert.assertEquals(dateDebutSurchargeCapital.getOneDayBefore(), capital.getDateFin());
+					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
+					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
+				}
+				{
+					final CapitalHisto capital = capitaux.get(1);
+					Assert.assertNotNull(capital);
+					Assert.assertEquals(dateDebutSurchargeCapital, capital.getDateDebut());
+					Assert.assertEquals(dateFinSurchargeCapital, capital.getDateFin());
+					Assert.assertEquals((Long) 42L, capital.getMontant().getMontant());
+					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+					Assert.assertEquals(CapitalHisto.Source.FISCALE, capital.getSource());
+				}
+				{
+					final CapitalHisto capital = capitaux.get(2);
+					Assert.assertNotNull(capital);
+					Assert.assertEquals(dateFinSurchargeCapital.getOneDayAfter(), capital.getDateDebut());
+					Assert.assertNull(capital.getDateFin());
+					Assert.assertEquals((Long) 10000000L, capital.getMontant().getMontant());
+					Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
+					Assert.assertEquals(CapitalHisto.Source.CIVILE, capital.getSource());
 				}
 			}
 		});

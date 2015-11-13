@@ -29,13 +29,13 @@ import ch.vd.unireg.xml.party.v4.PartyPart;
 import ch.vd.unireg.xml.party.v4.UidNumberList;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.IdentificationEntreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -105,10 +105,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initParts(to, from, parts, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
 
 		if (parts != null && parts.contains(PartyPart.CAPITALS)) {
-			to.getCapitals().addAll(extractCapitaux(rcData));
+			to.getCapitals().addAll(extractCapitaux(entreprise, context));
 		}
 
 		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
@@ -169,28 +168,20 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@NotNull
-	private List<Capital> extractCapitaux(List<DonneesRegistreCommerce> rcData) {
-		// TODO [SIPM][RCEnt] aller chercher les capitaux dans les données civiles si nécessaire
-
-		final List<DateRangeHelper.Ranged<MontantMonetaire>> rcCapitaux = extractRanges(rcData, new DonneesRegistreCommerceExtractor<MontantMonetaire>() {
-			@Override
-			public MontantMonetaire extract(DonneesRegistreCommerce rc) {
-				return rc.getCapital();
-			}
-		});
-
-		final List<Capital> liste = new ArrayList<>(rcCapitaux.size());
-		for (DateRangeHelper.Ranged<MontantMonetaire> data : rcCapitaux) {
-			final MontantMonetaire mm = data.getPayload();
-			if (mm != null) {
+	private List<Capital> extractCapitaux(Entreprise entreprise, Context context) {
+		final List<CapitalHisto> data = context.tiersService.getCapitaux(entreprise);
+		if (data != null && !data.isEmpty()) {
+			final List<Capital> capitaux = new ArrayList<>(data.size());
+			for (CapitalHisto mmh : data) {
 				final Capital capital = new Capital();
-				capital.setDateFrom(DataHelper.coreToXMLv2(data.getDateDebut()));
-				capital.setDateTo(DataHelper.coreToXMLv2(data.getDateFin()));
-				capital.setPaidInCapital(new MonetaryAmount(mm.getMontant(), mm.getMonnaie()));
-				liste.add(capital);
+				capital.setDateFrom(DataHelper.coreToXMLv2(mmh.getDateDebut()));
+				capital.setDateTo(DataHelper.coreToXMLv2(mmh.getDateFin()));
+				capital.setPaidInCapital(new MonetaryAmount(mmh.getMontant().getMontant(), mmh.getMontant().getMonnaie()));
+				capitaux.add(capital);
 			}
+			return capitaux;
 		}
-		return liste;
+		return Collections.emptyList();
 	}
 
 	@NotNull

@@ -25,6 +25,7 @@ import ch.vd.unireg.xml.party.corporation.v2.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v2.TaxSystem;
 import ch.vd.unireg.xml.party.v2.PartyPart;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
+import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -81,10 +82,9 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		super.initParts(to, from, parts, context);
 
 		final Entreprise entreprise = (Entreprise) from;
-		final List<DonneesRegistreCommerce> rcData = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
 
 		if (parts != null && parts.contains(PartyPart.CAPITALS)) {
-			to.getCapitals().addAll(extractCapitaux(rcData));
+			to.getCapitals().addAll(extractCapitaux(entreprise, context));
 		}
 
 		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
@@ -141,26 +141,23 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@NotNull
-	private List<Capital> extractCapitaux(List<DonneesRegistreCommerce> rcData) {
-		// TODO [SIPM][RCEnt] aller chercher les capitaux dans les données civiles si nécessaire
-
-		final List<DateRangeHelper.Ranged<Long>> rcCapitaux = extractRanges(rcData, new DonneesRegistreCommerceExtractor<Long>() {
-			@Override
-			public Long extract(DonneesRegistreCommerce rc) {
-				return rc.getCapital() != null && rc.getCapital().isEnFrancsSuisses() ? rc.getCapital().getMontant() : null;
+	private List<Capital> extractCapitaux(Entreprise entreprise, Context context) {
+		final List<CapitalHisto> data = context.tiersService.getCapitaux(entreprise);
+		if (data != null && !data.isEmpty()) {
+			final List<Capital> capitaux = new ArrayList<>(data.size());
+			for (CapitalHisto mmh : data) {
+				if (mmh.getMontant().isEnFrancsSuisses()) {             // on ne publie que les capitaux en CHF, puisque le service ne connait pas la monnaie
+					final Capital capital = new Capital();
+					capital.setDateFrom(DataHelper.coreToXMLv1(mmh.getDateDebut()));
+					capital.setDateTo(DataHelper.coreToXMLv1(mmh.getDateFin()));
+					capital.setPaidInCapital(mmh.getMontant().getMontant());
+					capital.setShareCapital(mmh.getMontant().getMontant());
+					capitaux.add(capital);
+				}
 			}
-		});
-
-		final List<Capital> liste = new ArrayList<>(rcCapitaux.size());
-		for (DateRangeHelper.Ranged<Long> data : rcCapitaux) {
-			final Capital capital = new Capital();
-			capital.setDateFrom(DataHelper.coreToXMLv1(data.getDateDebut()));
-			capital.setDateTo(DataHelper.coreToXMLv1(data.getDateFin()));
-			capital.setPaidInCapital(data.getPayload());
-			capital.setShareCapital(data.getPayload());
-			liste.add(capital);
+			return capitaux;
 		}
-		return liste;
+		return Collections.emptyList();
 	}
 
 	@NotNull

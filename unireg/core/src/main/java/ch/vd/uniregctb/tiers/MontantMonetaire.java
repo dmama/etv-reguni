@@ -4,10 +4,11 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Embeddable
-public class MontantMonetaire {
+public class MontantMonetaire implements Duplicable<MontantMonetaire> {
 
 	public static final String CHF = "CHF";
 
@@ -44,6 +45,11 @@ public class MontantMonetaire {
 	@Transient
 	public boolean isEnFrancsSuisses() {
 		return CHF.equals(monnaie);
+	}
+
+	@Override
+	public MontantMonetaire duplicate() {
+		return new MontantMonetaire(montant, monnaie);
 	}
 
 	@Override
