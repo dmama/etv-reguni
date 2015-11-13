@@ -368,7 +368,7 @@
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Statut possible d'une déclaration d'impôt.</jxb:javadoc>
+					<jxb:javadoc>Statuts possibles d'une déclaration</jxb:javadoc>
 				</jxb:typesafeEnumClass>
 			</xs:appinfo>
 		</xs:annotation>
@@ -380,12 +380,22 @@
 			</xs:enumeration>
 			<xs:enumeration value="SUMMONS_SENT">
 				<xs:annotation>
-					<xs:documentation>Déclaration sommée.</xs:documentation>
+					<xs:documentation>Sommation envoyée.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REMINDER_SENT">
+				<xs:annotation>
+					<xs:documentation>Rappel envoyé.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="EXPIRED">
 				<xs:annotation>
 					<xs:documentation>Déclaration échue.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SUSPENDED">
+				<xs:annotation>
+					<xs:documentation>Déclaration suspendue.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="RETURNED">
