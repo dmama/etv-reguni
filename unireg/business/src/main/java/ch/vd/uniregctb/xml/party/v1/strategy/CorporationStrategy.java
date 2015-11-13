@@ -15,6 +15,8 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
+import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.xml.party.corporation.v1.Capital;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.corporation.v1.CorporationStatus;
@@ -28,6 +30,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -89,7 +92,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 
 		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
-			to.getLegalForms().addAll(extractFormesJuridiques(entreprise));
+			to.getLegalForms().addAll(extractFormesJuridiques(entreprise, context));
 		}
 
 		if (parts != null && parts.contains(PartyPart.TAX_SYSTEMS)) {
@@ -139,6 +142,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 
 	@NotNull
 	private List<Capital> extractCapitaux(List<DonneesRegistreCommerce> rcData) {
+		// TODO [SIPM][RCEnt] aller chercher les capitaux dans les données civiles si nécessaire
+
 		final List<DateRangeHelper.Ranged<Long>> rcCapitaux = extractRanges(rcData, new DonneesRegistreCommerceExtractor<Long>() {
 			@Override
 			public Long extract(DonneesRegistreCommerce rc) {
@@ -159,11 +164,28 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@NotNull
-	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise) {
+	private List<LegalForm> extractFormesJuridiques(Entreprise entreprise, Context context) {
 		final List<LegalForm> liste;
 		if (entreprise.isConnueAuCivil()) {
-			// TODO [SIPM][RCEnt] aller chercher les formes juridiques historiques
-			liste = Collections.emptyList();
+			final Organisation org = context.serviceOrganisationService.getOrganisationHistory(entreprise.getNumeroEntreprise());
+			if (org == null) {
+				throw new OrganisationNotFoundException(entreprise);
+			}
+
+			final List<DateRanged<FormeLegale>> fls = org.getFormeLegale();
+			if (fls == null || fls.isEmpty()) {
+				liste = Collections.emptyList();
+			}
+			else {
+				liste = new ArrayList<>(fls.size());
+				for (DateRanged<FormeLegale> fl : fls) {
+					final LegalForm lf = new LegalForm();
+					lf.setDateFrom(DataHelper.coreToXMLv1(fl.getDateDebut()));
+					lf.setDateTo(DataHelper.coreToXMLv1(fl.getDateFin()));
+					lf.setCode(EnumHelper.coreToXMLv1v2v3(fl.getPayload()));
+					liste.add(lf);
+				}
+			}
 		}
 		else {
 			final List<DateRangeHelper.Ranged<FormeJuridiqueEntreprise>> rcFormesJuridiques = extractRanges(entreprise.getDonneesRegistreCommerceNonAnnuleesTriees(),
