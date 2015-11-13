@@ -22,7 +22,9 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 		CONTRIBUABLE_SANS_DI("Le contribuable ne possède pas de déclaration"), // ----------------------------
 		DECL_ANNULEE("La déclaration du contribuable est annulée"), // -----------------------------------------
 		DECL_RETOURNEE("La déclaration a déjà été retournée"), // ----------------------------------------------
-		DECL_SOMMEE("La déclaration a déjà été sommée"), // ----------------------------------------------------
+		DECL_SOMMEE("Une sommation a déjà été émise"), // ----------------------------------------------------
+		DECL_RAPPELEE("Un rappel a déjà été émis"), // ----------------------------------------------------
+		DECL_SUSPENDUE("La déclaration est suspendue"), // ----------------------------------------------------
 		DECL_ECHUE("La déclaration est déjà échue");
 
 		private final String description;
@@ -143,6 +145,16 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	}
 
 	public void addErrorDeclarationEchue(Declaration di) {
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DECL_ECHUE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
+	}
+
+	public void addErrorDeclarationRappelee(Declaration di) {
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DECL_ECHUE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
+	}
+
+	public void addErrorDeclarationSuspendue(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
 		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DECL_ECHUE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}

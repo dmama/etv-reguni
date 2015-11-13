@@ -58,8 +58,10 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationRappelee;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
+import ch.vd.uniregctb.declaration.EtatDeclarationSuspendue;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -1099,32 +1101,43 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected void addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
-		EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
+		final EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
 		declaration.addEtat(etat);
 		merge(declaration);
 	}
 
 	protected void addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
-		EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
+		final EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
 		declaration.addEtat(etat);
 		merge(declaration);
 	}
 
 	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention) {
-		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
-		declaration.addEtat(etat);
-		merge(declaration);
+		addEtatDeclarationRetournee(declaration, dateObtention, "TEST");
 	}
 
 	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
-		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
-		etat.setSource(source);
+		final EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, source);
 		declaration.addEtat(etat);
 		merge(declaration);
 	}
 
 	protected void addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
-		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
+		Assert.assertTrue(declaration.isSommable());
+		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
+		declaration.addEtat(etat);
+		merge(declaration);
+	}
+
+	protected void addEtatDeclarationRappelee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
+		Assert.assertTrue(declaration.isRappelable());
+		final EtatDeclarationRappelee etat = new EtatDeclarationRappelee(dateObtention, dateEnvoi);
+		declaration.addEtat(etat);
+		merge(declaration);
+	}
+
+	protected void addEtatDeclarationSuspendue(Declaration declaration, RegDate dateObtention) {
+		final EtatDeclarationSuspendue etat = new EtatDeclarationSuspendue(dateObtention);
 		declaration.addEtat(etat);
 		merge(declaration);
 	}

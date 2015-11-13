@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.webservices.v5;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -22,11 +25,16 @@ public class TaxDeclarationStatusTypeTest extends EnumTest {
 
 	@Test
 	public void testTypeCoherence() {
-		assertEnumLengthEquals(TaxDeclarationStatusType.class, TypeEtatDeclaration.class);
 
-		// vérification que toutes les valeurs sont mappées sur quelque chose
+		// deux types ne sont pas envoyés par cette version du WS : RAPPELEE et SUSPENDUE
+		final Set<TypeEtatDeclaration> ignored = EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE);
+		assertEquals(TaxDeclarationStatusType.values().length + ignored.size(), TypeEtatDeclaration.values().length);
+
+		// vérification que toutes les valeurs officiellement renvoyées sont mappées sur quelque chose
 		for (TypeEtatDeclaration type : TypeEtatDeclaration.values()) {
-			assertNotNull(type.name(), EnumHelper.coreToWeb(type));
+			if (!ignored.contains(type)) {
+				assertNotNull(type.name(), EnumHelper.coreToWeb(type));
+			}
 		}
 	}
 

@@ -505,4 +505,48 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
+
+	@Test
+	public void testNonSommationDiSuspendue() throws Exception {
+
+		final int anneePf = 2014;
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateEmission = RegDate.get(anneePf + 1, 1, 15);
+		final RegDate delaiInitial = RegDate.get(anneePf + 1, 3, 15);
+
+		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, dateEmission);
+				addEtatDeclarationSuspendue(declaration, dateEmission.addMonths(2));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(delaiInitial);
+				declaration.addDelai(delai);
+
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addYears(1);
+		final EnvoiSommationsDIsPMResults results = processor.run(dateTraitement, null, null);
+		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
 }

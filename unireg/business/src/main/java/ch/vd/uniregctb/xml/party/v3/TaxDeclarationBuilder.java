@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.xml.party.v3;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,10 +17,16 @@ import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
+
+	private static final Set<TypeEtatDeclaration> ETATS_EXPOSES = EnumSet.of(TypeEtatDeclaration.ECHUE,
+	                                                                         TypeEtatDeclaration.EMISE,
+	                                                                         TypeEtatDeclaration.RETOURNEE,
+	                                                                         TypeEtatDeclaration.SOMMEE);
 
 	public static OrdinaryTaxDeclaration newOrdinaryTaxDeclaration(ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP declaration, @Nullable Set<PartyPart> parts) {
 
@@ -68,7 +75,10 @@ public class TaxDeclarationBuilder {
 	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
 			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsSorted()) {
-				d.getStatuses().add(newTaxDeclarationStatus(etat));
+				// on n'expose pas les nouveaux états qui ne sont pas connus par cette version de la XSD
+				if (ETATS_EXPOSES.contains(etat.getEtat())) {
+					d.getStatuses().add(newTaxDeclarationStatus(etat));
+				}
 			}
 		}
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {

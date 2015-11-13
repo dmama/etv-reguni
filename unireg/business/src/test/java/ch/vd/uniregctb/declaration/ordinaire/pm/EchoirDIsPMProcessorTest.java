@@ -172,6 +172,49 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 	}
 
 	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testTraiterDISommeeMaisSuspendue() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateTraitement = date(2015, 10, 1);
+
+		// Crée une déclaration à l'état émise
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2014);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
+				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17));
+				addEtatDeclarationSuspendue(declaration, date(2015, 8, 20));
+				return declaration.getId();
+			}
+		});
+
+		final EchoirDIsPMResults rapport = new EchoirDIsPMResults(dateTraitement, tiersService, adresseService);
+		final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
+		final IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(), di.getTiers().getNumero());
+		processor.traiterDI(ident, rapport);
+
+		assertEquals(1, rapport.nbDIsTotal);
+		assertEmpty(rapport.disEchues);
+		assertEquals(1, rapport.disEnErrors.size());
+
+		final Erreur erreur = rapport.disEnErrors.get(0);
+		assertNotNull(erreur);
+		assertEquals(id.longValue(), erreur.diId);
+		assertEquals(ErreurType.ETAT_DECLARATION_INCOHERENT, erreur.raison);
+	}
+
+	@Test
 	public void testRunAvecDINonSommee() throws Exception {
 
 		final RegDate dateDebut = RegDate.get(2000, 1, 1);
@@ -191,6 +234,39 @@ public class EchoirDIsPMProcessorTest extends BusinessTest {
 				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
+				return declaration.getId();
+			}
+		});
+
+		final EchoirDIsPMResults rapport = processor.run(dateTraitement, null);
+
+		assertEquals(0, rapport.nbDIsTotal);
+		assertEmpty(rapport.disEchues);
+		assertEmpty(rapport.disEnErrors);
+	}
+
+	@Test
+	public void testRunAvecDISommeeMaisSuspendue() throws Exception {
+
+		final RegDate dateDebut = RegDate.get(2000, 1, 1);
+		final RegDate dateTraitement = date(2015, 11, 1);
+
+		// Crée une déclaration à l'état émise
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise e = addEntrepriseInconnueAuCivil();
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
+				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(2014);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_PM, periode);
+				final CollectiviteAdministrative oipm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_PM.getNoColAdm());
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(e, periode, date(2014, 1, 1), date(2014, 12, 31), oipm, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				addEtatDeclarationEmise(declaration, date(2015, 1, 15));
+				addEtatDeclarationSommee(declaration, date(2015, 8, 15), date(2015, 8, 17));
+				addEtatDeclarationSuspendue(declaration, date(2015, 8, 20));
 				return declaration.getId();
 			}
 		});

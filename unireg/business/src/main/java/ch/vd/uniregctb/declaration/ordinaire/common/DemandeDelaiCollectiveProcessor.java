@@ -177,6 +177,12 @@ public class DemandeDelaiCollectiveProcessor {
 			case ECHUE:
 				r.addErrorDeclarationEchue(d);
 				break;
+			case RAPPELEE:
+				r.addErrorDeclarationRappelee(d);
+				break;
+			case SUSPENDUE:
+				r.addErrorDeclarationSuspendue(d);
+				break;
 			case SOMMEE:
 				r.addErrorDeclarationSommee(d);
 				break;

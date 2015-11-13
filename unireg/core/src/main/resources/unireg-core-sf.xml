@@ -27,8 +27,10 @@
 		<value>ch.vd.uniregctb.declaration.DelaiDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclaration</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationSommee</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationRappelee</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEchue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationEmise</value>
+		<value>ch.vd.uniregctb.declaration.EtatDeclarationSuspendue</value>
 		<value>ch.vd.uniregctb.declaration.EtatDeclarationRetournee</value>
 		<value>ch.vd.uniregctb.declaration.PeriodeFiscale</value>
 		<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>

@@ -436,6 +436,10 @@ public abstract class EnumHelper {
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SUMMONS_SENT;
 		case RETOURNEE:
 			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.RETURNED;
+		case SUSPENDUE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.SUSPENDED;
+		case RAPPELEE:
+			return ch.vd.unireg.xml.party.taxdeclaration.v4.TaxDeclarationStatusType.REMINDER_SENT;
 		default:
 			throw new IllegalArgumentException("Type d'état de déclaration inconnu = [" + type + ']');
 		}

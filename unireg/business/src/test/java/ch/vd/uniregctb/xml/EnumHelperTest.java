@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -47,6 +48,10 @@ public class EnumHelperTest {
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv2", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.DECLARATION_IMPOT_APM, TypeDocument.DECLARATION_IMPOT_PM, TypeDocument.QUESTIONNAIRE_SNC));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv3", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.DECLARATION_IMPOT_APM, TypeDocument.DECLARATION_IMPOT_PM, TypeDocument.QUESTIONNAIRE_SNC));
 		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.QUESTIONNAIRE_SNC));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv4", TypeDocument.class), EnumSet.of(TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, TypeDocument.QUESTIONNAIRE_SNC));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv1", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv2", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
+		knownCrashingEnums.put(Pair.<String, Class<? extends Enum>>of("coreToXMLv3", TypeEtatDeclaration.class), EnumSet.of(TypeEtatDeclaration.RAPPELEE, TypeEtatDeclaration.SUSPENDUE));
 
 		// boucle sur toutes les méthodes statiques publiques coreToXML... qui prennent un type énuméré en paramètre
 		final Method[] methods = EnumHelper.class.getDeclaredMethods();
