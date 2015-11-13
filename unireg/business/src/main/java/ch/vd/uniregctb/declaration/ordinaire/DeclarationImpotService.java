@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePM;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.DeterminationDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EchoirDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiDIsPMResults;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.declaration.ordinaire.pm.EnvoiSommationsDIsPMResults;
 import ch.vd.uniregctb.declaration.ordinaire.pm.TypeDeclarationImpotPM;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecCodeSegment;
 import ch.vd.uniregctb.declaration.ordinaire.pp.ContribuableAvecImmeuble;
-import ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.DeterminationDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EchoirDIsPPResults;
 import ch.vd.uniregctb.declaration.ordinaire.pp.EnvoiAnnexeImmeubleResults;
@@ -249,12 +249,12 @@ public interface DeclarationImpotService {
 	 * Ajoute un délai aux déclarations des contribuables spécifiés.
 	 *
 	 * @param ids            les ids des contribuables
-	 * @param annee          la période fiscale considérée
+	 * @param pf             la période fiscale considérée
 	 * @param dateDelai      la date de délai à appliquer aux déclarations
 	 * @param dateTraitement la date de traitement
 	 * @param s              un status manager
 	 */
-	DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int annee, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s);
+	DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(final List<Long> ids, int pf, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s);
 
 	/**
 	 * Permet de produire la liste des contribuables ayant une Di transformée en note

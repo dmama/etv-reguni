@@ -18,6 +18,7 @@ public enum JobCategory {
 	LR("Listes récapitulatives"),
 	DI_PP("Déclarations d'impôt (PP)"),
 	DI_PM("Déclarations d'impôt (PM)"),
+	DI("Déclarations d'impôt (PP & PM)"),
 	FORS("Fors fiscaux"),
 	STATS("Statistiques / Extractions"),
 	DB("Base de données"),

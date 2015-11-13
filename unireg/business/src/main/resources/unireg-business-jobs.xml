@@ -242,7 +242,7 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.pp.DemandeDelaiCollectiveJob">
+    <bean id="demandeDelaiCollectiveJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ordinaire.common.DemandeDelaiCollectiveJob">
         <constructor-arg value="406"/>
         <constructor-arg value="Traiter une demande de délai collective de DIs"/>
         <property name="service" ref="diService"/>

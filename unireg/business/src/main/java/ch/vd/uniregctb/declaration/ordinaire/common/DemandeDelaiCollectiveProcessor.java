@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.ordinaire.pp;
+package ch.vd.uniregctb.declaration.ordinaire.common;
 
 import java.util.List;
 
@@ -56,8 +56,7 @@ public class DemandeDelaiCollectiveProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public DemandeDelaiCollectiveResults run(final List<Long> ids, final int annee, final RegDate dateDelai, final RegDate dateTraitement,
-			final StatusManager s) {
+	public DemandeDelaiCollectiveResults run(final List<Long> ids, final int annee, final RegDate dateDelai, final RegDate dateTraitement, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final DemandeDelaiCollectiveResults rapportFinal = new DemandeDelaiCollectiveResults(annee, dateDelai, ids, dateTraitement, tiersService, adresseService);
@@ -85,12 +84,12 @@ public class DemandeDelaiCollectiveProcessor {
 		final int count = rapportFinal.traites.size();
 
 		if (status.interrupted()) {
-			status.setMessage("Le traitement de la demande de délai collective a été interrompu."
+			status.setMessage("Le traitement de la demande de délais collective a été interrompu."
 					+ " Nombre de contribuables traités au moment de l'interruption = " + count);
 			rapportFinal.interrompu = true;
 		}
 		else {
-			status.setMessage("Le traitement de la demande de délai collective est terminé." + " Nombre de contribuables traités = "
+			status.setMessage("Le traitement de la demande de délais collective est terminé." + " Nombre de contribuables traités = "
 					+ count + ". Nombre d'erreurs = " + rapportFinal.errors.size());
 		}
 
@@ -127,15 +126,14 @@ public class DemandeDelaiCollectiveProcessor {
 			return;
 		}
 
-		final DelaiDeclaration dd = newDelaiDeclaration(dateDelai, dateTraitement);
-		accorderDelaiDeclaration(tiers, annee, dd, r);
+		accorderDelaiDeclaration(tiers, annee, dateDelai, dateTraitement, r);
 	}
 
 	/**
 	 * @return un nouveau délai avec la date spécifiée
 	 */
-	protected static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
-		DelaiDeclaration dd = new DelaiDeclaration();
+	private static DelaiDeclaration newDelaiDeclaration(RegDate delai, RegDate dateTraitement) {
+		final DelaiDeclaration dd = new DelaiDeclaration();
 		dd.setConfirmationEcrite(false);
 		dd.setDateDemande(dateTraitement);
 		dd.setDateTraitement(dateTraitement);
@@ -147,9 +145,9 @@ public class DemandeDelaiCollectiveProcessor {
 	/**
 	 * Accorde le délai spécifié au contribuable.
 	 */
-	protected void accorderDelaiDeclaration(Contribuable ctb, int annee, DelaiDeclaration delai, DemandeDelaiCollectiveResults r) {
-
-		final RegDate nouveauDelai = delai.getDelaiAccordeAu();
+	protected void accorderDelaiDeclaration(Contribuable ctb, int annee,
+	                                        RegDate nouveauDelai, RegDate dateTraitement,
+	                                        DemandeDelaiCollectiveResults r) {
 
 		final List<Declaration> declarations = ctb.getDeclarationsForPeriode(annee, false);
 		if (declarations == null || declarations.isEmpty()) {
@@ -165,26 +163,33 @@ public class DemandeDelaiCollectiveProcessor {
 				final RegDate delaiExistant = d.getDelaiAccordeAu();
 				if (delaiExistant != null && delaiExistant.isAfterOrEqual(nouveauDelai)) {
 					// Le délai accordé est égal ou au delà du délai souhaité
-					r.addIgnoreDIDelaiSuperieur(d);
+					r.addIgnoreDelaiSuperieur(d);
 				}
 				else {
-					d.addDelai(delai);
+					accorderDelaiDeclaration(d, newDelaiDeclaration(nouveauDelai, dateTraitement));
 					r.addDeclarationTraitee(d);
 				}
 				break;
 			}
 			case RETOURNEE:
-				r.addErrorDIRetournee(d);
+				r.addErrorDeclarationRetournee(d);
 				break;
 			case ECHUE:
-				r.addErrorDIEchue(d);
+				r.addErrorDeclarationEchue(d);
 				break;
 			case SOMMEE:
-				r.addErrorDISommee(d);
+				r.addErrorDeclarationSommee(d);
 				break;
 			default:
-				throw new IllegalArgumentException("Etat de DI invalide : " + etatDeclaration);
+				throw new IllegalArgumentException("Etat de déclaration non-supporté : " + etatDeclaration);
 			}
 		}
+	}
+
+	private void accorderDelaiDeclaration(Declaration declaration, DelaiDeclaration delai) {
+		declaration.addDelai(delai);
+
+		// pour les Déclarations PM, il faut envoyer un courrier...
+		// TODO [SIPM] à faire une fois les maquettes éditiques connue...
 	}
 }
