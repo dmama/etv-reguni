@@ -51,6 +51,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parentes.ParentesSynchronizerInterceptor;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
@@ -972,10 +973,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return tiersDAO.addAndSave(ctb, ie);
 	}
 
-    protected DonneesRegistreCommerce addDonneesRegistreCommerce(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique, MontantMonetaire capital) {
-        final DonneesRegistreCommerce donneesRC = new DonneesRegistreCommerce(dateDebut, dateFin, raisonSociale, capital, formeJuridique);
+    protected DonneesRegistreCommerce addDonneesRegistreCommerce(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique) {
+        final DonneesRegistreCommerce donneesRC = new DonneesRegistreCommerce(dateDebut, dateFin, raisonSociale, formeJuridique);
         e.addDonneesRC(donneesRC);
         return donneesRC;
+    }
+
+    protected CapitalEntreprise addCapitalEntreprise(Entreprise e, RegDate dateDebut, RegDate dateFin, MontantMonetaire capital) {
+        final CapitalEntreprise capitalEntreprise = new CapitalEntreprise(dateDebut, dateFin, capital);
+        e.addCapital(capitalEntreprise);
+        return capitalEntreprise;
     }
 
     protected DomicileEtablissement addDomicileEtablissement(Etablissement etb, RegDate dateDebut, @Nullable RegDate dateFin, MockCommune commune) {

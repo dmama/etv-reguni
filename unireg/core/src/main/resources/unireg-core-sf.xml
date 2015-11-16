@@ -192,6 +192,7 @@
 		<value>ch.vd.uniregctb.tiers.DomicileEtablissement</value>
 		<value>ch.vd.uniregctb.tiers.RegimeFiscal</value>
 		<value>ch.vd.uniregctb.tiers.DonneesRegistreCommerce</value>
+		<value>ch.vd.uniregctb.tiers.CapitalEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 	</util:list>
 

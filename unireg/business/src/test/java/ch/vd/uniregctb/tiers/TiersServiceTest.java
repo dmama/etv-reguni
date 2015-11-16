@@ -76,7 +76,6 @@ import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.dao.DecisionAciDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.DayMonth;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -9576,8 +9575,7 @@ debut PF                                                                        
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
-				addDonneesRegistreCommerce(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, "Turlututu", FormeJuridiqueEntreprise.SARL,
-				                           new MontantMonetaire(42L, MontantMonetaire.CHF));
+				addCapitalEntreprise(entreprise, dateDebutSurchargeCapital, dateFinSurchargeCapital, new MontantMonetaire(42L, MontantMonetaire.CHF));
 				return entreprise.getNumero();
 			}
 		});

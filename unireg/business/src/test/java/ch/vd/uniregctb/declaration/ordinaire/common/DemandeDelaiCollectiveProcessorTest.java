@@ -27,7 +27,6 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -223,7 +222,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -260,7 +259,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -324,7 +323,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -427,7 +426,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -483,7 +482,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -540,7 +539,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 

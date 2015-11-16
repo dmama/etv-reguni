@@ -136,7 +136,6 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -3334,9 +3333,11 @@ public class BusinessWebServiceTest extends WebserviceTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise entreprise = addEntrepriseInconnueAuCivil();
 
-				entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2000, 3, 1), date(2009, 12, 31), "Ma petite entreprise", new MontantMonetaire(1000L, "CHF"), FormeJuridiqueEntreprise.SARL));
-				entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2010, 1, 1), date(2013, 5, 12), "Ma petite entreprise", new MontantMonetaire(1100L, "CHF"), FormeJuridiqueEntreprise.SARL));
-				entreprise.addDonneesRC(new DonneesRegistreCommerce(date(2013, 5, 13), null, "Ma grande entreprise", new MontantMonetaire(100000L, "CHF"), FormeJuridiqueEntreprise.SARL));
+				addDonneesRegistreCommerce(entreprise, date(2000, 3, 1), date(2013, 5, 12), "Ma petite entreprise", FormeJuridiqueEntreprise.SARL);
+				addDonneesRegistreCommerce(entreprise, date(2013, 5, 13), null, "Ma grande entreprise", FormeJuridiqueEntreprise.SARL);
+				addCapitalEntreprise(entreprise, date(2000, 3, 1), date(2009, 12, 31), new MontantMonetaire(1000L, "CHF"));
+				addCapitalEntreprise(entreprise, date(2010, 1, 1), date(2013, 5, 12), new MontantMonetaire(1100L, "CHF"));
+				addCapitalEntreprise(entreprise, date(2013, 5, 13), null, new MontantMonetaire(100000L, "CHF"));
 
 				addForPrincipal(entreprise, date(2000, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Geneve);
 				final ForFiscalSecondaire fs = addForSecondaire(entreprise, date(2005, 3, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ETABLISSEMENT_STABLE);

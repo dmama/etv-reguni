@@ -16,6 +16,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
@@ -29,6 +30,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 		if (!entreprise.isAnnule()) {
 			vr.merge(validateRegimesFiscaux(entreprise));
 			vr.merge(validateDonneesRegistreCommerce(entreprise));
+			vr.merge(validateCapitaux(entreprise));
 			vr.merge(validateAllegementsFiscaux(entreprise));
 			vr.merge(validateBouclements(entreprise));
 			vr.merge(validateEtats(entreprise));
@@ -93,6 +95,30 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			if (overlaps != null && !overlaps.isEmpty()) {
 				for (DateRange overlap : overlaps) {
 					vr.addError(String.format("La période %s est couverte par plusieurs ensembles de données RC", DateRangeHelper.toDisplayString(overlap)));
+				}
+			}
+		}
+
+		return vr;
+	}
+
+	protected ValidationResults validateCapitaux(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+
+		final List<CapitalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+
+		// on valide d'abord les données pour elles-mêmes
+		for (CapitalEntreprise d : capitaux) {
+			vr.merge(getValidationService().validate(d));
+		}
+
+		// ... puis entre elles (il ne doit y avoir, à tout moment, au plus qu'une seule instance active)
+		final int size = capitaux.size();
+		if (size > 1) {
+			final List<DateRange> overlaps = DateRangeHelper.overlaps(capitaux);
+			if (overlaps != null && !overlaps.isEmpty()) {
+				for (DateRange overlap : overlaps) {
+					vr.addError(String.format("La période %s est couverte par plusieurs données de capital", DateRangeHelper.toDisplayString(overlap)));
 				}
 			}
 		}

@@ -38,6 +38,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	private Set<RegimeFiscal> regimesFiscaux;
 	private Set<DonneesRegistreCommerce> donneesRC;
+	private Set<CapitalEntreprise> capitaux;
 	private Set<AllegementFiscal> allegementsFiscaux;
 	private Set<Bouclement> bouclements;
 	private Set<EtatEntreprise> etats;
@@ -119,6 +120,35 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		final List<DonneesRegistreCommerce> nonAnnulees = AnnulableHelper.sansElementsAnnules(donneesRC);
 		Collections.sort(nonAnnulees, new DateRangeComparator<DonneesRegistreCommerce>());
 		return nonAnnulees;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<CapitalEntreprise> getCapitaux() {
+		return capitaux;
+	}
+
+	public void setCapitaux(Set<CapitalEntreprise> capitaux) {
+		this.capitaux = capitaux;
+	}
+
+	public void addCapital(CapitalEntreprise capital) {
+		if (capital.getEntreprise() != null && capital.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ce capital est déjà associé à une autre entreprise");
+		}
+		if (this.capitaux == null) {
+			this.capitaux = new HashSet<>();
+		}
+		this.capitaux.add(capital);
+		capital.setEntreprise(this);
+	}
+
+	@Transient
+	@NotNull
+	public List<CapitalEntreprise> getCapitauxNonAnnulesTries() {
+		final List<CapitalEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(capitaux);
+		Collections.sort(nonAnnules, new DateRangeComparator<>());
+		return nonAnnules;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL)

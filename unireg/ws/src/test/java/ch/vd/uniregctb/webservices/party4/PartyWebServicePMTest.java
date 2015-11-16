@@ -290,7 +290,7 @@ public class PartyWebServicePMTest extends WebserviceTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(pm, date(1965, 5, 4), null, "Oversees Ltd.", FormeJuridiqueEntreprise.FILIALE_HS_NIRC, null);
+				addDonneesRegistreCommerce(pm, date(1965, 5, 4), null, "Oversees Ltd.", FormeJuridiqueEntreprise.FILIALE_HS_NIRC);
 				addForPrincipal(pm, date(1965, 5, 4), null, MockPays.Liechtenstein);
 				return pm.getNumero();
 			}

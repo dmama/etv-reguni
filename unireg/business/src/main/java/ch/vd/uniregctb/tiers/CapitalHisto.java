@@ -1,16 +1,16 @@
 package ch.vd.uniregctb.tiers;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.Capital;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
 
-public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHisto> {
+public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHisto>, Annulable {
 
 	/**
 	 * Source de la valeur du capital
@@ -28,24 +28,45 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 		FISCALE
 	}
 
+	private final Long id;
+	private final boolean annule;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final MontantMonetaire montant;
 	private final Source source;
 
-	public CapitalHisto(RegDate dateDebut, RegDate dateFin, @NotNull MontantMonetaire montant, Source source) {
+	public CapitalHisto(CapitalEntreprise capital) {
+		this(capital.getId(), capital.isAnnule(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant().duplicate(), Source.FISCALE);
+	}
+
+	public CapitalHisto(Capital capital) {
+		this(null, false, capital.getDateDebut(), capital.getDateFin(), new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise()), Source.CIVILE);
+	}
+
+	private CapitalHisto(Long id, boolean annule, RegDate dateDebut, RegDate dateFin, MontantMonetaire montant, Source source) {
+		this.id = id;
+		this.annule = annule;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.montant = montant;
 		this.source = source;
 	}
 
+	public CapitalHisto crop(DateRange range) {
+		return new CapitalHisto(id, annule, range.getDateDebut(), range.getDateFin(), montant, source);
+	}
+
 	@Override
 	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next)
-				&& next instanceof CapitalHisto
-				&& ((CapitalHisto) next).montant.equals(montant)
-				&& ((CapitalHisto) next).source == source;
+		boolean collatable = DateRangeHelper.isCollatable(this, next) && next instanceof CapitalHisto;
+		if (collatable) {
+			final CapitalHisto nextCapital = (CapitalHisto) next;
+			collatable = nextCapital.montant.equals(montant)
+					&& nextCapital.source == source
+					&& nextCapital.annule == annule
+					&& ((nextCapital.id == null && id == null) || (nextCapital.id != null && id != null && nextCapital.id.equals(id)));
+		}
+		return collatable;
 	}
 
 	@Override
@@ -53,7 +74,7 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Les ranges ne sont pas collatables...");
 		}
-		return new CapitalHisto(dateDebut, next.getDateFin(), montant, source);
+		return new CapitalHisto(id, annule, dateDebut, next.getDateFin(), montant, source);
 	}
 
 	@Override
@@ -77,10 +98,22 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 
 	@Override
 	public CapitalHisto duplicate() {
-		return new CapitalHisto(dateDebut, dateFin, montant.duplicate(), source);
+		return new CapitalHisto(id, annule, dateDebut, dateFin, montant.duplicate(), source);
 	}
 
 	public Source getSource() {
 		return source;
+	}
+
+	/**
+	 * @return Identifiant de la données dans la base fiscale
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public boolean isAnnule() {
+		return annule;
 	}
 }

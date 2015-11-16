@@ -267,7 +267,8 @@ public class IdentificationContribuableRequestV4ListenerItTest extends Identific
 				final PersonnePhysique ppDeux = addNonHabitant("Richard", "Basquette", null, Sexe.MASCULIN);
 				final PersonnePhysique ppTrois = addNonHabitant("Albus", "Trumbledaure", null, Sexe.MASCULIN);
 				final Entreprise pm = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise", FormeJuridiqueEntreprise.CORP_DP_ENT, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(pm, date(1883, 6, 1), null, "Banque cantonale vaudoise", FormeJuridiqueEntreprise.CORP_DP_ENT);
+				addCapitalEntreprise(pm, date(1883, 6, 1), null, new MontantMonetaire(1000000000L, MontantMonetaire.CHF));
 
 				// on crée 150 "Georges Pittet" pour vérifier aussi le cas du trop grand nombre de résultats
 				for (int i = 0; i < 150; ++i) {

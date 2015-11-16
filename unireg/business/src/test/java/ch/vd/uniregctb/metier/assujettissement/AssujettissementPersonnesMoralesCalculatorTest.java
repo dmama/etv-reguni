@@ -787,7 +787,7 @@ public class AssujettissementPersonnesMoralesCalculatorTest extends MetierTest {
 		final RegDate dateCreation = date(2011, 7, 12);
 
 		final Entreprise e = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(e, dateCreation, null, "L'avenir du genre humain", FormeJuridiqueEntreprise.SNC, null);
+		addDonneesRegistreCommerce(e, dateCreation, null, "L'avenir du genre humain", FormeJuridiqueEntreprise.SNC);
 		addForPrincipal(e, dateCreation, MotifFor.INDETERMINE, MockCommune.Lausanne, GenreImpot.REVENU_FORTUNE);
 		addBouclement(e, date(2012, 12, 1), DayMonth.get(12, 31), 12);      // bouclements tous les 31.12 depuis le 31.12.2012
 

@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -54,7 +53,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testPeriodesImpositionPersonnesMorales() throws Exception {
 		final Entreprise ctb = addEntrepriseInconnueAuCivil();
-		addDonneesRegistreCommerce(ctb, date(1984, 1, 1), null, "Toto SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000L, MontantMonetaire.CHF));
+		addDonneesRegistreCommerce(ctb, date(1984, 1, 1), null, "Toto SA", FormeJuridiqueEntreprise.SA);
 		addForPrincipal(ctb, date(1984, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		addBouclement(ctb, date(1984, 1, 1), DayMonth.get(12, 31), 12);
 		final List<PeriodeImposition> periodesImposition = service.determine(ctb);

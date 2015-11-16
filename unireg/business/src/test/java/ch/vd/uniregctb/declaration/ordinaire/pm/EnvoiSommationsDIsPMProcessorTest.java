@@ -28,7 +28,6 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 import ch.vd.uniregctb.type.MotifFor;
@@ -84,7 +83,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -130,7 +129,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -177,7 +176,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -225,7 +224,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -268,7 +267,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -318,7 +317,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				final ForFiscalPrincipal ffp = addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 				ffp.setAnnule(true);
@@ -363,7 +362,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -431,7 +430,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -475,7 +474,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 
@@ -519,7 +518,7 @@ public class EnvoiSommationsDIsPMProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final Entreprise e = addEntrepriseInconnueAuCivil();
-				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA, new MontantMonetaire(1000000L, MontantMonetaire.CHF));
+				addDonneesRegistreCommerce(e, dateDebut, null, "Truc machin SA", FormeJuridiqueEntreprise.SA);
 				addBouclement(e, dateDebut, DayMonth.get(12, 31), 12);
 				addForPrincipal(e, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Aubonne);
 

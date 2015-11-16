@@ -5459,10 +5459,9 @@ public class TiersServiceImpl implements TiersService {
 
 			@Override
 			public CapitalHisto adapt(CapitalHisto range, RegDate debut, CapitalHisto sourceSurchargeDebut, RegDate fin, CapitalHisto sourceSurchargeFin) {
-				return new CapitalHisto(sourceSurchargeDebut != null ? debut : range.getDateDebut(),
-				                        sourceSurchargeFin != null ? fin : range.getDateFin(),
-				                        range.getMontant().duplicate(),
-				                        range.getSource());
+				final DateRange cropRange = new DateRangeHelper.Range(sourceSurchargeDebut != null ? debut : range.getDateDebut(),
+				                                                      sourceSurchargeFin != null ? fin : range.getDateFin());
+				return range.crop(cropRange);
 			}
 
 			@Override
@@ -5480,7 +5479,7 @@ public class TiersServiceImpl implements TiersService {
 			if (capitaux != null && !capitaux.isEmpty()) {
 				final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
 				for (Capital capital : capitaux) {
-					liste.add(new CapitalHisto(capital.getDateDebut(), capital.getDateFin(), new MontantMonetaire(capital.getCapitalLibere().longValue(), capital.getDevise()), CapitalHisto.Source.CIVILE));
+					liste.add(new CapitalHisto(capital));
 				}
 				return DateRangeHelper.collate(liste);
 			}
@@ -5490,14 +5489,12 @@ public class TiersServiceImpl implements TiersService {
 
 	@NotNull
 	private List<CapitalHisto> extractCapitauxFiscaux(@NotNull Entreprise entreprise) {
-		final List<DonneesRegistreCommerce> donnees = entreprise.getDonneesRegistreCommerceNonAnnuleesTriees();
-		final List<CapitalHisto> liste = new ArrayList<>(donnees.size());
-		for (DonneesRegistreCommerce drc : donnees) {
-			if (drc.getCapital() != null) {
-				liste.add(new CapitalHisto(drc.getDateDebut(), drc.getDateFin(), drc.getCapital(), CapitalHisto.Source.FISCALE));
-			}
+		final List<CapitalEntreprise> capitaux = entreprise.getCapitauxNonAnnulesTries();
+		final List<CapitalHisto> liste = new ArrayList<>(capitaux.size());
+		for (CapitalEntreprise capital : capitaux) {
+			liste.add(new CapitalHisto(capital));
 		}
-		return DateRangeHelper.collate(liste);
+		return liste;
 	}
 
 	@Override

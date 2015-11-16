@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,27 +15,24 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
-import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
 
 @Entity
-@Table(name = "DONNEES_RC")
-public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements LinkedEntity {
+@Table(name = "CAPITAL_ENTREPRISE")
+public class CapitalEntreprise extends HibernateDateRangeEntity implements LinkedEntity {
 
 	private Long id;
 	private Entreprise entreprise;
-	private String raisonSociale;
-	private FormeJuridiqueEntreprise formeJuridique;
+	private MontantMonetaire montant;
 
-	// TODO : code noga, ... ?
-
-	public DonneesRegistreCommerce() {
+	/**
+	 * Nécessaire pour Hibernate, apparemment
+	 */
+	protected CapitalEntreprise() {
 	}
 
-	public DonneesRegistreCommerce(RegDate dateDebut, RegDate dateFin, String raisonSociale, FormeJuridiqueEntreprise formeJuridique) {
+	public CapitalEntreprise(RegDate dateDebut, RegDate dateFin, MontantMonetaire montant) {
 		super(dateDebut, dateFin);
-		this.raisonSociale = raisonSociale;
-		this.formeJuridique = formeJuridique;
+		this.montant = montant;
 	}
 
 	@Transient
@@ -66,23 +62,13 @@ public class DonneesRegistreCommerce extends HibernateDateRangeEntity implements
 		this.entreprise = entreprise;
 	}
 
-	@Column(name = "RAISON_SOCIALE", length = LengthConstants.TIERS_NOM)
-	public String getRaisonSociale() {
-		return raisonSociale;
+	@Embedded
+	public MontantMonetaire getMontant() {
+		return montant;
 	}
 
-	public void setRaisonSociale(String raisonSociale) {
-		this.raisonSociale = raisonSociale;
-	}
-
-	@Column(name = "FORME_JURIDIQUE", length = LengthConstants.PM_FORME)
-	@Enumerated(EnumType.STRING)
-	public FormeJuridiqueEntreprise getFormeJuridique() {
-		return formeJuridique;
-	}
-
-	public void setFormeJuridique(FormeJuridiqueEntreprise formeJuridique) {
-		this.formeJuridique = formeJuridique;
+	public void setMontant(MontantMonetaire montant) {
+		this.montant = montant;
 	}
 
 	@Override
