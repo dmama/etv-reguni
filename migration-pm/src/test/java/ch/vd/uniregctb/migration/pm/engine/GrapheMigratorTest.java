@@ -74,6 +74,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.ValidationInterceptor;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
+import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -531,8 +532,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(2, msgs.size());
-			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant), capital () et forme juridique (ASSOCIATION).", msgs.get(0));
-			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1990 -> ?], raison sociale (Je suis le mandataire), capital () et forme juridique (SA).", msgs.get(1));
+			Assert.assertEquals("INFO;" + idEntrepriseMandante + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1995 -> ?], raison sociale (Je suis le mandant) et forme juridique (ASSOCIATION).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntrepriseMandataire + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.1990 -> ?], raison sociale (Je suis le mandataire) et forme juridique (SA).", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
@@ -2601,8 +2602,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(dateDebut, rc.getDateDebut());
 			Assert.assertNull(rc.getDateFin());
 			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
-			Assert.assertNull(rc.getCapital());
 			Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
+
+			final Set<CapitalEntreprise> capitaux = e.getCapitaux();
+			Assert.assertNotNull(capitaux);
+			Assert.assertEquals(0, capitaux.size());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
@@ -2619,7 +2623,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Billards & co), capital () et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Billards & co) et forme juridique (SA).", msgs.get(0));
 		}
 	}
 
@@ -2656,8 +2660,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(dateDebut, rc.getDateDebut());
 			Assert.assertEquals(dateRequisitionRadiation, rc.getDateFin());
 			Assert.assertEquals("Billards & co", rc.getRaisonSociale());
-			Assert.assertNull(rc.getCapital());
 			Assert.assertEquals(FormeJuridiqueEntreprise.SA, rc.getFormeJuridique());
+
+			final Set<CapitalEntreprise> capitaux = e.getCapitaux();
+			Assert.assertNotNull(capitaux);
+			Assert.assertEquals(0, capitaux.size());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
@@ -2675,7 +2682,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> 27.12.2014], raison sociale (Billards & co), capital () et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> 27.12.2014], raison sociale (Billards & co) et forme juridique (SA).", msgs.get(0));
 		}
 	}
 
@@ -2711,10 +2718,20 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(dateDebut, rc.getDateDebut());
 			Assert.assertNull(rc.getDateFin());
 			Assert.assertEquals("Markus und Söhne", rc.getRaisonSociale());
-			Assert.assertNotNull(rc.getCapital());
-			Assert.assertEquals((Long) 45678134L, rc.getCapital().getMontant());
-			Assert.assertEquals("CHF", rc.getCapital().getMonnaie());
 			Assert.assertEquals(FormeJuridiqueEntreprise.SARL, rc.getFormeJuridique());
+
+			final Set<CapitalEntreprise> capitaux = e.getCapitaux();
+			Assert.assertNotNull(capitaux);
+			Assert.assertEquals(1, capitaux.size());
+
+			final CapitalEntreprise capital = capitaux.iterator().next();
+			Assert.assertNotNull(capital);
+			Assert.assertEquals(dateDebut, capital.getDateDebut());
+			Assert.assertNull(capital.getDateFin());
+			Assert.assertNull(capital.getDateFin());
+			Assert.assertNotNull(capital.getMontant());
+			Assert.assertEquals((Long) 45678134L, capital.getMontant().getMontant());
+			Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
 		});
 
 		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
@@ -2730,8 +2747,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
-			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Markus und Söhne), capital (45678134 CHF) et forme juridique (SARL).", msgs.get(0));
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.2010 -> ?], raison sociale (Markus und Söhne) et forme juridique (SARL).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [28.09.2010 -> ?], 45678134 CHF.", msgs.get(1));
 		}
 	}
 
@@ -2929,7 +2947,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.1998 -> ?], raison sociale (Markus und Söhne), capital () et forme juridique (SARL).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [28.09.1998 -> ?], raison sociale (Markus und Söhne) et forme juridique (SARL).", msgs.get(0));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.ADRESSES);
@@ -3216,8 +3234,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
-			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> ?], raison sociale (Toto SA), capital (10000 CHF) et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> ?], raison sociale (Toto SA) et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> ?], 10000 CHF.", msgs.get(1));
 		}
 	}
 	@Test
@@ -3347,8 +3366,9 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
-			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> 31.12.2013], raison sociale (Toto SA), capital (10000 CHF) et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals(2, msgs.size());
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [01.01.2013 -> 31.12.2013], raison sociale (Toto SA) et forme juridique (SA).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> 31.12.2013], 10000 CHF.", msgs.get(1));
 		}
 	}
 
@@ -3413,7 +3433,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);
 			Assert.assertEquals(1, msgs.size());
-			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [02.04.2001 -> ?], raison sociale (*Chez-moi sàrl), capital () et forme juridique (SARL).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Données 'civiles' migrées : sur la période [02.04.2001 -> ?], raison sociale (*Chez-moi sàrl) et forme juridique (SARL).", msgs.get(0));
 		}
 	}
 

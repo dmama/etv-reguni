@@ -38,6 +38,7 @@
 		<value>ch.vd.uniregctb.tiers.AllegementFiscal</value>
 		<value>ch.vd.uniregctb.tiers.AutreCommunaute</value>
 		<value>ch.vd.uniregctb.tiers.Bouclement</value>
+		<value>ch.vd.uniregctb.tiers.CapitalEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.CollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.tiers.Contribuable</value>
 		<value>ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales</value>

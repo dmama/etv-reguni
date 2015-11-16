@@ -3965,7 +3965,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(3, textes.size());
 			Assert.assertEquals("Raison sociale " + raisonSociale.getId() + " (Ma société à moi tout seul vraiment) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", textes.get(0));
 			Assert.assertEquals("En l'absence de donnée valide pour la raison sociale, repêchage de 'Ma société à moi tout seul vraiment'.", textes.get(1));
-			Assert.assertEquals("Données 'civiles' migrées : sur la période [14.06.2007 -> ?], raison sociale (Ma société à moi tout seul vraiment), capital () et forme juridique (SARL).", textes.get(2));
+			Assert.assertEquals("Données 'civiles' migrées : sur la période [14.06.2007 -> ?], raison sociale (Ma société à moi tout seul vraiment) et forme juridique (SARL).", textes.get(2));
 		}
 	}
 
@@ -4018,7 +4018,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals(3, textes.size());
 			Assert.assertEquals("Forme juridique 1 (S.A.) ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", textes.get(0));
 			Assert.assertEquals("En l'absence de donnée valide pour la forme juridique, repêchage de 'S.A.'.", textes.get(1));
-			Assert.assertEquals("Données 'civiles' migrées : sur la période [27.08.2004 -> ?], raison sociale (Ma société à moi tout seul si si vraiment), capital () et forme juridique (SA).", textes.get(2));
+			Assert.assertEquals("Données 'civiles' migrées : sur la période [27.08.2004 -> ?], raison sociale (Ma société à moi tout seul si si vraiment) et forme juridique (SA).", textes.get(2));
 		}
 	}
 

@@ -82,6 +82,7 @@
 	<bean id="regimeFiscalValidator" class="ch.vd.uniregctb.validation.tiers.RegimeFiscalValidator" parent="dateRangeEntityValidator"/>
 
 	<bean id="donneesRegistreCommerceValidator" class="ch.vd.uniregctb.validation.tiers.DonneesRegistreCommerceValidator" parent="dateRangeEntityValidator"/>
+	<bean id="capitalEntrepriseValidator" class="ch.vd.uniregctb.validation.tiers.CapitalEntrepriseValidator" parent="dateRangeEntityValidator"/>
 
 	<bean id="allegementFiscalValidator" class="ch.vd.uniregctb.validation.tiers.AllegementFiscalValidator" parent="dateRangeEntityValidator">
 		<property name="infraService" ref="serviceInfrastructureService"/>

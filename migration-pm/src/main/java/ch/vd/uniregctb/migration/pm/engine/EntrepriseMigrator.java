@@ -136,6 +136,7 @@ import ch.vd.uniregctb.migration.pm.utils.KeyedSupplier;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -1744,18 +1745,16 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		private final RegDate dateFinActivite;
 		private final NavigableMap<RegDate, String> histoRaisonsSociales;
-		private final NavigableMap<RegDate, BigDecimal> histoCapitaux;
 		private final NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques;
 		private final MigrationResultProduction mr;
 
 		private RegDate nextDate;
 		private boolean done;
 
-		public DonneesRegistreCommerceGenerator(RegDate firstDate, RegDate dateFinActivite, NavigableMap<RegDate, String> histoRaisonsSociales, NavigableMap<RegDate, BigDecimal> histoCapitaux,
+		public DonneesRegistreCommerceGenerator(RegDate firstDate, RegDate dateFinActivite, NavigableMap<RegDate, String> histoRaisonsSociales,
 		                                        NavigableMap<RegDate, RegpmTypeFormeJuridique> histoFormesJuridiques, MigrationResultProduction mr) {
 			this.dateFinActivite = dateFinActivite;
 			this.histoRaisonsSociales = histoRaisonsSociales;
-			this.histoCapitaux = histoCapitaux;
 			this.histoFormesJuridiques = histoFormesJuridiques;
 			this.mr = mr;
 			this.nextDate = firstDate;
@@ -1774,8 +1773,6 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			}
 			final String raisonSociale = histoRaisonsSociales.floorEntry(nextDate).getValue();
 			final RegpmTypeFormeJuridique formeJuridique = histoFormesJuridiques.floorEntry(nextDate).getValue();
-			final BigDecimal montant = Optional.ofNullable(histoCapitaux.floorEntry(nextDate)).map(Map.Entry::getValue).orElse(null);
-			final MontantMonetaire capital = montant != null ? new MontantMonetaire(montant.longValue(), MontantMonetaire.CHF) : null;
 			final RegDate debut = nextDate;
 
 			nextDate = computeNextDate();
@@ -1796,16 +1793,15 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				fin = nextDate.getOneDayBefore();
 			}
 
-			return new DonneesRegistreCommerce(debut, fin, raisonSociale, capital, toFormeJuridique(formeJuridique.getCode()));
+			return new DonneesRegistreCommerce(debut, fin, raisonSociale, toFormeJuridique(formeJuridique.getCode()));
 		}
 
 		@Nullable
 		private RegDate computeNextDate() {
 			final RegDate nextRaisonSocialeChange = histoRaisonsSociales.higherKey(nextDate);
-			final RegDate nextCapitalChange = histoCapitaux.higherKey(nextDate);
 			final RegDate nextFormeJuridiqueChange = histoFormesJuridiques.higherKey(nextDate);
-			done = nextRaisonSocialeChange == null && nextCapitalChange == null && nextFormeJuridiqueChange == null;
-			return Stream.of(nextRaisonSocialeChange, nextCapitalChange, nextFormeJuridiqueChange)
+			done = nextRaisonSocialeChange == null && nextFormeJuridiqueChange == null;
+			return Stream.of(nextRaisonSocialeChange, nextFormeJuridiqueChange)
 					.filter(Objects::nonNull)
 					.min(Comparator.naturalOrder())
 					.orElse(null);
@@ -1864,15 +1860,31 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 
 		// génération des données à sauvegarder
-		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, rsData, capitalData, formeJuridiqueData, mr);
+		final Iterable<DonneesRegistreCommerce> donneesRC = () -> new DonneesRegistreCommerceGenerator(dateDebutEffective, dateFinActivite, rsData, formeJuridiqueData, mr);
 		StreamSupport.stream(donneesRC.spliterator(), false)
 				.peek(rc -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
-				                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s), capital (%s) et forme juridique (%s).",
+				                          String.format("Données 'civiles' migrées : sur la période %s, raison sociale (%s) et forme juridique (%s).",
 				                                        StringRenderers.DATE_RANGE_RENDERER.toString(rc),
 				                                        rc.getRaisonSociale(),
-				                                        rc.getCapital() != null ? StringRenderers.MONTANT_MONETAIRE_RENDERER.toString(rc.getCapital()) : StringUtils.EMPTY,
 				                                        rc.getFormeJuridique())))
 				.forEach(unireg::addDonneesRC);
+
+		// génération des données de capital (d'abord sans dates de fin...)
+		final List<CapitalEntreprise> capitaux = capitalData.entrySet().stream()
+				.filter(entry -> entry.getValue() != null)
+				.map(entry -> new CapitalEntreprise(entry.getKey(), null, new MontantMonetaire(entry.getValue().longValue(), MontantMonetaire.CHF)))
+				.collect(Collectors.toList());
+
+		// assignation des dates de fin en fonction des dates de début du suivant
+		assigneDatesFin(dateFinActivite, capitaux);
+
+		// persistence et log
+		capitaux.stream()
+				.peek(capital -> mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.INFO,
+				                               String.format("Donnée de capital migrée : sur la période %s, %s.",
+				                                             StringRenderers.DATE_RANGE_RENDERER.toString(capital),
+				                                             capital.getMontant())))
+				.forEach(unireg::addCapital);
 	}
 
 	private static FormeJuridiqueEntreprise toFormeJuridique(String codeRegpm) {
