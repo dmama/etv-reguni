@@ -631,8 +631,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
-		assertEquals(dateDebut, tache.getDeclarationImpotOrdinaire().getDateDebut());
-		assertEquals(dateFin, tache.getDeclarationImpotOrdinaire().getDateFin());
+		assertEquals(dateDebut, tache.getDeclaration().getDateDebut());
+		assertEquals(dateFin, tache.getDeclaration().getDateFin());
 	}
 
 	/**
@@ -641,7 +641,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected static void assertTacheAnnulationDI(TypeEtatTache etat, long diId, boolean annule, TacheAnnulationDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
-		assertEquals(Long.valueOf(diId), tache.getDeclarationImpotOrdinaire().getId());
+		assertEquals(Long.valueOf(diId), tache.getDeclaration().getId());
 		assertEquals(annule, tache.isAnnule());
 	}
 

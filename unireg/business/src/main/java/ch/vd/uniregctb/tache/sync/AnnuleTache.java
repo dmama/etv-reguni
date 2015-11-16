@@ -46,7 +46,7 @@ public class AnnuleTache extends SynchronizeAction {
 		final String tacheDetail;
 		if (tache instanceof TacheAnnulationDeclarationImpot) {
 			final TacheAnnulationDeclarationImpot annule = (TacheAnnulationDeclarationImpot) tache;
-			final DeclarationImpotOrdinaire di = annule.getDeclarationImpotOrdinaire();
+			final DeclarationImpotOrdinaire di = annule.getDeclaration();
 			tacheDetail = String.format("d'annulation de la déclaration d'impôt %s couvrant la période du %s au %s",
 			                            toString(di.getTypeContribuable()),
 			                            RegDateHelper.dateToDisplayString(di.getDateDebut()),
@@ -54,7 +54,7 @@ public class AnnuleTache extends SynchronizeAction {
 		}
 		else if (tache instanceof TacheAnnulationQuestionnaireSNC) {
 			final TacheAnnulationQuestionnaireSNC annule = (TacheAnnulationQuestionnaireSNC) tache;
-			final QuestionnaireSNC q = annule.getQuestionnaireSNC();
+			final QuestionnaireSNC q = annule.getDeclaration();
 			tacheDetail = String.format("d'annulation du questionnaire SNC couvrant la période du %s au %s",
 			                            RegDateHelper.dateToDisplayString(q.getDateDebut()),
 			                            RegDateHelper.dateToDisplayString(q.getDateFin()));

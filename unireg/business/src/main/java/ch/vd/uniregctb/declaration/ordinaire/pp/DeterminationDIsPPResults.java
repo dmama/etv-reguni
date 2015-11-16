@@ -147,7 +147,7 @@ public class DeterminationDIsPPResults extends JobResults<Long, DeterminationDIs
 	}
 
 	public void addTacheAnnulationCreee(Contribuable ctb, TacheAnnulationDeclarationImpot tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDeclarationImpotOrdinaire().getDateDebut(), tache.getDeclarationImpotOrdinaire().getDateFin(),
+		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDeclaration().getDateDebut(), tache.getDeclaration().getDateFin(),
 		                       TraiteType.TACHE_ANNULATION_CREE, null, null, null));
 	}
 

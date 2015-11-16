@@ -630,7 +630,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheAnnulationDeclarationImpot tadi0 = new TacheAnnulationDeclarationImpot();
 			tadi0.setContribuable(pp0);
 			tadi0.setDateEcheance(RegDate.get(2008, 10, 25));
-			tadi0.setDeclarationImpotOrdinaire(dio0);
+			tadi0.setDeclaration(dio0);
 			tadi0.setEtat(TypeEtatTache.TRAITE);
 			tadi0.setLogCreationDate(new Timestamp(1201820400000L));
 			tadi0.setLogModifDate(new Timestamp(1201820400000L));

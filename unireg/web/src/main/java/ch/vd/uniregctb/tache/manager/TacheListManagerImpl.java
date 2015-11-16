@@ -16,7 +16,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinairePP;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -37,6 +38,7 @@ import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
 import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheAnnulationDeclaration;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -162,16 +164,21 @@ public class TacheListManagerImpl implements TacheListManager {
 				tacheView.setTypeDocument(tedi.getTypeDocument());
 				tacheView.setDelaiRetourEnJours(DELAI_RETOUR_DI);       // TODO pour les PM aussi ???
 			}
-			else if (tache instanceof TacheAnnulationDeclarationImpot) {
-				final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
-				final DeclarationImpotOrdinairePP declarationImpotOrdinaire = (DeclarationImpotOrdinairePP) tadi.getDeclarationImpotOrdinaire();
-				final int annee = declarationImpotOrdinaire.getDateDebut().year();
+			else if (tache instanceof TacheAnnulationDeclaration) {
+				final TacheAnnulationDeclaration<?> tad = (TacheAnnulationDeclaration<?>) tache;
+				final Declaration declaration = tad.getDeclaration();
+				final int annee = declaration.getPeriode().getAnnee();
 				tacheView.setAnnee(annee);
-				tacheView.setDateDebutImposition(declarationImpotOrdinaire.getDateDebut());
-				tacheView.setDateFinImposition(declarationImpotOrdinaire.getDateFin());
-				tacheView.setTypeContribuable(declarationImpotOrdinaire.getTypeContribuable());
-				tacheView.setTypeDocument(declarationImpotOrdinaire.getModeleDocument().getTypeDocument());
-				tacheView.setIdDI(declarationImpotOrdinaire.getId());
+				tacheView.setDateDebutImposition(declaration.getDateDebut());
+				tacheView.setDateFinImposition(declaration.getDateFin());
+				tacheView.setTypeDocument(declaration.getModeleDocument().getTypeDocument());
+				tacheView.setIdDI(declaration.getId());
+
+				if (tache instanceof TacheAnnulationDeclarationImpot) {
+					final TacheAnnulationDeclarationImpot tadi = (TacheAnnulationDeclarationImpot) tache;
+					final DeclarationImpotOrdinaire di = tadi.getDeclaration();
+					tacheView.setTypeContribuable(di.getTypeContribuable());
+				}
 			}
 
 			tacheView.setAnnule(tache.isAnnule());

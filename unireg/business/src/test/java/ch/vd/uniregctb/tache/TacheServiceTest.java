@@ -500,7 +500,7 @@ public class TacheServiceTest extends BusinessTest {
 		// la tâche d'annulation de di
 		assertNotNull(tacheAnnulationDeclaration);
 		assertEquals(TypeEtatTache.EN_INSTANCE, tacheAnnulationDeclaration.getEtat());
-		assertEquals(2009, (int) tacheAnnulationDeclaration.getDeclarationImpotOrdinaire().getPeriode().getAnnee());
+		assertEquals(2009, (int) tacheAnnulationDeclaration.getDeclaration().getPeriode().getAnnee());
 	}
 
 	@Test
@@ -2239,7 +2239,7 @@ public class TacheServiceTest extends BusinessTest {
 		Collections.sort(annulations, new Comparator<TacheAnnulationDeclarationImpot>() {
 			@Override
 			public int compare(TacheAnnulationDeclarationImpot o1, TacheAnnulationDeclarationImpot o2) {
-				return o1.getDeclarationImpotOrdinaire().getDateDebut().compareTo(o2.getDeclarationImpotOrdinaire().getDateDebut());
+				return o1.getDeclaration().getDateDebut().compareTo(o2.getDeclaration().getDateDebut());
 			}
 		});
 	}
@@ -4740,7 +4740,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertFalse(tache.isAnnule());
 
 				final TacheAnnulationDeclarationImpot annulation = (TacheAnnulationDeclarationImpot) tache;
-				final DeclarationImpotOrdinaire diAAnnuler = annulation.getDeclarationImpotOrdinaire();
+				final DeclarationImpotOrdinaire diAAnnuler = annulation.getDeclaration();
 				assertNotNull(diAAnnuler);
 				assertFalse(diAAnnuler.isAnnule());
 				assertFalse(diAAnnuler.isLibre());      // la DI a été adaptée au for
@@ -5352,7 +5352,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final TacheAnnulationDeclarationImpot tache = (TacheAnnulationDeclarationImpot) taches.get(0);
 				assertNotNull(tache);
-				assertEquals(di.get(0).getId(), tache.getDeclarationImpotOrdinaire().getId());
+				assertEquals(di.get(0).getId(), tache.getDeclaration().getId());
 
 				return null;
 			}
@@ -5719,7 +5719,7 @@ public class TacheServiceTest extends BusinessTest {
 					final TacheAnnulationDeclarationImpot tacheDi = (TacheAnnulationDeclarationImpot) tache;
 					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
 					assertFalse(tache.isAnnule());
-					assertNotNull(tacheDi.getDeclarationImpotOrdinaire());
+					assertNotNull(tacheDi.getDeclaration());
 				}
 				// une tâche d'envoi avec le bon type de document
 				{

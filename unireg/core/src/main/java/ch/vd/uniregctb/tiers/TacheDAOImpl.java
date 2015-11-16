@@ -18,7 +18,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -162,20 +162,14 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 			final RegDate dateDebutPeriode = RegDate.get(annee, 1, 1);
 			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
-			if (TypeTache.TacheEnvoiDeclarationImpotPP == typeTache) {
-				clause += " and tache.dateDebut >= :dateDebut";
-				clause += " and tache.dateFin <= :dateFin";
-				params.put("dateDebut", dateDebutPeriode);
-				params.put("dateFin", dateFinPeriode);
-			}
-			else if (TypeTache.TacheEnvoiDeclarationImpotPM == typeTache) {
+			if (typeTache == TypeTache.TacheEnvoiDeclarationImpotPP || typeTache == TypeTache.TacheEnvoiDeclarationImpotPM || typeTache == TypeTache.TacheEnvoiQuestionnaireSNC) {
 				clause += " and tache.dateFin between :dateDebut and :dateFin";
 				params.put("dateDebut", dateDebutPeriode);
 				params.put("dateFin", dateFinPeriode);
 			}
-			else if (TypeTache.TacheAnnulationDeclarationImpot == typeTache) {
-				clause += " and tache.declarationImpotOrdinaire.dateDebut >= :dateDebut";
-				clause += " and tache.declarationImpotOrdinaire.dateFin <= :dateFin";
+			else if (typeTache == TypeTache.TacheAnnulationDeclarationImpot || typeTache == TypeTache.TacheAnnulationQuestionnaireSNC) {
+				clause += " and tache.declaration.dateDebut >= :dateDebut";
+				clause += " and tache.declaration.dateFin <= :dateFin";
 				params.put("dateDebut", dateDebutPeriode);
 				params.put("dateFin", dateFinPeriode);
 			}
@@ -219,9 +213,9 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 			clause += " and tache.annulationDate is null";
 		}
 
-		final DeclarationImpotOrdinaire declarationAnnulee = criterion.getDeclarationAnnulee();
-		if (declarationAnnulee != null && typeTache == TypeTache.TacheAnnulationDeclarationImpot) {
-			clause += " and tache.declarationImpotOrdinaire = :diAnnulee";
+		final Declaration declarationAnnulee = criterion.getDeclarationAnnulee();
+		if (declarationAnnulee != null && (typeTache == TypeTache.TacheAnnulationDeclarationImpot || typeTache == TypeTache.TacheAnnulationQuestionnaireSNC)) {
+			clause += " and tache.declaration = :diAnnulee";
 			params.put("diAnnulee", declarationAnnulee);
 		}
 
@@ -301,7 +295,7 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 				if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheAnnulationDeclarationImpot
 						&& (isTacheOuverte(t))) {
 					final TacheAnnulationDeclarationImpot annul = (TacheAnnulationDeclarationImpot) t;
-					if (Long.valueOf(noDi).equals(annul.getDeclarationImpotOrdinaire().getId())) {
+					if (Long.valueOf(noDi).equals(annul.getDeclaration().getId())) {
 						return true;
 					}
 				}
@@ -310,8 +304,8 @@ public class TacheDAOImpl extends BaseDAOImpl<Tache, Long> implements TacheDAO {
 
 		// Recherche dans la base de données
 
-		final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable.id = :ctb and "
-				+ "tache.declarationImpotOrdinaire.id = :noDi and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final String query = "from TacheAnnulationDeclaration tache where tache.contribuable.id = :ctb and "
+				+ "tache.declaration.id = :noDi and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
 		final List<Tache> list = find(query,
 		                              buildNamedParameters(Pair.of("ctb", noCtb), Pair.of("noDi", noDi)),
 		                              FlushMode.MANUAL);

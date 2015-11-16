@@ -782,7 +782,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = deletes.size() - 1; i >= 0; i--) {
 				final Long questionnaireId = deletes.get(i).questionnaireId;
 				for (TacheAnnulationQuestionnaireSNC annulation : tachesAnnulation) {
-					if (annulation.getQuestionnaireSNC().getId().equals(questionnaireId)) {
+					if (annulation.getDeclaration().getId().equals(questionnaireId)) {
 						deletes.remove(i);
 						break;      // pas la peine de l'enlever plusieurs fois...
 					}
@@ -1203,7 +1203,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = deleteActions.size() - 1; i >= 0; i--) {
 				final Long diId = deleteActions.get(i).diId;
 				for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
-					if (annulation.getDeclarationImpotOrdinaire().getId().equals(diId)) {
+					if (annulation.getDeclaration().getId().equals(diId)) {
 						deleteActions.remove(i);
 						break;      // pas la peine de l'enlever plusieurs fois...
 					}
@@ -1332,7 +1332,7 @@ public class TacheServiceImpl implements TacheService {
 	 */
 	private static boolean isTacheAnnulationQuestionnaireSNCValide(TacheAnnulationQuestionnaireSNC annulation, List<DateRange> periodes, List<UpdateQSNC> updates, RegDate dateReference) {
 
-		final QuestionnaireSNC questionnaire = annulation.getQuestionnaireSNC();
+		final QuestionnaireSNC questionnaire = annulation.getDeclaration();
 		if (questionnaire.isAnnule()) {
 			// la déclaration est déjà annulée -> la tâche ne sert à rien
 			return false;
@@ -1364,7 +1364,7 @@ public class TacheServiceImpl implements TacheService {
 	 */
 	private static boolean isTacheAnnulationDIValide(TacheAnnulationDeclarationImpot annulation, List<PeriodeImposition> periodes, List<UpdateDI> updateActions, RegDate dateReference) {
 
-		final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
+		final DeclarationImpotOrdinaire declaration = annulation.getDeclaration();
 		if (declaration.isAnnule()) {
 			// la déclaration est déjà annulée
 			return false;

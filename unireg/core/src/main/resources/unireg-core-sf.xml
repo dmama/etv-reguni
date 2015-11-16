@@ -95,6 +95,7 @@
 		<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
 		<value>ch.vd.uniregctb.tiers.Tiers</value>
 		<value>ch.vd.uniregctb.tiers.Tache</value>
+		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclaration</value>
 		<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>
 		<value>ch.vd.uniregctb.tiers.TacheAnnulationQuestionnaireSNC</value>
 		<value>ch.vd.uniregctb.tiers.TacheControleDossier</value>
