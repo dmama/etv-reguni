@@ -28,6 +28,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v2.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV2" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v3.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandlerV3" />
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.periodic.v3.PeriodicTaxLiabilityRequest" value-ref="periodicTaxLiabilityRequestHandlerV3" />
+				<entry key="ch.vd.unireg.xml.event.party.fiscact.periodic.v1.PeriodicFiscalActivityRequest" value-ref="periodicFiscalActivityRequestHandlerV1" />
 			</util:map>
 		</property>
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
@@ -169,5 +170,9 @@
 		<property name="taxliabilityControlService" ref="taxLiabilityControlService"/>
 	</bean>
 
+	<bean id="periodicFiscalActivityRequestHandlerV1" class="ch.vd.uniregctb.evenement.party.PeriodicFiscalActivityRequestHandlerV1">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
 
 </beans>
