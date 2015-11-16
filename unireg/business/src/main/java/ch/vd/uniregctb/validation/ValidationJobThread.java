@@ -23,6 +23,8 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesMorales;
+import ch.vd.uniregctb.tiers.ContribuableImpositionPersonnesPhysiques;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
@@ -41,7 +43,8 @@ public class ValidationJobThread extends Thread {
 	private final TiersDAO tiersDAO;
 	private final PlatformTransactionManager transactionManager;
 	private final AdresseService adresseService;
-	private final int premiereAnneeFiscale;
+	private final int premiereAnneeFiscalePP;
+	private final int premiereAnneeFiscalePM;
 	private final ValidationService validationService;
 	private final PeriodeImpositionService periodeImpositionService;
 
@@ -60,7 +63,8 @@ public class ValidationJobThread extends Thread {
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
 
-		this.premiereAnneeFiscale = parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
+		this.premiereAnneeFiscalePP = parametreService.getPremierePeriodeFiscalePersonnesPhysiques();
+		this.premiereAnneeFiscalePM = parametreService.getPremierePeriodeFiscalePersonnesMorales();
 	}
 
 	@Override
@@ -141,11 +145,26 @@ public class ValidationJobThread extends Thread {
 		}
 	}
 
+	private int getPremierePeriodeFiscalePourPeriodesImposition(Contribuable contribuable) {
+		if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
+			return premiereAnneeFiscalePP;
+		}
+		else if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
+			return premiereAnneeFiscalePM;
+		}
+		else {
+			// bizarre... établissement, peut-être ? au pire, on lève des problèmes...
+			return Math.min(premiereAnneeFiscalePP, premiereAnneeFiscalePM);
+		}
+	}
+
 	private void checkPeriodesImposition(final Contribuable contribuable, ValidationJobResults results) {
 
 		final RegDate aujourdhui = RegDate.get();
 		final RegDate dateDebut = contribuable.getDateDebutActivite();
 		final RegDate dateFin = contribuable.getDateFinActivite();
+
+		final int premiereAnneeFiscale = getPremierePeriodeFiscalePourPeriodesImposition(contribuable);
 
 		final int anneeDebut = Math.max(premiereAnneeFiscale, (dateDebut == null ? aujourdhui.year() : dateDebut.year()));
 		final int anneeFin = Math.max(premiereAnneeFiscale, (dateFin == null ? aujourdhui.year() : dateFin.year()));
