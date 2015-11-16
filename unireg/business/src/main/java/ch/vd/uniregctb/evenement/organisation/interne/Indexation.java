@@ -36,9 +36,8 @@ public class Indexation extends EvenementOrganisationInterne {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 		final Entreprise pm = getEntreprise();
 		if (pm != null) {
-			// TODO: Plutôt que cet appel direct qui entraîne une réindexation immédiate, appeler l'intercepteur et lui passer l'entité
-			LOGGER.info("Déclenchement de la réindexation pour l'entreprise {}.", pm.getNumero());
-			context.getIndexer().schedule(pm.getNumero());
+			programmeReindexation(pm);
+
 		}
 		// Cet événement reste en status REDONDANT. Utiliser la classe dérivée IndexationPure pour obtenir un statut TRAITE.
 	}

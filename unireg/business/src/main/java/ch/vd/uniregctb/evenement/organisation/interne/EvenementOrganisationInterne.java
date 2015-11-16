@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -39,9 +40,17 @@ import ch.vd.uniregctb.type.TypeRegimeFiscal;
 /**
  * Classe de base pour l'implémentation des événements organisation en provenance du RCEnt.
  *
- * Note importante: le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
- *                  sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
- *                  à TRAITE au moyen de la méthode raiseStatusTo().
+ * Note importante: - Le status de l'événement est à REDONDANT dès le départ. Lors du traitement il faut, lorsque des données
+ *                    sont modifiées et / ou quelque action est entreprise en réaction à l'événement, faire passer le status
+ *                    à TRAITE au moyen de la méthode raiseStatusTo().
+ *
+ *                  - Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
+ *                  qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
+ *                  qui:
+ *                    1) Audit.info() proprement ce qui va être fait,
+ *                    2) Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
+ *                    3) Fait ce qui doit être fait s'il y a lieu,
+ *                    4) Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
  */
 public abstract class EvenementOrganisationInterne {
 
@@ -57,7 +66,7 @@ public abstract class EvenementOrganisationInterne {
 
 	private HandleStatus status = HandleStatus.REDONDANT;
 
-	protected final EvenementOrganisationContext context;
+	private final EvenementOrganisationContext context;
 	private final EvenementOrganisationOptions options;
 
 	protected static final String MSG_GENERIQUE_A_VERIFIER = "Veuillez vérifier que le traitement automatique de création de l'entreprise donne bien le résultat escompté.";
@@ -274,6 +283,11 @@ public abstract class EvenementOrganisationInterne {
 		return context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
 	}
 
+	protected void programmeReindexation(Entreprise pm) {
+		Audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise %s.", pm.getNumero()));
+		context.getIndexer().schedule(pm.getNumero());
+	}
+
 	/**
 	 * Crée et persiste une nouvelle entreprise pour un numéro d'organisation donné
 	 * @param noOrganisation numéro d'organisation à utiliser
@@ -469,4 +483,48 @@ public abstract class EvenementOrganisationInterne {
 		                                               bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
+
+	/**
+	 * Opère un changement de domicile sur un établissement donné.
+	 *
+	 * Note: La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
+	 *
+	 * @param etablissement L'établissement concerné par le changement de domicile
+	 * @param siegeApres    Le siège d'où extrapoler le domicile.
+	 * @param dateAvant     La date du dernier jour du domicile précédant
+	 * @param dateApres     La date du premier jour du nouveau domicile
+	 */
+	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Siege siegeApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres) {
+		final DomicileEtablissement domicilePrecedant = DateRangeHelper.rangeAt(etablissement.getSortedDomiciles(false), dateApres);
+		context.getTiersService().closeDomicileEtablissement(domicilePrecedant, dateAvant);
+		context.getTiersService().addDomicileEtablissement(etablissement, siegeApres.getTypeAutoriteFiscale(),
+		                                                   siegeApres.getNoOfs(), dateApres, null);
+
+		Commune communePrecedante = context.getServiceInfra().getCommuneByNumeroOfs(domicilePrecedant.getNumeroOfsAutoriteFiscale(), dateAvant);
+		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(siegeApres.getNoOfs(), dateApres);
+
+		Audit.info(getNumeroEvenement(),
+		           String.format("Changement du domicile de l'établissement no %s (civil: %s) de %s (civil: %s) vers %s (civil: %s).",
+		                         etablissement.getNumero(), etablissement.getNumeroEtablissement(),
+		                         communePrecedante.getNomOfficielAvecCanton(), domicilePrecedant.getNumeroOfsAutoriteFiscale(),
+		                         nouvelleCommune.getNomOfficielAvecCanton(), nouvelleCommune.getNoOFS())
+		);
+
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
+	/**
+	 * Publie un événement fiscal d'information.
+	 *
+	 * @param date         Date de valeur de l'événement
+	 * @param entreprise   L'entreprise concernée
+	 * @param typeInfo     Le type d'information représenté par le message
+	 * @param auditMessage Le message à diffuser dans l'audit.
+	 */
+	protected void emetEvtFiscalInformation(RegDate date, Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire typeInfo, String auditMessage) {
+		Audit.info(getNumeroEvenement(), auditMessage);
+		context.getEvenementFiscalService().publierEvenementFiscalInformationComplementaire(entreprise, typeInfo, date);
+		raiseStatusTo(HandleStatus.TRAITE);
+	}
+
 }

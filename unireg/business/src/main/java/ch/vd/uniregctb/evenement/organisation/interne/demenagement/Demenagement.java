@@ -1,15 +1,11 @@
 package ch.vd.uniregctb.evenement.organisation.interne.demenagement;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
-import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
@@ -17,8 +13,6 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
-import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
-import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -62,35 +56,6 @@ public abstract class Demenagement extends EvenementOrganisationInterne {
 
 	@Override
 	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
-
-	/**
-	 * Opère un changement de domicile sur un établissement donné.
-	 *
-	 * Note: La méthode utilise les dates avant/après de l'événement interne en cours de traitement.
-	 *
-	 * @param etablissement L'établissement concerné par le changement de domicile
-	 * @param siegeApres    Le siège d'où extrapoler le domicile.
-	 * @param dateAvant     La date du dernier jour du domicile précédant
-	 * @param dateApres     La date du premier jour du nouveau domicile
-	 */
-	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Siege siegeApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres) {
-		final DomicileEtablissement domicilePrecedant = DateRangeHelper.rangeAt(etablissement.getSortedDomiciles(false), dateApres);
-		context.getTiersService().closeDomicileEtablissement(domicilePrecedant, dateAvant);
-		context.getTiersService().addDomicileEtablissement(etablissement, siegeApres.getTypeAutoriteFiscale(),
-		                                                   siegeApres.getNoOfs(), dateApres, null);
-
-		Commune communePrecedante = context.getServiceInfra().getCommuneByNumeroOfs(domicilePrecedant.getNumeroOfsAutoriteFiscale(), dateAvant);
-		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(siegeApres.getNoOfs(), dateApres);
-
-		Audit.info(getNumeroEvenement(),
-		           String.format("Changement du domicile de l'établissement no %s (civil: %s) de %s (civil: %s) vers %s (civil: %s).",
-		           etablissement.getNumero(), etablissement.getNumeroEtablissement(),
-		           communePrecedante.getNomOfficielAvecCanton(), domicilePrecedant.getNumeroOfsAutoriteFiscale(),
-		           nouvelleCommune.getNomOfficielAvecCanton(), nouvelleCommune.getNoOFS())
-		);
-
-		raiseStatusTo(HandleStatus.TRAITE);
-	}
 
 	/**
 	 * Changement de siège principal avec établissement stable
