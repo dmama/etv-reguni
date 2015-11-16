@@ -41,6 +41,9 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-response/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-3.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-request/2" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-request/3" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-3.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/fiscact-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/fiscact-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-fiscact-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-fiscact-request-1.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/data/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd"/>
 

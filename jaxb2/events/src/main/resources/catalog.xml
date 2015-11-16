@@ -43,6 +43,10 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-response-3.xsd" uri="event/party/taxliab-response-3.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-2.xsd" uri="event/party/periodic-taxliab-request-2.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-3.xsd" uri="event/party/periodic-taxliab-request-3.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-request-1.xsd" uri="event/party/fiscact-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/fiscact-response-1.xsd" uri="event/party/fiscact-response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-fiscact-request-1.xsd" uri="event/party/periodic-fiscact-request-1.xsd"/>
+
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/data/dataEvent-1.xsd" uri="event/data/dataEvent-1.xsd"/>
 
 	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd" uri="event/lr/evtQuittanceListe-v1.xsd"/>
