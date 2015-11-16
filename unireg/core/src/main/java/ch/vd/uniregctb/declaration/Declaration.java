@@ -358,6 +358,12 @@ public abstract class Declaration extends HibernateDateRangeEntity implements Li
 			return retour;
 		}
 
+		// l'état "suspendu" est directement derrière l'état "retourné", en termes de priorité
+		final EtatDeclaration suspension = getDernierEtatOfType(TypeEtatDeclaration.SUSPENDUE, etatsSorted);
+		if (suspension != null) {
+			return suspension;
+		}
+
 		// récupère le dernier état non-annulé (qui n'est pas un retour, donc)
 		for (int i = etatsSorted.size() - 1; i >= 0; --i) {
 			final EtatDeclaration e = etatsSorted.get(i);
