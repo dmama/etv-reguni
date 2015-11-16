@@ -1611,8 +1611,6 @@
     <column>DATE_FIN</column>
     <column>ENTREPRISE_ID</column>
     <column>RAISON_SOCIALE</column>
-    <column>CAPITAL</column>
-    <column>MONNAIE_CAPITAL</column>
     <column>FORME_JURIDIQUE</column>
     <row>
       <value>1</value>
@@ -1624,8 +1622,6 @@
       <null/>
       <value>21038</value>
       <value>Curia Treuhand AG</value>
-      <null/>
-      <null/>
       <value>SA</value>
     </row>
     <row>
@@ -1638,8 +1634,6 @@
       <null/>
       <value>2058</value>
       <value>KPMG AG (KPMG SA) (KPMG Ltd)</value>
-      <null/>
-      <null/>
       <value>SA</value>
     </row>
   </table>

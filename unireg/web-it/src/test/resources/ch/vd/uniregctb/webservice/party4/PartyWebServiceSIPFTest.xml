@@ -514,6 +514,30 @@
 			<null/>
 		</row>
 	</table>
+	<table name="CAPITAL_ENTREPRISE">
+		<column>ID</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>MONTANT</column>
+		<column>MONNAIE</column>
+		<column>ENTREPRISE_ID</column>
+		<row>
+			<value>3</value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
+			<value><![CDATA[[UT] AdresseServiceTest]]></value>
+			<value>19790807</value>
+			<null/>
+			<value>150000</value>
+			<value>CHF</value>
+			<value>222</value>
+		</row>
+	</table>
 	<table name="DONNEES_RC">
 		<column>ID</column>
 		<column>LOG_CDATE</column>
@@ -524,8 +548,6 @@
 		<column>DATE_FIN</column>
 		<column>ENTREPRISE_ID</column>
 		<column>RAISON_SOCIALE</column>
-		<column>CAPITAL</column>
-		<column>MONNAIE_CAPITAL</column>
 		<column>FORME_JURIDIQUE</column>
 		<row>
 			<value>2</value>
@@ -537,8 +559,6 @@
 			<null/>
 			<value>37</value>
 			<value>Fiber Seal (Romandie) SA, en liquidation</value>
-			<null/>
-			<null/>
 			<value>SA</value>
 		</row>
 		<row>
@@ -551,8 +571,6 @@
 			<null/>
 			<value>222</value>
 			<value>Kalesa S.A., en liquidation</value>
-			<value>150000</value>
-			<value>CHF</value>
 			<value>SA</value>
 		</row>
 		<row>
@@ -565,8 +583,6 @@
 			<null/>
 			<value>25000</value>
 			<value>Fonds prévoyance en faveur du personnel Sté électrique intercommunale de la Côte</value>
-			<null/>
-			<null/>
 			<value>SA</value>
 		</row>
 	</table>
