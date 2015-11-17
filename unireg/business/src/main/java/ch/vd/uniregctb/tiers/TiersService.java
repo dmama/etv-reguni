@@ -82,6 +82,12 @@ public interface TiersService {
     List<DateRanged<Etablissement>> getEtablissementsSecondairesEntreprise(Entreprise entreprise);
 
     /**
+     * @param etablissement établissement ciblé
+     * @return la liste des entités juridiques (personnes physiques, entreprises...) liées à l'établissement donné
+     */
+    List<DateRanged<Contribuable>> getEntitesJuridiquesEtablissement(Etablissement etablissement);
+
+    /**
      * Retourne un tiers en fonction de son numéro de tiers.
      *
      * @param numeroTiers le numéro de tiers (= numéro de contribuable, sauf dans le cas du débiteur prestation imposable)

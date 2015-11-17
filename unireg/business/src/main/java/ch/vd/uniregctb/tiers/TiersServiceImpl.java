@@ -315,7 +315,28 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
-    @Override
+	@Override
+	public List<DateRanged<Contribuable>> getEntitesJuridiquesEtablissement(Etablissement etablissement) {
+		final Set<RapportEntreTiers> objets = etablissement.getRapportsObjet();
+		final List<DateRanged<Contribuable>> entites = new LinkedList<>();
+		for (RapportEntreTiers ret : objets) {
+			if (!ret.isAnnule() && ret instanceof ActiviteEconomique) {
+				final Contribuable ctb = (Contribuable) getTiers(ret.getSujetId());
+				if (ctb != null) {
+					entites.add(new DateRanged<>(ret.getDateDebut(), ret.getDateFin(), ctb));
+				}
+				else {
+					LOGGER.warn(String.format("Contribuable non-trouvé (%d) sur le rapport %d.", ret.getSujetId(), ret.getId()));
+				}
+			}
+		}
+
+		final List<DateRanged<Contribuable>> tries = new ArrayList<>(entites);
+		Collections.sort(tries, new DateRangeComparator<>());
+		return tries;
+	}
+
+	@Override
     public Tiers getTiers(long numeroTiers) {
         return tiersDAO.get(numeroTiers);
     }

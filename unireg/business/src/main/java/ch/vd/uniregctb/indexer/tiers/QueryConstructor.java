@@ -81,8 +81,7 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
 					break;
 				case ETABLISSEMENT:
-					// TODO Indexer pour etablissement
-					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case COLLECTIVITE_ADMINISTRATIVE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrativeIndexable.SUB_TYPE)), should);
@@ -94,8 +93,7 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrativeIndexable.SUB_TYPE)), should);
-					// TODO Indexer pour etablissement
-					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
+					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case PERSONNE_PHYSIQUE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, HabitantIndexable.SUB_TYPE)), should);
