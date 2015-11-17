@@ -7,6 +7,7 @@
 	<bean id="evtCivCriteriaValidator" class="ch.vd.uniregctb.evenement.common.EvenementCivilCriteriaValidator" />
 
 	<bean id="evtCivEchCriteriaValidator" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchCriteriaValidator" />
+	<bean id="evtOrganisationCriteriaValidator" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationCriteriaValidator" />
 
 	<bean id="evtCivController" abstract="true" class="ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
@@ -31,6 +32,11 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
+	<bean id="evtOrganisationController" class="ch.vd.uniregctb.evenement.organisation.EvenementOrganisationController" parent="evtCivController">
+		<property name="validator" ref="evtOrganisationCriteriaValidator" />
+		<property name="manager" ref="evtOrganisationManager" />
+	</bean>
+
 	<bean id="evtCivRegPPManager" class="ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManagerImpl" parent="evtCivManager">
 		<property name="evenementDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
@@ -40,6 +46,17 @@
 		<property name="evenementService" ref="evtCivilEchService" />
 		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
 		<property name="evenementProcessor" ref="evtCivilEchProcessor" />
+	</bean>
+
+	<bean id="evtOrganisationManager" class="ch.vd.uniregctb.evenement.organisation.manager.EvenementOrganisationManagerImpl">
+		<property name="webOrganisationService" ref="webOrganisationService" />
+		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="evenementService" ref="evtOrganisationService" />
+		<property name="evenementNotificationQueue" ref="evtOrganisationNotificationQueue" />
+		<property name="evenementProcessor" ref="evtOrganisationProcessor" />
 	</bean>
 
 	<!-- Evénements notaires -->

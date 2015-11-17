@@ -113,7 +113,7 @@ public class FailliteConcordatStrategyTest extends WithoutSpringTest {
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMANDEMENT_DE_PAYER));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SEQUESTRE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_PROCES_VERBAL_SAISIE));
-		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_PROUSUITE));
+		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_COMMUNICATION_DANS_LA_POURSUITE));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION));
 		Assert.assertNull(createEventAndMatch(TypeEvenementOrganisation.FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL));

@@ -52,7 +52,7 @@ public enum TypeEvenementOrganisation {
 		FOSC_COMMANDEMENT_DE_PAYER(36, "Commandement de payer"),
 		FOSC_PROCES_VERBAL_SEQUESTRE(37, "Procès-verbal de séquestre"),
 		FOSC_PROCES_VERBAL_SAISIE(38, "Procès-verbal de saisie"),
-		FOSC_COMMUNICATION_DANS_LA_PROUSUITE(39, "Communication dans la poursuite"),
+		FOSC_COMMUNICATION_DANS_LA_POURSUITE(39, "Communication dans la poursuite"),
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_FUSION_OU_SCISSION(40, "Appel aux créanciers en suite de fusion ou de scission"),
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_LIQUIDATION(41, "Appel aux créanciers en suite de liquidation"),
 		FOSC_APPEL_AUX_CREANCIERS_SUITE_REDUCTION_CAPITAL(42, "Appel aux créanciers en suite de réduction du capital"),
