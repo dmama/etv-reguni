@@ -1026,6 +1026,7 @@ public class TacheServiceImpl implements TacheService {
 			}
 		};
 
+		@Nullable
 		static DomaineContribuable of(Contribuable contribuable) {
 			if (contribuable instanceof ContribuableImpositionPersonnesPhysiques) {
 				return PERSONNES_PHYSIQUES;
@@ -1033,7 +1034,9 @@ public class TacheServiceImpl implements TacheService {
 			if (contribuable instanceof ContribuableImpositionPersonnesMorales) {
 				return PERSONNES_MORALES;
 			}
-			throw new IllegalArgumentException("Type de contribuable non-supporté : " + contribuable.getClass().getName());
+
+			// non traité par la mécanique de recalcul des tâches
+			return null;
 		}
 
 		/**
@@ -1082,6 +1085,11 @@ public class TacheServiceImpl implements TacheService {
 
 		// On récupère les données brutes
 		final DomaineContribuable domaine = DomaineContribuable.of(contribuable);
+		if (domaine == null) {
+			// type de contribuable non traité par la mécanique de recalcul des tâches
+			return Collections.emptyList();
+		}
+
 		final List<PeriodeImposition> periodes = domaine.filtrerPeriodes(getPeriodesImpositionHisto(contribuable), parametres);
 		final List<DeclarationImpotOrdinaire> declarations = domaine.filtrerDeclarations(getDeclarationsActives(contribuable), parametres);
 		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiDIsEnInstance(contribuable);
