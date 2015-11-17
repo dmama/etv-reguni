@@ -134,7 +134,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 	@SuppressWarnings({"unchecked"})
 	private Iterator<Long> getIdsContribuablesAvecForOrdinaireValideUnJourAuMoins(Session session, int pf) {
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");
+		b.append("SELECT DISTINCT ctb.id FROM ContribuableImpositionPersonnesPhysiques AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
 		b.append(" AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
@@ -168,7 +168,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 	@SuppressWarnings({"unchecked"})
 	private Iterator<Long> getIdsTiersCandidatsPourExtractionRevenuSourcePure(Session session, int pf) {
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT ctb.id FROM Contribuable AS ctb");
+		b.append("SELECT DISTINCT ctb.id FROM ContribuableImpositionPersonnesPhysiques AS ctb");
 		b.append(" INNER JOIN ctb.forsFiscaux AS for");
 		b.append(" WHERE for.annulationDate IS NULL");
 		b.append(" AND for.class = ForFiscalPrincipalPP");

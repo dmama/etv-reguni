@@ -1040,7 +1040,7 @@ public class ProduireRolesProcessor {
 	protected List<Long> getIdsOfAllContribuables(final int annee) {
 
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT DISTINCT cont.id FROM Contribuable AS cont INNER JOIN cont.forsFiscaux AS for");
+		b.append("SELECT DISTINCT cont.id FROM ContribuableImpositionPersonnesPhysiques AS cont INNER JOIN cont.forsFiscaux AS for");
 		b.append(" WHERE cont.annulationDate IS NULL");
 		b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
 		b.append(" AND (for.dateDebut IS NULL OR for.dateDebut <= :finPeriode)");
@@ -1083,7 +1083,7 @@ public class ProduireRolesProcessor {
 		}
 		else {
 			final StringBuilder b = new StringBuilder();
-			b.append("SELECT DISTINCT cont.id FROM Contribuable AS cont INNER JOIN cont.forsFiscaux AS for");
+			b.append("SELECT DISTINCT cont.id FROM ContribuableImpositionPersonnesPhysiques AS cont INNER JOIN cont.forsFiscaux AS for");
 			b.append(" WHERE cont.annulationDate IS NULL");
 			b.append(" AND for.annulationDate IS NULL AND for.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'");
 			b.append(" AND for.numeroOfsAutoriteFiscale IN (:noOfsCommune)");

@@ -86,7 +86,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 		final String queryString = "SELECT DISTINCT                                                                     "
 									+ "    cont.id                                                                     	"
 									+ "FROM                                                                          	"
-									+ "    Contribuable AS cont                                                      	"
+									+ "    ContribuableImpositionPersonnesPhysiques AS cont                             "
 									+ "INNER JOIN                                                                    	"
 									+ "    cont.forsFiscaux AS fors                                                  	"
 									+ "WHERE                                                                         	"
