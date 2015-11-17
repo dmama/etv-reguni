@@ -28,7 +28,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  *
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
  */
-public class MenageCommunIndexable extends AssujettissablePersonnePhysiqueIndexable<MenageCommun> {
+public class MenageCommunIndexable extends ContribuableImpositionPersonnesPhysiquesIndexable<MenageCommun> {
 
 	// private final Logger LOGGER = LoggerFactory.getLogger(MenageCommunIndexable.class);
 
