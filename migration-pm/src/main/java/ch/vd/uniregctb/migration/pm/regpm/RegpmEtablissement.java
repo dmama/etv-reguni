@@ -43,8 +43,6 @@ import ch.vd.uniregctb.migration.pm.regpm.usertype.RegDateUserType;
 })
 public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
-	private static final long serialVersionUID = -7209488522260407956L;
-
 	private Long id;
 	private String raisonSociale1;
 	private String raisonSociale2;
@@ -73,6 +71,7 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 	private Set<RegpmRattachementProprietaire> rattachementsProprietaires;
 	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 	private Set<RegpmMandat> mandants;
+	private SortedSet<RegpmBlocNotesEtablissement> notes;
 
 	// no institution ?, mandat contribuable ?, ...
 
@@ -420,5 +419,16 @@ public class RegpmEtablissement extends RegpmEntity implements WithLongId {
 
 	public void setMandants(Set<RegpmMandat> mandants) {
 		this.mandants = mandants;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ETABNO")
+	@Sort(type = SortType.NATURAL)
+	public SortedSet<RegpmBlocNotesEtablissement> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(SortedSet<RegpmBlocNotesEtablissement> notes) {
+		this.notes = notes;
 	}
 }

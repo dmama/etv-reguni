@@ -241,6 +241,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		etablissement.getInscriptionsRC().size();
 		etablissement.getRadiationsRC().size();
 		etablissement.getMandants().size();
+		etablissement.getNotes().size();
 
 		// chargement de l'entreprise/individu lié(e)
 		forceLoad(etablissement.getEntreprise(), graphe);
@@ -288,6 +289,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		pm.getQuestionnairesSNC().size();
 		pm.getCapitaux().size();
 		pm.getMandants().size();
+		pm.getNotes().size();
 
 		// lazy init + éventuels liens vers d'autres entités
 		{
@@ -472,7 +474,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		});
 	}
 
-	private Graphe loadGraphe(final long idEntreprise) {
+	protected Graphe loadGraphe(final long idEntreprise) {
 		final long start = System.nanoTime();
 		final GrapheImpl graphe = new GrapheImpl();     // vide au départ...
 		try {

@@ -49,6 +49,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAllegementFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmBlocNotesEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCapital;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
@@ -107,6 +108,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.DayMonth;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
@@ -184,6 +186,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		entreprise.setRegimesFiscauxCH(new TreeSet<>());
 		entreprise.setRegimesFiscauxVD(new TreeSet<>());
 		entreprise.setSieges(new TreeSet<>());
+		entreprise.setNotes(new TreeSet<>());
 
 		return entreprise;
 	}
@@ -516,6 +519,16 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 		return a;
 	}
 
+	static RegpmBlocNotesEntreprise addNote(RegpmEntreprise entreprise, RegDate dateValidite, String texte) {
+		final RegpmBlocNotesEntreprise note = new RegpmBlocNotesEntreprise();
+		note.setId(new RegpmBlocNotesEntreprise.PK(computeNewSeqNo(entreprise.getNotes(), x -> x.getId().getSeqNo()), entreprise.getId()));
+		assignMutationVisa(note, REGPM_VISA, REGPM_MODIF);
+		note.setDateValidite(dateValidite);
+		note.setCommentaire(texte);
+		entreprise.getNotes().add(note);
+		return note;
+	}
+
 	@Test
 	public void testMigrationSuperSimple() throws Exception {
 
@@ -541,7 +554,6 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
 		Assert.assertEquals(idEntreprise, idMapper.getIdUniregEntreprise(noEntreprise));
 		Assert.assertEquals(0, linkCollector.getCollectedLinks().size());
-
 	}
 
 	@Test
@@ -4365,5 +4377,51 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 			Assert.assertEquals("Etat 'INSCRITE_RC' migré sur la période [01.03.2005 -> ?].", textes.get(7));
 			Assert.assertEquals("Entreprise migrée : 26.23.", textes.get(8));
 		}
+	}
+
+	@Test
+	public void testMigrationNotes() throws Exception {
+
+		final long noEntreprise = 2623L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addNote(e, RegDate.get(2000, 1, 1), "Première note");
+		addNote(e, RegDate.get(1999, 1, 1), "Seconde note");
+		addNote(e, RegDate.get(2005, 7, 12), "Cette sté n'a plus qu'une activité de facturation dès le    01.01.1993 selon lettre du 02.06.1993 au dossier. Ne plus   toucher ce dossier qui a été vu et revu par STL. Suite à la réorganisation sous forme de scissions multiples un nouveau dossier a été constitué soit : no xxxxx.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ");
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final List<Remarque> remarques = uniregStore.getEntitiesFromDb(Remarque.class, Collections.singletonMap("tiers", entreprise));
+			Assert.assertNotNull(remarques);
+			Assert.assertEquals(3, remarques.size());
+			{
+				final Remarque remarque = remarques.get(0);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("01.01.2000 - Première note", remarque.getTexte());
+			}
+			{
+				final Remarque remarque = remarques.get(1);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("01.01.1999 - Seconde note", remarque.getTexte());
+			}
+			{
+				final Remarque remarque = remarques.get(2);
+				Assert.assertNotNull(remarque);
+				Assert.assertEquals("12.07.2005 - Cette sté n'a plus qu'une activité de facturation dès le\n01.01.1993 selon lettre du 02.06.1993 au dossier. Ne plus\ntoucher ce dossier qui a été vu et revu par STL. Suite à la\nréorganisation sous forme de scissions multiples un nouveau\ndossier a été constitué soit : no xxxxx.", remarque.getTexte());
+			}
+		});
 	}
 }

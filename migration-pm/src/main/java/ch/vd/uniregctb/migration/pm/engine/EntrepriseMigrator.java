@@ -1657,6 +1657,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
 		migratePersonneContact(regpm.getContact1(), unireg, mr);
+		migrateNotes(regpm.getNotes(), unireg);
 		migrateFlagDoublon(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, unireg, mr);
 		logDroitPublicAPM(regpm, mr);

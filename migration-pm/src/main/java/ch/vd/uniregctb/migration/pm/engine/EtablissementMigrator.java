@@ -522,6 +522,7 @@ public class EtablissementMigrator extends AbstractEntityMigrator<RegpmEtablisse
 		// coordonnées financières
 		final String titulaireCompte = extractEnseigneOuRaisonSociale(regpm);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, titulaireCompte, unireg, mr);
+		migrateNotes(regpm.getNotes(), unireg);
 
 		// données de base : enseigne, flag "principal" (aucun de ceux qui viennent de RegPM ne le sont, normalement)
 		unireg.setEnseigne(regpm.getEnseigne());

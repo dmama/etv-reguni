@@ -31,6 +31,8 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmBlocNotesEtablissement;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -46,6 +48,7 @@ import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -90,6 +93,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setRattachementsProprietaires(new HashSet<>());
 		etablissement.setSuccursales(new HashSet<>());
 		etablissement.setMandants(new HashSet<>());
+		etablissement.setNotes(new TreeSet<>());
 
 		// rattachement à l'entreprise depuis l'entreprise également
 		entreprise.getEtablissements().add(etablissement);
@@ -113,6 +117,7 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		etablissement.setRadiationsRC(new TreeSet<>());
 		etablissement.setRattachementsProprietaires(new HashSet<>());
 		etablissement.setSuccursales(new HashSet<>());
+		etablissement.setNotes(new TreeSet<>());
 
 		return etablissement;
 	}
@@ -170,6 +175,16 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 		ragp.setLeader(leader);
 		etb.getAppartenancesGroupeProprietaire().add(ragp);
 		return ragp;
+	}
+
+	static RegpmBlocNotesEtablissement addNote(RegpmEtablissement etb, RegDate dateValidite, String texte) {
+		final RegpmBlocNotesEtablissement note = new RegpmBlocNotesEtablissement();
+		note.setId(new RegpmBlocNotesEtablissement.PK(computeNewSeqNo(etb.getNotes(), x -> x.getId().getSeqNo()), etb.getId()));
+		assignMutationVisa(note, REGPM_VISA, REGPM_MODIF);
+		note.setDateValidite(dateValidite);
+		note.setCommentaire(texte);
+		etb.getNotes().add(note);
+		return note;
 	}
 
 	@Test
@@ -1298,5 +1313,66 @@ public class EtablissementMigratorTest extends AbstractEntityMigratorTest {
 
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bPériode d'établissement stable 1 ignorée car sa date de début de validité est dans le futur \\([0-9.]+\\)\\.$");
 		assertExistMessageWithContent(mr, LogCategory.ETABLISSEMENTS, "\\bEtablissement ignoré car sans établissement stable ni rôle de mandataire\\.$");
+	}
+
+	@Test
+	public void testMigrationNotes() throws Exception {
+
+		final long noEntreprise = 4346375L;
+		final long noEtablissement = 353645427L;
+		final RegDate dateDebut = RegDate.get(2000, 1, 13);
+		final RegDate dateFin = RegDate.get(2006, 5, 4);
+
+		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(noEntreprise);
+		EntrepriseMigratorTest.addRaisonSociale(entreprise, dateDebut, "Toto SA", null, null, true);
+		EntrepriseMigratorTest.addFormeJuridique(entreprise, dateDebut, EntrepriseMigratorTest.createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+
+		final RegpmEtablissement etablissement = buildEtablissement(noEtablissement, entreprise);
+		addEtablissementStable(etablissement, dateDebut, dateFin);
+		addDomicileEtablissement(etablissement, dateDebut, Commune.LAUSANNE, false);
+		addNote(etablissement, RegDate.get(2000, 6, 2), "Ma toute première note...");
+		addNote(etablissement, RegDate.get(1998, 8, 1), "Une autre......");
+		addNote(etablissement, RegDate.get(2005, 7, 12), "Cette sté n'a plus qu'une activité de facturation dès le    01.01.1993 selon lettre du 02.06.1993 au dossier. Ne plus   toucher ce dossier qui a été vu et revu par STL. Suite à la réorganisation sous forme de scissions multiples un nouveau dossier a été constitué soit : no xxxxx.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ");
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
+		                                         Collections.singletonList(etablissement),
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(etablissement, migrator, mr, linkCollector, idMapper);
+
+		// vérification du contenu de la base
+		doInUniregTransaction(true, status -> {
+			final List<Long> ids = getTiersDAO().getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			Assert.assertNotNull(ids);
+			Assert.assertEquals(1, ids.size());
+
+			final Etablissement etb = (Etablissement) getTiersDAO().get(ids.get(0));
+			Assert.assertNotNull(etb);
+
+			// notes sur l'établissement
+			{
+				final List<Remarque> remarques = uniregStore.getEntitiesFromDb(Remarque.class, Collections.singletonMap("tiers", etb));
+				Assert.assertNotNull(remarques);
+				Assert.assertEquals(3, remarques.size());
+				{
+					final Remarque remarque = remarques.get(0);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("02.06.2000 - Ma toute première note...", remarque.getTexte());
+				}
+				{
+					final Remarque remarque = remarques.get(1);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("01.08.1998 - Une autre......", remarque.getTexte());
+				}
+				{
+					final Remarque remarque = remarques.get(2);
+					Assert.assertNotNull(remarque);
+					Assert.assertEquals("12.07.2005 - Cette sté n'a plus qu'une activité de facturation dès le\n01.01.1993 selon lettre du 02.06.1993 au dossier. Ne plus\ntoucher ce dossier qui a été vu et revu par STL. Suite à la\nréorganisation sous forme de scissions multiples un nouveau\ndossier a été constitué soit : no xxxxx.", remarque.getTexte());
+				}
+			}
+		});
 	}
 }

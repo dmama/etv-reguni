@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.migration.pm.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -48,6 +50,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAppartenanceGroupeProprietaire;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmBlocNotes;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCoordonneesFinancieres;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntity;
@@ -69,6 +72,7 @@ import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscalAvecMotifs;
 import ch.vd.uniregctb.tiers.LocalisationDatee;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -1096,5 +1100,49 @@ public abstract class AbstractEntityMigrator<T extends RegpmEntity> implements E
 
 			return new DonneesMandats(rolesMandant, rolesMandataire);
 		});
+	}
+
+	/**
+	 * Migration des notes associées à un tiers
+	 * @param notes notes collectées dans RegPM
+	 * @param unireg destination des notes
+	 */
+	protected void migrateNotes(SortedSet<? extends RegpmBlocNotes> notes, Tiers unireg) {
+		if (notes != null && !notes.isEmpty()) {
+			notes.stream()
+					.filter(regpm -> StringUtils.isNotBlank(regpm.getCommentaire()))
+					.map(regpm -> {
+						final Remarque remarque = new Remarque();
+						copyCreationMutation(regpm, remarque);
+						remarque.setTexte(migrateTexteNote(regpm.getCommentaire(), regpm.getDateValidite()));
+						remarque.setTiers(unireg);
+						return remarque;
+					})
+					.filter(remarque -> StringUtils.isNotBlank(remarque.getTexte()))
+					.forEach(uniregStore::saveEntityToDb);
+		}
+	}
+
+	private static String migrateTexteNote(String src, RegDate dateValidite) {
+		final int ligne = 60;
+
+		// on sait que le commentaire dans le mainframe a une longueur maximale de 800 caractères...
+		// donc on n'a pas à se préoccuper d'une quelconque troncature (nous avons 2000 caractères dans Unireg)
+
+		final List<String> lignes = new ArrayList<>(20);
+		for (int i = 0 ; i < src.length() ; i += ligne) {
+			final String extract = StringUtils.trimToNull(src.substring(i, Math.min(i + ligne, src.length())));
+			if (extract != null) {
+				lignes.add(extract);
+			}
+		}
+
+		if (!lignes.isEmpty()) {
+			lignes.set(0, String.format("%s - %s", RegDateHelper.dateToDisplayString(dateValidite), lignes.get(0)));
+			return lignes.stream().collect(Collectors.joining(System.lineSeparator()));
+		}
+		else {
+			return null;
+		}
 	}
 }
