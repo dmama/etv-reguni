@@ -1652,7 +1652,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
 		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
 
-		// TODO migrer les documents...
+		// TODO migrer les documents (questionnaires SNC...)
 
 		final String raisonSociale = Optional.ofNullable(mr.getExtractedData(RaisonSocialeHistoData.class, moi.getKey()).histo.lastEntry()).map(Map.Entry::getValue).orElse(null);
 		migrateCoordonneesFinancieres(regpm::getCoordonneesFinancieres, raisonSociale, unireg, mr);
@@ -1666,7 +1666,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateAllegementsFiscaux(regpm, unireg, mr);
 		migrateRegimesFiscaux(regpm, unireg, mr);
 		migrateExercicesCommerciaux(regpm, unireg, mr);
-		migrateDeclarations(regpm, unireg, mr, idMapper);
+		migrateDeclarationsImpot(regpm, unireg, mr, idMapper);
 		generateForsPrincipaux(regpm, unireg, mr);
 		migrateImmeubles(regpm, unireg, mr);
 		generateEtablissementPrincipal(regpm, unireg, linkCollector, idMapper, mr);
@@ -2395,7 +2395,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 	/**
 	 * Migration des déclarations d'impôts, de leurs états, délais...
 	 */
-	private void migrateDeclarations(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
+	private void migrateDeclarationsImpot(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr, IdMapping idMapper) {
 
 		final EntityKey moi = buildEntrepriseKey(regpm);
 		final List<RegpmDossierFiscal> dossiers = mr.getExtractedData(DossiersFiscauxData.class, moi).liste;
