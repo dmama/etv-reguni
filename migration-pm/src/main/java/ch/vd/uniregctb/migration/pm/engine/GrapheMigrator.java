@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -152,7 +153,7 @@ public class GrapheMigrator implements InitializingBean {
 		doMigrateEtablissements(graphe.getEtablissements().values(), mr, linkCollector, idMapper);
 		doMigrateEntreprises(graphe.getEntreprises().values(), mr, linkCollector, idMapper);
 		doMigrateIndividus(graphe.getIndividus().values(), mr, linkCollector, idMapper);
-		addLinks(linkCollector.getCollectedLinks(), mr);
+		addLinks(linkCollector.getCollectedLinks(), linkCollector.getNeutralizedLinks(), mr);
 	}
 
 	private void doMigrateEntreprises(Collection<RegpmEntreprise> entreprises, MigrationResultContextManipulation mr, EntityLinkCollector linkCollector, IdMapping idMapper) {
@@ -167,10 +168,13 @@ public class GrapheMigrator implements InitializingBean {
 		individus.forEach(i -> individuMigrator.migrate(i, mr, linkCollector, idMapper));
 	}
 
-	private void addLinks(Collection<EntityLinkCollector.EntityLink> links, MigrationResultContextManipulation mr) {
-		if (links != null && !links.isEmpty()) {
+	private void addLinks(Collection<EntityLinkCollector.EntityLink> collectedLinks,
+	                      Collection<Pair<EntityLinkCollector.NeutralizationReason, EntityLinkCollector.EntityLink>> neutralizedLinks,
+	                      MigrationResultContextManipulation mr) {
 
-			links.forEach(link -> logCreationRapportEntreTiers(link, mr));
+		if (collectedLinks != null && !collectedLinks.isEmpty()) {
+
+			collectedLinks.forEach(link -> logCreationRapportEntreTiers(link, mr));
 
 			// on désactive temporairement la validation (elle sera ré-activée une fois que TOUS les liens
 			// auront été générés, pour éviter de sauter sur les états incohérents intermédiaires)
@@ -179,7 +183,7 @@ public class GrapheMigrator implements InitializingBean {
 			final boolean wasEnabled = validationInterceptor.isEnabled();
 			validationInterceptor.setEnabled(false);
 			try {
-				links.stream()
+				collectedLinks.stream()
 						.map(EntityLinkCollector.EntityLink::toRapportEntreTiers)
 						.map(uniregStore::saveEntityToDb)
 						.forEach(this::propagateRapportEntreTiers);
@@ -187,6 +191,11 @@ public class GrapheMigrator implements InitializingBean {
 			finally {
 				validationInterceptor.setEnabled(wasEnabled);
 			}
+		}
+
+		// log des liens qui n'ont finalement pas été créés car un des participants au moins n'a pas rempli les critères de migration
+		if (neutralizedLinks != null && !neutralizedLinks.isEmpty()) {
+			neutralizedLinks.forEach(pair -> logAbandonRapportEntreTiers(pair.getLeft(), pair.getRight(), mr));
 		}
 	}
 
@@ -203,6 +212,26 @@ public class GrapheMigrator implements InitializingBean {
 		mr.pushContextValue(RapportEntreTiersLoggedElement.class, new RapportEntreTiersLoggedElement<>(link));
 		try {
 			mr.addMessage(LogCategory.RAPPORTS_ENTRE_TIERS, LogLevel.INFO, StringUtils.EMPTY);
+		}
+		finally {
+			mr.popContexteValue(RapportEntreTiersLoggedElement.class);
+		}
+	}
+
+	/**
+	 * Génère un log dans la liste des rapports entre tiers finalement abandonnés
+	 * @param link le lien (source du rapport entre tiers)
+	 * @param mr le collecteur de résultats/remarques de migration et manipulateur de contexte de log
+	 * @param <S> type de tiers source dans le lien
+	 * @param <D> type de tiers destination dans le lien
+	 * @param <R> type du rapport entre tiers généré par le lien
+	 */
+	private <S extends Tiers, D extends Tiers, R extends RapportEntreTiers> void logAbandonRapportEntreTiers(EntityLinkCollector.NeutralizationReason reason,
+	                                                                                                         EntityLinkCollector.EntityLink<S, D, R> link,
+	                                                                                                         MigrationResultContextManipulation mr) {
+		mr.pushContextValue(RapportEntreTiersLoggedElement.class, new RapportEntreTiersLoggedElement<>(link, !reason.isSourceNeutralisee(), !reason.isDestinationNeutralisee()));
+		try {
+			mr.addMessage(LogCategory.RAPPORTS_ENTRE_TIERS, LogLevel.ERROR, "Lien non généré car l'une des parties au moins a finalement été exclue de la migration.");
 		}
 		finally {
 			mr.popContexteValue(RapportEntreTiersLoggedElement.class);

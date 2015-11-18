@@ -1,9 +1,15 @@
 package ch.vd.uniregctb.migration.pm.engine.collector;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRange;
@@ -25,14 +31,111 @@ import ch.vd.uniregctb.type.TypeMandat;
 
 public class EntityLinkCollector {
 
+	/**
+	 * La liste des données de lien reçues
+	 */
 	private final List<EntityLink> collectedLinks = new LinkedList<>();
 
+	/**
+	 * Les entités neutralisées (parce qu'en fait, elles ne seront pas migrées...)
+	 */
+	private final Set<EntityKey> neutralizedKeys = new HashSet<>();
+
+	/**
+	 * Ajout d'un nouveau lien
+	 * @param link le lien en question
+	 */
 	public void addLink(EntityLink link) {
 		collectedLinks.add(link);
 	}
 
+	/**
+	 * Ajout d'une entité déclarée comme finalement non-migrée (cela aura
+	 * pour conséquence de ne pas générer les liens de et vers cette entité)
+	 * @param key clé de l'entité à neutraliser
+	 */
+	public void addNeutralizedEntity(EntityKey key) {
+		neutralizedKeys.add(key);
+	}
+
+	/**
+	 * @return la liste des liens finalement concernés par une réelle création
+	 * (en particulier, les entités neutralisées n'apparaîtront pas dans cette liste)
+	 */
 	public List<EntityLink> getCollectedLinks() {
-		return collectedLinks;
+		return collectedLinks.stream()
+				.filter(link -> !neutralizedKeys.contains(link.getSourceKey()))
+				.filter(link -> !neutralizedKeys.contains(link.getDestinationKey()))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Indicateur de la raison pour laquelle un lien est finalement écarté de la création...
+	 */
+	public enum NeutralizationReason {
+
+		/**
+		 * La source a été neutralisée (mais pas la destination)
+		 */
+		SOURCE_NEUTRALIZED,
+
+		/**
+		 * La destination a été neutralisée (mais pas la source)
+		 */
+		DESTINATION_NEUTRALIZED,
+
+		/**
+		 * La source ET la destination ont été toutes deux neutralisées
+		 */
+		BOTH_NEUTRALIZED;
+
+		/**
+		 * @return <code>true</code> dès que la source est indiquée comme neutralisée
+		 */
+		public boolean isSourceNeutralisee() {
+			return this == SOURCE_NEUTRALIZED || this == BOTH_NEUTRALIZED;
+		}
+
+		/**
+		 * @return <code>true</code> dès que la destination est indiquée comme neutralisée
+		 */
+		public boolean isDestinationNeutralisee() {
+			return this == DESTINATION_NEUTRALIZED || this == BOTH_NEUTRALIZED;
+		}
+	}
+
+	/**
+	 * @return la liste des liens finalement écartés d'une réelle création car l'un des participants a été neutralisé
+	 * @see #addNeutralizedEntity(EntityKey)
+	 */
+	public List<Pair<NeutralizationReason, EntityLink>> getNeutralizedLinks() {
+		return collectedLinks.stream()
+				.map(link -> {
+					final boolean sourceNeutralisee = neutralizedKeys.contains(link.getSourceKey());
+					final boolean destinationNeutralisee = neutralizedKeys.contains(link.getDestinationKey());
+					if (sourceNeutralisee && destinationNeutralisee) {
+						return Pair.of(NeutralizationReason.BOTH_NEUTRALIZED, link);
+					}
+					else if (sourceNeutralisee) {
+						return Pair.of(NeutralizationReason.SOURCE_NEUTRALIZED, link);
+					}
+					else if (destinationNeutralisee) {
+						return Pair.of(NeutralizationReason.DESTINATION_NEUTRALIZED, link);
+					}
+					else {
+						return null;
+					}
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Pour les tests seulement...
+	 * @return une version Read-Only de l'ensemble des clés neutralisées
+	 */
+	public Set<EntityKey> getNeutralizedKeys() {
+		return Collections.unmodifiableSet(neutralizedKeys);
 	}
 
 	// TODO il y en a sans doute d'autre...

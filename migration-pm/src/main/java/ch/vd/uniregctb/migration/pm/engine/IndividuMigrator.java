@@ -3,14 +3,9 @@ package ch.vd.uniregctb.migration.pm.engine;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v5.FoundPerson;
-import ch.vd.evd0001.v5.Identity;
 import ch.vd.evd0001.v5.ListOfFoundPersons;
 import ch.vd.evd0001.v5.ListOfPersons;
 import ch.vd.evd0001.v5.Person;
@@ -28,9 +22,7 @@ import ch.vd.unireg.common.NomPrenom;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.adapter.rcent.historizer.equalator.Equalator;
-import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.migration.pm.MigrationResultContextManipulation;
 import ch.vd.uniregctb.migration.pm.MigrationResultInitialization;
@@ -45,16 +37,13 @@ import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmIndividu;
-import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseIndividu;
 import ch.vd.uniregctb.migration.pm.store.UniregStore;
 import ch.vd.uniregctb.migration.pm.utils.DatesParticulieres;
 import ch.vd.uniregctb.migration.pm.utils.EntityKey;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 
@@ -208,218 +197,22 @@ public class IndividuMigrator extends AbstractEntityMigrator<RegpmIndividu> {
 			ppExistant = rechercheNonHabitantExistant(regpm, mr);
 		}
 
-		// numéro de contribuable pour le log final
-		final long noCtbPersonnePhysique;
-
-		// création d'une personne physique au besoin (= réelle migration)
-		if (ppExistant == null) {
-			final PersonnePhysique pp = new PersonnePhysique();
-			if (trouveRCPersId != null) {
-				pp.setNumeroIndividu(trouveRCPersId.getLeft());
-				pp.setHabitant(trouveRCPersId.getRight());
-				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, String.format("Individu %d trouvé dans RCPers sans équivalent dans Unireg...", trouveRCPersId.getLeft()));
-
-				// Dans le cas d'un non-habitant (= ancien habitant, donc...), il faut recopier certaines données dans Unireg
-				if (!pp.isHabitantVD()) {
-					final Person rcpers = getFromRCPersWithId(mr, trouveRCPersId.getLeft());
-					if (rcpers == null) {
-						// bizarre, RCPers ne nous renvoie rien... on prend les données de RegPM...
-						pp.setNom(regpm.getNom());
-						pp.setTousPrenoms(regpm.getPrenom());
-						pp.setPrenomUsuel(extractPrenomUsuel(regpm.getPrenom()));
-						pp.setSexe(regpm.getSexe());
-						pp.setDateNaissance(regpm.getDateNaissance());
-						pp.setDateDeces(regpm.getDateDeces());
-					}
-					else {
-						// on recopie les données (minimales) de RCPers
-						final Identity identity = rcpers.getIdentity();
-						pp.setNom(identity.getOfficialName());
-						pp.setTousPrenoms(identity.getFirstNames());
-						if (StringUtils.isNotBlank(identity.getCallName())) {
-							pp.setPrenomUsuel(identity.getCallName());
-						}
-						else {
-							pp.setPrenomUsuel(extractPrenomUsuel(identity.getFirstNames()));
-						}
-						pp.setSexe(EchHelper.sexeFromEch44(identity.getSex()));
-						pp.setDateNaissance(EchHelper.partialDateFromEch44(identity.getDateOfBirth()));
-						pp.setDateDeces(XmlUtils.xmlcal2regdate(rcpers.getDateOfDeath()));
-					}
-				}
-			}
-			else {
-				pp.setNom(regpm.getNom());
-				pp.setTousPrenoms(regpm.getPrenom());
-				pp.setPrenomUsuel(extractPrenomUsuel(regpm.getPrenom()));
-				pp.setSexe(regpm.getSexe());
-				pp.setDateNaissance(regpm.getDateNaissance());
-				pp.setDateDeces(regpm.getDateDeces());
-				pp.setHabitant(Boolean.FALSE);
-			}
-
-			// TODO il y a sûrement d'autres choses à migrer (adresses...)
-			// TODO si l'individu est indiqué comme marié dans regpm/rcpers, ne faudrait-il pas créer un ménage commun aussi ?
-
-			final PersonnePhysique saved = uniregStore.saveEntityToDb(pp);
-			idMapper.addIndividu(regpm, saved);
-			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO,
-			              String.format("Création de la personne physique %s pour correspondre à l'individu RegPM.", FormatNumeroHelper.numeroCTBToDisplay(saved.getId())));
-
-			// capture du nouveau numéro de contribuable
-			noCtbPersonnePhysique = saved.getId();
-
-			// migration de l'adresse courrier RegPM vers une adresse courrier de la personne physique dans Unireg
-			// on ne prend que la dernière adresse connue (si l'individu a été retrouvé dans RCPers, on garde l'adresse RCPers uniquement)
-			if (trouveRCPersId == null || !pp.isHabitantVD()) {
-				migrateAdresse(regpm, saved, mr);
-			}
-
-			// enregistrement d'un callback appelé une fois la transaction committée, afin de placer cette nouvelle personne physique dans l'indexeur ad'hoc
-			// (ceci fonctionne sans création d'une nouvelle transaction car l'accès aux données à indexer ne nécessite pas de nouvel accès en base)
-			mr.addPostTransactionCallback(() -> nonHabitantIndex.index(saved));
-		}
-		else {
+		// [SIFISC-16858] On ne crée pas de nouvel individu...
+		if (ppExistant != null) {
 			idMapper.addIndividu(regpm, ppExistant);
-			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé personne physique existante %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getId())));
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.INFO, String.format("Trouvé personne physique existante %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getNumero())));
 
-			// capture du numéro de contribuable utilisé
-			noCtbPersonnePhysique = ppExistant.getId();
-		}
-
-		// log de suivi à la fin des opérations pour cet individu
-		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Individu migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(noCtbPersonnePhysique)));
-	}
-
-	/**
-	 * Migration d'une adresse sur la personne physique
-	 * @param regpm individu de RegPM
-	 * @param unireg personne physique cible dans Unireg
-	 * @param mr collecteur de messages de migration
-	 */
-	private void migrateAdresse(RegpmIndividu regpm, PersonnePhysique unireg, MigrationResultContextManipulation mr) {
-
-		// classification et tri des adresses connues de l'individu dans RegPM
-		final Map<RegpmTypeAdresseIndividu, List<RegpmAdresseIndividu>> map = regpm.getAdresses().stream()
-				.filter(a -> a.getDateAnnulation() == null)
-				.sorted(Comparator.comparing(RegpmAdresseIndividu::getDateDebut))
-				.collect(Collectors.toMap(RegpmAdresseIndividu::getType,
-				                          Collections::singletonList,
-				                          (l1, l2) -> Stream.concat(l1.stream(), l2.stream()).collect(Collectors.toList()),
-				                          () -> new EnumMap<>(RegpmTypeAdresseIndividu.class)));
-
-		// L'algorithme de récupération de l'adresse est le suivant :
-		// - toutes choses étant égales par ailleurs, on préfère l'adresse COURRIER à l'adresse DOMICILE (les autres sont ignorées)
-		// - on cherche d'abord une adresse sans date de fin (= encore valide)
-		// - si on n'en trouve aucune, on prend l'adresse que l'on trouve qui se termine le plus récemment (avec, en cas de dates de fin identiques, une priorité classique en fonction du type)
-
-		final List<RegpmTypeAdresseIndividu> ordrePriorite = Arrays.asList(RegpmTypeAdresseIndividu.COURRIER, RegpmTypeAdresseIndividu.PRINCIPALE, RegpmTypeAdresseIndividu.SECONDAIRE);
-
-		// première passe -> on cherche une adresse encore valide
-		final AdresseTiers adresseActiveTrouvee = ordrePriorite.stream()                // garant de la priorité accordée aux types
-				.map(map::get)
-				.filter(Objects::nonNull)
-				.flatMap(List::stream)
-				.filter(a -> a.getDateAnnulation() == null)                             // on ne prend pas en compte les adresses annulées
-				.filter(a -> a.getDateFin() == null || isFutureDate(a.getDateFin()))    // seules les adresses ouvertes (ou assimilées ouvertes) sont prises en compte
-				.filter(a -> {
-					if (a.getDateDebut() == null) {
-						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
-						              String.format("Adresse %d ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", a.getId().getNoSequence()));
-						return false;
-					}
-					return true;
-				})
-				.filter(a -> {
-					if (isFutureDate(a.getDateDebut())) {
-						mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
-						              String.format("Adresse %d ignorée en raison de sa date de début dans le futur (%s).",
-						                            a.getId().getNoSequence(),
-						                            StringRenderers.DATE_RENDERER.toString(a.getDateDebut())));
-						return false;
-					}
-					return true;
-				})
-				.map(a -> {
-					if (isFutureDate(a.getDateFin())) {
-						mr.addMessage(LogCategory.ADRESSES, LogLevel.WARN,
-						              String.format("Date de fin (%s) de l'adresse %d ignorée (date future).",
-						                            StringRenderers.DATE_RENDERER.toString(a.getDateFin()),
-						                            a.getId().getNoSequence()));
-						final RegpmAdresseIndividu ouverte = new RegpmAdresseIndividu();
-						ouverte.setChez(a.getChez());
-						ouverte.setDateDebut(a.getDateDebut());
-						ouverte.setDateFin(null);       // <- c'est pour ça qu'on est là
-						ouverte.setEgid(a.getEgid());
-						ouverte.setEwid(a.getEwid());
-						ouverte.setId(a.getId());
-						ouverte.setLieu(a.getLieu());
-						ouverte.setLocalitePostale(a.getLocalitePostale());
-						ouverte.setNomRue(a.getNomRue());
-						ouverte.setNoPolice(a.getNoPolice());
-						ouverte.setNoPostalEtranger(a.getNoPostalEtranger());
-						ouverte.setOfsPays(a.getOfsPays());
-						ouverte.setRue(a.getRue());
-						ouverte.setType(a.getType());
-						return ouverte;
-					}
-					return a;
-				})
-				.map(a -> adresseHelper.buildAdresse(a, mr, a.getChez(), false))
-				.filter(Objects::nonNull)
-				.peek(a -> checkDateLouche(a.getDateDebut(),
-				                           () -> "Adresse avec une date de début de validité",
-				                           LogCategory.ADRESSES,
-				                           mr))
-				.findFirst()
-				.orElse(null);
-		if (adresseActiveTrouvee != null) {
-			adresseActiveTrouvee.setUsage(TypeAdresseTiers.COURRIER);
-			unireg.addAdresseTiers(adresseActiveTrouvee);
+			// log de suivi à la fin des opérations pour cet individu
+			mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Individu migré : %s.", FormatNumeroHelper.numeroCTBToDisplay(ppExistant.getNumero())));
 		}
 		else {
-        	// deuxième passe si pas d'adresse jusque là -> celle qui se termine le plus tard
-			final AdresseTiers derniereAdresseFermee = ordrePriorite.stream()                               // garant de la priorité accordée aux types
-					.map(map::get)
-					.filter(Objects::nonNull)
-					.flatMap(List::stream)
-					.filter(a -> a.getDateAnnulation() == null)                                             // on ne prend pas en compte les adresses annulées
-					.filter(a -> a.getDateFin() != null && !isFutureDate(a.getDateFin()))                   // seules les adresses fermées nous intéressent ici (les autres ont déjà été vues dans la première passe)
-					.filter(a -> {
-						if (a.getDateDebut() == null) {
-							mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
-							              String.format("Adresse %d ignorée car sa date de début de validité est nulle (ou antérieure au 01.08.1291).", a.getId().getNoSequence()));
-							return false;
-						}
-						return true;
-					})
-					.filter(e -> {
-						if (isFutureDate(e.getDateDebut())) {
-							mr.addMessage(LogCategory.ADRESSES, LogLevel.ERROR,
-							              String.format("Adresse %d ignorée en raison de sa date de début dans le futur (%s).",
-							                            e.getId().getNoSequence(),
-							                            StringRenderers.DATE_RENDERER.toString(e.getDateDebut())));
-							return false;
-						}
-						return true;
-					})
-					.sorted(Comparator.comparing(RegpmAdresseIndividu::getDateFin).reversed())                      // on prend la date de fermeture la plus tardive
-					.map(a -> adresseHelper.buildAdresse(a, mr, a.getChez(), false))
-					.filter(Objects::nonNull)
-					.peek(a -> checkDateLouche(a.getDateDebut(),
-					                           () -> "Adresse avec une date de début de validité",
-					                           LogCategory.ADRESSES,
-					                           mr))
-					.findFirst()
-					.orElse(null);
-			if (derniereAdresseFermee != null) {
-				derniereAdresseFermee.setUsage(TypeAdresseTiers.COURRIER);
-				unireg.addAdresseTiers(derniereAdresseFermee);
-			}
-			else {
-				// on a rien trouvé... ça vaut bien un petit tour par les logs
-				mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.WARN, "Aucune adresse trouvée.");
-			}
+
+			// si on est ici, c'est que l'individu a au moins un mandant récent, mais on ne le retrouve pas...
+			// comme on ne doit pas le créer, il ne faut pas oublier de neutraliser la création des liens avec cet individu,,,
+			mr.addMessage(LogCategory.INDIVIDUS_PM, LogLevel.ERROR, "Individu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg.");
+
+			// on ne doit finalement générer aucun des liens de mandats
+			linkCollector.addNeutralizedEntity(buildIndividuKey(regpm));
 		}
 	}
 

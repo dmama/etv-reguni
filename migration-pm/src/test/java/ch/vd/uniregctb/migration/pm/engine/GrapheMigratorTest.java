@@ -2287,7 +2287,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final long idEntreprise = 423632L;
 		final long idIndividu = Long.MAX_VALUE;     // ne devrait pas exister dans RCPers, selon toute vraissemblance
 		final RegpmEntreprise entreprise = EntrepriseMigratorTest.buildEntreprise(idEntreprise);
-		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(idIndividu, "Deker", "Jacob", RegDate.get(1971, 10, 31), Sexe.MASCULIN);
+		final RegpmIndividu individu = IndividuMigratorTest.buildBaseIndividu(idIndividu, "Porchet", "Philibert", RegDate.get(1971, 8, 31), Sexe.MASCULIN);
 		EntrepriseMigratorTest.addMandat(entreprise, individu, RegpmTypeMandat.GENERAL, null, RegDate.get(2009, 6, 12), RegDate.get(2010, 7, 13));      // mandat ajouté pour déclencher la migration de l'individu
 
 		EntrepriseMigratorTest.addForPrincipalSuisse(entreprise, RegDate.get(2000, 1, 1), RegpmTypeForPrincipal.SIEGE, Commune.BERN);
@@ -2303,8 +2303,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 		// identifiants des nouvelles entités
 		final MutableLong noEtablissementPrincipal = new MutableLong();
-		final MutableLong noContribuableIndividu = new MutableLong();
-		doInUniregTransaction(true, status -> {
+		final Map<LogCategory, List<String>> messages = doInUniregTransaction(true, status -> {
 
 			// établissement principal
 
@@ -2338,11 +2337,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 
 			final List<PersonnePhysique> pps = uniregStore.getEntitiesFromDb(PersonnePhysique.class, null);
 			Assert.assertNotNull(pps);
-			Assert.assertEquals(1, pps.size());
-
-			final PersonnePhysique pp = pps.get(0);
-			Assert.assertNotNull(pp);
-			noContribuableIndividu.setValue(pp.getNumero());
+			Assert.assertEquals(0, pps.size());
 
 			// contrôle des fors principaux sur la PM
 			final Entreprise e = uniregStore.getEntityFromDb(Entreprise.class, idEntreprise);
@@ -2383,29 +2378,28 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertNull(ffs.getMotifFermeture());
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
+
+			return buildTextualMessages(mr);
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
-		Assert.assertNotNull(noContribuableIndividu.getValue());
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.INDIVIDUS_PM, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
-			Assert.assertEquals(6, msgs.size());
+			Assert.assertEquals(5, msgs.size());
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;L'entreprise n'existait pas dans Unireg avec ce numéro de contribuable.", msgs.get(0));
 			Assert.assertEquals("WARN;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise sans exercice commercial ni date de bouclement futur.", msgs.get(1));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Création de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " d'après le siège 1.", msgs.get(2));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Domicile de l'établissement principal " + FormatNumeroHelper.numeroCTBToDisplay(noEtablissementPrincipal.longValue()) + " : [01.01.2000 -> ?] sur COMMUNE_HC/351.", msgs.get(3));
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;;;;;;;Entreprise migrée : " + FormatNumeroHelper.numeroCTBToDisplay(idEntreprise) + ".", msgs.get(4));
-			Assert.assertEquals("INFO;;;;;;;;;;;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";Deker;Jacob;MASCULIN;1971-10-31;Individu migré : " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableIndividu.longValue()) + ".", msgs.get(5));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.INDIVIDUS_PM);
 			Assert.assertEquals(4, msgs.size());
-			Assert.assertEquals("WARN;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";Deker;Jacob;MASCULIN;1971-10-31;L'individu RCPers " + idIndividu + " ne peut être renvoyé (Personne 'CT.VD.RCPERS/" + idIndividu + "' introuvable).", msgs.get(0));
-			Assert.assertEquals("INFO;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";Deker;Jacob;MASCULIN;1971-10-31;Trouvé un individu (165501) de RCPers pour le nom (Deker), prénom (Jacob), sexe (MASCULIN) et date de naissance (31.10.1971).", msgs.get(1));
-			Assert.assertEquals("WARN;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";Deker;Jacob;MASCULIN;1971-10-31;Individu 165501 trouvé dans RCPers sans équivalent dans Unireg...", msgs.get(2));
-			Assert.assertEquals("INFO;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";Deker;Jacob;MASCULIN;1971-10-31;Création de la personne physique " + FormatNumeroHelper.numeroCTBToDisplay(noContribuableIndividu.longValue()) + " pour correspondre à l'individu RegPM.", msgs.get(3));
+			Assert.assertEquals("WARN;" + idIndividu + ";;Porchet;Philibert;MASCULIN;1971-08-31;L'individu RCPers " + idIndividu + " ne peut être renvoyé (Personne 'CT.VD.RCPERS/" + idIndividu + "' introuvable).", msgs.get(0));
+			Assert.assertEquals("INFO;" + idIndividu + ";;Porchet;Philibert;MASCULIN;1971-08-31;Aucun résultat dans RCPers pour le nom (Porchet), prénom (Philibert), sexe (MASCULIN) et date de naissance (31.08.1971).", msgs.get(1));
+			Assert.assertEquals("INFO;" + idIndividu + ";;Porchet;Philibert;MASCULIN;1971-08-31;Aucun non-habitant trouvé dans Unireg avec ces nom (Porchet), prénom (Philibert), sexe (MASCULIN) et date de naissance (31.08.1971).", msgs.get(2));
+			Assert.assertEquals("ERROR;" + idIndividu + ";;Porchet;Philibert;MASCULIN;1971-08-31;Individu non migré car aucune correspondance univoque n'a pu être trouvée avec une personne physique existante dans Unireg.", msgs.get(3));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.FORS);
@@ -2424,7 +2418,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			final List<String> msgs = messages.get(LogCategory.RAPPORTS_ENTRE_TIERS);
 			Assert.assertEquals(2, msgs.size());
 			Assert.assertEquals("INFO;ETABLISSEMENT_ENTITE_JURIDIQUE;2000-01-01;;;;;" + noEtablissementPrincipal.longValue() + ";" + idEntreprise + ";;;" + idEntreprise + ";", msgs.get(0));
-			Assert.assertEquals("INFO;MANDANT_MANDATAIRE;2009-06-12;2010-07-13;" + idEntreprise + ";;;" + idEntreprise + ";;;" + idIndividu + ";" + noContribuableIndividu.longValue() + ";", msgs.get(1));
+			Assert.assertEquals("ERROR;MANDANT_MANDATAIRE;2009-06-12;2010-07-13;" + idEntreprise + ";;;" + idEntreprise + ";;;" + idIndividu + ";;Lien non généré car l'une des parties au moins a finalement été exclue de la migration.", msgs.get(1));
 		}
 		{
 			final List<String> msgs = messages.get(LogCategory.DONNEES_CIVILES_REGPM);

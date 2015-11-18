@@ -30,9 +30,17 @@ public class RapportEntreTiersLoggedElement<S extends Tiers, D extends Tiers, R 
 	public static final LoggedElement EMPTY = new EmptyValuedLoggedElement(NAMES);
 
 	private final EntityLinkCollector.EntityLink<S, D, R> link;
+	private final boolean sourceResolvable;
+	private final boolean destinationResolvable;
 
 	public RapportEntreTiersLoggedElement(EntityLinkCollector.EntityLink<S, D, R> link) {
+		this(link, true, true);
+	}
+
+	public RapportEntreTiersLoggedElement(EntityLinkCollector.EntityLink<S, D, R> link, boolean sourceResolvable, boolean destinationResolvable) {
 		this.link = link;
+		this.sourceResolvable = sourceResolvable;
+		this.destinationResolvable = destinationResolvable;
 	}
 
 	@NotNull
@@ -44,18 +52,24 @@ public class RapportEntreTiersLoggedElement<S extends Tiers, D extends Tiers, R 
 	@NotNull
 	@Override
 	public Map<LoggedElementAttribute, Object> getItemValues() {
+
 		final Map<LoggedElementAttribute, Object> map = new EnumMap<>(LoggedElementAttribute.class);
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_TYPE, link.getType());
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DATE_DEBUT, link.getDateDebut());
 		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DATE_FIN, link.getDateFin());
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_ENTREPRISE_ID, link.getSourceKey() != null && link.getSourceKey().getType() == EntityKey.Type.ENTREPRISE ? link.getSourceKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_ETABLISSEMENT_ID, link.getSourceKey() != null && link.getSourceKey().getType() == EntityKey.Type.ETABLISSEMENT ? link.getSourceKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_INDIVIDU_ID, link.getSourceKey() != null && link.getSourceKey().getType() == EntityKey.Type.INDIVIDU ? link.getSourceKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_UNIREG_ID, link.resolveSource().getId());
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_ENTREPRISE_ID, link.getDestinationKey() != null && link.getDestinationKey().getType() == EntityKey.Type.ENTREPRISE ? link.getDestinationKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_ETABLISSEMENT_ID, link.getDestinationKey() != null && link.getDestinationKey().getType() == EntityKey.Type.ETABLISSEMENT ? link.getDestinationKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_INDIVIDU_ID, link.getDestinationKey() != null && link.getDestinationKey().getType() == EntityKey.Type.INDIVIDU ? link.getDestinationKey().getId() : null);
-		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_UNIREG_ID, link.resolveDestination().getId());
+
+		final EntityKey sourceKey = link.getSourceKey();
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_ENTREPRISE_ID, sourceKey != null && sourceKey.getType() == EntityKey.Type.ENTREPRISE ? sourceKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_ETABLISSEMENT_ID, sourceKey != null && sourceKey.getType() == EntityKey.Type.ETABLISSEMENT ? sourceKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_INDIVIDU_ID, sourceKey != null && sourceKey.getType() == EntityKey.Type.INDIVIDU ? sourceKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_SRC_UNIREG_ID, sourceResolvable ? link.resolveSource().getId() : null);
+
+		final EntityKey destinationKey = link.getDestinationKey();
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_ENTREPRISE_ID, destinationKey != null && destinationKey.getType() == EntityKey.Type.ENTREPRISE ? destinationKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_ETABLISSEMENT_ID, destinationKey != null && destinationKey.getType() == EntityKey.Type.ETABLISSEMENT ? destinationKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_INDIVIDU_ID, destinationKey != null && destinationKey.getType() == EntityKey.Type.INDIVIDU ? destinationKey.getId() : null);
+		LoggedElementHelper.addValue(map, LoggedElementAttribute.RET_DEST_UNIREG_ID, destinationResolvable ? link.resolveDestination().getId() : null);
+
 		return Collections.unmodifiableMap(map);
 	}
 }
