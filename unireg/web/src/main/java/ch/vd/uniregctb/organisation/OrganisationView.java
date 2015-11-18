@@ -2,6 +2,10 @@ package ch.vd.uniregctb.organisation;
 
 import java.io.Serializable;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+
 /**
  *
  */
@@ -18,6 +22,18 @@ public class OrganisationView implements Serializable {
 	private boolean canceled;
 	private Long numeroOrganisationRemplacant;
 
+	public OrganisationView(final Organisation organisation, RegDate date) {
+		this.setNumeroOrganisation(organisation.getNumeroOrganisation());
+		nom = organisation.getNom(date);
+		autoriteFiscale = organisation.getSiegePrincipal(date).getNoOfs();
+		formeJuridique = organisation.getFormeLegale(date).name();
+		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();
+		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
+		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
+		numeroOrganisationRemplacant = organisation.getRemplacePar(date);
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
 	public Long getNumeroOrganisation() {
 		return numeroOrganisation;
 	}
@@ -39,6 +55,7 @@ public class OrganisationView implements Serializable {
 		return canceled;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setCanceled(boolean canceled) {
 		this.canceled = canceled;
 	}
@@ -47,6 +64,8 @@ public class OrganisationView implements Serializable {
 	public Long getNumeroOrganisationRemplacant() {
 		return numeroOrganisationRemplacant;
 	}
+
+	@SuppressWarnings("UnusedDeclaration")
 	public void setNumeroOrganisationRemplacant(Long numeroOrganisationRemplacant) {
 		this.numeroOrganisationRemplacant = numeroOrganisationRemplacant;
 	}
@@ -55,18 +74,22 @@ public class OrganisationView implements Serializable {
 		return serialVersionUID;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public String getNumeroIDE() {
 		return numeroIDE;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setNumeroIDE(String numeroIDE) {
 		this.numeroIDE = numeroIDE;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public String getFormeJuridique() {
 		return formeJuridique;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setFormeJuridique(String formeJuridique) {
 		this.formeJuridique = formeJuridique;
 	}
@@ -79,29 +102,32 @@ public class OrganisationView implements Serializable {
 		this.autoriteFiscale = autoriteFiscale;
 	}
 
-	/**
-	 * Redefinition de la methode equals pour gerer les ajout/suppression d'objets dans une collection
-	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if ((obj == null) || (obj.getClass() != this.getClass()))
-			return false;
-		// object must be Test at this point
-		OrganisationView organisationView = (OrganisationView) obj;
-		return (numeroOrganisation.equals(organisationView.numeroOrganisation) || numeroOrganisation.equals(organisationView.numeroOrganisation));
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final OrganisationView that = (OrganisationView) o;
+
+		if (isCanceled() != that.isCanceled()) return false;
+		if (!getNumeroOrganisation().equals(that.getNumeroOrganisation())) return false;
+		if (getNumeroIDE() != null ? !getNumeroIDE().equals(that.getNumeroIDE()) : that.getNumeroIDE() != null) return false;
+		if (!getNom().equals(that.getNom())) return false;
+		if (getFormeJuridique() != null ? !getFormeJuridique().equals(that.getFormeJuridique()) : that.getFormeJuridique() != null) return false;
+		if (getAutoriteFiscale() != null ? !getAutoriteFiscale().equals(that.getAutoriteFiscale()) : that.getAutoriteFiscale() != null) return false;
+		return !(getNumeroOrganisationRemplacant() != null ? !getNumeroOrganisationRemplacant().equals(that.getNumeroOrganisationRemplacant()) : that.getNumeroOrganisationRemplacant() != null);
+
 	}
 
-	/**
-	 * Redefinition de la methode hashCode pour gerer les ajout/suppression d'objets
-	 * dans une collection
-	 */
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 31 * hash ;
-		hash = 31 * hash + (null == numeroOrganisation ? 0 : numeroOrganisation.hashCode());
-		return hash;
+		int result = getNumeroOrganisation().hashCode();
+		result = 31 * result + (getNumeroIDE() != null ? getNumeroIDE().hashCode() : 0);
+		result = 31 * result + getNom().hashCode();
+		result = 31 * result + (getFormeJuridique() != null ? getFormeJuridique().hashCode() : 0);
+		result = 31 * result + (getAutoriteFiscale() != null ? getAutoriteFiscale().hashCode() : 0);
+		result = 31 * result + (isCanceled() ? 1 : 0);
+		result = 31 * result + (getNumeroOrganisationRemplacant() != null ? getNumeroOrganisationRemplacant().hashCode() : 0);
+		return result;
 	}
 }

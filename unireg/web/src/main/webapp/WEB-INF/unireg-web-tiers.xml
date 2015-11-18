@@ -155,6 +155,7 @@
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
+		<property name="evenementOrganisationDAO" ref="evenementOrganisationDAO" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="periodiciteDAO" ref="periodiciteDAO" />
 		<property name="etatDeclarationDAO" ref="etatDeclarationDAO" />

@@ -7,11 +7,11 @@ import java.util.Comparator;
  *  1. les plus anciens en premier
  *  2. Puis par identifiant croissant
  */
-public class EvenementOrganisationBasicInfoComparator implements Comparator<EvenementOrganisationBasicInfo> {
+public class EvenementOrganisationComparator implements Comparator<EvenementOrganisation> {
 
 	@Override
-	public int compare(EvenementOrganisationBasicInfo o1, EvenementOrganisationBasicInfo o2) {
-		int comp = o1.getDate().compareTo(o2.getDate());
+	public int compare(EvenementOrganisation o1, EvenementOrganisation o2) {
+		int comp = o1.getDateEvenement().compareTo(o2.getDateEvenement());
 		if (comp == 0) {
 			comp = (o1.getId() < o2.getId() ? -1 : (o1.getId() > o2.getId() ? 1 : 0));
 		}

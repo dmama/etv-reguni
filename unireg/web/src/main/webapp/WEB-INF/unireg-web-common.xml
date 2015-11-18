@@ -67,10 +67,6 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
-	<bean id="webOrganisationService" class="ch.vd.uniregctb.organisation.WebOrganisationServiceImpl">
-		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
-	</bean>
-
 	<bean id="entrepriseService" class="ch.vd.uniregctb.entreprise.EntrepriseServiceImpl">
 		<property name="serviceOrganisationService" ref="serviceOrganisationService" />
 		<property name="tiersService" ref="tiersService" />

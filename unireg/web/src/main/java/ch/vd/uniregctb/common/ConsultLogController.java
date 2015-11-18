@@ -16,6 +16,7 @@ import ch.vd.uniregctb.declaration.PeriodiciteDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationDAO;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
 import ch.vd.uniregctb.reqdes.UniteTraitementDAO;
 import ch.vd.uniregctb.rf.ImmeubleDAO;
@@ -44,6 +45,7 @@ public class ConsultLogController {
 	private DroitAccesDAO droitAccesDAO;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilEchDAO evenementCivilEchDAO;
+	private EvenementOrganisationDAO evenementOrganisationDAO;
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
@@ -68,6 +70,7 @@ public class ConsultLogController {
 	public static final String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
 	public static final String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
 	public static final String NATURE_EVENEMENT_ECH_PARAMETER_VALUE = "EvenementEch";
+	public static final String NATURE_EVENEMENT_ORGANISATION_PARAMETER_VALUE = "EvenementOrganisation";
 	public static final String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
 	public static final String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
 	public static final String NATURE_IMMEUBLE = "Immeuble";
@@ -119,6 +122,9 @@ public class ConsultLogController {
 			break;
 		case NATURE_EVENEMENT_ECH_PARAMETER_VALUE:
 			objet = evenementCivilEchDAO.get(id);
+			break;
+		case NATURE_EVENEMENT_ORGANISATION_PARAMETER_VALUE:
+			objet = evenementOrganisationDAO.get(id);
 			break;
 		case NATURE_IDENTIFICATION_PARAMETER_VALUE:
 			objet = identCtbDAO.get(id);
@@ -209,6 +215,10 @@ public class ConsultLogController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilEchDAO(EvenementCivilEchDAO evenementCivilEchDAO) {
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
+	}
+
+	public void setEvenementOrganisationDAO(EvenementOrganisationDAO evenementOrganisationDAO) {
+		this.evenementOrganisationDAO = evenementOrganisationDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

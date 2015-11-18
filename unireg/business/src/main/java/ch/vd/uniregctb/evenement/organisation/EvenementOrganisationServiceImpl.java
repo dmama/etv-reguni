@@ -25,7 +25,7 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 	/**
 	 * Comparateur qui trie les événements organisation par date, puis par priorité
 	 */
-	private static final Comparator<EvenementOrganisationBasicInfo> EVT_ORGANISATION_COMPARATOR = new EvenementOrganisationBasicInfoComparator();
+	private static final Comparator<EvenementOrganisation> EVT_ORGANISATION_COMPARATOR = new EvenementOrganisationComparator();
 
 	private ServiceOrganisationService serviceOrganisationService;
     private EvenementOrganisationDAO evenementOrganisationDAO;
@@ -50,11 +50,7 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 
 	@Override
 	public List<EvenementOrganisationBasicInfo> buildLotEvenementsOrganisationNonTraites(long noOrganisation) {
-		final List<EvenementOrganisationBasicInfo> infos = buildListeEvenementsNonTraitesPourOrganisation(noOrganisation);
-		if (infos != null && infos.size() > 1) {
-			Collections.sort(infos, EVT_ORGANISATION_COMPARATOR);
-		}
-		return infos;
+		return buildInfos(getEvenementsNonTraitesOrganisation(noOrganisation), noOrganisation);
 	}
 
 	private List<EvenementOrganisationBasicInfo> buildInfos(List<EvenementOrganisation> evts, long noOrganisation) {
@@ -71,25 +67,31 @@ public class EvenementOrganisationServiceImpl implements EvenementOrganisationSe
 		}
 	}
 
-	private List<EvenementOrganisationBasicInfo> buildListeEvenementsNonTraitesPourOrganisation(long noOrganisation) {
-		// on récupère tous les événements organisation attribuables à l'organisation donnée
-		final List<EvenementOrganisation> evts = evenementOrganisationDAO.getEvenementsPourOrganisation(noOrganisation);
+	@Override
+	public List<EvenementOrganisation> getEvenementsNonTraitesOrganisation(long noOrganisation) {
+		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisationNonTraites(noOrganisation));
+	}
+
+	private List<EvenementOrganisation> arrangeAndSort(List<EvenementOrganisation> evts) {
 		if (evts != null && evts.size() > 0) {
-			final List<EvenementOrganisationBasicInfo> liste = buildInfos(evts, noOrganisation);
-			return liste.size() > 0 ? liste : Collections.<EvenementOrganisationBasicInfo>emptyList();
-		}
-		else {
+			Collections.sort(evts, EVT_ORGANISATION_COMPARATOR);
+			return evts;
+		} else {
 			return Collections.emptyList();
 		}
 	}
-
 
     @Override
     public EvenementOrganisation get(Long id) {
         return evenementOrganisationDAO.get(id);
     }
 
-    @Override
+	@Override
+	public List<EvenementOrganisation> getEvenementsOrganisation(Long noOrganisation) {
+		return arrangeAndSort(evenementOrganisationDAO.getEvenementsOrganisation(noOrganisation));
+	}
+
+	@Override
     public List<EvenementOrganisation> find(EvenementOrganisationCriteria<TypeEvenementOrganisation> criterion, ParamPagination pagination) {
         return evenementOrganisationDAO.find(criterion, pagination);
     }

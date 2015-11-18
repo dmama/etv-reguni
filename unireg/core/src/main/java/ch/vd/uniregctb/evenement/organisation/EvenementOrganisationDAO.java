@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.organisation;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -17,18 +16,18 @@ import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 public interface EvenementOrganisationDAO extends GenericDAO<EvenementOrganisation, Long> {
 
 	/**
-	 * Renvoie l'ensemble des événements non encore traités (i.e. dont l'état n'est pas final) pour les organisations données
-	 * @param nosOrganisation numéros des organisations sur lesquels les événements doivent être recherchés
+	 * Renvoie l'ensemble des événements non encore traités (i.e. dont l'état n'est pas final) pour l'organisation donnée
+	 * @param noOrganisation numéro de l'organisation sur laquelle les événements doivent être recherchés
 	 * @return une liste des événements liés à l'organisation donnée et dont l'état n'est pas final (ordre non garanti)
 	 */
-	List<EvenementOrganisation> getEvenementsOrganisationNonTraites(Collection<Long> nosOrganisation);
+	List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation);
 
 	/**
 	 * Renvoie l'ensemble des événements pour l'organisation donnée
 	 * @param noOrganisation numéro de l'organisation sur lequel les événements doivent être recherchés
 	 * @return une liste des événements liés à l'organisation donnée et (ordre non garanti)
 	 */
-	List<EvenementOrganisation> getEvenementsPourOrganisation(long noOrganisation);
+	List<EvenementOrganisation> getEvenementsOrganisation(long noOrganisation);
 
 	/**
 	 * Renvoie l'ensemble des événements organisation à relancer, i.e. qui sont dans l'état {@link EtatEvenementOrganisation#A_TRAITER A_TRAITER}

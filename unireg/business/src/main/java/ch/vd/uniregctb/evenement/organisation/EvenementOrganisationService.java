@@ -16,6 +16,8 @@ public interface EvenementOrganisationService {
 	 */
 	List<EvenementOrganisationBasicInfo> buildLotEvenementsOrganisationNonTraites(long noOrganisation);
 
+    List<EvenementOrganisation> getEvenementsNonTraitesOrganisation(long noOrganisation);
+
     /**
      *
      * @param id id de l'événement à retrouver
@@ -23,6 +25,13 @@ public interface EvenementOrganisationService {
      * @return l'evenement organisation correspondant à l'id
      */
     EvenementOrganisation get(Long id);
+
+    /**
+     * Retourne la liste des événements concernant une organisation
+     * @param noOrganisation L'organisation concernée
+     * @return la liste ordonnées chronologiquement. Vide si aucun événement.
+     */
+    List<EvenementOrganisation> getEvenementsOrganisation(Long noOrganisation);
 
     /**
      *

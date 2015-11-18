@@ -13,6 +13,7 @@ import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
@@ -45,14 +46,14 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 	}
 
 	@Override
-	public List<EvenementOrganisation> getEvenementsOrganisationNonTraites(Collection<Long> nosOrganisation) {
-		return getEvenementsOrganisationNonTraites(nosOrganisation, true);
+	public List<EvenementOrganisation> getEvenementsOrganisationNonTraites(long noOrganisation) {
+		return getEvenementsOrganisationNonTraites(Collections.singletonList(noOrganisation), true);
 
 	}
 
 	@Override
-	public List<EvenementOrganisation> getEvenementsPourOrganisation(long noOrganisation) {
-		return getEvenementsOrganisationNonTraites(Collections.singletonList(noOrganisation));
+	public List<EvenementOrganisation> getEvenementsOrganisation(long noOrganisation) {
+		return getEvenementsOrganisationNonTraites(Collections.singletonList(noOrganisation), false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,6 +65,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 		if (nonTraitesSeulement) {
 			query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
 		}
+		query.addOrder(Order.asc("dateEvenement"));
 		return query.list();
 	}
 
@@ -121,6 +123,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 			queryObject.setFirstResult(firstResult);
 			queryObject.setMaxResults(maxResult);
 		}
+
 
 		return queryObject.list();
 	}

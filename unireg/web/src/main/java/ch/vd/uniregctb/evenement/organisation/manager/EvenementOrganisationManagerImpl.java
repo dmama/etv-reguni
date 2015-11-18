@@ -34,11 +34,9 @@ import ch.vd.uniregctb.evenement.organisation.view.ErreurEvenementOrganisationVi
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationCriteriaView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationDetailView;
 import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationElementListeRechercheView;
-import ch.vd.uniregctb.evenement.organisation.view.EvenementOrganisationGrappeView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceOrganisationService;
 import ch.vd.uniregctb.organisation.OrganisationView;
-import ch.vd.uniregctb.organisation.WebOrganisationService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.OrganisationNotFoundException;
@@ -59,7 +57,6 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 	protected ServiceOrganisationService serviceOrganisationService;
 	protected ServiceInfrastructureService serviceInfrastructureService;
 	protected MessageSource messageSource;
-	protected WebOrganisationService webOrganisationService;
 
 	private EvenementOrganisationService evenementService;
 	private EvenementOrganisationNotificationQueue evenementNotificationQueue;
@@ -100,10 +97,6 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		this.messageSource = messageSource;
 	}
 
-	public void setWebOrganisationService(WebOrganisationService webOrganisationService) {
-		this.webOrganisationService = webOrganisationService;
-	}
-
 	@Override
     @Transactional(readOnly = true)
 	public EvenementOrganisationDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
@@ -127,18 +120,10 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getMessage(), err.getCallstack()));
 		}
 
-		// récupération de la grappe
-		try {
-			evtView.setGrappeComplete(buildGrappeView(evt));
-		}
-		catch (EvenementOrganisationException e) {
-			evtView.setOrganisationError(e.getMessage());
-		}
-
 		final Long numeroOrganisation = evt.getNoOrganisation();
 		evtView.setNoOrganisation(numeroOrganisation);
-		try { // [SIFISC-4834] on permet la visualisation de l'événement même si les données de l'individu sont invalides
-			evtView.setOrganisation(webOrganisationService.getOrganisation(numeroOrganisation));
+		try {
+			evtView.setOrganisation(new OrganisationView(retrieveOrganisation(numeroOrganisation), evt.getDateEvenement()));
 			evtView.setAdresse(retrieveAdresse(numeroOrganisation));
 			retrieveTiersAssocie(evt.getId(), numeroOrganisation, evtView);
 		}
@@ -166,11 +151,6 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return evtView;
 	}
 
-	private EvenementOrganisationGrappeView buildGrappeView(EvenementOrganisation evt) throws EvenementOrganisationException {
-		// Dummy empty stuff for now
-		return new EvenementOrganisationGrappeView(new ArrayList<EvenementOrganisationBasicInfo>());
-	}
-
 	@Override
 	@Transactional
 	public boolean recycleEvenementOrganisation(Long id) throws EvenementOrganisationException {
@@ -184,7 +164,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 	}
 
     private boolean recycleEvenementOrganisation(EvenementOrganisation evt) {
-        boolean individuRecycle = false;
+        boolean organisationRecycle = false;
         final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(evt.getNoOrganisation());
         if (list == null || list.isEmpty()) {
             throw new RuntimeException("La liste devrait toujours avoir au moins un élément");
@@ -195,7 +175,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
             final EvenementOrganisationProcessor.ListenerHandle handle =  evenementProcessor.registerListener(processorListener);
             try {
                 evenementNotificationQueue.post(evt.getNoOrganisation(), EvenementOrganisationProcessingMode.IMMEDIATE);
-                individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
+                organisationRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
             }
             finally {
                 evenementProcessor.unregisterListener(handle);
@@ -204,7 +184,7 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
         else {
             LOGGER.warn(String.format("Tentative incohérente de recyclage de l'événement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", evt.getId()));
         }
-        return individuRecycle;
+        return organisationRecycle;
     }
 
     @Override
@@ -218,11 +198,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 	public List<EvenementOrganisationElementListeRechercheView> find(EvenementOrganisationCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementOrganisationElementListeRechercheView> evtsElementListeRechercheView = new ArrayList<>();
 		if (bean.isModeLotEvenement()) {
-			// cas spécial, on veut la liste des evenements en attente pour un individu
-			List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(bean.getNumeroOrganisation());
+			// cas spécial, on veut la liste des evenements en attente pour une organisation
+			List<EvenementOrganisation> list = evenementService.getEvenementsNonTraitesOrganisation(bean.getNumeroOrganisation());
 			for (int i = (pagination.getNumeroPage() - 1) * pagination.getTaillePage();
 			     i < list.size() && i < (pagination.getNumeroPage()) * pagination.getTaillePage(); ++i) {
-				EvenementOrganisationBasicInfo evt = list.get(i);
+				EvenementOrganisation evt = list.get(i);
 				final EvenementOrganisationElementListeRechercheView evtElementListeRechercheView = buildElementRechercheView(evt);
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
 			}
@@ -245,10 +225,6 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		} else {
 			return evenementService.count(bean);
 		}
-	}
-
-	private EvenementOrganisationElementListeRechercheView buildElementRechercheView(EvenementOrganisationBasicInfo evt) throws AdresseException {
-		return buildElementRechercheView(evenementService.get(evt.getId()));
 	}
 
 	private EvenementOrganisationElementListeRechercheView buildElementRechercheView(EvenementOrganisation evt) throws AdresseException {
@@ -412,12 +388,11 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		return null;
 	}
 
-	protected OrganisationView retrieveIndividu(Long numeroOrganisation) {
-		return webOrganisationService.getOrganisation(numeroOrganisation);
+	protected Organisation retrieveOrganisation(Long numeroOrganisation) {
+		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(numeroOrganisation);
+		if (organisation == null) {
+			throw new ObjectNotFoundException(this.messageSource.getMessage("error.organisation.inexistant", new Object[] {Long.toString(numeroOrganisation)},  WebContextUtils.getDefaultLocale()));
+		}
+		return organisation;
 	}
-
-	protected OrganisationView retrieveIndividu(Long numeroOrganisation, Long numeroEvenement) {
-		return webOrganisationService.getOrganisation(numeroOrganisation);
-	}
-
 }

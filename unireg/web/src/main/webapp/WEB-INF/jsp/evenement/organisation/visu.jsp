@@ -230,19 +230,16 @@
 				<fmt:message key="option.etat.evenement.${aTraiter.etat}"/>
 			</display:column>
 			<display:column titleKey="label.date.evenement">
-				<c:if test="${aTraiter.date == aTraiter.dateOriginale}">
-					<unireg:regdate regdate="${aTraiter.dateOriginale}"/>
+				<c:if test="${aTraiter.date == aTraiter.date}">
+					<unireg:regdate regdate="${aTraiter.date}"/>
 				</c:if>
-				<c:if test="${aTraiter.date != aTraiter.dateOriginale}">
+				<c:if test="${aTraiter.date != aTraiter.date}">
 					<span title="<fmt:message key='label.modification.date.par.correction'/>">
-						<unireg:regdate regdate="${aTraiter.dateOriginale}"/>
+						<unireg:regdate regdate="${aTraiter.date}"/>
 						<img src="<c:url value='/images/right-arrow.png'/>" alt="<fmt:message key='label.modification.date.par.correction'/>" height="16px"/>
 						<unireg:regdate regdate="${aTraiter.date}"/>
 					</span>
 				</c:if>
-			</display:column>
-			<display:column titleKey="label.taille.grappe.traitement.associee">
-				<c:out value="${fn:length(aTraiter.referrers) + 1}"/>
 			</display:column>
 		</display:table>
 	</fieldset>
