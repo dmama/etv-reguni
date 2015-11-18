@@ -30,6 +30,7 @@ public class BooleanYesNoUserType extends GenericUserType implements UserType, P
 		final Map<String, Boolean> map = new HashMap<>();
 		map.put("O", Boolean.TRUE);
 		map.put("Y", Boolean.TRUE);
+		map.put("A", Boolean.TRUE);         // comme "ANNULE"
 		map.put("N", Boolean.FALSE);
 		return map;
 	}

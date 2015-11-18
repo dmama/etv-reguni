@@ -113,6 +113,7 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 	private Set<RegpmRattachementProprietaire> rattachementsProprietaires;
 	private Set<RegpmAppartenanceGroupeProprietaire> appartenancesGroupeProprietaire;
 	private SortedSet<RegpmBlocNotesEntreprise> notes;
+	private Set<RegpmCritereSegmentation> criteresSegmentation;
 
 	@Id
 	@Column(name = "NO_ENTREPRISE")
@@ -806,5 +807,15 @@ public class RegpmEntreprise extends RegpmEntity implements WithLongId {
 
 	public void setNotes(SortedSet<RegpmBlocNotesEntreprise> notes) {
 		this.notes = notes;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "FK_ENTREPRISE_NO")
+	public Set<RegpmCritereSegmentation> getCriteresSegmentation() {
+		return criteresSegmentation;
+	}
+
+	public void setCriteresSegmentation(Set<RegpmCritereSegmentation> criteresSegmentation) {
+		this.criteresSegmentation = criteresSegmentation;
 	}
 }

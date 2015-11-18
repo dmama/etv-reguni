@@ -25,6 +25,7 @@
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCaracteristiquesIndividu</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCollectiviteAdministrative</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCommune</value>
+		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmCritereSegmentation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDecisionTaxation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation</value>
 		<value>ch.vd.uniregctb.migration.pm.regpm.RegpmDomicileEtablissement</value>

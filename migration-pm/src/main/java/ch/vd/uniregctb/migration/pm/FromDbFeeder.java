@@ -290,6 +290,7 @@ public class FromDbFeeder implements Feeder, DisposableBean {
 		pm.getCapitaux().size();
 		pm.getMandants().size();
 		pm.getNotes().size();
+		pm.getCriteresSegmentation().size();
 
 		// lazy init + éventuels liens vers d'autres entités
 		{
