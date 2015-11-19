@@ -83,6 +83,11 @@ public class SiteOrganisationRCEnt implements Serializable, SiteOrganisation {
 		return nom;
 	}
 
+	@Override
+	public String getNom(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
 	public Map<String, List<DateRanged<String>>> getNomsAdditionnels() {
 		return nomsAdditionnels;
 	}

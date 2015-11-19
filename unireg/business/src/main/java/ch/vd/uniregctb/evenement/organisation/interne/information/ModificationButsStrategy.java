@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -54,22 +56,28 @@ public class ModificationButsStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 
 		String butsAvant = null;
-		DateRanged<String> butsAvantDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateAvant).getPayload().getDonneesRC().getButs(), dateAvant);
-		if (butsAvantDateRanged != null) {
-			butsAvant = butsAvantDateRanged.getPayload();
-		}
-		String butsApres = null;
-		final DateRanged<String> butsApresDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getButs(), dateApres);
-		if (butsApresDateRanged != null) {
-			butsApres = butsApresDateRanged.getPayload();
-		}
-
-		if (!ComparisonHelper.areEqual(butsAvant, butsApres)) {
-			LOGGER.info("Modification des buts de l'entreprise -> Propagation.");
-			return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_BUT);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			if (isExisting(organisation, dateApres)) {
+				throw new EvenementOrganisationException(
+						String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+			}
 		} else {
-			LOGGER.info("Pas de modification des buts de l'entreprise.");
-			return null;
+			DateRanged<String> butsAvantDateRanged = DateRangeHelper.rangeAt(sitePrincipalAvantRange.getPayload().getDonneesRC().getButs(), dateAvant);
+			if (butsAvantDateRanged != null) {
+				butsAvant = butsAvantDateRanged.getPayload();
+			}
+			String butsApres = null;
+			final DateRanged<String> butsApresDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getButs(), dateApres);
+			if (butsApresDateRanged != null) {
+				butsApres = butsApresDateRanged.getPayload();
+			}
+			if (!ComparisonHelper.areEqual(butsAvant, butsApres)) {
+				LOGGER.info("Modification des buts de l'entreprise -> Propagation.");
+				return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_BUT);
+			}
 		}
+		LOGGER.info("Pas de modification des buts de l'entreprise.");
+		return null;
 	}
 }

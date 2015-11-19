@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.type.CategorieEntreprise;
 public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrategy {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChangementFormeJuridiqueStrategy.class);
+	private static final String MESSAGE_FORME_JURIDIQUE_MANQUANTE = "Forme juridique introuvable sur organisation %s en date du %s";
 
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est nécessaire.
@@ -55,7 +57,17 @@ public class ChangementFormeJuridiqueStrategy extends AbstractOrganisationStrate
 		final FormeLegale formeLegaleAvant = organisation.getFormeLegale(dateAvant);
 		final FormeLegale formeLegaleApres = organisation.getFormeLegale(dateApres);
 
-		if (formeLegaleAvant != formeLegaleApres) {
+		if (formeLegaleAvant == null) {
+			if (isExisting(organisation, dateApres)) {
+				throw new EvenementOrganisationException(
+						String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+			}
+			LOGGER.info("Organisation nouvellement connue au civil. Pas de changement de catégorie.");
+			return null;
+		} else if (formeLegaleApres == null) {
+			throw new EvenementOrganisationException(
+					String.format(MESSAGE_FORME_JURIDIQUE_MANQUANTE, organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateApres)));
+		} else if (formeLegaleAvant != formeLegaleApres) {
 
 			final CategorieEntreprise categoryAvant = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateAvant);
 			final CategorieEntreprise categoryApres = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateApres);

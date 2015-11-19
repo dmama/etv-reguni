@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
@@ -49,17 +51,25 @@ public class ReinscriptionStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateAvant = event.getDateEvenement().getOneDayBefore();
 		final RegDate dateApres = event.getDateEvenement();
 
-		final SiteOrganisation sitePrincipalAvant = organisation.getSitePrincipal(dateAvant).getPayload();
-		final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
 
-		final RegDate dateRadiationRCAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
-		final RegDate dateRadiationRCApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+		if (sitePrincipalAvantRange == null) {
+			if (isExisting(organisation, dateApres)) {
+				throw new EvenementOrganisationException(
+						String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+			}
+		} else {
+			final SiteOrganisation sitePrincipalAvant = sitePrincipalAvantRange.getPayload();
+			final SiteOrganisation sitePrincipalApres = organisation.getSitePrincipal(dateApres).getPayload();
 
-		if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
-			LOGGER.info(String.format("Réinscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
-			return new Reinscription(event, organisation, entreprise, context, options);
+			final RegDate dateRadiationRCAvant = sitePrincipalAvant.getDonneesRC().getDateRadiation(dateAvant);
+			final RegDate dateRadiationRCApres = sitePrincipalApres.getDonneesRC().getDateRadiation(dateApres);
+
+			if (dateRadiationRCAvant != null && dateRadiationRCApres == null) {
+				LOGGER.info(String.format("Réinscription au RC de l'entreprise %s (civil: %s).", entreprise.getNumero(), organisation.getNumeroOrganisation()));
+				return new Reinscription(event, organisation, entreprise, context, options);
+			}
 		}
-
 		LOGGER.info("Pas de réinscription au RC de l'entreprise.");
 		return null;
 	}

@@ -22,6 +22,8 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DemenagementSiegeStrategy.class);
 
+	private static final String MESSAGE_HORS_SUISSE = "Les changements de siège impliquant un/des sièges hors Suisse ne sont pas pris en charge. Veuillez traiter manuellement.";
+
 	/**
 	 * Détecte les mutations pour lesquelles la création d'un événement interne est pertinente.
 	 *
@@ -54,10 +56,23 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 		final Siege communeDeSiegeAvant = organisation.getSiegePrincipal(dateAvant);
 		final Siege communeDeSiegeApres = organisation.getSiegePrincipal(dateApres);
 
-		if (communeDeSiegeAvant == null || communeDeSiegeApres == null) { // Sièges hors Suisse
-			throw new EvenementOrganisationException("Les changements de siège impliquant un/des sièges hors Suisse ne sont pas pris en charge. Veuillez traiter manuellement.");
+
+		if (communeDeSiegeApres == null) {
+			throw new EvenementOrganisationException(MESSAGE_HORS_SUISSE);
 		}
-		else if (communeDeSiegeAvant.getNoOfs() == communeDeSiegeApres.getNoOfs()) { // Pas un changement, pas de traitement
+
+		if (communeDeSiegeAvant == null) {
+			if (isExisting(organisation, dateApres)) {
+				throw new EvenementOrganisationException(MESSAGE_HORS_SUISSE);
+			} else {
+				LOGGER.info("Pas de déménagement trouvé car l'organisation n'était pas connue avant au civil.");
+				return null; // On n'existait pas hier, en fait.
+			}
+		}
+
+		// Passé ce point on a forcément un déménagement
+
+		if (communeDeSiegeAvant.getNoOfs() == communeDeSiegeApres.getNoOfs()) { // Pas un changement, pas de traitement
 			LOGGER.info("Pas de changement d'autorité politique. La commune d'autorité fiscale reste no {}", communeDeSiegeAvant.getNoOfs());
 			return null;
 		}
@@ -78,8 +93,9 @@ public class DemenagementSiegeStrategy extends AbstractOrganisationStrategy {
 			return new DemenagementArrivee(event, organisation, entreprise, context, options);
 		}
 		else {
-			throw new EvenementOrganisationException(String.format("Il existe un type de siège dont Unireg n'a pas pleinement connaissance. Type avant: %s. Type après: %s. Impossible de continuer.",
-			                                                       communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale()));
+			throw new EvenementOrganisationException(
+					String.format("Il existe manifestement un type de siège qu'Unireg ne sait pas traiter. Type avant: %s. Type après: %s. Impossible de continuer.",
+					              communeDeSiegeAvant.getTypeAutoriteFiscale(), communeDeSiegeApres.getTypeAutoriteFiscale()));
 		}
 	}
 

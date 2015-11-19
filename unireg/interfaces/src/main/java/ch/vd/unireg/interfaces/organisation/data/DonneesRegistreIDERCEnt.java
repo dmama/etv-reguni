@@ -25,7 +25,7 @@ public class DonneesRegistreIDERCEnt implements DonneesRegistreIDE, Serializable
 	private final List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation;
 
 	public DonneesRegistreIDERCEnt(List<AdresseRCEnt> adresseBoitePostale,
-	                          @NotNull List<DateRanged<StatusRegistreIDE>> status,
+	                          List<DateRanged<StatusRegistreIDE>> status,
 	                          List<DateRanged<TypeOrganisationRegistreIDE>> typeOrganisation,
 	                          List<AdresseRCEnt> adresseEffective,
 	                          List<DateRanged<RaisonLiquidationRegistreIDE>> raisonDeLiquidation) {

@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.common.Adresse;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationException;
 import ch.vd.unireg.interfaces.organisation.ServiceOrganisationRaw;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -77,17 +78,23 @@ public class ServiceOrganisationImpl implements ServiceOrganisationService {
 	@Override
 	@NotNull
 	public String createOrganisationDescription(Organisation organisation, RegDate date) {
-		Siege siege = DateRangeHelper.rangeAt(organisation.getSiegesPrincipaux(), date);
-		String commune = "";
+		Siege siege = organisation.getSiegePrincipal(date);
+		String nomCommune = "";
 		if (siege != null) {
-			commune = DateRangeHelper.rangeAt(serviceInfra.getCommuneHistoByNumeroOfs(siege.getNoOfs()), date).getNomOfficielAvecCanton();
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(siege.getNoOfs(), date);
+			if (commune != null) {
+				nomCommune = commune.getNomOfficielAvecCanton();
+			} else {
+				nomCommune = serviceInfra.getCommuneByNumeroOfs(siege.getNoOfs(), RegDate.get()).getNomOfficielAvecCanton() + " [actuelle] ";
+			}
 		}
 		FormeLegale formeLegale = organisation.getFormeLegale(date);
 		String nom = organisation.getNom(date);
-		return String.format("%s (civil: %d), %s %s, forme juridique %s",
+		return String.format("[En date du %s] %s (civil: %d), %s %s, forme juridique %s",
+		                     RegDateHelper.dateToDisplayString(date),
 		                     nom != null ? nom : "[inconnu]",
 		                     organisation.getNumeroOrganisation(),
-		                     commune,
+		                     nomCommune,
 		                     siege != null ? "(ofs: " + siege.getNoOfs() + ")" : "[inconnue]",
 		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}

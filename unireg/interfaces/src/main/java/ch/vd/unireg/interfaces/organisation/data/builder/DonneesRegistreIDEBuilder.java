@@ -23,7 +23,7 @@ public class DonneesRegistreIDEBuilder implements DataBuilder<DonneesRegistreIDE
 
 	public DonneesRegistreIDEBuilder() {}
 
-	public DonneesRegistreIDEBuilder(@NotNull List<DateRanged<StatusRegistreIDE>> status) {
+	public DonneesRegistreIDEBuilder(List<DateRanged<StatusRegistreIDE>> status) {
 		this.status = status;
 	}
 

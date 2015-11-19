@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.common.ComparisonHelper;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -54,22 +56,28 @@ public class ModificationStatutsStrategy extends AbstractOrganisationStrategy {
 		final RegDate dateApres = event.getDateEvenement();
 
 		RegDate statutsAvant = null;
-		DateRanged<RegDate> statutsAvantDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateAvant).getPayload().getDonneesRC().getDateStatuts(), dateAvant);
-		if (statutsAvantDateRanged != null) {
-			statutsAvant = statutsAvantDateRanged.getPayload();
-		}
 		RegDate statutsApres = null;
-		final DateRanged<RegDate> statutsApresDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getDateStatuts(), dateApres);
-		if (statutsApresDateRanged != null) {
-			statutsApres = statutsApresDateRanged.getPayload();
-		}
-
-		if (!ComparisonHelper.areEqual(statutsAvant, statutsApres)) {
-			LOGGER.info("Modification des statuts de l'entreprise -> Propagation.");
-			return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_STATUTS);
+		final DateRanged<SiteOrganisation> sitePrincipalAvantRange = organisation.getSitePrincipal(dateAvant);
+		if (sitePrincipalAvantRange == null) {
+			if (isExisting(organisation, dateApres)) {
+				throw new EvenementOrganisationException(
+						String.format("Site principal introuvable sur organisation %s en date du %s", organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(dateAvant)));
+			}
 		} else {
-			LOGGER.info("Pas de modification des statuts de l'entreprise.");
-			return null;
+			DateRanged<RegDate> statutsAvantDateRanged = DateRangeHelper.rangeAt(sitePrincipalAvantRange.getPayload().getDonneesRC().getDateStatuts(), dateAvant);
+			if (statutsAvantDateRanged != null) {
+				statutsAvant = statutsAvantDateRanged.getPayload();
+			}
+			final DateRanged<RegDate> statutsApresDateRanged = DateRangeHelper.rangeAt(organisation.getSitePrincipal(dateApres).getPayload().getDonneesRC().getDateStatuts(), dateApres);
+			if (statutsApresDateRanged != null) {
+				statutsApres = statutsApresDateRanged.getPayload();
+			}
+			if (!ComparisonHelper.areEqual(statutsAvant, statutsApres)) {
+				LOGGER.info("Modification des statuts de l'entreprise -> Propagation.");
+				return new InformationComplementaire(event, organisation, entreprise, context, options, TypeInformationComplementaire.MODIFICATION_STATUTS);
+			}
 		}
+		LOGGER.info("Pas de modification des statuts de l'entreprise.");
+		return null;
 	}
 }

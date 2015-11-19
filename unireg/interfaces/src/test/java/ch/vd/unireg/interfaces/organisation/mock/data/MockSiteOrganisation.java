@@ -126,6 +126,11 @@ public class MockSiteOrganisation implements SiteOrganisation {
 	}
 
 	@Override
+	public String getNom(RegDate date) {
+		return OrganisationHelper.valueForDate(getNom(), date);
+	}
+
+	@Override
 	public DonneesRC getDonneesRC() {
 		return donneesRC;
 	}

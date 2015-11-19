@@ -2,8 +2,6 @@ package ch.vd.unireg.interfaces.organisation.data;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
 import ch.vd.registre.base.date.RegDate;
 
 /**
@@ -16,7 +14,6 @@ public interface DonneesRegistreIDE {
 
 	List<DateRanged<RaisonLiquidationRegistreIDE>> getRaisonDeLiquidation();
 
-	@NotNull
 	List<DateRanged<StatusRegistreIDE>> getStatus();
 
 	StatusRegistreIDE getStatus(RegDate date);

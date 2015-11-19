@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.organisation.interne;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
@@ -62,5 +63,21 @@ public abstract class AbstractOrganisationStrategy implements EvenementOrganisat
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Est-ce que cette organisation existant d'aujourd'hui existait déjà hier, selon RCEnt?
+	 * @param organisation Une organisation existant pour la date fournie
+	 * @param date La date "aujourd'hui"
+	 * @return Vrai si existait hier
+	 */
+	protected boolean isExisting(Organisation organisation, RegDate date) throws EvenementOrganisationException {
+		String nom = organisation.getNom(date);
+		if (nom == null) {
+			throw new EvenementOrganisationException(
+					String.format("Entreprise %s inexistante au %s ne peut être utilisée pour savoir si elle existe déjà à cette date. Ne devrait jamais arriver en production.",
+					              organisation.getNumeroOrganisation(), RegDateHelper.dateToDisplayString(date)));
+		}
+		return organisation.getNom(date.getOneDayBefore()) != null;
 	}
 }

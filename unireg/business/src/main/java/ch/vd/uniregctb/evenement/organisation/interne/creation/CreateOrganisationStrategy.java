@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.organisation.interne.creation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -51,12 +52,14 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 			return null;
 		}
 
+		final RegDate dateEvenement = event.getDateEvenement();
+
 		// On doit connaître la catégorie pour continuer en mode automatique
-		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, event.getDateEvenement());
+		CategorieEntreprise category = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, dateEvenement);
 		if (category != null) {
 
 			// On crée une entreprise pour les organisations ayant un siège dans la canton de VD
-			if (hasSitePrincipalVD(organisation, event.getDateEvenement())) {
+			if (hasSitePrincipalVD(organisation, dateEvenement)) {
 
 				switch (category) {
 
@@ -95,7 +98,7 @@ public class CreateOrganisationStrategy extends AbstractOrganisationStrategy {
 					LOGGER.info("L'entité organisation {} est installée sur Vaud. Catégorie [{}] -> Traitement manuel.", organisation.getNumeroOrganisation(), category);
 					return new TraitementManuel(event, organisation, null, context, options, MSG_CREATION_AUTOMATIQUE_IMPOSSIBLE);
 				}
-			} else if (hasSiteVD(organisation, event.getDateEvenement())) {
+			} else if (hasSiteVD(organisation, dateEvenement)) {
 				switch (category) {
 
 				case PP:

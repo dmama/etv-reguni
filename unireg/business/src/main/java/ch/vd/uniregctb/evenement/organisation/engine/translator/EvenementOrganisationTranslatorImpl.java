@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.organisation.engine.translator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -12,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
-import ch.vd.unireg.interfaces.organisation.data.Siege;
+import ch.vd.unireg.interfaces.organisation.data.SiteOrganisation;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.data.DataEventService;
@@ -111,13 +110,13 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 	@Override
 	public EvenementOrganisationInterne toInterne(EvenementOrganisation event, EvenementOrganisationOptions options) throws EvenementOrganisationException {
 		final Organisation organisation = serviceOrganisationService.getOrganisationHistory(event.getNoOrganisation());
+		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
 		sanityCheck(event, organisation);
 
-		Audit.info(event.getId(), String.format("Organisation trouvée: %s", createOrganisationDescription(organisation, event.getDateEvenement())));
+		Audit.info(event.getId(), String.format("Organisation trouvée: %s", serviceOrganisationService.createOrganisationDescription(organisation, event.getDateEvenement())));
 
 		final Entreprise entreprise = context.getTiersDAO().getEntrepriseByNumeroOrganisation(organisation.getNumeroOrganisation());
 
-		// Sanity check. Pourquoi ici? Pour ne pas courir le risque d'ignorer des entreprise (passer à TRAITE) sur la foi d'information manquantes.
 		// TODO: S'assurer que tous les sites de l'organisation ont une forme juridique
 		// TODO: S'assurer que tous les sites de l'organisation ont une autorité fiscale (seat)
 
@@ -156,45 +155,25 @@ public class EvenementOrganisationTranslatorImpl implements EvenementOrganisatio
 						String.format("Erreur fatale: la date de l'événement %s (%s) est antérieure à la date de création (%s) de l'organisation telle que rapportée par RCEnt. No civil: %s, nom: %s.",
 						              event.getId(), dateEvenement, noms.get(0).getDateDebut(), organisation.getNumeroOrganisation(), noms.get(0).getPayload()));
 			}
+			StringBuilder champs = new StringBuilder();
 			FormeLegale formeLegale = organisation.getFormeLegale(dateEvenement);
-			Siege siegePrincipal = organisation.getSiegePrincipal(dateEvenement);
-			if (formeLegale == null || siegePrincipal == null) {
-				StringBuilder champs = new StringBuilder();
-				if (formeLegale == null) champs.append("[legalForm] ");
-				if (siegePrincipal == null) champs.append("[seat] ");
+			if (formeLegale == null) {
+				champs.append("[legalForm] ");
+			}
+			for (SiteOrganisation site : organisation.getDonneesSites()) {
+				String nom = site.getNom(dateEvenement); // Le nom (obligatoire de par le xsd) nous permet de déduire si le site est existant pour la date données.
+				if (nom != null && site.getSiege(dateEvenement) == null) {
+					champs.append(String.format("[Etablissement %s: seat] ", site.getNumeroSite()));
+				}
+			}
+			if (champs.length() > 0) {
 				throw new EvenementOrganisationException(String.format("Donnée RCEnt invalide, champ(s) nécessaires manquant(s): %s.", champs));
 			}
-
 		} else {
 			throw new EvenementOrganisationException(
 					String.format("Donnée RCEnt invalide: Champ obligatoire 'nom' pas trouvé pour l'organisation no civil: %s",
 					              organisation.getNumeroOrganisation()));
 		}
-	}
-
-	/**
-	 * Description générique de l'organisation pour une certaine date.
-	 *
-	 * Note: cette méthode serait mieux ailleurs, mais où, sachant qu'elle a besoin d'accéder au service infra?
-	 * @param organisation
-	 * @param date
-	 * @return
-	 */
-	@NotNull
-	private String createOrganisationDescription(Organisation organisation, RegDate date) {
-		Siege siege = organisation.getSiegePrincipal(date);
-		String commune = "";
-		if (siege != null) {
-			commune = context.getServiceInfra().getCommuneByNumeroOfs(siege.getNoOfs(), date).getNomOfficielAvecCanton();
-		}
-		FormeLegale formeLegale = organisation.getFormeLegale(date);
-		String nom = organisation.getNom(date);
-		return String.format("%s (civil: %d), %s %s, forme juridique %s.",
-		                     nom != null ? nom : "[inconnu]",
-		                     organisation.getNumeroOrganisation(),
-		                     commune != null ? commune : null,
-		                     siege != null ? "(ofs:" + siege.getNoOfs() + ")" : "[inconnue]",
-		                     formeLegale != null ? formeLegale : "[inconnue]");
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

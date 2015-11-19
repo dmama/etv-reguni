@@ -32,6 +32,8 @@ public interface SiteOrganisation {
 
 	List<DateRanged<String>> getNom();
 
+	String getNom(RegDate date);
+
 	/**
 	 * @return les données historisées en provenance du registre RC
 	 */
