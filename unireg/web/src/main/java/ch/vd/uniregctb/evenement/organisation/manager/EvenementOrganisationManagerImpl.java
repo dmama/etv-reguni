@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
@@ -229,10 +230,15 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		final EvenementOrganisationElementListeRechercheView view = new EvenementOrganisationElementListeRechercheView(evt);
 		final long numeroOrganisation = evt.getNoOrganisation();
 		try {
+			final RegDate dateEvenement = evt.getDateEvenement();
+
 			view.setNumeroCTB(getNumeroCtbPourNoOrganisation(numeroOrganisation));
 
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(evt.getNoOrganisation());
-			view.setNom(organisation.getNom(null));
+			view.setNom(organisation.getNom(dateEvenement));
+			view.setAutoriteFiscale(organisation.getSiegePrincipal(dateEvenement).getNoOfs());
+			view.setSource(evt.getIdentiteEmetteur());
+
 		}
 		catch (ServiceOrganisationException e) {
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement organisation n°" + evt.getId(), e);

@@ -51,7 +51,11 @@
 
 			<!-- ID -->
 			<display:column property="id" sortable ="${sortable}" titleKey="label.evenement" href="visu.do" paramId="id" paramProperty="id" sortName="id" />
-			<!-- NO Individu + Conjoint -->
+			<!-- Source -->
+			<display:column titleKey="label.evenement.source">
+				<c:out value="${tableEvtsOrganisation.source}" />
+			</display:column>
+			<!-- NO Organisation -->
 			<display:column sortable ="${sortable}" titleKey="label.organisation" sortProperty="numeroOrganisation" sortName="numeroOrganisation">
 				${tableEvtsOrganisation.numeroOrganisation}
 			</display:column>
@@ -61,9 +65,13 @@
 					<unireg:numCTB numero="${tableEvtsOrganisation.numeroCTB}" />
 				</c:if>
 			</display:column>
-			<!-- Nom  /Prénom -->
+			<!-- Raison sociale -->
 			<display:column titleKey="label.raison.sociale">
 				<c:out value="${tableEvtsOrganisation.nom}" />
+			</display:column>
+			<!-- Siège -->
+			<display:column titleKey="label.siege">
+				<unireg:commune ofs="${tableEvtsOrganisation.autoriteFiscale}" displayProperty="nomOfficielAvecCanton"/>
 			</display:column>
 			<!-- Type evt -->
 			<display:column sortable ="${sortable}" titleKey="label.type.evenement" sortName="type">

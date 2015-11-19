@@ -110,7 +110,7 @@
 		        <td width="50%" class="error"><c:out value="${command.organisationError}"/></td>
 	        </c:if>
 	        <c:if test="${command.organisation != null}">
-		        <td width="50%">${command.organisation.nom}&nbsp;${command.organisation.nom}</td>
+		        <td width="50%">${command.organisation.nom}</td>
 	        </c:if>
         </tr>
         <c:if test="${command.adresse.ligne1 != null}">
@@ -159,6 +159,24 @@
 	        </c:if>
         </tr>
         <tr class="<unireg:nextRowClass/>">
+            <td><fmt:message key="label.categorie"/>&nbsp;:</td>
+	        <c:if test="${command.organisation == null}">
+		        <td class="error"><c:out value="${command.organisationError}"/></td>
+	        </c:if>
+	        <c:if test="${command.organisation != null}">
+		        <td>${command.organisation.categorie}</td>
+	        </c:if>
+        </tr>
+        <tr class="<unireg:nextRowClass/>">
+            <td><fmt:message key="label.siege"/>&nbsp;:</td>
+            <c:if test="${command.organisation == null}">
+                <td class="error"><c:out value="${command.organisationError}"/></td>
+            </c:if>
+            <c:if test="${command.organisation != null}">
+                <td><unireg:commune ofs="${command.organisation.autoriteFiscale}" displayProperty="nomOfficielAvecCanton"/></td>
+            </c:if>
+        </tr>
+        <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.numero.ide"/>&nbsp;:</td>
 	        <c:if test="${command.organisation == null}">
 		        <td class="error"><c:out value="${command.organisationError}"/></td>
@@ -169,7 +187,7 @@
         </tr>
     </table>
 </fieldset>
-<!-- Fin Individu -->
+<!-- Fin Organisation -->
 
 <!-- Debut List tiers -->
 <c:if test="${not empty command.tiersAssocies || not empty command.erreursTiersAssocies}">

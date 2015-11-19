@@ -5,6 +5,8 @@ import java.io.Serializable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 
 /**
  *
@@ -17,7 +19,9 @@ public class OrganisationView implements Serializable {
 	private String numeroIDE;
 	private String nom;
 	private String formeJuridique;
+	private CategorieEntreprise categorie;
 	private Integer autoriteFiscale;
+
 
 	private boolean canceled;
 	private Long numeroOrganisationRemplacant;
@@ -31,6 +35,7 @@ public class OrganisationView implements Serializable {
 		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
 		canceled = statusRegistreIDE != null && statusRegistreIDE == StatusRegistreIDE.RADIE;
 		numeroOrganisationRemplacant = organisation.getRemplacePar(date);
+		categorie = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, date);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -100,6 +105,10 @@ public class OrganisationView implements Serializable {
 
 	public void setAutoriteFiscale(Integer autoriteFiscale) {
 		this.autoriteFiscale = autoriteFiscale;
+	}
+
+	public CategorieEntreprise getCategorie() {
+		return categorie;
 	}
 
 	@Override
