@@ -131,23 +131,21 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 			evtView.setOrganisationError(e.getMessage());
 		}
 
-		try {
-			final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(numeroOrganisation);
-			evtView.setNonTraitesSurMemeOrganisation(list);
-			if (list != null && list.size() > 0) {
-				final EvenementOrganisationBasicInfo evtPrioritaire = list.get(0);
-				if (evtView.getEvtId() == evtPrioritaire.getId()) {
-					evtView.setRecyclable(true);
+		if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
+			try {
+				final List<EvenementOrganisationBasicInfo> list = evenementService.buildLotEvenementsOrganisationNonTraites(numeroOrganisation);
+				evtView.setNonTraitesSurMemeOrganisation(list);
+				if (list != null && list.size() > 0) {
+					final EvenementOrganisationBasicInfo evtPrioritaire = list.get(0);
+					if (evtView.getEvtId() == evtPrioritaire.getId()) {
+						evtView.setRecyclable(true);
+					}
 				}
 			}
-		}
-		catch (Exception e) {
-			evtView.setOrganisationError(e.getMessage());
-		}
-		if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
-            evtView.setRecyclable(true);
+			catch (Exception e) {
+				evtView.setOrganisationError(e.getMessage());
+			}
         }
-
 		return evtView;
 	}
 
