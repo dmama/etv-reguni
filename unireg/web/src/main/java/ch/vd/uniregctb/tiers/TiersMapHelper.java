@@ -413,7 +413,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Initialise la map des types d'evenements civils ech
+	 * Initialise la map des types d'evenements civils organisation
 	 *
 	 * @return une map
 	 */

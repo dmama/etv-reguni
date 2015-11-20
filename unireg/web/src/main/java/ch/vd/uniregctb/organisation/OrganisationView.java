@@ -4,9 +4,11 @@ import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
+import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.unireg.interfaces.organisation.data.StatusRegistreIDE;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.type.CategorieEntreprise;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  *
@@ -20,8 +22,8 @@ public class OrganisationView implements Serializable {
 	private String nom;
 	private String formeJuridique;
 	private CategorieEntreprise categorie;
-	private Integer autoriteFiscale;
-
+	private Integer noOFSSiege;
+	private TypeAutoriteFiscale typeSiege;
 
 	private boolean canceled;
 	private Long numeroOrganisationRemplacant;
@@ -29,7 +31,9 @@ public class OrganisationView implements Serializable {
 	public OrganisationView(final Organisation organisation, RegDate date) {
 		this.setNumeroOrganisation(organisation.getNumeroOrganisation());
 		nom = organisation.getNom(date);
-		autoriteFiscale = organisation.getSiegePrincipal(date).getNoOfs();
+		final Siege siegePrincipal = organisation.getSiegePrincipal(date);
+		noOFSSiege = siegePrincipal.getNoOfs();
+		typeSiege = siegePrincipal.getTypeAutoriteFiscale();
 		formeJuridique = organisation.getFormeLegale(date).name();
 		numeroIDE = organisation.getNumeroIDE().isEmpty() ? null : organisation.getNumeroIDE().get(0).getPayload();
 		final StatusRegistreIDE statusRegistreIDE = organisation.getSitePrincipal(date).getPayload().getDonneesRegistreIDE().getStatus(date);
@@ -99,16 +103,28 @@ public class OrganisationView implements Serializable {
 		this.formeJuridique = formeJuridique;
 	}
 
-	public Integer getAutoriteFiscale() {
-		return autoriteFiscale;
+	public Integer getNoOFSSiege() {
+		return noOFSSiege;
 	}
 
-	public void setAutoriteFiscale(Integer autoriteFiscale) {
-		this.autoriteFiscale = autoriteFiscale;
+	public void setNoOFSSiege(Integer noOFSSiege) {
+		this.noOFSSiege = noOFSSiege;
+	}
+
+	public TypeAutoriteFiscale getTypeSiege() {
+		return typeSiege;
+	}
+
+	public void setTypeSiege(TypeAutoriteFiscale typeSiege) {
+		this.typeSiege = typeSiege;
 	}
 
 	public CategorieEntreprise getCategorie() {
 		return categorie;
+	}
+
+	public void setCategorie(CategorieEntreprise categorie) {
+		this.categorie = categorie;
 	}
 
 	@Override
@@ -123,7 +139,7 @@ public class OrganisationView implements Serializable {
 		if (getNumeroIDE() != null ? !getNumeroIDE().equals(that.getNumeroIDE()) : that.getNumeroIDE() != null) return false;
 		if (!getNom().equals(that.getNom())) return false;
 		if (getFormeJuridique() != null ? !getFormeJuridique().equals(that.getFormeJuridique()) : that.getFormeJuridique() != null) return false;
-		if (getAutoriteFiscale() != null ? !getAutoriteFiscale().equals(that.getAutoriteFiscale()) : that.getAutoriteFiscale() != null) return false;
+		if (getNoOFSSiege() != null ? !getNoOFSSiege().equals(that.getNoOFSSiege()) : that.getNoOFSSiege() != null) return false;
 		return !(getNumeroOrganisationRemplacant() != null ? !getNumeroOrganisationRemplacant().equals(that.getNumeroOrganisationRemplacant()) : that.getNumeroOrganisationRemplacant() != null);
 
 	}
@@ -134,7 +150,7 @@ public class OrganisationView implements Serializable {
 		result = 31 * result + (getNumeroIDE() != null ? getNumeroIDE().hashCode() : 0);
 		result = 31 * result + getNom().hashCode();
 		result = 31 * result + (getFormeJuridique() != null ? getFormeJuridique().hashCode() : 0);
-		result = 31 * result + (getAutoriteFiscale() != null ? getAutoriteFiscale().hashCode() : 0);
+		result = 31 * result + (getNoOFSSiege() != null ? getNoOFSSiege().hashCode() : 0);
 		result = 31 * result + (isCanceled() ? 1 : 0);
 		result = 31 * result + (getNumeroOrganisationRemplacant() != null ? getNumeroOrganisationRemplacant().hashCode() : 0);
 		return result;

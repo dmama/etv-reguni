@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.type.EmetteurEvenementOrganisation;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
 
 public class EvenementOrganisationElementListeRechercheView implements Serializable {
@@ -22,7 +23,8 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 	private Long numeroCTB;
 	private String nom;
 	private String commentaireTraitement;
-	private Integer autoriteFiscale;
+	private Integer noOFSSiege;
+	private TypeAutoriteFiscale typeSiege;
 	private EmetteurEvenementOrganisation source;
 
 	public EvenementOrganisationElementListeRechercheView(EvenementOrganisation evt) {
@@ -39,30 +41,50 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public TypeEvenementOrganisation getType() {
 		return type;
+	}
+
+	public void setType(TypeEvenementOrganisation type) {
+		this.type = type;
 	}
 
 	public EtatEvenementOrganisation getEtat() {
 		return etat;
 	}
 
-	@SuppressWarnings("unused")
+	public void setEtat(EtatEvenementOrganisation etat) {
+		this.etat = etat;
+	}
+
 	public Date getDateTraitement() {
 		return dateTraitement;
 	}
 
-	@SuppressWarnings("unused")
+	public void setDateTraitement(Date dateTraitement) {
+		this.dateTraitement = dateTraitement;
+	}
+
 	public RegDate getDateEvenement() {
 		return dateEvenement;
 	}
 
-	@SuppressWarnings("unused")
+	public void setDateEvenement(RegDate dateEvenement) {
+		this.dateEvenement = dateEvenement;
+	}
+
 	public Long getNumeroOrganisation() {
 		return numeroOrganisation;
 	}
 
-	@SuppressWarnings("unused")
+	public void setNumeroOrganisation(Long numeroOrganisation) {
+		this.numeroOrganisation = numeroOrganisation;
+	}
+
 	public Long getNumeroCTB() {
 		return numeroCTB;
 	}
@@ -71,7 +93,6 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 		this.numeroCTB = numeroCTB;
 	}
 
-	@SuppressWarnings("unused")
 	public String getNom() {
 		return nom;
 	}
@@ -80,9 +101,28 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 		this.nom = nom;
 	}
 
-	@SuppressWarnings("unused")
 	public String getCommentaireTraitement() {
 		return commentaireTraitement;
+	}
+
+	public void setCommentaireTraitement(String commentaireTraitement) {
+		this.commentaireTraitement = commentaireTraitement;
+	}
+
+	public Integer getNoOFSSiege() {
+		return noOFSSiege;
+	}
+
+	public void setNoOFSSiege(Integer noOFSSiege) {
+		this.noOFSSiege = noOFSSiege;
+	}
+
+	public TypeAutoriteFiscale getTypeSiege() {
+		return typeSiege;
+	}
+
+	public void setTypeSiege(TypeAutoriteFiscale typeSiege) {
+		this.typeSiege = typeSiege;
 	}
 
 	public EmetteurEvenementOrganisation getSource() {
@@ -91,13 +131,5 @@ public class EvenementOrganisationElementListeRechercheView implements Serializa
 
 	public void setSource(EmetteurEvenementOrganisation source) {
 		this.source = source;
-	}
-
-	public Integer getAutoriteFiscale() {
-		return autoriteFiscale;
-	}
-
-	public void setAutoriteFiscale(Integer autoriteFiscale) {
-		this.autoriteFiscale = autoriteFiscale;
 	}
 }

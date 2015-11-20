@@ -236,7 +236,8 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 
 			final Organisation organisation = serviceOrganisationService.getOrganisationHistory(evt.getNoOrganisation());
 			view.setNom(organisation.getNom(dateEvenement));
-			view.setAutoriteFiscale(organisation.getSiegePrincipal(dateEvenement).getNoOfs());
+			view.setNoOFSSiege(organisation.getSiegePrincipal(dateEvenement).getNoOfs());
+			view.setTypeSiege(organisation.getSiegePrincipal(dateEvenement).getTypeAutoriteFiscale());
 			view.setSource(evt.getIdentiteEmetteur());
 
 		}

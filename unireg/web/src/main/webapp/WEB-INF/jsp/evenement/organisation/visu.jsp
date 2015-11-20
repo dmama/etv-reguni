@@ -26,11 +26,11 @@
             <td width="25%">
 		            <unireg:regdate regdate="${command.evtDate}"/>
             </td>
-
         </tr>
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.type.evenement"/> :</td>
-            <td width="25%"><fmt:message key="${command.evtType}"/></td>
+            <td width="25%"><fmt:message key="option.type.evenement.organisation.${command.evtType}"/></td>
+
             <td width="25%"><fmt:message key="label.date.traitement"/> :</td>
             <td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss"/></td>
         </tr>
@@ -173,7 +173,17 @@
                 <td class="error"><c:out value="${command.organisationError}"/></td>
             </c:if>
             <c:if test="${command.organisation != null}">
-                <td><unireg:commune ofs="${command.organisation.autoriteFiscale}" displayProperty="nomOfficielAvecCanton"/></td>
+                <c:choose>
+                    <c:when test="${command.organisation.typeSiege == 'COMMUNE_OU_FRACTION_VD'}">
+                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/></td>
+                    </c:when>
+                    <c:when test="${command.organisation.typeSiege == 'COMMUNE_HC'}">
+                        <td><unireg:commune ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficielAvecCanton" titleProperty="${noOFS}"/></td>
+                    </c:when>
+                    <c:when test="${command.organisation.typeSiege == 'PAYS_HS'}">
+                        <td><unireg:pays ofs="${command.organisation.noOFSSiege}" date="${command.evtDate}" displayProperty="nomOfficiel" titleProperty="${noOFS}"/></td>
+                    </c:when>
+                </c:choose>
             </c:if>
         </tr>
         <tr class="<unireg:nextRowClass/>">
