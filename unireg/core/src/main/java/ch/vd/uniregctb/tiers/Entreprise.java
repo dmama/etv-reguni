@@ -42,6 +42,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	private Set<AllegementFiscal> allegementsFiscaux;
 	private Set<Bouclement> bouclements;
 	private Set<EtatEntreprise> etats;
+	private Set<FlagEntreprise> flags;
 
 	@Column(name = "NUMERO_ENTREPRISE")
 	@Index(name = "IDX_TIERS_NO_ENTREPRISE")
@@ -250,6 +251,28 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 
 	public void setEtats(Set<EtatEntreprise> etats) {
 		this.etats = etats;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ENTREPRISE_ID")
+	public Set<FlagEntreprise> getFlags() {
+		return flags;
+	}
+
+	public void setFlags(Set<FlagEntreprise> flags) {
+		this.flags = flags;
+	}
+
+	public void addFlag(FlagEntreprise flag) {
+		if (flag.getEntreprise() != null && flag.getEntreprise() != this) {
+			throw new IllegalArgumentException("Ce flag est déjà associé à une autre entreprise.");
+		}
+
+		if (this.flags == null) {
+			this.flags = new HashSet<>();
+		}
+		this.flags.add(flag);
+		flag.setEntreprise(this);
 	}
 
 	public Entreprise() {

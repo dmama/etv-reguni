@@ -390,6 +390,22 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	RegimeFiscal addAndSave(Entreprise entreprise, RegimeFiscal regime);
 
 	/**
+	 * Ajoute un nouvau flag à l'entrprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param etat l'état à ajouter
+	 * @return une nouvelle instance de flag avec son ID renseigné
+	 */
+	EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat);
+
+	/**
+	 * Ajoute un nouvau flag à l'entrprise fournie
+	 * @param entreprise l'entreprise en question
+	 * @param flag le flag à ajouter
+	 * @return une nouvelle instance de flag avec son ID renseigné
+	 */
+	FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag);
+
+	/**
 	 * Retourne les numéros des contribuables modifiés entre un intervalle de temps passé en paramètre.
 	 *
 	 *

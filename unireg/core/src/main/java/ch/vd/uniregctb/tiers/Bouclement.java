@@ -38,6 +38,7 @@ public class Bouclement extends HibernateEntity implements LinkedEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID", nullable = false, updatable = false)
 	public Long getId() {
 		return id;
 	}

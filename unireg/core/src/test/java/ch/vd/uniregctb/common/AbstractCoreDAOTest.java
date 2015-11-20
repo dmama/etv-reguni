@@ -89,6 +89,8 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -124,7 +126,9 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -1297,6 +1301,22 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		bouclement.setDateDebut(dateDebut);
 		bouclement.setPeriodeMois(periodeEnMois);
 		return tiersDAO.addAndSave(e, bouclement);
+	}
+
+	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatEntreprise type) {
+		final EtatEntreprise etat = new EtatEntreprise();
+		etat.setDateDebut(dateDebut);
+		etat.setDateFin(dateFin);
+		etat.setType(type);
+		return tiersDAO.addAndSave(e, etat);
+	}
+
+	protected FlagEntreprise addFlagEntreprise(Entreprise e, int anneeDebut, @Nullable Integer anneeFin, TypeFlagEntreprise type) {
+		final FlagEntreprise flag = new FlagEntreprise();
+		flag.setType(type);
+		flag.setAnneeDebutValidite(anneeDebut);
+		flag.setAnneeFinValidite(anneeFin);
+		return tiersDAO.addAndSave(e, flag);
 	}
 
 	protected ForFiscalPrincipalPM addForPrincipal(ContribuableImpositionPersonnesMorales ctb, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture,

@@ -128,6 +128,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
@@ -5411,6 +5412,32 @@ public class TiersServiceImpl implements TiersService {
 
 		// et on envoie un événement fiscal
 		evenementFiscalService.publierEvenementFiscalAnnulationRegimeFiscal(rf);
+	}
+
+	@Override
+	public FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut, @Nullable Integer anneeFin) {
+		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
+		return tiersDAO.addAndSave(e, new FlagEntreprise(type, anneeDebut, anneeFin));
+	}
+
+	@Override
+	public FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut) {
+		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
+		return tiersDAO.addAndSave(e, new FlagEntreprise(type, anneeDebut, null));
+	}
+
+	@Override
+	public void closeFlagEntreprise(FlagEntreprise flag, int anneeFin) {
+		if (flag.getAnneeDebutValidite().compareTo(anneeFin) > 0) {
+			throw new ValidationException(flag, String.format("L'année de fin de validité (%d) est avant l'année de début de validité (%d) du flag entreprise.",
+			                                                  anneeFin, flag.getAnneeDebutValidite()));
+		}
+		flag.setAnneeFinValidite(anneeFin);
+	}
+
+	@Override
+	public void annuleFlagEntreprise(FlagEntreprise flag) {
+		flag.setAnnule(true);
 	}
 
 	@Override

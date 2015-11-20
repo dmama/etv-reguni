@@ -319,6 +319,16 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
+	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public Bouclement addAndSave(Entreprise entreprise, Bouclement bouclement) {
 		throw new NotImplementedException();
 	}

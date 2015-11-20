@@ -36,6 +36,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
@@ -1570,6 +1571,38 @@ public interface TiersService {
      * @param rf le régime fiscal à annuler
      */
     void annuleRegimeFiscal(RegimeFiscal rf);
+
+    /**
+     * Crée un nouveau flag sur l'entreprise avec les données fournies
+     * @param e entreprise destinataire
+     * @param type le type de flag
+     * @param anneeDebut l'année de début de validité du flag (incluse)
+     * @param anneeFin (optionnelle) l'année de fin de validité du flag (incluse)
+     * @return le flag nouvellement créé
+     */
+    FlagEntreprise addFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut, @Nullable Integer anneeFin);
+
+    /**
+     * Crée un flag valide depuis l'année donnée avec les informations fournies
+     * @param e entreprise destinataire
+     * @param type le type de flag
+     * @param anneeDebut l'année de début de validité du flag (incluse)
+     * @return le flag nouvellement créé
+     */
+    FlagEntreprise openFlagEntreprise(Entreprise e, TypeFlagEntreprise type, int anneeDebut);
+
+    /**
+     * Ferme le flag à l'année indiquée (incluse)
+     * @param flag le flag à clôturer
+     * @param anneeFin année de clôture
+     */
+    void closeFlagEntreprise(FlagEntreprise flag, int anneeFin);
+
+    /**
+     * Annule le flag entreprise passé en paramètre
+     * @param flag le flag à annuler
+     */
+    void annuleFlagEntreprise(FlagEntreprise flag);
 
     /**
      * L'historiques des données civiles fourni par RCEnt (en gros, rien avant leur reprise, quelque part en 2015...) ne nous permet pas de donner

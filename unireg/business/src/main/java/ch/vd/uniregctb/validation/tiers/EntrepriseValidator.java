@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
 public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesValidator<Entreprise> {
@@ -34,6 +35,7 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 			vr.merge(validateAllegementsFiscaux(entreprise));
 			vr.merge(validateBouclements(entreprise));
 			vr.merge(validateEtats(entreprise));
+			vr.merge(validateFlags(entreprise));
 		}
 		return vr;
 	}
@@ -75,6 +77,20 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 				}
 			}
 		}
+		return vr;
+	}
+
+	protected ValidationResults validateFlags(Entreprise entreprise) {
+		final ValidationResults vr = new ValidationResults();
+		final List<FlagEntreprise> flags = AnnulableHelper.sansElementsAnnules(entreprise.getFlags());
+
+		// on valide les flags par eux-mêmes
+		for (FlagEntreprise flag : flags) {
+			vr.merge(getValidationService().validate(flag));
+		}
+
+		// TODO [SIPM][FlagEntreprise] pour l'instant, on n'a aucune règle concernant les éventuelles incompatibilités entre flags...
+
 		return vr;
 	}
 

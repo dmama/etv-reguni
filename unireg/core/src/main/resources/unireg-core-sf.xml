@@ -63,6 +63,7 @@
 		<value>ch.vd.uniregctb.tiers.Entreprise</value>
 		<value>ch.vd.uniregctb.tiers.Etablissement</value>
 		<value>ch.vd.uniregctb.tiers.EtatEntreprise</value>
+		<value>ch.vd.uniregctb.tiers.FlagEntreprise</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscal</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalAutreImpot</value>
 		<value>ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</value>

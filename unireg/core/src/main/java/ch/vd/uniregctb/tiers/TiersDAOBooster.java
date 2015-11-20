@@ -358,6 +358,16 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
+	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
+		return target.addAndSave(entreprise, etat);
+	}
+
+	@Override
+	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
+		return target.addAndSave(entreprise, flag);
+	}
+
+	@Override
 	public List<Long> getListeCtbModifies(Date dateDebutRech, Date dateFinRech) {
 		return target.getListeCtbModifies(dateDebutRech, dateFinRech);
 	}

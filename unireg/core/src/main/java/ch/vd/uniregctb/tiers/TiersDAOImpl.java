@@ -1507,6 +1507,54 @@ public class TiersDAOImpl extends BaseDAOImpl<Tiers, Long> implements TiersDAO {
 		return addAndSave(entreprise, regime, REGIME_FISCAL_ACCESSOR);
 	}
 
+	private static final EntityAccessor<Entreprise, EtatEntreprise> ETAT_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, EtatEntreprise>() {
+		@Override
+		public Collection<EtatEntreprise> getEntities(Entreprise tiers) {
+			return tiers.getEtats();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, EtatEntreprise entity) {
+			tiers.addEtat(entity);
+		}
+
+		@Override
+		public void assertSame(EtatEntreprise entity1, EtatEntreprise entity2) {
+			Assert.isSame(entity1.getDateDebut(), entity2.getDateDebut());
+			Assert.isSame(entity1.getDateFin(), entity2.getDateFin());
+			Assert.isSame(entity1.getType(), entity2.getType());
+		}
+	};
+
+	@Override
+	public EtatEntreprise addAndSave(Entreprise entreprise, EtatEntreprise etat) {
+		return addAndSave(entreprise, etat, ETAT_ENTREPRISE_ACCESSOR);
+	}
+
+	private static final EntityAccessor<Entreprise, FlagEntreprise> FLAG_ENTREPRISE_ACCESSOR = new EntityAccessor<Entreprise, FlagEntreprise>() {
+		@Override
+		public Collection<FlagEntreprise> getEntities(Entreprise tiers) {
+			return tiers.getFlags();
+		}
+
+		@Override
+		public void addEntity(Entreprise tiers, FlagEntreprise entity) {
+			tiers.addFlag(entity);
+		}
+
+		@Override
+		public void assertSame(FlagEntreprise entity1, FlagEntreprise entity2) {
+			Assert.isSame(entity1.getAnneeDebutValidite(), entity2.getAnneeDebutValidite());
+			Assert.isSame(entity1.getAnneeFinValidite(), entity2.getAnneeFinValidite());
+			Assert.isSame(entity1.getType(), entity2.getType());
+		}
+	};
+
+	@Override
+	public FlagEntreprise addAndSave(Entreprise entreprise, FlagEntreprise flag) {
+		return addAndSave(entreprise, flag, FLAG_ENTREPRISE_ACCESSOR);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	private <T extends Tiers, E extends HibernateEntity> E addAndSave(T tiers, E entity, EntityAccessor<T, E> accessor) {
 		if (entity.getKey() == null) {
