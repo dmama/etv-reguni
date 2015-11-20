@@ -23,11 +23,15 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.reqdes.UniteTraitement;
 import ch.vd.uniregctb.rf.Immeuble;
+import ch.vd.uniregctb.tiers.AllegementFiscal;
+import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DecisionAci;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tache;
@@ -45,11 +49,14 @@ public class ConsultLogController {
 	 */
 	private enum LoggableEntity {
 		AdresseTiers(AdresseTiers.class),
+		AllegementFiscal(AllegementFiscal.class),
+		Capital(CapitalEntreprise.class),
 		DecisionAci(DecisionAci.class),
 		DelaiDeclaration(DelaiDeclaration.class),
 		DI(DeclarationImpotOrdinaire.class),
 		DomicileEtablissement(DomicileEtablissement.class),
 		DroitAcces(DroitAcces.class),
+		EtatEntreprise(EtatEntreprise.class),
 		EtatDeclaration(EtatDeclaration.class),
 		Evenement(EvenementCivilRegPP.class),
 		EvenementEch(EvenementCivilEch.class),
@@ -61,6 +68,7 @@ public class ConsultLogController {
 		MouvementDossier(MouvementDossier.class),
 		Periodicite(Periodicite.class),
 		RapportEntreTiers(RapportEntreTiers.class),
+		RegimeFiscal(RegimeFiscal.class),
 		Remarque(Remarque.class),
 		SituationFamille(SituationFamille.class),
 		Tache(Tache.class),

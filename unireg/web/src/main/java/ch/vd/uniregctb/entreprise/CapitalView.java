@@ -11,34 +11,28 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.uniregctb.common.MontantMonetaireView;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 
 public class CapitalView implements CollatableDateRange {
 
+	private final Long id;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final MontantMonetaireView capitalLibere;
 	private final CapitalHisto.Source source;
 
-	public CapitalView(Capital capital) {
-		this(capital.getDateDebut(),
-		     capital.getDateFin(),
-		     buildMontantMonetaire(capital.getCapitalLibere(), capital.getDevise()),
-		     CapitalHisto.Source.CIVILE);
-	}
-
 	public CapitalView(CapitalHisto capital) {
-		this(capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
+		this(capital.getId(), capital.getDateDebut(), capital.getDateFin(), capital.getMontant(), capital.getSource());
 	}
 
-	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, CapitalHisto.Source source) {
-		this(dateDebut, dateFin, buildMontantMonetaire(capitalLibere), source);
+	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaire capitalLibere, CapitalHisto.Source source) {
+		this(id, dateDebut, dateFin, buildMontantMonetaire(capitalLibere), source);
 	}
 
-	public CapitalView(RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, CapitalHisto.Source source) {
+	public CapitalView(Long id, RegDate dateDebut, RegDate dateFin, MontantMonetaireView capitalLibere, CapitalHisto.Source source) {
+		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.capitalLibere = capitalLibere;
@@ -59,6 +53,10 @@ public class CapitalView implements CollatableDateRange {
 			return null;
 		}
 		return new MontantMonetaireView(mm);
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override
@@ -88,11 +86,12 @@ public class CapitalView implements CollatableDateRange {
 	public boolean isCollatable(DateRange next) {
 		return DateRangeHelper.isCollatable(this, next)
 				&& next instanceof CapitalView
+				&& isSameValue(id, ((CapitalView) next).id)
 				&& isSameValue(capitalLibere, ((CapitalView) next).capitalLibere)
 				&& source == ((CapitalView) next).source;
 	}
 
-	private static boolean isSameValue(MontantMonetaireView one, MontantMonetaireView two) {
+	private static <T> boolean isSameValue(T one, T two) {
 		return one == two || (one != null && two != null && one.equals(two));
 	}
 
@@ -101,6 +100,6 @@ public class CapitalView implements CollatableDateRange {
 		if (!isCollatable(next)) {
 			throw new IllegalArgumentException("Ranges are not collatable!");
 		}
-		return new CapitalView(dateDebut, next.getDateFin(), capitalLibere, source);
+		return new CapitalView(id, dateDebut, next.getDateFin(), capitalLibere, source);
 	}
 }

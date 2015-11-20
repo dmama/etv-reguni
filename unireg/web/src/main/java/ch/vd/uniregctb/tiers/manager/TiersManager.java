@@ -521,7 +521,7 @@ public class TiersManager implements MessageSourceAware {
 			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
 			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
 			for (RegimeFiscal regime : regimes) {
-				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getDateDebut(), regime.getDateFin(), regime.getType());
+				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.getDateDebut(), regime.getDateFin(), regime.getType());
 				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
 					vd.add(rfView);
 				}
@@ -544,7 +544,7 @@ public class TiersManager implements MessageSourceAware {
 		if (allegements != null) {
 			final List<AllegementFiscalView> views = new ArrayList<>(allegements.size());
 			for (AllegementFiscal af : allegements) {
-				final AllegementFiscalView afView = new AllegementFiscalView(af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
+				final AllegementFiscalView afView = new AllegementFiscalView(af.getId(), af.getDateDebut(), af.getDateFin(), af.getTypeImpot(), af.getTypeCollectivite(), af.getNoOfsCommune(), af.getPourcentageAllegement());
 				views.add(afView);
 			}
 			Collections.sort(views, reverseComparator);

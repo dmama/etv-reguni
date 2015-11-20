@@ -106,7 +106,7 @@ public class CapitalHisto implements CollatableDateRange, Duplicable<CapitalHist
 	}
 
 	/**
-	 * @return Identifiant de la données dans la base fiscale
+	 * @return Identifiant de la donnée dans la base fiscale
 	 */
 	public Long getId() {
 		return id;

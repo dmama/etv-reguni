@@ -12,6 +12,7 @@ import ch.vd.uniregctb.tiers.AllegementFiscal;
 
 public class AllegementFiscalView implements DateRange {
 
+	private final Long id;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final AllegementFiscal.TypeImpot typeImpot;
@@ -19,13 +20,18 @@ public class AllegementFiscalView implements DateRange {
 	private final Integer noOfsCommune;
 	private final BigDecimal pourcentage;
 
-	public AllegementFiscalView(RegDate dateDebut, RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, @Nullable Integer noOfsCommune, BigDecimal pourcentage) {
+	public AllegementFiscalView(Long id, RegDate dateDebut, RegDate dateFin, AllegementFiscal.TypeImpot typeImpot, AllegementFiscal.TypeCollectivite typeCollectivite, @Nullable Integer noOfsCommune, BigDecimal pourcentage) {
+		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeImpot = typeImpot;
 		this.typeCollectivite = typeCollectivite;
 		this.noOfsCommune = noOfsCommune;
 		this.pourcentage = pourcentage;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override

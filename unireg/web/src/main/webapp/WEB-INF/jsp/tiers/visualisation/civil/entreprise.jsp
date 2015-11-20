@@ -108,6 +108,9 @@
 				<fmt:message key="option.capital.source.${capitaux.source}"/>
 			</display:column>
 		</c:if>
+		<display:column class="action">
+			<unireg:consulterLog entityNature="Capital" entityId="${capitaux.id}"/>
+		</display:column>
 	</display:table>
 
 </fieldset>

@@ -24,6 +24,9 @@
 			<display:column sortable="true" titleKey="label.type">
 				<fmt:message key="option.regime.fiscal.${regimesVD.type}"/>
 			</display:column>
+			<display:column class="action">
+				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesVD.id}"/>
+			</display:column>
 		</display:table>
 
 	</c:if>
@@ -51,6 +54,9 @@
 			</display:column>
 			<display:column sortable="true" titleKey="label.type">
 				<fmt:message key="option.regime.fiscal.${regimesCH.type}"/>
+			</display:column>
+			<display:column class="action">
+				<unireg:consulterLog entityNature="RegimeFiscal" entityId="${regimesCH.id}"/>
 			</display:column>
 		</display:table>
 

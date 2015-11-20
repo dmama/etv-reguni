@@ -11,37 +11,21 @@
 
 	<c:if test="${not empty command.entreprise.etats}">
 
-		<input class="noprint" id="showEtatsPMHisto" type="checkbox" onclick="refreshEtatsPM(this);" />
-		<label class="noprint" for="showEtatsPMHisto"><fmt:message key="label.historique" /></label>
-
-		<display:table name="${command.entreprise.etats}" id="etatsPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:column titleKey="label.date.debut">
-				<unireg:regdate regdate="${etatsPM.dateDebut}"/>
+				<unireg:regdate regdate="${etatPM.dateDebut}"/>
 			</display:column>
 			<display:column titleKey="label.date.fin">
-				<unireg:regdate regdate="${etatsPM.dateFin}"/>
+				<unireg:regdate regdate="${etatPM.dateFin}"/>
 			</display:column>
 			<display:column titleKey="label.type">
-				<fmt:message key="option.etat.entreprise.${etatsPM.type}"/>
+				<fmt:message key="option.etat.entreprise.${etatPM.type}"/>
+			</display:column>
+			<display:column class="action">
+				<unireg:consulterLog entityNature="EtatEntreprise" entityId="${etatPM.id}"/>
 			</display:column>
 		</display:table>
 
 	</c:if>
 
 </fieldset>
-
-<script type="text/javascript">
-
-	/**
-	 * Affiche ou filtre les données historiques de la table des sièges
-	 */
-	function refreshEtatsPM(checkbox) {
-		var showHisto = $(checkbox).attr('checked');
-		var table = $('#etatsPM');
-		Histo.refreshHistoTable(showHisto, table, 1);
-	}
-
-	// on rafraîchit toutes les tables une première fois à l'affichage de la page
-	refreshEtatsPM($('#showEtatsPMHisto'));
-
-</script>

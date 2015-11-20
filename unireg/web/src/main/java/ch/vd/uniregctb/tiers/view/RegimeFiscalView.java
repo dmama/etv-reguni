@@ -7,15 +7,21 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class RegimeFiscalView implements DateRange {
-	
+
+	private final Long id;
 	private RegDate dateDebut;
 	private RegDate dateFin;
 	private TypeRegimeFiscal type;
 
-	public RegimeFiscalView(RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
+	public RegimeFiscalView(Long id, RegDate dateDebut, RegDate dateFin, TypeRegimeFiscal type) {
+		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.type = type;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	@Override

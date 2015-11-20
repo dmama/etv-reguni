@@ -120,7 +120,8 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		}
 		final List<EtatEntrepriseView> views = new ArrayList<>(data.size());
 		for (EtatEntreprise etat : data) {
-			final EtatEntrepriseView view = new EtatEntrepriseView(etat.getDateDebut(),
+			final EtatEntrepriseView view = new EtatEntrepriseView(etat.getId(),
+			                                                       etat.getDateDebut(),
 			                                                       etat.getDateFin(),
 			                                                       etat.getType(),
 			                                                       etat.isAnnule());
