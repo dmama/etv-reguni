@@ -167,7 +167,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeMandat;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> {
 
@@ -3198,9 +3197,39 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		}
 	}
 
-	private static TypeRegimeFiscal mapTypeRegimeFiscal(RegpmTypeRegimeFiscal type) {
-		// TODO il va falloir trouver un mapping un peu plus touffu...
-		return TypeRegimeFiscal.ORDINAIRE;
+	private static String mapTypeRegimeFiscalVD(RegpmTypeRegimeFiscal type) {
+		final RegpmTypeRegimeFiscal typeEffectif;
+		switch (type) {
+		case _01_ORDINAIRE:
+		case _11_PARTICIPATIONS_HOLDING:
+		case _12_PARTICIPATIONS_PART_IMPOSABLE:
+		case _50_PLACEMENT_COLLECTIF_IMMEUBLE:
+		case _60_TRANSPORTS_CONCESSIONNES:
+		case _70_ORDINAIRE_ASSOCIATION_FONDATION:
+		case _109_PM_AVEC_EXONERATION_ART_90G:
+		case _190_PM_AVEC_EXONERATION_ART_90CEFH:
+		case _709_PURE_UTILITE_PUBLIQUE:
+		case _715_FONDATION_ECCLESIASTIQUE_ART_90D:
+		case _719_BUTS_CULTUELS_ART_90H:
+		case _729_INSTITUTIONS_DE_PREVOYANCE_ART_90I:
+		case _739_CAISSES_ASSURANCES_SOCIALES_ART_90F:
+		case _749_CONFEDERATION_ETAT_ETRANGER_ART_90AI:
+		case _759_CANTON_ETABLISSEMENT_ART_90B:
+		case _769_COMMUNE_ETABLISSEMENT_ART_90C:
+		case _779_PLACEMENT_COLLECTIF_EXONERE_ART_90J:
+		case _41C_SOCIETE_DE_BASE_MIXTE:
+		case _42C_SOCIETE_DE_DOMICILE:
+			typeEffectif = type;
+			break;
+		default:
+			typeEffectif = RegpmTypeRegimeFiscal._01_ORDINAIRE;
+			break;
+		}
+		return extractCode(typeEffectif);
+	}
+
+	private static String extractCode(RegpmTypeRegimeFiscal type) {
+		return type.name().substring(1, type.name().indexOf('_', 1));
 	}
 
 	private static RegimeFiscal mapRegimeFiscal(RegimeFiscal.Portee portee, RegpmRegimeFiscal rf) {
@@ -3208,7 +3237,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		unireg.setDateDebut(rf.getDateDebut());
 		unireg.setDateFin(null);
 		unireg.setPortee(portee);
-		unireg.setType(mapTypeRegimeFiscal(rf.getType()));
+		if (portee == RegimeFiscal.Portee.VD) {
+			unireg.setCode(mapTypeRegimeFiscalVD(rf.getType()));
+		}
+		else {
+			unireg.setCode(extractCode(rf.getType()));
+		}
 		return unireg;
 	}
 

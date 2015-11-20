@@ -25,6 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.adapter.rcent.service.RCEntAdapter;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -119,7 +120,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 
@@ -1183,7 +1183,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(RegDate.get(2000, 1, 1), rf.getDateDebut());
 				Assert.assertNull(rf.getDateFin());
 				Assert.assertNull(rf.getAnnulationDate());
-				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
 			}
 			{
 				final RegimeFiscal rf = regimesFiscauxTries.get(1);
@@ -1192,7 +1192,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(RegDate.get(2000, 1, 3), rf.getDateDebut());
 				Assert.assertEquals(RegDate.get(2005, 12, 31), rf.getDateFin());
 				Assert.assertNull(rf.getAnnulationDate());
-				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+				Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), rf.getCode());
 			}
 			{
 				final RegimeFiscal rf = regimesFiscauxTries.get(2);
@@ -1201,7 +1201,7 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals(RegDate.get(2006, 1, 1), rf.getDateDebut());
 				Assert.assertNull(rf.getDateFin());
 				Assert.assertNull(rf.getAnnulationDate());
-				Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, rf.getType());      // pour le moment, on n'a que celui-là...
+				Assert.assertEquals(MockTypeRegimeFiscal.EXO_90G.getCode(), rf.getCode());
 			}
 			return null;
 		});
