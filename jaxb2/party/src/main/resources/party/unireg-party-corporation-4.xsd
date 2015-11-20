@@ -353,18 +353,11 @@
 
 	<xs:simpleType name="taxSystemTypeType">
 		<xs:annotation>
-			<xs:appinfo>
-				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Le type de régime fiscal</jxb:javadoc>
-				</jxb:typesafeEnumClass>
-			</xs:appinfo>
+			<xs:documentation>Le code du régime fiscal (voir FiDoR pour sa signification).</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="ORDINARY">
-				<xs:annotation>
-					<xs:documentation>Ordinaire.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
 
