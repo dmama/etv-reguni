@@ -14,6 +14,7 @@ import ch.vd.uniregctb.migration.pm.log.AdresseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EmptyValuedLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EntrepriseLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.EtablissementLoggedElement;
+import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.IndividuLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LoggedElement;
@@ -62,6 +63,7 @@ public abstract class LogStructure {
 		final Function<LogContexte, LoggedElement> donneesIndividu = new FromContextInformationSource(IndividuLoggedElement.class, IndividuLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesAdresse = new FromContextInformationSource(AdresseLoggedElement.class, AdresseLoggedElement.EMPTY);
 		final Function<LogContexte, LoggedElement> donneesRapportEntreTiers = new FromContextInformationSource(RapportEntreTiersLoggedElement.class, RapportEntreTiersLoggedElement.EMPTY);
+		final Function<LogContexte, LoggedElement> donneesForsOuvertsApresFinAssuj = new FromContextInformationSource(ForPrincipalOuvertApresFinAssujLoggedElement.class, ForPrincipalOuvertApresFinAssujLoggedElement.EMPTY);
 
 		final Map<LogCategory, List<Function<LogContexte, LoggedElement>>> map = new EnumMap<>(LogCategory.class);
 
@@ -97,6 +99,9 @@ public abstract class LogStructure {
 
 		// Dans la liste des entreprises de forme juridique DP_APM, on met l'entreprise seulement
 		map.put(LogCategory.DP_APM, Arrays.asList(donneesNiveau, donneesEntreprise));
+
+		// Liste des fors ouverts après la fermeture de tous les assujettissements
+		map.put(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, Arrays.asList(donneesNiveau, donneesForsOuvertsApresFinAssuj));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
 		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));

@@ -80,6 +80,15 @@ public enum LoggedElementAttribute {
 	RET_DEST_INDIVIDU_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 	RET_DEST_UNIREG_ID(Number.class, Object::toString, LoggedElementHelper.<Number>exceptionThrowing()),
 
+	//
+	// utilisables dans les diverses listes de contrôle
+	//
+
+	RAISON_SOCIALE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	NOM_COMMUNE(String.class, s -> s, LoggedElementHelper.<String>exceptionThrowing()),
+	DATE_DEBUT_FOR(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+	DATE_FIN_ASSUJETTISSEMENT(RegDate.class, RegDateHelper::dateToDashString, LoggedElementHelper.<RegDate>exceptionThrowing()),
+
 	;
 
 	/**

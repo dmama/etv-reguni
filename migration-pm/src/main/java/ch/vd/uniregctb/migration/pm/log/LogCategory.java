@@ -57,13 +57,18 @@ public enum LogCategory {
 	DONNEES_CIVILES_REGPM,
 
 	/**
-	 * Liste des rapports entre tiers générés
+	 * Liste des rapports entre tiers générés (et accessoirement aussi de ceux qui ont finalement été abandonnés)
 	 */
 	RAPPORTS_ENTRE_TIERS,
 
 	/**
 	 * Liste des entreprises dont la forme juridique (au moment de la migration) est DP_APM
 	 */
-	DP_APM
+	DP_APM,
+
+	/**
+	 * Liste des fors principaux ignorés car ouverts postérieurement à toute date de fin d'assujettissement ICC
+	 */
+	FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT
 
 }

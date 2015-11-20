@@ -85,6 +85,7 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.AdresseHelper;
 import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.engine.helpers.StringRenderers;
 import ch.vd.uniregctb.migration.pm.extractor.IbanExtractor;
+import ch.vd.uniregctb.migration.pm.log.ForPrincipalOuvertApresFinAssujLoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -1096,7 +1097,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	/**
 	 * Extraction des fors principaux valides d'une entreprise de RegPM (en particulier, on blinde le
-	 * cas de fors multiples à la même date ete des fors sans date de début)
+	 * cas de fors multiples à la même date et des fors sans date de début)
 	 * @param regpm l'entreprise cible
 	 * @param mr le collecteur de messages de suivi et manipulateur de contexte de log
 	 * @param idMapper mapper d'identifiants RegPM -> Unireg
@@ -1107,7 +1108,48 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
+			final boolean isAssujettissementIccOuvert = regpm.getAssujettissements().stream()
+					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
+					.filter(ass -> ass.getDateFin() == null)
+					.findAny()
+					.isPresent();
+
+			// La date de fin du dernier assujettissement ICC qui a été fermé (s'il existe un assujettissement ouvert
+			// alors cette date de fin d'assujettissement ne doit pas être utilisée...)
+			final RegDate dateFinDernierAssujettissementFerme = regpm.getAssujettissements().stream()
+					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
+					.map(RegpmAssujettissement::getDateFin)
+					.filter(Objects::nonNull)
+					.max(Comparator.naturalOrder())
+					.orElse(null);
+
 			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
+					.filter(ff -> {
+						if (ff.getDateValidite() != null
+								&& !isAssujettissementIccOuvert
+								&& ff.getCommune() != null
+								&& ff.getCommune().getCanton() == RegpmCanton.VD
+								&& RegDateHelper.isAfter(ff.getDateValidite(), dateFinDernierAssujettissementFerme, NullDateBehavior.LATEST)) {
+
+							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+							              String.format("For fiscal principal vaudois %d ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'assujettissement ICC de l'entreprise (%s).",
+							                            ff.getId().getSeqNo(),
+							                            StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()),
+							                            StringRenderers.DATE_RENDERER.toString(dateFinDernierAssujettissementFerme)));
+
+							// [SIFISC-17110] On veut une liste...
+							mr.pushContextValue(ForPrincipalOuvertApresFinAssujLoggedElement.class, new ForPrincipalOuvertApresFinAssujLoggedElement(regpm, ff, dateFinDernierAssujettissementFerme));
+							try {
+								mr.addMessage(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, LogLevel.INFO, StringUtils.EMPTY);
+							}
+							finally {
+								mr.popContexteValue(ForPrincipalOuvertApresFinAssujLoggedElement.class);
+							}
+
+							return false;
+						}
+						return true;
+					})
 					.collect(Collectors.toMap(RegpmForPrincipal::getDateValidite,
 					                          Collections::singletonList,
 					                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList())));
