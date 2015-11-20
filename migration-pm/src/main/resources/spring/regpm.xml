@@ -93,6 +93,7 @@
 		<property name="maxIdle" value="${regpm.jdbc.pool.size}" />
 		<property name="minIdle" value="0" />
 		<property name="initialSize" value="0" />
+		<property name="timeBetweenEvictionRunsMillis" value="10000"/>
 	</bean>
 
 	<bean id="regpmTransactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
