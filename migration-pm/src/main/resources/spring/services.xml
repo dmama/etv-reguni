@@ -10,6 +10,7 @@
 	<bean id="_tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="bouclementService" ref="bouclementService"/>
 		<property name="serviceOrganisationService" ref="serviceOrganisationService"/>
+		<property name="assujettissementService" ref="assujettissementService"/>
 		<!-- en théorie, il en manque plein... -->
 	</bean>
 

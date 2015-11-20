@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.migration.pm.utils;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Set;
@@ -54,7 +55,12 @@ public class TiersServiceFactory implements FactoryBean<TiersService>, Initializ
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (supportedMethodNames != null && supportedMethodNames.contains(method.getName())) {
-				return method.invoke(target, args);
+				try {
+					return method.invoke(target, args);
+				}
+				catch (InvocationTargetException e) {
+					throw e.getTargetException();
+				}
 			}
 			throw new NotImplementedException("La méthode '" + method.getName() + "' n'est pas actuellement supportée...");
 		}
