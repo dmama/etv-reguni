@@ -120,8 +120,8 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 				}
 			}
 		}
-		catch (Exception e) {
-			LOGGER.error("Exception levée dans le thread principal de migration", e);
+		catch (Throwable e) {
+			LOGGER.error("Erreur irrécupérable levée dans le thread principal de migration", e);
 		}
 		finally {
 			LOGGER.info("Fin de la migration.");
@@ -131,7 +131,7 @@ public class Migrator implements SmartLifecycle, MigrationInitializationRegistra
 	@Override
 	public void registerInitializationCallback(@NotNull Runnable callback) {
 		if (thread != null) {
-			throw new IllegalStateException("Le processus a déjà commencé : il est trop tard pour enregistrer un callbck d'initialisation !");
+			throw new IllegalStateException("Le processus a déjà commencé : il est trop tard pour enregistrer un callback d'initialisation !");
 		}
 
 		synchronized (initCallbacks) {
