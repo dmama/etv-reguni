@@ -99,7 +99,7 @@ public abstract class LogStructure {
 		map.put(LogCategory.DP_APM, Arrays.asList(donneesNiveau, donneesEntreprise));
 
 		// Dans le log des erreurs, on ne met aucun contexte -> seul le texte sera affiché
-		map.put(LogCategory.EXCEPTIONS, Collections.emptyList());
+		map.put(LogCategory.EXCEPTIONS, Collections.singletonList(donneesNiveau));
 
 		return map;
 	}

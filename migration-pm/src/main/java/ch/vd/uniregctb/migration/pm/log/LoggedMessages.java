@@ -42,8 +42,8 @@ public class LoggedMessages {
 	}
 
 	@NotNull
-	public static LoggedMessages singleton(LogCategory cat, LogLevel level, String message) {
-		return new LoggedMessages(Collections.singletonMap(cat, Collections.singletonList(new LoggedMessage(level, message))));
+	public static LoggedMessages singleton(LogCategory cat, LoggedMessage msg) {
+		return new LoggedMessages(Collections.singletonMap(cat, Collections.singletonList(msg)));
 	}
 
 	/**

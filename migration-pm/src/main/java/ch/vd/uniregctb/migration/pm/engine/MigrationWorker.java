@@ -35,6 +35,7 @@ import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
+import ch.vd.uniregctb.migration.pm.log.MessageLoggedElement;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -287,10 +288,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				Thread.currentThread().interrupt();
 			}
 
-			return LoggedMessages.singleton(LogCategory.EXCEPTIONS, LogLevel.ERROR,
-			                                String.format("Les entreprises %s n'ont pas pu être migrées : %s",
-			                                              Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
-			                                              dump(t)));
+			final MessageLoggedElement elt = new MessageLoggedElement(LogLevel.ERROR,
+			                                                          String.format("Les entreprises %s n'ont pas pu être migrées : %s",
+			                                                                        Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
+			                                                                        dump(t)));
+			return LoggedMessages.singleton(LogCategory.EXCEPTIONS, elt.resolve());
 		}
 	}
 

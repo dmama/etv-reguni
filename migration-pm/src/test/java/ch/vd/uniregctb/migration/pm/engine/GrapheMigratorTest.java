@@ -55,6 +55,7 @@ import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
 import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
+import ch.vd.uniregctb.migration.pm.log.MessageLoggedElement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -3458,10 +3459,11 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		}
 		catch (MigrationException e) {
 			final Long[] idsEntreprises = graphe.getEntreprises().keySet().toArray(new Long[graphe.getEntreprises().size()]);
-			mr = LoggedMessages.singleton(LogCategory.EXCEPTIONS, LogLevel.ERROR,
-			                              String.format("Les entreprises %s n'ont pas pu être migrées : %s",
-			                                            Arrays.toString(idsEntreprises),
-			                                            MigrationWorker.dump(e)));
+			final MessageLoggedElement elt = new MessageLoggedElement(LogLevel.ERROR,
+			                                                          String.format("Les entreprises %s n'ont pas pu être migrées : %s",
+			                                                                        Arrays.toString(idsEntreprises),
+			                                                                        MigrationWorker.dump(e)));
+			mr = LoggedMessages.singleton(LogCategory.EXCEPTIONS, elt.resolve());
 		}
 
 		// dump sur la sortie standard
