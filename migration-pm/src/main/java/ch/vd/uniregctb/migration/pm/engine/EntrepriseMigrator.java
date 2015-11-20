@@ -1876,8 +1876,21 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 				.map(entry -> new CapitalEntreprise(entry.getKey(), null, new MontantMonetaire(entry.getValue().longValue(), MontantMonetaire.CHF)))
 				.collect(Collectors.toList());
 
+		// petit contrôle sur la date de fin d'activité par rapport aux dates des capitaux...
+		final RegDate dateFinActiviteCapitaux;
+		if (dateFinActivite != null && !capitaux.isEmpty() && capitaux.get(capitaux.size() - 1).getDateDebut().isAfter(dateFinActivite)) {
+			dateFinActiviteCapitaux = null;
+			mr.addMessage(LogCategory.DONNEES_CIVILES_REGPM, LogLevel.ERROR,
+			              String.format("Date de début d'une donnée de capital (%s) postérieure à la date de fin d'activité calculée (%s), cette dernière est donc ignorée ici.",
+			                            StringRenderers.DATE_RENDERER.toString(capitaux.get(capitaux.size() - 1).getDateDebut()),
+			                            StringRenderers.DATE_RENDERER.toString(dateFinActivite)));
+		}
+		else {
+			dateFinActiviteCapitaux = dateFinActivite;
+		}
+
 		// assignation des dates de fin en fonction des dates de début du suivant
-		assigneDatesFin(dateFinActivite, capitaux);
+		assigneDatesFin(dateFinActiviteCapitaux, capitaux);
 
 		// persistence et log
 		capitaux.stream()
