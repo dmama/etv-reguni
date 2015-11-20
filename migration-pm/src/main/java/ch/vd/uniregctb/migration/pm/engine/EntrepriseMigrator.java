@@ -100,6 +100,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeCollectivite;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCodeContribution;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCommune;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmCritereSegmentation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDemandeDelaiSommation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmEntreprise;
@@ -119,6 +120,7 @@ import ch.vd.uniregctb.migration.pm.regpm.RegpmSiegeEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAdresseEntreprise;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeContribution;
+import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeCritereSegmentation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeDemandeDelai;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDecisionTaxation;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmTypeEtatDemandeDelai;
@@ -144,6 +146,7 @@ import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
+import ch.vd.uniregctb.tiers.FlagEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
@@ -161,6 +164,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
+import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypeMandat;
 import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
@@ -1660,6 +1664,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		migrateNotes(regpm.getNotes(), unireg);
 		migrateFlagDoublon(regpm, unireg, mr);
 		migrateDonneesRegistreCommerce(regpm, unireg, mr);
+		migrateLIASF(regpm, unireg, mr);
 		logDroitPublicAPM(regpm, mr);
 
 		migrateAdresses(regpm, unireg, mr);
@@ -1677,6 +1682,48 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 		// log de suivi à la fin des opérations pour cette entreprise
 		mr.addMessage(LogCategory.SUIVI, LogLevel.INFO, String.format("Entreprise migrée : %s.", FormatNumeroHelper.numeroCTBToDisplay(unireg.getNumero())));
+	}
+
+	/**
+	 * Migration des flags LIASF de l'entreprise de RegPM
+	 * @param regpm l'entreprise dans RegPM
+	 * @param unireg l'entreprise cible dans Unireg
+	 * @param mr le collecteur de messages de suivi
+	 */
+	private static void migrateLIASF(RegpmEntreprise regpm, Entreprise unireg, MigrationResultProduction mr) {
+		regpm.getCriteresSegmentation().stream()
+				.filter(critere -> critere.getType() == RegpmTypeCritereSegmentation.LIASF)
+				.sorted(Comparator.comparing(RegpmCritereSegmentation::getPfDebut))
+				.map(critere -> {
+					final FlagEntreprise flag = new FlagEntreprise();
+					copyCreationMutation(critere, flag);
+					flag.setAnneeDebutValidite(critere.getPfDebut());
+					flag.setAnneeFinValidite(critere.getPfFin());
+					flag.setType(TypeFlagEntreprise.UTILITE_PUBLIQUE);
+					if (critere.isAnnule()) {       // on reprend même les annulés !
+						flag.setAnnulationDate(flag.getLogModifDate());
+						flag.setAnnulationUser(flag.getLogModifUser());
+					}
+					return flag;
+				})
+				.filter(flag -> {
+					if (flag.getAnneeFinValidite() != null && flag.getAnneeFinValidite() < flag.getAnneeDebutValidite() && !flag.isAnnule()) {
+						mr.addMessage(LogCategory.SUIVI, LogLevel.ERROR,
+						              String.format("Le flag d'entreprise %s non-annulé est ignoré par la migration car son année de début (%d) est postérieure à son année de fin (%d).",
+						                            flag.getType(),
+						                            flag.getAnneeDebutValidite(),
+						                            flag.getAnneeFinValidite()));
+						return false;
+					}
+					return true;
+				})
+				.peek(flag -> mr.addMessage(LogCategory.SUIVI, LogLevel.INFO,
+				                            String.format("Génération d'un flag entreprise %s%s entre les années %d et %s.",
+				                                          flag.getType(),
+				                                          flag.isAnnule() ? " (annulé)" : StringUtils.EMPTY,
+				                                          flag.getAnneeDebutValidite(),
+				                                          flag.getAnneeFinValidite() == null ? "?" : flag.getAnneeFinValidite())))
+				.forEach(unireg::addFlag);
 	}
 
 	/**
