@@ -135,12 +135,17 @@ public class PeriodeImpositionPersonnesMoralesCalculator implements PeriodeImpos
 
 		switch (categorie) {
 		case APM:
+		case FP:
+		case DP:
 			return TypeDocument.DECLARATION_IMPOT_APM;
 		case PM:
 		case DPPM:
+		case AUTRE:
 			return TypeDocument.DECLARATION_IMPOT_PM;
+		case SP:
+			return null;            // TODO si une SP est ici, c'est qu'elle est assujettie...
 		default:
-			throw new IllegalArgumentException("Type de catégorie d'entreprise non-supportée dans le calculateur de périodes d'imposition : " + categorie);
+			throw new IllegalArgumentException("Type de catégorie d'entreprise non-supportée dans le calculateur de périodes d'imposition des personnes morales : " + categorie);
 		}
 	}
 
