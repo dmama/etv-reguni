@@ -45,7 +45,6 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.metier.bouclement.BouclementService;
 import ch.vd.uniregctb.migration.pm.Graphe;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.SerializationIntermediary;
 import ch.vd.uniregctb.migration.pm.communes.FractionsCommuneProvider;
 import ch.vd.uniregctb.migration.pm.communes.FusionCommunesProvider;
@@ -54,7 +53,8 @@ import ch.vd.uniregctb.migration.pm.engine.helpers.DoublonProvider;
 import ch.vd.uniregctb.migration.pm.indexeur.NonHabitantIndex;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
-import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmAssujettissement;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmCategoriePersonneMorale;
 import ch.vd.uniregctb.migration.pm.regpm.RegpmDossierFiscal;
@@ -104,14 +104,13 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 	private ValidationService validationService;
 	private UniregStore uniregStore;
 
-	private static Map<LogCategory, List<String>> buildTextualMessages(MigrationResultMessageProvider mr) {
-		return Stream.of(LogCategory.values())
-				.map(cat -> mr.getMessages(cat).stream().map(msg -> Pair.of(cat, LoggedElementRenderer.INSTANCE.toString(msg))))
-				.flatMap(Function.identity())
-				.collect(Collectors.toMap(Pair::getKey,
-				                          pair -> Collections.singletonList(pair.getValue()),
-				                          (v1, v2) -> Stream.concat(v1.stream(), v2.stream()).collect(Collectors.toList()),
-				                          () -> new EnumMap<>(LogCategory.class)));
+	private static Map<LogCategory, List<String>> buildTextualMessages(LoggedMessages lms) {
+		final Map<LogCategory, List<LoggedMessage>> map = lms.asMap();
+		final Map<LogCategory, List<String>> messages = new EnumMap<>(LogCategory.class);
+		for (Map.Entry<LogCategory, List<LoggedMessage>> entry : map.entrySet()) {
+			messages.put(entry.getKey(), entry.getValue().stream().map(LoggedMessage::getMessage).collect(Collectors.toList()));
+		}
+		return messages;
 	}
 
 	private static final long INACTIVE_ENTREPRISE_ID = 1832L;
@@ -282,8 +281,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Collections.singletonList(mandataire),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		final MutableLong noContribuableEtablissementPrincipalMandataire = new MutableLong();
 		final MutableLong noContribuableEtablissementSecondaireMandataire = new MutableLong();
@@ -481,7 +480,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.ADRESSES,
 		                               LogCategory.FORS,
@@ -572,8 +571,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Arrays.asList(etablissement1, etablissement2),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// pour tester la cohérence avec le message de suivi par la suite
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -737,7 +736,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -836,8 +835,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Arrays.asList(etablissement1, etablissement2),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// pour tester la cohérence avec le message de suivi par la suite
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -964,7 +963,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.ETABLISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1041,8 +1040,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
 		final long idEntreprise = doInUniregTransaction(true, status -> {
@@ -1097,8 +1096,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Collections.singletonList(etb),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification du contenu de la base -> une nouvelle entreprise
 		final long idEntreprise = doInUniregTransaction(true, status -> {
@@ -1157,8 +1156,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification du contenu de la base -> une nouvelle regpm
 		doInUniregTransaction(true, status -> {
@@ -1226,7 +1225,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1280,8 +1279,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -1361,7 +1360,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1422,8 +1421,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -1489,7 +1488,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1540,8 +1539,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// récupération du numéro de contribuable de l'établissement principal (pour le contrôle des logs)
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -1592,7 +1591,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1638,8 +1637,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		final MockGraphe graphe = new MockGraphe(Collections.singletonList(entreprise),
 		                                         Collections.singletonList(etablissement),
 		                                         null);
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// extraction de l'établissement et vérification des données
 		doInUniregTransaction(true, status -> {
@@ -1705,8 +1704,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Collections.singletonList(etablissement),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// pour tester la cohérence avec le message de suivi par la suite
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -1809,7 +1808,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.ADRESSES, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -1894,8 +1893,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Collections.singletonList(etablissement),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// pour tester la cohérence avec le message de suivi par la suite
 		final MutableLong noContribuableEtablissementPrincipalCree = new MutableLong();
@@ -1961,7 +1960,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ETABLISSEMENTS, LogCategory.ASSUJETTISSEMENTS, LogCategory.RAPPORTS_ENTRE_TIERS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -2021,10 +2020,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNull(msg);     // -> aucun message : pas de différence trouvée
 	}
@@ -2047,10 +2046,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNull(msg);     // -> aucun message : pas de différence trouvée
 	}
@@ -2068,10 +2067,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(1, msg.size());
@@ -2091,10 +2090,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(1, msg.size());
@@ -2115,10 +2114,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
@@ -2139,10 +2138,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.ASSUJETTISSEMENTS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(2, msg.size());
@@ -2166,10 +2165,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.FORS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(6, msg.size());
@@ -2227,10 +2226,10 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		final List<String> msg = messages.get(LogCategory.FORS);
 		Assert.assertNotNull(msg);
 		Assert.assertEquals(5, msg.size());
@@ -2298,8 +2297,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     Collections.singletonList(individu));
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// identifiants des nouvelles entités
 		final MutableLong noEtablissementPrincipal = new MutableLong();
@@ -2379,7 +2378,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
 			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffs.getNumeroOfsAutoriteFiscale());
 
-			return buildTextualMessages(mr);
+			return buildTextualMessages(lms);
 		});
 		Assert.assertNotNull(noEtablissementPrincipal.getValue());
 
@@ -2451,8 +2450,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		doInUniregTransaction(true, status -> {
 
@@ -2511,7 +2510,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.FORS, LogCategory.ASSUJETTISSEMENTS, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -2579,8 +2578,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification de la présence de la raison sociale
 		doInUniregTransaction(true, status -> {
@@ -2603,7 +2602,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(0, capitaux.size());
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -2637,8 +2636,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification de la présence de la raison sociale
 		doInUniregTransaction(true, status -> {
@@ -2661,7 +2660,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals(0, capitaux.size());
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -2695,8 +2694,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification de la présence de la raison sociale
 		doInUniregTransaction(true, status -> {
@@ -2728,7 +2727,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("CHF", capital.getMontant().getMonnaie());
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI, LogCategory.DONNEES_CIVILES_REGPM), messages.keySet());
 		{
 			final List<String> msgs = messages.get(LogCategory.SUIVI);
@@ -2779,8 +2778,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     Collections.singletonList(etablissement),
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		final MutableLong noContribuableEtablissementPrincipal = new MutableLong();
 		final MutableLong noContribuableEtablissementSecondaire = new MutableLong();
@@ -2919,7 +2918,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.DONNEES_CIVILES_REGPM,
 		                               LogCategory.ADRESSES,
@@ -3005,8 +3004,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification de ce qui a été mis en base
 		doInUniregTransaction(true, status -> {
@@ -3130,8 +3129,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification du contenu de la base
 		doInUniregTransaction(true, status -> {
@@ -3194,7 +3193,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
 		                               LogCategory.DECLARATIONS,
@@ -3233,6 +3232,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			Assert.assertEquals("INFO;" + idEntreprise + ";Active;;;;;;;;;Donnée de capital migrée : sur la période [01.01.2013 -> ?], 10000 CHF.", msgs.get(1));
 		}
 	}
+
 	@Test
 	public void testDeclarationEmiseAnnuleeSansLienVersExerciceCommercial() throws Exception {
 
@@ -3261,8 +3261,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                     null,
 		                                     null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// vérification du contenu de la base
 		doInUniregTransaction(true, status -> {
@@ -3325,7 +3325,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 			}
 		});
 
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
 		                               LogCategory.DECLARATIONS,
@@ -3380,8 +3380,8 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		                                         null,
 		                                         null);
 
-		final MigrationResultMessageProvider mr = grapheMigrator.migrate(graphe);
-		Assert.assertNotNull(mr);
+		final LoggedMessages lms = grapheMigrator.migrate(graphe);
+		Assert.assertNotNull(lms);
 
 		// en base : le flag débiteur inactif doit avoir été mis, et les fors créés mais annulés
 		doInUniregTransaction(true, status -> {
@@ -3402,7 +3402,7 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		// et dans les messages de suivi ?
-		final Map<LogCategory, List<String>> messages = buildTextualMessages(mr);
+		final Map<LogCategory, List<String>> messages = buildTextualMessages(lms);
 		Assert.assertEquals(EnumSet.of(LogCategory.SUIVI,
 		                               LogCategory.FORS,
 		                               LogCategory.DONNEES_CIVILES_REGPM),
@@ -3451,21 +3451,21 @@ public class GrapheMigratorTest extends AbstractMigrationEngineTest {
 		});
 
 		// lancement de la migration du graphe (de la même façon, en ce qui concerne la gestion des exception, que ce qui est fait dans le MigrationWorker)
-		MigrationResultMessageProvider mr;
+		LoggedMessages mr;
 		try {
 			mr = grapheMigrator.migrate(graphe);
 			Assert.assertNotNull(mr);
 		}
 		catch (MigrationException e) {
-			final MigrationResult res = new MigrationResult(graphe);
 			final Long[] idsEntreprises = graphe.getEntreprises().keySet().toArray(new Long[graphe.getEntreprises().size()]);
-			final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprises), MigrationWorker.dump(e));
-			res.addMessage(LogCategory.EXCEPTIONS, LogLevel.ERROR, msg);
-			mr = res;
+			mr = LoggedMessages.singleton(LogCategory.EXCEPTIONS, LogLevel.ERROR,
+			                              String.format("Les entreprises %s n'ont pas pu être migrées : %s",
+			                                            Arrays.toString(idsEntreprises),
+			                                            MigrationWorker.dump(e)));
 		}
 
 		// dump sur la sortie standard
-		final String summary = mr.summary();
+		final String summary = mr.toString();
 		System.out.println(summary);
 
 		// on ouvre une session hibernate pour vérifier visuellement le contenu

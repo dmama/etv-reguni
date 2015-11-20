@@ -2,6 +2,7 @@ package ch.vd.uniregctb.migration.pm.engine;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -27,13 +28,13 @@ import ch.vd.uniregctb.common.DefaultThreadFactory;
 import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
 import ch.vd.uniregctb.migration.pm.Graphe;
 import ch.vd.uniregctb.migration.pm.MigrationMode;
-import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.Worker;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
-import ch.vd.uniregctb.migration.pm.log.LoggedElement;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementAttribute;
 import ch.vd.uniregctb.migration.pm.log.LoggedElementRenderer;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessage;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
 import ch.vd.uniregctb.migration.pm.utils.EntityMigrationSynchronizer;
 
 public class MigrationWorker implements Worker, InitializingBean, DisposableBean {
@@ -46,7 +47,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	private final EntityMigrationSynchronizer synchronizer = new EntityMigrationSynchronizer();
 	private BlockingQueue<Runnable> queue;
 	private ExecutorService executor;
-	private CompletionService<MigrationResultMessageProvider> completionService;
+	private CompletionService<LoggedMessages> completionService;
 	private GatheringThread gatheringThread;
 
 	private MigrationMode mode;
@@ -83,12 +84,11 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	}
 
 	@NotNull
-	private static LogLevel extractLevel(LoggedElement elt, @NotNull LogLevel defaultLevel) {
-		final LogLevel setInElement = (LogLevel) elt.getItemValues().get(LoggedElementAttribute.NIVEAU);
-		return setInElement == null ? defaultLevel : setInElement;
+	private static LogLevel extractLevel(LoggedMessage elt, @NotNull LogLevel defaultLevel) {
+		return elt.getLevel() == null ? defaultLevel : elt.getLevel();
 	}
 
-	private static void log(Logger logger, LoggedElement elt) {
+	private static void log(Logger logger, LoggedMessage elt) {
 		final LogLevel level = extractLevel(elt, LogLevel.INFO);
 		final Consumer<String> realLogger;
 		switch (level) {
@@ -109,7 +109,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 		}
 
 		// envoi dans le log
-		realLogger.accept(LoggedElementRenderer.INSTANCE.toString(elt));
+		realLogger.accept(elt.getMessage());
 	}
 
 	/**
@@ -186,23 +186,17 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 
 				// boucle principale du thread... réception des résultats de migration de graphes
 				while (!(stopOnNextLoop || (stopOnExhaustion && nbEnCours.get() == 0))) {
-					final Future<MigrationResultMessageProvider> future = completionService.poll(1, TimeUnit.SECONDS);
+					final Future<LoggedMessages> future = completionService.poll(1, TimeUnit.SECONDS);
 					if (future != null) {
 						nbEnCours.decrementAndGet();
 
 						try {
-							final MigrationResultMessageProvider res = future.get();
-							if (LOGGER.isDebugEnabled()) {
-								LOGGER.debug("Résultat de migration reçu : " + res);
-							}
+							final LoggedMessages res = future.get();
 
 							// utilisation des loggers pour les fichiers/listes de contrôle
-							for (LogCategory cat : LogCategory.values()) {
-								final List<LoggedElement> messages = res.getMessages(cat);
-								if (!messages.isEmpty()) {
-									final Logger logger = getLogger(cat);
-									messages.forEach(msg -> log(logger, msg));
-								}
+							for (Map.Entry<LogCategory, List<LoggedMessage>> entry : res.asMap().entrySet()) {
+								final Logger logger = getLogger(entry.getKey());
+								entry.getValue().forEach(msg -> log(logger, msg));
 							}
 						}
 						catch (ExecutionException e) {
@@ -264,7 +258,7 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 	 * @param graphe le graphe à migrer
 	 * @return les indications issues de la migration
 	 */
-	private MigrationResultMessageProvider migrateGraphe(Graphe graphe) {
+	private LoggedMessages migrateGraphe(Graphe graphe) {
 
 		LOGGER.info(String.format("Migration du graphe %s", graphe));
 
@@ -293,10 +287,10 @@ public class MigrationWorker implements Worker, InitializingBean, DisposableBean
 				Thread.currentThread().interrupt();
 			}
 
-			final MigrationResult res = new MigrationResult(graphe);
-			final String msg = String.format("Les entreprises %s n'ont pas pu être migrées : %s", Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])), dump(t));
-			res.addMessage(LogCategory.EXCEPTIONS, LogLevel.ERROR, msg);
-			return res;
+			return LoggedMessages.singleton(LogCategory.EXCEPTIONS, LogLevel.ERROR,
+			                                String.format("Les entreprises %s n'ont pas pu être migrées : %s",
+			                                              Arrays.toString(idsEntreprise.toArray(new Long[idsEntreprise.size()])),
+			                                              dump(t)));
 		}
 	}
 

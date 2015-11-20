@@ -22,4 +22,12 @@ public interface LoggedElement {
 	@NotNull
 	Map<LoggedElementAttribute, Object> getItemValues();
 
+	/**
+	 * @return la transformation de cet élément en un {@link LoggedMessage}
+	 */
+	default LoggedMessage resolve() {
+		final Map<LoggedElementAttribute, Object> values = getItemValues();
+		final LogLevel logLevel = (LogLevel) values.get(LoggedElementAttribute.NIVEAU);
+		return new LoggedMessage(logLevel, LoggedElementRenderer.INSTANCE.toString(this));
+	}
 }

@@ -19,6 +19,7 @@ import ch.vd.uniregctb.migration.pm.MigrationResultMessageProvider;
 import ch.vd.uniregctb.migration.pm.engine.collector.EntityLinkCollector;
 import ch.vd.uniregctb.migration.pm.log.LogCategory;
 import ch.vd.uniregctb.migration.pm.log.LogLevel;
+import ch.vd.uniregctb.migration.pm.log.LoggedMessages;
 import ch.vd.uniregctb.migration.pm.log.RapportEntreTiersLoggedElement;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapper;
 import ch.vd.uniregctb.migration.pm.mapping.IdMapping;
@@ -87,7 +88,7 @@ public class GrapheMigrator implements InitializingBean {
 	 * @return des messages à logguer
 	 * @throws MigrationException en cas de gros souci
 	 */
-	public MigrationResultMessageProvider migrate(Graphe graphe) throws MigrationException {
+	public LoggedMessages migrate(Graphe graphe) throws MigrationException {
 		final MigrationResult mr = new MigrationResult(graphe);
 
 		// on crée un mapper d'ID dont la référence est le mapper global, en prenant soin de transvaser les nouveaux mappings dans le mapper global après la fin de la transaction
@@ -126,7 +127,7 @@ public class GrapheMigrator implements InitializingBean {
 			}
 		}
 		catch (Exception e) {
-			final MigrationException me = new MigrationException(e, graphe, mr);
+			final MigrationException me = new MigrationException(e, graphe, resolveInReadOnlyTransaction(mr));
 			LOGGER.error("", me);
 			throw me;
 		}
@@ -134,7 +135,23 @@ public class GrapheMigrator implements InitializingBean {
 			AuthenticationHelper.popPrincipal();
 		}
 
-		return mr;
+		return resolveInReadOnlyTransaction(mr);
+	}
+
+	/**
+	 * @param mr un container de messages
+	 * @return les messages sous leur forme résolue (nécessite l'ouverture d'une transaction read-only à la base de données Unireg)
+	 */
+	private LoggedMessages resolveInReadOnlyTransaction(MigrationResultMessageProvider mr) {
+		// on expose les messages récoltés depuis l'intérieur d'une transaction read-only
+		// (car certains suppliers ont besoin d'une connexion à la base de données...)
+		final TransactionTemplate roTemplate = new TransactionTemplate(uniregTransactionManager);
+		roTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		roTemplate.setReadOnly(true);
+		return roTemplate.execute(status -> {
+			status.setRollbackOnly();
+			return LoggedMessages.resolutionOf(mr);
+		});
 	}
 
 	/**
