@@ -32,7 +32,6 @@ import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public abstract class EnumHelper {
 
@@ -2933,26 +2932,6 @@ public abstract class EnumHelper {
 		default:
 			throw new IllegalArgumentException("Forme juridique inconnue : " + fl);
 		}
-	}
-
-	@Nullable
-	public static String coreToXMLv1v2v3(TypeRegimeFiscal rf) {
-		if (rf == null) {
-			return null;
-		}
-
-		// TODO [SIPM] mapping à coder...
-		return "01";
-	}
-
-	@Nullable
-	public static ch.vd.unireg.xml.party.corporation.v4.TaxSystemType coreToXMLv4(TypeRegimeFiscal rf) {
-		if (rf == null) {
-			return null;
-		}
-
-		// TODO [SIPM] mapping à coder
-		return ch.vd.unireg.xml.party.corporation.v4.TaxSystemType.ORDINARY;
 	}
 
 	@Nullable

@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.fidor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -46,8 +47,8 @@ import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.RegionImpl;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -439,26 +440,6 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		throw new NotImplementedException("Pas encore implémenté dans Fidor");
-	}
-
-	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		if (urlsApplication == null) {
 			urlsStats.addMiss();
@@ -585,6 +566,17 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	public Region getRegion(int code) {
 		try {
 			return RegionImpl.get(fidorClient.getRegion(code));
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
+		try {
+			// TODO [SIPM][Régimes fiscaux] Appler fidor...
+			return Arrays.<TypeRegimeFiscal>asList(MockTypeRegimeFiscal.ALL);
 		}
 		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);

@@ -22,7 +22,6 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -310,6 +309,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
+		return target.getRegimesFiscaux();
+	}
+
+	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		return target.getListeFractionsCommunes();
 	}
@@ -322,26 +326,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return target.getLocaliteByNPA(npa);
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		return target.getTypesRegimesFiscaux();
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		return target.getTypeRegimeFiscal(code);
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		return target.getTypesEtatsPM();
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		return target.getTypeEtatPM(code);
 	}
 
 	@Override

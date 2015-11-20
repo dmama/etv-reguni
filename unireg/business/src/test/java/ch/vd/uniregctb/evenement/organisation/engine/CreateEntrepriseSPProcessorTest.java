@@ -75,7 +75,7 @@ public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+				                             Assert.assertEquals(0, entreprise.getRegimesFiscaux().size());
 
 				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
 
@@ -139,7 +139,7 @@ public class CreateEntrepriseSPProcessorTest extends AbstractEvenementOrganisati
 				                             Assert.assertEquals(EtatEvenementOrganisation.TRAITE, evt.getEtat());
 
 				                             final Entreprise entreprise = tiersDAO.getEntrepriseByNumeroOrganisation(evt.getNoOrganisation());
-				                             Assert.assertEquals(2, entreprise.getRegimesFiscaux().size());
+				                             Assert.assertEquals(0, entreprise.getRegimesFiscaux().size());
 
 				                             Assert.assertTrue(entreprise.getForsFiscauxValidAt(RegDate.get(2015, 6, 25)).size() == 0);
 

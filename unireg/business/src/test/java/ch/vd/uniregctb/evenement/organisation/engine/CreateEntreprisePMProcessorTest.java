@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
@@ -39,7 +40,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.IDE;
@@ -154,7 +154,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
 					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
 				                             }
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
@@ -165,7 +165,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
 					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
 				                             }
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);
@@ -292,7 +292,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
 					                             Assert.assertEquals(RegimeFiscal.Portee.CH, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
 				                             }
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(1);
@@ -303,7 +303,7 @@ public class CreateEntreprisePMProcessorTest extends AbstractEvenementOrganisati
 					                             final EvenementFiscalRegimeFiscal efrf = (EvenementFiscalRegimeFiscal) ef;
 					                             Assert.assertEquals(EvenementFiscalRegimeFiscal.TypeEvenementFiscalRegime.OUVERTURE, efrf.getType());
 					                             Assert.assertEquals(RegimeFiscal.Portee.VD, efrf.getRegimeFiscal().getPortee());
-					                             Assert.assertEquals(TypeRegimeFiscal.ORDINAIRE, efrf.getRegimeFiscal().getType());
+					                             Assert.assertEquals(MockTypeRegimeFiscal.ORDINAIRE_PM.getCode(), efrf.getRegimeFiscal().getCode());
 				                             }
 				                             {
 					                             final EvenementFiscal ef = evtsFiscauxTries.get(2);

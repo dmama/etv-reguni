@@ -4,7 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public class RegimeFiscalView implements DateRange {
 

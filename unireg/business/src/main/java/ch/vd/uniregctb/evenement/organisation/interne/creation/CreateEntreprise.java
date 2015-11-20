@@ -89,7 +89,7 @@ public abstract class CreateEntreprise extends EvenementOrganisationInterne {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 
 		// Création de l'entreprise
-		createEntreprise(getOrganisation().getNumeroOrganisation(), dateDeDebut);
+		createEntreprise(dateDeDebut);
 
 		// Création de l'établissement principal
 		createAddEtablissement(sitePrincipal.getNumeroSite(), autoriteFiscalePrincipale, true, dateDeDebut);

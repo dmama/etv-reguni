@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
@@ -26,6 +28,7 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
@@ -515,13 +518,20 @@ public class TiersManager implements MessageSourceAware {
 		// comparateur qui mets les ranges les plus récents devant
 		final Comparator<DateRange> reverseComparator = new ReverseComparator<>(new DateRangeComparator<>());
 
+		// map des régimes fiscaux existants indexés par code
+		final List<TypeRegimeFiscal> typesRegime = serviceInfrastructureService.getRegimesFiscaux();
+		final Map<String, TypeRegimeFiscal> mapRegimesParCode = new HashMap<>(typesRegime.size());
+		for (TypeRegimeFiscal type : typesRegime) {
+			mapRegimesParCode.put(type.getCode(), type);
+		}
+
 		// les régimes fiscaux
 		final Set<RegimeFiscal> regimes = entreprise.getRegimesFiscaux();
 		if (regimes != null) {
 			final List<RegimeFiscalView> vd = new ArrayList<>(regimes.size());
 			final List<RegimeFiscalView> ch = new ArrayList<>(regimes.size());
 			for (RegimeFiscal regime : regimes) {
-				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.getDateDebut(), regime.getDateFin(), regime.getType());
+				final RegimeFiscalView rfView = new RegimeFiscalView(regime.getId(), regime.getDateDebut(), regime.getDateFin(), mapRegimesParCode.get(regime.getCode()));
 				if (regime.getPortee() == RegimeFiscal.Portee.VD) {
 					vd.add(rfView);
 				}

@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.uniregctb.tiers.AllegementFiscal;
 import ch.vd.uniregctb.tiers.CapitalEntreprise;
 import ch.vd.uniregctb.tiers.DonneesRegistreCommerce;
@@ -14,7 +15,6 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MontantMonetaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.FormeJuridiqueEntreprise;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
 public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
@@ -30,8 +30,8 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testChevauchementRegimesFiscaux() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addRegimeFiscal(new RegimeFiscal(date(2000, 1, 1), date(2005, 12, 31), RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
-		entreprise.addRegimeFiscal(new RegimeFiscal(date(2000, 1, 1), null, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE));
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2000, 1, 1), date(2005, 12, 31), RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode()));
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2000, 1, 1), null, RegimeFiscal.Portee.CH, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode()));
 
 		// ici, tout va bien, les différentes portées ne se marchent pas dessus
 		{
@@ -40,14 +40,15 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 		}
 
 		// ajoutons un régime fiscal VD qui ne chevauche pas -> pas de souci
-		entreprise.addRegimeFiscal(new RegimeFiscal(date(2007, 1, 1), date(2009, 12, 1), RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
+
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2007, 1, 1), date(2009, 12, 1), RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode()));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertFalse(vr.toString(), vr.hasErrors());
 		}
 
 		// ajoutons un régime fiscal VD qui chevauche -> rien ne va plus
-		entreprise.addRegimeFiscal(new RegimeFiscal(date(2005, 1, 1), date(2007, 12, 31), RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2005, 1, 1), date(2007, 12, 31), RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode()));
 		{
 			final ValidationResults vr = validate(entreprise);
 			Assert.assertTrue(vr.hasErrors());
@@ -63,7 +64,7 @@ public class EntrepriseValidatorTest extends AbstractValidatorTest<Entreprise> {
 	public void testRegimeFiscalInvalide() throws Exception {
 
 		final Entreprise entreprise = new Entreprise();
-		entreprise.addRegimeFiscal(new RegimeFiscal(date(2010, 1, 1), date(2005, 12, 31), RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE));     // les dates sont à l'envers !
+		entreprise.addRegimeFiscal(new RegimeFiscal(date(2010, 1, 1), date(2005, 12, 31), RegimeFiscal.Portee.VD, MockTypeRegimeFiscal.ORDINAIRE_PM.getCode()));     // les dates sont à l'envers !
 
 		final ValidationResults vr = validate(entreprise);
 		Assert.assertTrue(vr.hasErrors());

@@ -6,7 +6,6 @@ import java.util.Set;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.ws.security.v6.AllowedAccess;
 import ch.vd.unireg.xml.party.corporation.v4.TaxSystemScope;
-import ch.vd.unireg.xml.party.corporation.v4.TaxSystemType;
 import ch.vd.unireg.xml.party.ebilling.v1.EbillingStatusType;
 import ch.vd.unireg.xml.party.othercomm.v2.LegalForm;
 import ch.vd.unireg.xml.party.person.v4.NaturalPersonCategoryType;
@@ -51,7 +50,6 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 public abstract class EnumHelper {
 
@@ -132,10 +130,6 @@ public abstract class EnumHelper {
 
 	public static CommunicationMode coreToWeb(ModeCommunication mode) {
 		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv3(mode);
-	}
-
-	public static TaxSystemType coreToWeb(TypeRegimeFiscal rf) {
-		return ch.vd.uniregctb.xml.EnumHelper.coreToXMLv4(rf);
 	}
 
 	public static TaxSystemScope coreToWeb(RegimeFiscal.Portee portee) {

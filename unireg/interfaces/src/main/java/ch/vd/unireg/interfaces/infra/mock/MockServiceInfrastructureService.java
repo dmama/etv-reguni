@@ -1,6 +1,7 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +28,6 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 /**
@@ -456,26 +456,6 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		return null;
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		return null;
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		return null;
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		return null;
-	}
-
-	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		return null;
 	}
@@ -488,6 +468,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		return null;
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
+		return Arrays.<TypeRegimeFiscal>asList(MockTypeRegimeFiscal.ALL);
 	}
 
 	@Override

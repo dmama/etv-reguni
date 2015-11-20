@@ -18,7 +18,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateDateRangeEntity;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 @Entity
 @Table(name = "REGIME_FISCAL")
@@ -32,15 +31,15 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	private Long id;
 	private Entreprise entreprise;
 	private Portee portee;
-	private TypeRegimeFiscal type;
+	private String code;
 
 	public RegimeFiscal() {
 	}
 
-	public RegimeFiscal(RegDate dateDebut, RegDate dateFin, Portee portee, TypeRegimeFiscal type) {
+	public RegimeFiscal(RegDate dateDebut, RegDate dateFin, Portee portee, String code) {
 		super(dateDebut, dateFin);
 		this.portee = portee;
-		this.type = type;
+		this.code = code;
 	}
 
 	@Transient
@@ -80,14 +79,13 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 		this.portee = portee;
 	}
 
-	@Column(name = "TYPE", length = LengthConstants.REGIME_FISCAL_TYPE, nullable = false, updatable = false)
-	@Enumerated(EnumType.STRING)
-	public TypeRegimeFiscal getType() {
-		return type;
+	@Column(name = "CODE", length = LengthConstants.REGIME_FISCAL_TYPE, nullable = false, updatable = false)
+	public String getCode() {
+		return code;
 	}
 
-	public void setType(TypeRegimeFiscal type) {
-		this.type = type;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	@Transient
@@ -105,6 +103,6 @@ public class RegimeFiscal extends HibernateDateRangeEntity implements LinkedEnti
 	@Transient
 	@Override
 	public RegimeFiscal duplicate() {
-		return new RegimeFiscal(getDateDebut(), getDateFin(), portee, type);
+		return new RegimeFiscal(getDateDebut(), getDateFin(), portee, code);
 	}
 }

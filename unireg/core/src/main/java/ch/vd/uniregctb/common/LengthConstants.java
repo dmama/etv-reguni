@@ -131,7 +131,7 @@ public abstract class LengthConstants {
 	public static final int ETB_RAISON_SOCIALE = 250;
 
 	public static final int REGIME_FISCAL_PORTEE = 2;
-	public static final int REGIME_FISCAL_TYPE = 20;
+	public static final int REGIME_FISCAL_TYPE = 10;
 
 	public static final int ALLEGEMENT_FISCAL_TYPE_COLLECTIVITE = 15;
 	public static final int ALLEGEMENT_FISCAL_TYPE_IMPOT = 50;

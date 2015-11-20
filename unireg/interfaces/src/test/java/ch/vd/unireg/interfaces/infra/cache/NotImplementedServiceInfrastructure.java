@@ -22,7 +22,6 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 public class NotImplementedServiceInfrastructure implements ServiceInfrastructureRaw {
@@ -143,26 +142,6 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		throw new NotImplementedException();
 	}
@@ -184,6 +163,11 @@ public class NotImplementedServiceInfrastructure implements ServiceInfrastructur
 
 	@Override
 	public Region getRegion(int code) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
 		throw new NotImplementedException();
 	}
 

@@ -11,10 +11,12 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.Organisation;
 import ch.vd.unireg.interfaces.organisation.data.OrganisationHelper;
 import ch.vd.unireg.interfaces.organisation.data.Siege;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalInformationComplementaire;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisation;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
@@ -25,6 +27,7 @@ import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarning
 import ch.vd.uniregctb.evenement.organisation.interne.helper.BouclementHelper;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
 import ch.vd.uniregctb.tiers.Bouclement;
+import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
@@ -32,10 +35,10 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
+import ch.vd.uniregctb.type.CategorieEntreprise;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 /**
  * Classe de base pour l'implémentation des événements organisation en provenance du RCEnt.
@@ -299,8 +302,8 @@ public abstract class EvenementOrganisationInterne {
 		return (Entreprise) context.getTiersDAO().save(entreprise);
 	}
 
-	protected void createEntreprise(long noOrganisation, RegDate dateDebut) {
-		Assert.notNull(noOrganisation);
+	protected void createEntreprise(RegDate dateDebut) {
+		Assert.notNull(organisation);
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
@@ -308,14 +311,69 @@ public abstract class EvenementOrganisationInterne {
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
-		openRegimesFiscauxOrdinairesCHVD(entreprise, dateDebut);
+		openRegimesFiscauxOrdinairesCHVD(entreprise, organisation, dateDebut);
 	}
 
-	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, RegDate dateDebut) {
+	/**
+	 * En fonction de la catégorie d'entreprise, détermination du régime fiscal par défaut
+	 * @param organisation données civiles
+	 * @param date       date de référence
+	 * @return le type de régime fiscal par défaut...
+	 */
+	protected final TypeRegimeFiscal getRegimeFiscalParDefaut(Organisation organisation, RegDate date) {
+		final CategorieEntreprise categorie = CategorieEntrepriseHelper.getCategorieEntreprise(organisation, date);
+		if (categorie == null) {
+			return null;
+		}
+
+		switch (categorie) {
+		case AUTRE:
+		case DPPM:
+		case PM:
+			return getRegimeFiscalParDefaultPM();
+		case DP:
+		case APM:
+		case FP:
+			return getRegimeFiscalParDefaultAPM();
+		case SP:
+		case PP:
+			return null;
+		default:
+			throw new IllegalArgumentException("Catégorie entreprise inconnue : " + categorie);
+		}
+	}
+
+	private TypeRegimeFiscal getRegimeFiscalParDefaultPM() {
+		final List<TypeRegimeFiscal> regimes = context.getServiceInfra().getRegimesFiscaux();
+		for (TypeRegimeFiscal regime : regimes) {
+			if (regime.isDefaultPourPM()) {
+				return regime;
+			}
+		}
+		throw new IllegalArgumentException("Impossible de déterminer le régime fiscal par défaut (PM).");
+	}
+
+	private TypeRegimeFiscal getRegimeFiscalParDefaultAPM() {
+		final List<TypeRegimeFiscal> regimes = context.getServiceInfra().getRegimesFiscaux();
+		for (TypeRegimeFiscal regime : regimes) {
+			if (regime.isDefaultPourAPM()) {
+				return regime;
+			}
+		}
+		throw new IllegalArgumentException("Impossible de déterminer le régime fiscal par défaut (APM).");
+	}
+
+	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut) {
 		// Le régime fiscal VD + CH
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, TypeRegimeFiscal.ORDINAIRE, dateDebut);
-		context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, TypeRegimeFiscal.ORDINAIRE, dateDebut);
-		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		final TypeRegimeFiscal typeRegimeFiscal = getRegimeFiscalParDefaut(organisation, dateDebut);
+		if (typeRegimeFiscal != null) {
+			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
+			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
+			Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+		}
+		else {
+			Audit.info(getNumeroEvenement(), String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -324,7 +382,7 @@ public abstract class EvenementOrganisationInterne {
 		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
 		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
 
-		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 

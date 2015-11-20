@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 
 /**
@@ -156,26 +155,6 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		return hostService.getTypesRegimesFiscaux();
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		return hostService.getTypeRegimeFiscal(code);
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		return hostService.getTypesEtatsPM();
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		return hostService.getTypeEtatPM(code);
-	}
-
-	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		return fidorService.getUrlVers(application, tiersId, oid);
 	}
@@ -198,6 +177,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	@Override
 	public Region getRegion(int code) {
 		return fidorService.getRegion(code);
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
+		return fidorService.getTousLesRegimesFiscaux();
 	}
 
 	@Override

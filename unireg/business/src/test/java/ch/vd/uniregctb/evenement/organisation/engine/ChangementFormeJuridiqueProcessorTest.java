@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockTypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
 import ch.vd.unireg.interfaces.organisation.data.StatusInscriptionRC;
 import ch.vd.unireg.interfaces.organisation.data.StatusRC;
@@ -31,7 +32,6 @@ import ch.vd.uniregctb.tiers.RegimeFiscal;
 import ch.vd.uniregctb.type.EtatEvenementOrganisation;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementOrganisation;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 
 import static ch.vd.uniregctb.type.EmetteurEvenementOrganisation.FOSC;
 import static ch.vd.uniregctb.type.EtatEvenementOrganisation.A_TRAITER;
@@ -79,8 +79,8 @@ public class ChangementFormeJuridiqueProcessorTest extends AbstractEvenementOrga
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 
-				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
-				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
 				return entreprise;
 			}
@@ -236,8 +236,8 @@ public class ChangementFormeJuridiqueProcessorTest extends AbstractEvenementOrga
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 
-				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
-				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
 				return entreprise;
 			}
@@ -345,8 +345,8 @@ public class ChangementFormeJuridiqueProcessorTest extends AbstractEvenementOrga
 			public Entreprise doInTransaction(TransactionStatus transactionStatus) {
 				Entreprise entreprise = addEntrepriseConnueAuCivil(noOrganisation);
 
-				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
-				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, TypeRegimeFiscal.ORDINAIRE);
+				addRegimeFiscalVD(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
+				addRegimeFiscalCH(entreprise, RegDate.get(2010, 6, 24), null, MockTypeRegimeFiscal.ORDINAIRE_PM);
 
 				return entreprise;
 			}

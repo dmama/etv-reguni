@@ -238,7 +238,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				final TaxSystem ts = new TaxSystem();
 				ts.setDateFrom(DataHelper.coreToXMLv2(regime.getDateDebut()));
 				ts.setDateTo(DataHelper.coreToXMLv2(regime.getDateFin()));
-				ts.setType(EnumHelper.coreToXMLv4(regime.getType()));
+				ts.setType(regime.getCode());
 				ts.setScope(EnumHelper.coreToXMLv4(regime.getPortee()));
 				liste.add(ts);
 			}

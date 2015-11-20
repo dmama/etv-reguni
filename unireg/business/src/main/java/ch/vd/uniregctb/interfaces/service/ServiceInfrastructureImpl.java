@@ -34,7 +34,6 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -742,28 +741,13 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
+	public List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException {
+		return rawService.getTousLesRegimesFiscaux();
+	}
+
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return rawService.getLocaliteByNPA(npa);
-	}
-
-	@Override
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-		return rawService.getTypesRegimesFiscaux();
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-		return rawService.getTypeRegimeFiscal(code);
-	}
-
-	@Override
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-		return rawService.getTypesEtatsPM();
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-		return rawService.getTypeEtatPM(code);
 	}
 
 	@Override

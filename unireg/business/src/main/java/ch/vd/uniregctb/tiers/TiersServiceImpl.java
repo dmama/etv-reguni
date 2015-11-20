@@ -55,6 +55,7 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.organisation.data.Capital;
 import ch.vd.unireg.interfaces.organisation.data.DateRanged;
 import ch.vd.unireg.interfaces.organisation.data.FormeLegale;
@@ -131,7 +132,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeFlagEntreprise;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -5377,7 +5377,7 @@ public class TiersServiceImpl implements TiersService {
 
 	@Override
 	public RegimeFiscal openRegimeFiscal(Entreprise e, RegimeFiscal.Portee portee, TypeRegimeFiscal type, RegDate dateDebut) {
-		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, null, portee, type));
+		final RegimeFiscal rf = tiersDAO.addAndSave(e, new RegimeFiscal(dateDebut, null, portee, type.getCode()));
 		evenementFiscalService.publierEvenementFiscalOuvertureRegimeFiscal(rf);
 		return rf;
 	}

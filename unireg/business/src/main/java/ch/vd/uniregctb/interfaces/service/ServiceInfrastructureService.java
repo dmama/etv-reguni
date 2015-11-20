@@ -21,7 +21,6 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 
@@ -481,28 +480,8 @@ public interface ServiceInfrastructureService {
 	List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws ServiceInfrastructureException;
 
 	/**
-	 * @return la liste des types de régimes fiscaux qui existent pour les personnes morales.
-	 * @throws ServiceInfrastructureException en cas de problème
+	 * @return l'ensemble des différents régimes fiscaux disponibles
+	 * @throws ServiceInfrastructureException en cas de souci
 	 */
-	List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException;
-
-	/**
-	 * @param code un code de régime fiscal
-	 * @return le régime fiscal pour le code demandé; ou <null> si le code ne correspond à aucun régime fiscal connu,
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException;
-
-	/**
-	 * @return la liste des types d'états qui existent pour les personnes morales.
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException;
-
-	/**
-	 * @param code un code de type d'état PM
-	 * @return le type d'état PM pour le code demandé; ou <null> si le code ne correspond à aucun type d'état connu,
-	 * @throws ServiceInfrastructureException en cas de problème
-	 */
-	TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException;
+	List<TypeRegimeFiscal> getRegimesFiscaux() throws ServiceInfrastructureException;
 }

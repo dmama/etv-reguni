@@ -33,7 +33,6 @@ import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
-import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.cache.CacheHelper;
 import ch.vd.uniregctb.cache.CacheStats;
@@ -1376,180 +1375,6 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
-	private static class KeyGetCodesRegimesFiscaux {
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			return !(o == null || getClass() != o.getClass());
-		}
-
-		@Override
-		public int hashCode() {
-			return 5874894;
-		}
-
-		@Override
-		public String toString() {
-			return getClass().getSimpleName() + "{}";
-		}
-	}
-
-	@Override
-	@SuppressWarnings({"unchecked"})
-	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
-
-		final List<TypeRegimeFiscal> resultat;
-
-		final KeyGetCodesRegimesFiscaux key = new KeyGetCodesRegimesFiscaux();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getTypesRegimesFiscaux();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<TypeRegimeFiscal>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetTypeRegimeFiscal {
-
-		private final String code;
-
-		private KeyGetTypeRegimeFiscal(String code) {
-			this.code = code;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final KeyGetTypeRegimeFiscal that = (KeyGetTypeRegimeFiscal) o;
-			return code.equals(that.code);
-
-		}
-
-		@Override
-		public int hashCode() {
-			return code.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetTypeRegimeFiscal{" +
-					"code='" + code + '\'' +
-					'}';
-		}
-	}
-
-	@Override
-	public TypeRegimeFiscal getTypeRegimeFiscal(String code) throws ServiceInfrastructureException {
-
-		final TypeRegimeFiscal resultat;
-
-		final KeyGetTypeRegimeFiscal key = new KeyGetTypeRegimeFiscal(code);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getTypeRegimeFiscal(code);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (TypeRegimeFiscal) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetCodesEtatsPM {
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			return !(o == null || getClass() != o.getClass());
-		}
-
-		@Override
-		public int hashCode() {
-			return 333211;
-		}
-
-		@Override
-		public String toString() {
-			return getClass().getSimpleName() + "{}";
-		}
-	}
-
-	@Override
-	@SuppressWarnings({"unchecked"})
-	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
-
-		final List<TypeEtatPM> resultat;
-
-		final KeyGetCodesEtatsPM key = new KeyGetCodesEtatsPM();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getTypesEtatsPM();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<TypeEtatPM>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
-	private static class KeyGetTypeEtatPM {
-
-		private final String code;
-
-		private KeyGetTypeEtatPM(String code) {
-			this.code = code;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final KeyGetTypeEtatPM that = (KeyGetTypeEtatPM) o;
-			return code.equals(that.code);
-
-		}
-
-		@Override
-		public int hashCode() {
-			return code.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			return "KeyGetTypeEtatPM{" +
-					"code='" + code + '\'' +
-					'}';
-		}
-	}
-
-	@Override
-	public TypeEtatPM getTypeEtatPM(String code) throws ServiceInfrastructureException {
-
-		final TypeEtatPM resultat;
-
-		final KeyGetTypeEtatPM key = new KeyGetTypeEtatPM(code);
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getTypeEtatPM(code);
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (TypeEtatPM) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1764,6 +1589,39 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			resultat = (Region) element.getObjectValue();
 		}
 
+		return resultat;
+	}
+
+	private static class KeyGetTousRegimesFiscaux {
+		@Override
+		public int hashCode() {
+			return 43278237;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return this == o || getClass() == o.getClass();
+		}
+
+		@Override
+		public String toString() {
+			return getClass().getSimpleName() + "{}";
+		}
+	}
+
+	@Override
+	public List<TypeRegimeFiscal> getTousLesRegimesFiscaux() {
+		final List<TypeRegimeFiscal> resultat;
+		final KeyGetTousRegimesFiscaux key = new KeyGetTousRegimesFiscaux();
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getTousLesRegimesFiscaux();
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			//noinspection unchecked
+			resultat = (List<TypeRegimeFiscal>) element.getValue();
+		}
 		return resultat;
 	}
 

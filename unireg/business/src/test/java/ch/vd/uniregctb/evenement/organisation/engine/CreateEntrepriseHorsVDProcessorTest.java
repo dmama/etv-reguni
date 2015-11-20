@@ -44,7 +44,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 
 		// Mise en place service mock
 		final Long noOrganisation = 101202100L;
-		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
+		final MockOrganisation org = MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 		                                                 MockCommune.Zurich);
 		MockSiteOrganisationFactory.addSite(1012021001234L,
 		                                    org,
@@ -126,7 +126,7 @@ public class CreateEntrepriseHorsVDProcessorTest extends AbstractEvenementOrgani
 			@Override
 			protected void init() {
 				addOrganisation(
-						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0103_SOCIETE_NOM_COLLECIF,
+						MockOrganisationFactory.createSimpleEntrepriseRC(noOrganisation, noOrganisation + 1000000, "Robert Alkan et autres", RegDate.get(2015, 6, 24), null, FormeLegale.N_0106_SOCIETE_ANONYME,
 						                                                 MockCommune.Zurich));
 			}
 		});

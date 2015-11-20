@@ -67,7 +67,7 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
 
 		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant);
-		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), dateApres);
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), dateApres);
 	}
 
 	@Override

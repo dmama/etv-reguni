@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import org.apache.commons.lang3.StringUtils;
+
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.tiers.RegimeFiscal;
 
@@ -22,8 +24,8 @@ public class RegimeFiscalValidator extends DateRangeEntityValidator<RegimeFiscal
 			if (rf.getPortee() == null) {
 				vr.addError("La portée est un attribut obligatoire pour un régime fiscal.");
 			}
-			if (rf.getType() == null) {
-				vr.addError("Le type est un attribut obligatoire pour un régime fiscal");
+			if (StringUtils.isBlank(rf.getCode())) {
+				vr.addError("Le code d'un régime fiscal est un attribut obligatoire.");
 			}
 		}
 		return vr;

@@ -23,6 +23,7 @@ import ch.vd.unireg.interfaces.common.Adresse;
 import ch.vd.unireg.interfaces.common.CasePostale;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
@@ -94,7 +95,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
-import ch.vd.uniregctb.type.TypeRegimeFiscal;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static org.junit.Assert.assertEquals;
@@ -996,12 +996,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     protected RegimeFiscal addRegimeFiscalVD(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
-        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.VD, type);
+        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.VD, type.getCode());
         return tiersDAO.addAndSave(entreprise, rf);
     }
 
     protected RegimeFiscal addRegimeFiscalCH(Entreprise entreprise, RegDate dateDebut, @Nullable RegDate dateFin, TypeRegimeFiscal type) {
-        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.CH, type);
+        final RegimeFiscal rf = new RegimeFiscal(dateDebut, dateFin, RegimeFiscal.Portee.CH, type.getCode());
         return tiersDAO.addAndSave(entreprise, rf);
     }
 
