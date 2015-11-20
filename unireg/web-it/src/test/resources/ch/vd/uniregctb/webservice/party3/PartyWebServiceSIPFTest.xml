@@ -647,7 +647,7 @@
 		<column>LOG_CUSER</column>
 		<column>LOG_MDATE</column>
 		<column>LOG_MUSER</column>
-		<column>TYPE</column>
+		<column>CODE</column>
 		<column>DATE_DEBUT</column>
 		<column>DATE_FIN</column>
 		<column>ENTREPRISE_ID</column>
@@ -658,7 +658,7 @@
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
-			<value>ORDINAIRE</value>
+			<value>01</value>
 			<value>19930101</value>
 			<value>20031231</value>
 			<value>222</value>
@@ -670,7 +670,7 @@
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
 			<value><![CDATA[2010-03-09 11:26:29.761]]></value>
 			<value><![CDATA[[UT] AdresseServiceTest]]></value>
-			<value>ORDINAIRE</value>
+			<value>01</value>
 			<value>19930101</value>
 			<value>20031231</value>
 			<value>222</value>
