@@ -90,7 +90,7 @@ public class EvenementOrganisationDetailView implements Serializable {
 
 	@SuppressWarnings("unused")
 	public List<ErreurEvenementOrganisationView> getEvtErreurs() {
-		return Collections.unmodifiableList(evtErreurs);
+		return evtErreurs;
 	}
 
 	public void addEvtErreur(ErreurEvenementOrganisationView evtErreur) {

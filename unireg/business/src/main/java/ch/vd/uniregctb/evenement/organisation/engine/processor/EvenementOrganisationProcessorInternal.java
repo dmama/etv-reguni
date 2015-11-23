@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationMessageCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingMiseEnAttenteStrategy;
 import ch.vd.uniregctb.evenement.organisation.engine.ErrorPostProcessingStrategy;
@@ -293,21 +294,28 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		cleanupAvantTraitement(event);
 
 		final EvenementOrganisationMessageCollector<EvenementOrganisationErreur> collector = new EvenementOrganisationMessageCollector<>(ERREUR_FACTORY);
-		final EtatEvenementOrganisation etat = processEventAndCollectMessages(event, collector, collector);
+		final EtatEvenementOrganisation etat = processEventAndCollectMessages(event, collector, collector, collector);
 
 		addDateTraitement(event);
 
 		// les erreurs et warnings collectés sont maintenant associés à l'événement en base
-		final List<EvenementOrganisationErreur> erreurs = EvenementCivilHelper.eliminerDoublons(collector.getErreurs());
-		final List<EvenementOrganisationErreur> warnings = EvenementCivilHelper.eliminerDoublons(collector.getWarnings());
-		event.getErreurs().addAll(erreurs);
-		event.getErreurs().addAll(warnings);
+		final List<EvenementOrganisationErreur> entrees = EvenementCivilHelper.eliminerDoublons(collector.getEntrees());
+		event.getErreurs().addAll(entrees);
 
-		for (EvenementOrganisationErreur e : erreurs) {
-			Audit.error(event.getId(), e.getMessage());
-		}
-		for (EvenementOrganisationErreur w : warnings) {
-			Audit.warn(event.getId(), w.getMessage());
+		for (EvenementOrganisationErreur e : entrees) {
+			switch (e.getType()) {
+			case ERROR:
+				Audit.error(event.getId(), e.getMessage());
+				break;
+			case WARNING:
+				Audit.warn(event.getId(), e.getMessage());
+				break;
+			case SUIVI:
+				Audit.info(event.getId(), e.getMessage());
+				break;
+			default:
+				throw new IllegalArgumentException(String.format("Type d'erreur inconnu: %s", e.getType()));
+			}
 		}
 
 		final boolean hasErrors = collector.hasErreurs();
@@ -337,7 +345,10 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 		}
 	}
 
-	private EtatEvenementOrganisation processEventAndCollectMessages(EvenementOrganisation event, EvenementOrganisationErreurCollector erreurs, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	private EtatEvenementOrganisation processEventAndCollectMessages(EvenementOrganisation event,
+	                                                                 EvenementOrganisationErreurCollector erreurs,
+	                                                                 EvenementOrganisationWarningCollector warnings,
+	                                                                 EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// Translate event
 		final EvenementOrganisationInterne evtInterne = buildInterne(event);
 		if (evtInterne == null) {
@@ -353,7 +364,7 @@ public class EvenementOrganisationProcessorInternal implements ProcessorInternal
 				etat = EtatEvenementOrganisation.EN_ERREUR;
 			}
 			else {
-				etat = evtInterne.handle(warnings).toEtat();
+				etat = evtInterne.handle(warnings, suivis).toEtat();
 			}
 			if (StringUtils.isNotBlank(event.getCommentaireTraitement()) && evtInterne.shouldResetCommentaireTraitement(etat, event.getCommentaireTraitement())) {
 				event.setCommentaireTraitement(null);

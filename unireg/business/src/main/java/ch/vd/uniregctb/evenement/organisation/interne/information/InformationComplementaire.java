@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -33,9 +34,9 @@ public class InformationComplementaire extends EvenementOrganisationInterne {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		String message = String.format("Envoi d'un événement d'information: %s. Entreprise %s (civil: %s).", typeInfo.name(), getEntreprise().getNumero(), getNoOrganisation());
-		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message);
+		emetEvtFiscalInformation(getDateEvt(), getEntreprise(), typeInfo, message, suivis);
 	}
 
 	@Override

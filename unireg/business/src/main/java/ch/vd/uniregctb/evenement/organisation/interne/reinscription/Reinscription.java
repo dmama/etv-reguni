@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
@@ -57,7 +58,7 @@ public class Reinscription extends EvenementOrganisationInterne {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		ForFiscalPrincipalPM dernierForPrincipal = getEntreprise().getDernierForFiscalPrincipal();
 		if (dernierForPrincipal != null) {
@@ -65,7 +66,7 @@ public class Reinscription extends EvenementOrganisationInterne {
 				LOGGER.info(String.format("Réinscription RC de l'entreprise %s: un for actif est déjà présent en date du %s",
 				                          getEntreprise().getNumero(), dateApres));
 			} else {
-				reopenForFiscalPrincipal(dernierForPrincipal);
+				reopenForFiscalPrincipal(dernierForPrincipal, suivis);
 				warnings.addWarning("Veuillez vérifier la réinscription au RC de l'entreprise précédemment radiée.");
 			}
 		} else {

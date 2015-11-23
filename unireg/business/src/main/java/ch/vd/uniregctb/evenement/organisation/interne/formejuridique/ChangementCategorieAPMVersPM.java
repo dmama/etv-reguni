@@ -9,6 +9,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.EvenementOrganisationInterne;
 import ch.vd.uniregctb.tiers.CategorieEntrepriseHelper;
@@ -64,10 +65,10 @@ public class ChangementCategorieAPMVersPM extends EvenementOrganisationInterne {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
-		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant);
-		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), dateApres);
+		closeRegimesFiscauxOrdinairesCHVD(regimeFiscalCHAvant, regimeFiscalVDAvant, dateAvant, suivis);
+		openRegimesFiscauxOrdinairesCHVD(getEntreprise(), getOrganisation(), dateApres, suivis);
 	}
 
 	@Override

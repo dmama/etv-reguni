@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.HandleStatus;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -40,8 +41,8 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.doHandle(warnings);
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		super.doHandle(warnings, suivis);
 
 		// Ouverture du For principal seulement si inscrit au RC (certaines APM ne sont pas au RC)
 		if (inscritAuRC()) {
@@ -52,10 +53,10 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 			                       getAutoriteFiscalePrincipale(),
 			                       MotifRattachement.DOMICILE,
 			                       motifOuverture,
-			                       warnings);
+			                       warnings, suivis);
 
 			// Création du bouclement
-			createAddBouclement(getDateDeDebut());
+			createAddBouclement(getDateDeDebut(), suivis);
 			raiseStatusTo(HandleStatus.TRAITE);
 		} else {
 			warnings.addWarning("Organisation non inscrite au RC. Pas de création automatique du for fiscal. Veuillez traiter le cas manuellement.");
@@ -64,12 +65,12 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		// Gestion des sites secondaires non supportée pour l'instant, en attente du métier.
 		if (false) {
 			for (SiteOrganisation site : getOrganisation().getSitesSecondaires(getDateEvt())) {
-				handleEtablissementsSecondaires(getAutoriteFiscalePrincipale(), site, warnings);
+				handleEtablissementsSecondaires(getAutoriteFiscalePrincipale(), site, warnings, suivis);
 			}
 		}
 	}
 
-	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	private void handleEtablissementsSecondaires(Siege siegePrincipal, SiteOrganisation site, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		long numeroSite = site.getNumeroSite();
 		Etablissement etablissement = getEtablissementByNumeroSite(numeroSite);
 		if (etablissement != null) {
@@ -89,11 +90,11 @@ public class CreateEntrepriseAPM extends CreateEntreprise {
 		final List<Integer> autoritesAvecForSecondaire = new ArrayList<>();
 
 		if (autoriteFiscale.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, getDateDeDebut());
+			createAddEtablissement(site.getNumeroSite(), autoriteFiscale, false, getDateDeDebut(), suivis);
 
 			if (siegePrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 					(!autoritesAvecForSecondaire.contains(autoriteFiscale.getNoOfs()))) {
-				openForFiscalSecondaire(getDateDeDebut(), autoriteFiscale, MotifRattachement.ETABLISSEMENT_STABLE, MotifFor.DEBUT_EXPLOITATION, warnings);
+				openForFiscalSecondaire(getDateDeDebut(), autoriteFiscale, MotifRattachement.ETABLISSEMENT_STABLE, MotifFor.DEBUT_EXPLOITATION, warnings, suivis);
 				autoritesAvecForSecondaire.add(autoriteFiscale.getNoOfs());
 			}
 

@@ -23,6 +23,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.evenement.organisation.interne.helper.BouclementHelper;
 import ch.vd.uniregctb.tiers.ActiviteEconomique;
@@ -50,7 +51,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
  *                  - Le "context" est privé à cette classe. C'est intentionnel qu'il n'y a pas d'accesseur. Toutes les opérations
  *                  qui ont un impact Unireg (sur la BD ou qui emettent des événements) doivent être exécutée dans une méthode
  *                  qui:
- *                    1) Audit.info() proprement ce qui va être fait,
+ *                    1) suivis.addSuivi() proprement ce qui va être fait (il faut donc passer en paramètre le collector de suivi),
  *                    2) Vérifie s'il y a redondance, le rapport dans les logs et sort le cas échéant,
  *                    3) Fait ce qui doit être fait s'il y a lieu,
  *                    4) Utilise la méthode raiseStatusTo() pour régler le statut en fonction de ce qui a été fait.
@@ -121,12 +122,13 @@ public abstract class EvenementOrganisationInterne {
 	 * </ul>
 	 * </p>
 	 * @param warnings une liste de warnings qui sera remplie - si nécessaire - par la méthode.
+	 * @param suivis       Le collector pour le suivi
 	 * @return un code de status permettant de savoir si lévénement a été traité ou s'il était redondant.
 	 * @throws EvenementOrganisationException si le traitement de l'événement est impossible pour une raison ou pour une autre.
 	 */
 	@NotNull
-	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		this.doHandle(warnings);
+	public final HandleStatus handle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		this.doHandle(warnings, suivis);
 		Assert.notNull(status, "Status inconnu après le traitement de l'événement interne!");
 		return status;
 	}
@@ -160,7 +162,7 @@ public abstract class EvenementOrganisationInterne {
 	/*
 			Méthode à redéfinir pour implémenter le traitement concret. Voir ci-dessus handle().
 		 */
-	public abstract void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException;
+	public abstract void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException;
 
 	@NotNull
 	protected MotifFor determineMotifOuvertureFor() throws EvenementOrganisationException {
@@ -286,7 +288,7 @@ public abstract class EvenementOrganisationInterne {
 		return context.getTiersDAO().getEtablissementByNumeroSite(numeroSite);
 	}
 
-	protected void programmeReindexation(Entreprise pm) {
+	protected void programmeReindexation(Entreprise pm, EvenementOrganisationSuiviCollector suivis) {
 		Audit.info(getNumeroEvenement(), String.format("Déclenchement de la réindexation pour l'entreprise %s.", pm.getNumero()));
 		context.getIndexer().schedule(pm.getNumero());
 	}
@@ -302,16 +304,16 @@ public abstract class EvenementOrganisationInterne {
 		return (Entreprise) context.getTiersDAO().save(entreprise);
 	}
 
-	protected void createEntreprise(RegDate dateDebut) {
+	protected void createEntreprise(RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(organisation);
 		Assert.notNull(dateDebut);
 
 		final Entreprise entreprise = createEntreprise(noOrganisation);
-		Audit.info(getNumeroEvenement(), String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
+		suivis.addSuivi(String.format("Entreprise créée avec le numéro %s pour l'organisation %s", entreprise.getNumero(), noOrganisation));
 		setEntreprise(entreprise);
 		raiseStatusTo(HandleStatus.TRAITE);
 
-		openRegimesFiscauxOrdinairesCHVD(entreprise, organisation, dateDebut);
+		openRegimesFiscauxOrdinairesCHVD(entreprise, organisation, dateDebut, suivis);
 	}
 
 	/**
@@ -363,26 +365,27 @@ public abstract class EvenementOrganisationInterne {
 		throw new IllegalArgumentException("Impossible de déterminer le régime fiscal par défaut (APM).");
 	}
 
-	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut) {
+	protected void openRegimesFiscauxOrdinairesCHVD(Entreprise entreprise, Organisation organisation, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		// Le régime fiscal VD + CH
 		final TypeRegimeFiscal typeRegimeFiscal = getRegimeFiscalParDefaut(organisation, dateDebut);
 		if (typeRegimeFiscal != null) {
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.CH, typeRegimeFiscal, dateDebut);
 			context.getTiersService().openRegimeFiscal(entreprise, RegimeFiscal.Portee.VD, typeRegimeFiscal, dateDebut);
-			Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+			suivis.addSuivi(
+					String.format("Régimes fiscaux ordinaires VD et CH ouverts pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
 		}
 		else {
-			Audit.info(getNumeroEvenement(), String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
+			suivis.addSuivi(String.format("Aucun régime fiscal ouvert pour l'entreprise %s (civil: %d)", FormatNumeroHelper.numeroCTBToDisplay(entreprise.getNumero()), noOrganisation));
 		}
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
-	protected void closeRegimesFiscauxOrdinairesCHVD(RegimeFiscal regimeFiscalCH, RegimeFiscal regimeFiscalVD, RegDate dateFin) throws EvenementOrganisationException {
+	protected void closeRegimesFiscauxOrdinairesCHVD(RegimeFiscal regimeFiscalCH, RegimeFiscal regimeFiscalVD, RegDate dateFin, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 		// Le régime fiscal VD + CH
 		context.getTiersService().closeRegimeFiscal(regimeFiscalCH, dateFin);
 		context.getTiersService().closeRegimeFiscal(regimeFiscalVD, dateFin);
 
-		Audit.info(getNumeroEvenement(), String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
+		suivis.addSuivi(String.format("Régimes fiscaux VD et CH fermés pour l'entreprise numéro %s (civil: %s)", entreprise.getNumero(), noOrganisation));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -408,9 +411,10 @@ public abstract class EvenementOrganisationInterne {
 	 * @param numeroSite Le numéro du site sur lequel porte l'établissement
 	 * @param autoriteFiscale La commune politique de domicile de l'établissement
 	 * @param principal Si l'établissement est principal ou secondaire
+	 * @param suivis       Le collector pour le suivi
 	 * @param dateDebut Date de début
 	 */
-	protected void createAddEtablissement(Long numeroSite, Siege autoriteFiscale, boolean principal, RegDate dateDebut) {
+	protected void createAddEtablissement(Long numeroSite, Siege autoriteFiscale, boolean principal, RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(numeroSite);
 		Assert.notNull(autoriteFiscale);
 		Assert.notNull(dateDebut);
@@ -424,13 +428,13 @@ public abstract class EvenementOrganisationInterne {
 
 		final String commune = DateRangeHelper.rangeAt(context.getServiceInfra().getCommuneHistoByNumeroOfs(autoriteFiscale.getNoOfs()), dateDebut).getNomOfficielAvecCanton();
 
-		Audit.info(getNumeroEvenement(), String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
-		                         principal ? "principal" : "secondaire",
-		                         etablissement.getNumero(),
-		                         numeroSite,
-		                         commune,
-		                         autoriteFiscale.getNoOfs(),
-		                         RegDateHelper.dateToDisplayString(dateDebut)));
+		suivis.addSuivi(String.format("Etablissement %s créé avec le numéro %s pour le site %s, domicile %s (ofs: %s), à partir du %s",
+		                              principal ? "principal" : "secondaire",
+		                              etablissement.getNumero(),
+		                              numeroSite,
+		                              commune,
+		                              autoriteFiscale.getNoOfs(),
+		                              RegDateHelper.dateToDisplayString(dateDebut)));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -447,17 +451,18 @@ public abstract class EvenementOrganisationInterne {
 	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipalPM openForFiscalPrincipal(final RegDate dateOuverture, Siege autoriteFiscale,
-	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings) {
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
 
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
-			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
-			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
+			suivis.addSuivi(String.format("Ouverture d'un for fiscal principal pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
+			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().openForFiscalPrincipal(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
 		} else {
@@ -475,16 +480,17 @@ public abstract class EvenementOrganisationInterne {
 	 * @param autoriteFiscale          l'autorité fiscale sur laquelle est ouvert le nouveau for.
 	 * @param rattachement             le motif de rattachement du nouveau for
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
+	 * @param suivis       Le collector pour le suivi
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalSecondaire openForFiscalSecondaire(final RegDate dateOuverture, Siege autoriteFiscale,
-	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings) {
+	                                                      MotifRattachement rattachement, MotifFor motifOuverture, EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) {
 		final Commune commune = context.getServiceInfra().getCommuneByNumeroOfs(autoriteFiscale.getNoOfs(), dateOuverture);
 		if (!commune.isPrincipale()) {
 			Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for secondaire dans le canton"); // TODO: is it?
-			Audit.info(getNumeroEvenement(), String.format("Ouverture d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
-			                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-			                                               RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
+			suivis.addSuivi(String.format("Ouverture d'un for fiscal secondaire pour l'entreprise no %s avec le no organisation civil %s, à partir de %s, motif ouverture %s, rattachement %s.",
+			                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+			                              RegDateHelper.dateToDisplayString(dateOuverture), motifOuverture, rattachement));
 			raiseStatusTo(HandleStatus.TRAITE);
 			return context.getTiersService().openForFiscalSecondaire(entreprise, dateOuverture, rattachement, autoriteFiscale.getNoOfs(), autoriteFiscale.getTypeAutoriteFiscale(), motifOuverture);
 		} else {
@@ -500,22 +506,23 @@ public abstract class EvenementOrganisationInterne {
 	 *
 	 * @param dateDeFermeture la date à laquelle l'ancien for est fermé
 	 * @param motifFermeture  le motif de fermeture du for fiscal principal
+	 * @param suivis       Le collector pour le suivi
 	 * @return
 	 */
-	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture) {
+	protected ForFiscalPrincipal closeForFiscalPrincipal(RegDate dateDeFermeture, MotifFor motifFermeture, EvenementOrganisationSuiviCollector suivis) {
 
-		Audit.info(getNumeroEvenement(), String.format("Fermeture du for principal pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
-		                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
+		suivis.addSuivi(String.format("Fermeture du for principal pour l'entreprise %s (civil: %s), en date du %s, motif fermeture %s",
+		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(), RegDateHelper.dateToDisplayString(dateDeFermeture), motifFermeture));
 
 		raiseStatusTo(HandleStatus.TRAITE);
 		return context.getTiersService().closeForFiscalPrincipal(entreprise, dateDeFermeture, motifFermeture);
 	}
 
-	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal) {
-		Audit.info(getNumeroEvenement(), String.format("Réouverture du for principal pour l'entreprise %s (civil: %s), qui commençait le %s%s.",
-		                                               entreprise.getNumero(), entreprise.getNumeroEntreprise(),
-		                                               forFiscalPrincipal.getDateDebut(),
-		                                               forFiscalPrincipal.getDateFin() != null ? ", et terminait le " + forFiscalPrincipal.getDateFin() : ""));
+	protected void reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, EvenementOrganisationSuiviCollector suivis) {
+		suivis.addSuivi(String.format("Réouverture du for principal pour l'entreprise %s (civil: %s), qui commençait le %s%s.",
+		                              entreprise.getNumero(), entreprise.getNumeroEntreprise(),
+		                              forFiscalPrincipal.getDateDebut(),
+		                              forFiscalPrincipal.getDateFin() != null ? ", et terminait le " + forFiscalPrincipal.getDateFin() : ""));
 		context.getTiersService().annuleForFiscal(forFiscalPrincipal);
 		context.getTiersService().reopenFor(forFiscalPrincipal, forFiscalPrincipal.getTiers());
 		raiseStatusTo(HandleStatus.TRAITE);
@@ -525,7 +532,7 @@ public abstract class EvenementOrganisationInterne {
 	 * Ajoute un bouclement en bonne et due forme.
 	 * @param dateDebut Date de début du bouclement
 	 */
-	protected void createAddBouclement(RegDate dateDebut) {
+	protected void createAddBouclement(RegDate dateDebut, EvenementOrganisationSuiviCollector suivis) {
 		final Bouclement bouclement;
 		boolean isCreationPure = OrganisationHelper.siegePrincipalPrecedant(organisation, getDateEvt()) == null;
 
@@ -537,8 +544,8 @@ public abstract class EvenementOrganisationInterne {
 		bouclement.setEntreprise(entreprise);
 		context.getTiersDAO().addAndSave(entreprise, bouclement);
 		RegDate premierBouclement = RegDate.get(bouclement.getDateDebut().year(), bouclement.getAncrage().month(), bouclement.getAncrage().day());
-		Audit.info(getNumeroEvenement(), String.format("Bouclement créé avec une périodicité de %s mois à partir du %s",
-		                                               bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
+		suivis.addSuivi(String.format("Bouclement créé avec une périodicité de %s mois à partir du %s",
+		                              bouclement.getPeriodeMois(), RegDateHelper.dateToDisplayString(premierBouclement)));
 		raiseStatusTo(HandleStatus.TRAITE);
 	}
 
@@ -551,8 +558,9 @@ public abstract class EvenementOrganisationInterne {
 	 * @param siegeApres    Le siège d'où extrapoler le domicile.
 	 * @param dateAvant     La date du dernier jour du domicile précédant
 	 * @param dateApres     La date du premier jour du nouveau domicile
+	 * @param suivis        Le collector pour le suivi
 	 */
-	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Siege siegeApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres) {
+	protected void changeDomicileEtablissement(@NotNull Etablissement etablissement, @NotNull Siege siegeApres, @NotNull RegDate dateAvant, @NotNull RegDate dateApres, EvenementOrganisationSuiviCollector suivis) {
 		final DomicileEtablissement domicilePrecedant = DateRangeHelper.rangeAt(etablissement.getSortedDomiciles(false), dateApres);
 		context.getTiersService().closeDomicileEtablissement(domicilePrecedant, dateAvant);
 		context.getTiersService().addDomicileEtablissement(etablissement, siegeApres.getTypeAutoriteFiscale(),
@@ -561,7 +569,7 @@ public abstract class EvenementOrganisationInterne {
 		Commune communePrecedante = context.getServiceInfra().getCommuneByNumeroOfs(domicilePrecedant.getNumeroOfsAutoriteFiscale(), dateAvant);
 		Commune nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(siegeApres.getNoOfs(), dateApres);
 
-		Audit.info(getNumeroEvenement(),
+		suivis.addSuivi(
 		           String.format("Changement du domicile de l'établissement no %s (civil: %s) de %s (civil: %s) vers %s (civil: %s).",
 		                         etablissement.getNumero(), etablissement.getNumeroEtablissement(),
 		                         communePrecedante.getNomOfficielAvecCanton(), domicilePrecedant.getNumeroOfsAutoriteFiscale(),
@@ -577,10 +585,10 @@ public abstract class EvenementOrganisationInterne {
 	 * @param date         Date de valeur de l'événement
 	 * @param entreprise   L'entreprise concernée
 	 * @param typeInfo     Le type d'information représenté par le message
-	 * @param auditMessage Le message à diffuser dans l'audit.
+	 * @param suivis       Le collector pour le suivi
 	 */
-	protected void emetEvtFiscalInformation(RegDate date, Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire typeInfo, String auditMessage) {
-		Audit.info(getNumeroEvenement(), auditMessage);
+	protected void emetEvtFiscalInformation(RegDate date, Entreprise entreprise, EvenementFiscalInformationComplementaire.TypeInformationComplementaire typeInfo, String message, EvenementOrganisationSuiviCollector suivis) {
+		suivis.addSuivi(message);
 		context.getEvenementFiscalService().publierEvenementFiscalInformationComplementaire(entreprise, typeInfo, date);
 		raiseStatusTo(HandleStatus.TRAITE);
 	}

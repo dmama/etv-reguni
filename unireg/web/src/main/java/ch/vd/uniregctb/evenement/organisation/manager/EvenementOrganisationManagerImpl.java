@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.evenement.organisation.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -119,8 +121,14 @@ public class EvenementOrganisationManagerImpl implements EvenementOrganisationMa
 		evtView.setEvtId(evt.getId());
 		evtView.setEvtType(evt.getType());
 		for (EvenementOrganisationErreur err : evt.getErreurs() ) {
-			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getMessage(), err.getCallstack()));
+			evtView.addEvtErreur(new ErreurEvenementOrganisationView(err.getId(), err.getMessage(), err.getCallstack()));
 		}
+		Collections.sort(evtView.getEvtErreurs(), new Comparator<ErreurEvenementOrganisationView>() {
+			@Override
+			public int compare(ErreurEvenementOrganisationView o1, ErreurEvenementOrganisationView o2) {
+				return Long.valueOf(o1.getErrorId()).compareTo(o2.getErrorId());
+			}
+		});
 
 		final Long numeroOrganisation = evt.getNoOrganisation();
 		evtView.setNoOrganisation(numeroOrganisation);

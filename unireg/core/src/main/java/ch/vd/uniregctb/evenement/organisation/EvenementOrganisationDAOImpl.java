@@ -66,6 +66,7 @@ public class EvenementOrganisationDAOImpl extends BaseDAOImpl<EvenementOrganisat
 			query.add(Restrictions.in("etat", ETATS_NON_TRAITES));
 		}
 		query.addOrder(Order.asc("dateEvenement"));
+		query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		return query.list();
 	}
 

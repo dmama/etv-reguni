@@ -8,6 +8,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.MotifFor;
@@ -25,7 +26,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
 
 		MotifFor motifFor;
 
@@ -41,7 +42,7 @@ public class DemenagementArriveeDepartVD extends Demenagement {
 			throw new EvenementOrganisationException(String.format("Une combinaison non supportée de déplacement de siège est survenue. type avant: %s, type après: %s", getSiegeAvant().getTypeAutoriteFiscale(), getSiegeApres().getTypeAutoriteFiscale()));
 		}
 
-		effectueChangementSiege(motifFor, warnings);
+		effectueChangementSiege(motifFor, warnings, suivis);
 	}
 
 	@Override

@@ -47,15 +47,15 @@
     </table>
 
     <c:if test="${not empty command.evtErreurs}">
-        <display:table name="command.evtErreurs" id="row" class="error">
-            <c:if test="${empty row.callstack}">
-                <display:column property="message" titleKey="label.erreur"/>
-            </c:if>
-            <c:if test="${not empty row.callstack}">
-                <display:column titleKey="label.erreur">
-                    <unireg:callstack headerMessage="${row.message} " callstack="${row.callstack}"/>
-                </display:column>
-            </c:if>
+        <display:table name="command.evtErreurs" id="row">
+            <display:column titleKey="label.suivi">
+                <c:if test="${empty row.callstack}">
+                    ${row.message}
+                </c:if>
+                <c:if test="${not empty row.callstack}">
+                    <span class="error"><unireg:callstack headerMessage="${row.message}" callstack="${row.callstack}"/></span>
+                </c:if>
+            </display:column>
         </display:table>
     </c:if>
 

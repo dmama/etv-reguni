@@ -14,6 +14,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.metier.MetierServicePM;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -58,10 +59,10 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 		return evenementFiscalService;
 	}
 
-	protected void launchEvent(final EvenementOrganisationInterne evtOrganisation, final EvenementOrganisationErreurCollector erreurs, final EvenementOrganisationWarningCollector warnings) throws Exception {
+	protected void launchEvent(final EvenementOrganisationInterne evtOrganisation, final EvenementOrganisationErreurCollector erreurs, final EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws Exception {
 		evtOrganisation.validate(erreurs, warnings);
 		if (!erreurs.hasErreurs()) {
-			evtOrganisation.handle(warnings);
+			evtOrganisation.handle(warnings, suivis);
 		}
 	}
 
@@ -72,7 +73,8 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	protected void assertSansErreurNiWarning(EvenementOrganisationInterne evt) throws Exception {
 		final EvenementOrganisationErreurCollector erreurs = buildMessageCollector();
 		final EvenementOrganisationWarningCollector warnings = buildMessageCollector();
-		launchEvent(evt, erreurs, warnings);
+		final EvenementOrganisationSuiviCollector suivis = buildMessageCollector();
+		launchEvent(evt, erreurs, warnings, suivis);
 		Assert.assertFalse(erreurs.hasErreurs());
 		Assert.assertFalse(warnings.hasWarnings());
 	}
@@ -80,8 +82,9 @@ public abstract class AbstractEvenementOrganisationInterneTest extends BusinessT
 	protected void assertErreurs(EvenementOrganisationInterne evt, List<String> messagesErreurs) throws Exception {
 		final MessageCollector erreurs = buildMessageCollector();
 		final MessageCollector warnings = buildMessageCollector();
+		final EvenementOrganisationSuiviCollector suivis = buildMessageCollector();
 		try {
-			launchEvent(evt, erreurs, warnings);
+			launchEvent(evt, erreurs, warnings, suivis);
 		}
 		catch (EvenementOrganisationException e) {
 			erreurs.addErreur(e);

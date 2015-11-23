@@ -10,6 +10,7 @@ import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationContext;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationException;
 import ch.vd.uniregctb.evenement.organisation.EvenementOrganisationOptions;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationErreurCollector;
+import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationSuiviCollector;
 import ch.vd.uniregctb.evenement.organisation.audit.EvenementOrganisationWarningCollector;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.type.CategorieEntreprise;
@@ -33,8 +34,8 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 	}
 
 	@Override
-	public void doHandle(EvenementOrganisationWarningCollector warnings) throws EvenementOrganisationException {
-		super.doHandle(warnings);
+	public void doHandle(EvenementOrganisationWarningCollector warnings, EvenementOrganisationSuiviCollector suivis) throws EvenementOrganisationException {
+		super.doHandle(warnings, suivis);
 
 		MotifFor motifOuverture = determineMotifOuvertureFor();
 
@@ -42,10 +43,10 @@ public class CreateEntrepriseDPPM extends CreateEntreprise {
 		                       getAutoriteFiscalePrincipale(),
 		                       MotifRattachement.DOMICILE,
 		                       motifOuverture,
-		                       warnings);
+		                       warnings, suivis);
 
 		// Création du bouclement
-		createAddBouclement(getDateDeDebut());
+		createAddBouclement(getDateDeDebut(), suivis);
 
 		warnings.addWarning(MSG_GENERIQUE_A_VERIFIER);
 	}
