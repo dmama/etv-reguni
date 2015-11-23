@@ -105,6 +105,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.EtatEntreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipalPM;
 import ch.vd.uniregctb.tiers.Mandat;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -4424,5 +4425,97 @@ public class EntrepriseMigratorTest extends AbstractEntityMigratorTest {
 				Assert.assertEquals("12.07.2005 - Cette sté n'a plus qu'une activité de facturation dès le\n01.01.1993 selon lettre du 02.06.1993 au dossier. Ne plus\ntoucher ce dossier qui a été vu et revu par STL. Suite à la\nréorganisation sous forme de scissions multiples un nouveau\ndossier a été constitué soit : no xxxxx.", remarque.getTexte());
 			}
 		});
+	}
+
+	/**
+	 * [SIFISC-16333][SIFISC-17112] Une administration de droit public (actuelle) doit être migrée sans for
+	 */
+	@Test
+	public void testMigrationForsAdministrationDroitPublic() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateChangementFormeJuridique = dateDebut.addYears(3);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addFormeJuridique(e, dateChangementFormeJuridique, createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipal ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNull(ffp);     // DP -> pas de for...
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(1, textes.size());
+			Assert.assertEquals("For fiscal principal 1 du 27.08.2004 non-migré (administration de droit public).", textes.get(0));
+		}
+	}
+
+	/**
+	 * [SIFISC-16333][SIFISC-17112] Une ancienne administration de droit public (qui ne l'est plus) doit être migrée avec for si elle en a...
+	 */
+	@Test
+	public void testMigrationForsAncienneAdministrationDroitPublic() throws Exception {
+
+		final long noEntreprise = 74984L;
+		final RegpmEntreprise e = buildEntreprise(noEntreprise);
+		final RegDate dateDebut = RegDate.get(2004, 8, 27);
+		final RegDate dateChangementFormeJuridique = dateDebut.addYears(3);
+
+		addRaisonSociale(e, dateDebut, "Toto SA", null, null, true);
+		addFormeJuridique(e, dateDebut, createTypeFormeJuridique("DP", RegpmCategoriePersonneMorale.APM));
+		addFormeJuridique(e, dateChangementFormeJuridique, createTypeFormeJuridique("S.A.", RegpmCategoriePersonneMorale.PM));
+		addForPrincipalSuisse(e, dateDebut, RegpmTypeForPrincipal.SIEGE, Commune.ECHALLENS);
+
+		final MockGraphe graphe = new MockGraphe(Collections.singletonList(e),
+		                                         null,
+		                                         null);
+		final MigrationResultCollector mr = new MigrationResultCollector(graphe);
+		final EntityLinkCollector linkCollector = new EntityLinkCollector();
+		final IdMapper idMapper = new IdMapper();
+		migrator.initMigrationResult(mr, idMapper);
+		migrate(e, migrator, mr, linkCollector, idMapper);
+
+		doInUniregTransaction(true, status -> {
+			final Entreprise entreprise = uniregStore.getEntityFromDb(Entreprise.class, noEntreprise);
+			Assert.assertNotNull(entreprise);
+
+			final ForFiscalPrincipal ffp = entreprise.getDernierForFiscalPrincipal();
+			Assert.assertNotNull(ffp);     // plus DP -> for migré..
+			Assert.assertEquals(dateDebut, ffp.getDateDebut());
+			Assert.assertNull(ffp.getDateFin());
+			Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+			Assert.assertEquals(Commune.ECHALLENS.getNoOfs(), ffp.getNumeroOfsAutoriteFiscale());
+			Assert.assertFalse(ffp.isAnnule());
+		});
+
+		// vérification des messages dans le contexte "FORS"
+		{
+			final List<MigrationResultCollector.Message> messages = mr.getMessages().get(LogCategory.FORS);
+			Assert.assertNotNull(messages);
+			final List<String> textes = messages.stream().map(msg -> msg.text).collect(Collectors.toList());
+			Assert.assertEquals(2, textes.size());
+			Assert.assertEquals("Entreprise non-DP (dernière forme juridique : 'S.A.') ayant possédé une forme juridique DP par le passé, des fors fiscaux pourront donc être repris.", textes.get(0));
+			Assert.assertEquals("For principal COMMUNE_OU_FRACTION_VD/5518 [27.08.2004 -> ?] généré.", textes.get(1));
+		}
 	}
 }

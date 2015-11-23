@@ -2937,18 +2937,24 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			return;
 		}
 
-		// entreprise administratives de droit public et autre -> migration manuelle (combien de cas ?)
+		// [SIFISC-17112] dans le cas où une entreprise a été DP et autre au cours de sa vie, il faut prendre la décision de migration de ses fors basée sur sa catégorie courante
+		final boolean isDP;
 		if (hasDP && hasPMorAPMnonDP) {
-			forsRegpm.stream()
-					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.ERROR,
-					                             String.format("For fiscal principal %d du %s non-migré car l'entreprise PM/APM a été DP et non-DP au cours de son existence.",
-					                                           ff.getId().getSeqNo(),
-					                                           StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()))));
-			return;
+
+			final RegpmTypeFormeJuridique derniereFormeJuridique = histoFormesJuridiques.floorEntry(RegDate.get()).getValue();
+			isDP = toFormeJuridique(derniereFormeJuridique.getCode()) == FormeJuridiqueEntreprise.CORP_DP_ADM;
+			if (!isDP) {
+				mr.addMessage(LogCategory.FORS, LogLevel.WARN,
+				              String.format("Entreprise non-DP (dernière forme juridique : '%s') ayant possédé une forme juridique DP par le passé, des fors fiscaux pourront donc être repris.",
+				                            derniereFormeJuridique.getCode()));
+			}
+		}
+		else {
+			isDP = hasDP;
 		}
 
 		// entreprises administratives de droit public (communes...) -> pas de for migré, et c'est normal
-		if (hasDP) {
+		if (isDP) {
 			forsRegpm.stream()
 					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 					                             String.format("For fiscal principal %d du %s non-migré (administration de droit public).",
