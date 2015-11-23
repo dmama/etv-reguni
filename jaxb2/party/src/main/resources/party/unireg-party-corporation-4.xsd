@@ -580,16 +580,7 @@
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
-							<jxb:javadoc>La date de début de validité de l'état.</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>La date de fin de validité de l'état; ou non-renseigné s'il est toujours valide.</jxb:javadoc>
+							<jxb:javadoc>La date d'obtention de l'état.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
