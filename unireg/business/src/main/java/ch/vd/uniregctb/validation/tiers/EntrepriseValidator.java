@@ -61,22 +61,13 @@ public class EntrepriseValidator extends ContribuableImpositionPersonnesMoralesV
 
 	protected ValidationResults validateEtats(Entreprise entreprise) {
 		final ValidationResults vr = new ValidationResults();
-		final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
+		final List<EtatEntreprise> etats = AnnulableHelper.sansElementsAnnules(entreprise.getEtats());
 
-		// on valide d'abord les états pour eux-mêmes ...
+		// on valide les états pour eux-mêmes ...
 		for (EtatEntreprise etat : etats) {
 			vr.merge(getValidationService().validate(etat));
 		}
 
-		// ... puis entre eux (il ne doit y avoir qu'un seul état valide à un moment donné)
-		if (etats.size() > 1) {
-			final List<DateRange> overlaps = DateRangeHelper.overlaps(etats);
-			if (overlaps != null && !overlaps.isEmpty()) {
-				for (DateRange overlap : overlaps) {
-					vr.addError(String.format("La période %s est couverte par plusieurs états", DateRangeHelper.toDisplayString(overlap)));
-				}
-			}
-		}
 		return vr;
 	}
 

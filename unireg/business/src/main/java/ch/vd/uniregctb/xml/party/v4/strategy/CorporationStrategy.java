@@ -283,8 +283,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		final List<CorporationStatus> statuses = new ArrayList<>(etats.size());
 		for (EtatEntreprise etat : etats) {
 			final CorporationStatus status = new CorporationStatus();
-			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateDebut()));
-			status.setDateTo(DataHelper.coreToXMLv2(etat.getDateFin()));
+			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateObtention()));
 			status.setStatusType(EnumHelper.coreToXMLv4(etat.getType()));
 			statuses.add(status);
 		}

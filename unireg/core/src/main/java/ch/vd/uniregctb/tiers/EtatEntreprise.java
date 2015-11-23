@@ -11,16 +11,24 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
-import ch.vd.uniregctb.common.HibernateDateRangeEntity;
+import org.hibernate.annotations.Type;
+
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatEntreprise;
 
 @Entity
 @Table(name = "ETAT_ENTREPRISE")
-public class EtatEntreprise extends HibernateDateRangeEntity {
+public class EtatEntreprise extends HibernateEntity implements LinkedEntity, Comparable<EtatEntreprise> {
 
 	private Long id;
+	private RegDate dateObtention;
 	private TypeEtatEntreprise type;
 	private Entreprise entreprise;
 
@@ -41,6 +49,16 @@ public class EtatEntreprise extends HibernateDateRangeEntity {
 		this.id = id;
 	}
 
+	@Column(name = "DATE_OBTENTION", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getDateObtention() {
+		return dateObtention;
+	}
+
+	public void setDateObtention(RegDate dateObtention) {
+		this.dateObtention = dateObtention;
+	}
+
 	@Column(name = "TYPE_ETAT", length = LengthConstants.ETATENT_ETAT, nullable = false)
 	@Enumerated(value = EnumType.STRING)
 	public TypeEtatEntreprise getType() {
@@ -59,5 +77,24 @@ public class EtatEntreprise extends HibernateDateRangeEntity {
 
 	public void setEntreprise(Entreprise entreprise) {
 		this.entreprise = entreprise;
+	}
+
+	@Override
+	public List<?> getLinkedEntities(boolean includeAnnuled) {
+		return entreprise == null ? null : Collections.singletonList(entreprise);
+	}
+
+	@Override
+	public int compareTo(EtatEntreprise o) {
+		int comparison = NullDateBehavior.EARLIEST.compare(dateObtention, o.dateObtention);
+		if (comparison == 0) {
+			comparison = Long.compare(id, o.id);
+		}
+		return comparison;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Etat %s obtenu le %s", type, RegDateHelper.dateToDisplayString(dateObtention));
 	}
 }

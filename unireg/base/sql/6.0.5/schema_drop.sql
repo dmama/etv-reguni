@@ -92,6 +92,8 @@ drop table CAPITAL_ENTREPRISE cascade constraints;
 
 drop table FLAG_ENTREPRISE cascade constraints;
 
+drop table ETAT_ENTREPRISE cascade constraints;
+
 drop table ALLEGEMENT_FISCAL cascade constraints;
 
 drop table TIERS cascade constraints;

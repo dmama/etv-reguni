@@ -4,6 +4,7 @@ package ch.vd.uniregctb.xml.party.v3.strategy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,7 @@ import ch.vd.unireg.xml.party.corporation.v3.LegalSeat;
 import ch.vd.unireg.xml.party.corporation.v3.TaxSystem;
 import ch.vd.unireg.xml.party.v3.PartyPart;
 import ch.vd.unireg.xml.party.v3.UidNumberList;
+import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.metier.bouclement.ExerciceCommercial;
 import ch.vd.uniregctb.tiers.CapitalHisto;
 import ch.vd.uniregctb.tiers.DomicileEtablissement;
@@ -110,7 +112,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		}
 
 		if (parts != null && parts.contains(PartyPart.CORPORATION_STATUSES)) {
-			to.getStatuses().addAll(extractEtats(entreprise.getEtatsNonAnnulesTries()));
+			to.getStatuses().addAll(extractEtats(entreprise));
 		}
 
 		if (parts != null && parts.contains(PartyPart.LEGAL_FORMS)) {
@@ -263,18 +265,22 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@NotNull
-	private List<CorporationStatus> extractEtats(List<EtatEntreprise> etats) {
+	private List<CorporationStatus> extractEtats(Entreprise entreprise) {
+		final List<EtatEntreprise> etats = entreprise.getEtatsNonAnnulesTries();
 		if (etats == null || etats.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		final List<CorporationStatus> statuses = new ArrayList<>(etats.size());
-		for (EtatEntreprise etat : etats) {
+		RegDate fin = null;
+		final List<CorporationStatus> statuses = new LinkedList<>();
+		for (EtatEntreprise etat : CollectionsUtils.revertedOrder(etats)) {
 			final CorporationStatus status = new CorporationStatus();
-			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateDebut()));
-			status.setDateTo(DataHelper.coreToXMLv2(etat.getDateFin()));
+			status.setDateFrom(DataHelper.coreToXMLv2(etat.getDateObtention()));
+			status.setDateTo(DataHelper.coreToXMLv2(fin));
 			status.setCode(EnumHelper.coreToXMLv1v2v3(etat.getType()));
-			statuses.add(status);
+			statuses.add(0, status);
+
+			fin = etat.getDateObtention().getOneDayBefore();
 		}
 		return statuses;
 	}

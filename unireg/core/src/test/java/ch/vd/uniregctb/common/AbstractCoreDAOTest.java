@@ -1303,10 +1303,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return tiersDAO.addAndSave(e, bouclement);
 	}
 
-	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatEntreprise type) {
+	protected EtatEntreprise addEtatEntreprise(Entreprise e, RegDate dateObtention, TypeEtatEntreprise type) {
 		final EtatEntreprise etat = new EtatEntreprise();
-		etat.setDateDebut(dateDebut);
-		etat.setDateFin(dateFin);
+		etat.setDateObtention(dateObtention);
 		etat.setType(type);
 		return tiersDAO.addAndSave(e, etat);
 	}

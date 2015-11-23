@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -236,7 +237,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 		}
 
 		if (this.etats == null) {
-			this.etats = new HashSet<>();
+			this.etats = new LinkedHashSet<>();         // pour garder l'ordre d'insertion dans la base
 		}
 		this.etats.add(etat);
 		etat.setEntreprise(this);
@@ -245,7 +246,7 @@ public class Entreprise extends ContribuableImpositionPersonnesMorales {
 	@Transient
 	public List<EtatEntreprise> getEtatsNonAnnulesTries() {
 		final List<EtatEntreprise> nonAnnules = AnnulableHelper.sansElementsAnnules(etats);
-		Collections.sort(nonAnnules, new DateRangeComparator<>());
+		Collections.sort(nonAnnules);
 		return nonAnnules;
 	}
 

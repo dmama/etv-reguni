@@ -12,11 +12,8 @@
 	<c:if test="${not empty command.entreprise.etats}">
 
 		<display:table name="${command.entreprise.etats}" id="etatPM" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
-			<display:column titleKey="label.date.debut">
-				<unireg:regdate regdate="${etatPM.dateDebut}"/>
-			</display:column>
-			<display:column titleKey="label.date.fin">
-				<unireg:regdate regdate="${etatPM.dateFin}"/>
+			<display:column titleKey="label.date.obtention">
+				<unireg:regdate regdate="${etatPM.dateObtention}"/>
 			</display:column>
 			<display:column titleKey="label.type">
 				<fmt:message key="option.etat.entreprise.${etatPM.type}"/>

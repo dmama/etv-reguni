@@ -2,6 +2,7 @@ package ch.vd.uniregctb.entreprise;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ch.vd.registre.base.date.CollatableDateRange;
@@ -99,12 +100,12 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
 		// les états
 		final List<EtatEntreprise> etats = new ArrayList<>(entreprise.getEtats());
-		Collections.sort(etats, new DateRangeComparator<EtatEntreprise>() {
+		Collections.sort(etats, new Comparator<EtatEntreprise>() {
 			@Override
 			public int compare(EtatEntreprise o1, EtatEntreprise o2) {
 				int comparison = Boolean.compare(o1.isAnnule(), o2.isAnnule());     // false < true
 				if (comparison == 0) {
-					comparison = - super.compare(o1, o2);       // les plus récents d'abord
+					comparison = - o1.getDateObtention().compareTo(o2.getDateObtention());       // les plus récents d'abord
 				}
 				return comparison;
 			}
@@ -121,8 +122,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 		final List<EtatEntrepriseView> views = new ArrayList<>(data.size());
 		for (EtatEntreprise etat : data) {
 			final EtatEntrepriseView view = new EtatEntrepriseView(etat.getId(),
-			                                                       etat.getDateDebut(),
-			                                                       etat.getDateFin(),
+			                                                       etat.getDateObtention(),
 			                                                       etat.getType(),
 			                                                       etat.isAnnule());
 			views.add(view);
