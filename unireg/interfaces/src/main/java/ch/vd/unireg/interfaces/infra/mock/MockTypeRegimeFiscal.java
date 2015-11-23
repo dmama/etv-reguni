@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -59,7 +60,39 @@ public class MockTypeRegimeFiscal implements TypeRegimeFiscal {
 				}
 			}
 		}
+
+		// petites vérifications de consistance
+		checkOneAndOnlyOne(mocks, new Predicate<MockTypeRegimeFiscal>() {
+			@Override
+			public boolean evaluate(MockTypeRegimeFiscal object) {
+				return object.isDefaultPourPM();
+			}
+		});
+		checkOneAndOnlyOne(mocks, new Predicate<MockTypeRegimeFiscal>() {
+			@Override
+			public boolean evaluate(MockTypeRegimeFiscal object) {
+				return object.isDefaultPourAPM();
+			}
+		});
+
 		return mocks.toArray(new MockTypeRegimeFiscal[mocks.size()]);
+	}
+
+	private static <T extends TypeRegimeFiscal> void checkOneAndOnlyOne(List<T> elements, Predicate<? super T> predicate) {
+		boolean foundOne = false;
+		for (T element : elements) {
+			if (predicate.evaluate(element)) {
+				if (foundOne) {
+					// un deuxième ??
+					throw new IllegalArgumentException("Au moins deux éléments satisfont le prédicat...");
+				}
+				foundOne = true;
+			}
+		}
+		if (!foundOne) {
+			// aucun ??
+			throw new IllegalArgumentException("Aucun élément ne satisfait au prédicat...");
+		}
 	}
 
 	private MockTypeRegimeFiscal(String code, Integer premierePF, Integer dernierePF, String libelle, boolean pourPM, boolean pourAPM, boolean defaultPM, boolean defaultAPM) {
