@@ -184,7 +184,7 @@ public class EvenementOrganisation extends HibernateEntity {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "EVT_ORGANISATION_ID", nullable = false)
 	@ForeignKey(name = "FK_EV_ERR_EV_ORGA_ID")
-	@OrderColumn(name = "LIST_INDEX", nullable = true)
+	@OrderColumn(name = "LIST_INDEX", nullable = false)
 	public List<EvenementOrganisationErreur> getErreurs() {
 		return erreurs;
 	}
