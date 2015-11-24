@@ -241,11 +241,9 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 
 	private static final class ComparaisonAssujettissementsData {
 		private final boolean active;
-		private final SortedSet<RegpmAssujettissement> regpmAssujettissements;
 		private final KeyedSupplier<Entreprise> entrepriseSupplier;
-		public ComparaisonAssujettissementsData(boolean active, SortedSet<RegpmAssujettissement> regpmAssujettissements, KeyedSupplier<Entreprise> entrepriseSupplier) {
+		public ComparaisonAssujettissementsData(boolean active, KeyedSupplier<Entreprise> entrepriseSupplier) {
 			this.active = active;
-			this.regpmAssujettissements = regpmAssujettissements;
 			this.entrepriseSupplier = entrepriseSupplier;
 		}
 	}
@@ -275,6 +273,49 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		private final List<RegpmForPrincipal> liste;
 		public ForsPrincipauxData(@Nullable List<RegpmForPrincipal> liste) {
 			this.liste = liste == null ? Collections.emptyList() : liste;
+		}
+	}
+
+	private static final class AssujettissementData {
+		@NotNull
+		private final List<DateRange> ranges;
+
+		public AssujettissementData(@Nullable Collection<RegpmAssujettissement> liste) {
+			if (liste == null || liste.isEmpty()) {
+				this.ranges = Collections.emptyList();
+			}
+			else {
+				this.ranges = neverNull(DateRangeHelper.merge(liste.stream()
+						                                              .filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
+						                                              .map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
+						                                              .sorted(DateRangeComparator::compareRanges)
+						                                              .collect(Collectors.toList())));
+			}
+		}
+
+		/**
+		 * @return <code>true</code> si la collection des assujettissements ICC est non-vide
+		 */
+		public boolean hasSome() {
+			return !ranges.isEmpty();
+		}
+
+		/**
+		 * @return la date de fin de l'assujettissement (<code>null</code> si pas d'assujettissement du tout ou si assujettissement encore ouvert)
+		 * @see #hasSome() pour faire la distinction entre "pas d'assujettissement" et "assujettissement ouvert" en cas de <code>null</code>
+		 */
+		@Nullable
+		public RegDate getDateFin() {
+			final DateRange last = getLast();
+			return last == null ? null : last.getDateFin();
+		}
+
+		/**
+		 * @return la dernière période d'assujettissement, ou <code>null</code> s'il n'y en a pas
+		 */
+		@Nullable
+		public DateRange getLast() {
+			return hasSome() ? ranges.get(ranges.size() - 1) : null;
 		}
 	}
 
@@ -458,6 +499,17 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		                         e -> extractDonneesMandats(e, mr, idMapper),
 		                         null,
 		                         null);
+
+		// périodes d'assujettissement ICC dans RegPM
+		mr.registerDataExtractor(AssujettissementData.class,
+		                         this::extractDonneesAssujettissement,
+		                         null,
+		                         null);
+	}
+
+	@NotNull
+	private AssujettissementData extractDonneesAssujettissement(RegpmEntreprise entreprise) {
+		return new AssujettissementData(entreprise.getAssujettissements());
 	}
 
 	@NotNull
@@ -863,20 +915,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(entreprise);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			final boolean isAssujettissementIccOuvert = entreprise.getAssujettissements().stream()
-					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
-					.filter(ass -> ass.getDateFin() == null)
-					.findAny()
-					.isPresent();
-
-			// La date de fin du dernier assujettissement ICC qui a été fermé (s'il existe un assujettissement ouvert
-			// alors cette date de fin d'assujettissement ne doit pas être utilisée...)
-			final RegDate dateFinDernierAssujettissementFerme = entreprise.getAssujettissements().stream()
-					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
-					.map(RegpmAssujettissement::getDateFin)
-					.filter(Objects::nonNull)
-					.max(Comparator.naturalOrder())
-					.orElse(null);
+			final AssujettissementData assujettissementData = mr.getExtractedData(AssujettissementData.class, entrepriseKey);
 
 			// on retrie les sièges par date de validité (le tri naturel est fait par numéro de séquence) en ignorant au passage les sièges annulés ou dont la date de début est dans le futur
 			final NavigableMap<RegDate, List<RegpmSiegeEntreprise>> strict = entreprise.getSieges().stream()
@@ -900,12 +939,12 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 						return true;
 					})
 					.filter(s -> {
-						if (!isAssujettissementIccOuvert && RegDateHelper.isAfter(s.getDateValidite(), dateFinDernierAssujettissementFerme, NullDateBehavior.LATEST)) {
+						if (assujettissementData.hasSome() && RegDateHelper.isAfter(s.getDateValidite(), assujettissementData.getDateFin(), NullDateBehavior.LATEST)) {
 							mr.addMessage(LogCategory.SUIVI, LogLevel.WARN,
 							              String.format("Le siège %d est ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'assujettissement ICC de l'entreprise (%s).",
 							                            s.getId().getSeqNo(),
 							                            StringRenderers.DATE_RENDERER.toString(s.getDateValidite()),
-							                            StringRenderers.DATE_RENDERER.toString(dateFinDernierAssujettissementFerme)));
+							                            StringRenderers.DATE_RENDERER.toString(assujettissementData.getDateFin())));
 							return false;
 						}
 						return true;
@@ -1135,37 +1174,23 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		final EntityKey entrepriseKey = buildEntrepriseKey(regpm);
 		return doInLogContext(entrepriseKey, mr, idMapper, () -> {
 
-			final boolean isAssujettissementIccOuvert = regpm.getAssujettissements().stream()
-					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
-					.filter(ass -> ass.getDateFin() == null)
-					.findAny()
-					.isPresent();
-
-			// La date de fin du dernier assujettissement ICC qui a été fermé (s'il existe un assujettissement ouvert
-			// alors cette date de fin d'assujettissement ne doit pas être utilisée...)
-			final RegDate dateFinDernierAssujettissementFerme = regpm.getAssujettissements().stream()
-					.filter(ass -> ass.getType() == RegpmTypeAssujettissement.LILIC)
-					.map(RegpmAssujettissement::getDateFin)
-					.filter(Objects::nonNull)
-					.max(Comparator.naturalOrder())
-					.orElse(null);
-
+			final AssujettissementData assujettissementData = mr.getExtractedData(AssujettissementData.class, entrepriseKey);
 			final Map<RegDate, List<RegpmForPrincipal>> forsParDate = regpm.getForsPrincipaux().stream()
 					.filter(ff -> {
 						if (ff.getDateValidite() != null
-								&& !isAssujettissementIccOuvert
+								&& assujettissementData.hasSome()
 								&& ff.getCommune() != null
 								&& ff.getCommune().getCanton() == RegpmCanton.VD
-								&& RegDateHelper.isAfter(ff.getDateValidite(), dateFinDernierAssujettissementFerme, NullDateBehavior.LATEST)) {
+								&& RegDateHelper.isAfter(ff.getDateValidite(), assujettissementData.getDateFin(), NullDateBehavior.LATEST)) {
 
 							mr.addMessage(LogCategory.FORS, LogLevel.WARN,
 							              String.format("For fiscal principal vaudois %d ignoré car sa date de début de validité (%s) est postérieure à la date de fin d'assujettissement ICC de l'entreprise (%s).",
 							                            ff.getId().getSeqNo(),
 							                            StringRenderers.DATE_RENDERER.toString(ff.getDateValidite()),
-							                            StringRenderers.DATE_RENDERER.toString(dateFinDernierAssujettissementFerme)));
+							                            StringRenderers.DATE_RENDERER.toString(assujettissementData.getDateFin())));
 
 							// [SIFISC-17110] On veut une liste...
-							mr.pushContextValue(ForPrincipalOuvertApresFinAssujLoggedElement.class, new ForPrincipalOuvertApresFinAssujLoggedElement(regpm, ff, dateFinDernierAssujettissementFerme));
+							mr.pushContextValue(ForPrincipalOuvertApresFinAssujLoggedElement.class, new ForPrincipalOuvertApresFinAssujLoggedElement(regpm, ff, assujettissementData.getDateFin()));
 							try {
 								mr.addMessage(LogCategory.FORS_OUVERTS_APRES_FIN_ASSUJETTISSEMENT, LogLevel.INFO, StringUtils.EMPTY);
 							}
@@ -1328,10 +1353,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			final Entreprise entreprise = data.entrepriseSupplier.get();
 			try {
 				// assujettissements ICC dans RegPM
-				final List<DateRange> lilic = neverNull(DateRangeHelper.merge(data.regpmAssujettissements.stream()
-						                                                              .filter(a -> a.getType() == RegpmTypeAssujettissement.LILIC)
-						                                                              .map(a -> new DateRangeHelper.Range(a.getDateDebut(), a.getDateFin()))
-						                                                              .collect(Collectors.toList())));
+				final List<DateRange> lilic = mr.getExtractedData(AssujettissementData.class, keyEntreprise).ranges;
 
 				// assujettissements calculés par Unireg
 				final List<DateRange> calcules = neverNull(DateRangeHelper.merge(assujettissementService.determine(entreprise)));
@@ -1723,7 +1745,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 		mr.addPreTransactionCommitData(new AnnulationDonneesFiscalesPourInactifsData(regpm, moi));
 
 		// enregistrement de cette entreprise pour la comparaison des assujettissements avant/après
-		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), regpm.getAssujettissements(), moi));
+		mr.addPreTransactionCommitData(new ComparaisonAssujettissementsData(activityManager.isActive(regpm), moi));
 
 		// TODO migrer les documents (questionnaires SNC...)
 
