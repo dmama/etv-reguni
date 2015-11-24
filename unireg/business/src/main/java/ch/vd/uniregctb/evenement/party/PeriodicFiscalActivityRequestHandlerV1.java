@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateRange;
@@ -27,6 +30,16 @@ public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandler<Pe
 
 	private TiersDAO tiersDAO;
 	private SecurityProviderInterface securityProvider;
+
+	private static final Map<Boolean, String> MESSAGES_TRAITEMENT = buildMessagesTraitement();
+
+	@NotNull
+	private static Map<Boolean, String> buildMessagesTraitement() {
+		final Map<Boolean, String> map = new HashMap<>(2);
+		map.put(Boolean.TRUE, "Le contribuable a un for vaudois ouvert sur la période demandée.");
+		map.put(Boolean.FALSE, "Le contribuable n'a aucun for vaudois ouvert sur la période demandée.");
+		return Collections.unmodifiableMap(map);
+	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -78,7 +91,7 @@ public class PeriodicFiscalActivityRequestHandlerV1 implements RequestHandler<Pe
 		}
 
 		// construction de la réponse
-		return new RequestHandlerResult(new FiscalActivityResponse(hasActivite));
+		return new RequestHandlerResult(new FiscalActivityResponse(hasActivite, MESSAGES_TRAITEMENT.get(hasActivite)));
 	}
 
 	@Override

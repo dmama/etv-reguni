@@ -69,6 +69,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertFalse(Integer.toString(annee), response.isActive());
+			Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
 		}
 	}
 
@@ -104,6 +105,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertFalse(Integer.toString(annee), response.isActive());
+			Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
 		}
 	}
 
@@ -138,6 +140,12 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertEquals(Integer.toString(annee), annee >= 2000 && annee <= 2010, response.isActive());
+			if (response.isActive()) {
+				Assert.assertEquals("Le contribuable a un for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
+			else {
+				Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
 		}
 	}
 
@@ -206,6 +214,7 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertFalse(Integer.toString(annee), response.isActive());
+			Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
 		}
 	}
 
@@ -241,6 +250,12 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertEquals(Integer.toString(annee), annee >= 2003 && annee <= 2008, response.isActive());
+			if (response.isActive()) {
+				Assert.assertEquals("Le contribuable a un for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
+			else {
+				Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
 		}
 	}
 
@@ -276,6 +291,12 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertEquals(Integer.toString(annee), annee >= 2003 && annee <= 2008, response.isActive());
+			if (response.isActive()) {
+				Assert.assertEquals("Le contribuable a un for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
+			else {
+				Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
 		}
 	}
 
@@ -310,6 +331,12 @@ public class PeriodicFiscalActivityRequestHandlerV1Test extends BusinessTest {
 			// contrôle de la réponse
 			Assert.assertNotNull(Integer.toString(annee), response);
 			Assert.assertEquals(Integer.toString(annee), annee >= 2000, response.isActive());
+			if (response.isActive()) {
+				Assert.assertEquals("Le contribuable a un for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
+			else {
+				Assert.assertEquals("Le contribuable n'a aucun for vaudois ouvert sur la période demandée.", response.getMessage());
+			}
 		}
 	}
 }

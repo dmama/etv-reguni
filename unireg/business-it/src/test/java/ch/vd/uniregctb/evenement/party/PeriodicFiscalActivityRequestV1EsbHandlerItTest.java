@@ -115,6 +115,7 @@ public class PeriodicFiscalActivityRequestV1EsbHandlerItTest extends PartyReques
 		final FiscalActivityResponse response = (FiscalActivityResponse) parseResponse(message);
 		assertNotNull(response);
 		assertTrue(response.isActive());
+		assertEquals("Le contribuable a un for vaudois ouvert sur la période demandée.", response.getMessage());
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
