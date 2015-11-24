@@ -19,8 +19,7 @@
 				<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 			</c:when>
 			<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
-				<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
-				(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
+				<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficielAvecCanton" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 			</c:when>
 		</c:choose>
 	</display:column>

@@ -183,7 +183,7 @@
 									    <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fp.dateDebut}"/>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
-										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
+										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b><c:if test="${fp.motifOuverture != null}"> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b></c:if><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
@@ -195,11 +195,10 @@
 								</c:when>
 								<c:when test="${fp.typeAutoriteFiscale == 'COMMUNE_HC'}">
 									<td class="principal_hc tooltip_cell" id="ffp-${fp.id}" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
-                                        <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fp.dateDebut}"/>
-                                        (<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="sigleCanton" date="${fp.dateDebut}"/>)
+                                        <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomOfficielAvecCanton" date="${fp.dateDebut}"/>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
-										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
+											Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b><c:if test="${fp.motifOuverture != null}"> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b></c:if><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>
@@ -214,7 +213,7 @@
                                         <unireg:pays ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomCourt" date="${fp.dateDebut}"/>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
-										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
+											Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b><c:if test="${fp.motifOuverture != null}"> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b></c:if><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b><c:if test="${fp.motifFermeture != null}"> - <b><fmt:message key="option.motif.fermeture.${fp.motifFermeture}"/></b></c:if><br/>
 										    Motif de rattachement : <b><fmt:message key="option.rattachement.${fp.motifRattachement}"/></b><br/>
 											Genre d'impôt : <b><fmt:message key="option.genre.impot.${fp.genreImpot}"/></b><br/>

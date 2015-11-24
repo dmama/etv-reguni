@@ -56,8 +56,7 @@
 		<display:column titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
-					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficiel" date="${sieges.dateFin}"/>
-					(<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="sigleCanton" date="${sieges.dateFin}"/>)
+					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficielAvecCanton" date="${sieges.dateFin}"/>
 				</c:when>
 				<c:when test="${sieges.type == 'PAYS_HS' }">
 					<unireg:pays ofs="${sieges.noOfsSiege}" displayProperty="nomCourt" date="${sieges.dateFin}"/>
