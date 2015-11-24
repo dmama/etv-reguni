@@ -1192,7 +1192,7 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 									.collect(Collectors.toMap(CommuneOuPays::new,
 									                          Collections::singletonList,
 									                          (f1, f2) -> Stream.concat(f1.stream(), f2.stream()).collect(Collectors.toList()),
-									                          LinkedHashMap::new));     // on veut conserver l'ordre des localisation pour les tests
+									                          LinkedHashMap::new));     // on veut conserver l'ordre des localisations pour les tests
 							if (parLocalisation.size() == 1) {
 								mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 								              String.format("Plusieurs (%d) fors principaux sur la même autorité fiscale (%s) ont une date de début identique au %s : seul le premier sera pris en compte.",
@@ -2981,8 +2981,22 @@ public class EntrepriseMigrator extends AbstractEntityMigrator<RegpmEntreprise> 
 			isDP = hasDP;
 		}
 
-		// entreprises administratives de droit public (communes...) -> pas de for migré, et c'est normal
+		// [SIFISC-17097] on doit reprendre les fors des entreprises DP qui ont des immeubles
+		final boolean isDPavecImmeuble;
 		if (isDP) {
+			final Map<RegpmCommune, List<DateRange>> directs = couvertureDepuisRattachementsProprietaires(regpm.getRattachementsProprietaires());
+			final Map<RegpmCommune, List<DateRange>> viaGroupe = couvertureDepuisAppartenancesGroupeProprietaire(regpm.getAppartenancesGroupeProprietaire());
+			isDPavecImmeuble = (directs != null && !directs.isEmpty()) || (viaGroupe != null && !viaGroupe.isEmpty());
+			if (isDPavecImmeuble) {
+				mr.addMessage(LogCategory.FORS, LogLevel.INFO, "Entreprise DP avec rattachement(s) propriétaire(s), on conservera donc les fors malgré la forme juridique DP.");
+			}
+		}
+		else {
+			isDPavecImmeuble = false;
+		}
+
+		// entreprises administratives de droit public (communes...) -> pas de for migré, et c'est normal
+		if (isDP && !isDPavecImmeuble) {
 			forsRegpm.stream()
 					.forEach(ff -> mr.addMessage(LogCategory.FORS, LogLevel.INFO,
 					                             String.format("For fiscal principal %d du %s non-migré (administration de droit public).",
